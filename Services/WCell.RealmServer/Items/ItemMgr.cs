@@ -10,7 +10,6 @@ using WCell.RealmServer.Content;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Items.Enchanting;
 using WCell.RealmServer.Misc;
-using WCell.RealmServer.NPCs;
 using WCell.RealmServer.NPCs.Auctioneer;
 using WCell.RealmServer.Quests;
 using WCell.RealmServer.RacesClasses;
@@ -27,16 +26,16 @@ namespace WCell.RealmServer.Items
 
 		public const uint MaxId = 2500000;
 
-		[NotVariable]
 		/// <summary>
 		/// All defined <see cref="ItemTemplate">ItemTemplates</see>.
 		/// </summary>
+		[NotVariable]
 		public static ItemTemplate[] Templates = new ItemTemplate[100000];
 
-		[NotVariable]
 		/// <summary>
 		/// All ItemSet definitions
 		/// </summary>
+		[NotVariable]
 		public static ItemSet[] Sets = new ItemSet[1000];
 
 		//[NotVariable]
@@ -54,6 +53,12 @@ namespace WCell.RealmServer.Items
 		[NotVariable]
 		public static MappedDBCReader<ItemRandomSuffixEntry, ItemRandomSuffixConverter> RandomSuffixReader;
 
+        [NotVariable]
+        public static MappedDBCReader<ScalingStatDistributionEntry, ScalingStatDistributionConverter> ScalingStatDistributionReader;
+
+        [NotVariable]
+        public static MappedDBCReader<ScalingStatValues, ScalingStatValuesConverter> ScalingStatValuesReader;
+
 		/// <summary>
 		/// All partial inventory types by InventorySlot
 		/// </summary>
@@ -70,6 +75,28 @@ namespace WCell.RealmServer.Items
 				return null;
 			}
 			return Templates[(uint)id];
+		}
+
+		/// <summary>
+		/// Returns the ItemTemplate with the given id
+		/// </summary>
+		public static ItemTemplate GetTemplateForced(ItemId id)
+		{
+			ItemTemplate templ;
+			if ((uint)id >= Templates.Length)
+			{
+				templ = null;
+			}
+			else
+			{
+				templ = Templates[(uint)id];
+			}
+
+			if (templ == null)
+			{
+				throw new ContentException("Requested ItemTemplate does not exist: {0}", id);
+			}
+			return templ;
 		}
 
 		/// <summary>
@@ -108,19 +135,28 @@ namespace WCell.RealmServer.Items
 			return Sets[id];
 		}
 
-		#region Equipment Mapping
+		#region Slot Mapping
+
+		public static readonly EquipmentSlot[] AllBagSlots = new[] { EquipmentSlot.Bag1, EquipmentSlot.Bag2, EquipmentSlot.Bag3, EquipmentSlot.Bag4 };
+
+		public static EquipmentSlot[] GetEquipmentSlots(InventorySlotType invSlot)
+		{
+			return EquipmentSlotsByInvSlot[(int)invSlot];
+		}
 
 		/// <summary>
-		/// Maps a set of available InventorySlots to their corresponding InventorySlotTypes
+		/// Maps a set of available InventorySlots by their corresponding InventorySlotType
 		/// </summary>
-		public static readonly EquipmentSlot[][] EquipmentSlotMap = GetEqSlots();
+		public static readonly EquipmentSlot[][] EquipmentSlotsByInvSlot = GetEqByInv();
 
-		static EquipmentSlot[][] GetEqSlots()
+		public static readonly InventorySlot[][] EquippableInvSlotsByClass = GetEqByCl();
+
+		static EquipmentSlot[][] GetEqByInv()
 		{
 			var slots = new EquipmentSlot[1 + (int)Utility.GetMaxEnum<InventorySlotType>()][];
-			var bagSlots = new[] { EquipmentSlot.Bag1, EquipmentSlot.Bag2, EquipmentSlot.Bag3, EquipmentSlot.Bag4 };
 
-			slots[(int)InventorySlotType.Bag] = bagSlots; slots[(int)InventorySlotType.Body] = new[] { EquipmentSlot.Shirt };
+			slots[(int)InventorySlotType.Bag] = AllBagSlots;
+			slots[(int)InventorySlotType.Body] = new[] { EquipmentSlot.Shirt };
 			slots[(int)InventorySlotType.Chest] = new[] { EquipmentSlot.Chest };
 			slots[(int)InventorySlotType.Cloak] = new[] { EquipmentSlot.Back };
 			slots[(int)InventorySlotType.Feet] = new[] { EquipmentSlot.Boots };
@@ -130,8 +166,8 @@ namespace WCell.RealmServer.Items
 			slots[(int)InventorySlotType.Holdable] = new[] { EquipmentSlot.OffHand };
 			slots[(int)InventorySlotType.Legs] = new[] { EquipmentSlot.Pants };
 			slots[(int)InventorySlotType.Neck] = new[] { EquipmentSlot.Neck };
-			slots[(int)InventorySlotType.Quiver] = bagSlots;
-			slots[(int)InventorySlotType.Ranged] = new[] { EquipmentSlot.ExtraWeapon };
+			slots[(int)InventorySlotType.Quiver] = AllBagSlots;
+			slots[(int)InventorySlotType.WeaponRanged] = new[] { EquipmentSlot.ExtraWeapon };
 			slots[(int)InventorySlotType.RangedRight] = new[] { EquipmentSlot.ExtraWeapon };
 			slots[(int)InventorySlotType.Relic] = new[] { EquipmentSlot.ExtraWeapon };
 			slots[(int)InventorySlotType.Robe] = new[] { EquipmentSlot.Chest };
@@ -148,7 +184,16 @@ namespace WCell.RealmServer.Items
 			slots[(int)InventorySlotType.Wrist] = new[] { EquipmentSlot.Wrist };
 
 			// special treatment
-			slots[(int)InventorySlotType.Ammo] = null;
+			slots[(int)InventorySlotType.Ammo] = null; // new[] { EquipmentSlot.Invalid };
+			return slots;
+		}
+
+		private static InventorySlot[][] GetEqByCl()
+		{
+			var slots = new InventorySlot[(int)ItemClass.End][];
+			slots[(int)ItemClass.Weapon] = new[] { InventorySlot.MainHand, InventorySlot.OffHand, InventorySlot.ExtraWeapon };
+			slots[(int)ItemClass.Armor] = new[] { InventorySlot.Chest, InventorySlot.Boots, InventorySlot.Gloves, InventorySlot.Head,
+				InventorySlot.Pants, InventorySlot.Chest, InventorySlot.Shoulders, InventorySlot.Wrist, InventorySlot.Belt };
 			return slots;
 		}
 		#endregion
@@ -580,17 +625,23 @@ namespace WCell.RealmServer.Items
 		private static void LoadDBCs()
 		{
 			RandomPropPointReader = new MappedDBCReader<ItemLevelInfo, ItemRandPropPointConverter>(
-				RealmServerConfiguration.GetDBCFile("RandPropPoints.dbc"));
+                RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_RANDPROPPOINTS));
 
 			EnchantMgr.Init();
 
 			RandomPropertiesReader =
 				new MappedDBCReader<ItemRandomPropertyEntry, ItemRandomPropertiesConverter>(RealmServerConfiguration.GetDBCFile(
-																						WCellDef.DBC_ITEMRANDOMPROPERTIES));
+																						WCellConstants.DBC_ITEMRANDOMPROPERTIES));
 
 			RandomSuffixReader =
 				new MappedDBCReader<ItemRandomSuffixEntry, ItemRandomSuffixConverter>(RealmServerConfiguration.GetDBCFile(
-																					WCellDef.DBC_ITEMRANDOMSUFFIX));
+																					WCellConstants.DBC_ITEMRANDOMSUFFIX));
+
+            ScalingStatDistributionReader = new MappedDBCReader<ScalingStatDistributionEntry, ScalingStatDistributionConverter>(RealmServerConfiguration.GetDBCFile(
+                                                                                    WCellConstants.DBC_SCALINGSTATDISTRIBUTION));
+
+            ScalingStatValuesReader = new MappedDBCReader<ScalingStatValues, ScalingStatValuesConverter>(RealmServerConfiguration.GetDBCFile(
+                                                                                    WCellConstants.DBC_SCALINGSTATVALUES));
 		}
 
 		public static bool Loaded { get; private set; }
@@ -600,10 +651,19 @@ namespace WCell.RealmServer.Items
 			if (!Loaded)
 			{
 				//ContentHandler.Load<ItemRandomSuffixInfo>();
-				ContentHandler.Load<ItemTemplate>();
-				ContentHandler.Load<ItemRandomEnchantEntry>();
+				ContentMgr.Load<ItemTemplate>();
+				ContentMgr.Load<ItemRandomEnchantEntry>();
 
-				Loaded = true;
+				OnLoaded();
+
+				foreach (var templ in Templates)
+				{
+					if (templ != null)
+					{
+						templ.InitializeTemplate();
+					}
+				}
+
 				TruncSets();
 
 				if (ArchetypeMgr.Loaded)
@@ -611,12 +671,18 @@ namespace WCell.RealmServer.Items
 					ArchetypeMgr.LoadItems();
 				}
 
-				RealmServer.InitMgr.SignalGlobalMgrReady(typeof(ItemMgr));
-
 				SpellHandler.InitTools();
 				LoadItemCharRelations();
 
 				AuctionMgr.Instance.LoadItems();
+
+				if (QuestMgr.Loaded)
+				{
+					EnsureItemQuestRelations();
+				}
+
+				RealmServer.InitMgr.SignalGlobalMgrReady(typeof(ItemMgr));
+				Loaded = true;
 			}
 		}
 
@@ -639,10 +705,7 @@ namespace WCell.RealmServer.Items
 			}
 		}
 
-		[Initialization]
-		[DependentInitialization(typeof(QuestMgr))]
-		[DependentInitialization(typeof(ItemMgr))]
-		public static void EnsureQuestRelations()
+		internal static void EnsureItemQuestRelations()
 		{
 			// Collect quests
 			foreach (var quest in QuestMgr.Templates)
@@ -661,7 +724,7 @@ namespace WCell.RealmServer.Items
 					var item = GetTemplate(itemInfo.ItemId);
 					if (item == null)
 					{
-						ContentHandler.OnInvalidDBData("QuestTemplate \"{0}\" refered to non-existing Item: {1}",
+						ContentMgr.OnInvalidDBData("QuestTemplate \"{0}\" refered to non-existing Item: {1}",
 													   quest, itemInfo);
 					}
 					else
@@ -674,7 +737,6 @@ namespace WCell.RealmServer.Items
 						{
 							ArrayUtil.AddOnlyOne(ref item.CollectQuests, quest);
 						}
-						break;
 					}
 				}
 			}
@@ -687,7 +749,7 @@ namespace WCell.RealmServer.Items
 					var quest = QuestMgr.GetTemplate(item.QuestId);
 					if (quest == null)
 					{
-						ContentHandler.OnInvalidDBData("Item {0} had invalid QuestId: {1}", item, item.QuestId);
+						ContentMgr.OnInvalidDBData("Item {0} had invalid QuestId: {1}", item, item.QuestId);
 						continue;
 					}
 					quest.Starters.Add(item);
@@ -701,7 +763,7 @@ namespace WCell.RealmServer.Items
 		public static void LoadSets()
 		{
 			var reader = new MappedDBCReader<ItemSet, ItemSet.ItemSetDBCConverter>(
-				RealmServerConfiguration.GetDBCFile("ItemSet.dbc"));
+                RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_ITEMSET));
 
 			foreach (var set in reader.Entries.Values)
 			{
@@ -760,22 +822,25 @@ namespace WCell.RealmServer.Items
 
 		#region TotemCategories
 		[NotVariable]
-		public static ItemTemplate[] FirstTotemsPerCat = new ItemTemplate[(uint)TotemCategory.End];
+		public static readonly ItemTemplate[] FirstTotemsPerCat = new ItemTemplate[(uint)ToolCategory.End + 100];
 
-		public static ItemTemplate GetFirstTotemCat(TotemCategory totemCat)
+		public static ItemTemplate GetFirstItemOfToolCategory(ToolCategory toolCat)
 		{
-			return FirstTotemsPerCat[(int)totemCat];
+			return FirstTotemsPerCat[(int)toolCat];
 		}
 
-		public static EquipmentSlot[] GetTotemCatSlots(TotemCategory totemCat)
+		public static EquipmentSlot[] GetToolCategorySlots(ToolCategory toolCat)
 		{
-			return FirstTotemsPerCat[(int)totemCat].EquipmentSlots;
+			var templ = FirstTotemsPerCat[(int) toolCat];
+			if (templ == null) return null;
+
+			return templ.EquipmentSlots;
 		}
 
 		public static Dictionary<int, TotemCategoryInfo> ReadTotemCategories()
 		{
 			var reader = new MappedDBCReader<TotemCategoryInfo, TotemCatConverter>(RealmServerConfiguration.GetDBCFile(
-																					"TotemCategory.dbc"));
+                                                                                    WCellConstants.DBC_TOTEMCATEGORY));
 			return reader.Entries;
 		}
 
@@ -813,7 +878,7 @@ namespace WCell.RealmServer.Items
 
 		public static ItemRandomPropertyEntry GetRandomPropertyEntry(uint id)
 		{
-			if (RandomPropPointReader == null)
+            if (RandomPropertiesReader == null)
 			{
 				LoadDBCs();
 			}
@@ -824,7 +889,7 @@ namespace WCell.RealmServer.Items
 
 		public static ItemRandomSuffixEntry GetRandomSuffixEntry(uint id)
 		{
-			if (RandomPropPointReader == null)
+            if (RandomSuffixReader == null)
 			{
 				LoadDBCs();
 			}
@@ -832,5 +897,50 @@ namespace WCell.RealmServer.Items
 			RandomSuffixReader.Entries.TryGetValue((int)id, out entry);
 			return entry;
 		}
+
+        public static ScalingStatDistributionEntry GetScalingStatDistributionEntry(uint id)
+        {
+            if (ScalingStatDistributionReader == null)
+            {
+                LoadDBCs();
+            }
+            ScalingStatDistributionEntry entry;
+            ScalingStatDistributionReader.Entries.TryGetValue((int)id, out entry);
+            return entry;
+        }
+
+        public static ScalingStatValues GetScalingStatValue(uint id)
+        {
+            if (ScalingStatValuesReader == null)
+            {
+                LoadDBCs();
+            }
+            ScalingStatValues entry;
+            ScalingStatValuesReader.Entries.TryGetValue((int)id, out entry);
+            return entry;
+        }
+
+		#region Apply changes when loading
+		private static readonly List<KeyValuePair<ItemId, Action<ItemTemplate>>> loadHooks = new List<KeyValuePair<ItemId, Action<ItemTemplate>>>();
+
+		/// <summary>
+		/// Adds a callback to be called on the given set of ItemTemplates after load and before Item initialization
+		/// </summary>
+		public static void Apply(Action<ItemTemplate> cb, params ItemId[] ids)
+		{
+			foreach (var id in ids)
+			{
+				loadHooks.Add(new KeyValuePair<ItemId, Action<ItemTemplate>>(id, cb));
+			}
+		}
+
+		static void OnLoaded()
+		{
+			foreach (var hook in loadHooks)
+			{
+				hook.Value(GetTemplateForced(hook.Key));
+			}
+		}
+		#endregion
 	}
 }

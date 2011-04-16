@@ -1,4 +1,4 @@
-﻿using WCell.Constants.Items;
+using WCell.Constants.Items;
 using WCell.RealmServer.Items;
 using WCell.Util.Commands;
 using WCell.RealmServer.Mail;
@@ -22,7 +22,7 @@ namespace WCell.RealmServer.Commands
 		{
 			protected override void Initialize()
 			{
-				Init("Read", "S");
+				Init("Read", "R");
 				EnglishParamInfo = "";
 				EnglishDescription = "Read all mails";
 			}
@@ -34,7 +34,10 @@ namespace WCell.RealmServer.Commands
 				{
 					trigger.Reply("Cannot read Mails if no Character is given (yet).");
 				}
-				chr.Mail.SendMailList();
+				else
+				{
+					chr.MailAccount.SendMailList();
+				}
 			}
 		}
 

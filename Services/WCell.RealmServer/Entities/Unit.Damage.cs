@@ -1,11 +1,15 @@
+using System;
 using System.Collections.Generic;
 using WCell.Constants;
 using WCell.Constants.Items;
+using WCell.Constants.NPCs;
+using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Items;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Modifiers;
+using WCell.RealmServer.Spells;
 using WCell.Util;
 
 namespace WCell.RealmServer.Entities
@@ -18,7 +22,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Applies modifications to your attacks
 		/// </summary>
-		public readonly List<IAttackModifier> AttackModifiers = new List<IAttackModifier>(1);
+		public readonly List<IAttackEventHandler> AttackEventHandlers = new List<IAttackEventHandler>(1);
 
 		/// <summary>
 		/// The maximum distance in yards to a valid attackable target
@@ -33,6 +37,110 @@ namespace WCell.RealmServer.Entities
 		{
 			get { return CombatReach + m_mainWeapon.MaxRange; }
 		}
+
+		#region Damage Mods
+
+		/// <summary>
+		/// Modifies the damage for the given school by the given delta.
+		/// </summary>
+		protected internal virtual void AddDamageDoneModSilently(DamageSchool school, int delta)
+		{
+			// do nothing
+		}
+
+		/// <summary>
+		/// Modifies the damage for the given school by the given delta.
+		/// </summary>
+		public void AddDamageDoneMod(DamageSchool school, int delta)
+		{
+			AddDamageDoneModSilently(school, delta);
+		}
+
+		/// <summary>
+		/// Modifies the damage for the given school by the given delta.
+		/// </summary>
+		protected internal virtual void RemoveDamageDoneModSilently(DamageSchool school, int delta)
+		{
+			// do nothing
+		}
+
+		/// <summary>
+		/// Modifies the damage for the given school by the given delta.
+		/// </summary>
+		public void RemoveDamageDoneMod(DamageSchool school, int delta)
+		{
+			RemoveDamageDoneModSilently(school, delta);
+		}
+
+		protected internal virtual void ModDamageDoneFactorSilently(DamageSchool school, float delta)
+		{
+			// do nothing
+		}
+
+		public virtual float GetDamageDoneFactor(DamageSchool school)
+		{
+			return 1;
+		}
+
+		public virtual int GetDamageDoneMod(DamageSchool school)
+		{
+			return 0;
+		}
+
+		/// <summary>
+		/// Adds/Removes a flat modifier to all of the given damage schools
+		/// </summary>
+		public void AddDamageDoneMod(uint[] schools, int delta)
+		{
+			foreach (var school in schools)
+			{
+				AddDamageDoneModSilently((DamageSchool)school, delta);
+			}
+			//this.UpdateAllDamages();
+		}
+
+		/// <summary>
+		/// Adds/Removes a flat modifier to all of the given damage schools
+		/// </summary>
+		public void RemoveDamageDoneMod(uint[] schools, int delta)
+		{
+			foreach (var school in schools)
+			{
+				RemoveDamageDoneModSilently((DamageSchool)school, delta);
+			}
+			//this.UpdateAllDamages();
+		}
+
+		public void ModDamageDoneFactor(DamageSchool school, float delta)
+		{
+			ModDamageDoneFactorSilently(school, delta);
+			//this.UpdateAllDamages();
+		}
+
+		/// <summary>
+		/// Adds/Removes a percent modifier to all of the given damage schools
+		/// </summary>
+		public void ModDamageDoneFactor(uint[] schools, float delta)
+		{
+			foreach (var school in schools)
+			{
+				ModDamageDoneFactorSilently((DamageSchool)school, delta);
+			}
+			//this.UpdateAllDamages();
+		}
+
+		/// <summary>
+		/// Get total damage, after adding/subtracting all modifiers (is not used for DoT)
+		/// </summary>
+		public int GetFinalDamage(DamageSchool school, int dmg, Spell spell = null)
+		{
+			if (spell != null)
+			{
+				dmg = Auras.GetModifiedInt(SpellModifierType.SpellPower, spell, dmg);
+			}
+			return dmg;
+		}
+		#endregion
 
 		#region Weapon Info
 		/// <summary>
@@ -69,16 +177,31 @@ namespace WCell.RealmServer.Entities
 			}
 			set
 			{
+				if (value == m_mainWeapon)
+				{
+					return;
+				}
+
 				if (value == null)
 				{
 					// always make sure that a weapon is equipped
 					value = GenericWeapon.Fists;
 				}
 
+				if (m_mainWeapon is Item)
+				{
+					((Item)m_mainWeapon).OnUnEquip(InventorySlot.MainHand);
+				}
+
 				m_mainWeapon = value;
 
 				this.UpdateMainDamage();
 				this.UpdateMainAttackTime();
+
+				if (value is Item)
+				{
+					((Item)value).OnEquip();
+				}
 			}
 		}
 
@@ -94,12 +217,22 @@ namespace WCell.RealmServer.Entities
 			}
 			internal set
 			{
-				if (m_RangedWeapon != value)
+				if (value == m_RangedWeapon)
 				{
-					m_RangedWeapon = value;
+					return;
+				}
 
-					this.UpdateRangedAttackTime();
-					this.UpdateRangedDamage();
+				if (m_RangedWeapon is Item)
+				{
+					((Item)m_RangedWeapon).OnUnEquip(InventorySlot.ExtraWeapon);
+				}
+				m_RangedWeapon = value;
+
+				this.UpdateRangedAttackTime();
+				this.UpdateRangedDamage();
+				if (value is Item)
+				{
+					((Item)value).OnEquip();
 				}
 			}
 		}
@@ -116,12 +249,23 @@ namespace WCell.RealmServer.Entities
 			}
 			internal set
 			{
-				if (m_offhandWeapon != value)
+				if (value == m_RangedWeapon)
 				{
-					m_offhandWeapon = value;
+					return;
+				}
 
-					this.UpdateOffHandDamage();
-					this.UpdateOffHandAttackTime();
+				if (m_offhandWeapon is Item)
+				{
+					((Item)m_offhandWeapon).OnUnEquip(InventorySlot.OffHand);
+				}
+
+				m_offhandWeapon = value;
+
+				this.UpdateOffHandDamage();
+				this.UpdateOffHandAttackTime();
+				if (value is Item)
+				{
+					((Item)value).OnEquip();
 				}
 			}
 		}
@@ -130,22 +274,129 @@ namespace WCell.RealmServer.Entities
 		{
 			switch (slot)
 			{
-				case EquipmentSlot.OffHand:
-					return m_offhandWeapon;
+				case EquipmentSlot.MainHand:
+					return m_mainWeapon;
 				case EquipmentSlot.ExtraWeapon:
 					return m_RangedWeapon;
-				default:
+				case EquipmentSlot.OffHand:
+					return m_offhandWeapon;
+			}
+			return null;
+		}
+
+		public IWeapon GetWeapon(InventorySlotType slot)
+		{
+			switch (slot)
+			{
+				case InventorySlotType.WeaponMainHand:
 					return m_mainWeapon;
+				case InventorySlotType.WeaponRanged:
+					return m_RangedWeapon;
+				case InventorySlotType.WeaponOffHand:
+					return m_offhandWeapon;
+			}
+			return null;
+		}
+
+		public void SetWeapon(InventorySlotType slot, IWeapon weapon)
+		{
+			switch (slot)
+			{
+				case InventorySlotType.WeaponMainHand:
+					MainWeapon = weapon;
+					break;
+				case InventorySlotType.WeaponRanged:
+					RangedWeapon = weapon;
+					break;
+				case InventorySlotType.WeaponOffHand:
+					OffHandWeapon = weapon;
+					break;
 			}
 		}
 
 		/// <summary>
-		/// Whether this Unit should use melee at all
+		/// Whether this Unit is allowed to melee at all
 		/// </summary>
 		public bool CanMelee
 		{
+			get { return MeleePermissionCounter > 0 && m_canInteract; }
+		}
+
+		/// <summary>
+		/// If greater 0, may melee, else not
+		/// </summary>
+		public int MeleePermissionCounter
+		{
 			get;
-			set;
+			internal set;
+		}
+
+		public void IncMeleePermissionCounter()
+		{
+			++MeleePermissionCounter;
+		}
+
+		public void DecMeleePermissionCounter()
+		{
+			--MeleePermissionCounter;
+		}
+		#endregion
+
+		#region Disarm
+		private InventorySlotTypeMask m_DisarmMask;
+
+		public bool MayCarry(InventorySlotTypeMask itemMask)
+		{
+			return (itemMask & DisarmMask) == 0;
+		}
+
+		/// <summary>
+		/// The mask of slots of currently disarmed items.
+		/// </summary>
+		public InventorySlotTypeMask DisarmMask
+		{
+			get { return m_DisarmMask; }
+		}
+
+		/// <summary>
+		/// Disarms the weapon of the given type (WeaponMainHand, WeaponRanged or WeaponOffHand)
+		/// </summary>
+		public void SetDisarmed(InventorySlotType type)
+		{
+			var m = type.ToMask();
+			if (m_DisarmMask.HasAnyFlag(m))
+			{
+				return;
+			}
+
+			m_DisarmMask |= m;
+
+			SetWeapon(type, null);
+		}
+
+		/// <summary>
+		/// Rearms the weapon of the given type (WeaponMainHand, WeaponRanged or WeaponOffHand)
+		/// </summary>
+		public void UnsetDisarmed(InventorySlotType type)
+		{
+			var m = type.ToMask();
+			if (!m_DisarmMask.HasAnyFlag(m))
+			{
+				return;
+			}
+
+			m_DisarmMask &= ~m;
+
+			SetWeapon(type, GetOrInvalidateItem(type));
+		}
+
+		/// <summary>
+		/// Finds the item for the given slot. 
+		/// Unequips it and returns null, if it may not currently be used.
+		/// </summary>
+		protected virtual IWeapon GetOrInvalidateItem(InventorySlotType type)
+		{
+			return null;
 		}
 		#endregion
 
@@ -219,13 +470,10 @@ namespace WCell.RealmServer.Entities
 		#endregion
 
 		#region Melee Attack Power
-		public virtual int MeleeAttackPower
+		public int MeleeAttackPower
 		{
 			get { return GetInt32(UnitFields.ATTACK_POWER); }
-			internal set
-			{
-				SetInt32(UnitFields.ATTACK_POWER, value);
-			}
+			internal set { SetInt32(UnitFields.ATTACK_POWER, value); }
 		}
 
 		public int MeleeAttackPowerModsPos
@@ -240,7 +488,7 @@ namespace WCell.RealmServer.Entities
 
 		public int MeleeAttackPowerModsNeg
 		{
-			get { return GetUInt16Low(UnitFields.ATTACK_POWER_MODS); }
+			get { return GetUInt16High(UnitFields.ATTACK_POWER_MODS); }
 			set
 			{
 				SetUInt16High(UnitFields.ATTACK_POWER_MODS, (ushort)value);
@@ -266,7 +514,7 @@ namespace WCell.RealmServer.Entities
 				value += MeleeAttackPowerModsPos;
 				value -= MeleeAttackPowerModsNeg;
 
-				value = ((1 + MeleeAttackPowerMultiplier)*value).RoundInt();
+				value = MathUtil.RoundInt((1 + MeleeAttackPowerMultiplier) * value);
 				return value;
 			}
 		}
@@ -313,15 +561,6 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
-		/// <summary>
-		/// Ranged AP bonus by Intelligence
-		/// </summary>
-		public int RangedAttackIntMod
-		{
-			get;
-			internal set;
-		}
-
 		public int TotalRangedAP
 		{
 			get
@@ -330,7 +569,7 @@ namespace WCell.RealmServer.Entities
 				value += RangedAttackPowerModsPos;
 				value -= RangedAttackPowerModsNeg;
 
-				value = ((1 + RangedAttackPowerMultiplier) * value).RoundInt();
+				value = MathUtil.RoundInt((1 + RangedAttackPowerMultiplier) * value);
 				return value;
 			}
 		}
@@ -341,7 +580,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Deals environmental damage to this Unit (cannot be resisted)
 		/// </summary>
-		public void DoEnvironmentalDamage(EnviromentalDamageType dmgType, int amount)
+		public virtual void DealEnvironmentalDamage(EnviromentalDamageType dmgType, int amount)
 		{
 			//if (dmgType == EnviromentalDamageType.Fall)
 			//{
@@ -362,48 +601,67 @@ namespace WCell.RealmServer.Entities
 		public void DoRawDamage(IDamageAction action)
 		{
 			// Default on damage stuff
+			if (m_FirstAttacker == null && action.Attacker != null)
+			{
+				FirstAttacker = action.Attacker;
+			}
+
+			// damage taken modifiers
+			if (m_damageTakenMods != null)
+			{
+				action.Damage += m_damageTakenMods[(int)action.UsedSchool];
+			}
+			if (m_damageTakenPctMods != null)
+			{
+				var val = m_damageTakenPctMods[(int)action.UsedSchool];
+				if (val != 0)
+				{
+					action.Damage -= (val * action.Damage + 50) / 100;
+				}
+			}
+
+			// AoE damage reduction
+			if (action.Spell != null && action.Spell.IsAreaSpell && AoEDamageModifierPct != 0)
+			{
+				action.Damage -= (action.Damage * AoEDamageModifierPct + 50) / 100;
+			}
+
+			// last change
 			action.Victim.OnDamageAction(action);
 
-			// events
-			if (action.Attacker is Character)
-			{
-				Character.NotifyHitDeliver(action);
-			}
-			else if (action.Attacker is NPC)
-			{
-				((NPC)action.Attacker).Entry.NotifyHitDeliver(action);
-			}
-
-			if (action.Victim is Character)
-			{
-				Character.NotifyHitReceive(action);
-			}
-			else if (action.Victim is NPC)
-			{
-				((NPC)action.Victim).Entry.NotifyHitReceive(action);
-			}
-
-			if (action.Attacker != null && action.Attacker.Brain != null)
-			{
-				action.Attacker.Brain.OnDamageDealt(action);
-			}
-
-			if (m_brain != null)
-			{
-				m_brain.OnDamageReceived(action);
-			}
-
-			// deal damage
+			// deal damage (no more changes to damage, from here on)
 			var dmg = action.ActualDamage;
 			if (dmg > 0)
 			{
-				if (action.Attacker != null && action.Victim.ManaShieldAmount > 0)
+				if (m_brain != null)
 				{
-					action.Victim.DrainManaShield(ref dmg);
+					m_brain.OnDamageReceived(action);
 				}
 
-				action.Victim.Health -= dmg;
+				if (action.Attacker !=null && action.Attacker.Brain != null)
+				{
+					action.Attacker.m_brain.OnDamageDealt(action);
+				}
+
+				var health = Health;
+
+				if (dmg >= health)
+				{
+					// kill
+					LastKiller = action.Attacker;
+				}
+
+				Health = health - dmg;
+
+				if (!IsAlive)
+				{
+					OnKilled(action);
+				}
 			}
+		}
+
+		protected virtual void OnKilled(IDamageAction action)
+		{
 		}
 	}
 }

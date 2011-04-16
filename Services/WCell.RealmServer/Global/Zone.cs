@@ -33,18 +33,18 @@ namespace WCell.RealmServer.Global
 		private ChatChannel m_allianceGeneralChannel, m_allianceLocalDefenseChannel;
 		private ChatChannel m_hordeGeneralChannel, m_hordeLocalDefenseChannel;
 
-		public readonly ZoneInfo Info;
-		public readonly Region Region;
+		public readonly ZoneTemplate Template;
+		public readonly Map Map;
 		public readonly IList<ChatChannel> AllianceChatChannels = new List<ChatChannel>();
 		public readonly IList<ChatChannel> HordeChatChannels = new List<ChatChannel>();
 
-		public Zone(Region rgn, ZoneInfo info)
+		public Zone(Map rgn, ZoneTemplate template)
 		{
-			Region = rgn;
-			Info = info;
-			if (info.WorldStates != null)
+			Map = rgn;
+			Template = template;
+			if (template.WorldStates != null)
 			{
-				WorldStates = new WorldStateCollection(this, info.WorldStates);
+				WorldStates = new WorldStateCollection(this, template.WorldStates);
 			}
 
 			CreateChatChannels();
@@ -58,17 +58,17 @@ namespace WCell.RealmServer.Global
 
 		public IWorldSpace ParentSpace
 		{
-			get { return ParentZone ?? (IWorldSpace)Region; }
+			get { return ParentZone ?? (IWorldSpace)Map; }
 		}
 
 		public int ExplorationBit
 		{
-			get { return Info.ExplorationBit; }
+			get { return Template.ExplorationBit; }
 		}
 
 		public int AreaLevel
 		{
-			get { return Info.AreaLevel; }
+			get { return Template.AreaLevel; }
 		}
 
 		/// <summary>
@@ -76,7 +76,7 @@ namespace WCell.RealmServer.Global
 		/// </summary>
 		public string Name
 		{
-			get { return Info.Name; }
+			get { return Template.Name; }
 		}
 
 		/// <summary>
@@ -84,7 +84,7 @@ namespace WCell.RealmServer.Global
 		/// </summary>
 		public ZoneId Id
 		{
-			get { return Info.Id; }
+			get { return Template.Id; }
 		}
 
 		/// <summary>
@@ -92,29 +92,29 @@ namespace WCell.RealmServer.Global
 		/// </summary>
 		public ZoneId ParentZoneId
 		{
-			get { return Info.ParentZoneId; }
+			get { return Template.ParentZoneId; }
 		}
 
 		public Zone ParentZone
 		{
-			get { return Region.GetZone(ParentZoneId); }
+			get { return Map.GetZone(ParentZoneId); }
 		}
 
 		/// <summary>
-		/// The ID of this zone's parent region.
+		/// The ID of this zone's parent map.
 		/// </summary>
-		public MapId RegionId
+		public MapId MapId
 		{
-			get { return Info.RegionId; }
+			get { return Template.MapId; }
 		}
 
 		/// <summary>
-		/// The <see cref="Global.RegionInfo">Region</see> to which this Zone belongs.
+		/// The <see cref="MapTemplate">Map</see> to which this Zone belongs.
 		/// </summary>
-		public RegionInfo RegionInfo
+		public MapTemplate MapTemplate
 		{
-			get { return Info.RegionInfo; }
-			set { Info.RegionInfo = value; }
+			get { return Template.MapTemplate; }
+			set { Template.MapTemplate = value; }
 		}
 
 		/// <summary>
@@ -122,7 +122,7 @@ namespace WCell.RealmServer.Global
 		/// </summary>
 		public ZoneFlags Flags
 		{
-			get { return Info.Flags; }
+			get { return Template.Flags; }
 		}
 
 		/// <summary>
@@ -130,12 +130,12 @@ namespace WCell.RealmServer.Global
 		/// </summary>
 		public FactionGroupMask Ownership
 		{
-			get { return Info.Ownership; }
+			get { return Template.Ownership; }
 		}
 
 		public void CallOnAllCharacters(Action<Character> action)
 		{
-			Region.CallOnAllCharacters(chr =>
+			Map.CallOnAllCharacters(chr =>
 			{
 				if (chr.Zone.Id == Id)
 				{
@@ -147,7 +147,7 @@ namespace WCell.RealmServer.Global
 		internal void EnterZone(Character chr, Zone oldZone)
 		{
 			UpdateChannels(chr, oldZone);
-			MiscHandler.SendInitWorldStates(chr, WorldStates, this);
+			WorldStateHandler.SendInitWorldStates(chr, WorldStates, this);
 
 			if (oldZone != null)
 			{
@@ -155,32 +155,41 @@ namespace WCell.RealmServer.Global
 			}
 
 			// update PvPState
-			var isBg = Region.IsBattleground;
+			var isBg = Map.IsBattleground;
 			if (RealmServerConfiguration.ServerType.HasAnyFlag(RealmServerType.PVP | RealmServerType.RPPVP) || isBg)
 			{
-				if (isBg || Info.IsHostileTo(chr))
+				if (isBg || Template.IsHostileTo(chr))
 				{
-					chr.PvPState = PvPState.PVP;
+				    chr.UpdatePvPState(true, true);
 					chr.PlayerFlags |= PlayerFlags.PVP;
+                    chr.PlayerFlags &= ~(PlayerFlags.InPvPSanctuary | PlayerFlags.FreeForAllPVP);
 				}
-				else if (Info.IsSanctuary)
+				else if (Template.IsSanctuary)
 				{
 					chr.PvPState = PvPState.InPvPSanctuary;
 					chr.PlayerFlags |= PlayerFlags.InPvPSanctuary;
+                    chr.PlayerFlags &= ~(PlayerFlags.PVP | PlayerFlags.FreeForAllPVP);
 				}
 				else
 				{
-					chr.PvPState = PvPState.None;
-					chr.PlayerFlags &= ~(PlayerFlags.PVP | PlayerFlags.InPvPSanctuary);
+                    chr.UpdatePvPState(false);
+                    chr.PlayerFlags &= ~(PlayerFlags.PVP | PlayerFlags.InPvPSanctuary | PlayerFlags.FreeForAllPVP);
 				}
+
+                if (Template.IsArena)
+                {
+                    chr.PvPState = PvPState.FFAPVP;
+                    chr.PlayerFlags |= PlayerFlags.FreeForAllPVP;
+                    chr.PlayerFlags &= ~(PlayerFlags.InPvPSanctuary);
+                }
 			}
 
-			Info.OnPlayerEntered(chr, oldZone);
+			Template.OnPlayerEntered(chr, oldZone);
 		}
 
 		internal void LeaveZone(Character chr)
 		{
-			Info.OnPlayerLeft(chr, this);
+			Template.OnPlayerLeft(chr, this);
 		}
 
 		#region Channels
@@ -214,16 +223,16 @@ namespace WCell.RealmServer.Global
 			var alliance = ChatChannelGroup.Alliance;
 			var horde = ChatChannelGroup.Horde;
 
-            if (!Info.Flags.HasFlag(ZoneFlags.Arena))
+            if (!Template.Flags.HasFlag(ZoneFlags.Arena))
 			{
-                if (!Info.Flags.HasFlag(ZoneFlags.AlwaysContested))
+                if (!Template.Flags.HasFlag(ZoneFlags.AlwaysContested))
 				{
-					AllianceChatChannels.Add(m_allianceLocalDefenseChannel = alliance.CreateLocalDefenseChannel(Info));
-					HordeChatChannels.Add(m_hordeLocalDefenseChannel = horde.CreateLocalDefenseChannel(Info));
+					AllianceChatChannels.Add(m_allianceLocalDefenseChannel = alliance.CreateLocalDefenseChannel(Template));
+					HordeChatChannels.Add(m_hordeLocalDefenseChannel = horde.CreateLocalDefenseChannel(Template));
 				}
 
-				AllianceChatChannels.Add(m_allianceGeneralChannel = alliance.CreateGeneralChannel(Info));
-				HordeChatChannels.Add(m_hordeGeneralChannel = horde.CreateGeneralChannel(Info));
+				AllianceChatChannels.Add(m_allianceGeneralChannel = alliance.CreateGeneralChannel(Template));
+				HordeChatChannels.Add(m_hordeGeneralChannel = horde.CreateGeneralChannel(Template));
 			}
 		}
 
@@ -239,7 +248,7 @@ namespace WCell.RealmServer.Global
 			{
 				var oldChannels = oldZone.GetChatChannels(chr.FactionGroup);
 
-				if (oldZone.Info.IsCity)
+				if (oldZone.Template.IsCity)
 				{
 					ChatChannelGroup.GetGroup(chr.FactionGroup).TradeChannel.Leave(chr, false);
 				}
@@ -268,7 +277,7 @@ namespace WCell.RealmServer.Global
 				}
 			}
 
-			if (Info.IsCity)
+			if (Template.IsCity)
 			{
 				ChatChannelGroup.GetGroup(chr.FactionGroup).TradeChannel.TryJoin(chr);
 			}

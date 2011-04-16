@@ -96,7 +96,7 @@ namespace WCell.RealmServer.Mail
 			{
 				// receiving character is online, get info from the character object
 				recipientFaction = recipient.Faction.Group;
-				recipientMailCount = recipient.Mail.AllMail.Count;
+				recipientMailCount = recipient.MailAccount.AllMail.Count;
 				recipientRecord = recipient.Record;
 			}
 			else
@@ -155,6 +155,13 @@ namespace WCell.RealmServer.Mail
 			uint money,
 			uint cod)
 		{
+			if (subject.Length > MailMgr.MaxMailSubjectLength ||
+				body.Length > MailMgr.MaxMailBodyLength)
+			{
+				// Player cannot send mails this long through the mail dialog
+				return MailError.INTERNAL_ERROR;
+			}
+
 			// Can't send mail to yourself.
 			if (recipient.EntityLowId == m_chr.EntityId.Low)
 			{
@@ -162,26 +169,31 @@ namespace WCell.RealmServer.Mail
 				return MailError.CANNOT_SEND_TO_SELF;
 			}
 
+		    var requiredCash = money;
+
 			// Check that sender is good for the money.
-			if (MailMgr.ChargePostage && !m_chr.GodMode)
+			if (MailMgr.ChargePostage)
 			{
-				var requiredCash = money + MailMgr.PostagePrice;
+                if (!m_chr.GodMode)
+                {
+                    requiredCash += MailMgr.PostagePrice;
 
-				var count = (items == null) ? 0u : (uint)items.Count;
-				if (count > 0)
-				{
-					requiredCash += ((count - 1) * MailMgr.PostagePrice);
-				}
-
-				if (requiredCash > m_chr.Money)
-				{
-					MailHandler.SendResult(m_chr.Client, 0u, MailResult.MailSent, MailError.NOT_ENOUGH_MONEY);
-					return MailError.NOT_ENOUGH_MONEY;
-				}
-
-				// Charge for the letter (already checked, Character has enough)
-				m_chr.Money -= requiredCash;
+                    var count = (items == null) ? 0u : (uint) items.Count;
+                    if (count > 0)
+                    {
+                        requiredCash += ((count - 1)*MailMgr.PostagePrice);
+                    }
+                }
 			}
+
+            if (requiredCash > m_chr.Money)
+            {
+                MailHandler.SendResult(m_chr.Client, 0u, MailResult.MailSent, MailError.NOT_ENOUGH_MONEY);
+                return MailError.NOT_ENOUGH_MONEY;
+            }
+
+            // Charge for the letter (already checked, Character has enough)
+            m_chr.Money -= requiredCash;
 
 			// All good, send an ok message
 			MailHandler.SendResult(m_chr.Client, 0u, MailResult.MailSent, MailError.OK);
@@ -267,8 +279,8 @@ namespace WCell.RealmServer.Mail
 			if (firstCheckSinceLogin)
 			{
 				// enqueue Task to load from DB
-				// then enqueue another task to do the actual sending from the Region thread
-				RealmServer.Instance.AddMessage(new Message(() =>
+				// then enqueue another task to do the actual sending from the Map thread
+				RealmServer.IOQueue.AddMessage(new Message(() =>
 				{
 					Load();
 					var context = m_chr.ContextHandler;
@@ -415,7 +427,6 @@ namespace WCell.RealmServer.Mail
 			if (letter.CashOnDelivery > 0)
 			{
 				m_chr.Money -= letter.CashOnDelivery;
-				letter.CashOnDelivery = 0;
 
 				// item was sent COD. Send the payment back to the sender in a new mail.
 				var charRecord = CharacterRecord.GetRecord(letter.SenderEntityId.Low);
@@ -423,9 +434,10 @@ namespace WCell.RealmServer.Mail
 				{
 					SendMail(charRecord.Name, letter.Subject, "", MailStationary.Normal, null, letter.CashOnDelivery, 0);
 				}
+                letter.CashOnDelivery = 0;
 			}
 
-			RealmServer.Instance.AddMessage(new Message(() =>
+			RealmServer.IOQueue.AddMessage(new Message(() =>
 			{
 				letter.Update();
 				MailHandler.SendResult(m_chr.Client, (uint)letter.Guid, MailResult.ItemTaken, MailError.OK, itemId, count);
@@ -493,7 +505,7 @@ namespace WCell.RealmServer.Mail
 
 			mail.CopiedToItem = true;
 
-			RealmServer.Instance.AddMessage(new Message(() =>
+			RealmServer.IOQueue.AddMessage(new Message(() =>
 			{
 				mail.Save();
 				MailHandler.SendResult(m_chr, messageId, MailResult.MadePermanent, MailError.OK);
@@ -508,7 +520,7 @@ namespace WCell.RealmServer.Mail
 			var mailList = new List<MailMessage>(2);
 			foreach (var letter in AllMail.Values)
 			{
-				if (letter.ReadTime == null && letter.DeliveryTime <= DateTime.Now)
+				if (letter.WasRead || letter.DeliveryTime > DateTime.Now)
 					continue;
 
 				++count;
@@ -551,7 +563,7 @@ namespace WCell.RealmServer.Mail
 			else
 			{
 				letter.DeletedTime = DateTime.Now;
-				RealmServer.Instance.AddMessage(new Message(letter.Destroy));
+				RealmServer.IOQueue.AddMessage(new Message(letter.Destroy));
 			}
 		}
 	}

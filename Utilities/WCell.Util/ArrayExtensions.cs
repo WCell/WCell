@@ -26,6 +26,18 @@ namespace WCell.Util
 		/// <summary>
 		/// Returns the entry in this array at the given index, or null if the index is out of bounds
 		/// </summary>
+		public static T Get<T>(this T[] arr, int index)
+		{
+			if (index >= arr.Length || index < 0)
+			{
+				return default(T);
+			}
+			return arr[index];
+		}
+
+		/// <summary>
+		/// Returns the entry in this array at the given index, or null if the index is out of bounds
+		/// </summary>
 		public static T Get<T>(this T[] arr, uint index)
 		{
 			if (index >= arr.Length)
@@ -47,6 +59,7 @@ namespace WCell.Util
 			return arr[index];
 		}
 
+		#region Trunc
 		/// <summary>
 		/// Cuts away everything after and including the first null
 		/// </summary>
@@ -79,7 +92,9 @@ namespace WCell.Util
 				}
 			}
 		}
+		#endregion
 
+		#region Prune
 		/// <summary>
 		/// Cuts away all null values
 		/// </summary>
@@ -127,6 +142,7 @@ namespace WCell.Util
 			}
 			arr = list.ToArray();
 		}
+		#endregion
 
 		public static void Set<T>(ref T[] arr, uint index, T val)
 		{
@@ -176,6 +192,17 @@ namespace WCell.Util
 			}
 			arr[index] = val;
 			return index;
+		}
+
+		/// <summary>
+		/// Appends the given values to the end of arr
+		/// </summary>
+		/// <returns>The index at which it was added</returns>
+		public static void Concat<T>(ref T[] arr, T[] values)
+		{
+			var oldLen = arr.Length;
+			Array.Resize(ref arr, oldLen + values.Length);
+			Array.Copy(values, 0, arr, oldLen, values.Length);
 		}
 
 		/// <summary>
@@ -302,6 +329,38 @@ namespace WCell.Util
 			//{
 			//    arr[i] 
 			//}
+		}
+
+		public static void Reverse<T>(this T[] arr)
+		{
+			var len = arr.Length - 1;
+			for (int i = 0; i < arr.Length / 2; i++)
+			{
+				var bottom = arr[i];
+				var top = arr[len - i];
+
+				arr[i] = top;
+				arr[len - i] = bottom;
+			}
+		}
+
+		/// <summary>
+		/// Sets all values of the given array between offset and length to the given obj
+		/// </summary>
+		public static void Fill<T>(this T[] arr, T obj, int offset, int until)
+		{
+			for (var i = offset; i <= until; i++)
+			{
+				arr[i] = obj;
+			}
+		}
+
+		public static void Fill(this int[] arr, int offset, int until, int startVal)
+		{
+			for (var i = offset; i <= until; i++)
+			{
+				arr[i] = startVal++;
+			}
 		}
 	}
 }

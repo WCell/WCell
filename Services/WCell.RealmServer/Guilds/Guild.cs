@@ -90,7 +90,8 @@ namespace WCell.RealmServer.Guilds
 				_MOTD = value;
 
 				GuildHandler.SendGuildRosterToGuildMembers(this);
-				UpdateLater();
+			    GuildHandler.SendEventToGuild(this, GuildEvents.MOTD);
+				this.UpdateLater();
 			}
 		}
 
@@ -109,7 +110,7 @@ namespace WCell.RealmServer.Guilds
 				_info = value;
 
 				GuildHandler.SendGuildRosterToGuildMembers(this);
-				UpdateLater();
+				this.UpdateLater();
 			}
 		}
 
@@ -136,7 +137,7 @@ namespace WCell.RealmServer.Guilds
 				m_leader = value;
 				_leaderLowId = (int)value.Id;
 
-				UpdateLater();
+				this.UpdateLater();
 			}
 		}
 
@@ -149,8 +150,7 @@ namespace WCell.RealmServer.Guilds
 			set
 			{
 				_tabard = value;
-
-				UpdateLater();
+				this.UpdateLater();
 			}
 		}
 
@@ -207,13 +207,15 @@ namespace WCell.RealmServer.Guilds
 			_info = "Default info";
 
 			m_ranks = GuildMgr.CreateDefaultRanks(this);
-			m_leader = new GuildMember(leader, this, HighestRank);
-
-			Members.Add(m_leader.Id, m_leader);
+			//m_leader = new GuildMember(leader, this, HighestRank);
 
 			Register();
 
-			RealmServer.Instance.AddMessage(Create);
+			m_leader = AddMember(leader);
+            //Set the leader as guild master rank
+		    m_leader.RankId = 0;
+		    
+			RealmServer.IOQueue.AddMessage(Create);
 		}
 		#endregion
 
@@ -298,8 +300,7 @@ namespace WCell.RealmServer.Guilds
 				}
 				newMember = new GuildMember(chr, this, m_ranks.Last());
 				Members.Add(newMember.Id, newMember);
-
-				UpdateLater(newMember.Create);
+				newMember.Create();
 			}
 			catch (Exception e)
 			{
@@ -360,13 +361,8 @@ namespace WCell.RealmServer.Guilds
 
 			if (update && member == m_leader)
 			{
-				OnLeaderDeleted();
-			}
-
-			if (m_leader == null)
-			{
-				// Guild has been disbanded
-				return true;
+                Disband();
+                return true;
 			}
 
 			m_syncRoot.Enter();
@@ -394,7 +390,7 @@ namespace WCell.RealmServer.Guilds
 				GuildHandler.SendEventToGuild(this, GuildEvents.LEFT, member);
 			}
 
-			RealmServer.Instance.AddMessage(() =>
+			RealmServer.IOQueue.AddMessage(() =>
 			{
 				member.Delete();
 				if (update)
@@ -422,6 +418,7 @@ namespace WCell.RealmServer.Guilds
 		private void OnLeaderDeleted()
 		{
 			// leader was deleted
+            /*
 			var highestRank = int.MaxValue;
 			GuildMember highestMember = null;
 			foreach (var member in Members.Values)
@@ -437,10 +434,7 @@ namespace WCell.RealmServer.Guilds
 			{
 				Disband();
 			}
-			else
-			{
-				ChangeLeader(highestMember);
-			}
+             */
 		}
 		#endregion
 
@@ -492,7 +486,8 @@ namespace WCell.RealmServer.Guilds
 
 				rank = new GuildRank(this, name, privileges, m_ranks.Count);
 				m_ranks.Add(rank);
-				UpdateLater(rank.CreateAndFlush);
+
+				rank.SaveLater();
 			}
 			catch (Exception e)
 			{
@@ -535,7 +530,7 @@ namespace WCell.RealmServer.Guilds
 
 				m_ranks.RemoveAt(lastRankId);
 
-				RealmServer.Instance.AddMessage(() => m_ranks[lastRankId].Delete());
+				RealmServer.IOQueue.AddMessage(() => m_ranks[lastRankId].Delete());
 			}
 			catch (Exception e)
 			{
@@ -597,9 +592,7 @@ namespace WCell.RealmServer.Guilds
 				return false;
 
 			member.RankId--;
-			member.Update();
-
-			UpdateLater();
+			member.UpdateLater();
 
 			return true;
 		}
@@ -615,12 +608,7 @@ namespace WCell.RealmServer.Guilds
 				return false;
 
 			member.RankId++;
-
-			RealmServer.Instance.AddMessage(new Message(() =>
-			{
-				member.UpdateAndFlush();
-				UpdateAndFlush();
-			}));
+			member.UpdateLater();
 
 			return true;
 		}
@@ -684,7 +672,7 @@ namespace WCell.RealmServer.Guilds
 				}
 
 				GuildMgr.Instance.UnregisterGuild(this);
-				RealmServer.Instance.AddMessage(() => Delete());
+				RealmServer.IOQueue.AddMessage(() => Delete());
 			}
 			finally
 			{
@@ -711,7 +699,7 @@ namespace WCell.RealmServer.Guilds
 			newLeader.RankId = 0;
 			Leader = newLeader;
 
-			RealmServer.Instance.AddMessage(new Message(() =>
+			RealmServer.IOQueue.AddMessage(new Message(() =>
 			{
 				if (currentLeader != null)
 				{
@@ -729,7 +717,7 @@ namespace WCell.RealmServer.Guilds
 
 		public void TrySetTabard(GuildMember member, NPC vendor, GuildTabard tabard)
 		{
-			if (!vendor.IsTabardVendor || !vendor.CanInteractWith(member.Character))
+			if (!vendor.IsTabardVendor || !vendor.CheckVendorInteraction(member.Character))
 			{
 				//"That's not an emblem vendor!"
 				GuildHandler.SendTabardResult(member.Character, GuildTabardResult.InvalidVendor);
@@ -1038,9 +1026,9 @@ namespace WCell.RealmServer.Guilds
 		/// Send a packet to every guild member
 		/// </summary>
 		/// <param name="packet">the packet to send</param>
-		public void SendAll(RealmPacketOut packet)
+		public void Broadcast(RealmPacketOut packet)
 		{
-			SendAll(packet, null);
+			Broadcast(packet, null);
 		}
 
 		/// <summary>
@@ -1048,7 +1036,7 @@ namespace WCell.RealmServer.Guilds
 		/// </summary>
 		/// <param name="packet">the packet to send</param>
 		/// <param name="ignoredCharacter">the <see cref="Character" /> that won't receive the packet</param>
-		public void SendAll(RealmPacketOut packet, Character ignoredCharacter)
+		public void Broadcast(RealmPacketOut packet, Character ignoredCharacter)
 		{
 			foreach (var member in Members.Values)
 			{

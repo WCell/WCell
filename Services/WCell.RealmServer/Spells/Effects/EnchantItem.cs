@@ -17,6 +17,7 @@
 using NLog;
 using WCell.Constants.Items;
 using WCell.Constants.Spells;
+using WCell.Constants.Updates;
 using WCell.RealmServer.Items.Enchanting;
 
 namespace WCell.RealmServer.Spells.Effects
@@ -33,9 +34,16 @@ namespace WCell.RealmServer.Spells.Effects
 
 		public override void Initialize(ref SpellFailedReason failReason)
 		{
-			if (m_cast.UsedItem.Template.Level < Effect.Spell.BaseLevel)
+			if (m_cast.TargetItem == null)
+			{
+				failReason = SpellFailedReason.ItemGone;
+				return;
+			}
+
+			if (m_cast.TargetItem.Template.Level < Effect.Spell.BaseLevel)
 			{
 				failReason = SpellFailedReason.Lowlevel;
+				return;
 			}
 
 			enchantEntry = EnchantMgr.GetEnchantmentEntry((uint)Effect.MiscValue);
@@ -57,7 +65,7 @@ namespace WCell.RealmServer.Spells.Effects
 
 		public override void Apply()
 		{
-			var item = m_cast.UsedItem;
+			var item = m_cast.TargetItem;
 			var duration = CalcEffectValue();
 			if (duration < 0)
 			{
@@ -69,6 +77,11 @@ namespace WCell.RealmServer.Spells.Effects
 		public override bool HasOwnTargets
 		{
 			get { return false; }
+		}
+
+		public override ObjectTypes CasterType
+		{
+			get { return ObjectTypes.Unit; }
 		}
 	}
 }

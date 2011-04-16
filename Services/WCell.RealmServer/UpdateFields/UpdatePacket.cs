@@ -1,4 +1,4 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: UpdatePacket.cs
  *   copyright		: (C) The WCell Team
@@ -56,7 +56,7 @@ namespace WCell.RealmServer.UpdateFields
 		/// <returns></returns>
 		public void SendTo(IRealmClient client)
 		{
-			if (TotalLength <= WCellDef.MAX_UNCOMPRESSED_UPDATE_PACKET)
+			if (TotalLength <= WCellConstants.MAX_UNCOMPRESSED_UPDATE_PACKET)
 			{
 				client.Send(GetFinalizedPacket());
 			}
@@ -71,7 +71,7 @@ namespace WCell.RealmServer.UpdateFields
 				if (length > 0x7FFF)
 				{
 					log.Warn("Sent UpdatePacket with Length {0} to {1} in {2}", length, client,
-						client.ActiveCharacter.Zone as IWorldSpace ?? client.ActiveCharacter.Region);
+						client.ActiveCharacter.Zone as IWorldSpace ?? client.ActiveCharacter.Map);
 				}
 
 				var maxOutputLength = length + FullUpdatePacketHeaderSize;
@@ -89,7 +89,6 @@ namespace WCell.RealmServer.UpdateFields
 
 				if (totalLength > MaxPacketSize)
 				{
-					//TODO: Split up packet if packet size exceeds max length
 					throw new Exception("Compressed Update packet exceeded max length: " + totalLength);
 				}
 				SendPacket(client, outSegment, totalLength, length);

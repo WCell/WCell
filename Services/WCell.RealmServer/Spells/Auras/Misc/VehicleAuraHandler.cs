@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,9 +18,9 @@ namespace WCell.RealmServer.Spells.Auras.Misc
 		private Vehicle Vehicle;
 		private VehicleSeat Seat;
 
-		protected internal override void CheckInitialize(CasterInfo casterInfo, Unit target, ref SpellFailedReason failReason)
+		protected internal override void CheckInitialize(SpellCast creatingCast, ObjectReference casterReference, Unit target, ref SpellFailedReason failReason)
 		{
-			Caster = casterInfo.Caster as Unit;
+			Caster = casterReference.Object as Unit;
 			if (Caster == null || Caster is Vehicle)
 			{
 				log.Warn("Invalid SpellCaster \"{0}\" for Spell: {1}", Caster, SpellEffect.Spell);
@@ -44,12 +44,12 @@ namespace WCell.RealmServer.Spells.Auras.Misc
 			}
 		}
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			Seat.Enter(Caster);
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			if (Caster.IsInWorld && Seat.Passenger == Caster)
 			{

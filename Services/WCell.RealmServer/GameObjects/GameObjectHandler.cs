@@ -114,7 +114,7 @@ namespace WCell.RealmServer.GameObjects
 					user.StandState = StandState.Kneeling;
 				}
 			}
-			return m_go.TryOpen(user) && DoUse(user);
+			return m_go.CanOpen(user) && DoUse(user);
 		}
 
 		private bool DoUse(Character user)

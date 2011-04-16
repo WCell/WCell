@@ -1,14 +1,16 @@
+using System;
 using System.Collections.Generic;
 using WCell.AuthServer.Commands;
 using WCell.RealmServer;
 using WCell.RealmServer.Commands;
 using System.IO;
 using Cell.Core;
+using WCell.Tools;
 using WCell.Util.Commands;
 using WCell.Tools.Commands;
 using WCell.Util;
 using WCell.AuthServer;
-
+using WCell.Util.NLog;
 using RealmServ = WCell.RealmServer.RealmServer;
 
 namespace WCell.PostBuild.Docs
@@ -19,6 +21,16 @@ namespace WCell.PostBuild.Docs
 
 		public static void CreateCommandDocs(string dir)
 		{
+			RealmServ.EntryLocation = Path.GetFullPath(ToolConfig.WCellRealmServerConsoleExe);
+			var realmServ = RealmServ.Instance; // make sure to create the RealmServ instance first
+
+			LogUtil.SetupConsoleLogging();
+
+			Console.WriteLine("Output Directory: " + new DirectoryInfo(dir).FullName);
+
+			RealmServerConfiguration.Instance.AutoSave = false;
+			RealmServerConfiguration.Initialize();
+
 			RealmCommandHandler.Initialize();
 			AuthCommandHandler.Initialize();
 			ToolCommandHandler.Initialize();
@@ -57,7 +69,7 @@ namespace WCell.PostBuild.Docs
 			var command = cmd as RealmServerCommand;
 			if (command != null)
 			{
-				writer.WriteLine(indent + "Needs Char: {0}", command.NeedsCharacter);
+				writer.WriteLine(indent + "Needs Char: {0}", command.RequiresCharacter);
 				writer.WriteLine(indent + "Required Targets: {0}", command.TargetTypes);
 			}
 			writer.WriteLine();

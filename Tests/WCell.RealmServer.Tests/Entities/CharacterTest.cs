@@ -148,12 +148,12 @@ namespace WCell.RealmServer.Tests.Entities
 
 			var chr = Setup.AllianceCharacterPool.Create();
 
-			var newRegion = World.Outland;
-			Assert.AreNotEqual(newRegion, chr.Region);
+			var newMap = World.Outland;
+			Assert.AreNotEqual(newMap, chr.Map);
 
 			// make sure we are in the world
 			chr.EnsureAloneInWorldAndLiving();
-			Thread.Sleep(Region.CharacterUpdateEnvironmentTicks * Region.DefaultUpdateDelay);
+			Thread.Sleep(Map.CharacterUpdateEnvironmentTicks * Map.DefaultUpdateDelay);
 
 			// wait a little until all updates have been sent
 			World.Outland.WaitTicks(2);
@@ -166,11 +166,11 @@ namespace WCell.RealmServer.Tests.Entities
 			// teleport
 			chr.TeleportTo(World.Outland, true);
 
-			Thread.Sleep(Region.CharacterUpdateEnvironmentTicks * Region.DefaultUpdateDelay);
+			Thread.Sleep(Map.CharacterUpdateEnvironmentTicks * Map.DefaultUpdateDelay);
 			// wait a little until all updates have been sent
 			World.Outland.WaitTicks(2);
 
-			Assert.AreEqual(World.Outland, chr.Region);
+			Assert.AreEqual(World.Outland, chr.Map);
 
 			// make sure we got our CreateSelf update-packet after teleporting
 			blocks = chr.FakeClient.GetUpdateBlocks(UpdateType.CreateSelf);
@@ -186,15 +186,15 @@ namespace WCell.RealmServer.Tests.Entities
 		{
 			var chr = Setup.DefaultCharacter;
 
+			chr.PowerType = PowerType.Mana;
 			chr.EnsureInWorld();
 			chr.EnsureHealth(100);
 			chr.EnsurePower(100);
-			chr.Power = (int)chr.MaxPower - 10;
-			chr.PowerRegenPerTick = 20;
-			chr.RegenerationDelay = 0.0001f;
+			chr.Power = chr.MaxPower - 10;
+			chr.SetBaseStat(StatType.Spirit, 100000);		// should be enough to regen 10 mana
 
-			// wait one region tick to regen
-			chr.Region.AddMessageAndWait(new Message(() => {
+			// wait one map tick to regen
+			chr.Map.AddMessageAndWait(new Message(() => {
 				Assert.AreEqual(chr.Power, (int)chr.MaxPower);
 			}));
 		}
@@ -216,8 +216,8 @@ namespace WCell.RealmServer.Tests.Entities
 
 			Thread.Sleep(1000);
 
-			chr1.Region.AddMessageAndWait(new Message1<Region>(
-				chr1.Region, (rgn) => ChatMgr.SendSystemMessage(rgn.Characters, "huhu")
+			chr1.Map.AddMessageAndWait(new Message1<Map>(
+				chr1.Map, (rgn) => ChatMgr.SendSystemMessage(rgn.Characters, "huhu")
 				));
 		}
 		#endregion
@@ -259,7 +259,7 @@ namespace WCell.RealmServer.Tests.Entities
 				Setup.AllianceCharacterPool.Clear();
 
 				// enqueue IO-task, so that by the time, the task is executed, all Characters have been saved to DB (and fully logged out)
-				RealmServer.Instance.AddMessage(new Message(() => {
+				RealmServer.IOQueue.AddMessage(new Message(() => {
 					Setup.WriteRamUsage("Removed {0} Characters", num);
 					lock (this)
 					{
@@ -330,14 +330,14 @@ namespace WCell.RealmServer.Tests.Entities
 			chr.EnsureInWorldAndLiving();
 
 			// make sure, Character is initialized
-			Thread.Sleep(Region.CharacterUpdateEnvironmentTicks * Region.DefaultUpdateDelay);
-			chr.Region.WaitTicks(2);
+			Thread.Sleep(Map.CharacterUpdateEnvironmentTicks * Map.DefaultUpdateDelay);
+			chr.Map.WaitTicks(2);
 			client.PurgeUpdatePackets();
 
 			// lets die
-			chr.Region.AddMessageAndWait(new Message(() => {
+			chr.Map.AddMessageAndWait(new Message(() => {
 				chr.Health = 0;
-				chr.Region.ForceUpdateCharacters();
+				chr.Map.ForceUpdateCharacters();
 			}));
 
 			Assert.IsFalse(chr.IsAlive);
@@ -355,7 +355,7 @@ namespace WCell.RealmServer.Tests.Entities
 			var packet = new RealmPacketOut(RealmServerOpCode.CMSG_REPOP_REQUEST, 0);
 			client.ReceiveCMSG(packet, true);
 
-			chr.Region.WaitTicks(2);
+			chr.Map.WaitTicks(2);
 
 			Assert.IsNotNull(chr.Corpse);
 			Assert.IsFalse(chr.IsAlive);
@@ -395,7 +395,7 @@ namespace WCell.RealmServer.Tests.Entities
 			var learntRank = 2;
 
 			chr1.EnsureInWorldAndLiving();
-			chr1.Talents.Owner.FreeTalentPoints = 12;
+			chr1.Talents.Owner.Level = 50;
 			chr1.Talents.Set(learntTalent, learntRank);
 
 			var chr2 = Setup.AllianceCharacterPool.Create();
@@ -408,8 +408,8 @@ namespace WCell.RealmServer.Tests.Entities
 			var sword = chr1.Inventory[InventorySlot.MainHand];
 			Assert.IsNotNull(sword, "Dummy Sword was not added to MainHand slot.");
 
-			Thread.Sleep(Region.CharacterUpdateEnvironmentTicks * Region.DefaultUpdateDelay);
-			chr1.Region.WaitTicks(2);
+			Thread.Sleep(Map.CharacterUpdateEnvironmentTicks * Map.DefaultUpdateDelay);
+			chr1.Map.WaitTicks(2);
 			client2.PurgeUpdatePackets();
 
 			PacketUtil.GetUpdatePackets = true;
@@ -418,8 +418,8 @@ namespace WCell.RealmServer.Tests.Entities
 			packet.Write(chr1.EntityId);
 			client2.ReceiveCMSG(packet, true);
 
-			Thread.Sleep(Region.CharacterUpdateEnvironmentTicks * Region.DefaultUpdateDelay);
-			chr1.Region.WaitTicks(2);
+			Thread.Sleep(Map.CharacterUpdateEnvironmentTicks * Map.DefaultUpdateDelay);
+			chr1.Map.WaitTicks(2);
 
 			// Expected response: 1. send creation of all items to the new observer + 2. Send all talents
 			var swordCreations = client2.GetUpdateBlocks(sword.EntityId, UpdateType.Create);
@@ -428,7 +428,7 @@ namespace WCell.RealmServer.Tests.Entities
 
 
 			var talentInfo = client2.DequeueSMSGInfo(RealmServerOpCode.SMSG_INSPECT_TALENT);
-			Assert.AreEqual(chr1.Talents.Owner.FreeTalentPoints, (int)talentInfo.Parser.ParsedPacket["FreePoints"].UIntValue);
+			Assert.AreEqual(chr1.Talents.GetFreeTalentPointsForLevel(chr1.Level), (int)talentInfo.Parser.ParsedPacket["FreePoints"].UIntValue);
 
 			var talentParser = talentInfo.Parser.Packet;
 			var bytes = talentParser.ReadBytes(((int)learntTalent.Index / 8) + 1);
@@ -448,7 +448,7 @@ namespace WCell.RealmServer.Tests.Entities
             var spi = chr.Spirit;
             var intel = chr.Intellect;
 
-            chr.GainXp(chr.NextLevelXP - chr.XP, false);
+            chr.GainXp(chr.NextLevelXP - chr.Experience, false);
 
             var newStr = chr.Strength;
             var newStam = chr.Stamina;

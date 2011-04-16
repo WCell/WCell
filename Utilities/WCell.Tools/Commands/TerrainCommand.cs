@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using WCell.Tools.Maps;
+using WCell.Tools.Maps.Parsing.WDT;
 using WCell.Util.Commands;
 
 namespace WCell.Tools.Commands

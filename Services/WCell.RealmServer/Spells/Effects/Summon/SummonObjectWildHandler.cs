@@ -27,7 +27,7 @@ namespace WCell.RealmServer.Handlers
             {
                 if (Cast.TargetLoc.X != 0)
                 {
-                    var worldLocation = new WorldLocation(caster.Region, Cast.TargetLoc);
+                    var worldLocation = new WorldLocation(caster.Map, Cast.TargetLoc);
 					go = goEntry.Spawn(worldLocation);
                 }
                 else

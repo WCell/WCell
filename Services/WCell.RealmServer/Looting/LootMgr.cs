@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NLog;
 using WCell.Constants;
 using WCell.Constants.Looting;
@@ -96,15 +97,15 @@ namespace WCell.RealmServer.Looting
 		{
 			if (!Loaded)
 			{
-				ContentHandler.Load<NPCLootItemEntry>();
-				ContentHandler.Load<ItemLootItemEntry>();
-				ContentHandler.Load<GOLootItemEntry>();
-				ContentHandler.Load<FishingLootItemEntry>();
-				ContentHandler.Load<MillingLootItemEntry>();
-				ContentHandler.Load<PickPocketLootItemEntry>();
-				ContentHandler.Load<ProspectingLootItemEntry>();
-				ContentHandler.Load<DisenchantingLootItemEntry>();
-				ContentHandler.Load<ReferenceLootItemEntry>();
+				ContentMgr.Load<NPCLootItemEntry>();
+				ContentMgr.Load<ItemLootItemEntry>();
+				ContentMgr.Load<GOLootItemEntry>();
+				ContentMgr.Load<FishingLootItemEntry>();
+				ContentMgr.Load<MillingLootItemEntry>();
+				ContentMgr.Load<PickPocketLootItemEntry>();
+				ContentMgr.Load<ProspectingLootItemEntry>();
+				ContentMgr.Load<DisenchantingLootItemEntry>();
+				ContentMgr.Load<ReferenceLootItemEntry>();
 
 				for (var i = ReferenceEntries.Count - 1; i >= 0; i--)
 				{
@@ -119,13 +120,14 @@ namespace WCell.RealmServer.Looting
 
 		static void LookupRef(ResolvedLootItemList list, LootItemEntry entry)
 		{
-			// TODO: Loot groups (see http://udbwiki.webhop.net/index.php/Gameobject_loot_template#groupid)
+			// TODO: Loot groups (see http://udbwiki.no-ip.org/index.php/Gameobject_loot_template#groupid)
 
 			var referencedEntries = GetEntries(LootEntryType.Reference, entry.ReferencedEntryId);
 			if (referencedEntries != null)
 			{
 				if (referencedEntries.ResolveStatus < 1)
 				{
+					// first step
 					referencedEntries.ResolveStatus = 1;
 					foreach (var refEntry in referencedEntries)
 					{
@@ -144,10 +146,12 @@ namespace WCell.RealmServer.Looting
 				}
 				else if (list.ResolveStatus == 1)
 				{
+					// list is already being resolved
 					LogManager.GetCurrentClassLogger().Warn("Infinite loop in Loot references detected in: " + entry);
 				}
 				else
 				{
+					// second step
 					foreach (var refEntry in referencedEntries)
 					{
 						AddRef(list, refEntry);
@@ -161,6 +165,10 @@ namespace WCell.RealmServer.Looting
 			list.Add(ent);
 		}
 
+		/// <summary>
+		/// Adds the new LootItemEntry to the global container.
+		/// Keeps the set of entries sorted by rarity.
+		/// </summary>
 		public static void AddEntry(LootItemEntry entry)
 		{
 			var entries = LootEntries[(uint)entry.LootType];
@@ -227,12 +235,13 @@ namespace WCell.RealmServer.Looting
 		{
 			var looters = FindLooters(lootable, initialLooter);
 
-			var items = GenerateItemLoot(lootable.GetLootId(type), type, heroic, looters);
+			var items = CreateLootItems(lootable.GetLootId(type), type, heroic, looters);
 			var money = lootable.LootMoney;
 			if (items.Length == 0 && money == 0)
 			{
 				if (lootable is GameObject)
 				{
+					// TODO: Don't mark GO as lootable if it has nothing to loot
 					money = 1;
 				}
 			}
@@ -311,7 +320,7 @@ namespace WCell.RealmServer.Looting
 		/// <summary>
 		/// Returns all Items that can be looted off the given lootable
 		/// </summary>
-		public static LootItem[] GenerateItemLoot(uint lootId, LootEntryType type, bool heroic, IList<LooterEntry> looters)
+		public static LootItem[] CreateLootItems(uint lootId, LootEntryType type, bool heroic, IList<LooterEntry> looters)
 		{
 #if DEBUG
 			if (!ItemMgr.Loaded)
@@ -328,53 +337,32 @@ namespace WCell.RealmServer.Looting
 			var items = new LootItem[Math.Min(MaxLootCount, entries.Count)];
 			//var i = max;
 			var i = 0;
-			for (var j = 0; j < entries.Count; j++)
+			foreach (var entry in entries)
 			{
-				var entry = entries[j];
 				var chance = entry.DropChance * LootItemDropFactor;
-				if ((100 * Utility.RandomFloat()) < chance)
+				if ((100*Utility.RandomFloat()) >= chance) continue;
+
+				var template = entry.ItemTemplate;
+				if (template == null)
 				{
-					var template = entry.ItemTemplate;
-					if (template == null)
-					{
-						// weird
-						continue;
-					}
+					// weird
+					continue;
+				}
 
-					if (template.CollectQuests != null)
-					{
-						var drop = false;
-						// only drop quest item if one of the Looters needs it
-						foreach (var looter in looters)
-						{
-							if (looter.Owner != null &&
-								looter.Owner.QuestLog.RequiresItem(template.ItemId))
-							{
-								drop = true;
-								break;
-							}
-						}
+				if (!looters.Any(looter => template.CheckLootConstraints(looter.Owner)))
+				{
+					continue;
+				}
 
-						if (!drop)
-						{
-							continue;
-						}
-					}
-					else if (template.StartQuest != null)
-					{
-						// TODO: Start quest
-					}
+				items[i] = new LootItem(template,
+				                        Utility.Random(entry.MinAmount, entry.MaxAmount),
+				                        (uint)i,
+				                        template.RandomPropertiesId);
+				i++;
 
-					items[i] = new LootItem(template,
-						Utility.Random(entry.MinAmount, entry.MaxAmount),
-						(uint)i,
-						template.RandomPropertiesId);
-
-					if (i == MaxLootCount - 1)
-					{
-						break;
-					}
-					i++;
+				if (i == MaxLootCount)
+				{
+					break;
 				}
 			}
 
@@ -388,6 +376,7 @@ namespace WCell.RealmServer.Looting
 		}
 		#endregion
 
+		#region FindLooters
 		public static IList<LooterEntry> FindLooters(ILootable lootable, Character initialLooter)
 		{
 			var looters = new List<LooterEntry>();
@@ -424,13 +413,20 @@ namespace WCell.RealmServer.Looting
 
 			looters.Add(initialLooter.LooterEntry);
 		}
+		#endregion
+
+		#region Extension methods
+		public static ResolvedLootItemList GetEntries(this ILootable lootable, LootEntryType type)
+		{
+			return GetEntries(type, lootable.GetLootId(type));
+		}
 
 		/// <summary>
-		/// Returns whether this lockable could be opened.
+		/// Returns whether this lockable can be opened by the given Character
 		/// </summary>
 		/// <param name="lockable"></param>
 		/// <returns></returns>
-		public static bool TryOpen(this ILockable lockable, Character chr)
+		public static bool CanOpen(this ILockable lockable, Character chr)
 		{
 			var lck = lockable.Lock;
 
@@ -459,7 +455,7 @@ namespace WCell.RealmServer.Looting
 
 		public static bool TryLoot(this ILockable lockable, Character chr)
 		{
-			if (TryOpen(lockable, chr))
+			if (CanOpen(lockable, chr))
 			{
 				// just open it
 				LockEntry.Loot(lockable, chr);
@@ -467,6 +463,28 @@ namespace WCell.RealmServer.Looting
 			}
 			return false;
 		}
+
+		/// <summary>
+		/// Whether the given lootable contains quest items for the given Character when looting with the given type
+		/// </summary>
+		public static bool ContainsQuestItemsFor(this ILootable lootable, Character chr, LootEntryType type)
+		{
+			var loot = lootable.Loot;
+			if (loot != null)
+			{
+				// loot has already been created
+				return loot.Items.Any(item => item.Template.HasQuestRequirements && item.Template.CheckQuestConstraints(chr));
+			}
+
+			// no loot yet -> check what happens if we create any
+			var entries = lootable.GetEntries(type);
+			if (entries != null)
+			{
+				return entries.Any(entry => entry.ItemTemplate.HasQuestRequirements && entry.ItemTemplate.CheckQuestConstraints(chr));
+			}
+			return false;
+		}
+		#endregion
 	}
 
 	/// <summary>

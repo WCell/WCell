@@ -69,7 +69,7 @@ namespace WCell.Tools.Domi.Output
 				{
 					foreach (var quest in quests)
 					{
-						writer.WriteLine("{0} (Id: {1})", quest.Title, quest.Id);
+						writer.WriteLine("{0} (Id: {1})", quest.DefaultTitle, quest.Id);
 
 						extraOuput(writer, quest);
 					}

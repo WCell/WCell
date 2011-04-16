@@ -1,0 +1,234 @@
+Help
+	Aliases: Help, ?
+	Usage: Help|? [<part of cmd> [[<part of subcmd>] <part of subcmd> ...]]
+	Description: Shows an overview over all Commands or -if specified- the help for a specific Command (and its subcommands).
+
+########################################
+
+ExecFile
+	Aliases: ExecFile
+	Usage: ExecFile <filename>
+	Description: Executes the given file.
+
+########################################
+
+Terrain
+	Aliases: Terrain, Terr
+	Usage: Terrain|Terr 
+	Description: 
+
+	SubCommands:
+
+		ExportHeightMaps
+			Aliases: Export, ExportMapFiles, Exp
+			Usage: Terrain|Terr Export|ExportMapFiles|Exp 
+			Description: Exports the Heightmaps to the Content/ folder.
+
+########################################
+
+Locale
+	Aliases: Locale, Loc
+	Usage: Locale|Loc 
+	Description: Sets the currently used Locale.
+
+########################################
+
+PacketAnalyzer
+	Aliases: PacketAnalyzer, PA
+	Usage: PacketAnalyzer|PA 
+	Description: Provides commands to use the PacketAnalyzer for converting log-files.
+
+	SubCommands:
+
+		PAParse
+			Aliases: Parse, P
+			Usage: PacketAnalyzer|PA Parse|P 
+			Description: Parses all selected log-files with the current settings - Use Info for more information.
+
+		PASave
+			Aliases: Save, S
+			Usage: PacketAnalyzer|PA Save|S [<newlocation>]
+			Description: Saves the current settings of the PATool. You can optionally add a new location where it should be saved to.
+
+		PALoad
+			Aliases: Load
+			Usage: PacketAnalyzer|PA Load 
+			Description: Reloads the packet definitions.
+
+		PAInfo
+			Aliases: Info, I
+			Usage: PacketAnalyzer|PA Info|I 
+			Description: Displays information about the current PATool settings.
+
+		PASelectDir
+			Aliases: SelectDir, SelDir, SD
+			Usage: PacketAnalyzer|PA SelectDir|SelDir|SD [<directory>]
+			Description: Selects the given directory or -if directory is ommited- shows the currently selected directory.
+
+		PASelectOutputFile
+			Aliases: SelectOut, SelOut, SO
+			Usage: PacketAnalyzer|PA SelectOut|SelOut|SO <file>
+			Description: Selects the given file to write the output to.
+
+		PASelectParser
+			Aliases: SelectParser, SetParser, Parser, SP
+			Usage: PacketAnalyzer|PA SelectParser|SetParser|Parser|SP <parsername>
+			Description: Selects the given log-parser. Make sure to choose the right one for the format of your log files.
+
+		PAListParsers
+			Aliases: ListParsers, LP
+			Usage: PacketAnalyzer|PA ListParsers|LP <parsername>
+			Description: Lists all available parsers. Use SelectParser to select the right one for your log files.
+
+		PAAddSelectedFiles
+			Aliases: SelectFiles, SF
+			Usage: PacketAnalyzer|PA SelectFiles|SF <file>[,<file2>[,<file3> ...]]|[-l <dir>]
+			Description: Adds the given log-file(s) to the list of selected log-files. All selected log-files will be parsed. Parameters can either be fully qualified file-names (relative or absolute) or numbers that correspond to the index within the currently selected Directory. The -l switch optionally lists all files (with numbers) of the given directory.
+
+		PARemoveSelectedFiles
+			Aliases: DeselectFiles, DeselFiles, UnselFiles, DF, UF
+			Usage: PacketAnalyzer|PA DeselectFiles|DeselFiles|UnselFiles|DF|UF [-a]<file>[,<file2>[,<file3> ...]]
+			Description: Removes either all (-a) or the given log-file(s) to the list of selected log-files. Only selected log-files will be parsed. Parameters can either be fully qualified file-names (relative or absolute) or numbers that correspond to the index of the currently selected files.
+
+		PAAddFilter
+			Aliases: AddFilter, AF
+			Usage: PacketAnalyzer|PA AddFilter|AF 
+			Description: Adds to the different kinds of filters.
+
+			SubCommands:
+
+				PAAddIncAndFilter
+					Aliases: IncAnd, IA
+					Usage: PacketAnalyzer|PA AddFilter|AF IncAnd|IA <part of opcode-name>[,<another part>[,<yet another part> ...]]
+					Description: Adds inclusive And-filters: A packet is only parsed if its opcode contains *all* of these.
+
+				PAAddIncOrFilter
+					Aliases: IncOr, IO
+					Usage: PacketAnalyzer|PA AddFilter|AF IncOr|IO <part of opcode-name>[,<another part>[,<yet another part> ...]]
+					Description: Adds inclusive Or-filters: A packet is only parsed if its opcode contains *any* of these.
+
+				PAAddExcAndFilter
+					Aliases: ExcAnd, EA
+					Usage: PacketAnalyzer|PA AddFilter|AF ExcAnd|EA <part of opcode-name>[,<another part>[,<yet another part> ...]]
+					Description: Adds exclusive And-filters: A packet is only parsed if *no* opcode contains *all* of these.
+
+				PAAddExcOrFilter
+					Aliases: ExcOr, EO
+					Usage: PacketAnalyzer|PA AddFilter|AF ExcOr|EO <part of opcode-name>[,<another part>[,<yet another part> ...]]
+					Description: Adds exclusive Or-filters: A packet is only parsed if *no* opcode contains *any* of these.
+
+		PARemoveFilter
+			Aliases: RemoveFilter, RF
+			Usage: PacketAnalyzer|PA RemoveFilter|RF 
+			Description: Removes the different kinds of filters.
+
+			SubCommands:
+
+				PARemoveIncAndFilter
+					Aliases: IncAnd, IA
+					Usage: PacketAnalyzer|PA RemoveFilter|RF IncAnd|IA [-a]|<part of opcode-name>[,<another part>[,<yet another part> ...]]
+					Description: Removes inclusive And-filters. - A packet is only parsed if its opcode contains all of these. -a removes all filters. Parts can also be indices.
+
+				PARemoveIncOrFilter
+					Aliases: IncOr, IO
+					Usage: PacketAnalyzer|PA RemoveFilter|RF IncOr|IO [-a]|<part of opcode-name>[,<another part>[,<yet another part> ...]]
+					Description: Removes inclusive Or-filters. - A packet is only parsed if its opcode contains at least one these.-a removes all filters. Parts can also be indices.
+
+				PARemoveExcAndFilter
+					Aliases: ExcAnd, EA
+					Usage: PacketAnalyzer|PA RemoveFilter|RF ExcAnd|EA [-a]|<part of opcode-name>[,<another part>[,<yet another part> ...]]
+					Description: Removes exclusive And-filters. - A packet is only parsed if *no* opcode contains *all* of these.-a removes all filters. Parts can also be indices.
+
+				PARemoveExcOrFilter
+					Aliases: ExcOr, EO
+					Usage: PacketAnalyzer|PA RemoveFilter|RF ExcOr|EO [-a]|<part of opcode-name>[,<another part>[,<yet another part> ...]]
+					Description: Removes exclusive Or-filters. - A packet is only parsed if *no* opcode contains *any* of these.-a removes all filters. Parts can also be indices.
+
+########################################
+
+WP
+	Aliases: WPs
+	Usage: WPs 
+	Description: 
+
+	SubCommands:
+
+		RandomWP
+			Aliases: Random, R
+			Usage: WPs Random|R [<min> [<max> [<mindist> [<maxdist>]]]]
+			Description: 
+
+########################################
+
+RalekSpellStudies
+	Aliases: SpellStudies, ST
+	Usage: SpellStudies|ST 
+	Description: Provides commands to study spells.
+
+	SubCommands:
+
+		StudySpell
+			Aliases: MatchSpellClassMask, MSCM
+			Usage: SpellStudies|ST MatchSpellClassMask|MSCM 
+			Description: Matches spells with the given spell class mask.
+
+########################################
+
+Dump
+	Aliases: Dump, D
+	Usage: Dump|D 
+	Description: Provides commands to create dump files.
+
+	SubCommands:
+
+		DumpSpells
+			Aliases: Spells, S
+			Usage: Dump|D Spells|S 
+			Description: Dumps all spells
+
+		DumpNPCs
+			Aliases: NPCs
+			Usage: Dump|D NPCs 
+			Description: Dumps all NPCs
+
+		DumpGOs
+			Aliases: GOs
+			Usage: Dump|D GOs 
+			Description: Dumps all Gameobjects
+
+		DumpItems
+			Aliases: Items
+			Usage: Dump|D Items 
+			Description: Dumps all Items
+
+		DumpQuests
+			Aliases: Quests
+			Usage: Dump|D Quests 
+			Description: Dumps all Quests
+
+		DumpATs
+			Aliases: ATs
+			Usage: Dump|D ATs 
+			Description: Dumps all AreaTriggers
+
+		DumpAll
+			Aliases: All
+			Usage: Dump|D All 
+			Description: Dumps all into files
+
+########################################
+
+DBC
+	Aliases: DBC
+	Usage: DBC 
+	Description: Provides commands to work with DBC files.
+
+	SubCommands:
+
+		DBCDump
+			Aliases: Dump
+			Usage: DBC Dump 
+			Description: Dumps all DBC files.
+
+########################################
+

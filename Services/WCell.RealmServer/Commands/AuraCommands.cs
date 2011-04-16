@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using WCell.Constants.Updates;
+using WCell.RealmServer.Lang;
 using WCell.Util;
 using WCell.Util.Commands;
 
@@ -9,10 +10,11 @@ namespace WCell.RealmServer.Commands
 	{
 		protected override void Initialize()
 		{
-			Init("Aura");
+			Init("Aura", "Auras");
 			EnglishDescription = "Provides commands to manage Auras (ie Buffs, Debuffs, passive effects).";
 		}
 
+		#region Clear
 		public class ClearAurasCommand : SubCommand
 		{
 			protected ClearAurasCommand() { }
@@ -29,6 +31,39 @@ namespace WCell.RealmServer.Commands
 				trigger.Reply("All visible Auras removed.");
 			}
 		}
+		#endregion
+
+		#region Add
+		public class AddAuraCommand : SubCommand
+		{
+			protected AddAuraCommand() { }
+
+			protected override void Initialize()
+			{
+				Init("Add");
+				EnglishParamInfo = "<spell1>[, <spell2> ... ]";
+				EnglishDescription = "Adds the given spells as Aura on the target";
+			}
+
+			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+			{
+				// add list of spells
+				var spells = SpellGetCommand.RetrieveSpells(trigger);
+				if (spells.Length == 0)
+				{
+					trigger.Reply(RealmLangKey.CmdSpellNotExists);
+				}
+				else
+				{
+					foreach (var spell in spells)
+					{
+						trigger.Args.Target.Auras.CreateSelf(spell);
+					}
+					trigger.Reply("Added {0} Auras.", spells.Length);
+				}
+			}
+		}
+		#endregion
 
 		#region Dump
 		public class DumpAurasCommand : SubCommand

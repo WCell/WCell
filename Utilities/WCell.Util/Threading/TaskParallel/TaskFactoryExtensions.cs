@@ -578,9 +578,16 @@ namespace WCell.Util.Threading.TaskParallel
                         try
                         {
                             action(state);
-                            result.TrySetResult(null);
                         }
                         catch (Exception exc) { result.TrySetException(exc); }
+						finally
+						{
+							result.TrySetResult(null);
+                        	if (result.Task.Status == TaskStatus.RanToCompletion)
+                        	{
+                        		result.Task.Dispose();
+                        	}
+                    }
                     }
                 }, scheduler);
 

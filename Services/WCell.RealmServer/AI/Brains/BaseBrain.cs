@@ -5,6 +5,7 @@ using WCell.RealmServer.AI.Actions;
 using WCell.RealmServer.AI.Groups;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Misc;
+using WCell.RealmServer.NPCs;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.AI.Actions.States;
@@ -227,10 +228,10 @@ namespace WCell.RealmServer.AI.Brains
 		#endregion
 
 		/// <summary>
-		/// Updates the AIAction by calling Perform. Called every tick by the Region
+		/// Updates the AIAction by calling Perform. Called every tick by the Map
 		/// </summary>
 		/// <param name="dt">not used</param>
-		public virtual void Update(float dt)
+		public virtual void Update(int dt)
 		{
 			if (!m_IsRunning)
 				return;
@@ -277,6 +278,11 @@ namespace WCell.RealmServer.AI.Brains
 		public void Perform()
 		{
 			// update current Action if any
+			if (m_owner.IsUsingSpell)
+			{
+				return;
+			}
+
 			if (m_currentAction == null)
 			{
 				m_currentAction = m_actions[m_state];
@@ -341,9 +347,9 @@ namespace WCell.RealmServer.AI.Brains
 			{
 				// execute only on world enter (not on resurrect)
 				m_actions.Init(m_owner);
-				m_SourcePoint = m_owner.Position;
-				CurrentAction = m_actions[m_state];
 			}
+			m_SourcePoint = m_owner.Position;
+			CurrentAction = m_actions[m_state];
 		}
 
 		public virtual void OnCombatTargetOutOfRange()
@@ -360,7 +366,12 @@ namespace WCell.RealmServer.AI.Brains
 				return false;
 			}
 
-			if (!m_owner.IsAreaActive && !m_owner.Region.ScanInactiveAreas)
+			if (!m_owner.CanDoHarm)
+			{
+				return false;
+			}
+
+			if (!m_owner.IsAreaActive && !m_owner.Map.ScanInactiveAreas)
 			{
 				// don't scan inactive Nodes
 				return false;
@@ -372,30 +383,36 @@ namespace WCell.RealmServer.AI.Brains
 			if ((owner.ThreatCollection.CurrentAggressor != null && owner.CanReachForCombat(owner.ThreatCollection.CurrentAggressor)) ||
 				 (m_IsAggressive && ScanAndAttack()))
 			{
-				owner.Brain.State = BrainState.Combat;
+				State = BrainState.Combat;
 				return true;
 			}
+
+			//var master = owner.Master;
+			//if (master != null)
+			//{
+			//    // help master
+			//}
 			return false;
 		}
 
 		public void OnGroupChange(AIGroup newGroup)
 		{
-			if (newGroup != null)
-			{
-				// now in new/different group
-				DefaultState = newGroup.DefaultState;
-				EnterDefaultState();
-			}
-			else
-			{
-				// left Group
-				DefaultState = DefaultBrainState;
-				if (m_currentAction.IsGroupAction)
-				{
-					m_currentAction.Stop();
-					EnterDefaultState();
-				}
-			}
+			//if (newGroup != null)
+			//{
+			//    // now in new/different group
+			//    DefaultState = newGroup.DefaultState;
+			//    EnterDefaultState();
+			//}
+			//else
+			//{
+			//    // left Group
+			//    DefaultState = DefaultBrainState;
+			//    if (m_currentAction != null && m_currentAction.IsGroupAction)
+			//    {
+			//        m_currentAction.Stop();
+			//        EnterDefaultState();
+			//    }
+			//}
 		}
 
 		/// <summary>
@@ -411,7 +428,7 @@ namespace WCell.RealmServer.AI.Brains
 			var owner = (NPC)m_owner;
 
 			// look around for possible enemies to attack (inverted predicate)
-			return !owner.IterateEnvironment(Unit.AggroMaxRangeDefault, obj =>
+			return !owner.IterateEnvironment(NPCEntry.AggroRangeMaxDefault, obj =>
 			{
 				if (!(obj is Unit))
 				{
@@ -420,25 +437,26 @@ namespace WCell.RealmServer.AI.Brains
 
 				var unit = (Unit)obj;
 
-                // Do not attack gamemasters unless provoked.
-                if(unit is Character)
-                {
-                    var chr = (Character)unit;
-                    if(chr.GodMode)
-                    {
-                        return true;
-                    }
-                }
+				// Do not attack gamemasters unless provoked.
+				if (unit is Character)
+				{
+					var chr = (Character)unit;
+					if (chr.GodMode)
+					{
+						return true;
+					}
+				}
+
 				// targets must be hostile, visible, alive, in range etc
 				if (unit.CanGenerateThreat &&
-				    m_owner.IsHostileWith(unit) &&
-				    m_owner.CanSee(unit) &&
+					m_owner.IsHostileWith(unit) &&
+					m_owner.CanSee(unit) &&
 					unit.IsInRadiusSq(owner, owner.GetAggroRangeSq(unit)) &&
 
 					// add this constraint, so NPCs don't randomly attack weak neutrals
 					(!(unit is NPC) || ((NPC)unit).ThreatCollection.CurrentAggressor != null || unit.IsHostileWith(owner)))
 				{
-					owner.ThreatCollection.AddNew(unit);
+					owner.ThreatCollection.AddNewIfNotExisted(unit);
 					if (owner.CanReachForCombat(unit))
 					{
 						return false;

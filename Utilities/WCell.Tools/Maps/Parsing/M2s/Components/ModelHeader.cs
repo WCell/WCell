@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System;
+using WCell.Tools.Maps.Structures;
 using WCell.Util.Graphics;
 
-namespace WCell.Tools.Maps
+namespace WCell.Tools.Maps.Parsing.M2s.Components
 {
     [Flags]
     public enum GlobalModelFlags
@@ -69,17 +67,6 @@ namespace WCell.Tools.Maps
         public bool HasUnknownFinalPart
         {
             get { return (GlobalModelFlags & GlobalModelFlags.Flag_0x8_ExtraHeaderField) != 0; }
-        }
-    }
-
-    public struct OffsetLocation
-    {
-        public int Count;
-        public int Offset;
-
-        public override string ToString()
-        {
-            return string.Format("{{Count = {0}, Offset = {1}}}", Count, Offset);
         }
     }
 }

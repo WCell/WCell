@@ -22,7 +22,7 @@ using System.ServiceModel;
 using System.ServiceModel.Channels;
 using NLog;
 using WCell.AuthServer;
-using WCell.AuthServer.Localization;
+using resources = WCell.AuthServer.Res.WCell_AuthServer;
 using WCell.Constants;
 using WCell.Constants.Login;
 using WCell.Core.Cryptography;
@@ -84,13 +84,13 @@ namespace WCell.AuthServer.IPC
 				{
 					msg = "<Unknown>";
 				}
-				log.Warn(Resources.RealmDisconnected, msg);
+				log.Warn(resources.RealmDisconnected, msg);
             };
         }
 
     	private RealmEntry GetRealmByChannel(IContextChannel chan)
     	{
-    		foreach (var realm in AuthenticationServer.Realms.Values)
+    		foreach (var realm in AuthenticationServer.Realms)
     		{
     			if (realm.Channel == chan)
     			{
@@ -146,7 +146,7 @@ namespace WCell.AuthServer.IPC
 
             if (authInfo == null)
             {
-                s_authServer.Error(null, Resources.CannotRetrieveAuthenticationInfo, accountName);
+                s_authServer.Error(null, resources.CannotRetrieveAuthenticationInfo, accountName);
             }
 
             return authInfo;
@@ -165,7 +165,7 @@ namespace WCell.AuthServer.IPC
             if (acc == null)
             //|| (requestAddr != 0 && acc.LastIP != requestAddr))
             {
-                log.Warn(string.Format(Resources.AttemptedRequestForUnknownAccount,
+                log.Warn(string.Format(resources.AttemptedRequestForUnknownAccount,
                     accountName,
                     requestAddr,
                     acc != null ? acc.LastIPStr : "()"));
@@ -190,7 +190,7 @@ namespace WCell.AuthServer.IPC
             var acc = AccountMgr.GetAccount(accountName);
             if (acc == null)
             {
-                log.Error(string.Format(Resources.AttemptedRequestForUnknownAccount, accountName));
+                log.Error(string.Format(resources.AttemptedRequestForUnknownAccount, accountName));
                 return null;
             }
 
@@ -262,7 +262,7 @@ namespace WCell.AuthServer.IPC
         {
             for (var i = 0; i < accNames.Length; i++)
             {
-                s_authServer.SetAccountLoggedOut(accNames[i]);
+                s_authServer.SetAccountLoggedOut(accNames[i], true);
             }
         }
 
@@ -303,7 +303,7 @@ namespace WCell.AuthServer.IPC
         /// <param name="accName">the account to log out</param>
         public void SetAccountLoggedOut(string id, string accName)
         {
-            s_authServer.SetAccountLoggedOut(accName);
+			s_authServer.SetAccountLoggedOut(accName, true);
         }
         #endregion
 
@@ -366,7 +366,7 @@ namespace WCell.AuthServer.IPC
                 {
                 	lock (AuthenticationServer.Realms)
 					{
-						AuthenticationServer.Realms.RemoveFirst(pair => pair.Value.Name.Equals(realmName, StringComparison.InvariantCultureIgnoreCase) );
+						AuthenticationServer.RemoveRealmByName(realmName);
                 	}
                 }
             }
@@ -399,10 +399,10 @@ namespace WCell.AuthServer.IPC
                 // register after setting all infos
                 lock (AuthenticationServer.Realms)
                 {
-                    AuthenticationServer.Realms.Add(id, realm);
+                    AuthenticationServer.AddRealm(realm);
                 }
             }
-			log.Info(Resources.RealmRegistered, realm); //realm.ChannelAddress);
+			log.Info(resources.RealmRegistered, realm); //realm.ChannelAddress);
         }
 
         /// <summary>
@@ -445,7 +445,7 @@ namespace WCell.AuthServer.IPC
 			if (realm != null)
 			{
 				realm.SetOffline(true);
-				log.Info(Resources.RealmUnregistered, realm);
+				log.Info(resources.RealmUnregistered, realm);
 			}
         }
         #endregion
@@ -470,7 +470,7 @@ namespace WCell.AuthServer.IPC
             {
                 acc.RoleGroupName = role;
 
-                AuthenticationServer.Instance.AddMessage(acc.SaveAndFlush);
+				AuthenticationServer.IOQueue.AddMessage(acc.SaveAndFlush);
                 return true;
             }
 
@@ -484,7 +484,7 @@ namespace WCell.AuthServer.IPC
             {
                 acc.EmailAddress = email;
 
-                AuthenticationServer.Instance.AddMessage(acc.SaveAndFlush);
+				AuthenticationServer.IOQueue.AddMessage(acc.SaveAndFlush);
                 return true;
             }
 
@@ -501,7 +501,7 @@ namespace WCell.AuthServer.IPC
                     acc.IsActive = active;
                     acc.StatusUntil = statusUntil;
 
-                    AuthenticationServer.Instance.AddMessage(acc.SaveAndFlush);
+					AuthenticationServer.IOQueue.AddMessage(acc.SaveAndFlush);
                     return true;
                 }
             }
@@ -525,7 +525,7 @@ namespace WCell.AuthServer.IPC
 
                 acc.Password = pass;
 
-                AuthenticationServer.Instance.AddMessage(acc.SaveAndFlush);
+				AuthenticationServer.IOQueue.AddMessage(acc.SaveAndFlush);
             	return true;
             }
 
@@ -539,7 +539,7 @@ namespace WCell.AuthServer.IPC
             {
                 acc.HighestCharLevel = level;
 
-                AuthenticationServer.Instance.AddMessage(acc.SaveAndFlush);
+				AuthenticationServer.IOQueue.AddMessage(acc.SaveAndFlush);
             }
         }
 

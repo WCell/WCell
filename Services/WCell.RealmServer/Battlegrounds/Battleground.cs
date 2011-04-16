@@ -3,6 +3,7 @@ using NLog;
 using WCell.Constants;
 using WCell.Constants.Spells;
 using WCell.Core.Timers;
+using WCell.RealmServer.Chat;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Handlers;
@@ -11,7 +12,7 @@ using WCell.Util.Variables;
 
 namespace WCell.RealmServer.Battlegrounds
 {
-	public abstract class Battleground : InstancedRegion, IBattlegroundRange
+	public abstract class Battleground : InstancedMap, IBattlegroundRange
 	{
 		/// <summary>
 		/// Whether to add to a Team even if it already has more players
@@ -30,9 +31,7 @@ namespace WCell.RealmServer.Battlegrounds
 		/// below minimum in seconds
 		/// </summary>
 		[Variable("BGDefaultShutdownDelay")]
-		public static float DefaultShutdownDelay = 200;
-
-		private static Logger log = LogManager.GetCurrentClassLogger();
+		public static int DefaultShutdownDelayMillis = 200000;
 
 		/// <summary>
 		/// Start the BG once this many % of players joined
@@ -41,7 +40,7 @@ namespace WCell.RealmServer.Battlegrounds
 		public static uint StartPlayerPct = 80;
 
 		[Variable("BGUpdateQueueSeconds")]
-		public static uint UpdateQueueSeconds = 10;
+		public static int UpdateQueueMillis = 10000;
 
 		protected readonly BattlegroundTeam[] _teams;
 
@@ -121,7 +120,11 @@ namespace WCell.RealmServer.Battlegrounds
 		public BattlegroundTeam Winner
 		{
 			get { return _winner; }
-			protected set { _winner = value; }
+			protected set
+			{
+				_winner = value;
+				value.ForeachCharacter( chr => chr.Achievements.CheckPossibleAchievementUpdates(Constants.Achievements.AchievementCriteriaType.CompleteBattleground, (uint)MapId ,1));
+			}
 		}
 
 		public virtual SpellId PreparationSpellId
@@ -139,7 +142,7 @@ namespace WCell.RealmServer.Battlegrounds
 			{
 				if (value)
 				{
-					RemainingShutdownDelay = DefaultShutdownDelay;
+					RemainingShutdownDelay = DefaultShutdownDelayMillis;
 				}
 				else
 				{
@@ -175,18 +178,18 @@ namespace WCell.RealmServer.Battlegrounds
 		/// <summary>
 		/// Preparation time of this BG
 		/// </summary>
-		public virtual float PreparationTimeSeconds
+		public virtual int PreparationTimeMillis
 		{
-			get { return 120; }
+			get { return 2 * 60 * 1000; }
 		}
 
 		/// <summary>
 		/// Time until shutdown.
 		/// Non-positive value cancels shutdown.
 		/// </summary>
-		public float RemainingShutdownDelay
+		public int RemainingShutdownDelay
 		{
-			get { return _shutdownTimer.RemainingInitialDelay; }
+			get { return _shutdownTimer.RemainingInitialDelayMillis; }
 			set
 			{
 				EnsureContext();
@@ -230,8 +233,16 @@ namespace WCell.RealmServer.Battlegrounds
 			get { return IsActive; }
 		}
 
+        /// <summary>
+        /// Whether to start the mode "Call To Arms" and change timers
+        /// </summary>
+        public virtual bool IsHolidayBG
+        {
+            get { return WorldEventMgr.IsHolidayActive(BattlegroundMgr.GetHolidayIdByBGId(Template.Id)); }
+        }
+
 		/// <summary>
-		/// Whether to start the Shutdown timer when <see cref="Region.PlayerCount"/> drops below the minimum
+		/// Whether to start the Shutdown timer when <see cref="Map.PlayerCount"/> drops below the minimum
 		/// </summary>
 		public bool CanShutdown { get; set; }
 
@@ -266,13 +277,13 @@ namespace WCell.RealmServer.Battlegrounds
 		/// <summary>
 		/// Starts the shutdown timer with the given delay
 		/// </summary>
-		protected virtual void StartShutdown(float seconds)
+		protected virtual void StartShutdown(int millis)
 		{
-			_shutdownTimer.Start(seconds);
+			_shutdownTimer.Start(millis);
 
 			foreach (var chr in m_characters)
 			{
-				chr.Auras.Cancel(_preparationSpell);
+				chr.Auras.Remove(_preparationSpell);
 			}
 		}
 
@@ -284,21 +295,21 @@ namespace WCell.RealmServer.Battlegrounds
 		public virtual void StartPreparation()
 		{
 			ExecuteInContext(() =>
-								{
-									_status = BattlegroundStatus.Preparing;
+			{
+				_status = BattlegroundStatus.Preparing;
 
-									if (_preparationSpell != null)
-									{
-										foreach (Character chr in m_characters)
-										{
-											chr.SpellCast.TriggerSelf(_preparationSpell);
-										}
-									}
+				if (_preparationSpell != null)
+				{
+					foreach (Character chr in m_characters)
+					{
+						chr.SpellCast.TriggerSelf(_preparationSpell);
+					}
+				}
 
-									CallDelayed(PreparationTimeSeconds / 2, () => { OnPrepareHalftime(); });
+				CallDelayed(PreparationTimeMillis / 2, OnPrepareHalftime);
 
-									OnPrepare();
-								});
+				OnPrepare();
+			});
 		}
 
 		public virtual void StartFight()
@@ -311,7 +322,7 @@ namespace WCell.RealmServer.Battlegrounds
 					_status = BattlegroundStatus.Active;
 					foreach (var chr in m_characters)
 					{
-						chr.Auras.Cancel(_preparationSpell);
+						chr.Auras.Remove(_preparationSpell);
 					}
 					OnStart();
 				}
@@ -442,7 +453,7 @@ namespace WCell.RealmServer.Battlegrounds
 		/// and adds them to the Battleground.
 		/// </summary>
 		/// <param name="amount"></param>
-		/// <remarks>Region-Context required. Cannot be used once the Battleground is over.</remarks>
+		/// <remarks>Map-Context required. Cannot be used once the Battleground is over.</remarks>
 		/// <returns>The amount of remaining players</returns>
 		public int ProcessPendingPlayers(BattlegroundSide side, int amount)
 		{
@@ -495,8 +506,7 @@ namespace WCell.RealmServer.Battlegrounds
 
 		public override void DeleteNow()
 		{
-			BattlegroundMgr.GetInstances(Template.Id).Remove(InstanceId);
-			World.RemoveInstance(this);
+			BattlegroundMgr.Instances.RemoveInstance(Template.Id, InstanceId);
 			FinalizeBattleground(true); // make sure that things are cleaned up
 
 			base.DeleteNow();
@@ -528,7 +538,7 @@ namespace WCell.RealmServer.Battlegrounds
 
 		protected virtual void OnPrepareHalftime()
 		{
-			CallDelayed(PreparationTimeSeconds / 2, () => { StartFight(); });
+			CallDelayed(PreparationTimeMillis / 2, StartFight);
 		}
 
 		protected virtual void OnPrepare()
@@ -537,28 +547,35 @@ namespace WCell.RealmServer.Battlegrounds
 
 		protected virtual void OnStart()
 		{
+            MiscHandler.SendPlaySoundToMap(this, (uint)BattlegroundSounds.BgStart);
 		}
 
 		protected virtual void OnFinish(bool disposing)
 		{
-		}
+            MiscHandler.SendPlaySoundToMap(this, Winner.Side == BattlegroundSide.Horde ? (uint)BattlegroundSounds.HordeWins 
+                                                                                           : (uint)BattlegroundSounds.AllianceWins);
+        }
+
+        public virtual void OnPlayerClickedOnflag(GameObject go, Character chr)
+        {
+        }
 
 		#endregion
 
 		#region Overrides
 		public virtual bool HasQueue { get { return true; } }
 
-		protected internal override void InitRegion()
+		protected internal override void InitMap()
 		{
-			base.InitRegion();
-			BattlegroundMgr.GetInstances(Template.Id).Add(InstanceId, this);
+			base.InitMap();
+			BattlegroundMgr.Instances.AddInstance(Template.Id, this);
 
 			_preparationSpell = SpellHandler.Get(PreparationSpellId);
 
 			if (HasQueue)
 			{
 				_instanceQueue = new InstanceBattlegroundQueue(this);
-				_queueTimer.Start(0, UpdateQueueSeconds * 1000);
+				_queueTimer.Start(0, UpdateQueueMillis);
 			}
 
 			_teams[(int)BattlegroundSide.Alliance] = CreateAllianceTeam();
@@ -662,7 +679,7 @@ namespace WCell.RealmServer.Battlegrounds
 			team.AddMember(chr);
 
 			if (_status == BattlegroundStatus.None &&
-			   PlayerCount >= (Template.RegionInfo.MaxPlayerCount * StartPlayerPct) / 100)
+			   PlayerCount >= (Template.MapTemplate.MaxPlayerCount * StartPlayerPct) / 100)
 			{
 				StartPreparation();
 			}
@@ -717,7 +734,7 @@ namespace WCell.RealmServer.Battlegrounds
 				if (IsActive && !chr.Role.IsStaff)
 				{
 					// flag as deserter
-					chr.Auras.AddSelf(BattlegroundMgr.DeserterSpell, false);
+					chr.Auras.CreateSelf(BattlegroundMgr.DeserterSpell, false);
 				}
 
 				// check if the BG is too empty to continue

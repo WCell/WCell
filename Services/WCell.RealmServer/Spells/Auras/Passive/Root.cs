@@ -21,13 +21,19 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	public class RootHandler : AuraEffectHandler
 	{
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
+			if(m_aura.Spell.SchoolMask == Constants.DamageSchoolMask.Frost)
+				m_aura.Auras.Owner.IncMechanicCount(SpellMechanic.Frozen);
+	
 			m_aura.Auras.Owner.IncMechanicCount(SpellMechanic.Rooted);
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
+			if (m_aura.Spell.SchoolMask == Constants.DamageSchoolMask.Frost)
+				m_aura.Auras.Owner.DecMechanicCount(SpellMechanic.Frozen);
+
 			m_aura.Auras.Owner.DecMechanicCount(SpellMechanic.Rooted);
 		}
 

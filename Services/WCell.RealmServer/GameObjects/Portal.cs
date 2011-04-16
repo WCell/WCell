@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using WCell.Constants.World;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
@@ -8,52 +8,34 @@ namespace WCell.RealmServer.GameObjects
 {
 	public class Portal : GameObject
 	{
-		public static Portal Create(IWorldLocation target)
+		public static Portal Create(IWorldLocation where, IWorldLocation target)
 		{
 			var entry = GOMgr.GetEntry(GOPortalEntry.PortalId);
 			if (entry == null)
 			{
 				return null;
 			}
-			var portal = (Portal)Create(entry, entry.FirstTemplate);
+			var portal = (Portal)Create(entry, where);
 			portal.Target = target;
 			return portal;
 		}
 
-		public static Portal Create(MapId rgnId, Vector3 pos, MapId targetRgn, Vector3 targetPos)
+		public static Portal Create(MapId mapId, Vector3 pos, MapId targetMap, Vector3 targetPos)
 		{
-			var portal = Create(targetRgn, targetPos);
-			var rgn = World.GetRegion(rgnId);
+			var entry = GOMgr.GetEntry(GOPortalEntry.PortalId);
+			if (entry == null)
+			{
+				return null;
+			}	
+			var rgn = World.GetNonInstancedMap(mapId);
 			if (rgn == null)
 			{
-				throw new ArgumentException("Invalid rgnId (not a Continent): " + rgnId);
+				throw new ArgumentException("Invalid MapId (not a Continent): " + mapId);
 			}
-			portal.Position = pos;
+
+			var portal = (Portal)Create(entry, new WorldLocationStruct(mapId, pos));
+			portal.Target = new WorldLocation(targetMap, targetPos);
 			rgn.AddObject(portal);
-			return portal;
-		}
-
-		public static Portal Create(MapId targetRgn, Vector3 targetPos)
-		{
-			var entry = GOMgr.GetEntry(GOPortalEntry.PortalId);
-			if (entry == null)
-			{
-				return null;
-			}
-			var portal = (Portal)Create(entry, entry.FirstTemplate);
-			portal.Target = new WorldLocation(targetRgn, targetPos);
-			return portal;
-		}
-
-		public static Portal Create(Region targetRgn, Vector3 targetPos)
-		{
-			var entry = GOMgr.GetEntry(GOPortalEntry.PortalId);
-			if (entry == null)
-			{
-				return null;
-			}
-			var portal = (Portal)Create(entry, entry.FirstTemplate);
-			portal.Target = new WorldLocation(targetRgn, targetPos);
 			return portal;
 		}
 
@@ -79,9 +61,9 @@ namespace WCell.RealmServer.GameObjects
 			{
 				if (Target is IWorldZoneLocation)
 				{
-					if (((IWorldZoneLocation)Target).ZoneInfo != null)
+					if (((IWorldZoneLocation)Target).ZoneTemplate != null)
 					{
-						return ((IWorldZoneLocation)Target).ZoneInfo.Id;
+						return ((IWorldZoneLocation)Target).ZoneTemplate.Id;
 					}
 				}
 				return ZoneId.None;
@@ -95,13 +77,13 @@ namespace WCell.RealmServer.GameObjects
 		/// <summary>
 		/// Can be used to set the <see cref="Target"/>
 		/// </summary>
-		public ZoneInfo TargetZone
+		public ZoneTemplate TargetZone
 		{
 			get
 			{
 				if (Target is IWorldZoneLocation)
 				{
-					return ((IWorldZoneLocation)Target).ZoneInfo;
+					return ((IWorldZoneLocation)Target).ZoneTemplate;
 				}
 				return null;
 			}

@@ -107,6 +107,7 @@ namespace WCell.RealmServer.Tests
 			{
 				if (m_npcPool == null)
 				{
+					EnsureMinimalSetup();
 					m_npcPool = new NPCPool();
 				}
 				return m_npcPool;
@@ -155,9 +156,9 @@ namespace WCell.RealmServer.Tests
 		}
 
 		/// <summary>
-		/// Some default region
+		/// Some default map
 		/// </summary>
-		public static Region Kalimdor
+		public static Map Kalimdor
 		{
 			get
 			{
@@ -167,9 +168,9 @@ namespace WCell.RealmServer.Tests
 		}
 
 		/// <summary>
-		/// Some default region
+		/// Some default map
 		/// </summary>
-		public static Region EasternKingdoms
+		public static Map EasternKingdoms
 		{
 			get
 			{
@@ -277,7 +278,7 @@ namespace WCell.RealmServer.Tests
 		public static void EnsureDBSetup()
 		{
 			EnsureMinimalSetup();
-			if (!RealmDBUtil.Initialized)
+			if (!RealmDBMgr.Initialized)
 			{
 				ResetDB();
 			}
@@ -289,7 +290,7 @@ namespace WCell.RealmServer.Tests
 
 			if (!RealmServer.Instance.IsRunning)
 			{
-				var dbSetup = RealmDBUtil.Initialized;
+				var dbSetup = RealmDBMgr.Initialized;
 
 				RealmServer.Instance.Start();
 				RealmServer.Instance.AuthClient.IsRunning = false;
@@ -307,7 +308,7 @@ namespace WCell.RealmServer.Tests
 
 		public static void ResetDB()
 		{
-			RealmDBUtil.Initialize();
+			RealmDBMgr.Initialize();
 
 			int count = CharacterRecord.GetCount();
 
@@ -346,7 +347,7 @@ namespace WCell.RealmServer.Tests
 		public static void EnsureNPCsLoaded()
 		{
 			EnsureBasicSetup();
-			NPCMgr.ForceInitialize();
+			NPCMgr.LoadAll();
 		}
 		#endregion
 
@@ -356,12 +357,12 @@ namespace WCell.RealmServer.Tests
 		}
 
 		/// <summary>
-		/// Adds the given object to the default region at a default location
+		/// Adds the given object to the default map at a default location
 		/// </summary>
-		public static void AddToDefaultRegion(WorldObject obj)
+		public static void AddToDefaultMap(WorldObject obj)
 		{
-			var region = Kalimdor;
-			region.AddMessageAndWait(new Message(() => {
+			var map = Kalimdor;
+			map.AddMessageAndWait(new Message(() => {
 				Kalimdor.AddObjectNow(obj, ref m_defaultPos);
 				if (obj is Character)
 				{
@@ -369,7 +370,7 @@ namespace WCell.RealmServer.Tests
 				}
 			}));
 
-			Assert.AreEqual(obj.Region, Kalimdor);
+			Assert.AreEqual(obj.Map, Kalimdor);
 			//Assert.IsTrue(obj.IsInWorld);
 		}
 
@@ -380,7 +381,7 @@ namespace WCell.RealmServer.Tests
 		{
 			if (!obj.IsInWorld)
 			{
-				AddToDefaultRegion(obj);
+				AddToDefaultMap(obj);
 			}
 		}
 

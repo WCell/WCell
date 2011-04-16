@@ -15,8 +15,11 @@
  *************************************************************************/
 
 using System;
+using System.Linq;
 using WCell.Constants;
+using WCell.Constants.Items;
 using WCell.Constants.Misc;
+using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Modifiers;
@@ -59,7 +62,7 @@ namespace WCell.RealmServer.Entities
 		[Initialization(InitializationPass.Tenth)]
 		public static void InitSpeeds()
 		{
-			
+
 		}
 
 		public static readonly int MechanicCount = (int)Convert.ChangeType(Utility.GetMaxEnum<SpellMechanic>(), typeof(int)) + 1;
@@ -67,14 +70,6 @@ namespace WCell.RealmServer.Entities
 		public static readonly int DamageSchoolCount = (int)DamageSchool.Count;
 		public static readonly int DispelTypeCount = (int)Convert.ChangeType(Utility.GetMaxEnum<DispelType>(), typeof(int)) + 1;
 
-		/// <summary>
-		/// A dictionary that maps each specific DamageTypeMask-flag to its corresponding DamageType counterpart
-		/// </summary>
-		// public static readonly Dictionary<DamageTypeMask, DamageType> DamageTypeLookup = new Dictionary<DamageTypeMask, DamageType>();
-		/// <summary>
-		/// All DamageTypeMasks
-		/// </summary>
-		// public static readonly DamageTypeMask[] DamageTypeMasks = Utility.GetEnumValues<DamageTypeMask>();
 		/// <summary>
 		/// All CombatRatings
 		/// </summary>
@@ -102,6 +97,7 @@ namespace WCell.RealmServer.Entities
 		// mod counters
 		protected uint m_flying, m_waterWalk, m_hovering, m_featherFalling;
 		protected int m_stealthed;
+		private int m_Pacified;
 
 		protected int[] m_mechanics;
 		protected int[] m_mechanicImmunities;
@@ -112,9 +108,11 @@ namespace WCell.RealmServer.Entities
 		protected int[] m_TargetResMods;
 		protected int[] m_spellInterruptProt;
 		protected int[] m_threatMods;
-
-		protected int m_ManaShieldAmount;
-		protected float m_ManaShieldFactor;
+		protected int[] m_attackerSpellHitChance;
+		protected int[] m_SpellHitChance;
+		protected int[] m_CritMods;
+		protected int[] m_damageTakenMods;
+		protected int[] m_damageTakenPctMods;
 
 		/// <summary>
 		/// Immunities against damage-schools
@@ -122,16 +120,11 @@ namespace WCell.RealmServer.Entities
 		protected int[] m_dmgImmunities;
 
 		/// <summary>
-		/// List of <see cref="IDamageAbsorber"/> which absorb any damage taken
-		/// </summary>
-		protected List<IDamageAbsorber> m_absorbers;
-
-		/// <summary>
 		/// Whether the physical state of this Unit allows it to move
 		/// </summary>
 		protected bool m_canMove;
 
-		protected bool m_canInteract, m_canHarm, m_canCastSpells, m_evades;
+		protected bool m_canInteract, m_canHarm, m_canCastSpells, m_evades, m_canDoPhysicalActivity;
 
 		protected float m_speedFactor, m_swimFactor, m_flightFactor, m_mountMod;
 
@@ -153,35 +146,57 @@ namespace WCell.RealmServer.Entities
 
 		#region SpellMechanic Types
 		/// <summary>
-		/// Whether the Unit is allowed to cast spells
+		/// Whether the Unit is allowed to cast spells that are not physical abilities
 		/// </summary>
 		public bool CanCastSpells
 		{
-			get
+			get { return m_canCastSpells; }
+		}
+
+		/// <summary>
+		/// Wheter the Unit is allowed to attack and use physical abilities
+		/// </summary>
+		public bool CanDoPhysicalActivity
+		{
+			get { return m_canDoPhysicalActivity; }
+			private set
 			{
-				return m_canCastSpells;
+				if (m_canDoPhysicalActivity != value) return;
+
+				m_canDoPhysicalActivity = value;
+				if (value)
+				{
+					// disable physical abilities
+					IsFighting = false;
+					if (m_spellCast != null && m_spellCast.IsCasting && m_spellCast.Spell.IsPhysicalAbility)
+					{
+						m_spellCast.Cancel(SpellFailedReason.Pacified);
+					}
+				}
+				else
+				{
+					// enable physical abilities
+				}
 			}
 		}
 
 		/// <summary>
 		/// Whether the physical state of this Unit allows it to move.
-		/// To stop a char from moving, use IncMechanicCount to increase Rooted or any other movement-effecting Mechanic-school.
-		/// Use MayMove to also take Movement-controlling (eg by AI etc) into consideration.
+		/// To stop a character from moving, use IncMechanicCount to increase Rooted or any other movement-effecting Mechanic-school.
+		/// Use HasPermissionToMove to also take Movement-controlling (eg by AI etc) into consideration.
 		/// </summary>
 		public bool CanMove
 		{
-			get
-			{
-				return m_canMove;
-			}
+			get { return m_canMove && HasPermissionToMove; }
 		}
 
 		/// <summary>
-		/// Whether the owner (if any) allows this unit to move
+		/// Whether the owner or controlling AI allows this unit to move.
+		/// Always returns true for uncontrolled players.
 		/// </summary>
-		public bool MayMove
+		public bool HasPermissionToMove
 		{
-			get { return CanMove && (m_Movement == null || m_Movement.MayMove); }
+			get { return m_Movement == null || m_Movement.MayMove; }
 			set
 			{
 				if (m_Movement != null)
@@ -192,7 +207,7 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Whether the Unit is currently evading (cannot be hit etc)
+		/// Whether the Unit is currently evading (cannot be hit, generate threat etc)
 		/// </summary>
 		public bool IsEvading
 		{
@@ -225,23 +240,12 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public override bool CanDoHarm
 		{
-			get
-			{
-				return m_canHarm && base.CanDoHarm;
-			}
+			get { return m_canHarm && base.CanDoHarm; }
 		}
 
 		/// <summary>
-		/// Whether the owner is disarmed
+		/// Whether this Unit is currently stunned (!= rooted)
 		/// </summary>
-		public bool IsDisarmed
-		{
-			get
-			{
-				return IsUnderInfluenceOf(SpellMechanic.Disarmed);
-			}
-		}
-
 		public int Stunned
 		{
 			get
@@ -301,6 +305,30 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
+		/// Pacified units cannot attack or use physical abilities
+		/// </summary>
+		public int Pacified
+		{
+			get { return m_Pacified; }
+			set
+			{
+				if (m_Pacified == value) return;
+				if (value <= 0 && m_Pacified > 0)
+				{
+					// disable pacify
+					UnitFlags &= ~UnitFlags.Pacified;
+				}
+				else if (value > 0)
+				{
+					// enable pacify
+					UnitFlags |= UnitFlags.Pacified;
+				}
+				m_Pacified = value;
+				SetCanHarmState();
+			}
+		}
+
+		/// <summary>
 		/// Return whether the given Mechanic applies to the Unit
 		/// </summary>
 		public bool IsUnderInfluenceOf(SpellMechanic mechanic)
@@ -310,21 +338,6 @@ namespace WCell.RealmServer.Entities
 				return false;
 			}
 			return m_mechanics[(int)mechanic] > 0;
-		}
-
-		/// <summary>
-		/// Checks whether any of the mechanics of the given set are influencing the owner
-		/// </summary>
-		bool IsAnySetNoCheck(bool[] set)
-		{
-			for (int i = 1; i < set.Length; i++)
-			{
-				if (set[i] && m_mechanics[i] > 0)
-				{
-					return true;
-				}
-			}
-			return false;
 		}
 
 		/// <summary>
@@ -359,7 +372,7 @@ namespace WCell.RealmServer.Entities
 						MovementHandler.SendRooted((Character)this, 1);
 					}
 					//UnitFlags |= UnitFlags.Influenced;
-                    if (IsUsingSpell && SpellCast.Spell.InterruptFlags.HasFlag(InterruptFlags.OnStunned))
+					if (IsUsingSpell && SpellCast.Spell.InterruptFlags.HasFlag(InterruptFlags.OnStunned))
 					{
 						SpellCast.Cancel();
 					}
@@ -373,63 +386,55 @@ namespace WCell.RealmServer.Entities
 				}
 
 				// harmfulnes
-				if (m_canHarm && SpellConstants.HarmMechanics[(int)mechanic])
+				if (m_canHarm && SpellConstants.HarmPreventionMechanics[(int)mechanic])
 				{
-					m_canHarm = false;
-					if (IsUsingSpell && SpellCast.Spell.HasHarmfulEffects)
-					{
-						SpellCast.Cancel();
-					}
+					SetCanHarmState();
 				}
 
 				// check if we can still cast spells
-				if (m_canCastSpells && SpellConstants.SpellMechanics[(int)mechanic])
+				if (m_canCastSpells && SpellConstants.SpellCastPreventionMechanics[(int)mechanic])
 				{
 					// check if we can still cast spells
 					m_canCastSpells = false;
-					UnitFlags |= UnitFlags.Silenced;
-                    if (IsUsingSpell && SpellCast.Spell.InterruptFlags.HasFlag(InterruptFlags.OnSilence))
+					if (IsUsingSpell && SpellCast.Spell.InterruptFlags.HasFlag(InterruptFlags.OnSilence))
 					{
 						SpellCast.Cancel();
 					}
+					if (!m_canDoPhysicalActivity && m_canHarm)
+					{
+						// no spells and no physical activities -> No harm
+						SetCanHarmState();
+					}
 				}
 
-				if (mechanic == SpellMechanic.Frozen)
+				switch (mechanic)
 				{
-					// Apply Frozen AuraState
-					AuraState |= AuraStateMask.Frozen;
-				}
-
-
-				if (mechanic == SpellMechanic.Mounted)
-				{
-					// Now mounted
-					UnitFlags |= UnitFlags.Mounted;
-					SpeedFactor += MountSpeedMod;
-					m_auras.RemoveByFlag(AuraInterruptFlags.OnMount);
-				}
-				else if (mechanic == SpellMechanic.Slowed)
-				{
-					UnitFlags |= UnitFlags.Pacified;
-				}
-				else if (mechanic == SpellMechanic.Disarmed)
-				{
-					UnitFlags |= UnitFlags.Disarmed;
-					MainWeapon = GenericWeapon.Fists;
-					OffHandWeapon = null;
-					RangedWeapon = null;
-				}
-				else if (mechanic == SpellMechanic.Fleeing)
-				{
-					UnitFlags |= UnitFlags.Feared;
-				}
-				else if (mechanic == SpellMechanic.Disoriented)
-				{
-					UnitFlags |= UnitFlags.Confused;
-				}
-				else if (mechanic == SpellMechanic.Invulnerable)
-				{
-					UnitFlags |= UnitFlags.SelectableNotAttackable;
+					case SpellMechanic.Frozen:
+						AuraState |= AuraStateMask.Frozen;
+						break;
+					case SpellMechanic.Bleeding:
+						AuraState |= AuraStateMask.Bleeding;
+						break;
+					case SpellMechanic.Mounted:
+						UnitFlags |= UnitFlags.Mounted;
+						SpeedFactor += MountSpeedMod;
+						m_auras.RemoveByFlag(AuraInterruptFlags.OnMount);
+						break;
+					case SpellMechanic.Silenced:
+						UnitFlags |= UnitFlags.Silenced;
+						break;
+					case SpellMechanic.Fleeing:
+						UnitFlags |= UnitFlags.Feared;
+						break;
+					case SpellMechanic.Disoriented:
+						UnitFlags |= UnitFlags.Confused;
+						break;
+					case SpellMechanic.Invulnerable:
+						UnitFlags |= UnitFlags.SelectableNotAttackable;
+						break;
+					case SpellMechanic.Enraged:
+						AuraState |= AuraStateMask.Enraged;
+						break;
 				}
 			}
 
@@ -473,52 +478,87 @@ namespace WCell.RealmServer.Entities
 						//UnitFlags &= ~UnitFlags.UnInteractable;
 					}
 
-					if (!m_canHarm && SpellConstants.HarmMechanics[(int)mechanic] && !IsAnySetNoCheck(SpellConstants.HarmMechanics))
+					if (!m_canHarm && SpellConstants.HarmPreventionMechanics[(int)mechanic])
 					{
-						m_canHarm = true;
+						SetCanHarmState();
 					}
 
-					if (!m_canCastSpells && SpellConstants.SpellMechanics[(int)mechanic] && !IsAnySetNoCheck(SpellConstants.SpellMechanics))
+					if (!m_canCastSpells && SpellConstants.SpellCastPreventionMechanics[(int)mechanic] &&
+						!IsAnySetNoCheck(SpellConstants.SpellCastPreventionMechanics))
 					{
 						m_canCastSpells = true;
-						UnitFlags &= ~UnitFlags.Silenced;
+						if (!m_canDoPhysicalActivity && !m_canHarm)
+						{
+							// can do spells and no physical activities -> Can harm
+							SetCanHarmState();
+						}
 					}
 
-					if (mechanic == SpellMechanic.Frozen)
+					switch (mechanic)
 					{
-						// Remove Frozen AuraState
-						AuraState ^= AuraStateMask.Frozen;
-					}
-
-					if (mechanic == SpellMechanic.Mounted)
-					{
-						UnitFlags &= ~UnitFlags.Mounted;
-						SpeedFactor -= MountSpeedMod;
-					}
-					else if (mechanic == SpellMechanic.Disarmed && m_mechanics[(int)SpellMechanic.Disarmed] == 0)
-					{
-						UnitFlags &= ~UnitFlags.Disarmed;
-						// TODO: Put weapons back in place
-					}
-					else if (mechanic == SpellMechanic.Slowed && m_mechanics[(int)SpellMechanic.Slowed] == 0)
-					{
-						UnitFlags &= ~UnitFlags.Pacified;
-					}
-					else if (mechanic == SpellMechanic.Fleeing && m_mechanics[(int)SpellMechanic.Horrified] == 0)
-					{
-						UnitFlags &= ~UnitFlags.Feared;
-					}
-					else if (mechanic == SpellMechanic.Disoriented && m_mechanics[(int)SpellMechanic.Disoriented] == 0)
-					{
-						UnitFlags &= ~UnitFlags.Confused;
-					}
-					else if (mechanic == SpellMechanic.Invulnerable && m_mechanics[(int)SpellMechanic.Invulnerable] == 0)
-					{
-						UnitFlags &= ~UnitFlags.SelectableNotAttackable;
+						case SpellMechanic.Frozen:
+							AuraState ^= AuraStateMask.Frozen;
+							break;
+						case SpellMechanic.Bleeding:
+							AuraState ^= AuraStateMask.Bleeding;
+							break;
+						case SpellMechanic.Mounted:
+							UnitFlags &= ~UnitFlags.Mounted;
+							SpeedFactor -= MountSpeedMod;
+							break;
+						case SpellMechanic.Silenced:
+							UnitFlags &= ~UnitFlags.Silenced;
+							break;
+						case SpellMechanic.Fleeing:
+							UnitFlags &= ~UnitFlags.Feared;
+							break;
+						case SpellMechanic.Disoriented:
+							UnitFlags &= ~UnitFlags.Confused;
+							break;
+						case SpellMechanic.Invulnerable:
+							UnitFlags &= ~UnitFlags.SelectableNotAttackable;
+							break;
+						case SpellMechanic.Enraged:
+							AuraState &= ~AuraStateMask.Enraged;
+							break;
 					}
 				}
 			}
 		}
+
+		/// <summary>
+		/// Checks whether any of the mechanics of the given set are influencing the owner
+		/// </summary>
+		private bool IsAnySetNoCheck(bool[] set)
+		{
+			if (m_mechanics == null)
+			{
+				return false;
+			}
+			for (var i = 0; i < set.Length; i++)
+			{
+				if (set[i] && m_mechanics[i] > 0)
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+
+		private void SetCanHarmState()
+		{
+			if (!IsAnySetNoCheck(SpellConstants.HarmPreventionMechanics))
+			{
+				CanDoPhysicalActivity = m_Pacified <= 0;
+				m_canHarm = m_canDoPhysicalActivity || !IsUnderInfluenceOf(SpellMechanic.Silenced);
+			}
+			else
+			{
+				CanDoPhysicalActivity = false;
+				m_canHarm = false;
+			}
+		}
+
 		#endregion
 
 		#region Immunities
@@ -620,7 +660,7 @@ namespace WCell.RealmServer.Entities
 			Auras.RemoveWhere(aura =>
 				aura.Spell.AuraUID != effect.Spell.AuraUID &&
 				aura.Spell.SchoolMask.HasAnyFlag(effect.Spell.SchoolMask) &&
-                !aura.Spell.Attributes.HasFlag(SpellAttributes.UnaffectedByInvulnerability));
+				!aura.Spell.Attributes.HasFlag(SpellAttributes.UnaffectedByInvulnerability));
 		}
 
 		/// <summary>
@@ -653,7 +693,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Adds immunity against given SpellMechanic-school
 		/// </summary>
-		public void IncMechImmunityCount(SpellMechanic mechanic)
+		public void IncMechImmunityCount(SpellMechanic mechanic, Spell exclude)
 		{
 			if (m_mechanicImmunities == null)
 			{
@@ -665,7 +705,10 @@ namespace WCell.RealmServer.Entities
 			{
 				// new immunity: Gets rid of all Auras that use this Mechanic
 				Auras.RemoveWhere(aura => aura.Spell.Mechanic == mechanic &&
-                    ((mechanic != SpellMechanic.Invulnerable && mechanic != SpellMechanic.Invulnerable_2) || !aura.Spell.Attributes.HasFlag(SpellAttributes.UnaffectedByInvulnerability)));
+					aura.Spell != exclude &&
+					(aura.Spell.TargetTriggerSpells == null || !aura.Spell.TargetTriggerSpells.Contains(exclude)) &&
+					(aura.Spell.CasterTriggerSpells == null || !aura.Spell.CasterTriggerSpells.Contains(exclude)) &&
+					((mechanic != SpellMechanic.Invulnerable && mechanic != SpellMechanic.Invulnerable_2) || !aura.Spell.Attributes.HasFlag(SpellAttributes.UnaffectedByInvulnerability)));
 			}
 
 			m_mechanicImmunities[(int)mechanic]++;
@@ -689,26 +732,6 @@ namespace WCell.RealmServer.Entities
 
 
 		// TODO: ModDamageTaken and ModDamageTakenPercent
-		//public int GetDmgResistance(DamageType school)
-		//{
-		//    if (m_dmgResist == null) {
-		//        return 0;
-		//    }
-
-		//    m_dmgResist[(int)school] += value;
-		//}
-
-		///// <summary>
-		///// Adds resistance against certain damage
-		///// </summary>
-		//public void SetDmgnNullifier(DamageType school, int value)
-		//{
-		//    if (m_dmgResist == null) {
-		//        m_dmgResist = CreateDamageSchoolArr();
-		//    }
-
-		//    m_dmgResist[(int)school] += value;
-		//}
 		#endregion
 
 		#region Mechanic Resistance
@@ -766,63 +789,6 @@ namespace WCell.RealmServer.Entities
 				val = 0;
 			}
 			m_mechanicDurationMods[(int)mechanic] = val;
-		}
-		#endregion
-
-		#region Absorb
-		/// <summary>
-		/// Absorbs the given school and amount of damage
-		/// </summary>
-		/// <returns>The amount of damage absorbed</returns>
-		public int Absorb(DamageSchool school, int amount)
-		{
-			if (m_absorbers == null || m_absorbers.Count == 0)
-			{
-				return 0;
-			}
-			if (m_DamageAction != null)
-			{
-                if (m_DamageAction.Spell.AttributesExD.HasFlag(SpellAttributesExD.CannotBeAbsorbed))
-					return 0;
-			}
-			var absorb = 0;
-
-			// count backwards so removal of elements won't disturb anything
-			for (var i = m_absorbers.Count - 1; i >= 0; i--)
-			{
-				var absorber = m_absorbers[i];
-				if (absorber.AbsorbSchool.HasAnyFlag(school))
-				{
-					var abs = Math.Min(amount, absorber.AbsorbValue);
-					absorb += abs;
-					absorber.AbsorbValue -= abs;
-				}
-			}
-			return absorb;
-		}
-
-		/// <summary>
-		/// Adds a new <see cref="IDamageAbsorber"/>
-		/// </summary>
-		public void AddDmgAbsorption(IDamageAbsorber absorber)
-		{
-			if (m_absorbers == null)
-			{
-				m_absorbers = new List<IDamageAbsorber>(1);
-			}
-
-			m_absorbers.Add(absorber);
-		}
-
-		/// <summary>
-		/// Removes an existing <see cref="IDamageAbsorber"/>
-		/// </summary>
-		public void RemoveDmgAbsorption(IDamageAbsorber absorber)
-		{
-			if (m_absorbers != null)
-			{
-				m_absorbers.Remove(absorber);
-			}
 		}
 		#endregion
 
@@ -1005,84 +971,229 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
+		#region Spell Hit Chance
+		public int GetSpellHitChanceMod(DamageSchool school)
+		{
+			return m_SpellHitChance != null ? m_SpellHitChance[(int)school] : 0;
+		}
+
+		/// <summary>
+		/// Spell avoidance
+		/// </summary>
+		public virtual void ModSpellHitChance(DamageSchool school, int delta)
+		{
+			if (m_SpellHitChance == null)
+			{
+				m_SpellHitChance = CreateDamageSchoolArr();
+			}
+			var val = m_SpellHitChance[(int)school] + delta;
+			m_SpellHitChance[(int)school] = val;
+		}
+
+		/// <summary>
+		/// Spell avoidance
+		/// </summary>
+		public void ModSpellHitChance(uint[] schools, int delta)
+		{
+			foreach (var school in schools)
+			{
+				ModSpellHitChance((DamageSchool)school, delta);
+			}
+		}
+		#endregion
+
 		#region Spell Crit Chance
 		/// <summary>
 		/// Returns the SpellCritChance for the given DamageType
 		/// </summary>
-		public virtual float GetSpellCritChance(DamageSchool school)
+		public virtual float GetCritChance(DamageSchool school)
 		{
-			return 0;
+			return GetCritMod(school);
 		}
 
-		protected int[] m_spellCritMods;
-
-		public int GetSpellCritMod(DamageSchool school)
+		public int GetCritMod(DamageSchool school)
 		{
-			if (m_spellCritMods == null)
+			if (m_CritMods == null)
 			{
 				return 0;
 			}
-			return m_spellCritMods[(int)school];
+			return m_CritMods[(int)school];
 		}
 
-		public void SetSpellCritMod(DamageSchool school, int value)
+		public void SetCritMod(DamageSchool school, int value)
 		{
-			if (m_spellCritMods == null)
+			if (m_CritMods == null)
 			{
-				m_spellCritMods = CreateDamageSchoolArr();
+				m_CritMods = CreateDamageSchoolArr();
 			}
-			m_spellCritMods[(uint)school] = value;
+			m_CritMods[(uint)school] = value;
+			if (this is Character)
+			{
+				((Character)this).UpdateSpellCritChance();
+			}
+		}
+
+		public void ModCritMod(DamageSchool school, int delta)
+		{
+			if (m_CritMods == null)
+			{
+				m_CritMods = CreateDamageSchoolArr();
+			}
+			m_CritMods[(int)school] += delta;
+
 			if (this is Character)
 			{
 				UnitUpdates.UpdateSpellCritChance((Character)this);
 			}
 		}
 
-		public void ModSpellCritMod(DamageSchool school, int delta)
+		public void ModCritMod(DamageSchool[] schools, int delta)
 		{
-			if (m_spellCritMods == null)
+			if (m_CritMods == null)
 			{
-				m_spellCritMods = CreateDamageSchoolArr();
-			}
-			m_spellCritMods[(int)school] += delta;
-
-			if (this is Character)
-			{
-				UnitUpdates.UpdateSpellCritChance((Character)this);
-			}
-		}
-
-		public void ModSpellCritMod(DamageSchool[] schools, int delta)
-		{
-			if (m_spellCritMods == null)
-			{
-				m_spellCritMods = CreateDamageSchoolArr();
+				m_CritMods = CreateDamageSchoolArr();
 			}
 
 			foreach (var school in schools)
 			{
-				m_spellCritMods[(int)school] += delta;
+				m_CritMods[(int)school] += delta;
 			}
 			if (this is Character)
 			{
-				UnitUpdates.UpdateSpellCritChance((Character)this);
+				((Character)this).UpdateSpellCritChance();
 			}
 		}
 
-		public void ModSpellCritMod(uint[] schools, int delta)
+		public void ModCritMod(uint[] schools, int delta)
 		{
-			if (m_spellCritMods == null)
+			if (m_CritMods == null)
 			{
-				m_spellCritMods = CreateDamageSchoolArr();
+				m_CritMods = CreateDamageSchoolArr();
 			}
 
 			foreach (var school in schools)
 			{
-				m_spellCritMods[school] += delta;
+				m_CritMods[school] += delta;
 			}
 			if (this is Character)
 			{
-				UnitUpdates.UpdateSpellCritChance((Character)this);
+				((Character)this).UpdateSpellCritChance();
+			}
+		}
+		#endregion
+
+		#region Damage Taken Mods
+		/// <summary>
+		/// Returns the damage taken modifier for the given DamageSchool
+		/// </summary>
+		public int GetDamageTakenMod(DamageSchool school)
+		{
+			if (m_damageTakenMods == null)
+			{
+				return 0;
+			}
+			return m_damageTakenMods[(int)school];
+		}
+
+		public void SetDamageTakenMod(DamageSchool school, int value)
+		{
+			if (m_damageTakenMods == null)
+			{
+				m_damageTakenMods = CreateDamageSchoolArr();
+			}
+			m_damageTakenMods[(uint)school] = value;
+		}
+
+		public void ModDamageTakenMod(DamageSchool school, int delta)
+		{
+			if (m_damageTakenMods == null)
+			{
+				m_damageTakenMods = CreateDamageSchoolArr();
+			}
+			m_damageTakenMods[(int)school] += delta;
+		}
+
+		public void ModDamageTakenMod(DamageSchool[] schools, int delta)
+		{
+			if (m_damageTakenMods == null)
+			{
+				m_damageTakenMods = CreateDamageSchoolArr();
+			}
+
+			foreach (var school in schools)
+			{
+				m_damageTakenMods[(int)school] += delta;
+			}
+		}
+
+		public void ModDamageTakenMod(uint[] schools, int delta)
+		{
+			if (m_damageTakenMods == null)
+			{
+				m_damageTakenMods = CreateDamageSchoolArr();
+			}
+
+			foreach (var school in schools)
+			{
+				m_damageTakenMods[school] += delta;
+			}
+		}
+		#endregion
+
+		#region Damage Taken % Mods
+		/// <summary>
+		/// Returns the damage taken modifier for the given DamageSchool
+		/// </summary>
+		public int GetDamageTakenPctMod(DamageSchool school)
+		{
+			if (m_damageTakenPctMods == null)
+			{
+				return 0;
+			}
+			return m_damageTakenPctMods[(int)school];
+		}
+
+		public void SetDamageTakenPctMod(DamageSchool school, int value)
+		{
+			if (m_damageTakenPctMods == null)
+			{
+				m_damageTakenPctMods = CreateDamageSchoolArr();
+			}
+			m_damageTakenPctMods[(uint)school] = value;
+		}
+
+		public void ModDamageTakenPctMod(DamageSchool school, int delta)
+		{
+			if (m_damageTakenPctMods == null)
+			{
+				m_damageTakenPctMods = CreateDamageSchoolArr();
+			}
+			m_damageTakenPctMods[(int)school] += delta;
+		}
+
+		public void ModDamageTakenPctMod(DamageSchool[] schools, int delta)
+		{
+			if (m_damageTakenPctMods == null)
+			{
+				m_damageTakenPctMods = CreateDamageSchoolArr();
+			}
+
+			foreach (var school in schools)
+			{
+				m_damageTakenPctMods[(int)school] += delta;
+			}
+		}
+
+		public void ModDamageTakenPctMod(uint[] schools, int delta)
+		{
+			if (m_damageTakenPctMods == null)
+			{
+				m_damageTakenPctMods = CreateDamageSchoolArr();
+			}
+
+			foreach (var school in schools)
+			{
+				m_damageTakenPctMods[school] += delta;
 			}
 		}
 		#endregion
@@ -1108,7 +1219,7 @@ namespace WCell.RealmServer.Entities
 		{
 			foreach (var school in dmgTypes)
 			{
-				ModSpellInterruptProt((DamageSchool)school, delta);
+				ModThreat((DamageSchool)school, delta);
 			}
 		}
 
@@ -1126,7 +1237,38 @@ namespace WCell.RealmServer.Entities
 			{
 				return dmg;
 			}
-			return dmg + ((dmg * m_threatMods[(int)school]) / 100);
+			return Math.Max(0, dmg + ((dmg * m_threatMods[(int)school]) / 100));
+		}
+		#endregion
+
+		#region Spell Avoidance
+		public int GetAttackerSpellHitChanceMod(DamageSchool school)
+		{
+			return m_attackerSpellHitChance != null ? m_attackerSpellHitChance[(int)school] : 0;
+		}
+
+		/// <summary>
+		/// Spell avoidance
+		/// </summary>
+		public void ModAttackerSpellHitChance(DamageSchool school, int delta)
+		{
+			if (m_attackerSpellHitChance == null)
+			{
+				m_attackerSpellHitChance = CreateDamageSchoolArr();
+			}
+			var val = m_attackerSpellHitChance[(int)school] + delta;
+			m_attackerSpellHitChance[(int)school] = val;
+		}
+
+		/// <summary>
+		/// Spell avoidance
+		/// </summary>
+		public void ModAttackerSpellHitChance(uint[] schools, int delta)
+		{
+			foreach (var school in schools)
+			{
+				ModAttackerSpellHitChance((DamageSchool)school, delta);
+			}
 		}
 		#endregion
 
@@ -1136,86 +1278,83 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public virtual bool MayTeleport
 		{
-			get
-			{
-				return true;
-			}
+			get { return true; }
 		}
 
 		/// <summary>
-		/// Teleports the owner to the given position in the current region.
+		/// Teleports the owner to the given position in the current map.
 		/// </summary>
 		/// <returns>Whether the Zone had a globally unique Site.</returns>
 		public void TeleportTo(Vector3 pos)
 		{
-			TeleportTo(m_region, ref pos, null);
+			TeleportTo(m_Map, ref pos, null);
 		}
 
 		/// <summary>
-		/// Teleports the owner to the given position in the current region.
+		/// Teleports the owner to the given position in the current map.
 		/// </summary>
 		/// <returns>Whether the Zone had a globally unique Site.</returns>
 		public void TeleportTo(ref Vector3 pos)
 		{
-			TeleportTo(m_region, ref pos, null);
+			TeleportTo(m_Map, ref pos, null);
 		}
 
 		/// <summary>
-		/// Teleports the owner to the given position in the current region.
+		/// Teleports the owner to the given position in the current map.
 		/// </summary>
 		/// <returns>Whether the Zone had a globally unique Site.</returns>
 		public void TeleportTo(ref Vector3 pos, float? orientation)
 		{
-			TeleportTo(m_region, ref pos, orientation);
+			TeleportTo(m_Map, ref pos, orientation);
 		}
 
 		/// <summary>
-		/// Teleports the owner to the given position in the current region.
+		/// Teleports the owner to the given position in the current map.
 		/// </summary>
 		/// <returns>Whether the Zone had a globally unique Site.</returns>
 		public void TeleportTo(Vector3 pos, float? orientation)
 		{
-			TeleportTo(m_region, ref pos, orientation);
+			TeleportTo(m_Map, ref pos, orientation);
 		}
 
 		/// <summary>
-		/// Teleports the owner to the given position in the given region.
+		/// Teleports the owner to the given position in the given map.
 		/// </summary>
-		/// <param name="region">the target <see cref="Region" /></param>
+		/// <param name="map">the target <see cref="Map" /></param>
 		/// <param name="pos">the target <see cref="Vector3">position</see></param>
-		public void TeleportTo(MapId region, ref Vector3 pos)
+		public void TeleportTo(MapId map, ref Vector3 pos)
 		{
-			TeleportTo(World.GetRegion(region), ref pos, null);
+			TeleportTo(World.GetNonInstancedMap(map), ref pos, null);
 		}
 
 		/// <summary>
-		/// Teleports the owner to the given position in the given region.
+		/// Teleports the owner to the given position in the given map.
 		/// </summary>
-		/// <param name="region">the target <see cref="Region" /></param>
+		/// <param name="map">the target <see cref="Map" /></param>
 		/// <param name="pos">the target <see cref="Vector3">position</see></param>
-		public void TeleportTo(MapId region, Vector3 pos)
+		public void TeleportTo(MapId map, Vector3 pos)
 		{
-			TeleportTo(World.GetRegion(region), ref pos, null);
+			TeleportTo(World.GetNonInstancedMap(map), ref pos, null);
 		}
 
 		/// <summary>
-		/// Teleports the owner to the given position in the given region.
+		/// Teleports the owner to the given position in the given map.
 		/// </summary>
-		/// <param name="region">the target <see cref="Region" /></param>
+		/// <param name="map">the target <see cref="Map" /></param>
 		/// <param name="pos">the target <see cref="Vector3">position</see></param>
-		public void TeleportTo(Region region, ref Vector3 pos)
+		public void TeleportTo(Map map, ref Vector3 pos)
 		{
-			TeleportTo(region, ref pos, null);
+			TeleportTo(map, ref pos, null);
 		}
 
 		/// <summary>
-		/// Teleports the owner to the given position in the given region.
+		/// Teleports the owner to the given position in the given map.
 		/// </summary>
-		/// <param name="region">the target <see cref="Region" /></param>
+		/// <param name="map">the target <see cref="Map" /></param>
 		/// <param name="pos">the target <see cref="Vector3">position</see></param>
-		public void TeleportTo(Region region, Vector3 pos)
+		public void TeleportTo(Map map, Vector3 pos)
 		{
-			TeleportTo(region, ref pos, null);
+			TeleportTo(map, ref pos, null);
 		}
 
 		/// <summary>
@@ -1226,17 +1365,19 @@ namespace WCell.RealmServer.Entities
 		public bool TeleportTo(IWorldLocation location)
 		{
 			var pos = location.Position;
-			var rgn = location.Region;
-			if (rgn == null)
+			var map = location.Map;
+			if (map == null)
 			{
-				if (Region.Id != location.RegionId)
+				if (Map.Id != location.MapId)
 				{
 					return false;
 				}
-				rgn = Region;
+				map = Map;
 			}
 
-			TeleportTo(rgn, ref pos, m_orientation);
+			TeleportTo(map, ref pos, m_orientation);
+			Phase = location.Phase;
+
 			if (location is WorldObject)
 			{
 				Zone = ((WorldObject)location).Zone;
@@ -1245,38 +1386,41 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Teleports the owner to the given position in the given region.
+		/// Teleports the owner to the given position in the given map.
 		/// </summary>
-		/// <param name="region">the target <see cref="Region" /></param>
+		/// <param name="map">the target <see cref="Map" /></param>
 		/// <param name="pos">the target <see cref="Vector3">position</see></param>
 		/// <param name="orientation">the target orientation</param>
-		public void TeleportTo(Region region, Vector3 pos, float? orientation)
+		public void TeleportTo(Map map, Vector3 pos, float? orientation)
 		{
-			TeleportTo(region, ref pos, orientation);
+			TeleportTo(map, ref pos, orientation);
 		}
 
 		/// <summary>
-		/// Teleports the owner to the given position in the given region.
+		/// Teleports the owner to the given position in the given map.
 		/// </summary>
-		/// <param name="region">the target <see cref="Region" /></param>
+		/// <param name="map">the target <see cref="Map" /></param>
 		/// <param name="pos">the target <see cref="Vector3">position</see></param>
 		/// <param name="orientation">the target orientation</param>
-		public void TeleportTo(Region region, ref Vector3 pos, float? orientation)
+		public void TeleportTo(Map map, ref Vector3 pos, float? orientation)
 		{
-			var ownerRegion = m_region;
-			if (region.IsDisposed)
+			var ownerMap = m_Map;
+			if (map.IsDisposed)
 				return;
 
 			// must not be moving or logging out when being teleported
 			CancelMovement();
+			CancelAllActions();
 			if (this is Character)
 			{
+			    MovementHandler.SendStopMovementPacket(this);
+
 				((Character)this).CancelLogout();
 			}
 
-			if (ownerRegion == region)
+			if (ownerMap == map)
 			{
-				if (Region.MoveObject(this, ref pos))
+				if (Map.MoveObject(this, ref pos))
 				{
 					if (orientation.HasValue)
 						Orientation = orientation.Value;
@@ -1292,12 +1436,12 @@ namespace WCell.RealmServer.Entities
 			}
 			else
 			{
-				if (ownerRegion != null && !ownerRegion.IsInContext)
+				if (ownerMap != null && !ownerMap.IsInContext)
 				{
 					var position = pos;
-					ownerRegion.AddMessage(new Message(() => TeleportTo(region, ref position, orientation)));
+					ownerMap.AddMessage(new Message(() => TeleportTo(map, ref position, orientation)));
 				}
-				else if (region.TransferObjectLater(this, pos))
+				else if (map.TransferObjectLater(this, pos))
 				{
 					if (orientation.HasValue)
 					{
@@ -1309,15 +1453,15 @@ namespace WCell.RealmServer.Entities
 						var chr = ((Character)this);
 						chr.LastPosition = pos;
 
-						MovementHandler.SendNewWorld(chr.Client, region.Id, ref pos, Orientation);
+						MovementHandler.SendNewWorld(chr.Client, map.Id, ref pos, Orientation);
 					}
 				}
 				else
 				{
-					// apparently, the target region has a colliding entity ID. this should NEVER 
+					// apparently, the target map has a colliding entity ID. this should NEVER 
 					// happen for any kind of Unit
 
-					log.Error("ERROR: Tried to teleport object, but failed to add player to the new region - " + this);
+					log.Error("ERROR: Tried to teleport object, but failed to add player to the new map - " + this);
 				}
 			}
 		}
@@ -1330,10 +1474,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public int Stealthed
 		{
-			get
-			{
-				return m_stealthed;
-			}
+			get { return m_stealthed; }
 			set
 			{
 				if (m_stealthed != value)
@@ -1341,13 +1482,11 @@ namespace WCell.RealmServer.Entities
 					if (m_stealthed > 0 && value <= 0)
 					{
 						// deactivated stealth
-						ShapeshiftForm = ShapeshiftForm.Normal;
 						StateFlags &= ~StateFlag.Sneaking;
 					}
 					else if (m_stealthed <= 0 && value > 0)
 					{
 						// activated stealth
-						ShapeshiftForm = ShapeshiftForm.Stealth;
 						StateFlags |= StateFlag.Sneaking;
 
 						// some auras don't live through Stealth
@@ -1769,55 +1908,6 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
-		#region Mana Shield
-		/// <summary>
-		/// Amount of remaining mana shield
-		/// </summary>
-		public int ManaShieldAmount
-		{
-			get { return m_ManaShieldAmount; }
-			set { m_ManaShieldAmount = value; }
-		}
-
-		/// <summary>
-		/// Amount of mana to be subtracted for each hit taken
-		/// </summary>
-		public float ManaShieldFactor
-		{
-			get { return m_ManaShieldFactor; }
-			set { m_ManaShieldFactor = value; }
-		}
-
-		/// <summary>
-		/// Drains as much damage from a currently active mana shield as possible.
-		/// Deactivates the mana shield once its used up.
-		/// </summary>
-		/// <param name="damage"></param>
-		public void DrainManaShield(ref int damage)
-		{
-			var power = Power;
-			var amount = damage;
-			if (amount >= m_ManaShieldAmount)
-			{
-				amount = m_ManaShieldAmount;
-				m_auras.RemoveWhere(aura => aura.Spell.HasManaShield);
-			}
-
-			var powerPoints = (int)(power / m_ManaShieldFactor);
-			amount = Math.Min(amount, powerPoints);
-
-			m_ManaShieldAmount -= powerPoints;
-			Power = power - (int)(amount * m_ManaShieldFactor);
-			damage -= amount;
-		}
-
-		public void SetManaShield(float factor, int amount)
-		{
-			m_ManaShieldFactor = factor;
-			m_ManaShieldAmount = amount;
-		}
-		#endregion
-
 		#region Misc
 		public void ResetMechanicDefaults()
 		{
@@ -1825,7 +1915,7 @@ namespace WCell.RealmServer.Entities
 			m_mountMod = 0;
 
 			m_flying = m_waterWalk = m_hovering = m_featherFalling = 0;
-			m_canMove = m_canHarm = m_canInteract = m_canCastSpells = true;
+			m_canMove = m_canHarm = m_canInteract = m_canCastSpells = m_canDoPhysicalActivity = true;
 
 			m_walkSpeed = DefaultWalkSpeed;
 			m_walkBackSpeed = DefaultWalkBackSpeed;
@@ -1838,5 +1928,24 @@ namespace WCell.RealmServer.Entities
 			m_pitchSpeed = DefaulPitchSpeed;
 		}
 		#endregion
+
+		#region Resilience
+		public virtual float GetResiliencePct()
+		{
+			return 0;
+		}
+		#endregion
+
+		public int AttackerSpellCritChancePercentMod
+		{
+			get;
+			set;
+		}
+
+		public int AttackerPhysicalCritChancePercentMod
+		{
+			get;
+			set;
+		}
 	}
 }

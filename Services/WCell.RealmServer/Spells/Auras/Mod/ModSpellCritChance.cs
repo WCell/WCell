@@ -16,6 +16,7 @@
 
 using WCell.Constants;
 using WCell.RealmServer.Entities;
+using WCell.Util;
 
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
@@ -24,26 +25,36 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	/// </summary>
 	public class ModSpellCritChanceHandler : AuraEffectHandler
 	{
-		protected internal override void Apply()
+		private static uint[] AllDamageSchoolSet = Utility.GetSetIndices((uint)DamageSchoolMask.AllSchools);
+
+		protected override void Apply()
 		{
 			var owner = Owner as Character;
 			if (owner != null)
 			{
-				for (var s = DamageSchool.Physical; s < DamageSchool.Count; s++)
+				if (m_spellEffect.MiscValue == 0)
 				{
-					owner.ModSpellCritMod(s, EffectValue);
+					owner.ModCritMod(AllDamageSchoolSet, EffectValue);
+				}
+				else
+				{
+					owner.ModCritMod(m_spellEffect.MiscBitSet, EffectValue);
 				}
 			}
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			var owner = Owner as Character;
 			if (owner != null)
 			{
-				for (var s = DamageSchool.Physical; s < DamageSchool.Count; s++)
+				if (m_spellEffect.MiscValue == 0)
 				{
-					owner.ModSpellCritMod(s, -EffectValue);
+					owner.ModCritMod(AllDamageSchoolSet, -EffectValue);
+				}
+				else
+				{
+					owner.ModCritMod(m_spellEffect.MiscBitSet, -EffectValue);
 				}
 			}
 		}

@@ -13,7 +13,7 @@ namespace WCell.RealmServer.Quests
 		{
 			QuestId = qt.Id;
 			//Status = QuestMgr.GetQuestStatus(qt,) // kua jak do tohohle?
-			Title = qt.Title;
+			Title = qt.DefaultTitle;
 		}
 	}
 }

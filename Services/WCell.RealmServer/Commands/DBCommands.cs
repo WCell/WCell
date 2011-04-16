@@ -32,7 +32,7 @@ namespace WCell.RealmServer.Commands
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
 				trigger.Reply("Recreating Database Schema...");
-				DatabaseUtil.RecreateSchema();
+				DatabaseUtil.CreateSchema();
 				trigger.Reply("Done.");
 			}
 		}
@@ -49,7 +49,7 @@ namespace WCell.RealmServer.Commands
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
 				var settings = DatabaseUtil.Settings;
-				var session = DatabaseUtil.Session.GetSession();
+				var session = DatabaseUtil.Session;
 
 				trigger.Reply("DB Provider: " + settings.Dialect.GetType().Name);
 				trigger.Reply(" State: " + session.Connection.State);

@@ -30,13 +30,11 @@ namespace WCell.RealmServer.Taxi
 	/// </summary>
 	public static class TaxiMgr
 	{
-		private static Logger sLog = LogManager.GetCurrentClassLogger();
-
 		/// <summary>
-		/// The delay in seconds between position updates of Units that are on Taxis.
+		/// The delay in millis between position updates of Units that are on Taxis.
 		/// </summary>
 		[Variable("TaxiInterpolationMillis")]
-		public static int InterpolationDelay = 400;
+		public static int InterpolationDelayMillis = 800;
 
 		private static int airSpeed = 32;
 
@@ -97,13 +95,13 @@ namespace WCell.RealmServer.Taxi
 		{
 			init = true;
 			var taxiNodeReader = new MappedDBCReader<PathNode, DBCTaxiNodeConverter>(
-				RealmServerConfiguration.GetDBCFile("TaxiNodes.dbc"));
+                RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_TAXINODES));
 
 			var taxiPathReader = new MappedDBCReader<TaxiPath, DBCTaxiPathConverter>(
-				RealmServerConfiguration.GetDBCFile("TaxiPath.dbc"));
+				RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_TAXIPATHES));
 
 			TaxiVertexReader = new MappedDBCReader<PathVertex, DBCTaxiPathNodeConverter>(
-				RealmServerConfiguration.GetDBCFile("TaxiPathNode.dbc"));
+				RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_TAXIPATHNODES));
 
 			foreach (var node in taxiNodeReader.Entries.Values)
 			{
@@ -210,10 +208,10 @@ namespace WCell.RealmServer.Taxi
 
 				path.PathLength = totalLength;
 				path.PathTime = (uint)((totalLength * 1000) / AirSpeed);
-				var region = path.From.Region;
-				if (region != null && region.FirstTaxiNode == null)
+				var map = path.From.Map;
+				if (map != null && map.FirstTaxiNode == null)
 				{
-					region.FirstTaxiNode = path.From;
+					map.FirstTaxiNode = path.From;
 				}
 			}
 		}
@@ -239,7 +237,7 @@ namespace WCell.RealmServer.Taxi
 				if (node == null)
 					continue;
 
-				var temp = node.Position.GetDistanceSquared(ref pos);
+				var temp = node.Position.DistanceSquared(ref pos);
 				if (temp < distSq)
 				{
 					distSq = temp;
@@ -278,7 +276,7 @@ namespace WCell.RealmServer.Taxi
 				return false;
 			}
 
-			if (vendor == null || !vendor.CanInteractWith(chr))
+			if (vendor == null || !vendor.CheckVendorInteraction(chr))
 			{
 				TaxiHandler.SendActivateTaxiReply(client, TaxiActivateResponse.NotAvailable);
 			}
@@ -357,14 +355,14 @@ namespace WCell.RealmServer.Taxi
 			}
 
 			// Cheat check -- can't fly from a node across the continent
-			if (sourceNode.MapId != curChar.Region.Id)
+			if (sourceNode.MapId != curChar.Map.Id)
 			{
 				TaxiHandler.SendActivateTaxiReply(client, TaxiActivateResponse.NoPathNearby);
 				return false;
 			}
 
 			// Cheat check -- can't fly while trading
-			if (curChar.TradeInfo != null)
+			if (curChar.TradeWindow != null)
 			{
 				TaxiHandler.SendActivateTaxiReply(client, TaxiActivateResponse.PlayerBusy);
 				return false;
@@ -498,7 +496,7 @@ namespace WCell.RealmServer.Taxi
 			{
 				if (IsNormalSpeed)
 				{
-					unit.Region.MoveObject(unit, latestVertex.Pos);
+					unit.Map.MoveObject(unit, latestVertex.Pos);
 				}
 				else
 				{
@@ -571,10 +569,10 @@ namespace WCell.RealmServer.Taxi
 		/// Interpolates the position of the given Unit along the Path given the elapsed flight time.
 		/// </summary>
 		/// <param name="elapsedTime">Time that elapsed since the given unit passed by the last PathVertex</param>
-		internal static void InterpolatePosition(Unit unit, float elapsedTime)
+		internal static void InterpolatePosition(Unit unit, int elapsedTime)
 		{
 			var latestNode = unit.LatestTaxiPathNode;
-			unit.taxiTime += InterpolationDelay;
+			unit.taxiTime += elapsedTime;
 
 			if (latestNode.Next == null)
 			{
@@ -585,6 +583,8 @@ namespace WCell.RealmServer.Taxi
 
 			while (latestNode.Next.Value.TimeFromStart <= unit.taxiTime)
 			{
+				// arrived at a node
+
 				//if (unit is Character)
 				//{
 				//    var chr = (Character) unit;
@@ -619,7 +619,7 @@ namespace WCell.RealmServer.Taxi
 
 			var pos = prevPathNode.Pos +
 					  (((nextPathNode.Pos - prevPathNode.Pos) * timeDelta) / nextPathNode.TimeFromPrevious);
-			unit.Region.MoveObject(unit, ref pos);
+			unit.Map.MoveObject(unit, ref pos);
 		}
 	}
 }

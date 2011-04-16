@@ -17,6 +17,18 @@ namespace WCell.RealmServer.AI.Actions.States
 			}
 		}
 
+		protected override void OnLostTarget()
+		{
+			m_target = m_owner.Master;
+			if (m_target == null)
+			{
+				//log.Warn(GetType().Name + ": " + m_owner + " has no Master.");
+				Stop();
+				m_owner.Brain.EnterDefaultState();
+				return;
+			}
+		}
+
 		public override UpdatePriority Priority
 		{
 			get { return UpdatePriority.LowPriority; }

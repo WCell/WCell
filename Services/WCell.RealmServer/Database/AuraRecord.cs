@@ -3,6 +3,7 @@ using Cell.Core;
 using WCell.Constants.Spells;
 using WCell.Core;
 using WCell.Core.Database;
+using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Spells;
@@ -29,16 +30,21 @@ namespace WCell.RealmServer.Database
 		public static AuraRecord ObtainAuraRecord(Aura aura)
 		{
 			var record = AuraRecordPool.Obtain();
-			record.New = true;
+			record.State = RecordState.New;
 			record.RecordId = NextId();
 			record.SyncData(aura);
 
 			return record;
 		}
 
+		public static AuraRecord[] LoadAuraRecords(uint lowId)
+		{
+			return FindAllByProperty("m_OwnerId", (int)lowId);
+		}
+
 		public AuraRecord(Aura aura)
 		{
-			New = true;
+			State = RecordState.New;
 			RecordId = NextId();
 
 			SyncData(aura);
@@ -51,7 +57,7 @@ namespace WCell.RealmServer.Database
 		public void SyncData(Aura aura)
 		{
 			OwnerId = aura.Auras.Owner.EntityId.Low;
-			CasterId = (long)aura.CasterInfo.CasterId.Full;
+			CasterId = (long)aura.CasterReference.EntityId.Full;
 			Level = aura.Level;
 			m_spell = aura.Spell;
 			if (aura.HasTimeout)
@@ -138,15 +144,15 @@ namespace WCell.RealmServer.Database
 			set;
 		}
 
-		public CasterInfo GetCasterInfo(Region region)
+		public ObjectReference GetCasterInfo(Map map)
 		{
 			var id = new EntityId((ulong)CasterId);
-			var caster = region.GetObject(id);
+			var caster = map.GetObject(id);
 			if (caster != null)
 			{
-				return caster.CasterInfo;
+				return caster.SharedReference;
 			}
-			return new CasterInfo(id, Level);
+			return new ObjectReference(id, Level);
 		}
 
 		public override void Delete()

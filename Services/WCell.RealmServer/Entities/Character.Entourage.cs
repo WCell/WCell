@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,6 +6,7 @@ using WCell.Constants;
 using WCell.Constants.GameObjects;
 using WCell.Core;
 using WCell.RealmServer.Handlers;
+using WCell.RealmServer.Modifiers;
 using WCell.RealmServer.NPCs.Pets;
 using WCell.RealmServer.NPCs;
 using WCell.RealmServer.Database;
@@ -13,6 +14,7 @@ using WCell.Constants.NPCs;
 using WCell.Constants.Pets;
 using WCell.Util.Graphics;
 using Castle.ActiveRecord;
+
 
 namespace WCell.RealmServer.Entities
 {
@@ -25,48 +27,6 @@ namespace WCell.RealmServer.Entities
 		protected NPC m_activePet;
 		protected NPCCollection m_minions;
 		protected NPC[] m_totems;
-
-		/// <summary>
-		/// Currently active Pet of this Character
-		/// </summary>
-		public NPC ActivePet
-		{
-			get { return m_activePet; }
-			set
-			{
-				if (value == m_activePet) return;
-
-				if (m_activePet != null)
-				{
-					LosePet();
-				}
-
-				if (IsPetActive = value != null)
-				{
-					value.PetRecord.IsActivePet = true;
-					m_record.PetEntryId = value.Entry.NPCId;
-
-					if (value.SpecProfile != null)
-					{
-						TalentHandler.SendTalentGroupList(value);
-					}
-
-					m_activePet = value;
-
-					AddPostUpdateMessage(() =>
-					{
-						if (m_activePet == value)
-						{
-							PetHandler.SendSpells(this, m_activePet, PetAction.Follow);
-						}
-					});
-				}
-				else
-				{
-					UnsetActivePet();
-				}
-			}
-		}
 
 		/// <summary>
 		/// Action-information of previously summoned pets
@@ -100,6 +60,59 @@ namespace WCell.RealmServer.Entities
 			get { return m_totems; }
 		}
 
+		#region ActivePet
+		/// <summary>
+		/// Currently active Pet of this Character (the one with the action bar)
+		/// </summary>
+		public NPC ActivePet
+		{
+			get { return m_activePet; }
+			set
+			{
+				if (value == m_activePet) return;
+
+				if (m_activePet != null)
+				{
+					m_activePet.Delete();
+				}
+
+				if (IsPetActive = value != null)
+				{
+					value.PetRecord.IsActivePet = true;
+					m_record.PetEntryId = value.Entry.NPCId;
+
+					m_activePet = value;
+
+					if (m_activePet.PetRecord.ActionButtons == null)
+					{
+						m_activePet.PetRecord.ActionButtons = m_activePet.BuildPetActionBar();
+					}
+
+					AddPostUpdateMessage(() =>
+					{
+						if (m_activePet == value && m_activePet.IsInContext)
+						{
+							PetHandler.SendSpells(this, m_activePet, PetAction.Follow);
+							PetHandler.SendPetGUIDs(this);
+							m_activePet.OnBecameActivePet();
+						}
+					});
+				}
+				else
+				{
+					Summon = EntityId.Zero;
+					if (Charm == m_activePet)
+					{
+						Charm = null;
+					}
+					m_record.PetEntryId = 0;
+					PetHandler.SendEmptySpells(this);
+					PetHandler.SendPetGUIDs(this);
+					m_activePet = null;
+				}
+			}
+		}
+
 		/// <summary>
 		/// Lets the ActivePet appear/disappear (if this Character has one)
 		/// </summary>
@@ -119,19 +132,62 @@ namespace WCell.RealmServer.Entities
 				else
 				{
 					// Pet disappears
-					m_activePet.RemoveFromRegion();
+					m_activePet.RemoveFromMap();
 				}
 				m_record.IsPetActive = value;
 			}
 		}
 
-		#region Taming and Spawning Pets
-		public int StableSlotCount
+		/// <summary>
+		/// Dismisses the current pet
+		/// </summary>
+		public void DismissActivePet()
 		{
-			get { return Record.StableSlotCount; }
-			set { Record.StableSlotCount = value; }
+			if (m_activePet == null) return;
+			if (m_activePet.IsSummoned)
+			{
+				// delete entirely
+				AbandonActivePet();
+			}
+			else
+			{
+				// just set inactive
+				IsPetActive = false;
+			}
 		}
 
+		/// <summary>
+		/// ActivePet is about to be abandoned
+		/// </summary>
+		public void AbandonActivePet()
+		{
+			if (m_activePet.IsInWorld && m_activePet.IsHunterPet && !m_activePet.PetRecord.IsStabled)
+			{
+				m_activePet.RejectMaster();
+				m_activePet.IsDecaying = true;
+			}
+			else
+			{
+				m_activePet.Delete();
+			}
+		}
+
+		/// <summary>
+		/// Simply unsets the currently active pet without deleting or abandoning it.
+		/// Make sure to take care of the pet when calling this method.
+		/// </summary>
+		void UnsetActivePet()
+		{
+			if (m_activePet != null)
+			{
+			}
+		}
+		#endregion
+
+		#region Taming and Spawning Pets
+		/// <summary>
+		/// Amount of stabled pets + active pet (if any)
+		/// </summary>
 		public int TotalPetCount
 		{
 			get { return (m_activePet != null ? 1 : 0) + (m_StabledPetRecords != null ? m_StabledPetRecords.Count : 0); }
@@ -148,7 +204,7 @@ namespace WCell.RealmServer.Entities
 			{
 				if (m_StabledPetRecords == null)
 				{
-					m_StabledPetRecords = new List<PermanentPetRecord>(PetConstants.MaxStableSlots);
+					m_StabledPetRecords = new List<PermanentPetRecord>(PetMgr.MaxStableSlots);
 				}
 				return m_StabledPetRecords;
 			}
@@ -197,10 +253,10 @@ namespace WCell.RealmServer.Entities
 				pet.EntityId = new EntityId(NPCMgr.GenerateUniqueLowId(), record.PetNumber, HighId.UnitPet);
 			}
 
-			OnNewPet(pet);
+			InitializeMinion(pet);
 			if (IsPetActive)
 			{
-				m_region.AddObject(pet);
+				m_Map.AddObject(pet);
 			}
 			return pet;
 		}
@@ -224,24 +280,27 @@ namespace WCell.RealmServer.Entities
 		{
 			Enslave(minion, durationMillis);
 
-			minion.PetRecord = PetMgr.CreatePermanentPetRecord(minion.Entry, m_record.EntityLowId);
-			OnNewPet(minion);
+			minion.MakePet(m_record.EntityLowId);
+			m_record.PetCount++;
 
-			// If a hunter tames a pet that is more than five levels beneath their own 
-			// level, the pet will then have their level increased to five levels beneath 
-			// the hunter’s own level. 
-			if ((Level - minion.Level) > 5)
+			InitializeMinion(minion);
+
+			// Set the correct pet level
+			if (minion.Level < Level - PetMgr.MaxHunterPetLevelDifference)
 			{
-				var targetLevel = Level - 5;
-				while (minion.Level < targetLevel)
-				{
-					minion.PetExperience = minion.PetNextLevelExp;
-					minion.TryPetLevelUp();
-				}
+				minion.Level = Level - PetMgr.MaxHunterPetLevelDifference;
+			}
+			else if (minion.Level > Level)
+			{
+				minion.Level = Level;
 			}
 		}
 
-		void OnNewPet(NPC pet)
+		/// <summary>
+		/// Is called when this Character gets a new minion or pet or when
+		/// he changes his ActivePet to the given one.
+		/// </summary>
+		void InitializeMinion(NPC pet)
 		{
 			Summon = pet.EntityId;
 			pet.Summoner = this;
@@ -249,76 +308,26 @@ namespace WCell.RealmServer.Entities
 			pet.PetRecord.SetupPet(pet);
 			pet.SetPetAttackMode(pet.PetRecord.AttackMode);
 
-			if (pet.PetRecord is SummonedPetRecord)
-			{
-				m_record.PetSummonedCount++;
-			}
-			else
-			{
-				m_record.PetCount++;
-			}
-
 			ActivePet = pet;
+
+			for (var s = DamageSchool.Physical; s < DamageSchool.Count; s++)
+			{
+				// update all resistances
+				pet.UpdatePetResistance(s);
+			}
 		}
 		#endregion
 
-		/// <summary>
-		/// Dismisses (or deletes entirely) the current pet
-		/// </summary>
-		public void DismissPet()
-		{
-			if (m_activePet == null) return;
-			if (m_activePet.IsSummoned)
-			{
-				// delete entirely
-				ActivePet = null;
-			}
-			else
-			{
-				// just set inactive
-				IsPetActive = false;
-			}
-		}
-
-		private void LosePet()
-		{
-			if (m_activePet.IsInWorld && m_activePet == m_charm && !m_activePet.PetRecord.IsStabled)
-			{
-				m_activePet.RejectMaster();
-				m_activePet.IsDecaying = true;
-			}
-			else
-			{
-				m_activePet.Delete();
-				// TODO: loose happiness
-			}
-			m_record.PetCount--;
-		}
-
-		/// <summary>
-		/// Simply unsets the currently active pet without deleting or abandoning it.
-		/// Make sure to take care of the pet when calling this method.
-		/// </summary>
-		public void UnsetActivePet()
-		{
-			if (m_activePet != null)
-			{
-				if (m_activePet.IsInWorld)
-				{
-					m_activePet.Summoner = null;
-				}
-				Summon = EntityId.Zero;
-				if (Charm == m_activePet)
-				{
-					Charm = null;
-				}
-				m_record.PetEntryId = 0;
-				PetHandler.SendEmptySpells(this);
-				m_activePet = null;
-			}
-		}
-
 		#region Stabling
+		/// <summary>
+		/// Amount of purchased stable slots
+		/// </summary>
+		public int StableSlotCount
+		{
+			get { return Record.StableSlotCount; }
+			set { Record.StableSlotCount = value; }
+		}
+
 		public PermanentPetRecord GetStabledPet(uint petNumber)
 		{
 			if (m_StabledPetRecords == null)
@@ -353,7 +362,6 @@ namespace WCell.RealmServer.Entities
 		public void StablePet()
 		{
 			var pet = ActivePet;
-			StabledPetRecords.Add(pet.PermanentPetRecord);
 			pet.PermanentPetRecord.StabledSince = DateTime.Now;
 
 			// Always set the stabled flag before changing the ActivePet 
@@ -402,7 +410,6 @@ namespace WCell.RealmServer.Entities
 			// Always set the stabled flag before changing the ActivePet 
 			// or the pet will be deleted!
 			record.IsStabled = true;
-			StabledPetRecords.Add(record);
 			DeStablePet(stabledPermanentPet);
 			return true;
 		}
@@ -413,12 +420,12 @@ namespace WCell.RealmServer.Entities
 		/// <returns>True if successful.</returns>
 		public bool TryBuyStableSlot()
 		{
-			if (StableSlotCount >= PetConstants.MaxStableSlots)
+			if (StableSlotCount >= PetMgr.MaxStableSlots)
 			{
 				return false;
 			}
 
-			var price = PetMgr.StableSlotPrices[StableSlotCount];
+			var price = PetMgr.GetStableSlotPrice(StableSlotCount);
 			if (Money < price)
 			{
 				return false;
@@ -459,10 +466,7 @@ namespace WCell.RealmServer.Entities
 					{
 						activePetRecord = pet;
 					}
-					else
-					{
-						StabledPetRecords.Add(pet);
-					}
+					StabledPetRecords.Add(pet);
 				}
 			}
 
@@ -476,14 +480,20 @@ namespace WCell.RealmServer.Entities
 					if (entry == null)
 					{
 						log.Warn("{0} has invalid PetEntryId: {1} ({2})", this, m_record.PetEntryId, (uint)m_record.PetEntryId);
-						return;
+
+						// put back for later (maybe NPCs were not loaded or loaded incorrectly):
+						AddPetRecord(activePetRecord);
 					}
-					SpawnActivePet(activePetRecord);
+					else
+					{
+						SpawnActivePet(activePetRecord);
+					}
 				}
 				else
 				{
 					// active Pet does not exist in DB
 					m_record.PetEntryId = 0;
+					m_record.IsPetActive = false;
 				}
 			}
 		}
@@ -500,6 +510,22 @@ namespace WCell.RealmServer.Entities
 				pet.Health = petSettings.PetHealth;
 				pet.Power = petSettings.PetPower;
 			});
+		}
+
+		void AddPetRecord(IPetRecord record)
+		{
+			if (record is SummonedPetRecord)
+			{
+				SummonedPetRecords.Add((SummonedPetRecord) record);
+			}
+			else if (record is PermanentPetRecord)
+			{
+				StabledPetRecords.Add((PermanentPetRecord)record);
+			}
+			else
+			{
+				log.Warn("Unclassified PetRecord: " + record);
+			}
 		}
 
 		internal void SaveEntourage()
@@ -533,26 +559,15 @@ namespace WCell.RealmServer.Entities
 		#endregion
 
 		#region Talents
-		public void ResetPetTalents()
-		{
-			if (m_activePet == null) return;
-
-			var price = GodMode ? 0 : m_activePet.Talents.ResetAllPrice;
-			if (Money < price) return;
-
-			m_activePet.Talents.ResetAll();
-			m_activePet.ResetFreeTalentPoints();
-			m_activePet.LastTalentResetTime = DateTime.Now;
-			m_activePet.TalentResetPriceTier++;
-			Money -= price;
-		}
-
 		public bool CanControlExoticPets
 		{
 			get;
 			set;
 		}
 
+		/// <summary>
+		/// TODO: This seems awfully unsafe and inconsistent
+		/// </summary>
 		public int PetBonusTalentPoints
 		{
 			get { return m_petBonusTalentPoints; }
@@ -600,22 +615,17 @@ namespace WCell.RealmServer.Entities
 		//        }
 		//    }
 		//}
-
-		public PetTalentType PetTalentType
-		{
-			get { return PetTalentType.None; }
-		}
 		#endregion
 
 		#region Records
-		public SummonedPetRecord GetOrCreateSummonedPetRecord(NPCEntry entry)
+		internal SummonedPetRecord GetOrCreateSummonedPetRecord(NPCEntry entry)
 		{
 			var record = GetOrCreatePetRecord(entry, SummonedPetRecords);
 			record.PetNumber = (uint)PetMgr.PetNumberGenerator.Next();
 			return record;
 		}
 
-		public T GetOrCreatePetRecord<T>(NPCEntry entry, IList<T> list)
+		internal T GetOrCreatePetRecord<T>(NPCEntry entry, IList<T> list)
 			where T : IPetRecord, new()
 		{
 			foreach (var record in list)
@@ -625,16 +635,25 @@ namespace WCell.RealmServer.Entities
 					return record;
 				}
 			}
+
+			if (typeof(T) == typeof(SummonedPetRecord))
+			{
+				m_record.PetSummonedCount++;
+			}
+			else
+			{
+				m_record.PetCount++;
+			}
 			return PetMgr.CreateDefaultPetRecord<T>(entry, m_record.EntityLowId);
 		}
 
 		#endregion
 
 		#region Minion Events
-		protected internal override void OnMinionEnteredRegion(NPC minion)
+		protected internal override void OnMinionEnteredMap(NPC minion)
 		{
-			base.OnMinionEnteredRegion(minion);
-			if (minion.Entry.Type == NPCType.Totem)
+			base.OnMinionEnteredMap(minion);
+			if (minion.Entry.Type == CreatureType.Totem)
 			{
 				if (m_totems == null)
 				{
@@ -658,9 +677,9 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
-		protected internal override void OnMinionLeftRegion(NPC minion)
+		protected internal override void OnMinionLeftMap(NPC minion)
 		{
-			base.OnMinionLeftRegion(minion);
+			base.OnMinionLeftMap(minion);
 			if (minion == m_activePet)
 			{
 				if (m_activePet.PetRecord != null)
@@ -669,7 +688,7 @@ namespace WCell.RealmServer.Entities
 					((ActiveRecordBase)m_activePet.PetRecord).SaveLater();
 				}
 			}
-			else if (minion.Entry.Type == NPCType.Totem)
+			else if (minion.Entry.Type == CreatureType.Totem)
 			{
 				if (m_totems != null)
 				{
@@ -705,16 +724,6 @@ namespace WCell.RealmServer.Entities
 		#endregion
 
 		#region GOs
-		public void AddOwnedGO(GameObject go)
-		{
-			if (m_ownedGOs == null)
-			{
-				m_ownedGOs = new List<GameObject>();
-			}
-			go.Master = this;
-			m_ownedGOs.Add(go);
-		}
-
 		public bool OwnsGo(GOEntryId goId)
 		{
 			if (m_ownedGOs == null)
@@ -784,8 +793,17 @@ namespace WCell.RealmServer.Entities
 				}
 			}
 		}
+		internal void AddOwnedGO(GameObject go)
+		{
+			if (m_ownedGOs == null)
+			{
+				m_ownedGOs = new List<GameObject>();
+			}
+			go.Master = this;
+			m_ownedGOs.Add(go);
+		}
 
-		public void OnOwnedGODestroyed(GameObject go)
+		internal void OnOwnedGODestroyed(GameObject go)
 		{
 			if (m_ownedGOs != null)
 			{

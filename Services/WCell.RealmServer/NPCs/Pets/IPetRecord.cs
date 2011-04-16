@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,11 +17,6 @@ namespace WCell.RealmServer.NPCs.Pets
 			get;
 			set;
 		}
-
-        PetType Type
-        {
-            get; set;
-        }
 
 		NPCId EntryId
 		{
@@ -59,15 +54,6 @@ namespace WCell.RealmServer.NPCs.Pets
 			set;
 		}
 
-		/// <summary>
-		/// TODO: Save to DB (uint array)
-		/// </summary>
-		PetActionEntry[] Actions
-		{
-			get;
-			set;
-		}
-
 		PetState PetState
 		{
 			get;
@@ -95,6 +81,12 @@ namespace WCell.RealmServer.NPCs.Pets
 		bool IsDirty
 		{
 			get;
+		}
+
+		uint[] ActionButtons
+		{
+			get;
+			set;
 		}
 
 		void Save();

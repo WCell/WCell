@@ -39,11 +39,6 @@ namespace WCell.RealmServer.Spells.Effects
 		{
 		}
 
-		public override ObjectTypes CasterType
-		{
-			get { return ObjectTypes.Unit; }
-		}
-
 		public override bool HasOwnTargets
 		{
 			get { return false; }

@@ -7,27 +7,31 @@
     <Flat Name="SubClass" Column="subclass" />
     <FlatArray Name="Names">
       <Column Name="name" />
+      <Column Name="name_loc1" Table="locales_item" />
       <Column Name="name_loc2" Table="locales_item" />
       <Column Name="name_loc3" Table="locales_item" />
       <Column Name="name_loc4" Table="locales_item" />
       <Column Name="name_loc5" Table="locales_item" />
       <Column Name="name_loc6" Table="locales_item" />
       <Column Name="name_loc7" Table="locales_item" />
-      <Column Name="name_loc8" Table="locales_item" />
+      <!--<Column Name="name_loc8" Table="locales_item" />-->
     </FlatArray>
     <FlatArray Name="Description">
       <Column Name="description" />
+      <Column Name="description_loc1" Table="locales_item" />
       <Column Name="description_loc2" Table="locales_item" />
       <Column Name="description_loc3" Table="locales_item" />
       <Column Name="description_loc4" Table="locales_item" />
       <Column Name="description_loc5" Table="locales_item" />
       <Column Name="description_loc6" Table="locales_item" />
       <Column Name="description_loc7" Table="locales_item" />
-      <Column Name="description_loc8" Table="locales_item" />
+      <!--<Column Name="description_loc8" Table="locales_item" />-->
     </FlatArray>
     <Flat Name="DisplayId" Column="displayid" />
+    <Flat Name="Unk0" Column="unk0" />
     <Flat Name="Quality" Column="Quality" />    
     <Flat Name="Flags" Column="Flags" />
+    <Flat Name="Flags2" Column="Flags2" />
     <!--<Flat Name="Faction" Column="Faction" />-->
     <Flat Name="BuyStackSize" Column="BuyCount" />
     <Flat Name="BuyPrice" Column="BuyPrice" />
@@ -51,6 +55,8 @@
       <Flat Name="Type" Pattern="stat_type{#}" Offset="1" />
       <Flat Name="Value" Pattern="stat_value{#}" Offset="1" />
     </NestedArray>
+    <Flat Name="ScalingStatDistributionId" Column="ScalingStatDistribution"/>
+    <Flat Name="ScalingStatValueFlags" Column="ScalingStatValue"/>
     <!--all damages got removed in 381 apart from dmg_min1, dmg_max1, dmg_type1, dmg_min2, dmg_max2, dmg_type2-->
     <NestedArray Name="Damages">
       <Flat Name="Minimum" Pattern="dmg_min{#}" Offset="1" />
@@ -92,7 +98,7 @@
     <Flat Name="ZoneId" Column="area" />
     <Flat Name="MapId" Column="Map" />
     <Flat Name="BagFamily" Column="BagFamily" />
-    <Flat Name="TotemCategory" Column="TotemCategory" />
+    <Flat Name="TotemCategory" Column="ToolCategory" />
     <NestedArray Name="Sockets">
       <Flat Name="Color" Pattern="socketColor_{#}" Offset="1" />
       <Flat Name="Content" Pattern="SocketContent_{#}" Offset="1" />
@@ -104,7 +110,9 @@
     <Flat Name="Duration" Column="Duration" />
     <Flat Name="FoodType" Column="FoodType" />
 <!--<Flat Name="RequiredTargetType" Column="type" Table="item_required_target"/>
-    <Flat Name="RequiredTargetId" Column="targetEntry" Table="item_required_target"/> 
+    <Flat Name="RequiredTargetId" Column="targetEntry" Table="item_required_target"/>
+    <Flat Name="ItemLimitCategoryId" Column="ItemLimitCategory"/>
+    <Flat Name="HolidayId" Column="HolidayId"/>
     
     These two don't seem to be in UDB
 -->
@@ -119,17 +127,12 @@
 -->
 
 <!--extra in UDB
-    unk0
     ExtraFlags
     name
     requiredspell
     stackable = StackSize
-    ScalingStatDistribution
-    ScalingStatValue
     spellppmRate_{#}
     LanguageId
-    ItemLimitCategory
-    HolidayId
     ScriptName
     DisenchantID
     minMoneyLoot

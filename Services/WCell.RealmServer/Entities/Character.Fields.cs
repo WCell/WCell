@@ -3,7 +3,7 @@
  *   file		: Owner.Fields.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
- *   last changed	: $LastChangedDate: 2010-02-20 06:16:32 +0100 (lø, 20 feb 2010) $
+ *   last changed	: $LastChangedDate: 2010-02-20 06:16:32 +0100 (l? 20 feb 2010) $
  *   last author	: $LastChangedBy: dominikseifert $
  *   revision		: $Rev: 1257 $
  *
@@ -17,14 +17,19 @@
 using System;
 using System.Collections.Generic;
 using WCell.Constants;
+using WCell.Constants.Achievements;
+using WCell.Constants.ArenaTeams;
 using WCell.Constants.Items;
 using WCell.Constants.Misc;
+using WCell.Constants.NPCs;
 using WCell.Constants.Quests;
+using WCell.Constants.Skills;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.Constants.World;
 using WCell.Core.Timers;
 using WCell.RealmServer.AreaTriggers;
+using WCell.RealmServer.ArenaTeams;
 using WCell.RealmServer.Chat;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Factions;
@@ -54,7 +59,10 @@ using WCell.RealmServer.Taxi;
 using WCell.Core;
 using WCell.RealmServer.Battlegrounds;
 using WCell.RealmServer.NPCs.Vehicles;
+using WCell.RealmServer.Trade;
 using WCell.Util.Graphics;
+using WCell.RealmServer.Achievements;
+using WCell.RealmServer.Titles;
 
 namespace WCell.RealmServer.Entities
 {
@@ -72,14 +80,14 @@ namespace WCell.RealmServer.Entities
 		/// All objects that are currently visible by this Character.
 		/// Don't manipulate this collection.
 		/// </summary>
-		/// <remarks>Requires region context.</remarks>
-		public readonly HashSet<WorldObject> KnownObjects = new HashSet<WorldObject>();
+		/// <remarks>Requires map context.</remarks>
+		internal HashSet<WorldObject> KnownObjects = WorldObjectSetPool.Obtain();
 
 		/// <summary>
 		/// All objects that are currently in BroadcastRadius of this Character.
 		/// Don't manipulate this collection.
 		/// </summary>
-		/// <remarks>Requires region context.</remarks>
+		/// <remarks>Requires map context.</remarks>
 		public readonly ICollection<WorldObject> NearbyObjects = new List<WorldObject>();
 
 		protected TimerEntry m_logoutTimer;
@@ -95,6 +103,7 @@ namespace WCell.RealmServer.Entities
 		protected GroupUpdateFlags m_groupUpdateFlags = GroupUpdateFlags.None;
 
 		protected GuildMember m_guildMember;
+		protected ArenaTeamMember[] m_arenaTeamMember = new ArenaTeamMember[3];
 
 		/// <summary>
 		/// All skills of this Character
@@ -105,6 +114,8 @@ namespace WCell.RealmServer.Entities
 		/// All talents of this Character
 		/// </summary>
 		protected TalentCollection m_talents;
+
+		protected AchievementCollection m_achievements;
 
 		protected PlayerInventory m_inventory;
 
@@ -172,7 +183,9 @@ namespace WCell.RealmServer.Entities
 		private LooterEntry m_looterEntry;
 		private ExtraInfo m_ExtraInfo;
 
-		protected TradeInfo m_TradeInfo;
+		protected TradeWindow m_tradeWindow;
+
+		protected DateTime m_lastPvPUpdateTime;
 		#endregion
 
 		/// <summary>
@@ -347,7 +360,7 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Totally smashed
+		/// 100 Totally smashed
 		/// 60 Drunk
 		/// 30 Tipsy
 		/// </summary>
@@ -461,7 +474,7 @@ namespace WCell.RealmServer.Entities
 			set { SetUInt32(PlayerFields.FLAGS, (uint)value); }
 		}
 
-		public int XP
+		public int Experience
 		{
 			get { return GetInt32(PlayerFields.XP); }
 			set { SetInt32(PlayerFields.XP, value); }
@@ -559,10 +572,10 @@ namespace WCell.RealmServer.Entities
 			set { SetInt32(PlayerFields.WATCHED_FACTION_INDEX, value); }
 		}
 
-		public uint ChosenTitle
+		public TitleBitId ChosenTitle
 		{
-			get { return GetUInt32(PlayerFields.CHOSEN_TITLE); }
-			set { SetUInt32(PlayerFields.CHOSEN_TITLE, value); }
+			get { return (TitleBitId)GetUInt32(PlayerFields.CHOSEN_TITLE); }
+			set { SetUInt32(PlayerFields.CHOSEN_TITLE, (uint)value); }
 		}
 
 		public CharTitlesMask KnownTitleMask
@@ -643,6 +656,11 @@ namespace WCell.RealmServer.Entities
 			internal set { SetUInt32(PlayerFields.GUILDRANK, value); }
 		}
 
+		public void SetArenaTeamInfoField(ArenaTeamSlot slot, ArenaTeamInfoType type, uint value)
+		{
+			SetUInt32((int)PlayerFields.ARENA_TEAM_INFO_1_1 + ((int)slot * (int)ArenaTeamInfoType.ARENA_TEAM_END) + (int)type, value);
+		}
+
 		/// <summary>
 		/// The 3 classmasks of spells to not use require reagents for
 		/// </summary>
@@ -667,18 +685,41 @@ namespace WCell.RealmServer.Entities
 			get { return FactionMgr.Get(Race); }
 		}
 
+		public int ReputationGainModifierPercent { get; set; }
+
+		public int KillExperienceGainModifierPercent { get; set; }
+
+		public int QuestExperienceGainModifierPercent {
+            get
+            {
+                if(Zone.MapId == Constants.World.MapId.Kalimdor || Zone.MapId == MapId.EasternKingdoms)
+                {
+                    return XpGenerator.DefaultXpBaseValueAzeroth;
+                }
+                if(Zone.MapId == Constants.World.MapId.Outland)
+                {
+                    if(Zone.Id == ZoneId.EversongWoods || Zone.Id == ZoneId.Ghostlands)
+                    {
+                        return XpGenerator.DefaultXpBaseValueAzeroth;
+                    }
+                    return XpGenerator.DefaultXpBaseValueOutland;
+                }
+                return XpGenerator.DefaultXpBaseValueNorthrend;
+            }
+		    set { QuestExperienceGainModifierPercent = value; }
+        }
+
 		#region CombatRatings
 
 		/// <summary>
 		/// Gets the total modifier of the corresponding CombatRating (in %) 
-		/// ~MOK: Doubt it's in % (I'm guessing it's the value)
 		/// </summary>
-		public int GetCombatRatingMod(CombatRating rating)
+		public int GetCombatRating(CombatRating rating)
 		{
 			return GetInt32(PlayerFields.COMBAT_RATING_1 - 1 + (int)rating);
 		}
 
-		public void SetCombatRatingMod(CombatRating rating, int value)
+		public void SetCombatRating(CombatRating rating, int value)
 		{
 			SetInt32(PlayerFields.COMBAT_RATING_1 - 1 + (int)rating, value);
 			UpdateChancesByCombatRating(rating);
@@ -689,8 +730,8 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public void ModCombatRating(CombatRating rating, int delta)
 		{
-			var val = GetInt32(PlayerFields.COMBAT_RATING_1 - 1 + (int)rating);
-			SetInt32(PlayerFields.COMBAT_RATING_1 - 1 + (int)rating, val + delta);
+            var val = GetInt32(PlayerFields.COMBAT_RATING_1 - 1 + (int)rating) + delta;
+			SetInt32(PlayerFields.COMBAT_RATING_1 - 1 + (int)rating, val);
 			UpdateChancesByCombatRating(rating);
 		}
 
@@ -704,49 +745,13 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
-		private void UpdateChancesByCombatRating(CombatRating rating)
-		{
-			// TODO: Update influence
-			switch (rating)
-			{
-				case CombatRating.Dodge:
-					UnitUpdates.UpdateDodgeChance(this);
-					break;
-				case CombatRating.Parry:
-					UnitUpdates.UpdateParryChance(this);
-					break;
-				case CombatRating.Block:
-					UnitUpdates.UpdateBlockChance(this);
-					break;
-				case CombatRating.MeleeCritChance:
-					UnitUpdates.UpdateCritChance(this);
-					break;
-				case CombatRating.RangedCritChance:
-					UnitUpdates.UpdateCritChance(this);
-					break;
-				case CombatRating.SpellCritChance:
-					UnitUpdates.UpdateSpellCritChance(this);
-					break;
-				case CombatRating.DefenseSkill:
-					UnitUpdates.UpdateDodgeChance(this);
-					UnitUpdates.UpdateParryChance(this);
-					//UnitUpdates.UpdateDefense
-					break;
-			}
-		}
-
 		#endregion
 
 		#region Tracking of Resources & Creatures
 
-		/// <summary>
-		/// The Aura that activated a Resource- or CreatureTracker (or null if the player is not tracking anything)
-		/// </summary>
-		public Aura CurrentTracker { get; internal set; }
-
-		public CreatureTrackingMask CreatureTracking
+		public CreatureMask CreatureTracking
 		{
-			get { return (CreatureTrackingMask)GetUInt32(PlayerFields.TRACK_CREATURES); }
+			get { return (CreatureMask)GetUInt32(PlayerFields.TRACK_CREATURES); }
 			internal set { SetUInt32(PlayerFields.TRACK_CREATURES, (uint)value); }
 		}
 
@@ -772,7 +777,7 @@ namespace WCell.RealmServer.Entities
 		public uint BlockValue
 		{
 			get { return GetUInt32(PlayerFields.SHIELD_BLOCK); }
-			set { SetUInt32(PlayerFields.SHIELD_BLOCK, value); }
+			internal set { SetUInt32(PlayerFields.SHIELD_BLOCK, value); }
 		}
 
 		/// <summary>
@@ -784,10 +789,10 @@ namespace WCell.RealmServer.Entities
 			set { SetFloat(PlayerFields.DODGE_PERCENTAGE, value); }
 		}
 
-		public float ParryChance
+		public override float ParryChance
 		{
 			get { return GetFloat(PlayerFields.PARRY_PERCENTAGE); }
-			set { SetFloat(PlayerFields.PARRY_PERCENTAGE, value); }
+			internal set { SetFloat(PlayerFields.PARRY_PERCENTAGE, value); }
 		}
 
 		public uint Expertise
@@ -814,18 +819,57 @@ namespace WCell.RealmServer.Entities
 			internal set { SetFloat(PlayerFields.OFFHAND_CRIT_PERCENTAGE, value); }
 		}
 
-		public int GetDamageDoneMod(DamageSchool school)
+		///// <summary>
+		///// Reduces/increases the target chance to dodge the attack
+		///// </summary>
+		//public int TargetDodgeChanceMod
+		//{
+		//    get;
+		//    set;
+		//}
+
+		private int m_OffhandDmgPctMod;
+
+		/// <summary>
+		/// Percent added to offhand damage
+		/// </summary>
+		public int OffhandDmgPctMod
 		{
-			return GetInt32(PlayerFields.MOD_DAMAGE_DONE_POS + (int)school) -
-					GetInt32(PlayerFields.MOD_DAMAGE_DONE_NEG + (int)school);
+			get { return m_OffhandDmgPctMod; }
+			set
+			{
+				m_OffhandDmgPctMod = value;
+				this.UpdateOffHandDamage();
+			}
+		}
+
+		/// <summary>
+		/// Character's hit chance in %
+		/// </summary>
+		public float HitChance
+		{
+			get;
+			set;
+		}
+
+		public float RangedHitChance
+		{
+			get;
+			set;
+		}
+
+		public override uint Defense
+		{
+			get;
+			internal set;
 		}
 		#endregion
 
-		#region Quests
+		#region Quest Fields
 
 		public void ResetQuest(int slot)
 		{
-			var i = slot * 5;
+			var i = slot * QuestConstants.UpdateFieldCountPerQuest;
 			SetUInt32((PlayerFields.QUEST_LOG_1_1 + i), 0);
 			SetUInt32((PlayerFields.QUEST_LOG_1_2 + i), 0);
 			SetUInt32((PlayerFields.QUEST_LOG_1_3 + i), 0);
@@ -839,7 +883,7 @@ namespace WCell.RealmServer.Entities
 		/// <param name="slot">The slot.</param>
 		public uint GetQuestId(int slot)
 		{
-			return GetUInt32(PlayerFields.QUEST_LOG_1_1 + (slot * 5));
+			return GetUInt32(PlayerFields.QUEST_LOG_1_1 + (slot * QuestConstants.UpdateFieldCountPerQuest));
 		}
 
 		/// <summary>
@@ -849,7 +893,7 @@ namespace WCell.RealmServer.Entities
 		/// <param name="questid">The questid.</param>
 		public void SetQuestId(int slot, uint questid)
 		{
-			SetUInt32((PlayerFields.QUEST_LOG_1_1 + (slot * 5)), questid);
+			SetUInt32((PlayerFields.QUEST_LOG_1_1 + (slot * QuestConstants.UpdateFieldCountPerQuest)), questid);
 		}
 
 		/// <summary>
@@ -859,7 +903,7 @@ namespace WCell.RealmServer.Entities
 		/// <returns></returns>
 		public QuestCompleteStatus GetQuestState(int slot)
 		{
-			return (QuestCompleteStatus)GetUInt32(PlayerFields.QUEST_LOG_1_2 + (slot * 5));
+			return (QuestCompleteStatus)GetUInt32(PlayerFields.QUEST_LOG_1_2 + (slot * QuestConstants.UpdateFieldCountPerQuest));
 		}
 
 		/// <summary>
@@ -869,7 +913,7 @@ namespace WCell.RealmServer.Entities
 		/// <param name="completeStatus">The status.</param>
 		public void SetQuestState(int slot, QuestCompleteStatus completeStatus)
 		{
-			SetUInt32((PlayerFields.QUEST_LOG_1_2 + (slot * 5)), (uint)completeStatus);
+			SetUInt32((PlayerFields.QUEST_LOG_1_2 + (slot * QuestConstants.UpdateFieldCountPerQuest)), (uint)completeStatus);
 		}
 
 		/// <summary>
@@ -880,8 +924,18 @@ namespace WCell.RealmServer.Entities
 		/// <param name="value">The value.</param>
 		internal void SetQuestCount(int slot, uint interactionIndex, ushort value)
 		{
-			var field = PlayerFields.QUEST_LOG_1_3 + ((int)interactionIndex >> 1);
-			SetUInt16Low((field + (slot * 5)), value);
+			// each quest has 4 quest counters
+			// each counter has 2 bytes
+			var field = (slot * QuestConstants.UpdateFieldCountPerQuest) + PlayerFields.QUEST_LOG_1_3 + ((int)interactionIndex >> 1);
+			var hiLo = interactionIndex % 2;
+			if (hiLo == 0)
+			{
+				SetUInt16Low(field, value);
+			}
+			else
+			{
+				SetUInt16High(field, value);
+			}
 		}
 
 		/// <summary>
@@ -891,7 +945,7 @@ namespace WCell.RealmServer.Entities
 		/// <returns></returns>
 		internal uint GetQuestTimeLeft(byte slot)
 		{
-			return GetUInt32((PlayerFields.QUEST_LOG_1_4 + (slot * 5)));
+			return GetUInt32(PlayerFields.QUEST_LOG_1_4 + (slot * QuestConstants.UpdateFieldCountPerQuest) );
 		}
 
 		/// <summary>
@@ -900,7 +954,7 @@ namespace WCell.RealmServer.Entities
 		/// <param name="slot">The slot.</param>
 		internal void SetQuestTimeLeft(byte slot, uint timeleft)
 		{
-			SetUInt32((PlayerFields.QUEST_LOG_1_4 + (slot * 5)), timeleft);
+			SetUInt32(PlayerFields.QUEST_LOG_1_4 + (slot * QuestConstants.UpdateFieldCountPerQuest), timeleft);
 		}
 
 		/*
@@ -976,15 +1030,11 @@ namespace WCell.RealmServer.Entities
 
 		#endregion
 
-		#region Combat
-
+		#region Damage
 		/// <summary>
 		/// Modifies the damage for the given school by the given delta.
-		/// Requires a call to <see cref="UnitUpdates.UpdateAllDamages"/> afterwards.
 		/// </summary>
-		/// <param name="school"></param>
-		/// <param name="delta"></param>
-		internal void AddDamageMod(DamageSchool school, int delta)
+		protected internal override void AddDamageDoneModSilently(DamageSchool school, int delta)
 		{
 			PlayerFields field;
 			if (delta == 0)
@@ -998,18 +1048,14 @@ namespace WCell.RealmServer.Entities
 			else
 			{
 				field = PlayerFields.MOD_DAMAGE_DONE_NEG;
-				delta = -delta;
 			}
 			SetInt32(field + (int)school, GetInt32(field + (int)school) + delta);
 		}
 
 		/// <summary>
 		/// Modifies the damage for the given school by the given delta.
-		/// Requires a call to <see cref="UnitUpdates.UpdateAllDamages"/> afterwards.
 		/// </summary>
-		/// <param name="school"></param>
-		/// <param name="delta"></param>
-		internal void RemoveDamageMod(DamageSchool school, int delta)
+		protected internal override void RemoveDamageDoneModSilently(DamageSchool school, int delta)
 		{
 			PlayerFields field;
 			if (delta == 0)
@@ -1023,57 +1069,30 @@ namespace WCell.RealmServer.Entities
 			else
 			{
 				field = PlayerFields.MOD_DAMAGE_DONE_NEG;
-				delta = -delta;
 			}
 			SetUInt32(field + (int)school, GetUInt32(field + (int)school) - (uint)delta);
 		}
 
-		/// <summary>
-		/// Adds/Removes a flat modifier to all of the given damage schools
-		/// </summary>
-		public void AddDamageMod(uint[] schools, int delta)
-		{
-			foreach (var school in schools)
-			{
-				AddDamageMod((DamageSchool)school, delta);
-			}
-			this.UpdateAllDamages();
-		}
-
-		/// <summary>
-		/// Adds/Removes a flat modifier to all of the given damage schools
-		/// </summary>
-		public void RemoveDamageMod(uint[] schools, int delta)
-		{
-			foreach (var school in schools)
-			{
-				RemoveDamageMod((DamageSchool)school, delta);
-			}
-			this.UpdateAllDamages();
-		}
-
-		private void ModDamageBonusPct(DamageSchool school, int delta)
+		protected internal override void ModDamageDoneFactorSilently(DamageSchool school, float delta)
 		{
 			if (delta == 0)
 			{
 				return;
 			}
 			var field = PlayerFields.MOD_DAMAGE_DONE_PCT + (int)school;
-			SetInt32(field, GetInt32(field) + delta);
+			SetFloat(field, GetFloat(field) + delta);
 		}
 
-		/// <summary>
-		/// Adds/Removes a percent modifier to all of the given damage schools
-		/// </summary>
-		public void ModDamageBonusPct(uint[] schools, int delta)
+		public override float GetDamageDoneFactor(DamageSchool school)
 		{
-			foreach (var school in schools)
-			{
-				ModDamageBonusPct((DamageSchool)school, delta);
-			}
-			this.UpdateAllDamages();
+			return GetFloat(PlayerFields.MOD_DAMAGE_DONE_PCT + (int)school);
 		}
 
+		public override int GetDamageDoneMod(DamageSchool school)
+		{
+			return GetInt32(PlayerFields.MOD_DAMAGE_DONE_POS + (int)school) -
+					GetInt32(PlayerFields.MOD_DAMAGE_DONE_NEG + (int)school);
+		}
 		#endregion
 
 		#region Healing Done
@@ -1109,7 +1128,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Returns the SpellCritChance for the given DamageType (0-100)
 		/// </summary>
-		public override float GetSpellCritChance(DamageSchool school)
+		public override float GetCritChance(DamageSchool school)
 		{
 			return GetFloat(PlayerFields.SPELL_CRIT_PERCENTAGE1 + (int)school);
 		}
@@ -1117,7 +1136,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Sets the SpellCritChance for the given DamageType
 		/// </summary>
-		internal void SetSpellCritChance(DamageSchool school, float val)
+		internal void SetCritChance(DamageSchool school, float val)
 		{
 			SetFloat(PlayerFields.SPELL_CRIT_PERCENTAGE1 + (int)school, val);
 		}
@@ -1145,18 +1164,18 @@ namespace WCell.RealmServer.Entities
 		}
 
 		#region Action Buttons
-
 		/// <summary>
 		/// Sets an ActionButton with the given information.
 		/// </summary>
-		public void SetActionButton(uint btnIndex, uint action, byte type)
+		public void BindActionButton(uint btnIndex, uint action, byte type, bool update = true)
 		{
-			var actions = m_record.ActionButtons;
+			CurrentSpecProfile.State = Core.Database.RecordState.Dirty;
+			var actions = CurrentSpecProfile.ActionButtons;
 			btnIndex = btnIndex * 4;
 			if (action == 0)
 			{
 				// unset it
-				Array.Copy(ActionButton.Empty, 0, actions, btnIndex, ActionButton.Size);
+				Array.Copy(ActionButton.EmptyButton, 0, actions, btnIndex, ActionButton.Size);
 			}
 			else
 			{
@@ -1165,11 +1184,36 @@ namespace WCell.RealmServer.Entities
 				actions[btnIndex + 2] = (byte)((action & 0xFF000) >> 16);
 				actions[btnIndex + 3] = type;
 			}
+
+			if (update)
+			{
+				CharacterHandler.SendActionButtons(this);
+			}
 		}
 
-		public void SetActionButton(ActionButton btn)
+		/// <summary>
+		/// Sets the given button to the given spell and resends it to the client
+		/// </summary>
+		public void BindSpellToActionButton(uint btnIndex, SpellId spell, bool update = true)
 		{
-			btn.Set(m_record.ActionButtons);
+			BindActionButton(btnIndex, (uint)spell, 0);
+			if (update)
+			{
+				CharacterHandler.SendActionButtons(this);
+			}
+		}
+
+		/// <summary>
+		/// Sets the given action button
+		/// </summary>
+		public void BindActionButton(ActionButton btn, bool update = true)
+		{
+			btn.Set(CurrentSpecProfile.ActionButtons);
+			CurrentSpecProfile.State = Core.Database.RecordState.Dirty;
+			if (update)
+			{
+				CharacterHandler.SendActionButtons(this);
+			}
 		}
 
 		/// <summary>
@@ -1177,41 +1221,8 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public byte[] ActionButtons
 		{
-			get { return m_record.ActionButtons; }
-			internal set { m_record.ActionButtons = value; }
+			get { return CurrentSpecProfile.ActionButtons; }
 		}
-
-		public struct ActionButton
-		{
-			public const uint Size = 4;
-			public const uint MaxAmount = 144;
-
-			public static readonly byte[] Empty = new byte[Size];
-
-			public uint Index;
-			public ushort Action;
-			public byte Type;
-			public byte Info;
-
-			public void Set(byte[] actions)
-			{
-				var index = Index * 4;
-				actions[index] = (byte)(Action & 0x00FF);
-				actions[index + 1] = (byte)((Action & 0xFF00) >> 8);
-				actions[index + 2] = Type;
-				actions[index + 3] = Info;
-			}
-
-			public static void Set(byte[] actions, uint index, ushort action, byte type, byte info)
-			{
-				index = index * 4;
-				actions[index] = (byte)(action & 0x00FF);
-				actions[index + 1] = (byte)((action & 0xFF00) >> 8);
-				actions[index + 2] = type;
-				actions[index + 3] = info;
-			}
-		}
-
 		#endregion
 
 		#region Custom Properties
@@ -1233,7 +1244,6 @@ namespace WCell.RealmServer.Entities
 		public Ticket Ticket { get; internal set; }
 
 		#region Base Unit Fields Overrides
-
 		public override int Health
 		{
 			get { return base.Health; }
@@ -1307,15 +1317,13 @@ namespace WCell.RealmServer.Entities
 				base.Level = value;
 				//Update Group Update flags
 				GroupUpdateFlags |= GroupUpdateFlags.Level;
-				this.UpdateLevel();
 			}
 		}
 
-
-		public int MaxLevel
+		public override int MaxLevel
 		{
 			get { return GetInt32(PlayerFields.MAX_LEVEL); }
-			set { SetInt32(PlayerFields.MAX_LEVEL, value); }
+			internal set { SetInt32(PlayerFields.MAX_LEVEL, value); }
 		}
 
 		public override Zone Zone
@@ -1327,7 +1335,7 @@ namespace WCell.RealmServer.Entities
 				{
 					if (value != null)
 					{
-						if (m_region != null && value.ParentZoneId == 0)
+						if (m_Map != null)
 						{
 							value.EnterZone(this, m_zone);
 						}
@@ -1346,20 +1354,28 @@ namespace WCell.RealmServer.Entities
 			return zone != null && IsZoneExplored(zone);
 		}
 
-		public bool IsZoneExplored(ZoneInfo zone)
+		public bool IsZoneExplored(ZoneTemplate zone)
 		{
 			return IsZoneExplored(zone.ExplorationBit);
 		}
 
 		public bool IsZoneExplored(int explorationBit)
 		{
-			var index = explorationBit >> 3;
-			if (index >= UpdateFieldMgr.ExplorationZoneFieldSize)
+			// index of the byte within m_record.ExploredZones[index] that contains the bit
+			var byteNo = explorationBit >> 3;
+
+			// ExploredZones contains 512 bytes and thus 512/4 = 128 fields
+			if ((byteNo >> 2) >= UpdateFieldMgr.ExplorationZoneFieldSize)
 			{
+				// Value is out of range, get out of here!
 				return false;
 			}
-			//return (GetUInt32((int)PlayerFields.EXPLORED_ZONES_1 + (int)index) & (1 << ((int)explorationBit % 32))) != 0;
-			return (m_record.ExploredZones[index] & (1 << (explorationBit % 8))) != 0;
+
+			// the position of the bit within it's byte
+			var bit = explorationBit % 8;
+			var bitMask = 1 << bit;
+
+			return (m_record.ExploredZones[byteNo] & bitMask) != 0;
 		}
 
 		public void SetZoneExplored(ZoneId id, bool explored)
@@ -1371,19 +1387,30 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
-		public void SetZoneExplored(ZoneInfo zone, bool gainXp)
+		public void SetZoneExplored(ZoneTemplate zone, bool gainXp)
 		{
-			var index = zone.ExplorationBit >> 5;
-			if (index >= UpdateFieldMgr.ExplorationZoneFieldSize * 4)
+			// index of the field that contains the bit
+			var fieldNo = zone.ExplorationBit >> 5;
+			if (fieldNo >= UpdateFieldMgr.ExplorationZoneFieldSize)
 			{
 				return;
 			}
 
-			//var intVal = GetUInt32((int)PlayerFields.EXPLORED_ZONES_1 + (int)index);
-			var byteVal = m_record.ExploredZones[index];
-			var bit = (zone.ExplorationBit - 1) % 8;
-			if ((byteVal & (1 << bit)) == 0)
+			// index of the byte that contains the bit
+			var byteNo = zone.ExplorationBit >> 3;
+
+			// the position of the bit within it's byte
+			var bit = (zone.ExplorationBit) % 8;
+
+			// the mask inside the byte
+			var bitMask = 1 << bit;
+
+			// the value of the byte
+			var byteVal = m_record.ExploredZones[byteNo];
+
+			if ((byteVal & bitMask) == 0)
 			{
+				// not explored yet
 				if (gainXp)
 				{
 					var xp = XpGenerator.GetExplorationXp(zone, this);
@@ -1391,24 +1418,36 @@ namespace WCell.RealmServer.Entities
 					{
 						if (Level >= RealmServerConfiguration.MaxCharacterLevel)
 						{
+							// already at level cap
 							CharacterHandler.SendExplorationExperience(this, zone.Id, 0);
 						}
 						else
 						{
-							GainXp(xp, false);
+							// gain XP
+							GainXp(xp);
 							CharacterHandler.SendExplorationExperience(this, zone.Id, xp);
 						}
 					}
 				}
 
-				var value = (byte)(byteVal | (1 << bit));
-				SetByte((int)PlayerFields.EXPLORED_ZONES_1 + (zone.ExplorationBit >> 5), index % 4, value);
-				m_record.ExploredZones[index] = value;
-			}
+				// set the bit client side
+				var newValue = (byte)(byteVal | bitMask);
+				SetByte((int)PlayerFields.EXPLORED_ZONES_1 + fieldNo, byteNo % 4, newValue);
 
-			foreach (var child in zone.ChildZones)
-			{
-				SetZoneExplored(child, gainXp);
+				// cache the new value for easy access
+				m_record.ExploredZones[byteNo] = newValue;
+
+				// check possible achievements
+				foreach (var worldMapOverlay in zone.WorldMapOverlays)
+				{
+					Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.ExploreArea, (uint)worldMapOverlay);
+				}
+
+				// explore parent
+				if (zone.ParentZone != null)
+				{
+					SetZoneExplored(zone.ParentZone, gainXp);
+				}
 			}
 		}
 
@@ -1435,7 +1474,7 @@ namespace WCell.RealmServer.Entities
 
 		#endregion
 
-		#region Properties
+		#region Misc Properties
 
 		public override bool IsInWorld
 		{
@@ -1513,6 +1552,14 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
+		/// The ArenaTeamMember object of this Character (if it he/she is in an arena team)
+		/// </summary>
+		public ArenaTeamMember[] ArenaTeamMember
+		{
+			get { return m_arenaTeamMember; }
+		}
+
+		/// <summary>
 		/// Characters get disposed after Logout sequence completed and
 		/// cannot (and must not) be used anymore.
 		/// </summary>
@@ -1587,7 +1634,7 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
-		public ClientLocale Locale
+		public override ClientLocale Locale
 		{
 			get { return m_client.Info.Locale; }
 			set { m_client.Info.Locale = value; }
@@ -1648,13 +1695,21 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
+		/// Whether this Character is currently trading with someone
+		/// </summary>
+		public bool IsTrading
+		{
+			get { return m_tradeWindow != null; }
+		}
+
+		/// <summary>
 		/// Current trading progress of the character
 		/// Null if none
 		/// </summary>
-		public TradeInfo TradeInfo
+		public TradeWindow TradeWindow
 		{
-			get { return m_TradeInfo; }
-			set { m_TradeInfo = value; }
+			get { return m_tradeWindow; }
+			set { m_tradeWindow = value; }
 		}
 
 		/// <summary>
@@ -1796,6 +1851,7 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
+		#region AFK & DND etc
 		/// <summary>
 		/// Whether or not this character is AFK.
 		/// </summary>
@@ -1869,7 +1925,9 @@ namespace WCell.RealmServer.Entities
 				return ChatTag.None;
 			}
 		}
+		#endregion
 
+		#region Interfaces & Collections
 		/// <summary>
 		/// Collection of reputations with all factions known to this Character
 		/// </summary>
@@ -1889,34 +1947,25 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Collection of all this Character's Talents
 		/// </summary>
-		public TalentCollection Talents
+		public override TalentCollection Talents
 		{
 			get { return m_talents; }
 		}
 
 		/// <summary>
-		/// Unused talent-points for this Character
+		/// Collection of all this Character's Achievements
 		/// </summary>
-		public int FreeTalentPoints
+		public AchievementCollection Achievements
 		{
-			get { return (int)GetUInt32(PlayerFields.CHARACTER_POINTS1); }
-			set
-			{
-				if (value < 0)
-					value = 0;
-
-				m_record.FreeTalentPoints = value;
-				SetUInt32(PlayerFields.CHARACTER_POINTS1, (uint)value);
-				TalentHandler.SendTalentGroupList(this);
-			}
+			get { return m_achievements; }
 		}
 
 		/// <summary>
-		/// Doesn't send a packet to the client
+		/// All spells known to this chr
 		/// </summary>
-		public void UpdateFreeTalentPointsSilently(int delta)
+		public PlayerAuraCollection PlayerAuras
 		{
-			SetUInt32(PlayerFields.CHARACTER_POINTS1, (uint)(FreeTalentPoints + delta));
+			get { return (PlayerAuraCollection)m_auras; }
 		}
 
 		/// <summary>
@@ -1964,6 +2013,48 @@ namespace WCell.RealmServer.Entities
 			get { return m_inventory; }
 		}
 
+
+		/// <summary>
+		/// The Character's MailAccount
+		/// </summary>
+		public MailAccount MailAccount
+		{
+			get { return m_mailAccount; }
+			set
+			{
+				if (m_mailAccount != value)
+				{
+					m_mailAccount = value;
+				}
+			}
+		}
+		#endregion
+
+		/// <summary>
+		/// Unused talent-points for this Character
+		/// </summary>
+		public int FreeTalentPoints
+		{
+			get { return (int)GetUInt32(PlayerFields.CHARACTER_POINTS1); }
+			set
+			{
+				if (value < 0)
+					value = 0;
+
+				//m_record.FreeTalentPoints = value;
+				SetUInt32(PlayerFields.CHARACTER_POINTS1, (uint)value);
+				TalentHandler.SendTalentGroupList(m_talents);
+			}
+		}
+
+		/// <summary>
+		/// Doesn't send a packet to the client
+		/// </summary>
+		public void UpdateFreeTalentPointsSilently(int delta)
+		{
+			SetUInt32(PlayerFields.CHARACTER_POINTS1, (uint)(FreeTalentPoints + delta));
+		}
+
 		/// <summary>
 		/// Forced logout must not be cancelled
 		/// </summary>
@@ -1977,6 +2068,18 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public GossipConversation GossipConversation { get; set; }
 
+		/// <summary>
+		/// Lets the Character gossip with the given speaker
+		/// </summary>
+		public void StartGossip(GossipMenu menu, WorldObject speaker)
+		{
+			GossipConversation = new GossipConversation(menu, this, speaker, menu.KeepOpen);
+			GossipConversation.DisplayCurrentMenu();
+		}
+
+		/// <summary>
+		/// Lets the Character gossip with herself
+		/// </summary>
 		public void StartGossip(GossipMenu menu)
 		{
 			GossipConversation = new GossipConversation(menu, this, this, menu.KeepOpen);
@@ -2001,58 +2104,80 @@ namespace WCell.RealmServer.Entities
 			get { return RelationMgr.Instance.HasPassiveRelations(EntityId.Low, CharacterRelationType.GuildInvite); }
 		}
 
-
-		/// <summary>
-		/// The Character's MailAccount
-		/// </summary>
-		public MailAccount Mail
+		public bool HasTitle(TitleId titleId)
 		{
-			get { return m_mailAccount; }
-			set
+			var titleEntry = TitleMgr.GetTitleEntry(titleId);
+			if (titleEntry == null)
 			{
-				if (m_mailAccount != value)
-				{
-					m_mailAccount = value;
-				}
+				// TO-DO: report about an error
+				return false;
 			}
+			var bitIndex = titleEntry.BitIndex;
+
+			var fieldIndexOffset = (int)bitIndex / 32 + (int)PlayerFields._FIELD_KNOWN_TITLES;
+			uint flag = (uint)(1 << (int)bitIndex % 32);
+
+			return ((CharTitlesMask)GetUInt32(fieldIndexOffset)).HasFlag((CharTitlesMask)flag);
 		}
 
-		private StandState m_standState;
-
-		/// <summary>
-		/// Changes the character's stand state and notifies the client.
-		/// </summary>
-		public override StandState StandState
+		public bool HasTitle(TitleBitId titleBitId)
 		{
-			get { return m_standState; }
-			set
-			{
-				if (value != StandState)
-				{
-					m_standState = value;
-					base.StandState = value;
-
-					if (m_looterEntry != null &&
-						m_looterEntry.Loot != null &&
-						value != StandState.Kneeling &&
-						m_looterEntry.Loot.MustKneelWhileLooting)
-					{
-						CancelLooting();
-					}
-
-					if (value == StandState.Stand)
-					{
-						m_auras.RemoveByFlag(AuraInterruptFlags.OnStandUp);
-					}
-
-					if (IsInWorld)
-					{
-						CharacterHandler.SendStandStateUpdate(this, value);
-					}
-				}
-			}
+			CharacterTitleEntry titleEntry = TitleMgr.GetTitleEntry(titleBitId);
+			if (titleEntry == null)
+				return false;
+			return HasTitle(titleEntry.TitleId);
 		}
 
+		public void SetTitle(TitleId titleId, bool lost)
+		{
+			var titleEntry = TitleMgr.GetTitleEntry(titleId);
+			if (titleEntry == null)
+			{
+				log.Warn(string.Format("TitleId: {0} could not be found.", (uint)titleId));
+				return;
+			}
+			var bitIndex = titleEntry.BitIndex;
+
+			var fieldIndexOffset = (int)bitIndex / 32 + (int)PlayerFields._FIELD_KNOWN_TITLES;
+			var flag = (uint)(1 << (int)bitIndex % 32);
+
+			if (lost)
+			{
+				if (!HasTitle(titleId))
+					return;
+
+				var value = GetUInt32(fieldIndexOffset) & ~flag;
+				SetUInt32(fieldIndexOffset, value);
+			}
+			else
+			{
+				if (HasTitle(titleId))
+					return;
+
+				var value = GetUInt32(fieldIndexOffset) | flag;
+				SetUInt32(fieldIndexOffset, value);
+			}
+
+			TitleHandler.SendTitleEarned(this, titleEntry, lost);
+
+		}
+
+		#endregion
+
+		#region Glyphs
+		public uint Glyphs_Enable
+		{
+			get { return GetUInt32(PlayerFields.GLYPHS_ENABLED); }
+			set { SetUInt32(PlayerFields.GLYPHS_ENABLED, value); }
+		}
+		public void SetGlyphSlot(byte slot, uint id)
+		{
+			SetUInt32(PlayerFields.GLYPH_SLOTS_1 + slot, id);
+		}
+		public uint GetGlyphSlot(byte slot)
+		{
+			return GetUInt32(PlayerFields.GLYPH_SLOTS_1 + slot);
+		}
 		#endregion
 	}
 }

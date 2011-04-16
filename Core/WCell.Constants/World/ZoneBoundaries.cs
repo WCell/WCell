@@ -5608,4 +5608,3 @@ namespace WCell.Constants.World
 	}
 
 }
-

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,9 +13,9 @@ namespace WCell.RealmServer.Spells.Auras.Misc
 {
 	public class CharmAuraHandler : AuraEffectHandler
 	{
-		protected internal override void CheckInitialize(CasterInfo casterInfo, Unit target, ref SpellFailedReason failReason)
+		protected internal override void CheckInitialize(SpellCast creatingCast, ObjectReference casterRef, Unit target, ref SpellFailedReason failReason)
 		{
-			var caster = casterInfo.Caster as Unit;
+			var caster = creatingCast.CasterReference.Object as Unit;
 			if (caster == null)
 			{
 				failReason = SpellFailedReason.BadTargets;
@@ -24,7 +24,7 @@ namespace WCell.RealmServer.Spells.Auras.Misc
 			{
 				if (!(target is NPC))
 				{
-					LogManager.GetCurrentClassLogger().Warn("{0} tried to Charm {1} which is not an NPC, but Player charming is not yet supported.");
+					LogManager.GetCurrentClassLogger().Warn("{0} tried to Charm {1} which is not an NPC, but Player charming is not yet supported.", caster, target);
 					failReason = SpellFailedReason.BadTargets;
 				}
 				if (caster.Charm != null)
@@ -35,10 +35,10 @@ namespace WCell.RealmServer.Spells.Auras.Misc
 				{
 					failReason = SpellFailedReason.CantBeCharmed;
 				}
-				else if (caster.Level > EffectValue)
-				{
-					failReason = SpellFailedReason.Highlevel;
-				}
+				//else if (caster.Level < EffectValue)
+				//{
+				//    failReason = SpellFailedReason.Highlevel;
+				//}
 				else if (caster.HasMaster)
 				{
 					failReason = SpellFailedReason.Charmed;
@@ -53,9 +53,9 @@ namespace WCell.RealmServer.Spells.Auras.Misc
 			}
 		}
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
-			var caster = m_aura.Caster as Unit;
+			var caster = m_aura.CasterUnit;
 			if (caster == null)
 			{
 				return;
@@ -77,9 +77,9 @@ namespace WCell.RealmServer.Spells.Auras.Misc
 			}
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
-			var caster = (Unit)m_aura.Caster;
+			var caster = (Unit)m_aura.CasterUnit;
 			var target = m_aura.Auras.Owner;
 			caster.Charm = null;
 			target.Charmer = null;

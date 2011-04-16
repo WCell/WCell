@@ -126,5 +126,3 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyKeyFile("../ICSharpCode.SharpZipLib.key")]
 #endif
 #endif
-
-

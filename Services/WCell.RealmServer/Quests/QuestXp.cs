@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,7 +7,7 @@ using WCell.Util;
 
 namespace WCell.RealmServer.Quests
 {
-	public struct QuestXPInfo
+	public class QuestXPInfo
 	{
 		public int Level;
 		public int[] RewXP;

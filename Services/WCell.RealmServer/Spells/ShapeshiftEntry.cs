@@ -12,11 +12,15 @@ namespace WCell.RealmServer.Spells
 	[Flags]
 	public enum ShapeshiftInfoFlags : uint
 	{
+		/// <summary>
+		/// This is used for stances and anything that does not really shift the form of the caster
+		/// </summary>
+		NotActualShapeshift = 0x0001,
 
 		/// <summary>
 		/// Only used in cat form
 		/// </summary>
-		AgilityBasedAttackPower = 0x20,
+		AgilityBasedAttackPower = 0x20
 	}
 
 	public class ShapeshiftEntry
@@ -25,7 +29,7 @@ namespace WCell.RealmServer.Spells
 		public uint BarOrder;
 		public string Name;
 		public ShapeshiftInfoFlags Flags;
-		public NPCType CreatureType;
+		public CreatureType CreatureType;
 		/// <summary>
 		/// In millis
 		/// </summary>
@@ -43,6 +47,10 @@ namespace WCell.RealmServer.Spells
 		{
 			get { return UnitMgr.GetModelInfo(ModelIdHorde); }
 		}
+
+		#region Custom Settings
+		public PowerType PowerType = PowerType.End;
+		#endregion
 	}
 
 	public class ShapeshiftEntryConverter : DBCRecordConverter
@@ -55,11 +63,11 @@ namespace WCell.RealmServer.Spells
 			entry.Id = (ShapeshiftForm)GetInt32(rawData, index++);
 			entry.BarOrder = GetUInt32(rawData, index++);
 			entry.Name = GetString(rawData, ref index);
-			entry.Flags = (ShapeshiftInfoFlags)GetUInt32(rawData, index++);
-			entry.CreatureType = (NPCType)GetInt32(rawData, index++);
-			index++;	// this columnn is set iff AttackTime is set
-			entry.AttackTime = GetInt32(rawData, index++);
 
+			entry.Flags = (ShapeshiftInfoFlags)GetUInt32(rawData, index++);
+			entry.CreatureType = (CreatureType)GetInt32(rawData, index++);
+			index++;
+			entry.AttackTime = GetInt32(rawData, index++);
 			entry.ModelIdAlliance = GetUInt32(rawData, index++);
 			entry.ModelIdHorde = GetUInt32(rawData, index++);
 

@@ -72,10 +72,10 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Show");
-				//ParamInfo = "[-r[a] <Region>]";
+				//ParamInfo = "[-r[a] <Map>]";
 				EnglishParamInfo = "[-a]";
 				EnglishDescription = "Shows the Taxi-Map. The -a switch automatically activates all Nodes beforehand."
-					//+ " The -r switch shows the Map of the given Region rather than the current one."
+					//+ " The -r switch shows the Map of the given Map rather than the current one."
 					;
 			}
 
@@ -94,21 +94,21 @@ namespace WCell.RealmServer.Commands
 						target.ActivateAllTaxiNodes();
 					}
 
-					Region region;
+					Map map;
 					PathNode node;
 					if (mod.Contains("r"))
 					{
-						region = World.GetRegion(trigger.Text.NextEnum(MapId.End));
-						if (region == null)
+						map = World.GetNonInstancedMap(trigger.Text.NextEnum(MapId.End));
+						if (map == null)
 						{
-							trigger.Reply("Invalid Region.");
+							trigger.Reply("Invalid Map.");
 							return;
 						}
-						node = region.FirstTaxiNode;
+						node = map.FirstTaxiNode;
 					}
 					else
 					{
-						region = target.Region;
+						map = target.Map;
 						node = TaxiMgr.GetNearestTaxiNode(target.Position);
 					}
 
@@ -118,7 +118,7 @@ namespace WCell.RealmServer.Commands
 					}
 					else
 					{
-						trigger.Reply("There are no Taxis available on this Map ({0})", region.Name);
+						trigger.Reply("There are no Taxis available on this Map ({0})", map.Name);
 					}
 				}
 			}
@@ -149,7 +149,7 @@ namespace WCell.RealmServer.Commands
 					var node = list.FirstOrDefault();
 					if (node != null)
 					{
-						target.TeleportTo(node.Region, node.Position);
+						target.TeleportTo(node.Map, node.Position);
 					}
 				}
 			}
@@ -162,7 +162,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("GotoNext", "TeleNext", "Next");
-				EnglishDescription = "Teleports to the closest Taxi Node in the current Region.";
+				EnglishDescription = "Teleports to the closest Taxi Node in the current Map.";
 			}
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
@@ -178,7 +178,7 @@ namespace WCell.RealmServer.Commands
 					var closestDist = float.MaxValue;
 					foreach (var node in GetNodes(trigger))
 					{
-						if (node.MapId == target.Region.Id)
+						if (node.MapId == target.Map.Id)
 						{
 							var dist = target.GetDistanceSq(node.Position);
 							if (dist < closestDist)
@@ -190,11 +190,11 @@ namespace WCell.RealmServer.Commands
 					}
 					if (closest == null)
 					{
-						trigger.Reply("No Node found in Region.");
+						trigger.Reply("No Node found in Map.");
 					}
 					else
 					{
-						target.TeleportTo(closest.Region, closest.Position);
+						target.TeleportTo(closest.Map, closest.Position);
 					}
 				}
 			}
@@ -209,7 +209,7 @@ namespace WCell.RealmServer.Commands
 				Init("List");
 				EnglishParamInfo = "[-rc <Map>][<name>|<id>]";
 				EnglishDescription = "Lists all Taxi nodes or only those matching the given Name or Id. " +
-					"-r swtich filters Nodes of the given Region. -rc switch filters Nodes of the current Region.";
+					"-r swtich filters Nodes of the given Map. -rc switch filters Nodes of the current Map.";
 			}
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
@@ -220,7 +220,7 @@ namespace WCell.RealmServer.Commands
 				{
 					if (mod.Contains("c") && trigger.Args.Target != null)
 					{
-						map = trigger.Args.Target.Region.Id;
+						map = trigger.Args.Target.Map.Id;
 					}
 					else
 					{

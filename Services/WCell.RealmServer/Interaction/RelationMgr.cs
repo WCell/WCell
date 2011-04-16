@@ -25,7 +25,7 @@ using WCell.Core.Initialization;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
-using WCell.RealmServer.Localization;
+using WCell.RealmServer.Res;
 using WCell.Util.NLog;
 
 namespace WCell.RealmServer.Interaction
@@ -106,7 +106,7 @@ namespace WCell.RealmServer.Interaction
 			}
 			catch (Exception e)
 			{
-				RealmDBUtil.OnDBError(e);
+				RealmDBMgr.OnDBError(e);
 				found = PersistedRelation.GetAll();
 			}
 
@@ -792,7 +792,7 @@ namespace WCell.RealmServer.Interaction
 						if (relatedChar != null)
 						{
 							packet.WriteByte((byte)relatedChar.Status);
-							packet.Write((int)relatedChar.Zone.Id);
+							packet.Write(relatedChar.Zone != null ? (int)relatedChar.Zone.Id : 0);
 							packet.Write(relatedChar.Level);
 							packet.Write((int)relatedChar.Class);
 						}

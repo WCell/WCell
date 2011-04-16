@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using WCell.Constants.Achievements;
 using WCell.Constants.Login;
 using WCell.Constants.NPCs;
 using WCell.Constants.Items;
@@ -70,16 +71,6 @@ namespace WCell.Constants
 			return (flags & otherFlags) != 0;
 		}
 
-		public static bool HasAnyFlag(this DamageSchoolMask flags, DamageSchoolMask otherFlags)
-		{
-			return (flags & otherFlags) != 0;
-		}
-
-		public static bool HasAnyFlag(this DamageSchoolMask flags, DamageSchool school)
-		{
-			return (flags & (DamageSchoolMask)(1 << (int) school)) != 0;
-		}
-
 		public static bool HasAnyFlag(this GroupMemberFlags flags, GroupMemberFlags otherFlags)
 		{
 			return (flags & otherFlags) != 0;
@@ -128,6 +119,21 @@ namespace WCell.Constants
 		public static bool HasAnyFlag(this  RaceMask2 flags, RaceMask2 otherFlags)
 		{
 			return (flags & otherFlags) != 0;
+		}
+
+		public static bool HasAnyFlag(this  ShapeshiftMask flags, ShapeshiftMask otherFlags)
+		{
+			return (flags & otherFlags) != 0;
+		}
+
+        public static bool HasAnyFlag(this AchievementFlags flags, AchievementFlags otherFlags)
+        {
+            return (flags & otherFlags) != 0;
+        }
+
+		public static ShapeshiftMask ToMask(this ShapeshiftForm form)
+		{
+			return (ShapeshiftMask) (1 << ((int) form - 1));
 		}
 		#endregion
 	}

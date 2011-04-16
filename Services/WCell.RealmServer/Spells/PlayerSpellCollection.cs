@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Castle.ActiveRecord;
+using Cell.Core;
+using NLog;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.GameObjects;
@@ -10,6 +12,7 @@ using WCell.RealmServer.GameObjects.GOEntries;
 using WCell.RealmServer.Items;
 using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Spells.Auras.Misc;
+using WCell.RealmServer.Talents;
 using WCell.Util.Threading;
 using WCell.RealmServer.Database;
 using WCell.Util;
@@ -19,9 +22,21 @@ namespace WCell.RealmServer.Spells
 {
 	public class PlayerSpellCollection : SpellCollection
 	{
-		private Timer m_offlineCooldownTimer;
-		private object m_lock;
-		private uint m_ownerId;
+		static readonly ObjectPool<PlayerSpellCollection> PlayerSpellCollectionPool =
+			new ObjectPool<PlayerSpellCollection>(() => new PlayerSpellCollection());
+
+		public static PlayerSpellCollection Obtain(Character chr)
+		{
+			var spells = PlayerSpellCollectionPool.Obtain();
+			spells.Initialize(chr);
+
+			// runes
+			if (spells.Runes != null)
+			{
+				spells.Runes.InitRunes(chr);
+			}
+			return spells;
+		}
 
 		/// <summary>
 		/// Whether to send Update Packets
@@ -29,65 +44,94 @@ namespace WCell.RealmServer.Spells
 		protected bool m_sendPackets;
 
 		/// <summary>
-		/// Amount of currently added modifiers that require charges.
-		/// If > 0, will iterate over modifiers and remove charges after SpellCasts.
-		/// </summary>
-		public int ModifiersWithCharges
-		{
-			get;
-			protected internal set;
-		}
-
-		/// <summary>
-		/// Flat modifiers of spells
-		/// </summary>
-		public readonly List<AddModifierEffectHandler> SpellModifiersFlat = new List<AddModifierEffectHandler>(5);
-
-		/// <summary>
-		/// Percent modifiers of spells
-		/// </summary>
-		public readonly List<AddModifierEffectHandler> SpellModifiersPct = new List<AddModifierEffectHandler>(5);
-
-		/// <summary>
-		/// Additional effects to be triggered when casting certain Spells
-		/// </summary>
-		public readonly List<AddTargetTriggerHandler> TargetTriggers = new List<AddTargetTriggerHandler>(1);
-
-		/// <summary>
 		/// All current Spell-cooldowns. 
 		/// Each SpellId has an expiry time associated with it
 		/// </summary>
-		protected Dictionary<uint, ISpellIdCooldown> m_idCooldowns;
+		protected List<ISpellIdCooldown> m_idCooldowns;
 		/// <summary>
 		/// All current category-cooldowns. 
 		/// Each category has an expiry time associated with it
 		/// </summary>
-		protected Dictionary<uint, ISpellCategoryCooldown> m_categoryCooldowns;
+		protected List<ISpellCategoryCooldown> m_categoryCooldowns;
 
-		public PlayerSpellCollection(Character owner)
-			: base(owner)
+		/// <summary>
+		/// The runes of this Player (if any)
+		/// </summary>
+		private RuneSet m_runes;
+
+		#region Init & Cleanup
+		private PlayerSpellCollection()
 		{
-			m_sendPackets = false;
+			m_idCooldowns =  new List<ISpellIdCooldown>(5);
+			m_categoryCooldowns =  new List<ISpellCategoryCooldown>(5);
 		}
 
-		public Dictionary<uint, ISpellIdCooldown> IdCooldowns
+		protected override void Initialize(Unit owner)
+		{
+			base.Initialize(owner);
+
+			var chr = (Character)owner;
+			m_sendPackets = false;
+			if (owner.Class == Constants.ClassId.DeathKnight)
+			{
+				m_runes = new RuneSet(chr);
+			}
+		}
+
+		protected internal override void Recycle()
+		{
+			base.Recycle();
+
+			m_idCooldowns.Clear();
+			m_categoryCooldowns.Clear();
+
+			if (m_runes != null)
+			{
+				m_runes.Dispose();
+				m_runes = null;
+			}
+
+			PlayerSpellCollectionPool.Recycle(this);
+		}
+		#endregion
+
+		public IEnumerable<ISpellIdCooldown> IdCooldowns
 		{
 			get { return m_idCooldowns; }
 		}
 
-		public Dictionary<uint, ISpellCategoryCooldown> CategoryCooldowns
+		public IEnumerable<ISpellCategoryCooldown> CategoryCooldowns
 		{
 			get { return m_categoryCooldowns; }
 		}
 
+		public int IdCooldownCount
+		{
+			get { return m_idCooldowns.Count; }
+		}
+
+		public int CategoryCooldownCount
+		{
+			get { return m_categoryCooldowns.Count; }
+		}
+
 		/// <summary>
-		/// If this is a player's 
+		/// Owner as Character
 		/// </summary>
 		public Character OwnerChar
 		{
-			get { return Owner as Character; }
+			get { return (Character)Owner; }
 		}
 
+		/// <summary>
+		/// The set of runes of this Character (if any)
+		/// </summary>
+		public RuneSet Runes
+		{
+			get { return m_runes; }
+		}
+
+		#region Add
 		public void AddNew(Spell spell)
 		{
 			AddSpell(spell, true);
@@ -104,39 +148,132 @@ namespace WCell.RealmServer.Spells
 		internal void OnlyAdd(SpellRecord record)
 		{
 			var id = record.SpellId;
-			if (!m_byId.ContainsKey(id))
-			{
-				//DeleteFromDB(id);
-				var spell = SpellHandler.Get(id);
-				m_byId[id] = spell;
-			}
+			//DeleteFromDB(id);
+			var spell = SpellHandler.Get(id);
+			m_byId[id] = spell;
 		}
 
 
 		/// <summary>
 		/// Teaches a new spell to the unit. Also sends the spell learning animation, if applicable.
 		/// </summary>
-		void AddSpell(Spell spell, bool isNew)
+		void AddSpell(Spell spell, bool sendPacket)
 		{
 			// make sure the char knows the skill that this spell belongs to
-			if (spell.Ability != null && !OwnerChar.Skills.Contains(spell.Ability.Skill.Id))
+			if (spell.Ability != null)
 			{
-				OwnerChar.Skills.Add(spell.Ability.Skill, true);
+				var skill = OwnerChar.Skills[spell.Ability.Skill.Id];
+				if (skill == null)
+				{
+					// learn new skill
+					skill = OwnerChar.Skills.Add(spell.Ability.Skill, true);
+				}
+
+				if (skill.CurrentTierSpell == null || skill.CurrentTierSpell.SkillTier < spell.SkillTier)
+				{
+					// upgrade tier
+					skill.CurrentTierSpell = spell;
+				}
 			}
 
-			if (!m_byId.ContainsKey(spell.Id))
+			if (!m_byId.ContainsKey(spell.SpellId))
 			{
-				if (m_sendPackets && isNew)
+				var owner = OwnerChar;
+				if (m_sendPackets && sendPacket)
 				{
-					SpellHandler.SendLearnedSpell(OwnerChar.Client, spell.Id);
+					SpellHandler.SendLearnedSpell(owner.Client, spell.Id);
 					if (!spell.IsPassive)
 					{
-						SpellHandler.SendVisual(Owner, 362);
+						SpellHandler.SendVisual(owner, 362);	// ouchy: Unnamed constants 
 					}
 				}
-				OwnerChar.m_record.AddSpell(spell.Id);
+
+				var specIndex = GetSpecIndex(spell);
+				var spells = GetSpellList(spell);
+				var newRecord = new SpellRecord(spell.SpellId, owner.EntityId.Low, specIndex);
+				newRecord.SaveLater();
+				spells.Add(newRecord);
 
 				base.AddSpell(spell);
+			}
+		}
+		#endregion
+
+		#region Remove/Replace/Clear
+		/// <summary>
+		/// Replaces or (if newSpell == null) removes oldSpell.
+		/// </summary>
+		public override bool Replace(Spell oldSpell, Spell newSpell)
+		{
+			var hasOldSpell = oldSpell != null && m_byId.Remove(oldSpell.SpellId);
+			if (hasOldSpell)
+			{
+				OnRemove(oldSpell);
+				if (newSpell == null)
+				{
+					if (m_sendPackets)
+					{
+						SpellHandler.SendSpellRemoved(OwnerChar, oldSpell.Id);
+					}
+					return true;
+				}
+			}
+
+			if (newSpell != null)
+			{
+				if (m_sendPackets && hasOldSpell)
+				{
+					SpellHandler.SendSpellSuperceded(OwnerChar.Client, oldSpell.Id, newSpell.Id);
+				}
+
+				AddSpell(newSpell, !hasOldSpell);
+			}
+			return hasOldSpell;
+		}
+
+		/// <summary>
+		/// Enqueues a new task to remove that spell from DB
+		/// </summary>
+		private void OnRemove(Spell spell)
+		{
+			var chr = OwnerChar;
+			if (spell.RepresentsSkillTier)
+			{
+				// TODO: Skill might now be represented by a lower tier, and only the MaxValue changes
+				chr.Skills.Remove(spell.Ability.Skill.Id);
+			}
+
+			// figure out from where to remove and do it
+			var spells = GetSpellList(spell);
+			for (var i = 0; i < spells.Count; i++)
+			{
+				var record = spells[i];
+				if (record.SpellId == spell.SpellId)
+				{
+					// delete and remove
+					RealmServer.IOQueue.AddMessage(new Message(record.Delete));
+					spells.RemoveAt(i);
+					return;
+				}
+			}
+		}
+
+		int GetSpecIndex(Spell spell)
+		{
+			var chr = OwnerChar;
+			return spell.IsTalent ? chr.Talents.CurrentSpecIndex : SpellRecord.NoSpecIndex;
+		}
+
+		List<SpellRecord> GetSpellList(Spell spell)
+		{
+			var chr = OwnerChar;
+			if (spell.IsTalent)
+			{
+				return chr.CurrentSpecProfile.TalentSpells;
+			}
+			else
+			{
+				return chr.Record.AbilitySpells;
 			}
 		}
 
@@ -151,101 +288,37 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
-			m_byId.Clear();
+			base.Clear();
 		}
+		#endregion
 
-		/// <summary>
-		/// Replaces or (if newSpell == null) removes oldSpell.
-		/// </summary>
-		public override void Replace(Spell oldSpell, Spell newSpell)
-		{
-			var hasOldSpell = oldSpell != null && m_byId.Remove(oldSpell.Id);
-			if (hasOldSpell)
-			{
-				OnRemove(oldSpell);
-				if (newSpell == null)
-				{
-					if (m_sendPackets)
-					{
-						SpellHandler.SendSpellRemoved(OwnerChar, oldSpell.Id);
-						return;
-					}
-				}
-			}
-
-			if (newSpell != null)
-			{
-				if (m_sendPackets && hasOldSpell)
-				{
-					SpellHandler.SendSpellSuperceded(OwnerChar.Client, oldSpell.Id, newSpell.Id);
-				}
-
-				AddSpell(newSpell, !hasOldSpell);
-			}
-		}
-
-		/// <summary>
-		/// Enqueues a new task to remove that spell from DB
-		/// </summary>
-		private void OnRemove(Spell spell)
-		{
-			if (spell.Skill != null)
-			{
-				OwnerChar.Skills.Remove(spell.SkillId);
-			}
-			OwnerChar.m_record.RemoveSpell(spell.Id);
-			if (spell.IsPassive)
-			{
-				Owner.Auras.Cancel(spell);
-			}
-		}
-
-		/// <summary>
-		/// Called when the player logs out
-		/// </summary>
-		internal void OnOwnerLoggedOut()
-		{
-			m_ownerId = Owner.EntityId.Low;
-			Owner = null;
-			m_sendPackets = false;
-			m_lock = new object();
-			SpellHandler.PlayerSpellCollections[m_ownerId] = this;
-
-			m_offlineCooldownTimer = new Timer(FinalizeCooldowns);
-			m_offlineCooldownTimer.Change(SpellHandler.DefaultCooldownSaveDelay, TimeSpan.Zero);
-		}
-
-		/// <summary>
-		/// Called when the player logs back in
-		/// </summary>
-		internal void OnReconnectOwner(Character owner)
-		{
-			lock (m_lock)
-			{
-				if (m_offlineCooldownTimer != null)
-				{
-					m_offlineCooldownTimer.Change(Timeout.Infinite, Timeout.Infinite);
-					m_offlineCooldownTimer = null;
-				}
-			}
-			Owner = owner;
-		}
-
+		#region Init
 		internal void PlayerInitialize()
 		{
 			// re-apply passive effects
 			var chr = OwnerChar;
 			foreach (var spell in m_byId.Values)
 			{
-				if (spell.IsPassive 
-					&& !spell.HasHarmfulEffects
-					)
-				{
-					chr.SpellCast.Start(spell, true, Owner);
-				}
 				if (spell.Talent != null)
 				{
+					// add talents silently to TalentCollection
 					chr.Talents.AddExisting(spell.Talent, spell.Rank);
+				}
+				else if (spell.IsPassive && !spell.HasHarmfulEffects)
+				{
+					// cast passive spells
+					chr.SpellCast.Start(spell, true, Owner);
+				}
+			}
+
+			// apply all highest ranks of all Talents
+			foreach (var talent in chr.Talents)
+			{
+				var spell = talent.Spell;
+				if (spell.IsPassive)
+				{
+					// cast passive Talent spells
+					chr.SpellCast.Start(spell, true, Owner);
 				}
 			}
 
@@ -271,151 +344,13 @@ namespace WCell.RealmServer.Spells
 			//    }
 			//}
 		}
-
-		#region Enhancers
-		public void RemoveEnhancer(SpellEffect effect)
-		{
-
-		}
-
-		/// <summary>
-		/// Returns the modified value (modified by certain talents) of the given type for the given spell (as int)
-		/// </summary>
-		public int GetModifiedInt(SpellModifierType type, Spell spell, int value)
-		{
-			var flatMod = GetModifierFlat(type, spell);
-			var percentMod = GetModifierPercent(type, spell);
-			return ((value + flatMod) * (100 + percentMod)) / 100;
-		}
-
-		/// <summary>
-		/// Returns the modified value (modified by certain talents) of the given type for the given spell (as float)
-		/// </summary>
-		public float GetModifiedFloat(SpellModifierType type, Spell spell, float value)
-		{
-			var flatMod = GetModifierFlat(type, spell);
-			var percentMod = GetModifierPercent(type, spell);
-			return (value + flatMod) * (1 + (percentMod / 100f));
-		}
-
-		/// <summary>
-		/// Returns the percent modifier (through certain talents) of the given type for the given spell
-		/// </summary>
-		public int GetModifierPercent(SpellModifierType type, Spell spell)
-		{
-			var amount = 0;
-			for (var i = 0; i < SpellModifiersPct.Count; i++)
-			{
-				var modifier = SpellModifiersPct[i];
-				if ((SpellModifierType)modifier.SpellEffect.MiscValue == type &&
-					spell.SpellClassSet == modifier.SpellEffect.Spell.SpellClassSet &&
-					spell.MatchesMask(modifier.SpellEffect.AffectMask))
-				{
-					amount += modifier.SpellEffect.ValueMin;
-				}
-			}
-			return amount;
-		}
-
-		/// <summary>
-		/// Returns the flat modifier (through certain talents) of the given type for the given spell
-		/// </summary>
-		public int GetModifierFlat(SpellModifierType type, Spell spell)
-		{
-			var amount = 0;
-			for (var i = 0; i < SpellModifiersFlat.Count; i++)
-			{
-				var modifier = SpellModifiersFlat[i];
-				if ((SpellModifierType)modifier.SpellEffect.MiscValue == type &&
-					spell.SpellClassSet == modifier.SpellEffect.Spell.SpellClassSet &&
-					spell.MatchesMask(modifier.SpellEffect.AffectMask))
-				{
-					amount += modifier.SpellEffect.ValueMin;
-				}
-			}
-			return amount;
-		}
-
-		/// <summary>
-		/// Trigger all spells that might be triggered by the given Spell
-		/// </summary>
-		/// <param name="spell"></param>
-		public void TriggerSpellsFor(SpellCast cast)
-		{
-			int val;
-			var spell = cast.Spell;
-			for (var i = 0; i < TargetTriggers.Count; i++)
-			{
-				var triggerHandler = TargetTriggers[i];
-				var effect = triggerHandler.SpellEffect;
-				if (spell.SpellClassSet == effect.Spell.SpellClassSet &&
-					spell.MatchesMask(effect.AffectMask) &&
-					(((val = effect.CalcEffectValue(Owner)) >= 100) || Utility.Random(0, 101) <= val) &&
-					spell != effect.TriggerSpell)	// prevent inf loops
-				{
-					var caster = triggerHandler.Aura.Caster;
-					if (caster != null)
-					{
-						//cast.Trigger(effect.TriggerSpell, cast.Targets.MakeArray());
-						cast.Trigger(effect.TriggerSpell);
-					}
-				}
-			}
-		}
-
-		public void OnCasted(SpellCast cast)
-		{
-			TriggerSpellsFor(cast);
-			var spell = cast.Spell;
-			if (ModifiersWithCharges > 0)
-			{
-				var toRemove = new List<Aura>(3);
-				for (var i = 0; i < SpellModifiersFlat.Count; i++)
-				{
-					var modifier = SpellModifiersFlat[i];
-					if (spell.SpellClassSet == modifier.SpellEffect.Spell.SpellClassSet &&
-						spell.MatchesMask(modifier.SpellEffect.AffectMask))
-					{
-						if (modifier.Charges > 0)
-						{
-							modifier.Charges--;
-							if (modifier.Charges < 1)
-							{
-								toRemove.Add(modifier.Aura);
-							}
-						}
-					}
-				}
-				for (var i = 0; i < SpellModifiersPct.Count; i++)
-				{
-					var modifier = SpellModifiersPct[i];
-					if (spell.SpellClassSet == modifier.SpellEffect.Spell.SpellClassSet &&
-						spell.MatchesMask(modifier.SpellEffect.AffectMask))
-					{
-						if (modifier.Charges > 0)
-						{
-							modifier.Charges--;
-							if (modifier.Charges < 1)
-							{
-								toRemove.Add(modifier.Aura);
-							}
-						}
-					}
-				}
-
-				foreach (var aura in toRemove)
-				{
-					aura.Remove(false);
-				}
-			}
-		}
 		#endregion
 
 		#region Spell Constraints
 		/// <summary>
 		/// Add everything to the caster that this spell requires
 		/// </summary>
-		public void SatisfyConstraintsFor(Spell spell)
+		public void AddSpellRequirements(Spell spell)
 		{
 			var chr = OwnerChar;
 			// add reagents
@@ -437,11 +372,11 @@ namespace WCell.RealmServer.Spells
 					chr.Inventory.Ensure(tool.Template, 1);
 				}
 			}
-			if (spell.RequiredTotemCategories != null)
+			if (spell.RequiredToolCategories != null)
 			{
-				foreach (var cat in spell.RequiredTotemCategories)
+				foreach (var cat in spell.RequiredToolCategories)
 				{
-					var tool = ItemMgr.GetFirstTotemCat(cat);
+					var tool = ItemMgr.GetFirstItemOfToolCategory(cat);
 					if (tool != null)
 					{
 						chr.Inventory.Ensure(tool, 1);
@@ -450,17 +385,18 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// Profession
-			if (spell.Skill != null)
+			if (spell.Ability.Skill != null)
 			{
-			    chr.Skills.TryLearn(spell.SkillId);
+				chr.Skills.TryLearn(spell.Ability.Skill.Id);
 			}
 
 
 			// add spellfocus object (if not present)
 			if (spell.RequiredSpellFocus != 0)
 			{
-				var go = chr.Region.GetGOWithSpellFocus(chr.Position, spell.RequiredSpellFocus,
-					spell.Range.MaxDist > 0 ? (spell.Range.MaxDist) : 5f, chr.Phase);
+				var range = Owner.GetSpellMaxRange(spell);
+				var go = chr.Map.GetGOWithSpellFocus(chr.Position, spell.RequiredSpellFocus,
+					range > 0 ? (range) : 5f, chr.Phase);
 
 				if (go == null)
 				{
@@ -480,22 +416,27 @@ namespace WCell.RealmServer.Spells
 
 		#region Cooldowns
 		/// <summary>
-		/// Tries to add the given Spell to the cooldown List.
-		/// Returns false if Spell is still cooling down.
+		/// Returns true if spell is currently cooling down.
+		/// Removes expired cooldowns of that spell.
 		/// </summary>
-		public bool CheckCooldown(Spell spell)
+		public override bool IsReady(Spell spell)
 		{
 			// check for individual cooldown
 			ISpellIdCooldown idCooldown = null;
-			if (m_idCooldowns != null)
+			if (spell.CooldownTime > 0)
 			{
-				if (m_idCooldowns.TryGetValue(spell.Id, out idCooldown))
+				for (var i = 0; i < m_idCooldowns.Count; i++)
 				{
-					if (idCooldown.Until > DateTime.Now)
+					idCooldown = m_idCooldowns[i];
+					if (idCooldown.SpellId == spell.Id)
 					{
-						return false;
+						if (idCooldown.Until > DateTime.Now)
+						{
+							return false;
+						}
+						m_idCooldowns.RemoveAt(i);
+						break;
 					}
-					m_idCooldowns.Remove(spell.Id);
 				}
 			}
 
@@ -503,25 +444,27 @@ namespace WCell.RealmServer.Spells
 			ISpellCategoryCooldown catCooldown = null;
 			if (spell.CategoryCooldownTime > 0)
 			{
-				if (m_categoryCooldowns != null)
+				for (var i = 0; i < m_categoryCooldowns.Count; i++)
 				{
-					if (m_categoryCooldowns.TryGetValue(spell.Category, out catCooldown))
+					catCooldown = m_categoryCooldowns[i];
+					if (catCooldown.CategoryId == spell.Category)
 					{
 						if (catCooldown.Until > DateTime.Now)
 						{
 							return false;
 						}
-						m_categoryCooldowns.Remove(spell.Category);
+						m_categoryCooldowns.RemoveAt(i);
+						break;
 					}
 				}
 			}
 
-			// enqueue delete task for consistent cooldowns
-			if (idCooldown is ConsistentSpellIdCooldown || catCooldown is ConsistentSpellCategoryCooldown)
+			// enqueue task to delete persistent cooldowns
+			if (idCooldown is PersistentSpellIdCooldown || catCooldown is PersistentSpellCategoryCooldown)
 			{
-				var removedId = idCooldown as ConsistentSpellIdCooldown;
-				var removedCat = catCooldown as ConsistentSpellCategoryCooldown;
-				RealmServer.Instance.AddMessage(new Message(() =>
+				var removedId = idCooldown as PersistentSpellIdCooldown;
+				var removedCat = catCooldown as PersistentSpellCategoryCooldown;
+				RealmServer.IOQueue.AddMessage(new Message(() =>
 				{
 					if (removedId != null)
 					{
@@ -538,7 +481,6 @@ namespace WCell.RealmServer.Spells
 
 		public override void AddCooldown(Spell spell, Item casterItem)
 		{
-			// TODO: Add cooldown mods
 			var itemSpell = casterItem != null && casterItem.Template.UseSpell != null;
 
 			var cd = 0;
@@ -551,22 +493,18 @@ namespace WCell.RealmServer.Spells
 				cd = spell.GetCooldown(Owner);
 			}
 
-			var catCd = 0;
+			int catCd;
 			if (itemSpell)
 			{
 				catCd = casterItem.Template.UseSpell.CategoryCooldown;
 			}
-			if (catCd == 0)
+			else
 			{
-				catCd = spell.CategoryCooldownTime;
+				catCd = spell.GetModifiedCooldown(Owner, spell.CategoryCooldownTime);
 			}
 
 			if (cd > 0)
 			{
-				if (m_idCooldowns == null)
-				{
-					m_idCooldowns = new Dictionary<uint, ISpellIdCooldown>();
-				}
 				var idCooldown = new SpellIdCooldown
 				{
 					SpellId = spell.Id,
@@ -577,15 +515,11 @@ namespace WCell.RealmServer.Spells
 				{
 					idCooldown.ItemId = casterItem.Template.Id;
 				}
-				m_idCooldowns[spell.Id] = idCooldown;
+				m_idCooldowns.Add(idCooldown);
 			}
 
 			if (spell.CategoryCooldownTime > 0)
 			{
-				if (m_categoryCooldowns == null)
-				{
-					m_categoryCooldowns = new Dictionary<uint, ISpellCategoryCooldown>();
-				}
 				var catCooldown = new SpellCategoryCooldown
 				{
 					SpellId = spell.Id,
@@ -601,164 +535,93 @@ namespace WCell.RealmServer.Spells
 				{
 					catCooldown.CategoryId = spell.Category;
 				}
-				m_categoryCooldowns[spell.Category] = catCooldown;
+				m_categoryCooldowns.Add(catCooldown);
 			}
 
-		}
-
-		/// <summary>
-		/// Returns whether the given spell is still cooling down
-		/// </summary>
-		public override bool IsReady(Spell spell)
-		{
-			ISpellCategoryCooldown catCooldown;
-			if (m_categoryCooldowns != null)
-			{
-				if (m_categoryCooldowns.TryGetValue(spell.Category, out catCooldown))
-				{
-					if (catCooldown.Until > DateTime.Now)
-					{
-						return true;
-					}
-
-					m_categoryCooldowns.Remove(spell.Category);
-					if (catCooldown is ActiveRecordBase)
-					{
-						RealmServer.Instance.AddMessage(new Message(() => ((ActiveRecordBase)catCooldown).Delete()));
-					}
-				}
-			}
-
-			ISpellIdCooldown idCooldown;
-			if (m_idCooldowns != null)
-			{
-				if (m_idCooldowns.TryGetValue(spell.Id, out idCooldown))
-				{
-					if (idCooldown.Until > DateTime.Now)
-					{
-						return true;
-					}
-
-					m_idCooldowns.Remove(spell.Id);
-					if (idCooldown is ActiveRecordBase)
-					{
-						RealmServer.Instance.AddMessage(() => ((ActiveRecordBase)idCooldown).Delete());
-					}
-				}
-			}
-			return false;
 		}
 
 		/// <summary>
 		/// Clears all pending spell cooldowns.
 		/// </summary>
-		/// <remarks>Requires IO-Context.</remarks>
 		public override void ClearCooldowns()
 		{
 			// send cooldown updates to client
-			if (m_idCooldowns != null)
+			foreach (var cd in m_idCooldowns)
 			{
-				foreach (var pair in m_idCooldowns)
-				{
-					SpellHandler.SendClearCoolDown(OwnerChar, (SpellId)pair.Key);
-				}
-				m_idCooldowns.Clear();
+				SpellHandler.SendClearCoolDown(OwnerChar, (SpellId)cd.SpellId);
 			}
-			if (m_categoryCooldowns != null)
+
+			foreach (var spell in m_byId.Values)
 			{
-				foreach (var spell in m_byId.Values)
+				foreach (var cd in m_categoryCooldowns)
 				{
-					if (m_categoryCooldowns.ContainsKey(spell.Category))
+					if (spell.Category == cd.CategoryId)
 					{
 						SpellHandler.SendClearCoolDown(OwnerChar, spell.SpellId);
+						break;
 					}
 				}
 			}
 
 			// remove and delete all cooldowns
-			var cds = m_idCooldowns;
-			var catCds = m_categoryCooldowns;
-			m_idCooldowns = null;
-			m_categoryCooldowns = null;
-			RealmServer.Instance.AddMessage(new Message(() =>
+			var cds = m_idCooldowns.ToArray();
+			var catCds = m_categoryCooldowns.ToArray();
+			m_idCooldowns.Clear();
+			m_categoryCooldowns.Clear();
+
+			RealmServer.IOQueue.AddMessage(new Message(() =>
 			{
-				if (cds != null)
+				foreach (var cooldown in cds)
 				{
-					foreach (var cooldown in cds.Values)
+					if (cooldown is ActiveRecordBase)
 					{
-						if (cooldown is ActiveRecordBase)
-						{
-							((ActiveRecordBase)cooldown).Delete();
-						}
+						((ActiveRecordBase)cooldown).Delete();
 					}
-					cds.Clear();
 				}
-				if (catCds != null)
+				foreach (var cooldown in catCds)
 				{
-					foreach (var cooldown in catCds.Values)
+					if (cooldown is ActiveRecordBase)
 					{
-						if (cooldown is ActiveRecordBase)
-						{
-							((ActiveRecordBase)cooldown).Delete();
-						}
+						((ActiveRecordBase)cooldown).Delete();
 					}
-					catCds.Clear();
 				}
 			}));
+
+			// clear rune cooldowns
+			if (m_runes != null)
+			{
+				// TODO: Clear rune cooldown
+			}
 		}
 
 		/// <summary>
-		/// Clears the cooldown for this spell and all spells in its category
+		/// Clears the cooldown for this spell
 		/// </summary>
-		public override void ClearCooldown(Spell cooldownSpell)
+		public override void ClearCooldown(Spell cooldownSpell, bool alsoCategory = true)
 		{
 			var ownerChar = OwnerChar;
-			if (ownerChar != null)
+
+			// send cooldown update to client
+			SpellHandler.SendClearCoolDown(ownerChar, cooldownSpell.SpellId);
+			if (alsoCategory && cooldownSpell.Category != 0)
 			{
-				// send cooldown update to client
-				SpellHandler.SendClearCoolDown(ownerChar, cooldownSpell.SpellId);
-				if (cooldownSpell.Category != 0)
+				foreach (var spell in m_byId.Values)
 				{
-					foreach (var spell in m_byId.Values)
+					if (spell.Category == cooldownSpell.Category)
 					{
-						if (spell.Category == cooldownSpell.Category)
-						{
-							SpellHandler.SendClearCoolDown(ownerChar, spell.SpellId);
-						}
+						SpellHandler.SendClearCoolDown(ownerChar, spell.SpellId);
 					}
 				}
 			}
 
 			// remove and delete
-			ISpellIdCooldown idCooldown;
-			ISpellCategoryCooldown catCooldown;
-			if (m_idCooldowns != null)
-			{
-				if (m_idCooldowns.TryGetValue(cooldownSpell.Id, out idCooldown))
-				{
-					m_idCooldowns.Remove(cooldownSpell.Id);
-				}
-			}
-			else
-			{
-				idCooldown = null;
-			}
+			ISpellIdCooldown idCooldown = m_idCooldowns.RemoveFirst(cd => cd.SpellId == cooldownSpell.Id);
+			ISpellCategoryCooldown catCooldown = m_categoryCooldowns.RemoveFirst(cd => cd.CategoryId == cooldownSpell.Category);
 
-			if (m_categoryCooldowns != null)
-			{
-				if (m_categoryCooldowns.TryGetValue(cooldownSpell.Category, out catCooldown))
-				{
-					m_categoryCooldowns.Remove(cooldownSpell.Id);
-				}
-			}
-			else
-			{
-				catCooldown = null;
-			}
-
+			// enqueue task
 			if (idCooldown is ActiveRecordBase || catCooldown is ActiveRecordBase)
 			{
-				RealmServer.Instance.AddMessage(new Message(() =>
+				RealmServer.IOQueue.AddMessage(new Message(() =>
 				{
 					if (idCooldown is ActiveRecordBase)
 					{
@@ -773,28 +636,18 @@ namespace WCell.RealmServer.Spells
 			}
 		}
 
-		private void FinalizeCooldowns(object sender)
+		private void SaveCooldowns()
 		{
-			lock (m_lock)
-			{
-				if (m_offlineCooldownTimer != null)
-				{
-					m_offlineCooldownTimer = null;
-					FinalizeCooldowns(ref m_idCooldowns);
-					FinalizeCooldowns(ref m_categoryCooldowns);
-				}
-			}
+			SaveCooldowns(m_idCooldowns);
+			SaveCooldowns(m_categoryCooldowns);
 		}
 
-		private void FinalizeCooldowns<T>(ref Dictionary<uint, T> cooldowns) where T : ICooldown
+		private void SaveCooldowns<T>(List<T> cooldowns) where T : ICooldown
 		{
-			if (cooldowns == null)
-				return;
-
-			Dictionary<uint, T> newCooldowns = null;
-			foreach (ICooldown cooldown in cooldowns.Values)
+			for (var i = cooldowns.Count - 1; i >= 0; i--)
 			{
-				if (cooldown.Until < DateTime.Now + TimeSpan.FromMinutes(1))
+				ICooldown cooldown = cooldowns[i];
+				if (cooldown.Until < DateTime.Now.AddMilliseconds(SpellHandler.MinCooldownSaveTimeMillis))
 				{
 					// already expired or will expire very soon
 					if (cooldown is ActiveRecordBase)
@@ -802,24 +655,107 @@ namespace WCell.RealmServer.Spells
 						// delete
 						((ActiveRecordBase)cooldown).Delete();
 					}
+					cooldowns.RemoveAt(i);
 				}
 				else
 				{
-					if (newCooldowns == null)
-					{
-						newCooldowns = new Dictionary<uint, T>();
-					}
-
 					var cd = cooldown.AsConsistent();
-					if (cd.CharId != m_ownerId)
-					{
-						cd.CharId = m_ownerId;
-					}
-					cd.SaveAndFlush();		// update or create
-					newCooldowns.Add(cd.Identifier, (T)cd);
+					cd.CharId = Owner.EntityId.Low;
+					cd.Save(); // update or create
+					cooldowns.Add((T)cd);
 				}
 			}
-			cooldowns = newCooldowns;
+		}
+
+		#endregion
+
+		#region Save / Load
+		/// <summary>
+		/// Called to save runes (cds & spells are saved in another way)
+		/// </summary>
+		internal void OnSave()
+		{
+			SaveCooldowns();
+			if (m_runes != null)
+			{
+				var record = OwnerChar.Record;
+				record.RuneSetMask = m_runes.PackRuneSetMask();
+				record.RuneCooldowns = m_runes.Cooldowns;
+			}
+		}
+
+		internal void LoadSpellsAndTalents()
+		{
+			var owner = OwnerChar;
+			var ownerRecord = owner.Record;
+
+			// add Spells from DB into the correct collections
+			var dbSpells = SpellRecord.LoadAllRecordsFor(owner.EntityId.Low);
+			var specs = owner.SpecProfiles;
+			foreach (var record in dbSpells)
+			{
+				var spell = record.Spell;
+				if (spell == null)
+				{
+					LogManager.GetCurrentClassLogger().Warn("Character \"{0}\" had invalid spell: {1} ({2})", this, record.SpellId,
+															(uint)record.SpellId);
+					continue;
+				}
+
+				if (spell.IsTalent)
+				{
+					if (record.SpecIndex < 0 || record.SpecIndex >= specs.Length)
+					{
+						LogManager.GetCurrentClassLogger().Warn(
+							"Character \"{0}\" had Talent-Spell {1} ({2}) but with invalid SpecIndex: {3}", this, record.SpellId,
+							(uint)record.SpellId, record.SpecIndex);
+						continue;
+					}
+					specs[record.SpecIndex].TalentSpells.Add(record);
+				}
+				else
+				{
+					ownerRecord.AbilitySpells.Add(record);
+					OnlyAdd(spell);		// add ability spell
+				}
+			}
+
+			// add talents
+			foreach (var spellRecord in owner.CurrentSpecProfile.TalentSpells)
+			{
+                // Add the talent spell to the character
+				OnlyAdd(spellRecord);
+			}
+		}
+
+		internal void LoadCooldowns()
+		{
+			var owner = OwnerChar;
+			var now = DateTime.Now;
+
+			foreach (var cd in PersistentSpellIdCooldown.LoadIdCooldownsFor(owner.EntityId.Low))
+			{
+				if (cd.Until > now)
+				{
+					m_idCooldowns.Add(cd);
+				}
+				else
+				{
+					cd.Delete();
+				}
+			}
+
+			foreach (var cd in PersistentSpellCategoryCooldown.LoadCategoryCooldownsFor(owner.EntityId.Low))
+			{
+				if (cd.Until > now)
+				{
+					m_categoryCooldowns.Add(cd);
+				}
+				else
+				{
+					cd.Delete();
+				}
+			}
 		}
 		#endregion
 	}

@@ -28,15 +28,60 @@ namespace WCell.RealmServer.Spells.Effects
 
 		protected override void Apply(WorldObject target)
 		{
-			((Unit)target).DoSpellDamage(m_cast.CasterUnit, Effect, CalcEffectValue());
-		}
-
-		public override ObjectTypes CasterType
-		{
-			get { return ObjectTypes.Unit; }
+			((Unit)target).DealSpellDamage(m_cast.CasterUnit, Effect, CalcDamageValue());
 		}
 
 		public override ObjectTypes TargetType
+		{
+			get { return ObjectTypes.Unit; }
+		}
+	}
+
+	/// <summary>
+	/// Deal EffectValue% damage (don't add further modifiers)
+	/// </summary>
+	public class SchoolDamagePercentEffectHandler : SpellEffectHandler
+	{
+		public SchoolDamagePercentEffectHandler(SpellCast cast, SpellEffect effect)
+			: base(cast, effect)
+		{
+		}
+
+		protected override void Apply(WorldObject target)
+		{
+			var value = (CalcDamageValue() * ((Unit)target).MaxHealth + 50) / 100;
+			((Unit)target).DealSpellDamage(m_cast.CasterUnit, Effect, value, false);
+		}
+
+		public override ObjectTypes TargetType
+		{
+			get { return ObjectTypes.Unit; }
+		}
+	}
+
+	/// <summary>
+	/// Deals EffectValue in % of Melee AP
+	/// </summary>
+	public class SchoolDamageByAPPctEffectHandler : SchoolDamageEffectHandler
+	{
+		public SchoolDamageByAPPctEffectHandler(SpellCast cast, SpellEffect effect)
+			: base(cast, effect)
+		{
+		}
+
+		protected override void Apply(WorldObject target)
+		{
+			var value = ((m_cast.CasterUnit.TotalMeleeAP * CalcDamageValue()) + 50) / 100;
+
+			((Unit)target).DealSpellDamage(m_cast.CasterUnit, Effect, value);
+		}
+
+		public override ObjectTypes TargetType
+		{
+			get{return ObjectTypes.Unit;}
+		}
+
+		public override ObjectTypes CasterType
 		{
 			get { return ObjectTypes.Unit; }
 		}

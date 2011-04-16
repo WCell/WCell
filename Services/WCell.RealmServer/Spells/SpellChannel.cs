@@ -23,6 +23,7 @@ using WCell.Core.Timers;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Spells.Auras;
+using WCell.Util;
 
 namespace WCell.RealmServer.Spells
 {
@@ -53,7 +54,7 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		private SpellChannel()
 		{
-			m_timer = new TimerEntry(0.0f, 0.0f, Tick);
+			m_timer = new TimerEntry(Tick);
 		}
 
 		public SpellCast Cast
@@ -62,7 +63,7 @@ namespace WCell.RealmServer.Spells
 		}
 
 		/// <summary>
-		/// The duration for the current or last Channel
+		/// The total duration of this Channel
 		/// </summary>
 		public int Duration
 		{
@@ -91,16 +92,16 @@ namespace WCell.RealmServer.Spells
 			set
 			{
 				m_until = value;
-				var timeLeft = (m_until - Environment.TickCount);
+				var timeLeft = TimeLeft;
 				if (timeLeft < 0)
 				{
-					Cancel();
+					//Cancel();
+					timeLeft = 1;
 				}
-				else
-				{
-					m_ticks = m_maxTicks - (timeLeft / m_amplitude);
-					SpellHandler.SendChannelUpdate(m_cast.Caster, (uint)timeLeft);
-				}
+
+				m_ticks = MathUtil.CeilingInt(timeLeft/(float) m_amplitude);
+				m_timer.Start(0, timeLeft%m_amplitude);
+				SpellHandler.SendChannelUpdate(m_cast, (uint) timeLeft);
 			}
 		}
 
@@ -127,30 +128,28 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public void Pushback(int millis)
 		{
-			if (m_channeling && m_cast != null && m_maxTicks > 1)
+			if (m_channeling && m_cast != null)
 			{
-				Until -= millis;
+				Until += millis;
 			}
 		}
 
 		/// <summary>
 		/// Opens this SpellChannel. 
 		/// Will be called by SpellCast class.
+		/// Requires an active Caster.
 		/// </summary>
 		internal void Open(List<SpellEffectHandler> channelHandlers, List<IAura> auras)
 		{
 			if (!m_channeling && m_cast != null)
 			{
-#if DEBUG
-				log.Info("Opening " + this);
-#endif
 				m_channeling = true;
 				m_auras = auras;
 
 				var spell = m_cast.Spell;
 				var caster = m_cast.CasterUnit;
 
-				m_duration = spell.GetDuration(caster.CasterInfo);
+				m_duration = spell.Durations.Max;
 				m_amplitude = spell.ChannelAmplitude;
 
 				if (m_amplitude < 1)
@@ -160,17 +159,27 @@ namespace WCell.RealmServer.Spells
 				}
 
 				caster.ChannelSpell = spell.SpellId;
-				SpellHandler.SendChannelStart(caster, spell.SpellId, m_duration);
 
 				var now = Environment.TickCount;
 				m_ticks = 0;
 				m_maxTicks = m_duration / m_amplitude;
 				m_channelHandlers = channelHandlers;
+
+				// get duration again, this time with modifiers
+				m_duration = spell.GetDuration(caster.SharedReference);
+				if (m_amplitude < 1)
+				{
+					// only one tick
+					m_amplitude = m_duration;
+				}
+
 				m_until = now + m_duration;
+				SpellHandler.SendChannelStart(m_cast, spell.SpellId, m_duration);
+
 
 				if (m_channeling)
 				{
-					m_timer.Start(0, m_amplitude);
+					m_timer.Start(m_amplitude, m_amplitude);
 				}
 				// Send Initial Tick? 
 				// Keep in mind: Aura is not initialized at this point!
@@ -184,7 +193,7 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// Triggers a new tick
 		/// </summary>
-		protected void Tick(float timeElapsed)
+		protected void Tick(int timeElapsed)
 		{
 			m_ticks++;
 
@@ -216,12 +225,12 @@ namespace WCell.RealmServer.Spells
 			// apply effects
 			foreach (var handler in handlers)
 			{
+				handler.OnChannelTick();
 				if (!m_channeling)
 				{
 					// cancelling a handler might cancel the SpellChannel
 					return;
 				}
-				handler.OnChannelTick();
 			}
 
 			// apply all Auras remove those that went inactive in the meantime
@@ -229,11 +238,11 @@ namespace WCell.RealmServer.Spells
 			{
 				m_auras.RemoveAll(aura =>
 				{
-					if (aura.IsActive)
+					if (aura.IsAdded)
 					{
 						aura.Apply();
 						// remove if Aura went inactive
-						return !aura.IsActive;
+						return !aura.IsAdded;
 					}
 					return true;
 				});
@@ -317,6 +326,7 @@ namespace WCell.RealmServer.Spells
 
 				auras.Clear();
 				SpellCast.AuraListPool.Recycle(auras);
+				m_auras = null;
 			}
 
 			m_channelHandlers.Clear();
@@ -327,7 +337,7 @@ namespace WCell.RealmServer.Spells
 
 			if (cancelled)
 			{
-				SpellHandler.SendChannelUpdate(caster, 0);
+				SpellHandler.SendChannelUpdate(m_cast, 0);
 			}
 
 			var obj = caster.ChannelObject;
@@ -341,7 +351,7 @@ namespace WCell.RealmServer.Spells
 
 		#region IUpdatable
 
-		public void Update(float dt)
+		public void Update(int dt)
 		{
 			if (m_timer == null)
 			{
@@ -369,7 +379,7 @@ namespace WCell.RealmServer.Spells
 		public override string ToString()
 		{
 			if (m_cast != null)
-				return "SpellChannel (Caster: " + m_cast.Caster + ", " + m_cast.Spell + ")";
+				return "SpellChannel (Caster: " + m_cast.CasterObject + ", " + m_cast.Spell + ")";
 
 			return "SpellChannel (Inactive)";
 		}

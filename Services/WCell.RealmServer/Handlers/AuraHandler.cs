@@ -24,15 +24,17 @@ namespace WCell.RealmServer.Spells.Auras
 				var chr = client.ActiveCharacter;
 				var aura = chr.Auras[spell, true];
 
-				if (aura != null && aura.CanBeCancelled)
+				if (aura != null && aura.CanBeRemoved)
 				{
 					aura.TryRemove(true);
 				}
 			}
 		}
 
+		#region Send Auras
 		public static void SendAuraUpdate(Unit owner, Aura aura)
 		{
+			if (!owner.IsAreaActive) return;
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_AURA_UPDATE))
 			{
 				owner.EntityId.WritePacked(packet);
@@ -45,6 +47,7 @@ namespace WCell.RealmServer.Spells.Auras
 
 		public static void SendAllAuras(IPacketReceiver rcv, Unit owner)
 		{
+			if (!owner.IsAreaActive) return;
 			using (var packet = CreateAllAuraPacket(owner))
 			{
 				rcv.Send(packet);
@@ -53,6 +56,7 @@ namespace WCell.RealmServer.Spells.Auras
 
 		public static void SendAllAuras(Unit owner)
 		{
+			if (!owner.IsAreaActive) return;
 			using (var packet = CreateAllAuraPacket(owner))
 			{
 				owner.SendPacketToArea(packet);
@@ -86,7 +90,7 @@ namespace WCell.RealmServer.Spells.Auras
 			// If the target was not the caster
 			if (!aura.Flags.HasFlag(AuraFlags.TargetIsCaster))
 			{
-				aura.CasterInfo.CasterId.WritePacked(packet);
+				aura.CasterReference.EntityId.WritePacked(packet);
 			}
 
             if (aura.Flags.HasFlag(AuraFlags.HasDuration))
@@ -109,6 +113,7 @@ namespace WCell.RealmServer.Spells.Auras
 				owner.SendPacketToArea(packet);
 			}
 		}
+		#endregion
 
 		/// <summary>
 		/// Sends updates to the client for spell-modifier
@@ -116,7 +121,7 @@ namespace WCell.RealmServer.Spells.Auras
 		public static void SendModifierUpdate(Character chr, SpellEffect effect, bool isPercent)
 		{
 			var type = (SpellModifierType)effect.MiscValue;
-			var enhancers = isPercent ? chr.PlayerSpells.SpellModifiersPct : chr.PlayerSpells.SpellModifiersFlat;
+			var enhancers = isPercent ? chr.PlayerAuras.SpellModifiersPct : chr.PlayerAuras.SpellModifiersFlat;
 
 			foreach (var bit in effect.AffectMaskBitSet)
 			{

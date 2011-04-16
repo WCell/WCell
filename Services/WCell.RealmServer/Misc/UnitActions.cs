@@ -7,13 +7,15 @@ using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Items;
+using WCell.RealmServer.Modifiers;
 using WCell.RealmServer.RacesClasses;
 using WCell.RealmServer.Spells;
+using WCell.RealmServer.Spells.Auras;
 using WCell.Util;
 
 namespace WCell.RealmServer.Misc
 {
-	#region Action Interfaces
+	#region IUnitAction
 	/// <summary>
 	/// Any kind of Action a Unit can perform
 	/// </summary>
@@ -29,12 +31,25 @@ namespace WCell.RealmServer.Misc
 		/// </summary>
 		Unit Victim { get; }
 
-		Spell Spell
+		/// <summary>
+		/// Whether this was a critical action (might be meaningless for some actions)
+		/// </summary>
+		bool IsCritical { get; }
+
+		Spell Spell { get; }
+
+		/// <summary>
+		/// Reference count is used to support pooling
+		/// </summary>
+		int ReferenceCount
 		{
 			get;
+			set;
 		}
 	}
+	#endregion
 
+	#region IDamageAction
 	public interface IDamageAction : IUnitAction
 	{
 		SpellEffect SpellEffect
@@ -58,11 +73,6 @@ namespace WCell.RealmServer.Misc
 			get;
 		}
 
-		bool IsCritical
-		{
-			get;
-		}
-
 		DamageSchool UsedSchool
 		{
 			get;
@@ -81,6 +91,103 @@ namespace WCell.RealmServer.Misc
 		IWeapon Weapon
 		{
 			get;
+		}
+	}
+	#endregion
+
+	#region SimpleUnitAction
+	public class SimpleUnitAction : IUnitAction
+	{
+		public Unit Attacker
+		{
+			get;
+			set;
+		}
+
+		public Unit Victim
+		{
+			get;
+			set;
+		}
+
+		public bool IsCritical
+		{
+			get;
+			set;
+		}
+
+		public Spell Spell
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Does nothing
+		/// </summary>
+		public int ReferenceCount
+		{
+			get { return 0; }
+			set { }
+		}
+	}
+	#endregion
+
+	#region HealAction
+	public class HealAction : SimpleUnitAction
+	{
+		public int Value
+		{
+			get;
+			set;
+		}
+	}
+	#endregion
+
+	#region TrapTriggerAction
+	public class TrapTriggerAction : SimpleUnitAction
+	{
+	}
+	#endregion
+
+	#region AuraRemovedAction
+	public class AuraAction : IUnitAction
+	{
+		public Unit Attacker
+		{
+			get;
+			set;
+		}
+
+		public Unit Victim
+		{
+			get;
+			set;
+		}
+
+		public bool IsCritical
+		{
+			get { return false; }
+		}
+
+		public Aura Aura
+		{
+			get;
+			set;
+		}
+
+		public Spell Spell
+		{
+			get { return Aura.Spell; }
+		}
+
+		/// <summary>
+		/// Does nothing
+		/// </summary>
+		public int ReferenceCount
+		{
+			get { return 0; }
+			set { }
 		}
 	}
 	#endregion
@@ -149,6 +256,15 @@ namespace WCell.RealmServer.Misc
 		{
 			get { return null; }
 		}
+
+		/// <summary>
+		/// Does nothing
+		/// </summary>
+		public int ReferenceCount
+		{
+			get { return 0; }
+			set { }
+		}
 	}
 	#endregion
 
@@ -157,12 +273,10 @@ namespace WCell.RealmServer.Misc
 	/// </summary>
 	public class DamageAction : IDamageAction
 	{
-		private static Logger log = LogManager.GetCurrentClassLogger();
-
 		/// <summary>
 		/// During Combat: The default delay in milliseconds between CombatTicks
 		/// </summary>
-		public static int DefaultCombatDelay = 600;
+		public static int DefaultCombatTickDelay = 600;
 
 		public DamageAction(Unit attacker)
 		{
@@ -187,10 +301,33 @@ namespace WCell.RealmServer.Misc
 			set;
 		}
 
+		public void ModDamagePercent(int pct)
+		{
+			m_Damage += (m_Damage * pct + 50) / 100;
+		}
+
+		/// <summary>
+		/// Returns the given percentage of the applied damage
+		/// </summary>
+		public int GetDamagePercent(int percent)
+		{
+			return (m_Damage * percent + 50) / 100;
+		}
+
+		private int m_Damage;
+
 		public int Damage
 		{
-			get;
-			set;
+			get { return m_Damage; }
+			set
+			{
+				if (value < 0)
+				{
+					// no negative damage
+					value = 0;
+				}
+				m_Damage = value;
+			}
 		}
 
 		public bool IsCritical
@@ -239,6 +376,15 @@ namespace WCell.RealmServer.Misc
 
 		public HitFlags HitFlags;
 
+		/// <summary>
+		/// Actions that are marked in use, will not be recycled
+		/// </summary>
+		public int ReferenceCount
+		{
+			get;
+			set;
+		}
+
 		#region Situational Properties
 		public DamageSchool UsedSchool
 		{
@@ -246,18 +392,32 @@ namespace WCell.RealmServer.Misc
 			set;
 		}
 
-		public bool IsInUse
-		{
-			get { return Victim != null; }
-		}
-
+		/// <summary>
+		/// White damage or strike ability (Heroic Strike, Ranged, Throw etc)
+		/// </summary>
 		public bool IsWeaponAttack
 		{
 			get
 			{
 				return Weapon != null &&
-					   (SpellEffect == null || SpellEffect.Spell.IsWeaponAbility);
+					   (SpellEffect == null || SpellEffect.Spell.IsPhysicalAbility);
 			}
+		}
+
+		/// <summary>
+		/// Any attack that involves a spell
+		/// </summary>
+		public bool IsSpellCast
+		{
+			get { return SpellEffect != null; }
+		}
+
+		/// <summary>
+		/// Pure spell attack, no weapon involved
+		/// </summary>
+		public bool IsMagic
+		{
+			get { return !IsWeaponAttack && SpellEffect != null; }
 		}
 
 		public bool IsRangedAttack
@@ -298,17 +458,24 @@ namespace WCell.RealmServer.Misc
 			}
 		}
 
+		/// <summary>
+		/// An action can crit if there is no spell involved,
+		/// the given spell is allowed to crit by default,
+		/// or the Attacker has a modifier that allows the spell to crit.
+		/// </summary>
 		public bool CanCrit
 		{
-			get { return (SpellEffect == null || !Spell.AttributesExB.HasFlag(SpellAttributesExB.CannotCrit)); }
+			get
+			{
+				return (SpellEffect == null ||
+						((!Spell.AttributesExB.HasFlag(SpellAttributesExB.CannotCrit) && !IsDot)) ||
+						(Attacker is Character && ((Character)Attacker).PlayerAuras.CanSpellCrit(SpellEffect.Spell)));
+			}
 		}
 
 		public int ActualDamage
 		{
-			get
-			{
-				return Damage - Absorbed - Resisted - Blocked;
-			}
+			get { return Damage - Absorbed - Resisted - Blocked; }
 		}
 		#endregion
 
@@ -317,15 +484,27 @@ namespace WCell.RealmServer.Misc
 		{
 			get
 			{
-				if (SpellEffect != null && SpellEffect.IsProc)
+				var flags = ProcTriggerFlags.AnyHostileAction;
+				if (SpellEffect != null)
 				{
-					return ProcTriggerFlags.None;
+					if (SpellEffect.IsProc)
+					{
+						// procs can't trigger procs
+						return ProcTriggerFlags.None;
+					}
+				}
+				else
+				{
+					flags |= ProcTriggerFlags.SpellHit;
+					if (IsCritical)
+					{
+						flags |= ProcTriggerFlags.SpellHitCritical;
+					}
 				}
 
-				var flags = ProcTriggerFlags.AnyHostileAction;
 				if (IsRangedAttack)
 				{
-					flags |= ProcTriggerFlags.RangedAttack | ProcTriggerFlags.PhysicalAttack;
+					flags |= ProcTriggerFlags.RangedHit | ProcTriggerFlags.PhysicalAttack;
 					if (IsCritical)
 					{
 						flags |= ProcTriggerFlags.RangedCriticalHit;
@@ -333,20 +512,15 @@ namespace WCell.RealmServer.Misc
 				}
 				else if (IsMeleeAttack)
 				{
-					flags |= ProcTriggerFlags.MeleeAttack | ProcTriggerFlags.PhysicalAttack;
+					flags |= ProcTriggerFlags.MeleeHit | ProcTriggerFlags.PhysicalAttack;
 					if (IsCritical)
 					{
 						flags |= ProcTriggerFlags.MeleeCriticalHit;
 					}
 				}
-
-				if (SpellEffect != null)
+				if (Blocked > 0)
 				{
-					flags |= ProcTriggerFlags.SpellHit;
-					if (IsCritical)
-					{
-						flags |= ProcTriggerFlags.SpellCastSpecific2;
-					}
+					flags |= ProcTriggerFlags.Block;
 				}
 				return flags;
 			}
@@ -356,15 +530,24 @@ namespace WCell.RealmServer.Misc
 		{
 			get
 			{
-				if (SpellEffect != null && SpellEffect.IsProc)
+				var flags = ProcTriggerFlags.ActionOther;
+				if (SpellEffect != null)
 				{
-					return ProcTriggerFlags.None;
+					if (SpellEffect.IsProc)
+					{
+						// procs can't trigger procs
+						return ProcTriggerFlags.None;
+					}
+					flags |= ProcTriggerFlags.SpellCast;
+					if (IsCritical)
+					{
+						flags |= ProcTriggerFlags.SpellCastCritical;
+					}
 				}
 
-				var flags = ProcTriggerFlags.ActionSelf;
 				if (IsRangedAttack)
 				{
-					flags |= ProcTriggerFlags.RangedAttackSelf;
+					flags |= ProcTriggerFlags.RangedHitOther;
 					if (IsCritical)
 					{
 						//flags |= ProcTriggerFlags.RangedCriticalHit;
@@ -372,22 +555,18 @@ namespace WCell.RealmServer.Misc
 				}
 				else if (IsMeleeAttack)
 				{
-					flags |= ProcTriggerFlags.MeleeAttackSelf;
+					flags |= ProcTriggerFlags.MeleeHitOther;
 					if (IsCritical)
 					{
-						flags |= ProcTriggerFlags.MeleeCriticalHitSelf;
+						flags |= ProcTriggerFlags.MeleeCriticalHitOther;
 					}
-				}
-				if (SpellEffect != null)
-				{
-					flags |= ProcTriggerFlags.SpellCast;
 				}
 				return flags;
 			}
 		}
 		#endregion
 
-		#region Attack and Damage
+		#region Attack
 		/// <summary>
 		/// Does a melee/ranged/wand physical attack. (Not spells)
 		/// Calculates resistances/attributes (resilience, hit chance) and takes them into account.
@@ -397,7 +576,7 @@ namespace WCell.RealmServer.Misc
 		{
 			if (Victim == null)
 			{
-				log.Error("{0} tried to attack with no Target selected.", Attacker);
+				LogManager.GetCurrentClassLogger().Error("{0} tried to attack with no Target selected.", Attacker);
 				return false;
 			}
 
@@ -406,11 +585,16 @@ namespace WCell.RealmServer.Misc
 				Evade();
 				return false;
 			}
-			else if (Victim.IsImmune(DamageSchool.Physical) || Victim.IsInvulnerable)
+			else if (Victim.IsImmune(UsedSchool) || Victim.IsInvulnerable)
 			{
 				MissImmune();
 				return false;
 			}
+
+			//foreach (var mod in Attacker.AttackModifiers)
+			//{
+			//    mod.ModPreAttack(this);
+			//}
 
 			if (CanCrit && Victim.StandState != StandState.Stand)
 			{
@@ -467,26 +651,15 @@ namespace WCell.RealmServer.Misc
 				else
 				{
 					var crushingblow = CalcCrushingBlowChance();
-					var critChance = CalcCritChance();
+					var critical = CalcCritChance();
 
-					critChance -= (int)(Victim.GetResiliencePct() * 100); //resilience
-					int critical;
-
-					if (critChance < 0)
-					{
-						critical = 0;
-					}
-					else
-					{
-						critical = critChance;
-					}
 					if (random > (hitChance - dodgeParry - glancingblow - crushingblow))
 					{
 						//crushing blow
 						StrikeCrushing();
 						return true;
 					}
-					else if (CanCrit && random > (hitChance - dodgeParry - glancingblow - crushingblow - critical))
+					else if (random > (hitChance - dodgeParry - glancingblow - crushingblow - critical))
 					{
 						// critical hit
 						StrikeCritical();
@@ -494,8 +667,7 @@ namespace WCell.RealmServer.Misc
 					}
 					else
 					{
-						var blockchance = CalcBlockChance();
-						if (CanBlockParry && random > (hitChance - dodgeParry - glancingblow - critical - crushingblow - blockchance))
+						if (CanBlockParry && random > (hitChance - dodgeParry - glancingblow - critical - crushingblow - CalcBlockChance()))
 						{
 							// block
 							Block();
@@ -511,7 +683,9 @@ namespace WCell.RealmServer.Misc
 				}
 			}
 		}
+		#endregion
 
+		#region Miss & Strike
 		public void MissImmune()
 		{
 			Damage = 0;
@@ -563,7 +737,7 @@ namespace WCell.RealmServer.Misc
 
 		public void StrikeCrushing()
 		{
-			Damage = (Damage * 1.5f).RoundInt();
+			Damage = (Damage * 10 + 5) / 15;		// == Damage * 1.5f
 			HitFlags = HitFlags.NormalSwingAnim | HitFlags.Crushing;
 			VictimState = VictimState.Wound;
 			Blocked = 0;
@@ -573,13 +747,18 @@ namespace WCell.RealmServer.Misc
 
 		public void StrikeCritical()
 		{
-			Damage = Attacker.CalcCritDamage(Damage, Victim, SpellEffect).RoundInt();
+			IsCritical = Victim.StandState == StandState.Stand;
+			SetCriticalDamage();
 			HitFlags = HitFlags.NormalSwingAnim | HitFlags.Resist_1 | HitFlags.Resist_2 | HitFlags.CriticalStrike;
 			VictimState = VictimState.Wound;
 			Blocked = 0;
 			// Automatic double damage against sitting target - but doesn't proc crit abilities
-			IsCritical = Victim.StandState == StandState.Stand;
 			DoStrike();
+		}
+
+		public void SetCriticalDamage()
+		{
+			Damage = MathUtil.RoundInt(Attacker.CalcCritDamage(Damage, Victim, SpellEffect));
 		}
 
 		public void StrikeGlancing()
@@ -610,7 +789,6 @@ namespace WCell.RealmServer.Misc
 			{
 				var level = Attacker.Level;
 				var res = Victim.GetResistance(UsedSchool) - Attacker.GetTargetResistanceMod(UsedSchool);
-
 
 				if (res > 0)
 				{
@@ -647,26 +825,38 @@ namespace WCell.RealmServer.Misc
 					ResistPct = 0;
 				}
 
-				Attacker.AddDamageMods(this);
-
-				Resisted = (ResistPct * Damage / 100f).RoundInt();
-				Absorbed = Victim.Absorb(UsedSchool, Damage);
-				if (Absorbed > 0)
+				Victim.DeathPrevention++;
+				Attacker.DeathPrevention++;
+				try
 				{
-					HitFlags |= HitFlags.Absorb_1 | HitFlags.Absorb_2;
+					// add mods and call events
+					AddDamageMods();
+					Victim.OnDefend(this);
+					Attacker.OnAttack(this);
+
+					Resisted = MathUtil.RoundInt(ResistPct * Damage / 100f);
+					if (Absorbed > 0)
+					{
+						HitFlags |= HitFlags.Absorb_1 | HitFlags.Absorb_2;
+					}
+					else
+					{
+						Absorbed = Resisted = 0;
+					}
+
+					if (Weapon == Attacker.OffHandWeapon)
+					{
+						HitFlags |= HitFlags.LeftSwing;
+					}
+
+					Victim.DoRawDamage(this);
+				}
+				finally
+				{
+					Victim.DeathPrevention--;
+					Attacker.DeathPrevention--;
 				}
 			}
-			else
-			{
-				Absorbed = Resisted = 0;
-			}
-
-			if (Weapon == Attacker.OffHandWeapon)
-			{
-				HitFlags |= HitFlags.LeftSwing;
-			}
-
-			Victim.DoRawDamage(this);
 
 			//if ()
 			//CombatHandler.SendMeleeDamage(attacker, this, schools, hitInfo, (uint)totalDamage,
@@ -679,10 +869,8 @@ namespace WCell.RealmServer.Misc
 			{
 				CombatHandler.SendAttackerStateUpdate(this);
 			}
-
-			// reset Target
-			Victim = null;
 		}
+
 		#endregion
 
 		#region Chances
@@ -783,23 +971,9 @@ namespace WCell.RealmServer.Misc
 		/// </summary>
 		public int CalcHitChance()
 		{
-			var hitchance = 0;
+			int hitchance = 0;
 			int skillBonus;
 
-			if (Attacker is Character)
-			{
-				var atk = Attacker as Character;
-				var hitrating = atk.GetCombatRatingMod(CombatRating.MeleeHitChance);
-
-				if (!IsRangedAttack)
-				{
-					hitchance = (int)(100 * (hitrating / GameTables.GetCRTable(CombatRating.MeleeHitChance)[Attacker.Level - 1]));
-				}
-				else
-				{
-					hitchance = (int)(100 * (hitrating / GameTables.GetCRTable(CombatRating.RangedHitChance)[Attacker.Level - 1]));
-				}
-			}
 			//uhm gotta set the variables for skills
 			if (Victim is Character)
 			{
@@ -810,9 +984,16 @@ namespace WCell.RealmServer.Misc
 				skillBonus = Victim.Level * 5; // defskill of mobs depends on their lvl.
 			}
 
+			// attacker hit mods
+			var attackHitChanceMod = Victim.GetIntMod(IsRangedAttack ? StatModifierInt.AttackerRangedHitChance : StatModifierInt.AttackerMeleeHitChance);
+			hitchance += attackHitChanceMod * 100;
+
 			if (Attacker is Character)
 			{
-				skillBonus -= (int)((Character)Attacker).Skills.GetValue(Weapon.Skill);
+
+				var atk = Attacker as Character;
+				hitchance += (IsRangedAttack ? (int)atk.RangedHitChance : (int)atk.HitChance) * 100;
+				skillBonus -= (int)atk.Skills.GetValue(Weapon.Skill);
 			}
 			else
 			{
@@ -852,7 +1033,7 @@ namespace WCell.RealmServer.Misc
 
 		/// <summary>
 		/// 2.1 calculation (3.30 is ~10% lower (24%))
-		/// Should be between 1 - 10000, 
+		/// Is between 1 - 10000, 
 		/// </summary>
 		/// <returns></returns>
 		public int CalcGlancingBlowChance()
@@ -865,10 +1046,7 @@ namespace WCell.RealmServer.Misc
 					weaponSkill = (uint)Attacker.Level * 5;
 				}
 				var chance = (10 + (int)(Victim.Level * 5 - weaponSkill)) * 100;
-				if (chance > 10000)
-					return 10000;
-
-				return chance;
+				return MathUtil.ClampMinMax(chance, 0, 10000);
 			}
 			return 0;
 		}
@@ -916,39 +1094,83 @@ namespace WCell.RealmServer.Misc
 		}
 
 		/// <summary>
-		/// Calculates the crit chance between 1-10000
+		/// After we already know that we did not crit, we want to check
+		/// again against a bonus crit chance.
+		/// 
+		/// We use basic laws of probability:
+		/// P(CritWithBonus | NoCrit) = 
+		/// P(CritWithBonus) / P(NoCrit) =
+		/// critBonus / (1 - origCritChance)
 		/// </summary>
-		/// <returns>The crit chance after taking into account the defense/weapon skill</returns>
+		public void AddBonusCritChance(int critBonusPct)
+		{
+			if (IsCritical) return;
+
+			var origCritChance = CalcCritChance();	// 0-10000
+			var critChance = (critBonusPct * 100) / (1 - origCritChance);
+
+			IsCritical = Utility.Random(0, 10000) < critChance;
+			if (IsCritical)
+			{
+				SetCriticalDamage();
+			}
+		}
+
+		/// <summary>
+		/// Calculates the crit chance between 0-10000
+		/// </summary>
+		/// <returns>The crit chance after taking into account defense, weapon skills, resilience etc</returns>
 		public int CalcCritChance()
 		{
-			var chance = Attacker.CalcCritChanceBase(Victim, SpellEffect, Weapon);
-
-			if (Attacker is NPC && Victim is Character)
+			if (!CanCrit)
 			{
-				var weaponSkill = Attacker.Level * 5;
-				var chr = Victim as Character;
-				var defSkill = chr.Skills.GetValue(SkillId.Defense);
-
-				chance += 0.04f * (weaponSkill - defSkill);
+				return 0;
 			}
 
-			if (Attacker is Character && Victim is NPC)
-			{
-				var chr = Attacker as Character;
-				var weaponSkill = chr.Skills.GetValue(Weapon.Skill);
-				var defSkill = Victim.Level * 5;
+			var chance = (int)Attacker.GetBaseCritChance(UsedSchool, Spell, Weapon) * 100;
 
-				if (defSkill > weaponSkill)
+			if (Weapon != null)
+			{
+				if (Attacker is NPC && Victim is Character)
 				{
-					chance -= 0.2f * (defSkill - weaponSkill);
+					// NPC attacks Player
+					var chr = Victim as Character;
+					var weaponSkill = chr.Skills.GetValue(Weapon.Skill);
+					var defSkill = chr.Skills.GetValue(SkillId.Defense);
+
+					chance += (int)(4 * (weaponSkill - defSkill));
 				}
-				// else: no change (mobs def is smaller than player's weapon skill)
+
+				if (Attacker is Character && Victim is NPC)
+				{
+					// Player attacks NPC
+					var chr = Attacker as Character;
+					var weaponSkill = chr.Skills.GetValue(Weapon.Skill);
+					var defSkill = Victim.Level * 5;
+
+					if (defSkill > weaponSkill)
+					{
+						chance -= (int)(20 * (defSkill - weaponSkill));
+					}
+					// else: no change (mobs def is smaller than player's weapon skill)
+				}
 			}
-			if (chance > 10000)
+
+			// attackerCritChance is not shown in the tooltip but affects the crit chance against the Victim
+			var attackerCritChance = 100;
+			if (UsedSchool == DamageSchool.Physical)
 			{
-				return 10000;
+				attackerCritChance += Victim.AttackerPhysicalCritChancePercentMod;
 			}
-			return (int)chance * 100;
+			else
+			{
+				attackerCritChance += Victim.AttackerSpellCritChancePercentMod;
+			}
+
+			chance = (chance * attackerCritChance + 50) / 100;	// rounded
+			chance -= (int)(Victim.GetResiliencePct() * 100); //resilience
+
+			return MathUtil.ClampMinMax(chance, 0, 10000);
 		}
 
 		/// <summary>
@@ -998,7 +1220,6 @@ namespace WCell.RealmServer.Misc
 		/// Calculates the parry chance taking into account the difference between 
 		/// the weapon skill of the attacker and the defense skill of the victim.
 		/// Also see <see cref="Unit.CalcParryChance"/>
-		/// TODO: Merge with Unit.CalcParryChance
 		/// </summary>
 		/// <returns>The chance between 1-10000</returns>
 		public int CalcParryChance()
@@ -1024,7 +1245,6 @@ namespace WCell.RealmServer.Misc
 		/// Calculates the dodge chance taking into account the difference between 
 		/// the weapon skill of the attacker and the defense skill of the victim.
 		/// Also see <see cref="Unit.CalcDodgeChance"/>
-		/// TODO: Merge with Unit.CalcDodgeChance
 		/// </summary>
 		/// <returns>The chance between 1-10000</returns>
 		public int CalcDodgeChance()
@@ -1049,21 +1269,65 @@ namespace WCell.RealmServer.Misc
 
 		#endregion
 
-		internal void Reset(Unit attacker, Unit target, IWeapon weapon, int totalDamage)
+		#region Damages
+		/// <summary>
+		/// Adds all damage boni and mali
+		/// </summary>
+		internal void AddDamageMods()
+		{
+			if (Attacker != null)
+			{
+				if (!IsDot)
+				{
+					// does not add to dot
+					Damage = Attacker.GetFinalDamage(UsedSchool, Damage, Spell);
+				}
+				else if (SpellEffect != null)
+				{
+					// periodic damage mod
+					Damage = Attacker.Auras.GetModifiedInt(SpellModifierType.PeriodicEffectValue, Spell, Damage);
+				}
+			}
+		}
+		#endregion
+
+		#region Absorb
+		public int Absorb(int absorbAmount, DamageSchoolMask schools)
+		{
+			if (absorbAmount <= 0)
+			{
+				return 0;
+			}
+
+			if (SpellEffect != null && Spell.AttributesExD.HasFlag(SpellAttributesExD.CannotBeAbsorbed))
+			{
+				return 0;
+			}
+
+			if (schools.HasAnyFlag(UsedSchool))
+			{
+				var value = Math.Min(Damage, absorbAmount);
+				absorbAmount -= value;
+				Absorbed += value;
+			}
+			return absorbAmount;
+		}
+		#endregion
+
+		internal void Reset(Unit attacker, Unit target, IWeapon weapon)
 		{
 			Attacker = attacker;
 			Victim = target;
 			Weapon = weapon;
-			Damage = totalDamage;
 		}
 
 		internal void OnFinished()
 		{
 			if (Attacker != null && Victim is NPC)
 			{
-				((NPC)(Victim)).ThreatCollection.AddNew(Attacker);
+				((NPC)(Victim)).ThreatCollection.AddNewIfNotExisted(Attacker);
 			}
-			Victim = null;
+			ReferenceCount--;
 			SpellEffect = null;
 		}
 
@@ -1074,8 +1338,23 @@ namespace WCell.RealmServer.Misc
 		}
 	}
 
-	public interface IAttackModifier
+	public interface IAttackEventHandler
 	{
-		void ModAttack(DamageAction action);
+		/// <summary>
+		/// Called before hit chance, damage etc is determined.
+		/// This is not used for Spell attacks, since those only have a single "stage".
+		/// NOT CURRENTLY IMPLEMENTED
+		/// </summary>
+		void OnBeforeAttack(DamageAction action);
+
+		/// <summary>
+		/// Called on the attacker, right before resistance is subtracted and final damage is evaluated
+		/// </summary>
+		void OnAttack(DamageAction action);
+
+		/// <summary>
+		/// Called on the defender, right before resistance is subtracted and final damage is evaluated
+		/// </summary>
+		void OnDefend(DamageAction action);
 	}
 }

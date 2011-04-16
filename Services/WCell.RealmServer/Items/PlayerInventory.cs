@@ -95,6 +95,12 @@ namespace WCell.RealmServer.Items
 			get { return this; }
 		}
 
+		//Item GetItemOrAmmo(EquipmentSlot slot)
+		//{
+		//    if (slot == EquipmentSlot.Invalid) return Ammo;
+		//    return this[slot];
+		//}
+
 		/// <summary>
 		/// Gets the item at the given InventorySlot (or null)
 		/// </summary>
@@ -352,6 +358,7 @@ namespace WCell.RealmServer.Items
 			return m_partialInventories[(int)ItemMgr.PartialInventoryTypes[slot]] as IItemSlotHandler;
 		}
 
+		#region Containers
 		/// <summary>
 		/// Returns the inventory of the corresponding cont (or null).
 		/// Only works for bags in the equipment's or bank's cont slots (only these bags may contain items).
@@ -365,7 +372,7 @@ namespace WCell.RealmServer.Items
 
 			if ((inclBank && ItemMgr.ContainerSlotsWithBank[(int)slot]) || (!inclBank && ItemMgr.ContainerSlotsWithoutBank[(int)slot]))
 			{
-				var bag = m_Items[(int)slot] as Container;
+				var bag = this[slot] as Container;
 				if (bag != null)
 				{
 					return bag.BaseInventory;
@@ -391,7 +398,7 @@ namespace WCell.RealmServer.Items
 				var bag = conts[i];
 				if (bag.EntityId == containerId)
 				{
-					return ((Container) bag).BaseInventory;
+					return ((Container)bag).BaseInventory;
 				}
 			}
 
@@ -402,7 +409,7 @@ namespace WCell.RealmServer.Items
 					var bag = BankBags[i];
 					if (bag.EntityId == containerId)
 					{
-						return ((Container) bag).BaseInventory;
+						return ((Container)bag).BaseInventory;
 					}
 				}
 			}
@@ -422,7 +429,7 @@ namespace WCell.RealmServer.Items
 
 			if (ItemMgr.ContainerBankSlots[(int)slot])
 			{
-				var bag = m_Items[(int)slot] as Container;
+				var bag = this[slot] as Container;
 				if (bag != null)
 				{
 					return bag.BaseInventory;
@@ -430,6 +437,7 @@ namespace WCell.RealmServer.Items
 			}
 			return null;
 		}
+		#endregion
 
 		/// <summary>
 		/// Checks some basic parameters for whether the character may interact with (Equip or Use) items and
@@ -474,42 +482,6 @@ namespace WCell.RealmServer.Items
 
 		#region Adding
 		/// <summary>
-		/// Tries to add a new item with the given template and amount ot the given slot.
-		/// Make sure the given targetSlot is valid before calling this method.
-		/// If slot is occupied, method will find another unoccupied slot.
-		/// </summary>
-		/// <returns>The result (InventoryError.OK in case that it worked)</returns>
-		public InventoryError TryAdd(ItemId id, ref int amount, InventorySlot targetSlot)
-		{
-			var templ = ItemMgr.GetTemplate(id);
-			if (templ != null)
-			{
-				return TryAdd(templ, ref amount, (int)targetSlot, true);
-			}
-			return InventoryError.Invalid;
-		}
-
-		/// <summary>
-		/// Tries to add ONE new item with the given template to the given slot.
-		/// Make sure the given targetSlot is valid before calling this method.
-		/// </summary>
-		public InventoryError TryAdd(ItemTemplate template, InventorySlot targetSlot)
-		{
-			var amount = 1;
-			return TryAdd(template, ref amount, (int)targetSlot, true);
-		}
-
-		/// <summary>
-		/// Tries to add a single new item with the given template to the given slot.
-		/// Make sure the given targetSlot is valid before calling this method.
-		/// </summary>
-		public InventoryError TryAdd(ItemTemplate template, EquipmentSlot targetSlot)
-		{
-			var amount = 1;
-			return TryAdd(template, ref amount, (int)targetSlot, true);
-		}
-
-		/// <summary>
 		/// 
 		/// </summary>
 		/// <returns>The result (InventoryError.OK in case that it worked)</returns>
@@ -530,17 +502,19 @@ namespace WCell.RealmServer.Items
 
 		public InventoryError Ensure(ItemTemplate templ, int amount, bool equip)
 		{
-			if (equip && templ.EquipmentSlots == null)
+			if (templ.EquipmentSlots == null)
 			{
-				return InventoryError.ITEM_CANT_BE_EQUIPPED;
+				if (equip)
+				{
+					return InventoryError.ITEM_CANT_BE_EQUIPPED;
+				}
 			}
-
-			if (templ.EquipmentSlots != null)
+			else
 			{
 				for (var i = 0; i < templ.EquipmentSlots.Length; i++)
 				{
 					var slot = templ.EquipmentSlots[i];
-					var item = m_Items[(int) slot];
+					var item = this[slot];
 					if (item != null && item.Template.Id == templ.Id)
 					{
 						// done
@@ -589,12 +563,9 @@ namespace WCell.RealmServer.Items
 		/// <summary>
 		/// Called whenever the Player receives a new Item
 		/// </summary>
-		internal void OnAdd(Item item)
+		internal void OnNewStack(Item item)
 		{
-			if (!item.IsBuyback)
-			{
-				ItemHandler.SendItemPushResult(Owner, item, true, item.Container.Slot, item.Slot);
-			}
+			item.m_owner = m_owner;
 			OnAddDontNotify(item);
 		}
 
@@ -605,12 +576,13 @@ namespace WCell.RealmServer.Items
 				m_totalCount++;
 				//OnAmountChanged(item, (int)item.Amount);
 				AddItemUniqueCount(item);
-				m_owner.QuestLog.OnItemAmountChanged(item, (int)item.Amount);
+				m_owner.QuestLog.OnItemAmountChanged(item, item.Amount);
 				item.OnAdd();
 			}
 
 			var context = m_owner.ContextHandler;
 			if (context != null)
+			{
 				context.AddMessage(() =>
 				{
 					if (m_owner != null)
@@ -618,13 +590,14 @@ namespace WCell.RealmServer.Items
 						m_owner.AddItemToUpdate(item);
 					}
 				});
+			}
 		}
 
 		/// <summary>
 		/// Called when the given Item is removed for good.
+		/// Don't use this method - but use item.Remove instead.
 		/// </summary>
-		/// <param name="item"></param>
-		public void OnRemove(Item item)
+		internal void OnRemove(Item item)
 		{
 			if (item.IsBuyback) return;
 			m_totalCount--;
@@ -634,7 +607,8 @@ namespace WCell.RealmServer.Items
 				SetAmmo(m_ammo.Template.Id);
 			}
 
-			m_owner.QuestLog.OnItemAmountChanged(item, -(int)item.Amount);
+			m_owner.RemoveOwnedItem(item);
+			m_owner.QuestLog.OnItemAmountChanged(item, -item.Amount);
 			RemoveItemUniqueCount(item);
 		}
 
@@ -652,14 +626,17 @@ namespace WCell.RealmServer.Items
 		#endregion
 
 		#region Searching
-
-	    /// <summary>
-	    /// Gets a free slot in the backpack (use FindFreeSlot(IMountableItem, uint) to also look through equipped bags and optionally the bank)
-	    /// </summary>
-	    public override int FindFreeSlot()
+		public override int FindFreeSlot()
 		{
-			var slot = BackPack.FindFreeSlot();
-			return slot;
+			return BackPack.FindFreeSlot();
+		}
+
+		/// <summary>
+		/// Gets a free slot in the backpack (use FindFreeSlot(IMountableItem, uint) to also look through equipped bags and optionally the bank)
+		/// </summary>
+		public override int FindFreeSlot(int offset, int end)
+		{
+			return BackPack.FindFreeSlot();
 		}
 
 		/// <summary>
@@ -668,9 +645,9 @@ namespace WCell.RealmServer.Items
 		/// <param name="templ"></param>
 		/// <param name="amount"></param>
 		/// <returns></returns>
-		public SimpleSlotId FindFreeSlotCheck(ItemTemplate templ, int amount)
+		public SimpleSlotId FindFreeSlotCheck(ItemTemplate templ, int amount, out InventoryError err)
 		{
-			var err = InventoryError.OK;
+			err = InventoryError.OK;
 			var possibleAmount = amount;
 			CheckUniqueness(templ, ref possibleAmount, ref err, true);
 			if (possibleAmount != amount)
@@ -678,7 +655,12 @@ namespace WCell.RealmServer.Items
 				return SimpleSlotId.Default;
 			}
 
-			return FindFreeSlot(templ, amount);
+			var slot = FindFreeSlot(templ, amount);
+			if (slot.Slot == INVALID_SLOT)
+			{
+				err = InventoryError.INVENTORY_FULL;
+			}
+			return slot;
 		}
 
 		/// <summary>
@@ -687,6 +669,11 @@ namespace WCell.RealmServer.Items
 		public override SimpleSlotId FindFreeSlot(IMountableItem mountItem, int amount)
 		{
 			return FindFreeSlot(mountItem, amount, AutoEquipNewItems);
+		}
+
+		public SimpleSlotId FindFreeSlot(Item item, bool tryEquip)
+		{
+			return FindFreeSlot(item, item.Amount, tryEquip);
 		}
 
 		/// <summary>
@@ -703,7 +690,7 @@ namespace WCell.RealmServer.Items
 				for (var i = 0; i < templ.EquipmentSlots.Length; i++)
 				{
 					var slot = (int)templ.EquipmentSlots[i];
-					var item = m_Items[slot];
+					var item = this[slot];
 					if (item == null)
 					{
 						var handler = GetHandler(slot);
@@ -836,7 +823,7 @@ namespace WCell.RealmServer.Items
 
 			for (var i1 = 0; i1 < ItemMgr.BankBagSlots.Length; i1++)
 			{
-				var avlblSlot = (int) ItemMgr.BankBagSlots[i1];
+				var avlblSlot = (int)ItemMgr.BankBagSlots[i1];
 				var container = m_Items[avlblSlot] as Container;
 				if (container != null)
 				{
@@ -875,7 +862,7 @@ namespace WCell.RealmServer.Items
 
 			for (var i1 = 0; i1 < slots.Length; i1++)
 			{
-				var avlblSlot = (int) slots[i1];
+				var avlblSlot = (int)slots[i1];
 				if (contLookup[avlblSlot])
 				{
 					var container = m_Items[avlblSlot] as Container;
@@ -887,7 +874,7 @@ namespace WCell.RealmServer.Items
 						{
 							if (contItems[i] == null)
 							{
-								var slotId = new SimpleSlotId {Container = contInv, Slot = i};
+								var slotId = new SimpleSlotId { Container = contInv, Slot = i };
 								slotList.Add(slotId);
 								if (slotList.Count == max)
 									return slotList;
@@ -897,7 +884,7 @@ namespace WCell.RealmServer.Items
 				}
 				else if (m_Items[avlblSlot] == null)
 				{
-					var slotId = new SimpleSlotId {Container = this, Slot = avlblSlot};
+					var slotId = new SimpleSlotId { Container = this, Slot = avlblSlot };
 					slotList.Add(slotId);
 					if (slotList.Count == max)
 					{
@@ -951,6 +938,8 @@ namespace WCell.RealmServer.Items
 
 		public bool Iterate(InventorySlot[] slots, Func<Item, bool> validator)
 		{
+			Owner.EnsureContext();
+
 			var contLookup = ItemMgr.ContainerSlotsWithBank;
 
 			for (var i1 = 0; i1 < slots.Length; i1++)
@@ -1094,10 +1083,11 @@ namespace WCell.RealmServer.Items
 		/// <param name="inclBank">whether to also search in the bank and its bags (if not enough was found in inventory and bags)</param>
 		/// <param name="templateId"></param>
 		/// <param name="amount">If 0, consumes all Items that were found</param>
+		/// <param name="force">Whether only to remove if there are at least the given amount of items</param>
 		/// <returns>whether the required amount of items was found (and thus consumed).</returns>
-		public bool Consume(bool inclBank, uint templateId, int amount)
+		public bool Consume(ItemId templateId, bool inclBank = false, int amount = 1, bool force = true)
 		{
-			return Consume(inclBank, templateId, amount, true);
+			return Consume((uint)templateId, inclBank, amount, force);
 		}
 
 		/// <summary>
@@ -1109,7 +1099,7 @@ namespace WCell.RealmServer.Items
 		/// <param name="amount">If 0, consumes all Items that were found</param>
 		/// <param name="force">Whether only to remove if there are at least the given amount of items</param>
 		/// <returns>whether the required amount of items was found (and thus consumed).</returns>
-		public bool Consume(bool inclBank, uint templateId, int amount, bool force)
+		public bool Consume(uint templateId, bool inclBank = false, int amount = 1, bool force = true)
 		{
 			var slotIds = new List<SimpleSlotId>();						// the locations of the found items
 			var found = Find(inclBank, amount, slotIds, item => item.Template.Id == templateId);
@@ -1144,24 +1134,29 @@ namespace WCell.RealmServer.Items
 		/// Finds and consumes all of the given items. 
 		/// Does not consume anything and returns false if not all items were found.
 		/// </summary>
-		public bool Consume(bool inclBank, ItemStackDescription[] items)
+		public bool Consume(ItemStackDescription[] items, bool inclBank)
 		{
 			var slotIdLists = new List<SimpleSlotId>[items.Length];				// the slots of the found items
 			var foundAmounts = new int[items.Length];
 			List<SimpleSlotId> slotIds;
+
+			// find all necessary items
 			for (var i = 0; i < items.Length; i++)
 			{
 				var template = items[i];
-				slotIdLists[i] = slotIds = new List<SimpleSlotId>();
+				slotIdLists[i] = slotIds = new List<SimpleSlotId>(3);
 
 				foundAmounts[i] = Find(inclBank, template.Amount, slotIds, item => item.Template.ItemId == template.ItemId);
 
 				if (foundAmounts[i] < template.Amount)
 				{
+					// one of the required items does not have a sufficient amount -> Cancel
 					return false;
 				}
 			}
 
+			// we made sure that we have enough of all items
+			// => Remove all of them
 			for (var i = 0; i < items.Length; i++)
 			{
 				var template = items[i];
@@ -1198,60 +1193,28 @@ namespace WCell.RealmServer.Items
 		/// <returns>The amount of found items</returns>
 		public int Find(bool inclBank, int max, IList<SimpleSlotId> list, Func<Item, bool> validator)
 		{
-			var slots = inclBank ? ItemMgr.InvSlotsWithBank : ItemMgr.StorageSlotsWithoutBank;
 			var found = 0;
 
-			var contLookup = ItemMgr.ContainerSlotsWithBank;
-
-			Item item;
-			foreach (int avlblSlot in slots)
+			Iterate(inclBank, item =>
 			{
-				item = m_Items[avlblSlot];
-				if (contLookup[avlblSlot])
-				{
-					var container = item as Container;
-					if (container != null)
-					{
-						var contInv = container.BaseInventory;
-						var contItems = contInv.Items;
-						for (var i = 0; i < contItems.Length; i++)
-						{
-							item = contItems[i];
-							if (item != null && validator(item))
-							{
-								found += item.Amount;
-								var slotId = new SimpleSlotId { Container = contInv, Slot = i };
-								list.Add(slotId);
-								if (found >= max)
-								{
-									return found;
-								}
-							}
-						}
-					}
-				}
-				else if (item != null && validator(item))
+				if (validator(item))
 				{
 					found += item.Amount;
-					var slotId = new SimpleSlotId
-					{
-						Container = this,
-						Slot = avlblSlot
-					};
+					var slotId = new SimpleSlotId { Container = item.Container, Slot = item.Slot };
 					list.Add(slotId);
 					if (found >= max)
 					{
-						return found;
+						return false;
 					}
 				}
-			}
+				return true;
+			});
 			return found;
 		}
 
 		/// <summary>
 		/// Returns the total amount of Items within this Inventory of the given ItemId
 		/// </summary>
-		/// <returns></returns>
 		public int GetAmount(ItemId id)
 		{
 			var amount = 0;
@@ -1324,8 +1287,8 @@ namespace WCell.RealmServer.Items
 				{
 					err = InventoryError.CANT_DO_RIGHT_NOW;
 				}
-				else if (srcItem.IsEquippedContainer && 
-					!((Container)srcItem).BaseInventory.IsEmpty && 
+				else if (srcItem.IsEquippedContainer &&
+					!((Container)srcItem).BaseInventory.IsEmpty &&
 					!ItemMgr.IsContainerEquipmentSlot(destSlot) &&
 					!Owner.GodMode)
 				{
@@ -1942,7 +1905,7 @@ namespace WCell.RealmServer.Items
 		{
 			foreach (var slot in includeBuyBack ? ItemMgr.AllSlots : ItemMgr.OwnedSlots)
 			{
-				var item = m_Items[(int)slot];
+				var item = this[slot];
 				if (item != null)
 				{
 					yield return item;
@@ -1958,6 +1921,7 @@ namespace WCell.RealmServer.Items
 		}
 		#endregion
 
+		#region Remove
 		/// <summary>
 		/// Removes Items from the Backpack, Bags and (if indicated) from the Bank and BankBags.
 		/// </summary>
@@ -1994,8 +1958,32 @@ namespace WCell.RealmServer.Items
 
 			return (amount <= 0);
 		}
+		#endregion
 
 		#region Equipment
+		/// <summary>
+		/// </summary>
+		/// <returns>Whether a match was found</returns>
+		public bool Iterate(InventorySlotTypeMask slots, Func<Item, bool> callback)
+		{
+			for (var sType = InventorySlotType.Head; sType < InventorySlotType.End; sType++)
+			{
+				if (!slots.HasAnyFlag(sType))
+				{
+					continue;
+				}
+				foreach (var slot in ItemMgr.GetEquipmentSlots(sType))
+				{
+					var item = this[slot];
+					if (item != null && !callback(item))
+					{
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+
 		/// <summary>
 		/// Checks if the given slot is occupied and -if so- puts the item from that slot into a free
 		/// storage slot (within the backpack or any equipped bags).
@@ -2070,7 +2058,7 @@ namespace WCell.RealmServer.Items
 					continue;
 				}
 
-				var occupyingItem = this[(int)slot];
+				var occupyingItem = this[slot];
 				if (occupyingItem == null)
 				{
 					return (InventorySlot)slot;
@@ -2152,7 +2140,7 @@ namespace WCell.RealmServer.Items
 		}
 
 		/// <summary>
-		/// Returns the amount of Itesm of the given Set that the owner currently has equipped.
+		/// Returns the amount of Items of the given Set that the owner currently has equipped.
 		/// </summary>
 		/// <param name="set"></param>
 		/// <returns></returns>
@@ -2278,6 +2266,89 @@ namespace WCell.RealmServer.Items
 
 		#endregion
 
+		#region Item Equipment Handlers
+		internal List<IItemEquipmentEventHandler> m_ItemEquipmentEventHandlers;
+
+		/// <summary>
+		/// Adds a handler to be notified upon equipment changes
+		/// </summary>
+		public void AddEquipmentHandler(IItemEquipmentEventHandler handler)
+		{
+			if (m_ItemEquipmentEventHandlers == null)
+			{
+				m_ItemEquipmentEventHandlers = new List<IItemEquipmentEventHandler>(3);
+			}
+			m_ItemEquipmentEventHandlers.Add(handler);
+		}
+
+		/// <summary>
+		/// Removes the given handler
+		/// </summary>
+		public void RemoveEquipmentHandler(IItemEquipmentEventHandler handler)
+		{
+			if (m_ItemEquipmentEventHandlers != null)
+			{
+				m_ItemEquipmentEventHandlers.Remove(handler);
+			}
+		}
+		#endregion
+
+		#region Checks
+		/// <summary>
+		/// Checks for whether the given amount of that Item can still be added 
+		/// (due to max unique count).
+		/// </summary>
+		/// <param name="mountItem"></param>
+		/// <returns></returns>
+		internal InventoryError CheckEquipCount(IMountableItem mountItem)
+		{
+			var templ = mountItem.Template;
+			if (templ.Flags.HasFlag(ItemFlags.UniqueEquipped))
+			{
+				// may only equip a certain maximum of this item
+				foreach (var slot in templ.EquipmentSlots)
+				{
+					var item = this[slot];
+					if (item != null && item.Template.Id == templ.Id)
+					{
+						return InventoryError.ITEM_UNIQUE_EQUIPABLE;
+					}
+				}
+			}
+
+			// also check for unique gems
+			if (mountItem.Enchantments != null)
+			{
+				for (var i = EnchantSlot.Socket1; i < EnchantSlot.Socket1 + ItemConstants.MaxSocketCount; i++)
+				{
+					var enchant = mountItem.Enchantments[(uint)i];
+					if (enchant != null && !CheckEquippedGems(enchant.Entry.GemTemplate))
+					{
+						return InventoryError.ITEM_UNIQUE_EQUIPPABLE_SOCKETED;
+					}
+				}
+			}
+			return InventoryError.OK;
+		}
+
+		internal bool CheckEquippedGems(ItemTemplate gemTempl)
+		{
+			if (gemTempl != null && gemTempl.Flags.HasFlag(ItemFlags.UniqueEquipped))
+			{
+				// may only equip a certain maximum of this kind of gem
+				for (var slot = EquipmentSlot.Head; slot < EquipmentSlot.Bag1; slot++)
+				{
+					var item = this[slot];
+					if (item != null && item.HasGem(gemTempl.ItemId))
+					{
+						return false;
+					}
+				}
+			}
+			return true;
+		}
+		#endregion
+
 		#region Misc
 		/// <summary>
 		/// Removes the given percentage of durability from all Items of this Inventory.
@@ -2322,12 +2393,12 @@ namespace WCell.RealmServer.Items
 		/// </summary>
 		/// <param name="cats"></param>
 		/// <returns></returns>
-		public bool CheckTotemCategories(TotemCategory[] cats)
+		public bool CheckTotemCategories(ToolCategory[] cats)
 		{
 			for (var i = 0; i < cats.Length; i++)
 			{
 				var cat = cats[i];
-				var slots = ItemMgr.GetTotemCatSlots(cat);
+				var slots = ItemMgr.GetToolCategorySlots(cat);
 				var found = false;
 				if (slots != null)
 				{
@@ -2336,7 +2407,7 @@ namespace WCell.RealmServer.Items
 					{
 						var slot = slots[j];
 						var item = this[slot];
-						if (item != null && item.Template.TotemCategory == cat)
+						if (item != null && item.Template.ToolCategory == cat)
 						{
 							found = true;
 							break;
@@ -2346,11 +2417,11 @@ namespace WCell.RealmServer.Items
 				else
 				{
 					// unequippable tools
-					if (this[EquipmentSlot.MainHand] == null || this[EquipmentSlot.MainHand].Template.TotemCategory != cat)
+					if (this[EquipmentSlot.MainHand] == null || this[EquipmentSlot.MainHand].Template.ToolCategory != cat)
 					{
 						found = !Iterate(item =>
 						{
-							if (item.Template.TotemCategory == cat)
+							if (item.Template.ToolCategory == cat)
 							{
 								return false;
 							}
@@ -2393,7 +2464,7 @@ namespace WCell.RealmServer.Items
 		#endregion
 
 		#region Load / Save
-		internal void AddDefaultItems()
+		public void AddDefaultItems()
 		{
 			var archetype = m_owner.Archetype;
 			var items = archetype.GetInitialItems(m_owner.Gender);
@@ -2411,6 +2482,10 @@ namespace WCell.RealmServer.Items
 					}
 					slotId.Container[slotId.Slot] = item;
 					OnAddDontNotify(item);
+					if (item.Template.IsAmmo)
+					{
+						Ammo = item;
+					}
 				}
 			}
 		}
@@ -2424,6 +2499,7 @@ namespace WCell.RealmServer.Items
 			// ItemMgr was initialized after login 
 			// which can only happen once and usually only on developing machines
 			var records = m_owner.Record.LoadedItems;
+			if (records == null) return;
 			var containers = new List<BaseInventory>(7) { this };
 			var items = new List<Item>(records.Count);
 
@@ -2460,7 +2536,7 @@ namespace WCell.RealmServer.Items
 			{
 				// add items to their slots
 				var record = item.Record;
-				var cont = containers.Where(inventory => inventory.Slot == record.ContainerSlot).FirstOrDefault();
+				var cont = containers.FirstOrDefault(bag => bag.Slot == record.ContainerSlot);
 				if (cont == null)
 				{
 					log.Error("Error when loading Item for Character: {0} - Could not find Container for {1} at slot {2} ({3})",
@@ -2491,9 +2567,21 @@ namespace WCell.RealmServer.Items
 		}
 		#endregion
 
-		public override string ToString()
+		public override IEnumerator<Item> GetEnumerator()
 		{
-			return "Inventory of " + Owner;
+			foreach (var item in m_Items)
+			{
+				if (item == null) continue;
+
+				yield return item;
+				if (!item.IsContainer) continue;
+
+				var cont = ((Container)item).BaseInventory;
+				foreach (var bagItem in cont)
+				{
+					yield return bagItem;
+				}
+			}
 		}
 	}
 }

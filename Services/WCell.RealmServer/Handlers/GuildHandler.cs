@@ -195,13 +195,15 @@ namespace WCell.RealmServer.Handlers
 			{
 				SendResult(client, GuildCommandId.QUIT, GuildResult.PLAYER_NOT_IN_GUILD);
 			}
-			else
-			{
-				if (guildMember.Rank.RankIndex != 0)
-				{
-					guildMember.LeaveGuild();
-				}
-			}
+            else if (guildMember.IsLeader && guildMember.Guild.MemberCount > 1)
+            {
+                SendResult(client, GuildCommandId.QUIT, GuildResult.LEADER_LEAVE);
+            }
+            else
+            {
+                guildMember.LeaveGuild();
+                SendResult(client, GuildCommandId.QUIT, GuildResult.SUCCESS);
+            }
 		}
 
 		/// <summary>
@@ -364,7 +366,7 @@ namespace WCell.RealmServer.Handlers
 			var backgroundColor = packet.ReadUInt32();
 
 			var chr = client.ActiveCharacter;
-			var vendor = chr.Region.GetObject(vendorEntityId) as NPC;
+			var vendor = chr.Map.GetObject(vendorEntityId) as NPC;
 			var tabard = new GuildTabard()
 			{
 				BackgroundColor = (int)backgroundColor,
@@ -406,7 +408,7 @@ namespace WCell.RealmServer.Handlers
 			var unkown = packet.ReadByte();
 
 			var chr = client.ActiveCharacter;
-			var bank = chr.Region.GetObject(bankEntityId) as GameObject;
+			var bank = chr.Map.GetObject(bankEntityId) as GameObject;
 
 			if (chr.Guild != null && chr.GuildMember != null)
 			{
@@ -426,7 +428,7 @@ namespace WCell.RealmServer.Handlers
 			var unknown = packet.ReadByte();
 
 			var chr = client.ActiveCharacter;
-			var bank = chr.Region.GetObject(bankEntityId) as GameObject;
+			var bank = chr.Map.GetObject(bankEntityId) as GameObject;
 
 			if (chr.Guild != null && chr.GuildMember != null)
 			{
@@ -441,7 +443,7 @@ namespace WCell.RealmServer.Handlers
 			var deposit = packet.ReadUInt32();
 
 			var chr = client.ActiveCharacter;
-			var bank = chr.Region.GetObject(bankEntityId) as GameObject;
+			var bank = chr.Map.GetObject(bankEntityId) as GameObject;
 
 			if (chr.Guild != null && chr.GuildMember != null)
 			{
@@ -456,7 +458,7 @@ namespace WCell.RealmServer.Handlers
 			var withdrawl = packet.ReadUInt32();
 
 			var chr = client.ActiveCharacter;
-			var bank = chr.Region.GetObject(bankEntityId) as GameObject;
+			var bank = chr.Map.GetObject(bankEntityId) as GameObject;
 
 			if (chr.Guild != null && chr.GuildMember != null)
 			{
@@ -468,7 +470,7 @@ namespace WCell.RealmServer.Handlers
 		public static void HandleGuildBankSwapItems(IRealmClient client, RealmPacketIn packet)
 		{
 			var bankEntityId = packet.ReadEntityId();
-			var isBankToBank = packet.ReadByte() > 0 ? true : false;
+			var isBankToBank = packet.ReadBoolean();
 
 			var toBankTab = (byte)1;
 			var toTabSlot = (byte)1;
@@ -484,46 +486,44 @@ namespace WCell.RealmServer.Handlers
 			var isBankToChar = true;
 			var amount = (byte)0;
 
-			if (!isBankToBank)
+			if (isBankToBank)
 			{
-				fromBankTab = packet.ReadByte();
-				fromTabSlot = packet.ReadByte();
-				itemEntryId = packet.ReadUInt32();
-				isAutoStore = packet.ReadByte() > 0 ? true : false;
-				autoStoreCount = (byte)0;
-				if (isAutoStore)
-				{
-					autoStoreCount = packet.ReadByte();
-				}
+                toBankTab = packet.ReadByte();
+                toTabSlot = packet.ReadByte();
+                unknown1 = packet.ReadUInt32();
+                fromBankTab = packet.ReadByte();
+                fromTabSlot = packet.ReadByte();
+                itemEntryId = packet.ReadUInt32();
+                unknown2 = packet.ReadByte();
+                amount = packet.ReadByte();
 
-				bagSlot = packet.ReadByte();
-				slot = packet.ReadByte();
-
-				if (!isAutoStore)
-				{
-					isBankToChar = packet.ReadByte() > 0 ? true : false;
-					amount = packet.ReadByte();
-				}
-
-				if ((fromTabSlot >= GuildMgr.MAX_BANK_TAB_SLOTS) && fromTabSlot != 0xFF) return;
+                if (toTabSlot >= GuildMgr.MAX_BANK_TAB_SLOTS) return;
+                if ((toBankTab == fromBankTab) && (toTabSlot == fromTabSlot)) return;
 			}
 			else
 			{
-				toBankTab = packet.ReadByte();
-				toTabSlot = packet.ReadByte();
-				unknown1 = packet.ReadUInt32();
-				fromBankTab = packet.ReadByte();
-				fromTabSlot = packet.ReadByte();
-				itemEntryId = packet.ReadUInt32();
-				unknown2 = packet.ReadByte();
-				amount = packet.ReadByte();
+                fromBankTab = packet.ReadByte();
+                fromTabSlot = packet.ReadByte();
+                itemEntryId = packet.ReadUInt32();
+                isAutoStore = packet.ReadBoolean();
+                autoStoreCount = (byte)0;
+                if (isAutoStore)
+                {
+                    autoStoreCount = packet.ReadByte();
+                    packet.SkipBytes(5);
+                }
+                else
 
-				if (toTabSlot >= GuildMgr.MAX_BANK_TAB_SLOTS) return;
-				if ((toBankTab == fromBankTab) && (toTabSlot == fromTabSlot)) return;
+                bagSlot = packet.ReadByte();
+                slot = packet.ReadByte();
+                isBankToChar = packet.ReadBoolean();
+                amount = packet.ReadByte();
+
+                if ((fromTabSlot >= GuildMgr.MAX_BANK_TAB_SLOTS) && fromTabSlot != 0xFF) return;
 			}
 
 			var chr = client.ActiveCharacter;
-			var bank = chr.Region.GetObject(bankEntityId) as GameObject;
+			var bank = chr.Map.GetObject(bankEntityId) as GameObject;
 			if (chr.Guild == null) return;
 
 			if (isBankToBank)
@@ -565,7 +565,7 @@ namespace WCell.RealmServer.Handlers
 			var newTabId = packet.ReadByte();
 
 			var chr = client.ActiveCharacter;
-			var bank = chr.Region.GetObject(bankEntityId) as GameObject;
+			var bank = chr.Map.GetObject(bankEntityId) as GameObject;
 
 			if (chr.Guild != null && chr.GuildMember != null)
 			{
@@ -585,7 +585,7 @@ namespace WCell.RealmServer.Handlers
 			if (newIcon.Length == 0) return;
 
 			var chr = client.ActiveCharacter;
-			var bank = chr.Region.GetObject(bankEntityId) as GameObject;
+			var bank = chr.Map.GetObject(bankEntityId) as GameObject;
 
 			if (chr.Guild != null && chr.GuildMember != null)
 			{
@@ -677,13 +677,35 @@ namespace WCell.RealmServer.Handlers
 			int rankId = packet.ReadInt32();
 			var newPrivileges = (GuildPrivileges)packet.ReadUInt32();
 			string newName = packet.ReadCString();
+		    var chr = client.ActiveCharacter;
 
 			// TODO: needs lots of additional checks, such as staff checks and in case of demoting even more
-			var guild = Guild.CheckPrivs(client.ActiveCharacter, GuildCommandId.PROMOTE, GuildPrivileges.PROMOTE | newPrivileges);
-			if (guild != null)
-			{
-				guild.ChangeRank(rankId, newName, newPrivileges, true);
-			}
+			var guild = Guild.CheckPrivs(chr, GuildCommandId.PROMOTE, GuildPrivileges.PROMOTE | newPrivileges);
+            if (guild != null)
+            {
+                chr.GuildMember.Rank.DailyBankMoneyAllowance = packet.ReadUInt32();
+                if (rankId == 0)
+                    chr.GuildMember.Rank.DailyBankMoneyAllowance = uint.MaxValue;
+
+                for (var i = 0; i < GuildMgr.MAX_BANK_TABS; ++i)
+                {
+                    uint bankPriveleges = packet.ReadUInt32();
+                    uint bankSlotWithdrawlAllowance = packet.ReadUInt32();
+
+                    if (rankId == 0)
+                    {
+                        chr.GuildMember.Rank.BankTabRights[i].Privileges = GuildBankTabPrivileges.Full;
+                        chr.GuildMember.Rank.BankTabRights[i].WithdrawlAllowance = uint.MaxValue;
+                    }
+                    else
+                    {
+                        chr.GuildMember.Rank.BankTabRights[i].Privileges = (GuildBankTabPrivileges) bankPriveleges;
+                        chr.GuildMember.Rank.BankTabRights[i].WithdrawlAllowance = bankSlotWithdrawlAllowance;
+                    }
+                }
+
+                guild.ChangeRank(rankId, newName, newPrivileges, true);
+            }
 		}
 
 		/// <summary>
@@ -808,7 +830,7 @@ namespace WCell.RealmServer.Handlers
 		{
 			using (var packet = CreateGuildQueryResponsePacket(guild))
 			{
-				guild.SendAll(packet);
+				guild.Broadcast(packet);
 			}
 		}
 
@@ -1071,7 +1093,7 @@ namespace WCell.RealmServer.Handlers
 		{
 			using (var packet = CreateEventPacket(guild, guildEvent, null))
 			{
-				guild.SendAll(packet);
+				guild.Broadcast(packet);
 			}
 		}
 
@@ -1086,7 +1108,7 @@ namespace WCell.RealmServer.Handlers
 		{
 			using (var packet = CreateEventPacket(guild, guildEvent, affectedMember, influencer))
 			{
-				guild.SendAll(packet);
+				guild.Broadcast(packet);
 			}
 		}
 
@@ -1100,7 +1122,7 @@ namespace WCell.RealmServer.Handlers
 		{
 			using (var packet = CreateEventPacket(guild, guildEvent, affectedMember))
 			{
-				guild.SendAll(packet);
+				guild.Broadcast(packet);
 			}
 		}
 
@@ -1114,7 +1136,7 @@ namespace WCell.RealmServer.Handlers
 		{
 			using (RealmPacketOut packet = CreateEventPacket(guild, guildEvent, null))
 			{
-				guild.SendAll(packet, ignoredCharacter);
+				guild.Broadcast(packet, ignoredCharacter);
 			}
 		}
 
@@ -1129,7 +1151,7 @@ namespace WCell.RealmServer.Handlers
 		{
 			using (RealmPacketOut packet = CreateEventPacket(guild, guildEvent, affectedMember))
 			{
-				guild.SendAll(packet, ignoredCharacter);
+				guild.Broadcast(packet, ignoredCharacter);
 			}
 		}
 
@@ -1303,14 +1325,22 @@ namespace WCell.RealmServer.Handlers
 						if (slot2 != -1)
 						{
 							list.Add(slot2);
+                            list.Sort();
 						}
 
 						packet.WriteByte((byte)list.Count);
 						foreach (var slot in list)
 						{
-							packet.Write(slot);
+                            packet.Write((byte)slot);
 							var item = member.Guild.Bank[tabId][slot];
+
+                            if (item == null)
+                            {
+                                packet.Write(0);
+                                continue;
+                            }
 							packet.Write(item.EntryId);
+                            packet.Write((uint)0);
 
 							var randomPropId = item.RandomProperty;
 							packet.Write(randomPropId);
@@ -1329,22 +1359,17 @@ namespace WCell.RealmServer.Handlers
 								continue;
 							}
 
-							var count = 0;
-							var enchantments = new int[3];
-							for (var i = 0; i < 3; ++i)
-							{
-								if (item.EnchantIds[i] == 0) continue;
-								count++;
-								enchantments[i] = item.EnchantIds[i];
-							}
+                            var pos = packet.Position;
+                            var count = 0;
+                            for (var i = 0; i < 3; ++i)
+                            {
+                                if (item.EnchantIds[i] == 0) continue;
+                                packet.Write((byte)i);
+                                packet.Write(item.EnchantIds[i]);
+                                count++;
+                            }
+                            packet.InsertByteAt((byte)count, pos, true);
 
-							packet.Write((byte)count);
-							for (var i = 0; i < 3; ++i)
-							{
-								if (enchantments[i] == 0) continue;
-								packet.Write((byte)i);
-								packet.Write(list[i]);
-							}
 						} // end foreach
 
 						member.Character.Client.Send(packet);
@@ -1366,7 +1391,7 @@ namespace WCell.RealmServer.Handlers
 		{
 			if (bank == null) return;
 			if (chr.Guild == null || chr.GuildMember == null) return;
-			if (!bank.CanInteractWith(chr)) return;
+			if (!bank.CanBeUsedBy(chr)) return;
 
 			var guild = chr.Guild;
 			var gBank = guild.Bank;
@@ -1376,22 +1401,19 @@ namespace WCell.RealmServer.Handlers
 				packet.Write(guild.Money);
 				packet.Write(tabId);
 				packet.Write(chr.GuildMember.Rank.BankTabRights[tabId].WithdrawlAllowance);
-				packet.Write(hasTabNames);
+			    var sendHasTabNames = tabId == 0 ? hasTabNames : false;
+                packet.Write(sendHasTabNames);
 
-				if (hasTabNames)
+                if (sendHasTabNames)
 				{
-					if (tabId == 0)
-					{
-						packet.Write((byte)guild.PurchasedBankTabCount);
-						for (var i = 0; i < guild.PurchasedBankTabCount; ++i)
-						{
-							packet.Write(gBank[i].Name);
-							packet.Write(gBank[i].Icon);
-						}
-					}
+                    packet.Write((byte)guild.PurchasedBankTabCount);
+                    for (var i = 0; i < guild.PurchasedBankTabCount; ++i)
+                    {
+                        packet.Write(gBank[i].Name);
+                        packet.Write(gBank[i].Icon);
+                    }
 				}
 
-				packet.Write(hasItemInfo);
 				if (!hasItemInfo)
 				{
 					chr.Client.Send(packet);
@@ -1399,52 +1421,46 @@ namespace WCell.RealmServer.Handlers
 				}
 
 				var bankTab = gBank[tabId];
-				for (var slot = 0; slot < GuildMgr.MAX_BANK_TAB_SLOTS; ++slot)
-				{
-					var item = (slot < bankTab.ItemRecords.Count) ? bankTab.ItemRecords[slot] : null;
 
-					packet.Write((byte)slot);
-					if (item == null)
-					{
-						packet.Write((uint)0);
-						continue;
-					}
+			    var bankTabItemCount = bankTab.ItemRecords.Where(record => record != null).Count();
+                packet.Write((byte)bankTabItemCount);
 
-					packet.Write(item.EntryId);
-					var randPropId = item.RandomProperty;
-					packet.Write(randPropId);
-					if (randPropId > 0)
-					{
-						packet.Write(item.RandomSuffix);
-					}
+                foreach(var item in bankTab.ItemRecords.Where(record => record != null))
+                {
+                    packet.Write((byte)item.Slot);
+                    
+                    packet.Write(item.EntryId);
 
-					packet.Write(item.Amount);
-					packet.Write((uint)0);
-					packet.Write((byte)0);
+                    packet.Write((uint)0);                  // 3.3.0 (0x8000, 0x8020)
+                    var randPropId = item.RandomProperty;
+                    packet.Write(randPropId);
+                    if (randPropId > 0)
+                    {
+                        packet.Write(item.RandomSuffix);
+                    }
 
-					if (item.EnchantIds == null)
-					{
-						packet.Write((byte)0);
-						continue;
-					}
+                    packet.Write(item.Amount);
+                    packet.Write((uint)0);
+                    packet.Write((byte)0);
 
-					var count = 0;
-					var list = new int[3];
-					for (var i = 0; i < 3; ++i)
-					{
-						if (item.EnchantIds[i] == 0) continue;
-						count++;
-						list[i] = item.EnchantIds[i];
-					}
+                    if (item.EnchantIds == null)
+                    {
+                        packet.Write((byte)0);
+                        continue;
+                    }
 
-					packet.Write((byte)count);
-					for (var i = 0; i < 3; ++i)
-					{
-						if (list[i] == 0) continue;
-						packet.Write((byte)i);
-						packet.Write(list[i]);
-					}
-				}
+                    var pos = packet.Position;
+                    var count = 0;
+                    for (var i = 0; i < 3; ++i)
+                    {
+                        if (item.EnchantIds[i] == 0) continue;
+                        packet.Write((byte)i);
+                        packet.Write(item.EnchantIds[i]);
+                        count++;
+                    }
+                    packet.InsertByteAt((byte)count, pos, true);
+
+                }
 
 				chr.Client.Send(packet);
 			}
@@ -1454,7 +1470,7 @@ namespace WCell.RealmServer.Handlers
 		{
 			if (bank == null) return;
 			if (chr.Guild == null || chr.GuildMember == null) return;
-			if (!bank.CanInteractWith(chr)) return;
+			if (!bank.CanBeUsedBy(chr)) return;
 
 			var bankTab = chr.Guild.Bank[tabId];
 			if (bankTab == null) return;
@@ -1488,6 +1504,8 @@ namespace WCell.RealmServer.Handlers
 
 		public static void SendGuildBankLog(Character chr, GuildBankLog log, byte tabId)
 		{
+            if (log == null)
+                return;
 			using (var packet = new RealmPacketOut(RealmServerOpCode.MSG_GUILD_BANK_LOG_QUERY))
 			{
 				var entries = log.GetBankLogEntries(tabId);

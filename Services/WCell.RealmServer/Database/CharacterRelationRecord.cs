@@ -27,7 +27,7 @@ namespace WCell.RealmServer.Database
 	public class CharacterRelationRecord : WCellRecord<CharacterRelationRecord>
 	{
 		private static readonly NHIdGenerator _idGenerator =
-			new NHIdGenerator(typeof(SpellRecord), "RecordId");
+			new NHIdGenerator(typeof(CharacterRelationRecord), "CharacterRelationGuid");
 
 		/// <summary>
 		/// Returns the next unique Id for a new SpellRecord
@@ -49,10 +49,10 @@ namespace WCell.RealmServer.Database
 
 		public CharacterRelationRecord(uint charId, uint relatedCharId, CharacterRelationType type)
 		{
+			State = RecordState.New;
 			CharacterId = charId;
 			RelatedCharacterId = relatedCharId;
 			RelationType = type;
-			New = true;
 			CharacterRelationGuid = NextId();
 		}
 

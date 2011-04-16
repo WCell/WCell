@@ -8,7 +8,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 	{
 		private static Logger sLog = LogManager.GetCurrentClassLogger();
 
-	    public uint StartOpen
+	    public int StartOpen
 	    {
             get { return Fields[0]; }
 	    }
@@ -17,7 +17,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 	    /// LockId from Lock.dbc
 	    /// "open" in the fields list
 	    /// </summary>
-	    public uint LockId
+	    public int LockId
 	    {
             get { return Fields[1]; }
 	    }
@@ -25,12 +25,12 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 	    /// <summary>
 	    /// Possibly the time delay before the door closes?
 	    /// </summary>
-	    public uint AutoClose
+	    public int AutoClose
 	    {
             get { return Fields[2]; }
 	    }
 
-	    public uint NoDamageImmune
+	    public int NoDamageImmune
 	    {
             get { return Fields[3]; }
 	    }
@@ -38,7 +38,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 	    /// <summary>
 	    /// A reference to an object holding the Text to display upon opening the door?
 	    /// </summary>
-	    public uint OpenTextId
+	    public int OpenTextId
 	    {
             get { return Fields[4]; }
 	    }
@@ -46,12 +46,12 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 	    /// <summary>
 	    /// A reference to an object holding the Text to display upon closing the door?
 	    /// </summary>
-	    public uint CloseTextId
+	    public int CloseTextId
 	    {
             get { return Fields[5]; }
 	    }
 
-	    public uint IgnoredByPathing
+	    public int IgnoredByPathing
 	    {
             get { return Fields[6]; }
 	    }
@@ -59,7 +59,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 
 		protected internal override void InitEntry()
 		{
-			Lock = LockEntry.Entries.Get(LockId);
+			Lock = LockEntry.Entries.Get((uint)LockId);
 		}
 	}
 }

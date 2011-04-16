@@ -15,6 +15,10 @@
  *************************************************************************/
 
 using WCell.Constants.Talents;
+using WCell.RealmServer.Entities;
+using WCell.RealmServer.Handlers;
+using WCell.RealmServer.Spells;
+
 namespace WCell.RealmServer.Talents
 {
 	public class Talent
@@ -38,88 +42,109 @@ namespace WCell.RealmServer.Talents
 			Rank = rank;
 		}
 
+		public Spell Spell
+		{
+			get { return Entry.Spells[m_rank]; }
+		}
+
+		/// <summary>
+		/// The actual rank, as displayed in the GUI
+		/// </summary>
+		public int ActualRank
+		{
+			get { return Rank + 1; }
+			set
+			{
+				Rank = value - 1;
+			}
+		}
+
 		/// <summary>
 		/// Current zero-based rank of this Talent. 
 		/// The rank displayed in the GUI is Rank+1.
 		/// </summary>
 		public int Rank
 		{
-			get
-			{
-				return m_rank;
-			}
+			get { return m_rank; }
 			set
 			{
 				int diff;
 				if (m_rank > value)
 				{
 					// remove Ranks
-					if (value < 0)
+					if (value < -1)
 					{
-						value = 0;
+						value = -1;
 					}
 					diff = m_rank - value;
 
-					Talents.Owner.UpdateFreeTalentPointsSilently(diff);
-					//if (value > 0)
-					//{
-					//    Talents.Owner.Spells.Replace(Entry.Spells[m_rank - 1], Entry.Spells[value - 1]);
-					//}
-					//else
-					//{
-					//    Talents.Owner.Spells.Remove(Entry.Spells[m_rank - 1]);
-					//    Talents.CurrentSpec.Remove(Entry.Id);
-					//}
-					for (var i = m_rank; i >= value; i--)
+					Talents.UpdateFreeTalentPointsSilently(diff);
+
+					for (var i = m_rank; i >= value + 1; i--)
 					{
-						Talents.Owner.Spells.Remove(Entry.Spells[i]);
+						// remove higher ranks
+						var spell = Entry.Spells[i];
+						Talents.Owner.Spells.Remove(spell);
 					}
+
+					if (value < 0)
+					{
+						// remove from TalentCollection
+						Talents.ById.Remove(Entry.Id);
+					}
+					diff = -diff; // subtract points from tree points
 				}
 				else if (value > m_rank)
 				{
 					// add Ranks
-					if (value > Entry.MaxRank)
+					if (value > Entry.MaxRank - 1)
 					{
-						value = Entry.MaxRank;
+						value = Entry.MaxRank - 1;
 					}
+
 					diff = value - m_rank;
 
-					// take points
-					if (m_rank >= 0)
-					{
-						Talents.Owner.Spells.Replace(Entry.Spells[m_rank], Entry.Spells[value]);
-					}
-					else
+					for (var i = m_rank + 1; i <= value; i++)
 					{
 						Talents.Owner.Spells.AddSpell(Entry.Spells[value]);
 					}
 
-					Talents.Owner.UpdateFreeTalentPointsSilently(-diff);
+					// take points
+					Talents.UpdateFreeTalentPointsSilently(-diff);
 				}
 				else
 				{
 					return;
 				}
-				Talents.m_treePoints[Entry.Tree.TabIndex] += diff;
+                Talents.UpdateTreePoint(Entry.Tree.TabIndex, diff);
 				m_rank = value;
 			}
 		}
 
 		/// <summary>
 		/// Sets the rank without sending any packets or doing checks.
+		/// Also does not increment spent talent points
 		/// </summary>
 		internal void SetRankSilently(int rank)
 		{
 			m_rank = rank;
-			Talents.m_treePoints[Entry.Tree.TabIndex] += rank+1;
+		}
+
+		public void Remove()
+		{
+			Remove(true);
 		}
 
 		/// <summary>
 		/// Removes all ranks of this talent.
 		/// </summary>
-		public void Remove()
+		internal void Remove(bool update)
 		{
-			Rank = 0;
+			Rank = -1;
+			if (update)
+			{
+				TalentHandler.SendTalentGroupList(Talents);
+			}
 		}
 	}
 

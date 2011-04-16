@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -60,8 +60,15 @@ namespace WCell.Constants.Spells
 		Dispel = 38,
 		Language = 39,
 		DualWeild = 40,
-		Unused_SummonWild,
-		Unused_SummonGuardian,
+		/// <summary>
+		/// Former SummonWild.
+		/// Now used in a lot of leaping and pouncing spells
+		/// </summary>
+		Leap2,
+		/// <summary>
+		/// Former SummonGuardian, used similarly to Leap2
+		/// </summary>
+		Leap3,
 		TeleportUnitsFaceCaster,
 		SkillStep,
 		AddHonor,
@@ -192,7 +199,10 @@ namespace WCell.Constants.Spells
 		/// Unused
 		/// </summary>
 		Unused_Effect_139 = 139, // Clear Quest
-		Effect_140 = 140, // Spawn GameObject? 
+		/// <summary>
+		/// Weird name, from wowhead
+		/// </summary>
+		TriggerSpellFromTargetWithCasterAsTarget = 140,
 		Effect_141 = 141, // Damage and Reduced Speed (Blood Bolt)
 		/// <summary>
 		/// Deals with branching targets
@@ -220,7 +230,10 @@ namespace WCell.Constants.Spells
 		/// </summary>
 		Effect_153 = 153, // Highest as of 2.4.3.8606
 		Unused_154 = 154,
-		EnableTitanGrip = 155, // Dual wield 2H
+		/// <summary>
+		/// Allows 2h weapons to be carried in 1h and applied an aura
+		/// </summary>
+		Allow2HWeaponIn1HAndApplyAura = 155, // Dual wield 1H
 		AddPrismaticGem = 156, // Add Socket
 		CreateItem2 = 157, // Create Item
 		Milling = 158,

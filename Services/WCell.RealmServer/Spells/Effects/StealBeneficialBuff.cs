@@ -35,9 +35,9 @@ namespace WCell.RealmServer.Spells.Effects
 		{
 		}
 
-		public override SpellFailedReason CheckValidTarget(WorldObject target)
+		public override SpellFailedReason InitializeTarget(WorldObject target)
 		{
-			var caster = m_cast.Caster.CasterInfo;
+			var caster = m_cast.CasterObject.SharedReference;
 			var auras = m_cast.CasterUnit.Auras;
 			foreach (var aura in ((Unit)target).Auras)
 			{
@@ -60,7 +60,7 @@ namespace WCell.RealmServer.Spells.Effects
 		protected override void Apply(WorldObject target)
 		{
 			var cast = m_cast;
-			if (toSteal.IsActive)
+			if (toSteal.IsAdded)
 			{
 				// remove from owner
 				toSteal.Remove(true);

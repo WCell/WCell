@@ -4,15 +4,65 @@
     <Item Key="Done">
       <Value>Done.</Value>
     </Item>
+    <Item Key="PleaseWait">
+      <Value>Please wait...</Value>
+    </Item>
+    <Item Key="GoBack">
+      <Value>Go back...</Value>
+    </Item>
+    <Item Key="AreYouSure">
+      <Value>Are you sure?</Value>
+    </Item>
+    <Item Key="Custom">
+      <Value>Custom</Value>
+    </Item>
+
     <Item Key="Addon">
       <Value>Addon</Value>
     </Item>
     <Item Key="Library">
       <Value>Library</Value>
     </Item>
+    <Item Key="NotConnectedToAuthServer">
+      <Value>Not connected to AuthServer</Value>
+    </Item>
     <Item Key="PlayerNotOnline">
       <Value>Player is not online: {0}</Value>
     </Item>
+    <Item Key="NoValidTarget">
+      <Value>There is no valid target.</Value>
+    </Item>
+    <Item Key="InvalidSelection">
+      <Value>Invalid selection.</Value>
+    </Item>
+
+    <Item Key="Second">
+      <Value>Second</Value>
+    </Item>
+    <Item Key="Seconds">
+      <Value>Seconds</Value>
+    </Item>
+    <Item Key="Minute">
+      <Value>Minute</Value>
+    </Item>
+    <Item Key="Minutes">
+      <Value>Minutes</Value>
+    </Item>
+    <Item Key="Hour">
+      <Value>Hour</Value>
+    </Item>
+    <Item Key="Hours">
+      <Value>Hours</Value>
+    </Item>
+
+
+    <Item Key="LogCombatExp">
+      <Value>{0} dies, you gain {1} experience.</Value>
+    </Item>
+    <Item Key="LogCombatExpRested">
+      <Value>{0} dies, you gain {1} experience (+{2} exp Rested bonus)</Value>
+    </Item>
+
 
     <Item Key="SubCommandNotFound">
       <Value>SubCommand not found: {0}</Value>
@@ -46,12 +96,307 @@
       <Value>Could not change the current user's locale.</Value>
     </Item>
 
+    <!-- 	Spell Commands		  -->
+    <Item Key="CmdSpellDescription">
+      <Value>Provides commands to interact with the Spells of the Target.</Value>
+    </Item>
+
+    <Item Key="CmdSpellAddDescription">
+      <Value>
+        Adds the given spell.
+        -r (Reagents) switch also adds all constraints required by the Spell (Tools, Reagents, Objects, Skills).
+        -c [&lt;class&gt;] adds all spells of the Character's or a given class.
+        -t (talents) adds the highest rank of all spells of all talents
+      </Value>
+    </Item>
+    <Item Key="CmdSpellAddParamInfo">
+      <Value>[-[r][c [&lt;class&gt;]]] [list of &lt;spell|line|talent&gt;]</Value>
+    </Item>
+    <Item Key="CmdSpellAddResponseSpell">
+      <Value>Spell added : {0}</Value>
+    </Item>
+    <Item Key="CmdSpellAddResponseSpells">
+      <Value>Added {0} spells.</Value>
+    </Item>
+    <Item Key="CmdSpellAddResponseTalents">
+      <Value>Added {0} talents.</Value>
+    </Item>
+
+    <Item Key="CmdSpellRemoveDescription">
+      <Value>Removes the given Spell</Value>
+    </Item>
+    <Item Key="CmdSpellRemoveParamInfo">
+      <Value>&lt;spell&gt;</Value>
+    </Item>
+    <Item Key="CmdSpellRemoveResponse">
+      <Value>Spell removed: {0}</Value>
+    </Item>
+    <Item Key="CmdSpellRemoveError">
+      <Value>No valid spells were given</Value>
+    </Item>
+
+    <Item Key="CmdSpellPurgeDescription">
+      <Value>Removes all spells but the initial ones.</Value>
+    </Item>
+    <Item Key="CmdSpellPurgeResponse">
+      <Value>Purged spells.</Value>
+    </Item>
+    <Item Key="CmdSpellPurgeError">
+      <Value>Target has no Spells.</Value>
+    </Item>
+
+    <Item Key="CmdSpellTriggerDescription">
+      <Value>Triggers the given spell on the target of the command.</Value>
+    </Item>
+    <Item Key="CmdSpellTriggerParamInfo">
+      <Value>&lt;spellid&gt;</Value>
+    </Item>
+    <Item Key="CmdSpellTriggerResponse">
+      <Value>Spell triggerred: {0}</Value>
+    </Item>
+    <Item Key="CmdSpellTriggerError">
+      <Value>Spell doesn't exist.</Value>
+    </Item>
+
     <Item Key="CmdSpellGetDescription">
       <Value>Retrieves information about the given Spell.</Value>
     </Item>
-
     <Item Key="CmdSpellGetParamInfo">
       <Value>&lt;spellid or lineid&gt;</Value>
     </Item>
+
+    <Item Key="CmdSpellClearDescription">
+      <Value>Clears all reamining spell-cooldowns</Value>
+    </Item>
+    <Item Key="CmdSpellClearResponse">
+      <Value>All Cooldowns cleared.</Value>
+    </Item>
+    <Item Key="CmdSpellClearError">
+      <Value>Target has no Cooldowns.</Value>
+    </Item>
+
+    <Item Key="CmdSpellVisualDescription">
+      <Value>Plays the visual of the given spell</Value>
+    </Item>
+    <Item Key="CmdSpellVisualParamInfo">
+      <Value>&lt;SpellId&gt;</Value>
+    </Item>
+    <Item Key="CmdSpellVisualError">
+      <Value>Invalid SpellId: {0}.</Value>
+    </Item>
+    <Item Key="CmdSpellNotExists">
+      <Value>Spell doesn't exist.</Value>
+    </Item>
+
+    <Item Key="CmdPushbackParams">
+      <Value>&lt;pushback in millis&gt;</Value>
+    </Item>
+    <Item Key="CmdPushbackDescription">
+      <Value>Pushbacks the spellcaster target by the given amount in milliseconds (Default: 1000 - Can be negative to speed up casting).</Value>
+    </Item>
+
+    <!-- End of Spell Commands -->
+
+    <!-- 	Skill Commands		-->
+    <Item Key="CmdSkillDescription">
+      <Value>Used for manipulation of Skills.</Value>
+    </Item>
+
+    <Item Key="CmdSkillSetParamInfo">
+      <Value>&lt;skill&gt; [&lt;value&gt; [&lt;maxValue&gt;]]</Value>
+    </Item>
+    <Item Key="CmdSkillSetDescription">
+      <Value>Sets the given Skill to the given values (or uses 1 by default)</Value>
+    </Item>
+    <Item Key="CmdSkillSetResponse">
+      <Value>"Skill {0} set to {1} (Max: {2}).</Value>
+    </Item>
+    <Item Key="CmdSkillSetError">
+      <Value>Skill {0} doesn't exist.</Value>
+    </Item>
+
+    <Item Key="CmdSkillLearnParamInfo">
+      <Value>[-r] &lt;skill&gt; [&lt;amount&gt;]</Value>
+    </Item>
+    <Item Key="CmdSkillLearnDescription">
+      <Value>Learns the given skill and all or optionally only the given maximum of abilities. Use the -r switch to also add other requirements.</Value>
+    </Item>
+    <Item Key="CmdSkillLearnResponse">
+      <Value>Skill {0} set to {1}.</Value>
+    </Item>
+    <Item Key="CmdSkillLearnError">
+      <Value>Skill {0} doesn't exist.</Value>
+    </Item>
+
+    <Item Key="CmdSkillTierParamInfo">
+      <Value>&lt;kill&gt; &lt;tier&gt;</Value>
+    </Item>
+    <Item Key="CmdSkillTierDescription">
+      <Value>Set the given Skill to the given Tier</Value>
+    </Item>
+    <Item Key="CmdSkillTierResponse">
+      <Value>Skill {0} set to {1} (Max: {2}).</Value>
+    </Item>
+    <Item Key="CmdSkillTierError1">
+      <Value>Skill {0} doesn't exist.</Value>
+    </Item>
+    <Item Key="CmdSkillTierError2">
+      <Value>Invalid Tier-number</Value>
+    </Item>
+    <!-- End of Skill Commands   -->
+
+    <!-- 	Map Commands		-->
+    <Item Key="CmdMapDescription">
+      <Value>Provides Commands to manipulate Maps and their content.</Value>
+    </Item>
+
+    <Item Key="CmdMapSpawnParamInfo">
+      <Value>[-a|&lt;name&gt;]</Value>
+    </Item>
+    <Item Key="CmdMapSpawnDescription">
+      <Value>
+        Spawns GOs and NPCs in the current (or specified) map.
+        -a switch spawns all active Maps.
+        (Only used for development purposes where the maps arent spawned automatically.)
+      </Value>
+    </Item>
+    <Item Key="CmdMapSpawnResponse">
+      <Value>Spawned map </Value>
+    </Item>
+    <Item Key="CmdMapSpawnResponse1">
+      <Value>All maps spawned.</Value>
+    </Item>
+    <Item Key="CmdMapSpawnError1">
+      <Value>Invalid Map.</Value>
+    </Item>
+    <Item Key="CmdMapSpawnError2">
+      <Value>You did not specify the Map to be spawned.</Value>
+    </Item>
+    <Item Key="CmdMapSpawnError3">
+      <Value>Map is already spawned.</Value>
+    </Item>
+    <Item Key="CmdMapSpawnResponse2">
+      <Value>Spawning {0}...</Value>
+    </Item>
+    <Item Key="CmdMapSpawnError4">
+      <Value>No GOs will be spawned (Use 'Load GOs' before spawning)</Value>
+    </Item>
+    <Item Key="CmdMapSpawnError5">
+      <Value>No NPCs will be spawned (Use 'Load NPCs' before spawning)</Value>
+    </Item>
+    <Item Key="CmdMapSpawnResponse3">
+      <Value>Spawned map </Value>
+    </Item>
+
+    <Item Key="CmdMapClearParamInfo">
+      <Value>[&lt;name&gt;]</Value>
+    </Item>
+    <Item Key="CmdMapClearDescription">
+      <Value>Removes all objects from the current or given Map.</Value>
+    </Item>
+    <Item Key="CmdMapClearError1">
+      <Value>Invalid Map.</Value>
+    </Item>
+    <Item Key="CmdMapClearError2">
+      <Value>You did not specify a Map to be cleared.</Value>
+    </Item>
+    <Item Key="CmdMapClearResponse">
+      <Value>Cleared Map </Value>
+    </Item>
+
+    <Item Key="CmdMapUpdateDescription">
+      <Value>Toggles map updates in all Maps on or off</Value>
+    </Item>
+
+    <!-- End of Map Commands -->
+
+    <Item Key="CmdMapListDescription">
+      <Value>Lists active maps</Value>
+    </Item>
+    <Item Key="CmdMapListResponse">
+      <Value>Active Maps: </Value>
+    </Item>
+    <Item Key="GossipOptionTrainer">
+      <Value>Train me...</Value>
+    </Item>
+    <Item Key="GossipOptionFlightMaster">
+      <Value>I want to fly...</Value>
+    </Item>
+    <Item Key="GossipOptionBanker">
+      <Value>Show Bank Account...</Value>
+    </Item>
+    <Item Key="GossipOptionVendor">
+      <Value>Let me see your wares...</Value>
+    </Item>
+    <Item Key="GossipOptionInnKeeper">
+      <Value>Make this inn your home.</Value>
+    </Item>
+    <Item Key="GossipOptionSpiritHealer">
+      <Value>Return me to life.</Value>
+    </Item>
+    <Item Key="GossipOptionTabardDesigner">
+      <Value>I want to create a guild crest.</Value>
+    </Item>
+    <Item Key="GossipOptionStableMaster">
+      <Value>I'd like to stable my pet here.</Value>
+    </Item>
+
+    <Item Key="GodModeIsActivated">
+      <Value>GodMode is Activated!</Value>
+    </Item>
+
+    <Item Key="FeatureNotYetImplemented">
+      <Value>Feature not yet implemented</Value>
+    </Item>
+    <Item Key="InvalidClass">
+      <Value>Invalid Class.</Value>
+    </Item>
+    <Item Key ="Goodbye">
+      <Value>Goodbye!</Value>
+    </Item>
+  
+<!--Editor-->
+    <Item Key ="EditorMapMenuText">
+      <Value>Welcome to the Map Editor</Value>
+    </Item>
+    <Item Key ="EditorMapMenuStatusNoData">
+      <Value>Data not loaded yet</Value>
+    </Item>
+    <Item Key ="EditorMapMenuStatusDataLoading">
+      <Value>Data is loading...</Value>
+    </Item>
+    <Item Key ="EditorMapMenuStatusNotSpawned">
+      <Value>Map is not spawned</Value>
+    </Item>
+    <Item Key ="EditorMapMenuStatusSpawning">
+      <Value>Map Spawning...</Value>
+    </Item>
+
+    <Item Key ="EditorMapMenuLoadData">
+      <Value>Load Map Data</Value>
+    </Item>
+    <Item Key ="EditorMapMenuSpawnMap">
+      <Value>Spawn Map</Value>
+    </Item>
+    <Item Key ="EditorMapMenuClearMap">
+      <Value>Clear Map</Value>
+    </Item>
+    <Item Key ="EditorMapMenuShow">
+      <Value>Show all Spawnpoints</Value>
+    </Item>
+    <Item Key ="EditorMapMenuHide">
+      <Value>Hide all Spawnpoints</Value>
+    </Item>
+    <Item Key ="EditorMapMenuEnableAllSpawnPoints">
+      <Value>Enable all Spawnpoints</Value>
+    </Item>
+    <Item Key ="EditorMapMenuDisableAllSpawnPoints">
+      <Value>Disable all Spawnpoints</Value>
+    </Item>
+
+    <Item Key ="EditorSpawnPointMenuMoveOverHere">
+      <Value>Move over here</Value>
+    </Item>
+    
   </Items>
 </Translation>

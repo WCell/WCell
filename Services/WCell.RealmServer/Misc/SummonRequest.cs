@@ -14,7 +14,7 @@ namespace WCell.RealmServer.Misc
 
 		public WorldObject Portal;
 		public DateTime ExpiryTime;
-		public Region TargetRegion;
+		public Map TargetMap;
 		public Vector3 TargetPos;
 		public Zone TargetZone;
 	}

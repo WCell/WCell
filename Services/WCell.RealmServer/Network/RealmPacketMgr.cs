@@ -25,7 +25,7 @@ using WCell.Core.Network;
 using WCell.PacketAnalysis;
 using WCell.RealmServer.Debugging;
 using WCell.RealmServer.Handlers;
-using WCell.RealmServer.Localization;
+using WCell.RealmServer.Res;
 using WCell.Util;
 using WCell.Util.NLog;
 using WCell.Util.Threading;
@@ -160,7 +160,7 @@ namespace WCell.RealmServer.Network
 				}
 
 				// not a game packet, so process it on the global thread
-				return RealmServer.Instance;
+				return RealmServer.IOQueue;
 			}
 
 		    if (chr == null || acc == null)
@@ -171,7 +171,7 @@ namespace WCell.RealmServer.Network
 		    }
 		    else
 		    {
-		        if (chr.Region != null)
+		        if (chr.Map != null)
 		        {
 		            return chr;
 		        }

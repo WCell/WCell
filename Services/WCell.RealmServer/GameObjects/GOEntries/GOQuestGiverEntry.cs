@@ -6,12 +6,10 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 {
     public class GOQuestGiverEntry : GOEntry
     {
-		private static readonly Logger sLog = LogManager.GetCurrentClassLogger();
-
         /// <summary>
         /// LockId from Lock.dbc
         /// </summary>
-        public uint LockId
+        public int LockId
         {
             get { return Fields[0]; }
         }
@@ -21,13 +19,13 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         /// </summary>
         public uint QuestListId
         {
-            get { return Fields[1]; }
+            get { return (uint) Fields[1]; }
         }
 
         /// <summary>
         /// PageId from PageTextMaterial.dbc
         /// </summary>
-        public uint PageTextMaterialId
+        public int PageTextMaterialId
         {
             get { return Fields[2]; }
         }
@@ -35,15 +33,15 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         /// <summary>
         /// Unknown
         /// </summary>
-        public uint GossipID
+        public override uint GossipId
         {
-            get { return Fields[3]; }
+            get { return (uint) Fields[3]; }
         }
 		
         /// <summary>
         /// Constrained to values 1-4
         /// </summary>
-        public uint CustomAnim
+        public int CustomAnim
         {
             get { return Fields[4]; }
         }
@@ -59,7 +57,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         /// <summary>
         /// Reference to Text object containing the text to display upon interacting with this GO (?)
         /// </summary>
-        public uint OpenTextId
+        public int OpenTextId
         {
             get { return Fields[6]; }
         }
@@ -75,7 +73,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 
 		protected internal override void InitEntry()
 		{
-			Lock = LockEntry.Entries.Get(LockId);
+			Lock = LockEntry.Entries.Get((uint)LockId);
 			LosOk = Fields[7] > 0;
 			AllowMounted = Fields[8] > 0;
 		}

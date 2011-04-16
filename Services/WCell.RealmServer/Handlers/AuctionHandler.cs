@@ -22,7 +22,7 @@ namespace WCell.RealmServer.Handlers
 			var chr = client.ActiveCharacter;
 			var auctioneerId = packet.ReadEntityId();
 
-			var auctioneer = chr.Region.GetObject(auctioneerId) as NPC;
+			var auctioneer = chr.Map.GetObject(auctioneerId) as NPC;
 			AuctionMgr.Instance.AuctionHello(chr, auctioneer);
 		}
 
@@ -31,14 +31,40 @@ namespace WCell.RealmServer.Handlers
 		{
 			var chr = client.ActiveCharacter;
 			var auctioneerId = packet.ReadEntityId();
+		    var unknown = packet.ReadUInt32();
 			var itemId = packet.ReadEntityId();
+		    var stackSize = packet.ReadUInt32();
 			var bid = packet.ReadUInt32();
 			var buyout = packet.ReadUInt32();
 			var time = packet.ReadUInt32();
 
-			var auctioneer = chr.Region.GetObject(auctioneerId) as NPC;
-			AuctionMgr.Instance.AuctionSellItem(chr, auctioneer, itemId, bid, buyout, time);
+			var auctioneer = chr.Map.GetObject(auctioneerId) as NPC;
+			AuctionMgr.Instance.AuctionSellItem(chr, auctioneer, itemId, bid, buyout, time, stackSize);
 		}
+
+        [ClientPacketHandler(RealmServerOpCode.CMSG_AUCTION_LIST_PENDING_SALES)]
+        public static void HandleAuctionListPendingSales(IRealmClient client, RealmPacketIn packet)
+        {
+            var chr = client.ActiveCharacter;
+            var auctioneerId = packet.ReadEntityId();
+            var auctioneer = chr.Map.GetObject(auctioneerId) as NPC;
+
+            var count = 1u;
+            using (var packetOut = new RealmPacketOut(RealmServerOpCode.SMSG_AUCTION_LIST_PENDING_SALES, 14 * (int)count))
+            {
+               
+                packetOut.Write(count);
+                for (var i = 0; i < count; ++i)
+                {
+                    packetOut.Write("");
+                    packetOut.Write("");
+                    packetOut.WriteUInt(0);
+                    packetOut.WriteUInt(0);
+                    packetOut.WriteFloat(0f);
+                    client.Send(packetOut);
+                }
+            }
+        }
 
 		[ClientPacketHandler(RealmServerOpCode.CMSG_AUCTION_PLACE_BID)]
 		public static void HandleAuctionPlaceBid(IRealmClient client, RealmPacketIn packet)
@@ -48,7 +74,7 @@ namespace WCell.RealmServer.Handlers
 			var auctionId = packet.ReadUInt32();
 			var bid = packet.ReadUInt32();
 
-			var auctioneer = chr.Region.GetObject(auctioneerId) as NPC;
+			var auctioneer = chr.Map.GetObject(auctioneerId) as NPC;
 			AuctionMgr.Instance.AuctionPlaceBid(chr, auctioneer, auctionId, bid);
 		}
 
@@ -59,7 +85,7 @@ namespace WCell.RealmServer.Handlers
 			var auctioneerId = packet.ReadEntityId();
 			var auctionId = packet.ReadUInt32();
 
-			var auctioneer = chr.Region.GetObject(auctioneerId) as NPC;
+			var auctioneer = chr.Map.GetObject(auctioneerId) as NPC;
 			AuctionMgr.Instance.CancelAuction(chr, auctioneer, auctionId);
 		}
 
@@ -69,7 +95,7 @@ namespace WCell.RealmServer.Handlers
 			var chr = client.ActiveCharacter;
 			var auctioneerId = packet.ReadEntityId();
 
-			var auctioneer = chr.Region.GetObject(auctioneerId) as NPC;
+			var auctioneer = chr.Map.GetObject(auctioneerId) as NPC;
 			AuctionMgr.Instance.AuctionListOwnerItems(chr, auctioneer);
 		}
 
@@ -79,7 +105,7 @@ namespace WCell.RealmServer.Handlers
 			var chr = client.ActiveCharacter;
 			var auctioneerId = packet.ReadEntityId();
 
-			var auctioneer = chr.Region.GetObject(auctioneerId) as NPC;
+			var auctioneer = chr.Map.GetObject(auctioneerId) as NPC;
 			AuctionMgr.Instance.AuctionListBidderItems(chr, auctioneer);
 		}
 
@@ -88,7 +114,7 @@ namespace WCell.RealmServer.Handlers
 		{
 			var chr = client.ActiveCharacter;
 			var auctioneerId = packet.ReadEntityId();
-			var auctioneer = chr.Region.GetObject(auctioneerId) as NPC;
+			var auctioneer = chr.Map.GetObject(auctioneerId) as NPC;
 
 			var searcher = new AuctionSearch()
 			{
@@ -204,12 +230,15 @@ namespace WCell.RealmServer.Handlers
 			if (auctions == null || auctions.Length < 1)
 				return;
 			var packet = new RealmPacketOut(RealmServerOpCode.SMSG_AUCTION_LIST_RESULT, 7000);
-			packet.Write(auctions.Length);
+            var count = 0;
+            packet.Write(auctions.Length);
 			foreach (var auction in auctions)
 			{
-				BuildAuctionPacket(auction, packet);
+				if(BuildAuctionPacket(auction, packet))
+                    count++;
 			}
-			packet.Write(auctions.Length);
+            //packet.InsertIntAt(count, 0, true);
+			packet.Write(count);
 			packet.Write(300);
 			client.Send(packet);
 			packet.Close();
@@ -218,27 +247,27 @@ namespace WCell.RealmServer.Handlers
 		#endregion
 
 		#region Packet Helper
-		public static void BuildAuctionPacket(Auction auction, RealmPacketOut packet)
+		public static bool BuildAuctionPacket(Auction auction, RealmPacketOut packet)
 		{
 			var item = AuctionMgr.Instance.AuctionItems[auction.ItemLowId];
 
 			if (item == null)
-				return;
+				return false;
 
 			var timeleft = auction.TimeEnds - DateTime.Now;
-			if (timeleft.Milliseconds < 0)
-				return;
+			if (timeleft.TotalMilliseconds < 0)
+				return false;
 
 			packet.Write(auction.ItemLowId);
 			packet.Write(item.Template.Id);
 
-			for (var i = 0; i < 6; i++)
+			for (var i = 0; i < 7; i++)
 			{
 				if (item.EnchantIds != null)
 				{
 					packet.Write(item.EnchantIds[i]);
-					packet.Write(i);					// enchant slot?
-					packet.Write(3);					// TODO: Fix enchant charges
+					packet.Write(i);					// enchant duration
+					packet.Write(item.GetEnchant((EnchantSlot)i).Charges);	// TODO: Fix enchant charges
 				}
 				else
 				{
@@ -248,23 +277,19 @@ namespace WCell.RealmServer.Handlers
 				}
 			}
 
-
-			//packet.Write(item.RandomPropertiesId);
-			packet.Write(0);
+			packet.Write(item.RandomProperty);
 			packet.Write(item.RandomSuffix);
-			packet.WriteUInt(0);
-			packet.WriteUInt(0);
-			packet.WriteUInt(0);
 			packet.Write(item.Amount);
-			packet.WriteUInt(0);
-			packet.WriteUInt(0);
-			packet.WriteULong(auction.OwnerLowId);
-			packet.Write(auction.CurrentBid); //auction start bid   
-			packet.Write(50);
-			packet.Write(auction.BuyoutPrice);
-			packet.Write(timeleft.Milliseconds);
-			packet.WriteULong(auction.BidderLowId);
-			packet.Write(auction.CurrentBid);
+			packet.Write((uint)item.Charges);
+            packet.WriteUInt(0);                    //Unknown
+            packet.WriteULong(auction.OwnerLowId);
+            packet.Write(auction.CurrentBid);       //auction start bid
+		    packet.WriteUInt(AuctionMgr.GetMinimumNewBidIncrement(auction));                    //amount required to outbid
+            packet.Write(auction.BuyoutPrice);
+            packet.Write((int)timeleft.TotalMilliseconds);
+            packet.WriteULong(auction.BidderLowId);
+            packet.Write(auction.CurrentBid);
+		    return true;
 		}
 		#endregion
 	}

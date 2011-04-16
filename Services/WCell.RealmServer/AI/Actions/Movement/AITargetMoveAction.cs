@@ -1,3 +1,4 @@
+using System;
 using NLog;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Entities;
@@ -13,7 +14,7 @@ namespace WCell.RealmServer.AI.Actions.Movement
 	{
 		protected static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-		public static int UpdatePositionTicks = 3;
+		public static int UpdatePositionTicks = 4;
 
 		public static float DefaultFollowDistanceMax = 5f;
 		//public static float DefaultFollowDistanceMin = 1f;
@@ -62,33 +63,29 @@ namespace WCell.RealmServer.AI.Actions.Movement
 				{
 					log.Error("Started " + GetType().Name + " without Target set: " + m_owner);
 					m_owner.Brain.EnterDefaultState();
+					return;
 				}
 				else
 				{
 					m_target = m_owner.Target;
 				}
 			}
+			Update();
 		}
 
 		public override void Update()
 		{
-			if (m_target == null)
-			{
-				log.Error(GetType().Name + " is being updated without a Target set: " + m_owner);
-				Stop();
-				m_owner.Brain.EnterDefaultState();
-				return;
-			}
-
-			if (!m_target.IsInWorld)
+			if (m_target == null || !m_target.IsInWorld)
 			{
 				// lost target
-				Stop();
-				m_owner.Brain.EnterDefaultState();
-				return;
+				OnLostTarget();
+				if (m_target == null)
+				{
+					return;
+				}
 			}
 
-			if (!m_owner.Movement.Update() && !m_owner.MayMove)
+			if (!m_owner.Movement.Update() && !m_owner.CanMove)
 			{
 				return;
 			}
@@ -109,6 +106,13 @@ namespace WCell.RealmServer.AI.Actions.Movement
 		    {
 		        MoveToTargetPoint();
 		    }
+		}
+
+		protected virtual void OnLostTarget()
+		{
+			log.Warn(GetType().Name + " is being updated without a Target set: " + m_owner);
+			Stop();
+			m_owner.Brain.EnterDefaultState();
 		}
 
 		protected virtual void OnArrived()

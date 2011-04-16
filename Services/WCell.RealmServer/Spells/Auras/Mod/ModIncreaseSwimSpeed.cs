@@ -22,12 +22,12 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	{
 		float val;
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			m_aura.Auras.Owner.SwimSpeedFactor = UnitUpdates.GetMultiMod(val = EffectValue / 100f, m_aura.Auras.Owner.SwimSpeedFactor);
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			m_aura.Auras.Owner.SwimSpeedFactor = UnitUpdates.GetMultiMod(-val, m_aura.Auras.Owner.SwimSpeedFactor);
 		}

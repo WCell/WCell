@@ -63,30 +63,11 @@ namespace WCell.RealmServer.Handlers
 			var objId = packet.ReadEntityId();
 			var chr = client.ActiveCharacter;
 			var looter = chr.LooterEntry;
-			var looted = chr.Region.GetObject(objId);
+			var lootable = chr.Map.GetObject(objId);
 
-			if (looted != null)
+			if (lootable != null)
 			{
-				looter.Release();		// make sure that the Character is not still looting something else
-
-				var loot = looted.Loot;
-				if (loot == null)
-				{
-					SendLootFail(chr, looted);
-					// TODO: Kneel and unkneel?
-				}
-				else if (looter.MayLoot(loot))
-				{
-					// we are either already a looter or become a new one
-					chr.CancelAllActions();
-					looter.Loot = loot;
-
-					SendLootResponse(chr, loot);
-				}
-				else
-				{
-					SendLootFail(chr, looted);
-				}
+				looter.TryLoot(lootable);
 			}
 		}
 
@@ -134,7 +115,7 @@ namespace WCell.RealmServer.Handlers
 			var rollType = (LootRollType)packet.ReadByte();
 
 			var chr = client.ActiveCharacter;
-			var looted = chr.Region.GetObject(lootedId);
+			var looted = chr.Map.GetObject(lootedId);
 
 			if (looted != null && looted.Loot != null &&
 				looted.Loot.Method == LootMethod.NeedBeforeGreed &&
@@ -152,8 +133,8 @@ namespace WCell.RealmServer.Handlers
 		    var playerId = packet.ReadEntityId();
 
 		    var chr = client.ActiveCharacter;
-		    var looted = chr.Region.GetObject(lootedId);
-		    var player = chr.Region.GetObject(playerId) as Character;
+		    var looted = chr.Map.GetObject(lootedId);
+		    var player = chr.Map.GetObject(playerId) as Character;
 
             if (looted != null && looted.Loot != null && 
                 looted.Loot.Method == LootMethod.MasterLoot &&
@@ -204,10 +185,9 @@ namespace WCell.RealmServer.Handlers
 					var templ = item.Template;
 					var looters = item.MultiLooters;
 					if (!item.Taken &&
-						((looters == null && templ.CheckLootRequirements(looter)) ||
+						((looters == null && templ.CheckLootConstraints(looter)) ||
 						(looters != null && looters.Contains(looterEntry))))
 					{
-
 						packet.Write((byte)i);
 						packet.Write(templ.Id);
 						packet.Write(item.Amount);

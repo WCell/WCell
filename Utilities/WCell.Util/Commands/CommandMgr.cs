@@ -45,6 +45,8 @@ namespace WCell.Util.Commands
 
 		protected static Logger log = LogManager.GetCurrentClassLogger();
 
+		public const char VariableCharacter = '$';
+
 		/// <summary>
 		/// Is triggered whenever an unknown command has been used
 		/// </summary>
@@ -88,7 +90,7 @@ namespace WCell.Util.Commands
 		/// If the processing of the command raises an Exception, the fail events are triggered.
 		/// </summary>
 		/// <returns>True if at least one Command was triggered, otherwise false.</returns>
-		public virtual bool Trigger(CmdTrigger<C> trigger)
+		public virtual bool Execute(CmdTrigger<C> trigger)
 		{
 			var cmd = GetCommand(trigger);
 			if (cmd != null)
@@ -172,7 +174,7 @@ namespace WCell.Util.Commands
 
 		public bool Trigger(CmdTrigger<C> trigger, BaseCommand<C> cmd)
 		{
-			return Trigger(trigger, cmd, false);
+			return Execute(trigger, cmd, false);
 		}
 
 		/// <summary>
@@ -182,7 +184,7 @@ namespace WCell.Util.Commands
 		/// <param name="cmd"></param>
 		/// <param name="silentFail">Will not reply if it failed due to target restrictions or privileges etc</param>
 		/// <returns></returns>
-		public virtual bool Trigger(CmdTrigger<C> trigger, BaseCommand<C> cmd, bool silentFail)
+		public virtual bool Execute(CmdTrigger<C> trigger, BaseCommand<C> cmd, bool silentFail)
 		{
 			if (cmd.Enabled)
 			{
@@ -352,14 +354,20 @@ namespace WCell.Util.Commands
 			//// map by type
 			//commandMapByType[type] = cmd;
 			cmd.DoInit();
+
 			commandsByName.Add(cmd.Name, cmd);
 
 			// Add to table, mapped by aliases
 			foreach (var alias in cmd.Aliases)
 			{
+				if (alias.Contains(VariableCharacter))
+				{
+					log.Error("Command alias \"{0}\" contained invalid character (Command: {1})", alias, cmd);
+					continue;
+				}
 				if (commandsByAlias.ContainsKey(alias))
 				{
-					log.Warn("Command alias \"{0}\" was used by more than 1 Command: {1} and {2}", alias, commandsByAlias[alias], cmd);
+					log.Warn("Overriding alias \"{0}\" because it was used by more than 1 Command: \"{1}\" and \"{2}\"", alias, commandsByAlias[alias], cmd);
 				}
 				commandsByAlias[alias] = cmd;
 			}
@@ -480,7 +488,8 @@ namespace WCell.Util.Commands
 		public bool MayDisplay(CmdTrigger<C> trigger, BaseCommand<C> cmd, bool ignoreRestrictions)
 		{
 			return cmd.Enabled &&
-				   (ignoreRestrictions || cmd.RootCmd.MayTrigger(trigger, cmd, true));
+				   (ignoreRestrictions ||
+						(cmd.RootCmd.MayTrigger(trigger, cmd, true) && TriggerValidator(trigger, cmd, true)));
 		}
 
 		public BaseCommand<C> SelectCommand(string cmdString)
@@ -570,8 +579,17 @@ namespace WCell.Util.Commands
 			else
 			{
 				// help for all commands
+				var count = 0;
+				foreach (var cmd in Commands)
+				{
+					if (MayDisplay(trigger, cmd, ignoreRestrictions))
+					{
+						count++;
+					}
+				}
+
 				trigger.ReplyFormat("Use: ? <Alias> [<subalias> [<subalias> ...]] for help on a certain command.");
-				trigger.Reply("All available commands:");
+				trigger.Reply("All {0} available commands:", count);
 
 				foreach (var cmd in Commands)
 				{
@@ -654,7 +672,7 @@ namespace WCell.Util.Commands
 							continue;
 						}
 
-						if (!Trigger(trigger))
+						if (!Execute(trigger))
 						{
 							trigger.Reply("Could not execute Command from file \"{0}\" (line {1}): \"{2}\"", filename, line,
 										  cmd);
@@ -710,7 +728,7 @@ namespace WCell.Util.Commands
 
 			protected override void Initialize()
 			{
-				Init("Call", "C", "@", "$");
+				Init("Call", "C", "@");
 				EnglishParamInfo = "(-l [<wildmatch>]|-<i>)|<methodname>[ <arg0> [<arg1> [...]]]";
 				EnglishDescription = "Calls any static method or custom function with the given arguments. Either use the name or the index of the function.";
 			}

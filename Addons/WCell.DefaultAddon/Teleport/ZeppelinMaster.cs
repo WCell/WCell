@@ -1,4 +1,5 @@
-﻿using WCell.RealmServer.NPCs;
+using WCell.RealmServer.Lang;
+using WCell.RealmServer.NPCs;
 using WCell.Constants.NPCs;
 using WCell.Constants.Factions;
 using WCell.Core.Initialization;
@@ -52,7 +53,7 @@ namespace WCell.Addons.Default.Teleport
                     convo.Character.TeleportTo(World.EasternKingdoms, new Vector3(-12407.52f, 208.3989f, 31.64571f));
                     convo.StayOpen = false;	// convo is over
                 }),
-                new QuitGossipMenuItem("Goodbye!")	// convo is over
+				new QuitGossipMenuItem(RealmLangKey.Goodbye)	// convo is over
 				)
                 {
                       // Don't close the menu, unless the user selected a final option
@@ -68,7 +69,7 @@ namespace WCell.Addons.Default.Teleport
                     convo.Character.TeleportTo(World.EasternKingdoms, new Vector3(2056.241f, 236.5589f, 99.76692f));
                     convo.StayOpen = false;	// convo is over
                 }),
-                new QuitGossipMenuItem("Goodbye!")	// convo is over
+                new QuitGossipMenuItem(RealmLangKey.Goodbye)	// convo is over
                 )
                 {
                 // Don't close the menu, unless the user selected a final option
@@ -84,7 +85,7 @@ namespace WCell.Addons.Default.Teleport
                     convo.Character.TeleportTo(World.Kalimdor, new Vector3(1360.738f, -4638.002f, 53.85339f));
                     convo.StayOpen = false;	// convo is over
                 }),
-                new QuitGossipMenuItem("Goodbye!")	// convo is over
+                new QuitGossipMenuItem(RealmLangKey.Goodbye)	// convo is over
                 )
             {
                 // Don't close the menu, unless the user selected a final option
@@ -100,7 +101,7 @@ namespace WCell.Addons.Default.Teleport
                     convo.Character.TeleportTo(World.EasternKingdoms, new Vector3(-14285.23f, 557.6923f, 8.872749f));
                     convo.StayOpen = false;	// convo is over
                 }),
-                new QuitGossipMenuItem("Goodbye!")	// convo is over
+                new QuitGossipMenuItem(RealmLangKey.Goodbye)	// convo is over
                 )
             {
                 // Don't close the menu, unless the user selected a final option
@@ -116,7 +117,7 @@ namespace WCell.Addons.Default.Teleport
                     convo.Character.TeleportTo(World.Kalimdor, new Vector3(-996.545f, -3829.761f, 5.601001f));
                     convo.StayOpen = false;	// convo is over
                 }),
-                new QuitGossipMenuItem("Goodbye!")	// convo is over
+                new QuitGossipMenuItem(RealmLangKey.Goodbye)	// convo is over
                 )
             {
                 // Don't close the menu, unless the user selected a final option

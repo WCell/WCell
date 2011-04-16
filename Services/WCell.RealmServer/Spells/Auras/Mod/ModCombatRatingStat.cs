@@ -1,4 +1,4 @@
-﻿using WCell.Constants.Spells;
+using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
 using WCell.Constants;
 using WCell.Constants.Misc;
@@ -12,17 +12,17 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
     {
         int value = 0;
 
-        protected internal override void Apply()
+        protected override void Apply()
         {
             var owner = m_aura.Auras.Owner as Character;
             if (owner != null)
             {
-                value = owner.GetStatValue((StatType)m_spellEffect.MiscValueB) / EffectValue;
+                value = owner.GetTotalStatValue((StatType)m_spellEffect.MiscValueB) / EffectValue;
                 owner.ModCombatRating((CombatRating)m_spellEffect.MiscValue, value);
             }
         }
 
-        protected internal override void Remove(bool cancelled)
+        protected override void Remove(bool cancelled)
         {
             var owner = m_aura.Auras.Owner as Character;
             if (owner != null)

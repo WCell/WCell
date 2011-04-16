@@ -2,7 +2,7 @@ using WCell.Constants.Misc;
 
 ///
 /// This file was automatically created, using WCell's CodeFileWriter
-/// Date: 4/23/2010
+/// Date: 7/19/2010
 ///
 
 namespace WCell.Constants
@@ -22,9 +22,8 @@ namespace WCell.Constants
 		/// <summary>
 		/// The version of the WoW Client that is currently supported.
 		/// </summary>
-		public static readonly ClientVersion RequiredVersion = new ClientVersion(4, 0, 0, 11927);
+        public static readonly ClientVersion RequiredVersion = new ClientVersion(4, 0, 0, 11927);
 
 	}
 
 }
-

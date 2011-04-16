@@ -15,6 +15,7 @@
  *************************************************************************/
 
 using System;
+using System.Linq;
 using WCell.Constants.Spells;
 using WCell.Constants.World;
 using WCell.RealmServer.Entities;
@@ -197,20 +198,55 @@ namespace WCell.RealmServer.Commands
 	}
 	#endregion
 
-	#region Teleport
-	public class TeleportCommand : RealmServerCommand
+    #region Stunned
+    public class StunnededCommand : RealmServerCommand
+	{
+		protected StunnededCommand() { }
+
+		protected override void Initialize()
+		{
+			Init("Stunned", "Stun");
+			EnglishParamInfo = "[0/1]";
+			EnglishDescription = "Toggles whether the Unit is stunned or not";
+		}
+
+		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+		{
+			var newState = (trigger.Text.HasNext && trigger.Text.NextBool()) ||
+				(!trigger.Text.HasNext && trigger.Args.Target.CanMove);
+
+			if (newState)
+			{
+				trigger.Args.Target.IncMechanicCount(SpellMechanic.Stunned);
+			}
+			else
+			{
+				trigger.Args.Target.DecMechanicCount(SpellMechanic.Stunned);
+			}
+			trigger.Reply((newState ? "S" : "Uns") + "tunned ");
+		}
+
+        public override ObjectTypeCustom TargetTypes
+        {
+            get
+            {
+                return ObjectTypeCustom.All;
+            }
+        }
+    }
+    #endregion
+
+    #region Teleport
+    public class TeleportCommand : RealmServerCommand
 	{
 		protected TeleportCommand() { }
 
 		protected override void Initialize()
 		{
 			Init("Tele", "Teleport");
-			EnglishParamInfo = "[-l[r <region>] <searchterm>] | [-c [<x> <y> <z> [<MapName or Id>]]] | [<LocationName>] | [-a <AreaTrigger Name>]";
-			EnglishDescription = "Teleports to the given location. " +
-				"-l lists all named locations that contain the given term. " +
-				"-c teleports to the given coordinates. " +
-				"-a teleports to the location of the given AreaTrigger (if its a global one). " +
-				"The location menu is only going to show up for male Characters (client-side bug).";
+			EnglishParamInfo = "[-c [<x> <y> <z> [<MapName or Id>]]] | [<LocationName>]";
+			EnglishDescription = "Teleports to the given location or shows a list of all places that match the given name. " +
+				"-c teleports to the given coordinates instead. ";
 		}
 
 		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
@@ -223,38 +259,10 @@ namespace WCell.RealmServer.Commands
 
 			var target = trigger.Args.Target;
 			var mod = trigger.Text.NextModifiers();
-			if (mod.Contains("l"))
-			{
-				var region = MapId.End;
-				if (mod.Contains("r"))
-				{
-					// also filter by region
-					region = trigger.Text.NextEnum(region);
-				}
-
-				var searchTerm = trigger.Text.NextWord();
-				var i = 0;
-				foreach (var location in WorldLocationMgr.WorldLocations.Values)
-				{
-					if (location.Names.Localize(trigger.Args.User.Locale).IndexOf(searchTerm, StringComparison.InvariantCultureIgnoreCase) > -1)
-					{
-						if (region == MapId.End || region == location.RegionId)
-						{
-							i++;
-							trigger.Reply("{0}. {1} ({2})", i, location.DefaultName, location.RegionId);
-						}
-					}
-				}
-
-				if (i == 0)
-				{
-					trigger.Reply("No locations found.");
-				}
-			}
-			else if (mod == "c")
+			if (mod == "c")
 			{
 				float? o = null;
-				Region region = null;
+				Map map = null;
 
 				var x = trigger.Text.NextFloat(-50001);
 				var y = trigger.Text.NextFloat(-50001);
@@ -263,8 +271,8 @@ namespace WCell.RealmServer.Commands
 				if (trigger.Text.HasNext)
 				{
 					var mapId = trigger.Text.NextEnum(MapId.End);
-					region = World.GetRegion(mapId);
-					if (region == null)
+					map = World.GetNonInstancedMap(mapId);
+					if (map == null)
 					{
 						trigger.Reply("Invalid map: " + mapId);
 						return;
@@ -276,13 +284,13 @@ namespace WCell.RealmServer.Commands
 					trigger.Reply("Invalid position. Usage: " + EnglishParamInfo);
 					return;
 				}
-				if (region == null)
+				if (map == null)
 				{
-					region = trigger.Args.Character.Region;
+					map = trigger.Args.Character.Map;
 				}
 
 				var pos = new Vector3(x, y, z);
-				trigger.Args.Target.TeleportTo(region, ref pos, o);
+				trigger.Args.Target.TeleportTo(map, ref pos, o);
 			}
 			else
 			{
@@ -291,6 +299,7 @@ namespace WCell.RealmServer.Commands
 
 				if (trigger.Args.Character != null)
 				{
+					// TODO: Use localization
 					var locs = WorldLocationMgr.GetMatches(targetName);
 
 					if (locs.Count == 0)
@@ -298,13 +307,24 @@ namespace WCell.RealmServer.Commands
 						trigger.Reply("No matches found for: " + targetName);
 						return;
 					}
-					else if (locs.Count == 1)
-					{
-						target.TeleportTo(locs[0]);
-					}
 					else
 					{
-						trigger.Args.Character.StartGossip(WorldLocationMgr.CreateTeleMenu(locs));
+						if (locs.Count == 1)
+						{
+							target.TeleportTo(locs[0]);
+						}
+						else
+						{
+							var perfectMatch = locs.FirstOrDefault(loc => loc.DefaultName.Equals(targetName, StringComparison.InvariantCultureIgnoreCase));
+							if (perfectMatch != null)
+							{
+								target.TeleportTo(perfectMatch);
+							}
+							else
+							{
+								trigger.Args.Character.StartGossip(WorldLocationMgr.CreateTeleMenu(locs));
+							}
+						}
 					}
 				}
 				else
@@ -323,8 +343,8 @@ namespace WCell.RealmServer.Commands
 				// var loc = WorldLocationMgr.GetFirstMatch(targetName);
 				//if (loc != null)
 				//{
-				//    var region = World.GetRegion(loc.RegionId);
-				//    trigger.Args.Target.TeleportTo(region, loc.Position);
+				//    var map = World.GetMap(loc.MapId);
+				//    trigger.Args.Target.TeleportTo(map, loc.Position);
 				//}
 				//else
 				//{
@@ -348,7 +368,7 @@ namespace WCell.RealmServer.Commands
 			Init("GoTo");
 			EnglishParamInfo = "<targetname>";
 			EnglishDescription =
-				"Teleports the Target to Character/Unit/GameObject. [NIY]: If Unit or GO are specified, target will be teleported to the nearest one.";
+				"Teleports the Target to Character/Unit/GameObject. If Unit or GO are specified, target will be teleported to the nearest one [NYI].";
 		}
 
 		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
@@ -414,7 +434,7 @@ namespace WCell.RealmServer.Commands
 				}
 				else
 				{
-					chr.TeleportTo(trigger.Args.Target.Region, trigger.Args.Target.Position);
+					chr.TeleportTo(trigger.Args.Target.Map, trigger.Args.Target.Position);
 					chr.Orientation = trigger.Args.Target.Orientation;
 				}
 			}
@@ -473,7 +493,7 @@ namespace WCell.RealmServer.Commands
 
 				if (chr == null)
 				{
-					trigger.Reply(LangKey.CmdSummonPlayerNotOnline, name);
+					trigger.Reply(RealmLangKey.CmdSummonPlayerNotOnline, name);
 				}
 				else
 				{
@@ -484,13 +504,13 @@ namespace WCell.RealmServer.Commands
 					}
 					else
 					{
-						chr.TeleportTo(trigger.Args.Target.Region, trigger.Args.Target.Position);
+						chr.TeleportTo(trigger.Args.Target.Map, trigger.Args.Target.Position);
 					}
 				}
 			}
 		}
 
-		public override bool NeedsCharacter
+		public override bool RequiresCharacter
 		{
 			get
 			{

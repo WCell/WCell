@@ -14,8 +14,6 @@
  *
  *************************************************************************/
 
-using WCell.RealmServer.Entities;
-
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
 	/// <summary>
@@ -24,14 +22,14 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	/// </summary>
 	public class ModManaRegenInterruptHandler : AuraEffectHandler
 	{
-		protected internal override void Apply()
+		protected override void Apply()
 		{
-			Owner.ManaRegenPerTickInterruptedPct = EffectValue; 
+			Owner.ManaRegenPerTickInterruptedPct += EffectValue; 
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
-			Owner.ManaRegenPerTickInterruptedPct = Unit.PowerRegenInterruptedPct;
+			Owner.ManaRegenPerTickInterruptedPct -= EffectValue;
 		}
 	}
 };

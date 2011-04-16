@@ -23,7 +23,7 @@ namespace WCell.RealmServer.Skills
 			var addSpell = SpellHandler.Get(AddSpellId);
 			if (spell == null || addSpell == null)
 			{
-				ContentHandler.OnInvalidDBData("Invalid SpellLearnRelation: Spell {0} (#{1}) and AddSpell {2} (#{3})",
+				ContentMgr.OnInvalidDBData("Invalid SpellLearnRelation: Spell {0} (#{1}) and AddSpell {2} (#{3})",
 					SpellId, (uint)SpellId, AddSpellId, (uint)AddSpellId);
 			}
 			else

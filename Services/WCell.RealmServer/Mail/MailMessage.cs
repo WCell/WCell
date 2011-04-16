@@ -4,9 +4,11 @@ using System.Linq;
 using Castle.ActiveRecord;
 using NLog;
 using WCell.Constants;
+using WCell.Constants.Items;
 using WCell.Core;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Items;
 
 namespace WCell.RealmServer.Mail
 {
@@ -107,29 +109,17 @@ namespace WCell.RealmServer.Mail
 
 		public EntityId ReceiverEntityId
 		{
-			get
-			{
-				return EntityId.GetPlayerId((uint)_receiverId);
-			}
-			set
-			{
-				_receiverId = (int)value.Low;
-			}
+			get { return EntityId.GetPlayerId((uint)_receiverId); }
+			set { _receiverId = (int)value.Low; }
 		}
 
 		public EntityId SenderEntityId
 		{
-			get
-			{
-				return EntityId.GetPlayerId((uint)_senderId);
-			}
-			set
-			{
-				_senderId = (int)value.Low;
-			}
+			get { return EntityId.GetPlayerId((uint)_senderId); }
+			set { _senderId = (int)value.Low; }
 		}
 
-		[Property(NotNull = true)]
+		[Property(NotNull = true, Length = 512)]
 		public string Subject
 		{
 			get;
@@ -139,7 +129,7 @@ namespace WCell.RealmServer.Mail
 		/// <summary>
 		/// The body of the message
 		/// </summary>
-		[Property(NotNull = true)]
+		[Property(NotNull = true, Length = 1024*8)]
 		public string Body
 		{
 			get;
@@ -175,7 +165,12 @@ namespace WCell.RealmServer.Mail
 
 		public int RemainingDeliveryMillis
 		{
-			get { return (int) (DeliveryTime - DateTime.Now).TotalMilliseconds; }
+			get { return (int)(DeliveryTime - DateTime.Now).TotalMilliseconds; }
+		}
+
+		public bool WasRead
+		{
+			get { return ReadTime != null; }
 		}
 
 		[Property]
@@ -207,21 +202,15 @@ namespace WCell.RealmServer.Mail
 
 		public uint CashOnDelivery
 		{
-			get
-			{
-				return (uint)_cashOnDelivery;
-			}
-			set
-			{
-				_cashOnDelivery = value;
-			}
+			get { return (uint)_cashOnDelivery; }
+			set { _cashOnDelivery = value; }
 		}
 
 		[Property(NotNull = true)]
 		public bool CopiedToItem
 		{
 			get;
-			set;
+			internal set;
 		}
 
 		#region Items
@@ -229,9 +218,13 @@ namespace WCell.RealmServer.Mail
 		public int IncludedItemCount
 		{
 			get;
-			set;
+			private set;
 		}
 
+		/// <summary>
+		/// The list of included items. 
+		/// Returns null if no items are added.
+		/// </summary>
 		public ICollection<ItemRecord> IncludedItems
 		{
 			get
@@ -254,27 +247,56 @@ namespace WCell.RealmServer.Mail
 				}
 				return _items;
 			}
-			internal set
+		}
+
+		#region Add / Remove Items
+		public ItemRecord AddItem(ItemId item)
+		{
+			var template = ItemMgr.GetTemplate(item);
+			if (template == null)
 			{
-				_items = value;
-				IncludedItemCount = _items != null ? _items.Count : 0;
+				return null;
 			}
+			return AddItem(template);
+		}
+
+		public ItemRecord AddItem(ItemTemplate template)
+		{
+			var record = ItemRecord.CreateRecord(template);
+			AddItem(record);
+			return record;
+		}
+
+		public void AddItem(ItemRecord record)
+		{
+			if (_items == null)
+			{
+				_items = new List<ItemRecord>(3);
+			}
+
+			record.MailId = Guid;
+			_items.Add(record);
+			IncludedItemCount++;
 		}
 
 		public ItemRecord RemoveItem(uint lowId)
 		{
 			var items = IncludedItems;
-			foreach (var item in items)
+			if (items != null)
 			{
-				if (item.EntityLowId == lowId)
+				foreach (var item in items)
 				{
-					items.Remove(item);
-					IncludedItemCount = items.Count;
-					return item;
+					if (item.EntityLowId == lowId)
+					{
+						items.Remove(item);
+						IncludedItemCount = items.Count;
+						return item;
+					}
 				}
 			}
 			return null;
 		}
+		#endregion
 
 		public void SetItems(ICollection<Item> items)
 		{
@@ -378,7 +400,8 @@ namespace WCell.RealmServer.Mail
 		/// </summary>
 		public void ReturnToSender()
 		{
-			RealmServer.Instance.ExecuteInContext(() => {
+			RealmServer.IOQueue.ExecuteInContext(() =>
+			{
 				if (!CharacterRecord.Exists(SenderId))
 				{
 					// can't return

@@ -10,8 +10,6 @@ namespace WCell.RealmServer.Spells.Effects
 {
 	public class TriggerRitualOfSummoningEffectHandler : SpellEffectHandler
 	{
-		private static Logger log = LogManager.GetCurrentClassLogger();
-
 		public TriggerRitualOfSummoningEffectHandler(SpellCast cast, SpellEffect effect)
 			: base(cast, effect)
 		{
@@ -32,18 +30,12 @@ namespace WCell.RealmServer.Spells.Effects
 
 		public override bool HasOwnTargets
 		{
-			get
-			{
-				return false;
-			}
+			get { return false; }
 		}
 
 		public override ObjectTypes CasterType
 		{
-			get
-			{
-				return ObjectTypes.Player;
-			}
+			get { return ObjectTypes.Player; }
 		}
 	}
 }

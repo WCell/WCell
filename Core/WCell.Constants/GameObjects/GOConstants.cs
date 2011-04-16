@@ -68,8 +68,6 @@ namespace WCell.Constants.GameObjects
         Flag_0x10000 = 0x10000,
         Flag_0x20000 = 0x20000,
         Flag_0x40000 = 0x40000,
-
-
     }
 
     [Flags]

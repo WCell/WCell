@@ -41,6 +41,7 @@ namespace WCell.Constants.Pets
 
         IsAutoCastEnabled = 0x40,
         IsAutoCastAllowed = 0x80,
+        DefaultSpellSetting = CastSpell | IsAutoCastEnabled | IsAutoCastAllowed
 	}
 
 	public enum PetAttackMode : byte
@@ -54,9 +55,10 @@ namespace WCell.Constants.Pets
 	public enum PetSpellState : ushort
 	{
 		None,
-		Default = 0x100,
-
-		Unk2 = 0xC100
+		Passive = 1,
+		AutoCast = 0x40,
+		Castable = 0x81,
+		Enabled = Passive | AutoCast | Castable,
 	}
 
     [Flags]
@@ -123,9 +125,10 @@ namespace WCell.Constants.Pets
     
     public enum PetType
     {
-        Minion,
+		Minion,
+		Pet,
         Guardian,
-        Pet,
-        None
+		Companion,
+        End
     }
 }

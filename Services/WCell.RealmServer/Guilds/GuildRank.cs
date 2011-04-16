@@ -12,13 +12,22 @@ namespace WCell.RealmServer.Guilds
         public uint DailyBankMoneyAllowance
         {
             get { return (uint)_moneyPerDay; }
-            set { _moneyPerDay = (int)value; }
+            set
+            {
+                if (RankIndex == 0)
+                    _moneyPerDay = int.MaxValue;
+                else
+                    _moneyPerDay = (int)value;
+            }
         }
 
         public GuildPrivileges Privileges
         {
             get { return (GuildPrivileges)_privileges; }
-            set { _privileges = (int)value; }
+            set
+            {
+                _privileges = (int)value;
+            }
         }
 
         public GuildRank()

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
@@ -86,7 +86,7 @@ namespace WCell.RealmServer.Tests.Skills
 
 			ItemMgr.LoadAll();
 			//LootMgr.LoadAll();
-			ContentHandler.Load<ItemLootItemEntry>();
+			ContentMgr.Load<ItemLootItemEntry>();
 		}
 
 		[ClassCleanup]
@@ -105,7 +105,7 @@ namespace WCell.RealmServer.Tests.Skills
 			skill.CurrentValue = 50;
 			skill.MaxValue = 75;
 
-			chr.SpellCast.UsedItem = item;
+			chr.SpellCast.TargetItem = item;
 			
 			// start disenchanting
 			var err = chr.SpellCast.Start(disenchantSpell, false);

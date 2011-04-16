@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using WCell.Constants.Items;
@@ -8,6 +9,7 @@ using WCell.RealmServer.Groups;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Items;
 using WCell.Constants.Looting;
+using WCell.Util.NLog;
 
 namespace WCell.RealmServer.Looting
 {
@@ -357,9 +359,9 @@ namespace WCell.RealmServer.Looting
 		/// Make sure the Looter is logged in before calling this Method.
 		/// 
 		/// TODO: Find the right error messages
-		/// TODO: Only give every MultiLoot item to everyone Once! Also check for quest-dependencies etc.
+		/// TODO: Only give every MultiLoot item to everyone once! Also check for quest-dependencies etc.
 		/// </summary>
-		public InventoryError MayLoot(LooterEntry looter, LootItem item)
+		public InventoryError CheckTakeItemConditions(LooterEntry looter, LootItem item)
 		{
 			if (item.Taken)
 			{
@@ -368,7 +370,7 @@ namespace WCell.RealmServer.Looting
 			if (item.RollProgress != null)
 			{
 				// TODO: Still being rolled for
-				return InventoryError.ALREADY_LOOTED;
+				return InventoryError.DONT_OWN_THAT_ITEM;
 			}
 			if (!looter.MayLoot(this))
 			{
@@ -390,7 +392,7 @@ namespace WCell.RealmServer.Looting
 				return InventoryError.OK;
 			}
 
-			if (!item.Template.CheckLootRequirements(looter.Owner))
+			if (!item.Template.CheckLootConstraints(looter.Owner))
 			{
 				return InventoryError.DONT_OWN_THAT_ITEM;
 			}
@@ -415,19 +417,28 @@ namespace WCell.RealmServer.Looting
 		/// <returns>The looted Item or null if Item could not be taken</returns>
 		public void TakeItem(LooterEntry entry, uint index, BaseInventory targetCont, int targetSlot)
 		{
-			var chr = entry.Owner;
-			if (chr != null && index < Items.Length)
+			LootItem lootItem = null;
+			try
 			{
-				var lootItem = Items[index];
-				var err = MayLoot(entry, lootItem);
-				if (err == InventoryError.OK)
+				var chr = entry.Owner;
+				if (chr != null && index < Items.Length)
 				{
-					HandoutItem(chr, lootItem, targetCont, targetSlot);
+					lootItem = Items[index];
+					var err = CheckTakeItemConditions(entry, lootItem);
+					if (err == InventoryError.OK)
+					{
+						HandoutItem(chr, lootItem, targetCont, targetSlot);
+					}
+					else
+					{
+						ItemHandler.SendInventoryError(chr.Client, null, null, err);
+					}
 				}
-				else
-				{
-					ItemHandler.SendInventoryError(chr.Client, null, null, err);
-				}
+			}
+			catch (Exception e)
+			{
+				LogUtil.ErrorException(e, "{0} threw an Exception while looting \"{1}\" (index = {2}) from {3}",
+					entry.Owner, lootItem, index, targetCont);
 			}
 		}
 
@@ -449,13 +460,14 @@ namespace WCell.RealmServer.Looting
 			{
 				// specific slot
 				amount = lootItem.Amount;
-				if (!targetCont.IsValidSlot(targetSlot))
+				if (!targetCont.IsValidSlot(targetSlot) || targetCont.Items[targetSlot] != null)
 				{
-					err = targetCont.TryAdd(lootItem.Template, ref amount, true);
+					// slot is not valid or occupied
+					err = targetCont.TryAdd(lootItem.Template, ref amount, ItemReceptionType.Loot);
 				}
 				else
 				{
-					err = targetCont.TryAdd(lootItem.Template, ref amount, targetSlot, true);
+					err = targetCont.TryAdd(lootItem.Template, ref amount, targetSlot, ItemReceptionType.Loot);
 				}
 			}
 			else
@@ -463,7 +475,7 @@ namespace WCell.RealmServer.Looting
 				// auto loot
 				amount = lootItem.Amount;
 				//err = chr.Inventory.TryAdd(lootItem.Template, ref amount);
-				err = chr.Inventory.TryAdd(lootItem.Template, ref amount);
+				err = chr.Inventory.TryAdd(lootItem.Template, ref amount, ItemReceptionType.Loot);
 			}
 
 			if (err == InventoryError.OK)
@@ -593,16 +605,19 @@ namespace WCell.RealmServer.Looting
 			Looters.Remove(entry);
 		}
 
-        public void GiveLoot(Character chr, Character player, byte lootSlot)
+		/// <summary>
+		/// Lets the master looter give the item in the given slot to the given receiver
+		/// </summary>
+        public void GiveLoot(Character master, Character receiver, byte lootSlot)
         {
-            if (chr.Group == null) return;
-            if (chr.Group.MasterLooter.Character != chr) return;
-            if (player.Group == null) return;
-            if (chr.Group != player.Group) return;
-            if (!chr.Loot.Looters.Contains(player.LooterEntry)) return;
+            if (master.Group == null) return;
+            if (master.Group.MasterLooter.Character != master) return;
+            if (receiver.Group == null) return;
+            if (master.Group != receiver.Group) return;
+            if (!master.Loot.Looters.Contains(receiver.LooterEntry)) return;
             if (Items[lootSlot] == null) return;
 
-            HandoutItem(player, Items[lootSlot], null, BaseInventory.INVALID_SLOT);
+            HandoutItem(receiver, Items[lootSlot], null, BaseInventory.INVALID_SLOT);
         }
     }
 }

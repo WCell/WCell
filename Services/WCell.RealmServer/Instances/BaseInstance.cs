@@ -20,7 +20,7 @@ namespace WCell.RealmServer.Instances
 	/// TODO:
 	/// - SMSG_INSTANCE_RESET_FAILURE: The party leader has attempted to reset the instance you are in. Please zone out to allow the instance to reset.
 	/// </summary>
-	public abstract class BaseInstance : InstancedRegion
+	public abstract class BaseInstance : InstancedMap
 	{
 		protected IInstanceHolderSet m_owner;
 		protected DateTime m_expiryTime;
@@ -30,9 +30,9 @@ namespace WCell.RealmServer.Instances
 		{
 		}
 
-		protected internal override void InitRegion()
+		protected internal override void InitMap()
 		{
-			base.InitRegion();
+			base.InitMap();
 
 			var secs = m_difficulty.ResetTime;
 			if (secs > 0)
@@ -55,10 +55,9 @@ namespace WCell.RealmServer.Instances
 		/// <summary>
 		/// Difficulty of the instance
 		/// </summary>
-		public MapDifficultyEntry Difficulty
+		public override MapDifficultyEntry Difficulty
 		{
 			get { return m_difficulty; }
-			set { m_difficulty = value; }
 		}
 
 		public IInstanceHolderSet Owner
@@ -71,6 +70,8 @@ namespace WCell.RealmServer.Instances
 		{
 			if (base.CanEnter(chr))
 			{
+				if (Owner == null) return true;
+
 				var leader = Owner.InstanceLeader;
 				return (leader != null && chr.IsAlliedWith(leader)) || chr.GodMode;
 			}
@@ -84,7 +85,7 @@ namespace WCell.RealmServer.Instances
 
 		public override void DeleteNow()
 		{
-			World.RemoveInstance(this);
+			InstanceMgr.Instances.RemoveInstance(MapId, InstanceId);
 			base.DeleteNow();
 		}
 

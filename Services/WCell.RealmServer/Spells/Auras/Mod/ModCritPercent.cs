@@ -24,17 +24,44 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	/// </summary>
 	public class ModCritPercentHandler : AuraEffectHandler
 	{
-		float value;
-
-		protected internal override void Apply()
+		protected override void Apply()
 		{
-			value = EffectValue / 100f;
-            m_aura.Auras.Owner.ChangeModifier(StatModifierFloat.CritChance, value);
+			ModValues(EffectValue);
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
-			m_aura.Auras.Owner.ChangeModifier(StatModifierFloat.CritChance, -value);
+			ModValues(-EffectValue);
+		}
+
+		void ModValues(int delta)
+		{
+			if (SpellEffect.Spell.HasItemRequirements)
+			{
+				if (SpellEffect.Spell.EquipmentSlot == Constants.Items.EquipmentSlot.ExtraWeapon)
+				{
+					Owner.ChangeModifier(StatModifierInt.RangedCritChance, delta);
+				}
+				else
+				{
+					Owner.ModCritMod(DamageSchool.Physical, delta);
+				}
+			}
+			else
+			{
+				// all crit chances
+				if (SpellEffect.Spell.SchoolMask == DamageSchoolMask.Physical)
+				{
+					// all physical
+					Owner.ModCritMod(DamageSchool.Physical, delta);
+					Owner.ChangeModifier(StatModifierInt.RangedCritChance, delta);
+				}
+				else
+				{
+					// given school
+					Owner.ModCritMod(SpellEffect.Spell.Schools, delta);
+				}
+			}
 		}
 	}
 };

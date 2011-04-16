@@ -92,7 +92,7 @@ namespace WCell.RealmServer.NPCs.Auctioneer
 			}
 			catch (Exception e)
 			{
-				RealmDBUtil.OnDBError(e);
+				RealmDBMgr.OnDBError(e);
 				FetchAuctions();
 			}
 #endif
@@ -142,7 +142,7 @@ namespace WCell.RealmServer.NPCs.Auctioneer
 				}
 				catch (Exception e)
 				{
-					RealmDBUtil.OnDBError(e);
+					RealmDBMgr.OnDBError(e);
 					foreach (var itemRecord in ItemRecord.LoadAuctionedItems())
 					{
 						_auctionedItems.Add(itemRecord.EntityLowId, itemRecord);
@@ -195,7 +195,7 @@ namespace WCell.RealmServer.NPCs.Auctioneer
 			AuctionHandler.SendAuctionHello(chr.Client, auctioneer);
 		}
 
-		public void AuctionSellItem(Character chr, NPC auctioneer, EntityId itemId, uint bid, uint buyout, uint time)
+		public void AuctionSellItem(Character chr, NPC auctioneer, EntityId itemId, uint bid, uint buyout, uint time, uint stackSize)
 		{
 			if (!DoAuctioneerInteraction(chr, auctioneer))
 				return;
@@ -205,55 +205,63 @@ namespace WCell.RealmServer.NPCs.Auctioneer
 			var msg = AuctionCheatChecks(auctioneer, item, bid, time);
 			if (msg == AuctionError.Ok)
 			{
-				// Check that character has enough money to cover the deposit
-				var houseFaction = auctioneer.AuctioneerEntry.LinkedHouseFaction;
-				var deposit = GetAuctionDeposit(item, houseFaction, time);
-				if (chr.Money < deposit)
-				{
-					AuctionHandler.SendAuctionCommandResult(chr.Client, null, AuctionAction.SellItem, AuctionError.NotEnoughMoney);
-					return;
-				}
+			    // Check that character has enough money to cover the deposit
+			    var houseFaction = auctioneer.AuctioneerEntry.LinkedHouseFaction;
+			    var deposit = GetAuctionDeposit(item, houseFaction, time);
+			    if (chr.Money < deposit)
+			    {
+			        AuctionHandler.SendAuctionCommandResult(chr.Client, null, AuctionAction.SellItem, AuctionError.NotEnoughMoney);
+			        return;
+			    }
 
-				// Charge the deposit to the character
-				chr.Money -= deposit;
+			    if (item.Amount > stackSize)
+			        item = item.Split((int) stackSize);
 
-				// Create the new Auction and add it to the list.
+			    if (item == null)
+			    {
+			        AuctionHandler.SendAuctionCommandResult(chr.Client, null, AuctionAction.SellItem, AuctionError.ItemNotFound);
+			        return;
+			    }
 
-				var newAuction = new Auction
-				{
-					BidderLowId = 0,
-					BuyoutPrice = buyout,
-					CurrentBid = bid,
-					Deposit = deposit,
-					HouseFaction = houseFaction,
-					ItemLowId = item.EntityId.Low,
-					ItemTemplateId = item.Template.Id,
-					OwnerLowId = chr.EntityId.Low,
-					TimeEnds = DateTime.Now.AddMinutes(time),
-					IsNew = true
-				};
 
-				if (item != null)
-				{
-					//save new auction to database and add item to items container
-					RealmServer.Instance.AddMessage(new Util.Threading.Message(() =>
-						{
-							ItemRecord record = item.Record;
-							record.IsAuctioned = true;
-							record.Save();
-							auctioneer.AuctioneerEntry.Auctions.AddAuction(newAuction);
-							AuctionItems.Add(newAuction.ItemLowId, record);
-							item.Remove(false);
-							AuctionListOwnerItems(chr, auctioneer);
-						}));
+			    // Charge the deposit to the character
+			    chr.Money -= deposit;
 
-					// Send the all-good message
-					AuctionHandler.SendAuctionCommandResult(chr.Client, newAuction, AuctionAction.SellItem, AuctionError.Ok);
-				}
-				else
-				{
-					AuctionHandler.SendAuctionCommandResult(chr.Client, newAuction, AuctionAction.SellItem, AuctionError.ItemNotFound);
-				}
+
+			    // Create the new Auction and add it to the list.
+
+			    var newAuction = new Auction
+			                         {
+			                             BidderLowId = 0,
+			                             BuyoutPrice = buyout,
+			                             CurrentBid = bid,
+			                             Deposit = deposit,
+			                             HouseFaction = houseFaction,
+			                             ItemLowId = item.EntityId.Low,
+			                             ItemTemplateId = item.Template.Id,
+			                             OwnerLowId = chr.EntityId.Low,
+			                             TimeEnds = DateTime.Now.AddMinutes(time),
+			                             IsNew = true
+			                         };
+
+
+
+			    //save new auction to database and add item to items container
+			    RealmServer.IOQueue.AddMessage(new Util.Threading.Message(() =>
+			                                                                  {
+			                                                                      ItemRecord record = item.Record;
+			                                                                      record.IsAuctioned = true;
+			                                                                      record.Save();
+			                                                                      auctioneer.AuctioneerEntry.Auctions.AddAuction(
+			                                                                          newAuction);
+			                                                                      AuctionItems.Add(newAuction.ItemLowId, record);
+			                                                                      item.Remove(false);
+			                                                                      AuctionListOwnerItems(chr, auctioneer);
+			                                                                  }));
+
+			    // Send the all-good message
+			    AuctionHandler.SendAuctionCommandResult(chr.Client, newAuction, AuctionAction.SellItem, AuctionError.Ok);
+
 			}
 			else
 			{
@@ -414,13 +422,11 @@ namespace WCell.RealmServer.NPCs.Auctioneer
 			if (!DoAuctioneerInteraction(chr, auctioneer))
 				return;
 
-			chr.SendMessage("Auctions are currently disabled.");
-			// TODO: Causes an Exception, probably because of incorrectly initialized Items
-			//Auction[] auctions = searcher.RetrieveMatchedAuctions(auctioneer.AuctioneerEntry.Auctions).ToArray();
-			//AuctionHandler.SendAuctionListItems(chr.Client, auctions);
+			Auction[] auctions = searcher.RetrieveMatchedAuctions(auctioneer.AuctioneerEntry.Auctions).ToArray();
+			AuctionHandler.SendAuctionListItems(chr.Client, auctions);
 		}
 
-		private void SendOutbidMail(Auction auction, uint newBid)
+		private static void SendOutbidMail(Auction auction, uint newBid)
 		{
 			if (auction == null)
 				return;
@@ -432,13 +438,13 @@ namespace WCell.RealmServer.NPCs.Auctioneer
 				AuctionHandler.SendAuctionOutbidNotification(oldBidder.Client,
 															 auction,
 															 newBid,
-															 GetMinimumNewBid(auction, newBid) - newBid);
+															 GetMinimumNewBidIncrement(auction));
 			}
 
 			auction.SendMail(MailAuctionAnswers.Outbid, auction.CurrentBid);
 		}
 
-		private void SendAuctionSuccessfullMail(Auction auction)
+		private static void SendAuctionSuccessfullMail(Auction auction)
 		{
 			if (auction == null)
 				return;
@@ -454,7 +460,7 @@ namespace WCell.RealmServer.NPCs.Auctioneer
 			auction.SendMail(MailAuctionAnswers.Successful, profit, body);
 		}
 
-		private void SendAuctionWonMail(Auction auction)
+		private static void SendAuctionWonMail(Auction auction)
 		{
 			if (auction == null)
 				return;
@@ -467,9 +473,9 @@ namespace WCell.RealmServer.NPCs.Auctioneer
 			}
 		}
 
-		private bool DoAuctioneerInteraction(Character chr, NPC auctioneer)
+		private static bool DoAuctioneerInteraction(Character chr, NPC auctioneer)
 		{
-			if (!auctioneer.IsAuctioneer || !auctioneer.CanInteractWith(chr))
+			if (!auctioneer.IsAuctioneer || !auctioneer.CheckVendorInteraction(chr))
 				return false;
 
 			chr.Auras.RemoveByFlag(AuraInterruptFlags.OnStartAttack);
@@ -508,16 +514,19 @@ namespace WCell.RealmServer.NPCs.Auctioneer
 				return AuctionError.CannotBidOnOwnAuction;
 			}
 
-			// Cannot bid on your alt's auctions
-			var record = chr.Account.GetCharacterRecord(auction.OwnerLowId);
-			if (record == null)
-			{
-				return AuctionError.CannotBidOnOwnAuction;
-			}
+            if (!chr.GodMode)
+            {
+                // Cannot bid on your alt's auctions
+                var record = chr.Account.GetCharacterRecord(auction.OwnerLowId);
+                if (record != null)
+                {
+                    return AuctionError.CannotBidOnOwnAuction;
+                }
+            }
 
-			if (bid < GetMinimumNewBid(auction, bid))
+		    if (bid < GetMinimumNewBid(auction))
 			{
-				// the Client checks this so if you get here, your are a CHEATER!!!
+				// the Client checks this so if you get here, you are a CHEATER!!!
 				// CHEATER!!!
 				return AuctionError.InternalError;
 			}
@@ -559,7 +568,7 @@ namespace WCell.RealmServer.NPCs.Auctioneer
 			return AuctionItems.ContainsKey(itemId);
 		}
 
-		private uint GetAuctionDeposit(Item item, AuctionHouseFaction houseFaction, uint timeInMin)
+		private static uint GetAuctionDeposit(Item item, AuctionHouseFaction houseFaction, uint timeInMin)
 		{
 			if (item == null)
 				return 0;
@@ -572,14 +581,24 @@ namespace WCell.RealmServer.NPCs.Auctioneer
 			return ((sellPrice * percent) / 100) * (timeInMin / (12 * 60)); // deposit is per 12 hour interval
 		}
 
-		private uint GetMinimumNewBid(Auction auction, uint bid)
+		public static uint GetMinimumNewBid(Auction auction)
 		{
 			// Bids must increase by the larger of 5% or 1 copper each time.
-			var minBidInc = Math.Max(((auction.CurrentBid / 100) * 5), 1);
-			return auction.CurrentBid + minBidInc;
+            return auction.CurrentBid + GetMinimumNewBidIncrement(auction);
 		}
 
-		private uint CalcAuctionCut(AuctionHouseFaction houseFaction, uint bid)
+        public static uint GetMinimumNewBidIncrement(Auction auction)
+        {
+            uint minimumIncreaseForNextBid = 0;
+            if (auction.CurrentBid > 0)
+            {
+                minimumIncreaseForNextBid = (auction.CurrentBid / 100) * 5;
+                minimumIncreaseForNextBid = Math.Max(1, minimumIncreaseForNextBid);
+            }
+            return minimumIncreaseForNextBid;
+        }
+
+		private static uint CalcAuctionCut(AuctionHouseFaction houseFaction, uint bid)
 		{
 			if (houseFaction == AuctionHouseFaction.Neutral && !AllowInterFactionAuctions)
 			{

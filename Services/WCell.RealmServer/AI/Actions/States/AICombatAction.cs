@@ -5,6 +5,7 @@ using WCell.Constants.Updates;
 using WCell.RealmServer.AI.Brains;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.NPCs;
+using WCell.Util;
 
 namespace WCell.RealmServer.AI.Actions.States
 {
@@ -58,7 +59,7 @@ namespace WCell.RealmServer.AI.Actions.States
 					((NPC)m_owner).CanEvade &&
 					!m_owner.IsInRadiusSq(m_owner.Brain.SourcePoint, NPCMgr.DefaultMaxHomeDistanceInCombatSq) &&
 					   ((((NPC)m_owner).Entry.Rank >= CreatureRank.RareElite) ||
-						Environment.TickCount - m_owner.LastCombatTime > NPCMgr.GiveUpCombatDelay);
+						m_owner.MillisSinceLastCombatAction > NPCMgr.GiveUpCombatDelay);
 			}
 		}
 
@@ -70,7 +71,7 @@ namespace WCell.RealmServer.AI.Actions.States
 
 		public override void Update()
 		{
-			if (m_owner.IsUsingSpell || !m_owner.CanDoHarm)
+			if (!m_owner.CanDoHarm)
 			{
 				// busy
 				return;
@@ -108,12 +109,10 @@ namespace WCell.RealmServer.AI.Actions.States
 							{
 								if (owner.Target != target || !m_init)
 								{
-									m_init = true;
-
 									// change target and start Action again
+									var oldTarget = owner.Target;
 									owner.Target = target;
-									owner.IsFighting = true;
-									m_Strategy.Start();
+									StartEngagingCurrentTarget(oldTarget);
 								}
 								else
 								{
@@ -128,7 +127,7 @@ namespace WCell.RealmServer.AI.Actions.States
 				{
 					if (!m_init)
 					{
-						m_Strategy.Start();
+						StartEngagingCurrentTarget(null);
 					}
 					else
 					{
@@ -141,14 +140,12 @@ namespace WCell.RealmServer.AI.Actions.States
 				if (owner.CanEvade)
 				{
 					// evade
-					if (Math.Abs(Environment.TickCount - owner.LastCombatTime) > NPCMgr.CombatEvadeDelay)
+					if (owner.MillisSinceLastCombatAction > NPCMgr.CombatEvadeDelay)
 					{
 						// check if something came up again
 						if (!m_owner.Brain.CheckCombat())
 						{
-#if DEV
-							owner.Say("No one left to attack.");
-#endif
+							// run back
 							owner.Brain.State = BrainState.Evade;
 						}
 					}
@@ -158,6 +155,7 @@ namespace WCell.RealmServer.AI.Actions.States
 					// cannot evade -> Just go back to default if there are no more targets
 					if (!owner.Brain.CheckCombat())
 					{
+						// go back to what we did before
 						owner.Brain.EnterDefaultState();
 					}
 				}
@@ -173,9 +171,44 @@ namespace WCell.RealmServer.AI.Actions.States
 			}
 
 			m_owner.IsInCombat = false;
+
+			if (m_init && m_owner.Target != null)
+			{
+				Disengage(m_owner.Target);
+			}
 			m_owner.Target = null;
 
 			m_owner.MarkUpdate(UnitFields.DYNAMIC_FLAGS);
+		}
+
+		/// <summary>
+		/// Start attacking a new target
+		/// </summary>
+		private void StartEngagingCurrentTarget(Unit oldTarget)
+		{
+			if (m_init)
+			{
+				if (oldTarget != null)
+				{
+					// had a previous target
+					Disengage(oldTarget);
+				}
+			}
+			else
+			{
+				m_init = true;
+			}
+			m_owner.IsFighting = true;
+			m_owner.Target.NPCAttackerCount++;
+			m_Strategy.Start();
+		}
+
+		/// <summary>
+		/// Stop attacking the old guy
+		/// </summary>
+		private void Disengage(Unit oldTarget)
+		{
+			oldTarget.NPCAttackerCount--;
 		}
 
 		public override UpdatePriority Priority

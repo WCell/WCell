@@ -1,4 +1,4 @@
-﻿//using System;
+//using System;
 //using System.Collections.Generic;
 //using System.Linq;
 //using System.Text;
@@ -82,13 +82,13 @@
 //            callback(InstanceLog);
 //        }
 
-//        public BaseInstance GetActiveInstance(RegionInfo region)
+//        public BaseInstance GetActiveInstance(MapInfo map)
 //        {
-//            if (m_region.Id == region.Id)
+//            if (m_map.Id == map.Id)
 //            {
-//                return m_region as BaseInstance;
+//                return m_map as BaseInstance;
 //            }
-//            return m_InstanceLog != null ? m_InstanceLog.GetActiveInstance(region) : null;
+//            return m_InstanceLog != null ? m_InstanceLog.GetActiveInstance(map) : null;
 //        }
 
 //        #endregion

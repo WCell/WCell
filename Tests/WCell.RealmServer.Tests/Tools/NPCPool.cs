@@ -11,26 +11,40 @@ using WCell.RealmServer.NPCs;
 using WCell.RealmServer.NPCs.Vendors;
 using WCell.RealmServer.Spells;
 
+
 namespace WCell.RealmServer.Tests.Tools
 {
 	public class NPCPool
 	{
 		public const NPCId DefaultMobId = NPCId.UndeadScarab;
+		private static readonly UnitModelInfo DefaultModel = new UnitModelInfo();
 
 		public static NPCEntry DefaultMobEntry = new NPCEntry
 		{
 			DisplayIds = new[] { 10u },
+			ModelInfos = new[] { DefaultModel },
 			DefaultName = "Default Mob",
+			MaxHealth = 100,
+			Type = CreatureType.Beast,
 			InstanceTypeHandlers = new NPCTypeHandler[0],
-			MaxHealth = 100
+			AllianceFaction = Faction.NullFaction,
+			HordeFaction = Faction.NullFaction,
+			NPCCreator = NPCEntry.DefaultCreator,
+			BrainCreator = npc => new MobBrain(npc)
 		};
 
 		public static NPCEntry DefaultVendorEntry = new NPCEntry
 		{
 			DisplayIds = new[] { 10u },
+			ModelInfos = new[] { DefaultModel },
 			DefaultName = "Default Vendor",
+			MaxHealth = 100,
+			Type = CreatureType.Humanoid,
 			InstanceTypeHandlers = new NPCTypeHandler[0],
-			MaxHealth = 100
+			AllianceFaction = Faction.NullFaction,
+			HordeFaction = Faction.NullFaction,
+			NPCCreator = NPCEntry.DefaultCreator,
+			BrainCreator = npc => new MobBrain(npc)
 		};
 
 		public NPC CreateMob()

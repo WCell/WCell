@@ -11,11 +11,11 @@ namespace WCell.RealmServer.Entities
 	{
 		public Character OwningCharacter
 		{
-			get { return m_owningCharacter; }
+			get { return m_owner; }
 			internal set
 			{
-				m_owningCharacter = value;
-				if (m_owningCharacter != null)
+				m_owner = value;
+				if (m_owner != null)
 				{
 					m_isInWorld = m_unknown = true;
 					SetEntityId(ItemFields.OWNER, value.EntityId);
@@ -107,7 +107,8 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Ensures, new value won't exceed UniqueCount.
+		/// Modifies the amount of this item (size of this stack).
+		/// Ensures that new value won't exceed UniqueCount.
 		/// Returns how many items actually got added. 
 		/// </summary>
 		/// <param name="value"></param>
@@ -116,24 +117,19 @@ namespace WCell.RealmServer.Entities
 		{
 			if (value != 0)
 			{
-				if (m_owningCharacter != null)
+				if (m_owner != null)
 				{
-					int uniqueCount;
 					if (value > 0 && m_template.UniqueCount > 0)
 					{
-						uniqueCount = m_owningCharacter.Inventory.GetUniqueCount(m_template.ItemId);
-					}
-					else
-					{
-						uniqueCount = int.MaxValue;
+						var uniqueCount = m_owner.Inventory.GetUniqueCount(m_template.ItemId);
+
+						if (value > uniqueCount)
+						{
+							value = uniqueCount;
+						}
 					}
 
-					if (value > uniqueCount)
-					{
-						value = uniqueCount;
-					}
-
-					m_owningCharacter.Inventory.OnAmountChanged(this, value);
+					m_owner.Inventory.OnAmountChanged(this, value);
 				}
 
 				m_record.Amount += value;
@@ -162,13 +158,13 @@ namespace WCell.RealmServer.Entities
 					var diff = value - m_record.Amount;
 					if (diff != 0)
 					{
-						if (m_owningCharacter != null)
+						if (m_owner != null)
 						{
-							m_owningCharacter.Inventory.OnAmountChanged(this, diff);
+							m_owner.Inventory.OnAmountChanged(this, diff);
 						}
 
 						SetInt32(ItemFields.STACK_COUNT, value);
-						m_record.Amount = (int)value;
+						m_record.Amount = value;
 					}
 				}
 			}
@@ -195,11 +191,16 @@ namespace WCell.RealmServer.Entities
 			}
 			set
 			{
+				if (!m_template.UseSpell.HasCharges || ((m_template.UseSpell.HasCharges) && (value <= 0)))
+				{
+					Amount--;
+					return;
+				}
+				m_record.Charges = (short)value;
 				if (m_template.UseSpell != null)
 				{
 					SetSpellCharges(m_template.UseSpell.Index, value);
 				}
-				m_record.Charges = (short)value;
 			}
 		}
 
@@ -306,7 +307,7 @@ namespace WCell.RealmServer.Entities
 			get { return m_record.ItemTextId; }
 			internal set
 			{
-			//TODO: Items don't have the Text ID field anymore
+				//TODO: Items don't have the Text ID field anymore
 				//SetUInt32(ItemFields.ITEM_TEXT_ID, value);
 				m_record.ItemTextId = value;
 			}
@@ -325,6 +326,12 @@ namespace WCell.RealmServer.Entities
 			{
 				return m_template.Damages;
 			}
+		}
+
+		public int BonusDamage
+		{
+			get;
+			set;
 		}
 
 		public SkillId Skill
@@ -363,7 +370,7 @@ namespace WCell.RealmServer.Entities
 				{
 					return 0.0f;
 				}
-				return Unit.DefaultMeleeDistance;
+				return Unit.DefaultMeleeAttackRange;
 			}
 		}
 
@@ -377,9 +384,9 @@ namespace WCell.RealmServer.Entities
 			{
 				if (IsMelee)
 				{
-					return Unit.DefaultMeleeDistance;
+					return Unit.DefaultMeleeAttackRange;
 				}
-				return Unit.DefaultRangedDistance;
+				return Unit.DefaultRangedAttackRange;
 			}
 		}
 

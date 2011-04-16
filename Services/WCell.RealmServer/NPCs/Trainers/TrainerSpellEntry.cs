@@ -123,22 +123,22 @@ namespace WCell.RealmServer.NPCs.Trainers
 		{
 			if ((Spell = SpellHandler.Get(SpellId)) == null)
 			{
-				ContentHandler.OnInvalidDBData("SpellId is invalid in " + this);
+				ContentMgr.OnInvalidDBData("SpellId is invalid in " + this);
 			}
 			else if (RequiredSpellId != SpellId.None && SpellHandler.Get(RequiredSpellId) == null)
 			{
-				ContentHandler.OnInvalidDBData("RequiredSpellId is invalid in " + this);
+				ContentMgr.OnInvalidDBData("RequiredSpellId is invalid in " + this);
 			}
 			else if (RequiredSkillId != SkillId.None && SkillHandler.Get(RequiredSkillId) == null)
 			{
-				ContentHandler.OnInvalidDBData("RequiredSkillId is invalid in " + this);
+				ContentMgr.OnInvalidDBData("RequiredSkillId is invalid in " + this);
 			}
 			else
 			{
 				var trainer = NPCMgr.GetEntry(TrainerId);
 				if (trainer == null)
 				{
-					ContentHandler.OnInvalidDBData("TrainerId is invalid in " + this);
+					ContentMgr.OnInvalidDBData("TrainerId is invalid in " + this);
 				}
 				else
 				{

@@ -1,5 +1,6 @@
 using System;
 using WCell.Constants.World;
+using WCell.RealmServer.Lang;
 using WCell.Util.Data;
 using WCell.RealmServer.Entities;
 using WCell.Util.Graphics;
@@ -15,7 +16,7 @@ namespace WCell.RealmServer.Global
 	public class WorldZoneLocation : IDataHolder, INamedWorldZoneLocation
 	{
 		public uint Id;
-		private ZoneInfo m_ZoneInfo;
+		private ZoneTemplate m_ZoneTemplate;
 
 		private string[] m_Names = new string[(int)ClientLocale.End];
 
@@ -24,6 +25,11 @@ namespace WCell.RealmServer.Global
 		{
 			get { return m_Names; }
 			set { m_Names = value; }
+		}
+
+		public uint Phase
+		{
+			get { return WorldObject.DefaultPhase; }
 		}
 
 		public WorldZoneLocation()
@@ -44,31 +50,31 @@ namespace WCell.RealmServer.Global
 
 		private WorldZoneLocation(MapId mapId, Vector3 pos)
 		{
-			RegionId = mapId;
+			MapId = mapId;
 			Position = pos;
 		}
 
 		public string DefaultName
 		{
-			get { return Names[(int)RealmServerConfiguration.DefaultLocale]; }
+			get { return Names.LocalizeWithDefaultLocale(); }
 			set { Names[(int)RealmServerConfiguration.DefaultLocale] = value; }
 		}
 
 		public string EnglishName
 		{
-			get { return Names[(int)ClientLocale.English]; }
+			get { return Names.LocalizeWithDefaultLocale(); }
 			set { Names[(int)ClientLocale.English] = value; }
 		}
 
-		public MapId RegionId
+		public MapId MapId
 		{
 			get;
 			set;
 		}
 
-		public Region Region
+		public Map Map
 		{
-			get { return World.GetRegion(RegionId); }
+			get { return World.GetNonInstancedMap(MapId); }
 		}
 
 		public Vector3 Position
@@ -89,13 +95,13 @@ namespace WCell.RealmServer.Global
 		/// The Zone to which this Location belongs (if any)
 		/// </summary>
 		[NotPersistent]
-		public ZoneInfo ZoneInfo
+		public ZoneTemplate ZoneTemplate
 		{
-			get { return m_ZoneInfo; }
+			get { return m_ZoneTemplate; }
 			set
 			{
-				m_ZoneInfo = value;
-				ZoneId = m_ZoneInfo != null ? m_ZoneInfo.Id : 0;
+				m_ZoneTemplate = value;
+				ZoneId = m_ZoneTemplate != null ? m_ZoneTemplate.Id : 0;
 			}
 		}
 
@@ -122,14 +128,14 @@ namespace WCell.RealmServer.Global
 				if (zone.Site is WorldZoneLocation)
 				{
 					// override
-					((WorldZoneLocation)zone.Site).ZoneInfo = null;
+					((WorldZoneLocation)zone.Site).ZoneTemplate = null;
 				}
 				else if (zone.Site != null)
 				{
 					return;
 				}
 				zone.Site = this;
-				ZoneInfo = zone;
+				ZoneTemplate = zone;
 			}
 		}
 
@@ -143,7 +149,7 @@ namespace WCell.RealmServer.Global
 						((WorldZoneLocation)obj).Position.X == Position.X &&
 						((WorldZoneLocation)obj).Position.Y == Position.Y &&
 						((WorldZoneLocation)obj).Position.Z == Position.Z &&
-						((WorldZoneLocation)obj).RegionId == RegionId
+						((WorldZoneLocation)obj).MapId == MapId
 					   );
 			}
 			return false;
@@ -152,7 +158,7 @@ namespace WCell.RealmServer.Global
 		// Get a unique id for current world location
 		public override int GetHashCode()
 		{
-			return (int)((int)RegionId * (Position.X * Position.Y * Position.Z));
+			return (int)((int)MapId * (Position.X * Position.Y * Position.Z));
 		}
 
 		/// <summary>

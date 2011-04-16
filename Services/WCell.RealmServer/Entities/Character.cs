@@ -3,7 +3,7 @@
  *   file		: Character.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
- *   last changed	: $LastChangedDate: 2010-02-20 06:16:32 +0100 (lÃ¸, 20 feb 2010) $
+ *   last changed	: $LastChangedDate: 2010-02-20 06:16:32 +0100 (lï¿? 20 feb 2010) $
  *   last author	: $LastChangedBy: dominikseifert $
  *   revision		: $Rev: 1257 $
  *
@@ -16,21 +16,18 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using NLog;
 using WCell.Constants;
+using WCell.Constants.Achievements;
 using WCell.Constants.Factions;
 using WCell.Constants.Items;
 using WCell.Constants.Misc;
-using WCell.Constants.NPCs;
-using WCell.Constants.Pets;
 using WCell.Constants.Spells;
-using WCell.Constants.Talents;
 using WCell.Constants.Updates;
 using WCell.Constants.World;
+using WCell.RealmServer.Achievements;
 using WCell.RealmServer.Chat;
 using WCell.RealmServer.Commands;
-using WCell.RealmServer.Database;
 using WCell.RealmServer.Factions;
 using WCell.RealmServer.Formulas;
 using WCell.RealmServer.Global;
@@ -40,11 +37,13 @@ using WCell.RealmServer.Help.Tickets;
 using WCell.RealmServer.Instances;
 using WCell.RealmServer.Interaction;
 using WCell.RealmServer.Items;
+using WCell.RealmServer.Lang;
 using WCell.RealmServer.Looting;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Modifiers;
 using WCell.RealmServer.NPCs;
 using WCell.RealmServer.NPCs.Pets;
+using WCell.RealmServer.NPCs.Spawns;
 using WCell.RealmServer.Quests;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Talents;
@@ -52,35 +51,35 @@ using WCell.RealmServer.Taxi;
 using WCell.Util;
 using WCell.Util.Commands;
 using WCell.RealmServer.Battlegrounds;
-using WCell.Util.Collections;
 using WCell.Util.Graphics;
-using WCell.Util.Threading;
 using WCell.RealmServer.Spells.Auras;
-using WCell.RealmServer.Guilds;
 using WCell.Core.Timers;
 using WCell.RealmServer.RacesClasses;
-using WCell.Constants.Looting;
 
 namespace WCell.RealmServer.Entities
 {
 	///<summary>
 	/// Represents a unit controlled by a player in the game world
 	///</summary>
-	public partial class Character : Unit, IUser, IContainer, ITicketHandler, IInstanceHolderSet, IHasTalents, ICharacterSet
+	public partial class Character : Unit, IUser, IContainer, ITicketHandler, IInstanceHolderSet, ICharacterSet
 	{
-		private static new Logger log = LogManager.GetCurrentClassLogger();
-
 		public static new readonly List<Character> EmptyArray = new List<Character>();
-
+		
+		#region Globals
 		/// <summary>
-		/// The delay until a normal player may logout in seconds.
+		/// The delay until a normal player may logout in millis.
 		/// </summary>
-		public static float DefaultLogoutDelay = 20.0f;
+		public static int DefaultLogoutDelayMillis = 20000;
 
 		/// <summary>
 		/// Speed increase when dead and in Ghost form
 		/// </summary>
-		public static float DeathSpeedIncrease = 0.25f;
+		public static float DeathSpeedFactorIncrease = 0.25f;
+
+		/// <summary>
+		/// The level at which players start to suffer from repercussion after death
+		/// </summary>
+		public static int ResurrectionSicknessStartLevel = 10;
 
 		/// <summary>
 		/// whether to check for speedhackers
@@ -91,6 +90,7 @@ namespace WCell.RealmServer.Entities
 		/// The factor that is applied to the maximum distance before detecting someone as a SpeedHacker
 		/// </summary>
 		public static float SpeedHackToleranceFactor = 1.5f;
+		#endregion
 
 		/// <summary>
 		/// Clears all trade-related fields for the character.
@@ -109,6 +109,7 @@ namespace WCell.RealmServer.Entities
 			m_lastPlayTimeUpdate = now;
 		}
 
+		#region Properties
 		/// <summary>
 		/// Check to see if character is in an instance
 		/// </summary>
@@ -116,7 +117,7 @@ namespace WCell.RealmServer.Entities
 		{
 			get
 			{
-				return m_region != null && m_region.IsInstance;
+				return m_Map != null && m_Map.IsInstance;
 			}
 		}
 
@@ -157,7 +158,7 @@ namespace WCell.RealmServer.Entities
 				var group = Group;
 				if (group != null)
 				{
-					return group.GetActiveInstance(m_region.RegionInfo) != null;
+					return group.GetActiveInstance(m_Map.MapTemplate) != null;
 				}
 				return false;
 			}
@@ -191,6 +192,7 @@ namespace WCell.RealmServer.Entities
 				}
 			}
 		}
+		#endregion
 
 		public uint GetInstanceDifficulty(bool isRaid)
 		{
@@ -200,10 +202,7 @@ namespace WCell.RealmServer.Entities
 		#region Death/Resurrect
 		public override bool IsAlive
 		{
-			get
-			{
-				return !(m_auras.GhostAura != null || Health == 0);
-			}
+			get { return !(m_auras.GhostAura != null || Health == 0); }
 		}
 
 		/// <summary>
@@ -260,7 +259,7 @@ namespace WCell.RealmServer.Entities
 				Health = 1;
 			}
 
-			if (!m_region.RegionInfo.NotifyPlayerBeforeDeath(this))
+			if (!m_Map.MapTemplate.NotifyPlayerBeforeDeath(this))
 			{
 				return false;
 			}
@@ -297,32 +296,36 @@ namespace WCell.RealmServer.Entities
 
 			CharacterHandler.SendCorpseReclaimDelay(m_client, Corpse.MinReclaimDelay);
 
-			if (m_region != null)
+			if (m_Map != null)
 			{
-				m_region.RegionInfo.NotifyPlayerResurrected(this);
+				m_Map.MapTemplate.NotifyPlayerResurrected(this);
 			}
 		}
 
 		/// <summary>
-		/// Resurrects and applies ResurrectionSickness if required
+		/// Resurrects, applies ResurrectionSickness and damages Items, if applicable
 		/// </summary>
-		public void ResurrectSH()
+		public void ResurrectWithConsequences()
 		{
 			Resurrect();
 
-			if (Level > 10)
+			if (Level >= ResurrectionSicknessStartLevel)
 			{
 				// Apply resurrection sickness and durability loss (see http://www.wowwiki.com/Death)
-				SpellCast.TriggerSelf(SpellId.ResurrectionSickness);
-				m_inventory.Iterate(item =>
+				Auras.CreateSelf(SpellId.ResurrectionSickness, true);
+
+				if (PlayerInventory.SHResDurabilityLossPct != 0)
 				{
-					if (item.MaxDurability > 0)
+					m_inventory.Iterate(item =>
 					{
-						item.Durability = Math.Max(0, item.Durability -
-							(((item.Durability * PlayerInventory.SHResDurabilityLossPct) + 50) / 100));
-					}
-					return true;
-				});
+						if (item.MaxDurability > 0)
+						{
+							item.Durability = Math.Max(0, item.Durability -
+								(((item.Durability * PlayerInventory.SHResDurabilityLossPct) + 50) / 100));
+						}
+						return true;
+					});
+				}
 			}
 		}
 
@@ -334,7 +337,7 @@ namespace WCell.RealmServer.Entities
 			CorpseReleaseFlags |= CorpseReleaseFlags.ShowCorpseAutoReleaseTimer;
 			IncMechanicCount(SpellMechanic.Rooted);
 
-			var healer = m_region.GetNearestSpiritHealer(ref m_position);
+			var healer = m_Map.GetNearestSpiritHealer(ref m_position);
 			if (healer != null)
 			{
 				CharacterHandler.SendHealerPosition(m_client, healer);
@@ -346,7 +349,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		void BecomeGhost()
 		{
-			SpellCast.Start(SpellHandler.Get(SpellId.Ghost), true, this);
+			SpellCast.Start(SpellHandler.Get(SpellId.Ghost_2), true, this);
 		}
 
 		/// <summary>
@@ -356,51 +359,92 @@ namespace WCell.RealmServer.Entities
 		{
 			base.OnDamageAction(action);
 
-			var chr = action.Attacker as Character;
-			var pvp = IsPvPing && chr != null;
-			var killingBlow = !IsAlive;
-
-			if (action.Attacker != null &&
-				m_activePet != null &&
-				m_activePet.CanBeAggroedBy(action.Attacker))
+			if (action.Attacker != null)
 			{
-				m_activePet.ThreatCollection.AddNew(action.Attacker);
-			}
-
-			if (pvp && chr.IsInBattleground)
-			{
-				// Add BG stats
-				var attackerStats = chr.Battlegrounds.Stats;
-				var victimStats = Battlegrounds.Stats;
-				attackerStats.TotalDamage += action.ActualDamage;
-				if (killingBlow)
+				// aggro pet and minions
+				if (m_activePet != null)
 				{
-					attackerStats.KillingBlows++;
+					m_activePet.ThreatCollection.AddNewIfNotExisted(action.Attacker);
 				}
-				if (victimStats != null)
+				if (m_minions != null)
 				{
-					victimStats.Deaths++;
-				}
-			}
-
-			if (killingBlow)
-			{
-				// this Character died in the process
-				if (pvp)
-				{
-					if (YieldsXpOrHonor)
+					foreach (var minion in m_minions)
 					{
-						chr.Proc(ProcTriggerFlags.GainExperience, this, action, true);
-						chr.OnHonorableKill(action);
+						minion.ThreatCollection.AddNewIfNotExisted(action.Attacker);
 					}
 				}
-				else
-				{
-					// durability loss
-					m_inventory.ApplyDurabilityLoss(PlayerInventory.DeathDurabilityLossPct);
-				}
 
-				m_region.RegionInfo.NotifyPlayerDied(action);
+				var pvp = action.Attacker.IsPvPing;
+				var chr = action.Attacker.CharacterMaster;
+
+				if (pvp && chr.IsInBattleground)
+				{
+					// Add BG stats
+					var attackerStats = chr.Battlegrounds.Stats;
+					attackerStats.TotalDamage += action.ActualDamage;
+				}
+			}
+		}
+
+		protected override void OnKilled(IDamageAction action)
+		{
+			base.OnKilled(action);
+
+			bool pvp;
+			if (action.Attacker != null)
+			{
+				pvp = action.Attacker.IsPvPing;
+				var chr = action.Attacker.CharacterMaster;
+
+				if (pvp && chr.IsInBattleground)
+				{
+					// Add BG stats
+					var attackerStats = chr.Battlegrounds.Stats;
+					var victimStats = Battlegrounds.Stats;
+					attackerStats.KillingBlows++;
+					if (victimStats != null)
+					{
+						victimStats.Deaths++;
+					}
+				}
+			}
+			else
+			{
+				pvp = false;
+			}
+
+			if (!pvp)
+			{
+				// durability loss
+				m_inventory.ApplyDurabilityLoss(PlayerInventory.DeathDurabilityLossPct);
+			}
+
+			m_Map.MapTemplate.NotifyPlayerDied(action);
+		}
+
+		/// <summary>
+		/// Finds the item for the given slot. Unequips it if it may not currently be used.
+		/// Returns the item to be equipped or null, if invalid.
+		/// </summary>
+		protected override IWeapon GetOrInvalidateItem(InventorySlotType type)
+		{
+			var slot = (int)ItemMgr.EquipmentSlotsByInvSlot[(int)type][0];
+			var item = m_inventory[slot];
+			if (item == null)
+			{
+				return null;
+			}
+
+			InventoryError err = InventoryError.OK;
+			m_inventory.Equipment.CheckAdd(slot, 1, item, ref err);
+			if (err == InventoryError.OK)
+			{
+				return item;
+			}
+			else
+			{
+				item.Unequip();
+				return null;
 			}
 		}
 
@@ -436,13 +480,13 @@ namespace WCell.RealmServer.Entities
 			m_record.CorpseY = m_corpse.Position.Y;
 			m_record.CorpseZ = m_corpse.Position.Z;
 			m_record.CorpseO = m_corpse.Orientation;
-			m_record.CorpseRegion = m_region.Id;		// we are spawning the corpse in the same region
+			m_record.CorpseMap = m_Map.Id;		// we are spawning the corpse in the same map
 			m_corpseReleaseTimer.Stop();
 
 			// we need health to walk again
 			SetUInt32(UnitFields.HEALTH, 1);
 
-			m_region.OnSpawnedCorpse(this);
+			m_Map.OnSpawnedCorpse(this);
 		}
 
 		/// <summary>
@@ -453,7 +497,7 @@ namespace WCell.RealmServer.Entities
 		/// <returns></returns>
 		public Corpse SpawnCorpse(bool bones, bool lootable)
 		{
-			return SpawnCorpse(bones, lootable, m_region, m_position, m_orientation);
+			return SpawnCorpse(bones, lootable, m_Map, m_position, m_orientation);
 		}
 
 		/// <summary>
@@ -462,7 +506,7 @@ namespace WCell.RealmServer.Entities
 		/// <param name="bones"></param>
 		/// <param name="lootable"></param>
 		/// <returns></returns>
-		public Corpse SpawnCorpse(bool bones, bool lootable, Region region, Vector3 pos, float o)
+		public Corpse SpawnCorpse(bool bones, bool lootable, Map map, Vector3 pos, float o)
 		{
 			var corpse = new Corpse(this, pos, o, DisplayId, Facial, Skin,
 				HairStyle, HairColor, FacialHair, GuildId, Gender, Race,
@@ -478,7 +522,7 @@ namespace WCell.RealmServer.Entities
 			}
 
 			corpse.Position = pos;
-			region.AddObjectLater(corpse);
+			map.AddObjectLater(corpse);
 			return corpse;
 		}
 
@@ -497,11 +541,11 @@ namespace WCell.RealmServer.Entities
 		/// 
 		/// TODO: Graveyards
 		/// </summary>
-		public void TeleportToNearestGraveyard(bool allowSameRegion)
+		public void TeleportToNearestGraveyard(bool allowSameMap)
 		{
-			if (allowSameRegion)
+			if (allowSameMap)
 			{
-				var healer = m_region.GetNearestSpiritHealer(ref m_position);
+				var healer = m_Map.GetNearestSpiritHealer(ref m_position);
 				if (healer != null)
 				{
 					TeleportTo(healer);
@@ -509,9 +553,9 @@ namespace WCell.RealmServer.Entities
 				}
 			}
 
-			if (m_region.RegionInfo.RepopRegion != null)
+			if (m_Map.MapTemplate.RepopMap != null)
 			{
-				TeleportTo(m_region.RegionInfo.RepopRegion, m_region.RegionInfo.RepopPosition);
+				TeleportTo(m_Map.MapTemplate.RepopMap, m_Map.MapTemplate.RepopPosition);
 			}
 			else
 			{
@@ -526,7 +570,7 @@ namespace WCell.RealmServer.Entities
 			get { return m_archetype.GetLevelStats((uint)Level); }
 		}
 
-		public void UpdateRest()
+		internal void UpdateRest()
 		{
 			if (m_restTrigger != null)
 			{
@@ -537,92 +581,137 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
+		/// <summary>
+		/// Gain experience from combat
+		/// </summary>
 		public void GainCombatXp(int experience, INamed killed, bool gainRest)
 		{
-			if (Level >= RealmServerConfiguration.MaxCharacterLevel)
+			if (Level >= MaxLevel)
 			{
 				return;
 			}
 
-			// Generate the message to send
-			var message = string.Format("{0} dies, you gain {1} experience.", killed.Name, experience);
+			var xp = experience + (experience * KillExperienceGainModifierPercent / 100);
 
-			XP += experience;
-			if (gainRest && RestXp > 0)
+			if (m_activePet != null && m_activePet.MayGainExperience)
 			{
-				var bonus = Math.Min(RestXp, experience);
-				message += string.Format(" (+{0} exp Rested bonus)", bonus);
-				XP += bonus;
-				RestXp -= bonus;
+				// give xp to pet
+				m_activePet.PetExperience += xp;
+				m_activePet.TryLevelUp();
 			}
 
-			// Send the message
-			ChatMgr.SendCombatLogExperienceMessage(this, message);
+			if (gainRest && RestXp > 0)
+			{
+				// add rest bonus
+				var bonus = Math.Min(RestXp, experience);
+				xp += bonus;
+				RestXp -= bonus;
+				ChatMgr.SendCombatLogExperienceMessage(this, Locale, RealmLangKey.LogCombatExpRested, killed.Name, experience, bonus);
+			}
+			else
+			{
+				ChatMgr.SendCombatLogExperienceMessage(this, Locale, RealmLangKey.LogCombatExp, killed.Name, experience);
+			}
+
+			Experience += xp;
 			TryLevelUp();
 		}
 
 		/// <summary>
-		/// 
+		/// Gain non-combat experience (through quests etc)
 		/// </summary>
 		/// <param name="experience"></param>
-		/// <param name="gainRest">If true, subtracts the given amount of experience from RestXp and adds it ontop of the given xp</param>
-		public void GainXp(int experience)
+		/// <param name="useRest">If true, subtracts the given amount of experience from RestXp and adds it ontop of the given xp</param>
+		public void GainXp(int experience, bool useRest = false)
 		{
-			GainXp(experience, false);
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="experience"></param>
-		/// <param name="gainRest">If true, subtracts the given amount of experience from RestXp and adds it ontop of the given xp</param>
-		public void GainXp(int experience, bool gainRest)
-		{
-			XP += experience;
-			if (gainRest && RestXp > 0)
+			var xp = experience;
+			if (useRest && RestXp > 0)
 			{
 				var bonus = Math.Min(RestXp, experience);
-				XP += bonus;
+				xp += bonus;
 				RestXp -= bonus;
 			}
 
+			Experience += xp;
 			TryLevelUp();
 		}
 
 		internal bool TryLevelUp()
 		{
-			var nextLevelXp = NextLevelXP;
 			var level = Level;
+			var xp = Experience;
+			var nextLevelXp = NextLevelXP;
 			var leveled = false;
-			var xp = XP;
 
-			while (xp >= nextLevelXp && level < RealmServerConfiguration.MaxCharacterLevel)
+			while (xp >= nextLevelXp && level < MaxLevel)
 			{
-				XP = xp -= nextLevelXp;
-				Level = ++level;
-				NextLevelXP = nextLevelXp = XpGenerator.GetXpForlevel(level + 1);
-
-				if (level >= 10)
-				{
-					FreeTalentPoints++;
-				}
-
-				var evt = LeveledUp;
-				if (evt != null)
-				{
-					evt(this);
-				}
+				++level;
+				xp -= nextLevelXp;
+				nextLevelXp = XpGenerator.GetXpForlevel(level + 1);
 				leveled = true;
 			}
 
 			if (leveled)
 			{
-				ModStatsForLevel(level);
-				m_auras.ReapplyAllAuras();
-				SaveLater();
+				Experience = xp;
+				NextLevelXP = nextLevelXp;
+				Level = level;
 				return true;
 			}
 			return false;
+		}
+
+		protected override void OnLevelChanged()
+		{
+			base.OnLevelChanged();
+
+			//check if we unlocked new glyphslots on every levelup!
+			InitGlyphsForLevel();
+
+			var level = Level;
+			int freeTalentPoints = m_talents.GetFreeTalentPointsForLevel(level);
+			if (freeTalentPoints < 0)
+			{
+				// need to remove talent points
+				if (!GodMode)
+				{
+					// remove the extra talents
+					m_talents.RemoveTalents(-freeTalentPoints);
+				}
+				freeTalentPoints = 0;
+			}
+
+			// check pet level
+			if (m_activePet != null)
+			{
+				if (!m_activePet.IsHunterPet || m_activePet.Level > level)
+				{
+					m_activePet.Level = level;
+				}
+				else if (level - PetMgr.MaxHunterPetLevelDifference > m_activePet.Level)
+				{
+					m_activePet.Level = level - PetMgr.MaxHunterPetLevelDifference;
+				}
+			}
+
+			FreeTalentPoints = freeTalentPoints;
+			ModStatsForLevel(level);
+			m_auras.ReapplyAllAuras();
+			m_achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.ReachLevel, (uint)Level);
+
+			// update level-depedent stats
+			this.UpdateDodgeChance();
+			this.UpdateBlockChance();
+			this.UpdateCritChance();
+			this.UpdateAllAttackPower();
+
+			var evt = LevelChanged;
+			if (evt != null)
+			{
+				evt(this);
+			}
+
+			SaveLater();
 		}
 
 		public void ModStatsForLevel(int level)
@@ -670,7 +759,6 @@ namespace WCell.RealmServer.Entities
 
 			//skills
 			Skills.UpdateSkillsForLevel(level);
-
 		}
 		#endregion
 
@@ -721,6 +809,14 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Sends a message to the client.
 		/// </summary>
+		public void SendSystemMessage(RealmLangKey key, params object[] args)
+		{
+			ChatMgr.SendSystemMessage(this, RealmLocalizer.Instance.Translate(Locale, key, args));
+		}
+
+		/// <summary>
+		/// Sends a message to the client.
+		/// </summary>
 		public void SendSystemMessage(string msg)
 		{
 			ChatMgr.SendSystemMessage(this, msg);
@@ -729,17 +825,14 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Sends a message to the client.
 		/// </summary>
-		public void SendSystemMessage(string msg, params object[] args)
+		public void SendSystemMessage(string msgFormat, params object[] args)
 		{
-			ChatMgr.SendSystemMessage(this, string.Format(msg, args));
+			ChatMgr.SendSystemMessage(this, string.Format(msgFormat, args));
 		}
 
-		/// <summary>
-		/// Flashes a notification in the middle of the screen
-		/// </summary>
-		public void Notify(string msg)
+		public void Notify(RealmLangKey key, params object[] args)
 		{
-			MiscHandler.SendNotification(this, msg);
+			Notify(RealmLocalizer.Instance.Translate(Locale, key, args));
 		}
 
 		/// <summary>
@@ -750,55 +843,31 @@ namespace WCell.RealmServer.Entities
 			MiscHandler.SendNotification(this, string.Format(msg, args));
 		}
 
-		public void SayGroup(string msg, params object[] args)
-		{
-			SayGroup(string.Format(msg, args));
-		}
-
 		public void SayGroup(string msg)
 		{
 			this.SayGroup(SpokenLanguage, msg);
 		}
 
-		public override void Say(string msg)
+		public void SayGroup(string msg, params object[] args)
 		{
-			this.SayYellEmote(ChatMsgType.Say, SpokenLanguage, msg);
+			SayGroup(string.Format(msg, args));
 		}
 
-		public override void Yell(string msg)
+		public override void Say(float radius, string msg)
 		{
-			this.SayYellEmote(ChatMsgType.Yell, SpokenLanguage, msg);
+			this.SayYellEmote(ChatMsgType.Say, SpokenLanguage, msg, radius);
 		}
 
-		public override void Emote(string msg)
+		public override void Yell(float radius, string msg)
 		{
-			this.SayYellEmote(ChatMsgType.Emote, SpokenLanguage, msg);
+			this.SayYellEmote(ChatMsgType.Yell, SpokenLanguage, msg, radius);
+		}
+
+		public override void Emote(float radius, string msg)
+		{
+			this.SayYellEmote(ChatMsgType.Emote, SpokenLanguage, msg, radius);
 		}
 		#endregion
-
-		public void Send(RealmPacketOut packet)
-		{
-			m_client.Send(packet);
-		}
-
-		public void Send(byte[] packet)
-		{
-			m_client.Send(packet);
-		}
-
-		/// <summary>
-		/// Change target and/or amount of combo points
-		/// </summary>
-		public override bool ModComboState(Unit target, int amount)
-		{
-			if (base.ModComboState(target, amount))
-			{
-				CombatHandler.SendComboPoints(this);
-				return true;
-			}
-
-			return false;
-		}
 
 		#region Interaction with NPCs & GameObjects
 		/// <summary>
@@ -840,7 +909,7 @@ namespace WCell.RealmServer.Entities
 		public bool TryBindTo(NPC innKeeper)
 		{
 			OnInteract(innKeeper);
-			if (innKeeper.BindPoint != NamedWorldZoneLocation.Zero && innKeeper.CanInteractWith(this))
+			if (innKeeper.BindPoint != NamedWorldZoneLocation.Zero && innKeeper.CheckVendorInteraction(this))
 			{
 				BindTo(innKeeper);
 				return true;
@@ -868,278 +937,6 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
-		#region Movement Handling
-		/// <summary>
-		/// Is called whenever the Character moves up or down in water or while flying.
-		/// </summary>
-		internal protected void MovePitch(float moveAngle)
-		{
-		}
-
-		/// <summary>
-		/// Is called whenever the Character falls
-		/// </summary>
-		internal protected void OnFalling()
-		{
-			if (m_fallStart == 0)
-			{
-				m_fallStart = Environment.TickCount;
-				m_fallStartHeight = m_position.Z;
-			}
-
-
-			if (IsFlying || !IsAlive || GodMode)
-			{
-				return;
-			}
-			// TODO Immunity against environmental damage
-
-		}
-
-		public bool IsSwimming
-		{
-			get { return MovementFlags.HasFlag(MovementFlags.Swimming); }
-		}
-
-		public bool IsUnderwater
-		{
-			get { return m_position.Z < m_swimSurfaceHeight - 0.5f; }
-		}
-
-		internal protected void OnSwim()
-		{
-			// TODO: Lookup liquid type and verify heights
-			if (!IsSwimming)
-			{
-				m_swimStart = DateTime.Now;
-			}
-			else
-			{
-
-			}
-		}
-
-		internal protected void OnStopSwimming()
-		{
-			m_swimSurfaceHeight = -2048;
-		}
-
-		/// <summary>
-		/// Is called whenever the Character is moved while on Taxi, Ship, elevator etc
-		/// </summary>
-		internal protected void MoveTransport(ref Vector4 transportLocation)
-		{
-			SendSystemMessage("You have been identified as cheater: Faking transport movement!");
-		}
-
-		/// <summary>
-		/// Is called whenever a Character moves
-		/// </summary>
-		public override void OnMove()
-		{
-			base.OnMove();
-
-			if (m_standState != StandState.Stand)
-			{
-				StandState = StandState.Stand;
-			}
-
-			if (m_currentRitual != null)
-			{
-				m_currentRitual.Remove(this);
-			}
-
-			// TODO: Change speedhack detection
-			// TODO: Check whether the character is really in Taxi
-			var now = Environment.TickCount;
-			if (m_fallStart > 0 && now - m_fallStart > 3000 && m_position.Z == LastPosition.Z)
-			{
-				if (IsAlive && Flying == 0 && Hovering == 0 && FeatherFalling == 0 && !IsImmune(DamageSchool.Physical))
-				{
-					var fallDamage = FallDamageGenerator.GetFallDmg(this, m_fallStartHeight - m_position.Z);
-
-					//if (fallDamage > 0)
-					//    DoEnvironmentalDamage(EnviromentalDamageType.Fall, fallDamage);
-
-					m_fallStart = 0;
-					m_fallStartHeight = 0;
-				}
-			}
-
-			if (SpeedHackCheck)
-			{
-				var msg = "You have been identified as a SpeedHacker. - Byebye!";
-
-				// simple SpeedHack protection
-				int latency = Client.Latency;
-				int delay = now - m_lastMoveTime + Math.Max(1000, latency);
-
-				float speed = Flying > 0 ? FlightSpeed : RunSpeed;
-				float maxDistance = (speed / 1000f) * delay * SpeedHackToleranceFactor;
-				if (!IsInRadius(ref LastPosition, maxDistance))
-				{
-					// most certainly a speed hacker
-					log.Warn("WARNING: Possible speedhacker [{0}] moved {1} yards in {2} milliseconds (Latency: {3}, Tollerance: {4})",
-							 this, GetDistance(ref LastPosition), delay, latency, SpeedHackToleranceFactor);
-				}
-
-				Kick(msg);
-			}
-
-			LastPosition = MoveControl.Mover.Position;
-		}
-
-		public void SetMover(WorldObject mover, bool canControl)
-		{
-			MoveControl.Mover = mover;
-			MoveControl.CanControl = canControl;
-
-			if (mover == null)
-			{
-				CharacterHandler.SendControlUpdate(this, this, canControl);
-			}
-			else
-			{
-				CharacterHandler.SendControlUpdate(this, mover, canControl);
-			}
-		}
-
-		public void ResetMover()
-		{
-			MoveControl.Mover = this;
-			MoveControl.CanControl = true;
-		}
-
-		/// <summary>
-		/// Is called whenever a new object appears within vision range of this Character
-		/// </summary>
-		public void OnEncountered(WorldObject obj)
-		{
-			obj.AreaCharCount++;
-			KnownObjects.Add(obj);
-			SendUnknownState(obj);
-		}
-
-		/// <summary>
-		/// Sends yet unknown information about a new object,
-		/// such as Aura packets
-		/// </summary>
-		/// <param name="obj"></param>
-		private void SendUnknownState(WorldObject obj)
-		{
-			if (obj is Unit)
-			{
-				var unit = (Unit)obj;
-
-				if (unit.Auras.VisibleAuraCount > 0)
-				{
-					AuraHandler.SendAllAuras(this, unit);
-				}
-			}
-		}
-
-		/// <summary>
-		/// Is called whenever an object leaves this Character's sight
-		/// </summary>
-		public void OnOutOfRange(WorldObject obj)
-		{
-			obj.AreaCharCount--;
-			if (obj is Character && m_observers != null)
-			{
-				if (m_observers.Remove((Character)obj))
-				{
-					// Character was observing: Now destroy items for him
-					for (var i = (InventorySlot)0; i < InventorySlot.Bag1; i++)
-					{
-						var item = m_inventory[i];
-						if (item != null)
-						{
-							item.SendDestroyToPlayer((Character)obj);
-						}
-					}
-				}
-			}
-
-			if (obj == DuelOpponent && !Duel.IsActive)
-			{
-				// opponent vanished before Duel started: Cancel duel
-				Duel.Dispose();
-			}
-
-			if (obj == m_target)
-			{
-				// unset current Target
-				ClearTarget();
-			}
-
-			if (obj == m_activePet)
-			{
-				ActivePet = null;
-			}
-
-			if (GossipConversation != null && obj == GossipConversation.Speaker && GossipConversation.Character == this)
-			{
-				// stop conversation with a vanished object
-				GossipConversation.Dispose();
-			}
-
-			if (!(obj is Transport))
-			{
-				KnownObjects.Remove(obj);
-
-				// send the destroy packet
-				obj.SendDestroyToPlayer(this);
-			}
-		}
-
-		/// <summary>
-		/// Is called whenever this Character was added to a new region
-		/// </summary>
-		internal protected override void OnEnterRegion()
-		{
-			base.OnEnterRegion();
-
-			// when removed from region, make sure the Character forgets everything and gets everything re-sent
-			ClearSelfKnowledge();
-
-			m_lastMoveTime = Environment.TickCount;
-			LastPosition = m_position;
-
-			AddPostUpdateMessage(() =>
-			{
-				// Add Honorless Target buff
-				if (m_zone != null && m_zone.Info.IsPvP)
-				{
-					SpellCast.TriggerSelf(SpellId.HonorlessTarget);
-				}
-			});
-
-			if (IsPetActive)
-			{
-				// actually spawn pet
-				IsPetActive = true;
-			}
-		}
-
-		protected internal override void OnLeavingRegion()
-		{
-			if (m_activePet != null && m_activePet.IsInWorld)
-			{
-				m_activePet.Region.RemoveObject(m_activePet);
-			}
-
-			if (m_minions != null)
-			{
-				foreach (var minion in m_minions)
-				{
-					minion.Delete();
-				}
-			}
-
-			base.OnLeavingRegion();
-		}
-		#endregion
-
 		#region Quests
 
 		/// <summary>
@@ -1154,11 +951,6 @@ namespace WCell.RealmServer.Entities
 		public QuestLog QuestLog
 		{
 			get { return m_questLog; }
-		}
-
-		public bool CanGiveQuestTo(Character chr)
-		{
-			return chr.IsAlliedWith(this); // since 3.0 you can share quests within any range
 		}
 		#endregion
 
@@ -1200,9 +992,20 @@ namespace WCell.RealmServer.Entities
 			return rep != null && rep.Standing >= Standing.Friendly;
 		}
 
+        public override bool IsNeutralWith(IFactionMember opponent)
+        {
+            if (IsAlliedWith(opponent))
+            {
+                return true;
+            }
+
+            var rep = m_reputations[opponent.Faction.ReputationIndex];
+            return rep != null && rep.Standing >= Standing.Neutral;
+        }
+
 		public override bool IsHostileWith(IFactionMember opponent)
 		{
-			if (opponent == this || (opponent is Unit && ((Unit)opponent).Master == this))
+			if (object.ReferenceEquals(opponent, this) || (opponent is Unit && ((Unit)opponent).Master == this))
 			{
 				return false;
 			}
@@ -1218,15 +1021,14 @@ namespace WCell.RealmServer.Entities
 
 		public override bool MayAttack(IFactionMember opponent)
 		{
-			if (opponent == this || (opponent is Unit && ((Unit)opponent).Master == this))
+			if (ReferenceEquals(opponent, this) || (opponent is Unit && ((Unit)opponent).Master == this))
 			{
 				return false;
 			}
 
 			if (opponent is Character)
 			{
-				var chr = (Character)opponent;
-				return CanPvP(chr);
+				return CanPvP((Character)opponent);
 			}
 
 			return m_reputations.CanAttack(opponent.Faction);
@@ -1234,11 +1036,8 @@ namespace WCell.RealmServer.Entities
 
 		public bool CanPvP(Character chr)
 		{
-			var state = PvPState;
-			if (chr.PvPState < state)
-			{
-				state = chr.PvPState;
-			}
+			var state = chr.PvPState < PvPState ? chr.PvPState : PvPState;
+
 			if (state == PvPState.FFAPVP)
 			{
 				return true;
@@ -1257,10 +1056,15 @@ namespace WCell.RealmServer.Entities
 		/// <returns></returns>
 		public override bool IsAlliedWith(IFactionMember opponent)
 		{
-			if (opponent == this ||
+			if (ReferenceEquals(opponent, this) ||
 				(opponent is Unit && ((Unit)opponent).Master == this))
 			{
 				return true;
+			}
+
+			if (!(opponent is Character) && opponent is WorldObject)
+			{
+				opponent = ((WorldObject)opponent).Master;
 			}
 
 			if (opponent is Character)
@@ -1281,6 +1085,49 @@ namespace WCell.RealmServer.Entities
 			return false;
 		}
 
+		public override bool IsInSameDivision(IFactionMember opponent)
+		{
+			if (ReferenceEquals(opponent, this) ||
+				(opponent is Unit && ((Unit)opponent).Master == this))
+			{
+				return true;
+			}
+
+			if (!(opponent is Character) && opponent is WorldObject)
+			{
+				opponent = ((WorldObject)opponent).Master;
+			}
+
+			if (opponent is Character)
+			{
+				if (IsInBattleground)
+				{
+					return Battlegrounds.Team == ((Character)opponent).Battlegrounds.Team;
+				}
+
+				var group = SubGroup;
+				if (group != null && ((Character)opponent).SubGroup == group)
+				{
+					// cannot ally with duelists
+					return DuelOpponent == null && ((Character)opponent).DuelOpponent == null;
+				}
+			}
+			return false;
+		}
+
+		public override void OnAttack(Misc.DamageAction action)
+		{
+			if (action.Victim is NPC && m_dmgBonusVsCreatureTypePct != null)
+			{
+				var bonus = m_dmgBonusVsCreatureTypePct[(int)((NPC)action.Victim).Entry.Type];
+				if (bonus != 0)
+				{
+					action.Damage += (bonus * action.Damage + 50) / 100;
+				}
+			}
+			base.OnAttack(action);
+		}
+
 		protected override void OnEnterCombat()
 		{
 			CancelLooting();
@@ -1293,9 +1140,19 @@ namespace WCell.RealmServer.Entities
 			{
 				if (NPCAttackerCount == 0 &&
 					(m_activePet == null || m_activePet.NPCAttackerCount == 0) &&
-					(Environment.TickCount - m_lastCombatTime) >= CombatDeactivationDelay &&
 					!m_auras.HasHarmfulAura())
 				{
+					if (m_minions != null)
+					{
+						// can't leave combat if any minion is in combat
+						foreach (var minion in m_minions)
+						{
+							if (minion.NPCAttackerCount > 0)
+							{
+								return base.CheckCombatState();
+							}
+						}
+					}
 					// leave combat if we didn't fight for a while and have no debuffs on us
 					IsInCombat = false;
 				}
@@ -1304,32 +1161,16 @@ namespace WCell.RealmServer.Entities
 			return base.CheckCombatState();
 		}
 
-		/// <summary>
-		/// Adds all damage boni and mali
-		/// </summary>
-		public override void AddDamageMods(DamageAction action)
+		public override int AddHealingModsToAction(int healValue, SpellEffect effect, DamageSchool school)
 		{
-			base.AddDamageMods(action);
-			var dmg = UnitUpdates.GetMultiMod(GetInt32(PlayerFields.MOD_DAMAGE_DONE_PCT + (int)action.UsedSchool) / 100f, action.Damage);
-			if (action.Spell != null)
-			{
-				dmg = PlayerSpells.GetModifiedInt(SpellModifierType.SpellPower, action.Spell, dmg);
-			}
-
-			dmg += GetDamageDoneMod(action.UsedSchool);
-			action.Damage = dmg;
-		}
-
-		public override int AddHealingMods(int dmg, SpellEffect effect, DamageSchool school)
-		{
-			dmg += (int)((dmg * HealingDoneModPct) / 100f);
-			dmg += HealingDoneMod;
+			healValue += (int)((healValue * HealingDoneModPct) / 100f);
+			healValue += HealingDoneMod;
 			if (effect != null)
 			{
-				dmg = PlayerSpells.GetModifiedInt(SpellModifierType.SpellPower, effect.Spell, dmg);
+				healValue = Auras.GetModifiedInt(SpellModifierType.SpellPower, effect.Spell, healValue);
 			}
 
-			return dmg;
+			return healValue;
 		}
 
 		public override int GetGeneratedThreat(int dmg, DamageSchool school, SpellEffect effect)
@@ -1337,7 +1178,7 @@ namespace WCell.RealmServer.Entities
 			var threat = base.GetGeneratedThreat(dmg, school, effect);
 			if (effect != null)
 			{
-				threat = PlayerSpells.GetModifiedInt(SpellModifierType.Threat, effect.Spell, threat);
+				threat = Auras.GetModifiedInt(SpellModifierType.Threat, effect.Spell, threat);
 			}
 			return threat;
 		}
@@ -1347,30 +1188,23 @@ namespace WCell.RealmServer.Entities
 			dmg = base.CalcCritDamage(dmg, victim, effect);
 			if (effect != null)
 			{
-				return PlayerSpells.GetModifiedFloat(SpellModifierType.CritDamage, effect.Spell, dmg);
+				return Auras.GetModifiedFloat(SpellModifierType.CritDamage, effect.Spell, dmg);
 			}
 			return dmg;
 		}
 
-		public override float CalcCritChanceBase(Unit victim, SpellEffect effect, IWeapon weapon)
+		/// <summary>
+		/// Change target and/or amount of combo points
+		/// </summary>
+		public override bool ModComboState(Unit target, int amount)
 		{
-			float chance;
-
-			if (weapon.IsRanged)
+			if (base.ModComboState(target, amount))
 			{
-				chance = CritChanceRangedPct;
-			}
-			else
-			{
-				chance = CritChanceMeleePct;
+				CombatHandler.SendComboPoints(this);
+				return true;
 			}
 
-			if (effect != null)
-			{
-				chance = PlayerSpells.GetModifiedFloat(SpellModifierType.CritChance, effect.Spell, chance);
-			}
-
-			return chance;
+			return false;
 		}
 		#endregion
 
@@ -1422,78 +1256,6 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
-		public BaseRelation GetRelationTo(Character chr, CharacterRelationType type)
-		{
-			return RelationMgr.Instance.GetRelation(EntityId.Low, chr.EntityId.Low, type);
-		}
-
-		/// <summary>
-		/// Returns whether this Character ignores the Character with the given low EntityId.
-		/// </summary>
-		/// <returns></returns>
-		public bool IsIgnoring(IUser user)
-		{
-			return RelationMgr.Instance.HasRelation(EntityId.Low, user.EntityId.Low, CharacterRelationType.Ignored);
-		}
-
-		/// <summary>
-		/// Indicates whether the two Characters are in the same <see cref="Group"/>
-		/// </summary>
-		/// <param name="chr"></param>
-		/// <returns></returns>
-		public bool IsAlliedWith(Character chr)
-		{
-			return m_groupMember != null && chr.m_groupMember != null && m_groupMember.Group == chr.m_groupMember.Group;
-		}
-
-		/// <summary>
-		/// Binds Character to start position if none other is set
-		/// </summary>
-		void CheckBindLocation()
-		{
-			if (!m_bindLocation.IsValid())
-			{
-				BindTo(this, m_archetype.StartLocation);
-			}
-		}
-
-		public void TeleportToBindLocation()
-		{
-			TeleportTo(BindLocation);
-		}
-
-		public bool CanFly
-		{
-			get
-			{
-				return (m_region.CanFly && (m_zone == null || m_zone.Flags.HasFlag(ZoneFlags.CanFly))) || Role.IsStaff;
-			}
-		}
-
-		#region Mounts
-
-		public override void Mount(uint displayId)
-		{
-			if (m_activePet != null)
-			{
-				// remove active pet
-				m_activePet.RemoveFromRegion();
-			}
-
-			base.Mount(displayId);
-		}
-
-		protected internal override void DoDismount()
-		{
-			if (IsPetActive)
-			{
-				// put pet into world
-				PlaceOnTop(ActivePet);
-			}
-			base.DoDismount();
-		}
-		#endregion
-
 		#region Summoning
 		public SummonRequest SummonRequest
 		{
@@ -1504,7 +1266,7 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// May be executed from outside of this Character's region's context
+		/// May be executed from outside of this Character's map's context
 		/// </summary>
 		public void StartSummon(ISummoner summoner)
 		{
@@ -1512,7 +1274,7 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// May be executed from outside of this Character's region's context
+		/// May be executed from outside of this Character's map's context
 		/// </summary>
 		/// <param name="summoner"></param>
 		/// <param name="timeoutSeconds"></param>
@@ -1523,23 +1285,23 @@ namespace WCell.RealmServer.Entities
 				ExpiryTime = DateTime.Now.AddSeconds(timeoutSeconds),
 				TargetPos = summoner.Position,
 				TargetZone = summoner.Zone,
-				TargetRegion = summoner.Region
+				TargetMap = summoner.Map
 			};
 
-			// make sure the Region was set or else the summoner was disposed before the Request completed
-			if (m_summonRequest.TargetRegion != null)
+			// make sure the Map was set or else the summoner was disposed before the Request completed
+			if (m_summonRequest.TargetMap != null)
 			{
 				var client = m_client;
 				if (client != null)
 				{
 					CharacterHandler.SendSummonRequest(client, summoner,
-						summoner.Zone != null ? summoner.ZoneInfo.Id : ZoneId.None,
+						summoner.Zone != null ? summoner.ZoneTemplate.Id : ZoneId.None,
 						timeoutSeconds * 1000);
 				}
 			}
 			else
 			{
-				//log.Warn("Tried to teleport {0} to a Summoner without a Region: {1}", this, summoner);
+				//log.Warn("Tried to teleport {0} to a Summoner without a Map: {1}", this, summoner);
 			}
 		}
 
@@ -1564,21 +1326,9 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
-		#region AI
-		public override LinkedList<WaypointEntry> Waypoints
+		public override int GetBasePowerRegen()
 		{
-			get { return null; }
-		}
-
-		public override SpawnPoint SpawnPoint
-		{
-			get { return null; }
-		}
-		#endregion
-
-		public override string ToString()
-		{
-			return Name + " (ID: " + EntityId + ", Account: " + Account + ")";
+			return RegenerationFormulas.GetPowerRegen(this);
 		}
 
 		public void ActivateAllTaxiNodes()
@@ -1599,11 +1349,11 @@ namespace WCell.RealmServer.Entities
 			base.SetZone(newZone);
 			if (newZone != null)
 			{
-				m_region.CallDelayed(CharacterHandler.ZoneUpdateDelay, () =>
+				m_Map.CallDelayed(CharacterHandler.ZoneUpdateDelayMillis, () =>
 				{
 					if (IsInWorld && Zone == newZone)
 					{
-						SetZoneExplored(m_zone.Info, true);
+						SetZoneExplored(m_zone.Template, true);
 					}
 				});
 			}
@@ -1616,9 +1366,9 @@ namespace WCell.RealmServer.Entities
 			{
 				ClearTarget();
 			}
-			if (TradeInfo != null)
+			if (TradeWindow != null)
 			{
-				TradeInfo.Cancel();
+				TradeWindow.Cancel();
 			}
 		}
 
@@ -1632,70 +1382,62 @@ namespace WCell.RealmServer.Entities
 		public override int GetPowerCost(DamageSchool school, Spell spell, int cost)
 		{
 			cost = base.GetPowerCost(school, spell, cost);
-			cost = PlayerSpells.GetModifiedInt(SpellModifierType.PowerCost, spell, cost);
+			cost = Auras.GetModifiedInt(SpellModifierType.PowerCost, spell, cost);
 			return cost;
 		}
 		#endregion
 
-		#region IHasTalents
-		public SpecProfile SpecProfile
+		#region Talent Specs
+		public SpecProfile CurrentSpecProfile
 		{
-			get { return Record.SpecProfile; }
-			set { Record.SpecProfile = value; }
+			get { return SpecProfiles[m_talents.CurrentSpecIndex]; }
 		}
 
-		public int GetTalentResetPrice()
+		/// <summary>
+		/// Talent specs
+		/// </summary>
+		public SpecProfile[] SpecProfiles
 		{
-			if (GodMode)
-			{
-				return 0;
-			}
-
-			var tiers = TalentMgr.TalentResetPriceTiers;
-			var lastPriceTier = Record.TalentResetPriceTier;
-			var lastResetTime = Record.LastTalentResetTime;
-			if (lastResetTime == null)
-			{
-				return tiers[0];
-			}
-
-			var timeLapse = DateTime.Now - lastResetTime.Value;
-			if (lastPriceTier < 4) return tiers[lastPriceTier];
-
-			var numDiscounts = timeLapse.Days / 30;
-			var newPriceTier = lastPriceTier - numDiscounts;
-			if (newPriceTier < 3)
-			{
-				return tiers[3];
-			}
-
-			if (newPriceTier > (tiers.Length - 1))
-			{
-				return tiers[tiers.Length - 1];
-			}
-
-			return tiers[newPriceTier];
+			get;
+			protected internal set;
 		}
 
-		public void ResetFreeTalentPoints()
+		public void ApplyTalentSpec(int no)
 		{
-			// One talent point for level 10 and above
-			FreeTalentPoints = (Level - 9);
+			var profile = SpecProfiles.Get(no);
+
+			if (profile != null)
+			{
+				// TODO: Change talent spec
+			}
 		}
 
-		public void ResetTalents()
+		public void InitGlyphsForLevel()
 		{
-			var price = Talents.ResetAllPrice;
-			if (Money < price) return;
+			foreach (var slot in GlyphInfoHolder.GlyphSlots)
+			{
+				if (slot.Value.Order != 0)
+				{
+					SetGlyphSlot((byte)(slot.Value.Order - 1), slot.Value.Id);
+				}
+			}
 
-			ResetFreeTalentPoints();
-			Record.LastTalentResetTime = DateTime.Now;
-			Record.TalentResetPriceTier++;
-			Money -= price;
+			var level = Level;
+			uint value = 0;
 
-			SpecProfile.ResetActiveTalentGroup();
+			if (level >= 15)
+				value |= (0x01 | 0x02);
+			if (level >= 30)
+				value |= 0x08;
+			if (level >= 50)
+				value |= 0x04;
+			if (level >= 70)
+				value |= 0x10;
+			if (level >= 80)
+				value |= 0x20;
+
+			Glyphs_Enable = value;
 		}
-
 		#endregion
 
 		#region Implementation of IInstanceHolder
@@ -1736,15 +1478,15 @@ namespace WCell.RealmServer.Entities
 			callback(Instances);
 		}
 
-		public BaseInstance GetActiveInstance(RegionInfo regionInfo)
+		public BaseInstance GetActiveInstance(MapTemplate mapTemplate)
 		{
-			var region = m_region;
-			if (region != null && region.Id == region.Id)
+			var map = m_Map;
+			if (map != null && map.Id == map.Id)
 			{
-				return region as BaseInstance;
+				return map as BaseInstance;
 			}
 			var instances = m_InstanceCollection;
-			return instances != null ? instances.GetActiveInstance(regionInfo) : null;
+			return instances != null ? instances.GetActiveInstance(mapTemplate) : null;
 		}
 		#endregion
 
@@ -1815,9 +1557,8 @@ namespace WCell.RealmServer.Entities
 
 			if (m_zone != null)
 			{
-				m_zone.Info.OnHonorableKill(this, victim);
+				m_zone.Template.OnHonorableKill(this, victim);
 			}
-			m_region.OnHonorableKill(action);
 		}
 
 		private uint CalcHonorForKill(Character victim)
@@ -1856,41 +1597,39 @@ namespace WCell.RealmServer.Entities
 
 		#region PvP Flag
 
-		public DateTime PvPEndTime = DateTime.Now;
+	    /// <summary>
+	    /// Auto removes PvP flag after expiring
+	    /// </summary>
+	    protected TimerEntry PvPEndTime;
 
 		public void TogglePvPFlag()
 		{
-			SetPvPFlag(!IsPvPFlagSet);
+			SetPvPFlag(!PlayerFlags.HasFlag(PlayerFlags.PVP));
 		}
 
 		public void SetPvPFlag(bool state)
 		{
-			IsPvPFlagSet = state;
-			IsPvPTimerActive = !state;
-
-			// If the PvP Flag is up and the character is not pvp-ing
-			// or the pvp timer is set, override the pvp state to on
+			
 			if (state)
 			{
-				if (PvPState.HasFlag(PvPState.PVP) || PvPEndTime > DateTime.Now)
-				{
-					UpdatePvPState(true, true);
-				}
+                // if the pvp timer is set, override the pvp state to on
+                UpdatePvPState(true, (PvPEndTime != null && PvPEndTime.IsRunning));
+                PlayerFlags |= PlayerFlags.PVP;
 				return;
 			}
 
-			// The flag is down and the character is pvp-ing in a non-hostile area
+			// The flag is down and the character has been pvp-ing in a non-hostile area
 			// Set the timer to turn things off
 			if (Zone != null)
 			{
-				if (!Zone.Info.IsHostileTo(this) && PvPState.HasFlag(PvPState.PVP))
+				if (!Zone.Template.IsHostileTo(this) && PvPState.HasFlag(PvPState.PVP))
 				{
 					SetPvPResetTimer();
 				}
 			}
 		}
 
-		public void UpdatePvPState(bool state, bool overridden)
+		public void UpdatePvPState(bool state, bool overridden = false)
 		{
 			if (!state || overridden)
 			{
@@ -1901,9 +1640,9 @@ namespace WCell.RealmServer.Entities
 
 			// Flag is up. Check for running reset timer.
 			// If running, reset it.
-			if (PvPEndTime > DateTime.Now)
+			if (PvPEndTime != null && PvPEndTime.IsRunning)
 			{
-				SetPvPResetTimer();
+				SetPvPResetTimer(true);
 				return;
 			}
 
@@ -1911,15 +1650,31 @@ namespace WCell.RealmServer.Entities
 			SetPvPState(true);
 		}
 
-		private void SetPvPResetTimer()
+		private void SetPvPResetTimer(bool overridden = false)
 		{
-			PvPEndTime = DateTime.Now.AddSeconds(300);
+            if (PvPEndTime == null)
+                PvPEndTime = new TimerEntry(dt => OnPvPTimerEnded());
+            
+            if (!PvPEndTime.IsRunning || overridden)
+                PvPEndTime.Start(300000);
+
+            IsPvPTimerActive = true;
 		}
 
 		private void ClearPvPResetTimer()
 		{
-			PvPEndTime = DateTime.Now;
+            if(PvPEndTime != null)
+                PvPEndTime.Stop();
+
+            IsPvPTimerActive = false;
 		}
+
+        private void OnPvPTimerEnded()
+        {
+            PlayerFlags &= ~PlayerFlags.PVP;
+            IsPvPTimerActive = false;
+            SetPvPState(false);
+        }
 
 		private void SetPvPState(bool state)
 		{
@@ -1929,8 +1684,8 @@ namespace WCell.RealmServer.Entities
 			{
 				if (state)
 				{
-					PvPState |= PvPState.PVP;
-					ActivePet.PvPState |= PvPState.PVP;
+					PvPState = PvPState.PVP;
+					ActivePet.PvPState = PvPState.PVP;
 				}
 				else
 				{
@@ -1942,7 +1697,7 @@ namespace WCell.RealmServer.Entities
 
 			if (state)
 			{
-				PvPState |= PvPState.PVP;
+				PvPState = PvPState.PVP;
 				return;
 			}
 
@@ -1951,7 +1706,6 @@ namespace WCell.RealmServer.Entities
 		#endregion
 
 		#region Barbershops
-
 		/// <summary>
 		/// Calculates the price of a purchase in a berber shop.
 		/// </summary>
@@ -2021,6 +1775,18 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
+		#region AI
+		public override LinkedList<WaypointEntry> Waypoints
+		{
+			get { return null; }
+		}
+
+		public override NPCSpawnPoint SpawnPoint
+		{
+			get { return null; }
+		}
+		#endregion
+
 		#region ITicketHandler
 		/// <summary>
 		/// The ticket that is currently being handled by this <see cref="ITicketHandler"/>
@@ -2054,7 +1820,7 @@ namespace WCell.RealmServer.Entities
 		#endregion
 
 		#region ICharacterSet
-		public int Count
+		public int CharacterCount
 		{
 			get { return 1; }
 		}
@@ -2064,10 +1830,25 @@ namespace WCell.RealmServer.Entities
 			callback(this);
 		}
 
-		public Character[] GetCharacters()
+		public Character[] GetAllCharacters()
 		{
 			return new[] { this };
 		}
 		#endregion
+
+		public void Send(RealmPacketOut packet)
+		{
+			m_client.Send(packet);
+		}
+
+		public void Send(byte[] packet)
+		{
+			m_client.Send(packet);
+		}
+
+		public override string ToString()
+		{
+			return Name + " (ID: " + EntityId + ", Account: " + Account + ")";
+		}
 	}
 }

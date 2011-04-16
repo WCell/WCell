@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace WCell.Constants
 {
@@ -47,11 +47,11 @@ namespace WCell.Constants
 		/// </summary>
 		public const float MaxPlain = (TilesPerMapSide / 2f) * TileSize;
 
-		public const string HeightMapFileExtension = "map";
-		public const string HeightMapFileFormat = "{0:00}_{1:00}." + HeightMapFileExtension;
-		public static string GetHeightMapFile(int x, int y)
+		public const string MapFileExtension = "map";
+		public const string MapFilenameFormat = "{0:00}_{1:00}." + MapFileExtension;
+		public static string GetMapFilename(int tileX, int tileY)
 		{
-			return string.Format(HeightMapFileFormat, x, y);
+			return string.Format(MapFilenameFormat, tileY, tileX);
 		}
 
 		public const string WMOFileExtension = "wmo";
@@ -68,9 +68,9 @@ namespace WCell.Constants
 			return string.Format(M2FileFormat, x, y);
 		}
 
-		public static string GetADTFile(string wdtName, int tileX, int tileY)
+		public static string GetADTFileName(string wdtName, int tileX, int tileY)
 		{
-			return string.Format("{0}_{1:00}_{2:00}", wdtName, tileX, tileY);
+			return string.Format("{0}_{1:00}_{2:00}", wdtName, tileY, tileX);
 		}
 	}
      

@@ -37,25 +37,25 @@ namespace WCell.RealmServer.Skills
 			{
 				SkillLine skill = new SkillLine();
 
-			    int index = 0;
+				int index = 0;
 				id = (int)(skill.Id = (SkillId)GetUInt32(rawData, index++));
-			    
+
 				skill.Category = (SkillCategory)GetInt32(rawData, index++);
-                skill.SkillCostsDataId = GetInt32(rawData, index++);
+				skill.SkillCostsDataId = GetInt32(rawData, index++);
 				//skill.Name = GetString(rawData, 3);
-			    skill.Name = GetString(rawData, ref index);
-			    string m_description_langString = GetString(rawData, ref index);
-			    int spellIconId = GetInt32(rawData, index++);
-			    string m_alternateVerb_lang = GetString(rawData, ref index);
-			    int m_canLink = GetInt32(rawData, index);// TODO: this is present on professions and secondary skills
+				skill.Name = GetString(rawData, ref index);
+				string m_description_langString = GetString(rawData, ref index);
+				int spellIconId = GetInt32(rawData, index++);
+				string m_alternateVerb_lang = GetString(rawData, ref index);
+				int m_canLink = GetInt32(rawData, index);// TODO: this is present on professions and secondary skills
 
-                if (skill.Category == SkillCategory.Profession)
-                {
-                    skill.Abandonable = 1;
-                }
+				if (skill.Category == SkillCategory.Profession)
+				{
+					skill.Abandonable = 1;
+				}
 
 
-			    return skill;
+				return skill;
 			}
 		}
 		#endregion
@@ -65,11 +65,11 @@ namespace WCell.RealmServer.Skills
 		{
 			public override SkillAbility ConvertTo(byte[] rawData, ref int id)
 			{
-				SkillAbility ability = new SkillAbility();
-			    int index = 0;
-			    id = (int) (ability.AbilityId = GetUInt32(rawData, index++));
-				ability.Skill = ById[GetUInt32(rawData, index++)];
-			    SpellId spellId = (SpellId) GetUInt32(rawData, index++);
+				var ability = new SkillAbility();
+				var index = 0;
+				id = (int)(ability.AbilityId = GetUInt32(rawData, index++));	// 0
+				ability.Skill = ById[GetUInt32(rawData, index++)];				// 1
+				var spellId = (SpellId)GetUInt32(rawData, index++);
 
 				if (spellId > 0)
 				{
@@ -83,17 +83,17 @@ namespace WCell.RealmServer.Skills
 
 				ability.RaceMask = (RaceMask)GetUInt32(rawData, index++);
 				ability.ClassMask = (ClassMask)GetUInt32(rawData, index++);//4
-			    var excludeRace = (RaceMask) GetUInt32(rawData, index++);
-			    var excludeClass = (ClassMask) GetUInt32(rawData, index++);
+				var excludeRace = (RaceMask)GetUInt32(rawData, index++);
+				var excludeClass = (ClassMask)GetUInt32(rawData, index++);
 
-			    int minSkillLineRank = GetInt32(rawData, index++);
+				int minSkillLineRank = GetInt32(rawData, index++);
 
 				ability.NextSpellId = (SpellId)GetUInt32(rawData, index++);//8
 
 				ability.AcquireMethod = (SkillAcquireMethod)GetInt32(rawData, index++);//9
-                ability.GreyValue = GetUInt32(rawData, index++);//10 m_trivialSkillLineRankHigh
-                ability.YellowValue = GetUInt32(rawData, index);//11 m_trivialSkillLineRankLow
-                // 12 - 13  m_characterPoints[2], but all are 0
+				ability.GreyValue = GetUInt32(rawData, index++);//10 m_trivialSkillLineRankHigh
+				ability.YellowValue = GetUInt32(rawData, index);//11 m_trivialSkillLineRankLow
+				// 12 - 13  m_characterPoints[2], but all are 0
 
 				var diff = ability.GreyValue - ability.YellowValue;
 				var red = (int)ability.YellowValue - (int)(diff / 2);
@@ -109,27 +109,29 @@ namespace WCell.RealmServer.Skills
 
 		#region SkillTier.dbc
 
-		public class SkillTierConverter : AdvancedDBCRecordConverter<SkillTier>
+		public class SkillTierConverter : AdvancedDBCRecordConverter<SkillTiers>
 		{
-			public override SkillTier ConvertTo(byte[] rawData, ref int id)
+			public override SkillTiers ConvertTo(byte[] rawData, ref int id)
 			{
-				id = GetInt32(rawData, 0);
+				const int maxTiersPerSkill = 16;
 
-				int currentIndex = 0;
-				SkillTier tier = new SkillTier();
+				var tier = new SkillTiers();
 
-				tier.Id = GetUInt32(rawData, currentIndex++);
-                uint[] cost = new uint[16];
-                uint[] value = new uint[16];
+				var index = 0;
+				id = (int)(tier.Id = GetUInt32(rawData, index++));
 
-                for (int i = 0; i < 16; i++)
-                {
-                    cost[i] = GetUInt32(rawData, currentIndex + i);
-                    value[i] = GetUInt32(rawData, currentIndex + i + 16);
-                }
+				tier.Id = (uint)id;
+				var cost = new uint[maxTiersPerSkill];
+				var value = new uint[maxTiersPerSkill];
 
-                tier.Values = value.Where(i => i != 0).ToArray();
-                tier.Costs = cost.Take(tier.Values.Length).ToArray();
+				for (int i = 0; i < maxTiersPerSkill; i++)
+				{
+					cost[i] = GetUInt32(rawData, index + i);
+					value[i] = GetUInt32(rawData, index + i + maxTiersPerSkill);
+				}
+
+				tier.MaxValues = value.Where(i => i != 0).ToArray();
+				tier.Costs = cost.Take(tier.MaxValues.Length).ToArray();
 
 
 				//tier.SkillLine = (SkillId)GetUInt32(rawData, currentIndex++);
@@ -178,7 +180,7 @@ namespace WCell.RealmServer.Skills
 				int skillTierId = GetInt32(rawData, currentIndex++);
 				if (skillTierId > 0)
 				{
-					TierReader.Entries.TryGetValue(skillTierId, out info.Tier);
+					TierReader.Entries.TryGetValue(skillTierId, out info.Tiers);
 				}
 
 				info.SkillCostIndex = GetUInt32(rawData, currentIndex);
@@ -187,22 +189,22 @@ namespace WCell.RealmServer.Skills
 				info.SkillLine = ById.Get((uint)skillId);
 				if (info.SkillLine != null)
 				{
-					foreach (var classId in WCellDef.AllClassIds)
+					foreach (var classId in WCellConstants.AllClassIds)
 					{
 						if (classId >= ClassId.End)
 						{
 							continue;
 						}
 						var classMask = classId.ToMask();
-						foreach (var raceMask in WCellDef.RaceTypesByMask.Keys)
+						foreach (var raceMask in WCellConstants.RaceTypesByMask.Keys)
 						{
-							RaceId raceId = WCellDef.GetRaceType(raceMask);
+							RaceId raceId = WCellConstants.GetRaceType(raceMask);
 							if (info.RaceMask.HasAnyFlag(raceMask) && info.ClassMask.HasAnyFlag(classMask))
 							{
 								Dictionary<SkillId, SkillRaceClassInfo>[] byClass = RaceClassInfos[(int)raceId];
 								if (byClass == null)
 								{
-									RaceClassInfos[(int)raceId] = byClass = new Dictionary<SkillId, SkillRaceClassInfo>[WCellDef.ClassTypeLength];
+									RaceClassInfos[(int)raceId] = byClass = new Dictionary<SkillId, SkillRaceClassInfo>[WCellConstants.ClassTypeLength];
 								}
 
 								Dictionary<SkillId, SkillRaceClassInfo> infos = byClass[(int)classId];
@@ -221,9 +223,9 @@ namespace WCell.RealmServer.Skills
 								else
 								{
 									// we can do this here because SkillTiers are the same for all races/classes
-									if (info.SkillLine.Tier.Id == 0 && info.Tier.Id != 0)
+									if (info.SkillLine.Tiers.Id == 0 && info.Tiers.Id != 0)
 									{
-										info.SkillLine.Tier = info.Tier;
+										info.SkillLine.Tiers = info.Tiers;
 									}
 								}
 

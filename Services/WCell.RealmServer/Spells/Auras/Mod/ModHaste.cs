@@ -25,14 +25,16 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	/// </summary>
 	public class ModHasteHandler : AuraEffectHandler
 	{
-		protected internal override void Apply()
+		protected override void Apply()
 		{
-			m_aura.Auras.Owner.ChangeModifier(StatModifierFloat.AttackTime, -EffectValue / 100f);
+			m_aura.Auras.Owner.ChangeModifier(StatModifierFloat.MeleeAttackTime, -EffectValue / 100f);
+			m_aura.Auras.Owner.ChangeModifier(StatModifierFloat.RangedAttackTime, -EffectValue / 100f);
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
-			m_aura.Auras.Owner.ChangeModifier(StatModifierFloat.AttackTime, +EffectValue / 100f);
+			m_aura.Auras.Owner.ChangeModifier(StatModifierFloat.MeleeAttackTime, +EffectValue / 100f);
+			m_aura.Auras.Owner.ChangeModifier(StatModifierFloat.RangedAttackTime, +EffectValue / 100f);
 		}
 	}
 };

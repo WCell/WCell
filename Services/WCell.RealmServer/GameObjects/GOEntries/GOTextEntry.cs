@@ -5,14 +5,12 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 {
     public class GOTextEntry : GOEntry
     {
-		private static readonly Logger sLog = LogManager.GetCurrentClassLogger();
-
         /// <summary>
         /// The Id of a PageText object that is associated with this object.
         /// </summary>
-        public uint PageId
+        public override uint PageId
         {
-            get { return Fields[0]; }
+            get { return (uint) Fields[0]; }
         }
 
         /// <summary>
@@ -26,7 +24,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// <summary>
 		/// The PageTextMaterialId from PageTextMaterial.dbc
 		/// </summary>
-		public uint PageTextMaterialId;
+		public int PageTextMaterialId;
 
 		protected internal override void InitEntry()
 		{

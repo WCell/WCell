@@ -461,7 +461,7 @@ namespace WCell.Util.DB
 			for (var i = 0; i < m_mapping.DataHolderDefinitions.Length; i++)
 			{
 				var def = m_mapping.DataHolderDefinitions[i];
-				var bytes = Encoding.ASCII.GetBytes(def.CreateIdString());
+				var bytes = Encoding.UTF8.GetBytes(def.CreateIdString());
 				writer.Write((ushort)bytes.Length);
 				writer.Write(bytes);
 			}
@@ -496,7 +496,7 @@ namespace WCell.Util.DB
 				var curId = def.CreateIdString();
 				var idLen = reader.ReadUInt16();
 				var idBytes = reader.ReadBytes(idLen);
-				var idStr = Encoding.ASCII.GetString(idBytes);
+				var idStr = Encoding.UTF8.GetString(idBytes);
 
 				if (curId != idStr)
 				{

@@ -25,7 +25,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 		protected static Logger log = LogManager.GetCurrentClassLogger();
 		uint displayId;
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			var owner = m_aura.Auras.Owner;
 			owner.Dismount();
@@ -39,7 +39,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 					var npcEntry = NPCMgr.GetEntry((uint)m_spellEffect.MiscValue);
 					if (npcEntry == null)
 					{
-						log.Warn("Transform spell {0} has invalid creature-id {1}", m_spellEffect.Spell, m_spellEffect.MiscValue);
+						log.Warn("Transform spell {0} has invalid creature-id {1}", m_aura.Spell, m_spellEffect.MiscValue);
 					}
 					else
 					{
@@ -49,11 +49,11 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			}
 			else
 			{
-				log.Warn("Transform spell {0} has no creature-id set", m_spellEffect.Spell);
+				log.Warn("Transform spell {0} has no creature-id set", m_aura.Spell);
 			}
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			var owner = m_aura.Auras.Owner;
 			owner.DisplayId = displayId;

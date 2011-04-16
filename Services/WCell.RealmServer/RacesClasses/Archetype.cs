@@ -1,16 +1,15 @@
 using System.Collections.Generic;
 using NLog;
 using WCell.Constants;
-using WCell.Constants.Items;
 using WCell.Constants.Misc;
 using WCell.Core;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Items;
+using WCell.RealmServer.Misc;
 using WCell.RealmServer.Spells;
 using WCell.Util.Data;
 using WCell.Constants.World;
-using WCell.RealmServer.Global;
 using WCell.Util.Graphics;
 
 namespace WCell.RealmServer.RacesClasses
@@ -21,11 +20,6 @@ namespace WCell.RealmServer.RacesClasses
 	[DataHolder]
 	public class Archetype : IDataHolder
 	{
-		public static byte[] CreateActionButtons()
-		{
-			return new byte[Character.ActionButton.MaxAmount * Character.ActionButton.Size];
-		}
-
 		public ClassId ClassId;
 		public RaceId RaceId;
 
@@ -76,14 +70,8 @@ namespace WCell.RealmServer.RacesClasses
 		[NotPersistent]
 		public readonly List<ItemStack> FemaleItems = new List<ItemStack>();
 
-		// <summary>
-		// All initial skills of this Archetype
-		// </summary>
-		//[NotPersistent]
-		//public readonly List<PlayerSkillEntry> Skills = new List<PlayerSkillEntry>();
-
 		[NotPersistent]
-		public byte[] ActionButtons = CreateActionButtons();
+		public byte[] ActionButtons = ActionButton.CreateEmptyActionButtonBar();
 
 		[NotPersistent]
 		public ChatLanguage[] SpokenLanguages;
@@ -107,18 +95,18 @@ namespace WCell.RealmServer.RacesClasses
 			var races = ArchetypeMgr.Archetypes[(uint)ClassId];
 			if (races == null)
 			{
-				ArchetypeMgr.Archetypes[(uint)ClassId] = races = new Archetype[WCellDef.RaceTypeLength];
+				ArchetypeMgr.Archetypes[(uint)ClassId] = races = new Archetype[WCellConstants.RaceTypeLength];
 			}
 
-			StartLocation = new ZoneWorldLocation(StartMapId, StartPosition, StartZoneId);
-			if (StartLocation.Region == null)
+			StartLocation = new WorldZoneLocation(StartMapId, StartPosition, StartZoneId);
+			if (StartLocation.Map == null)
 			{
-				LogManager.GetCurrentClassLogger().Warn("Failed to initialize Archetype \"" + this + "\" - StartRegion does not exist: " + StartMapId);
+				LogManager.GetCurrentClassLogger().Warn("Failed to initialize Archetype \"" + this + "\" - StartMap does not exist: " + StartMapId);
 				//ArrayUtil.Set(ref RaceClassMgr.BaseRaces, (uint)Id, null);
 			}
 			else
 			{
-				if (StartLocation.ZoneInfo == null)
+				if (StartLocation.ZoneTemplate == null)
 				{
 					LogManager.GetCurrentClassLogger().Warn("Failed to initialize Archetype \"" + this +
 												 "\" - StartZone \"" + StartZoneId + "\" does not exist in StartMap \"" +

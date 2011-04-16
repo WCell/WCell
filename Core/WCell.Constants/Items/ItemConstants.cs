@@ -38,11 +38,6 @@ namespace WCell.Constants.Items
 		public const int MaxEnchantsPerEntry = 3;
 
 		/// <summary>
-		/// Max amount of Enchantments per Item
-		/// </summary>
-		public const int MaxEnchantsPerItem = 11;
-
-		/// <summary>
 		/// 
 		/// </summary>
 		public const int MaxRandPropPoints = 5;

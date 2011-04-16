@@ -3,7 +3,7 @@
  *   file		: Summon.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
- *   last changed	: $LastChangedDate: 2010-01-17 17:38:11 +0100 (sø, 17 jan 2010) $
+ *   last changed	: $LastChangedDate: 2010-01-17 17:38:11 +0100 (s? 17 jan 2010) $
  *   last author	: $LastChangedBy: dominikseifert $
  *   revision		: $Rev: 1198 $
  *
@@ -24,6 +24,7 @@ using WCell.RealmServer.Handlers;
 using WCell.RealmServer.NPCs;
 using WCell.Util.Graphics;
 using NLog;
+
 
 namespace WCell.RealmServer.Spells.Effects
 {
@@ -62,11 +63,11 @@ namespace WCell.RealmServer.Spells.Effects
 
 		public override void Apply()
 		{
-			var handler = SpellHandler.GetSummonHandler(SummonType);
+			var handler = SpellHandler.GetSummonEntry(SummonType);
 			Summon(handler);
 		}
 
-		protected virtual void Summon(SpellSummonHandler handler)
+		protected virtual void Summon(SpellSummonEntry summonEntry)
 		{
 			var caster = m_cast.CasterUnit;
 
@@ -79,10 +80,28 @@ namespace WCell.RealmServer.Spells.Effects
 			{
 				targetLoc = caster.Position;
 			}
+			
+			var effectValue = CalcEffectValue();
+			int amount;
+			if (summonEntry.DetermineAmountBySpellEffect)
+			{
+				amount = effectValue > 0 ? effectValue : 1;
+			}
+			else
+			{
+				amount = 1;
+			}
 
-			var pet = handler.Summon(m_cast, ref targetLoc, entry);
-
-			pet.CreationSpellId = Effect.Spell.SpellId;
+			for (var i = 0; i < amount; i++)
+			{
+				var minion = summonEntry.Handler.Summon(m_cast, ref targetLoc, entry);
+				minion.CreationSpellId = Effect.Spell.SpellId;
+				if (!summonEntry.DetermineAmountBySpellEffect && effectValue > 1)
+				{
+					// effectValue represents the health
+					minion.Health = minion.BaseHealth = effectValue;
+				}
+			}
 		}
 
 		public override ObjectTypes CasterType

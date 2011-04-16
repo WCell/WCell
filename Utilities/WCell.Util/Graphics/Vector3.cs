@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.InteropServices;
 
 namespace WCell.Util.Graphics
@@ -9,12 +9,13 @@ namespace WCell.Util.Graphics
 	[StructLayout(LayoutKind.Explicit, Size = 12)]
 	public struct Vector3 : IEquatable<Vector3>
 	{
-		public static readonly Vector3 Zero = new Vector3(0, 0, 0);
+		public static readonly Vector3 Zero = new Vector3(0f, 0f, 0f);
+        public static readonly Vector3 One = new Vector3(1.0f, 1.0f, 1.0f);
 		public static readonly Vector3 Up = new Vector3(0f, 0f, 1f);
 		public static readonly Vector3 Down = new Vector3(0f, 0f, -1f);
 		public static readonly Vector3 Left = new Vector3(-1f, 0f, 0f);
 		public static readonly Vector3 Right = new Vector3(1f, 0f, 0f);
-		public static readonly Vector3 Backwards = new Vector3(0f, 0f, 1f);
+		public static readonly Vector3 Backward = new Vector3(0f, 0f, 1f);
 		public static readonly Vector3 Forward = new Vector3(0f, 0f, -1f);
 
 		/// <summary>
@@ -110,12 +111,21 @@ namespace WCell.Util.Graphics
 			return (float)Math.Sqrt(dist);
 		}
 
+        public static float Distance(Vector3 value1, Vector3 value2)
+        {
+            float num3 = value1.X - value2.X;
+            float num2 = value1.Y - value2.Y;
+            float num = value1.Z - value2.Z;
+            float num4 = ((num3 * num3) + (num2 * num2)) + (num * num);
+            return (float)Math.Sqrt((double)num4);
+        }
+
 		/// <summary>
 		/// Calculates the distance squared from this vector to another.
 		/// </summary>
 		/// <param name="point">the second <see cref="Vector3" /></param>
 		/// <returns>the distance squared between the vectors</returns>
-		public float GetDistanceSquared(Vector3 point)
+		public float DistanceSquared(Vector3 point)
 		{
 			float x = point.X - X;
 			float y = point.Y - Y;
@@ -129,7 +139,7 @@ namespace WCell.Util.Graphics
 		/// </summary>
 		/// <param name="point">the second <see cref="Vector3" /></param>
 		/// <returns>the distance squared between the vectors</returns>
-		public float GetDistanceSquared(ref Vector3 point)
+		public float DistanceSquared(ref Vector3 point)
 		{
 			float x = point.X - X;
 			float y = point.Y - Y;
@@ -137,6 +147,33 @@ namespace WCell.Util.Graphics
 
 			return ((x * x) + (y * y)) + (z * z);
 		}
+
+        public static float DistanceSquared(Vector3 value1, Vector3 value2)
+        {
+            float num3 = value1.X - value2.X;
+            float num2 = value1.Y - value2.Y;
+            float num = value1.Z - value2.Z;
+            return (((num3 * num3) + (num2 * num2)) + (num * num));
+        }
+
+        public static void DistanceSquared(ref Vector3 value1, ref Vector3 value2, out float result)
+        {
+            float num3 = value1.X - value2.X;
+            float num2 = value1.Y - value2.Y;
+            float num = value1.Z - value2.Z;
+            result = ((num3 * num3) + (num2 * num2)) + (num * num);
+        }
+
+        public float LengthSquared()
+        {
+            return (X*X + Y*Y + Z*Z);
+        }
+
+        public float Length()
+        {
+            var sqrd = (X*X + Y*Y + Z*Z);
+            return (float)Math.Sqrt(sqrd);
+        }
 		#endregion
 
 		#region Angles
@@ -338,6 +375,16 @@ namespace WCell.Util.Graphics
 			return vector;
 		}
 
+        public static Vector3 operator *(float scaleFactor, Vector3 a)
+        {
+            Vector3 vector;
+            vector.X = a.X * scaleFactor;
+            vector.Y = a.Y * scaleFactor;
+            vector.Z = a.Z * scaleFactor;
+
+            return vector;
+        }
+
 		public static Vector3 operator /(Vector3 a, Vector3 b)
 		{
 			Vector3 vector;
@@ -372,7 +419,7 @@ namespace WCell.Util.Graphics
         {
             Vector3 vector;
             float num2 = ((value.X * value.X) + (value.Y * value.Y)) + (value.Z * value.Z);
-            float num = 1f / ((float)Math.Sqrt((double)num2));
+            float num = 1f / ((float)Math.Sqrt(num2));
             vector.X = value.X * num;
             vector.Y = value.Y * num;
             vector.Z = value.Z * num;
@@ -383,6 +430,20 @@ namespace WCell.Util.Graphics
         {
             return (((vector1.X * vector2.X) + (vector1.Y * vector2.Y)) + (vector1.Z * vector2.Z));
 		}
+
+        public static void Add(ref Vector3 value1, ref Vector3 value2, out Vector3 result)
+        {
+            result.X = value1.X + value2.X;
+            result.Y = value1.Y + value2.Y;
+            result.Z = value1.Z + value2.Z;
+        }
+
+        public static void Subtract(ref Vector3 value1, ref Vector3 value2, out Vector3 result)
+        {
+            result.X = value1.X - value2.X;
+            result.Y = value1.Y - value2.Y;
+            result.Z = value1.Z - value2.Z;
+        }
 		#endregion
 
 		public static bool operator ==(Vector3 a, Vector3 b)
@@ -392,7 +453,7 @@ namespace WCell.Util.Graphics
 
 		public static bool operator !=(Vector3 a, Vector3 b)
 		{
-			if (!(a.X != b.X) && !(a.Y != b.Y))
+			if (a.X == b.X && a.Y == b.Y)
 			{
 				return (a.Z != b.Z);
 			}
@@ -411,6 +472,16 @@ namespace WCell.Util.Graphics
             vector.Y = num2;
             vector.Z = num;
             return vector;
+        }
+
+        public static void TransformNormal(ref Vector3 normal, ref Matrix matrix, out Vector3 newVector)
+        {
+            float num3 = ((normal.X * matrix.M11) + (normal.Y * matrix.M21)) + (normal.Z * matrix.M31);
+            float num2 = ((normal.X * matrix.M12) + (normal.Y * matrix.M22)) + (normal.Z * matrix.M32);
+            float num = ((normal.X * matrix.M13) + (normal.Y * matrix.M23)) + (normal.Z * matrix.M33);
+            newVector.X = num3;
+            newVector.Y = num2;
+            newVector.Z = num;
         }
 
         public static Vector3 Transform(Vector3 position, Matrix matrix)
@@ -448,6 +519,18 @@ namespace WCell.Util.Graphics
             vector.Z = num13;
             return vector;
 		}
+
+        public static void Transform(ref Vector3 position, ref Matrix matrix, out Vector3 result)
+        {
+            float num3 = (((position.X * matrix.M11) + (position.Y * matrix.M21)) + (position.Z * matrix.M31)) + matrix.M41;
+            float num2 = (((position.X * matrix.M12) + (position.Y * matrix.M22)) + (position.Z * matrix.M32)) + matrix.M42;
+            float num = (((position.X * matrix.M13) + (position.Y * matrix.M23)) + (position.Z * matrix.M33)) + matrix.M43;
+            result.X = num3;
+            result.Y = num2;
+            result.Z = num;
+        }
+
+
 		#endregion
 
 		#region Min/Max
@@ -472,15 +555,45 @@ namespace WCell.Util.Graphics
 			return new Vector3(x, y, z);
 		}
 
+        public static void Clamp(ref Vector3 value1, ref Vector3 min, ref Vector3 max, out Vector3 result)
+        {
+            float x = value1.X;
+            x = (x > max.X) ? max.X : x;
+            x = (x < min.X) ? min.X : x;
+            float y = value1.Y;
+            y = (y > max.Y) ? max.Y : y;
+            y = (y < min.Y) ? min.Y : y;
+            float z = value1.Z;
+            z = (z > max.Z) ? max.Z : z;
+            z = (z < min.Z) ? min.Z : z;
+            result.X = x;
+            result.Y = y;
+            result.Z = z;
+        }
+
 		public static Vector3 Min(Vector3 a, Vector3 b)
 		{
 			return new Vector3(Math.Min(a.X, b.X), Math.Min(a.Y, b.Y), Math.Min(a.Z, b.Z));
 		}
 
+        public static void Min(ref Vector3 value1, ref Vector3 value2, out Vector3 result)
+        {
+            result.X = (value1.X < value2.X) ? value1.X : value2.X;
+            result.Y = (value1.Y < value2.Y) ? value1.Y : value2.Y;
+            result.Z = (value1.Z < value2.Z) ? value1.Z : value2.Z;
+        }
+
 		public static Vector3 Max(Vector3 a, Vector3 b)
 		{
 			return new Vector3(Math.Max(a.X, b.X), Math.Max(a.Y, b.Y), Math.Max(a.Z, b.Z));
 		}
+
+        public static void Max(ref Vector3 value1, ref Vector3 value2, out Vector3 result)
+        {
+            result.X = (value1.X > value2.X) ? value1.X : value2.X;
+            result.Y = (value1.Y > value2.Y) ? value1.Y : value2.Y;
+            result.Z = (value1.Z > value2.Z) ? value1.Z : value2.Z;
+        }
 		#endregion
 
 		#region Overrides

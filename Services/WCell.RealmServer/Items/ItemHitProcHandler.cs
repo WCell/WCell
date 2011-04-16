@@ -30,7 +30,7 @@ namespace WCell.RealmServer.Items
 		/// </summary>
 		public ProcTriggerFlags ProcTriggerFlags
 		{
-			get { return ProcTriggerFlags.RangedAttackSelf | ProcTriggerFlags.MeleeAttackSelf; }
+			get { return ProcTriggerFlags.RangedHitOther | ProcTriggerFlags.MeleeHitOther; }
 		}
 
 		/// <summary>
@@ -78,7 +78,7 @@ namespace WCell.RealmServer.Items
 
 		public void TriggerProc(Unit triggerer, IUnitAction action)
 		{
-			m_Item.Owner.SpellCast.ValidateAndTriggerNew(m_Spell, triggerer);
+			m_Item.Owner.SpellCast.ValidateAndTriggerNew(m_Spell, Owner, triggerer, action);
 		}
 
 		public void Dispose()

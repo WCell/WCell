@@ -28,7 +28,7 @@ namespace WCell.RealmServer.Spells.Effects
 
 		protected override void Apply(WorldObject target)
 		{
-			((Unit) target).Health = ((int)((Unit) target).MaxHealth * CalcEffectValue() / 100);
+			((Unit) target).Health = ((Unit) target).MaxHealth * CalcEffectValue() / 100;
 		}
 
 		public override ObjectTypes TargetType

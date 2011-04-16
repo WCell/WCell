@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.InteropServices;
 
 namespace WCell.Util.Graphics
@@ -52,10 +52,25 @@ namespace WCell.Util.Graphics
 		/// <returns>true if the point is contained; false otherwise</returns>
 		public bool Contains(ref Vector3 point)
 		{
-			return Center.GetDistanceSquared(ref point) <= (Radius * Radius);
+			return Center.DistanceSquared(ref point) <= (Radius * Radius);
 		}
 
-		/// <summary>
+        public ContainmentType Contains(Vector3 point)
+        {
+            return (Vector3.DistanceSquared(point, Center) >= (Radius*Radius)) ? ContainmentType.Disjoint : ContainmentType.Contains;
+        }
+
+
+        public bool Intersects(BoundingBox box)
+        {
+            float num;
+            Vector3 vector;
+            Vector3.Clamp(ref this.Center, ref box.Min, ref box.Max, out vector);
+            Vector3.DistanceSquared(ref this.Center, ref vector, out num);
+            return (num <= (this.Radius * this.Radius));
+        }
+
+	    /// <summary>
 		/// Checks equality of two spheres.
 		/// </summary>
 		/// <param name="other">the other sphere to compare with</param>

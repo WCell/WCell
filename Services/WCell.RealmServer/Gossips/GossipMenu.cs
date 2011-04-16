@@ -1,11 +1,36 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using NLog;
 using WCell.Constants;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Lang;
 
 namespace WCell.RealmServer.Gossips
 {
+	public abstract class DynamicTextGossipMenu : GossipMenu
+	{
+		private static readonly DynamicGossipEntry SharedEntry = new DynamicGossipEntry(88993333, new DynamicGossipText(OnTextQuery));
+
+		private static string OnTextQuery(GossipConversation convo)
+		{
+			return ((DynamicTextGossipMenu)convo.CurrentMenu).GetText(convo);
+		}
+
+		protected DynamicTextGossipMenu()
+			: base(SharedEntry)
+		{
+		}
+
+		protected DynamicTextGossipMenu(params GossipMenuItemBase[] items)
+			: base(SharedEntry, items)
+		{
+		}
+
+		public abstract string GetText(GossipConversation convo);
+	}
+
 	/// <summary>
 	/// Represents single menu in conversation with it's items
 	/// </summary>
@@ -13,7 +38,7 @@ namespace WCell.RealmServer.Gossips
 	{
 		public static readonly GossipMenuItem[] EmptyGossipItems = new GossipMenuItem[0];
 
-		private uint m_bodyTextID;
+		private IGossipEntry m_textEntry;
 		private List<GossipMenuItemBase> m_gossipItems;
 		private GossipMenu m_parent;
 
@@ -22,15 +47,86 @@ namespace WCell.RealmServer.Gossips
 		/// </summary>
 		public GossipMenu()
 		{
+			m_textEntry = GossipMgr.DefaultGossipEntry;
 		}
 
 		/// <summary>
 		/// Constructor initializing menu with body text ID
 		/// </summary>
-		/// <param name="bodyTextID"><see cref="BodyTextId"/></param>
+		/// <param name="bodyTextID">GossipEntry Id</param>
 		public GossipMenu(uint bodyTextID)
 		{
-			m_bodyTextID = bodyTextID;
+			m_textEntry = GossipMgr.GetEntry(bodyTextID);
+			if (m_textEntry == null)
+			{
+				m_textEntry = GossipMgr.DefaultGossipEntry;
+				LogManager.GetCurrentClassLogger().Warn("Tried to create GossipMenu with invalid GossipEntry id: " + bodyTextID);
+			}
+		}
+
+		public GossipMenu(IGossipEntry textEntry)
+		{
+			m_textEntry = textEntry;
+			if (m_textEntry == null)
+			{
+				throw new ArgumentNullException("textEntry");
+			}
+		}
+
+		public GossipMenu(uint bodyTextId, List<GossipMenuItemBase> items)
+			: this(bodyTextId)
+		{
+			m_gossipItems = items;
+		}
+
+		public GossipMenu(uint bodyTextId, params GossipMenuItem[] items)
+			: this(bodyTextId)
+		{
+			m_gossipItems = new List<GossipMenuItemBase>(items.Length);
+			foreach (var item in items)
+			{
+				CheckItem(item);
+				m_gossipItems.Add(item);
+			}
+		}
+
+		public GossipMenu(uint bodyTextId, params GossipMenuItemBase[] items)
+			: this(bodyTextId)
+		{
+			m_gossipItems = new List<GossipMenuItemBase>(items.Length);
+			foreach (var item in items)
+			{
+				CheckItem(item);
+				m_gossipItems.Add(item);
+			}
+		}
+
+		public GossipMenu(IGossipEntry text, List<GossipMenuItemBase> items)
+			: this(text)
+		{
+			m_gossipItems = items;
+		}
+
+		public GossipMenu(IGossipEntry text, params GossipMenuItemBase[] items)
+			: this(text)
+		{
+			m_gossipItems = new List<GossipMenuItemBase>(items.Length);
+			foreach (var item in items)
+			{
+				CheckItem(item);
+				m_gossipItems.Add(item);
+			}
+		}
+
+		public GossipMenu(params GossipMenuItemBase[] items)
+			: this()
+		{
+			m_gossipItems = new List<GossipMenuItemBase>(items.Length);
+			foreach (var item in items)
+			{
+				CheckItem(item);
+				m_gossipItems.Add(item);
+			}
 		}
 
 		public GossipMenu ParentMenu
@@ -52,13 +148,13 @@ namespace WCell.RealmServer.Gossips
 		/// <summary>
 		/// ID of text in the body of this menu
 		/// </summary>
-		public uint BodyTextId
+		public IGossipEntry GossipEntry
 		{
 			get
 			{
-				return m_bodyTextID;
+				return m_textEntry;
 			}
-			set { m_bodyTextID = value; }
+			set { m_textEntry = value; }
 		}
 
 		/// <summary>
@@ -68,33 +164,6 @@ namespace WCell.RealmServer.Gossips
 		{
 			get;
 			set;
-		}
-
-		public GossipMenu(uint bodyTextId, List<GossipMenuItemBase> items)
-			: this(bodyTextId)
-		{
-			m_gossipItems = items;
-		}
-
-		public GossipMenu(uint bodyTextId, params GossipMenuItem[] items)
-			: this(bodyTextId)
-		{
-			m_gossipItems = new List<GossipMenuItemBase>(items.Length);
-			foreach (var item in items)
-			{
-				CheckItem(item);
-				m_gossipItems.Add(item);
-			}
-		}
-
-		public GossipMenu(params GossipMenuItemBase[] items)
-		{
-			m_gossipItems = new List<GossipMenuItemBase>(items.Length);
-			foreach (var item in items)
-			{
-				CheckItem(item);
-				m_gossipItems.Add(item);
-			}
 		}
 
 		public void AddRange(params GossipMenuItemBase[] items)
@@ -115,44 +184,43 @@ namespace WCell.RealmServer.Gossips
 			}
 		}
 
-		public int GetValidItemsCount(Character speaker)
-		{
-			var gossipItems = GossipItems;
-			var count = gossipItems.Count;
-
-			for (int i = 0; i < gossipItems.Count; i++)
-			{
-				bool shouldShow = true;
-
-				if (gossipItems[i].Action != null && !gossipItems[i].Action.CanUse(speaker))
-					shouldShow = false;
-
-				if (!shouldShow)
-				{
-					gossipItems[i] = null;
-					count--;
-				}
-			}
-			return count;
-		}
-
 		public void AddItem(GossipMenuItemBase item)
 		{
 			if (m_gossipItems == null)
-				m_gossipItems = new List<GossipMenuItemBase>(1);
-
-			if (item != null)
 			{
-				CheckItem(item);
+				m_gossipItems = new List<GossipMenuItemBase>(1);
+			}
+
+			CheckItem(item);
+			m_gossipItems.Add(item);
+		}
+
+		/// <summary>
+		/// Replaces the item at the given index with the given item.
+		/// If index == count, appends item to end.
+		/// </summary>
+		public void SetItem(int index, GossipMenuItemBase item)
+		{
+			if (m_gossipItems == null)
+			{
+				m_gossipItems = new List<GossipMenuItemBase>(1);
+			}
+
+			CheckItem(item);
+			if (index == m_gossipItems.Count)
+			{
+				// append to end
 				m_gossipItems.Add(item);
+			}
+			else
+			{
+				// replace
+				m_gossipItems[index] = item;
 			}
 		}
 
 		public void AddItem(GossipMenuIcon type)
 		{
-			if (m_gossipItems == null)
-				m_gossipItems = new List<GossipMenuItemBase>(1);
-
 			AddItem(new GossipMenuItem(type, type.ToString()));
 		}
 
@@ -168,23 +236,19 @@ namespace WCell.RealmServer.Gossips
 			}
 		}
 
-		public GossipMenu CreateSubMenu()
+		public void AddQuitMenuItem(RealmLangKey msg = RealmLangKey.Done)
 		{
-			return new GossipMenu(m_bodyTextID + 1000);
+			AddItem(new QuitGossipMenuItem(msg, new object[0]));
 		}
 
-		public void AddQuitMenuItem(string text)
+		public void AddQuitMenuItem(RealmLangKey msg, params object[] args)
 		{
-			AddItem(new QuitGossipMenuItem(text));
+			AddItem(new QuitGossipMenuItem(msg, args));
 		}
 
-		public void AddQuitMenuItem(string text, GossipActionHandler callback)
+		public void AddQuitMenuItem(GossipActionHandler callback, RealmLangKey msg = RealmLangKey.Done, params object[] args)
 		{
-			var action = new DefaultGossipAction(convo => {
-				callback(convo);
-				convo.Character.GossipConversation.StayOpen = false;
-			});
-			AddItem(new GossipMenuItem(text, action));
+			AddItem(new QuitGossipMenuItem(callback, msg, args));
 		}
 
 		public void AddGoBackItem()
@@ -194,7 +258,8 @@ namespace WCell.RealmServer.Gossips
 
 		public void AddGoBackItem(string text)
 		{
-			var action = new NavigationGossipAction(convo => {
+			var action = new NavigatingGossipAction(convo =>
+			{
 				convo.Character.GossipConversation.GoBack();
 			});
 			AddItem(new GossipMenuItem(text, action));
@@ -202,11 +267,29 @@ namespace WCell.RealmServer.Gossips
 
 		public void AddGoBackItem(string text, GossipActionHandler callback)
 		{
-			var action = new NavigationGossipAction(convo => {
+			var action = new NavigatingGossipAction(convo =>
+			{
 				callback(convo);
 				convo.Character.GossipConversation.GoBack();
 			});
 			AddItem(new GossipMenuItem(text, action));
+		}
+
+		public bool RemoveItem(GossipMenuItemBase item)
+		{
+			return m_gossipItems.Remove(item);
+		}
+
+		public void ClearAllItems()
+		{
+			m_gossipItems.Clear();
+		}
+
+		/// <summary>
+		/// Called before menu is sent to Character
+		/// </summary>
+		protected internal virtual void OnDisplay(GossipConversation convo)
+		{
 		}
 
 		internal void NotifyClose(GossipConversation convo)

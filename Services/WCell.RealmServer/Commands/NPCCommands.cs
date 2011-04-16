@@ -14,13 +14,16 @@
  *
  *************************************************************************/
 
+using System.Linq;
 using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.Constants.World;
 using WCell.RealmServer.AI.Brains;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Instances;
 using WCell.RealmServer.NPCs;
+using WCell.RealmServer.NPCs.Spawns;
 using WCell.Util.Commands;
 using WCell.Util;
 using WCell.RealmServer.AI;
@@ -43,6 +46,93 @@ namespace WCell.RealmServer.Commands
 			get { return ObjectTypeCustom.None; }
 		}
 
+		#region GetNPCSpawnEntry
+		public static NPCSpawnEntry GetNPCSpawnEntry(CmdTrigger<RealmServerCmdArgs> trigger, bool closest, out Map map)
+		{
+			var target = trigger.Args.Target;
+			NPCSpawnEntry entry;
+			map = null;
+			if (closest)
+			{
+				if (target == null)
+				{
+					trigger.Reply("Cannot use the -c switch without active Target.");
+					return null;
+				}
+
+				entry = NPCMgr.GetClosestSpawnEntry(target);
+				if (entry == null)
+				{
+					trigger.Reply("No Spawnpoint found.");
+					return null;
+				}
+			}
+			else
+			{
+				var word = trigger.Text.NextWord();
+				NPCId npcId;
+				if (!EnumUtil.TryParse(word, out npcId))
+				{
+					uint spawnId;
+					uint.TryParse(word, out spawnId);
+					entry = NPCMgr.GetSpawnEntry(spawnId);
+					if (entry == null)
+					{
+						trigger.Reply("Invalid SpawnId: " + spawnId);
+						return null;
+					}
+				}
+				else
+				{
+					var npcEntry = NPCMgr.GetEntry(npcId);
+					if (npcEntry == null)
+					{
+						trigger.Reply("Entry not found: " + npcId);
+						return null;
+					}
+					if (npcEntry.SpawnEntries.Count == 0)
+					{
+						trigger.Reply("Entry has no SpawnEntries: " + npcEntry);
+						return null;
+					}
+
+					entry = target != null ? npcEntry.SpawnEntries.GetClosestSpawnEntry(target) : npcEntry.SpawnEntries.First();
+				}
+			}
+
+			// found entry - now determine Map
+			map = entry.Map;
+			if (map == null)
+			{
+				if (target != null && entry.MapId == target.MapId)
+				{
+					// is in same map
+					map = target.Map;
+				}
+				else
+				{
+					// must create Map
+					if (World.IsInstance(entry.MapId))
+					{
+						// create instance
+						map = InstanceMgr.CreateInstance(target as Character, entry.MapId);
+						if (map == null)
+						{
+							trigger.Reply("Failed to create instance: " + entry.MapId);
+							return null;
+						}
+					}
+					else
+					{
+						trigger.Reply("Cannot spawn NPC for map: " + entry.MapId);
+						return null;
+					}
+				}
+			}
+			return entry;
+		}
+		#endregion
+
 		#region Add
 		public class AddNPCCommand : SubCommand
 		{
@@ -58,6 +148,12 @@ namespace WCell.RealmServer.Commands
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
 				var mod = trigger.Text.NextModifiers();
+				string destName = null;
+				if (mod.Contains("d"))
+				{
+					destName = trigger.Text.NextWord();
+				}
+
 				var entryId = trigger.Text.NextEnum(NPCId.End);
 				if (entryId == NPCId.End)
 				{
@@ -83,9 +179,8 @@ namespace WCell.RealmServer.Commands
 					{
 						NPC newNpc;
 						IWorldLocation dest;
-						if (mod.Contains("d"))
+						if (!string.IsNullOrEmpty(destName))
 						{
-							var destName = trigger.Text.NextWord();
 							dest = WorldLocationMgr.Get(destName);
 							if (dest == null)
 							{
@@ -105,17 +200,13 @@ namespace WCell.RealmServer.Commands
 
 						for (var i = 0; i < amount; i++)
 						{
-							newNpc = entry.Create();
+							newNpc = entry.SpawnAt(dest);
 							name = newNpc.Name;
-							newNpc.Zone = trigger.Args.Target.Zone;
 							if (mod.Contains("i"))
 							{
 								newNpc.Brain.DefaultState = BrainState.Idle;
 							}
 							newNpc.Brain.EnterDefaultState();
-
-							//trigger.Args.Target.PlaceInFront(newNpc);
-							newNpc.TeleportTo(dest);
 						}
 						// tricky way to make ourselves not welcome:
 						//trigger.Args.Owner.Reputations.SetValue(FactionRepListId.BootyBay, -30000);
@@ -128,66 +219,38 @@ namespace WCell.RealmServer.Commands
 		#endregion
 
 		#region Spawn
-		public class SpawnNPCCommand : SubCommand
+		public class NPCSpawnCommand : SubCommand
 		{
 			protected override void Initialize()
 			{
 				Init("AddSpawn", "Spawn");
-				EnglishParamInfo = "[-c]|[<spawnid> [<amount>]]";
+				EnglishParamInfo = "[-c]|[<NPCId or spawnid> [<amount>]]";
 				EnglishDescription = "Creates the NPC-spawnpoint with the given id. -c switch simply creates the spawnpoint that is closest to you";
 			}
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
 				var mod = trigger.Text.NextModifiers();
+				Map map;
+				var spawnEntry = GetNPCSpawnEntry(trigger, mod == "c", out map);
+				if (spawnEntry == null) return;
 
-				if (mod == "c")
+				var amount = trigger.Text.NextUInt(1);
+
+				if (amount < 1)
 				{
-					if (trigger.Args.Target == null)
-					{
-						trigger.Reply("Cannot use the -c switch without active Target.");
-						return;
-					}
-					var spawnPoint = NPCMgr.SpawnClosestSpawnEntry(trigger.Args.Target);
-					if (spawnPoint != null)
-					{
-						trigger.Args.Target.TeleportTo(spawnPoint);
-					}
-					else
-					{
-						trigger.Reply("No Spawnpoint found.");
-					}
+					trigger.Reply("Invalid amount: " + amount);
+					return;
 				}
-				else
+
+				// create & teleport
+				map.AddNPCSpawnPoolLater(spawnEntry.PoolTemplate);
+				if (trigger.Args.Target != null)
 				{
-					var deputyWilemId = 168224u;
-					var spawnId = trigger.Text.NextUInt(deputyWilemId);
-					var amount = trigger.Text.NextUInt(1);
-
-					if (amount < 1)
-					{
-						trigger.Reply("Invalid amount: " + amount);
-					}
-					else
-					{
-						var spawnEntry = NPCMgr.GetSpawnEntry(spawnId);
-						if (spawnEntry == null)
-						{
-							trigger.Reply("Invalid SpawnId: " + spawnId);
-						}
-						else
-						{
-							trigger.Args.Target.Region.AddSpawn(spawnEntry);
-
-							if (trigger.Args.Target != null)
-							{
-								trigger.Args.Target.TeleportTo(spawnEntry);
-							}
-
-							trigger.Reply("Created {0}.", spawnEntry);
-						}
-					}
+					trigger.Args.Target.TeleportTo(map, spawnEntry.Position);
 				}
+
+				trigger.Reply("Created spawn: {0}", spawnEntry);
 			}
 		}
 		#endregion
@@ -198,96 +261,27 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Goto");
-				EnglishParamInfo = "(-s spawnindex)|(<id>[ <spawn index>])";
+				EnglishParamInfo = "[-c]|[<NPCId or spawnid>";
 				EnglishDescription = "Teleports the target to the first (or given spawn-index of) NPC of the given type.";
 			}
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
-				var target = trigger.Args.Target;
-				if (target == null)
-				{
-					trigger.Reply("No active Target.");
-					return;
-				}
-
 				var mod = trigger.Text.NextModifiers();
+				Map map;
+				var spawnEntry = GetNPCSpawnEntry(trigger, mod == "c", out map);
+				if (spawnEntry == null) return;
 
-				if (mod.Contains("s"))
+				// teleport
+				if (trigger.Args.Target != null)
 				{
-					var spawnId = trigger.Text.NextUInt();
-					var spawn = NPCMgr.GetSpawnEntry(spawnId);
-					if (spawn == null)
-					{
-						trigger.Reply("Invalid spawn Id: " + spawnId);
-						return;
-					}
-					if (target.TeleportTo(spawn))
-					{
-						trigger.Reply("Going to: " + spawn);
-					}
-					else
-					{
-						trigger.Reply("Spawn is located in {0} ({1}) and not accessible in this Context.",
-									  spawn.RegionId, spawn.Position);
-					}
+					trigger.Args.Target.TeleportTo(map, spawnEntry.Position);
 				}
-				else
-				{
-					var entryId = trigger.Text.NextEnum(NPCId.End);
-					if (entryId == NPCId.End)
-					{
-						trigger.Reply("Invalid NPC.");
-						return;
-					}
 
-					var entry = NPCMgr.GetEntry(entryId);
-					if (entry != null)
-					{
-						var spawns = entry.SpawnEntries;
-
-						if (spawns.Count == 0)
-						{
-							trigger.Reply("Cannot go to NPC because it does not have any SpawnEntries: {0}", entry);
-							return;
-						}
-						trigger.Reply("Found {0} Spawns: " + spawns.ToString(", "), spawns.Count);
-
-						int spawnIndex;
-						if (trigger.Text.HasNext)
-						{
-							spawnIndex = trigger.Text.NextInt(-1);
-							if (spawnIndex < 0 || spawnIndex >= spawns.Count)
-							{
-								trigger.Reply("Invalid index for spawns (Required: 0 - {0})", spawns.Count - 1);
-								return;
-							}
-						}
-						else
-						{
-							spawnIndex = 0;
-						}
-
-						var spawn = spawns[spawnIndex];
-
-						if (target.TeleportTo(spawn))
-						{
-							if (spawns.Count > 1)
-							{
-								trigger.Reply("Going to: " + spawn);
-							}
-						}
-						else
-						{
-							trigger.Reply("Spawn is located in {0} ({1}) and not accessible in this Context.",
-										  spawn.RegionId, spawn.Position);
-						}
-					}
-				}
+				trigger.Reply("Created spawn: {0}", spawnEntry);
 			}
 		}
 		#endregion
-
 
 		#region Select
 		public class SelectNPCCommand : SubCommand
@@ -295,7 +289,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Select", "Sel");
-				EnglishParamInfo = "[-[n][d] [<name>][[<destination>]]]";
+				EnglishParamInfo = "[-[n][d] [<name>][<destination>]]";
 				EnglishDescription = "Selects the NPC whose name matches the given name and is closest to the given location. " +
 					"All arguments are optional. If no arguments are supplied, the first available NPC will be selected. " +
 					"If the destination is not given, it will search, starting at the current Target or oneself.";
@@ -305,7 +299,6 @@ namespace WCell.RealmServer.Commands
 			{
 				var mod = trigger.Text.NextModifiers();
 				var name = "";
-				IWorldLocation dest;
 				uint phase;
 
 				if (mod.Contains("n"))
@@ -313,45 +306,66 @@ namespace WCell.RealmServer.Commands
 					name = trigger.Text.NextWord();
 				}
 
+				Map rgn;
 				if (mod.Contains("d"))
 				{
 					var destName = trigger.Text.NextWord();
-					dest = WorldLocationMgr.Get(destName);
+					var dest = WorldLocationMgr.Get(destName);
 					if (dest == null)
 					{
-						trigger.Reply("Invalid Destination: " + destName);
-						return;
+						MapId mapId;
+						if (EnumUtil.TryParse(destName, out mapId))
+						{
+							rgn = World.GetNonInstancedMap(mapId);
+						}
+						else
+						{
+							rgn = null;
+						}
+
+						if (rgn == null)
+						{
+							trigger.Reply("Invalid Destination: " + destName);
+							return;
+						}
+					}
+					else
+					{
+						rgn = dest.Map;
 					}
 					phase = uint.MaxValue;
 				}
 				else
 				{
-					dest = trigger.Args.Target;
-					phase = trigger.Args.Target.Phase;
+					var target = trigger.Args.Target;
+					if (target == null)
+					{
+						trigger.Reply("Must have target or specify destination (using the -d switch).");
+						return;
+					}
+					rgn = target.Map;
+					phase = target.Phase;
 				}
 
-				var rgn = dest.Region;
 				if (rgn == null)
 				{
 					trigger.Reply("Instance-destinations are currently not supported.");
 					return;
 				}
 
-				var pos = dest.Position;
 				NPC npc = null;
 
 				// add message to iterate and then reply
-				rgn.AddMessage(() =>
+				rgn.ExecuteInContext(() =>
 				{
-					rgn.IterateObjects(ref pos, 10000000, obj =>
+					foreach (var obj in rgn)
 					{
 						if (obj is NPC && (name == "" || obj.Name.ContainsIgnoreCase(name)))
 						{
 							npc = (NPC)obj;
-							return false;
+							break;
 						}
-						return true;
-					}, phase);
+					}
 
 					if (npc == null)
 					{
@@ -360,14 +374,16 @@ namespace WCell.RealmServer.Commands
 					else
 					{
 						var chr = trigger.Args.Character;
-						if (chr != null && chr.IsInWorld)
+						if (trigger.Args.HasCharacter)
 						{
 							chr.Target = npc;
 						}
 						else
 						{
 							trigger.Args.Target = npc;
+							trigger.Args.Context = npc;
 						}
+						trigger.Reply("Selected: {0}", npc);
 					}
 				}
 				);
@@ -383,17 +399,17 @@ namespace WCell.RealmServer.Commands
 		{
 			Init("Respawn");
 			EnglishParamInfo = "[<radius>]";
-			EnglishDescription = "Respawns all NPCs in the area. Radius by default = 50";
+			EnglishDescription = "Respawns all NPCs in the area. Default Radius = 50";
 		}
 
 		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 		{
 			var radius = trigger.Text.NextFloat(50);
 			var target = trigger.Args.Target;
-			var region = target.Region;
-			var objCount = region.ObjectCount;
-			region.RespawnInRadius(target.Position, radius);
-			trigger.Reply("Done. Spawned {0} objects.", region.ObjectCount - objCount);
+			var map = target.Map;
+			var objCount = map.ObjectCount;
+			map.RespawnInRadius(target.Position, radius);
+			trigger.Reply("Done. Spawned {0} objects.", map.ObjectCount - objCount);
 		}
 
 		public override ObjectTypeCustom TargetTypes
@@ -440,86 +456,91 @@ namespace WCell.RealmServer.Commands
 	#endregion
 
 	#region Spawn
-	public class SpawnCommand : RealmServerCommand
-	{
-		protected override void Initialize()
-		{
-			Init("Spawn");
-		}
+	//public class SpawnCommand : RealmServerCommand
+	//{
+	//    protected override void Initialize()
+	//    {
+	//        Init("Spawn");
+	//    }
 
-		public class SpawnShowCommand : SubCommand
-		{
-			protected override void Initialize()
-			{
-				Init("Show", "Display");
-			}
+	//    public class SpawnShowCommand : SubCommand
+	//    {
+	//        protected override void Initialize()
+	//        {
+	//            Init("Show", "Display");
+	//        }
 
-			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
-			{
-				var targetObj = trigger.Args.Target;
-				if (!(targetObj is NPC))
-				{
-					targetObj = targetObj.Target;
-				}
+	//        public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+	//        {
+	//            var targetObj = trigger.Args.Target;
+	//            if (targetObj == null)
+	//            {
+	//                trigger.Reply("Target required.");
+	//                return;
+	//            }
+	//            if (!(targetObj is NPC))
+	//            {
+	//                targetObj = targetObj.Target;
+	//            }
 
-				var target = targetObj as NPC;
-				if (target == null)
-				{
-					trigger.Reply("Invalid Target.");
-					return;
-				}
+	//            var target = targetObj as NPC;
+	//            if (target == null)
+	//            {
+	//                trigger.Reply("Invalid Target.");
+	//                return;
+	//            }
 
-				var spawnPoint = target.SpawnPoint;
-				if (spawnPoint == null)
-				{
-					trigger.Reply("Target has no SpawnPoint.");
-					return;
-				}
+	//            var spawnPoint = target.SpawnPoint;
+	//            if (spawnPoint == null)
+	//            {
+	//                trigger.Reply("Target has no SpawnPoint.");
+	//                return;
+	//            }
 
-				spawnPoint.ToggleVisiblity();
-			}
-		}
+	//            spawnPoint.ToggleVisiblity();
+	//        }
+	//    }
 
-		public class SpawnMenuCommand : SubCommand
-		{
-			protected override void Initialize()
-			{
-				Init("Menu");
-			}
+	//    public class SpawnMenuCommand : SubCommand
+	//    {
+	//        protected override void Initialize()
+	//        {
+	//            Init("Menu");
+	//        }
 
-			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
-			{
-				var chr = trigger.Args.Character;
-				if (chr == null)
-				{
-					trigger.Reply("Character required.");
-					return;
-				}
+	//        public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+	//        {
+	//            var chr = trigger.Args.Character;
+	//            if (chr == null)
+	//            {
+	//                trigger.Reply("Character required.");
+	//                return;
+	//            }
 
-				var targetObj = trigger.Args.Target;
-				if (!(targetObj is NPC))
-				{
-					targetObj = targetObj.Target;
-				}
+	//            var targetObj = trigger.Args.Target;
+	//            if (!(targetObj is NPC))
+	//            {
+	//                targetObj = targetObj.Target;
+	//            }
 
-				var target = targetObj as NPC;
-				if (target == null)
-				{
-					trigger.Reply("Invalid Target.");
-					return;
-				}
+	//            var target = targetObj as NPC;
+	//            if (target == null)
+	//            {
+	//                trigger.Reply("Invalid Target.");
+	//                return;
+	//            }
 
-				var spawnPoint = target.SpawnPoint;
-				if (spawnPoint == null)
-				{
-					trigger.Reply("Target has no SpawnPoint.");
-					return;
-				}
+	//            var spawnPoint = target.SpawnPoint;
+	//            if (spawnPoint == null)
+	//            {
+	//                trigger.Reply("Target has no SpawnPoint.");
+	//                return;
+	//            }
 
-				chr.StartGossip(spawnPoint.GossipMenu);
-			}
-		}
-	}
+	//            chr.StartGossip(spawnPoint.GossipMenu);
+	//        }
+	//    }
+	//}
 	#endregion
 
 	#region Control
@@ -560,12 +581,54 @@ namespace WCell.RealmServer.Commands
 			}
 		}
 
-		public override bool NeedsCharacter
+		public override bool RequiresCharacter
 		{
-			get
+			get { return true; }
+		}
+	}
+	#endregion
+
+	#region MakeWild
+	public class MakeWildCommand : RealmServerCommand
+	{
+
+		protected override void Initialize()
+		{
+			Init("MakeWild");
+			EnglishParamInfo = "";
+			EnglishDescription = "Makes the current Target wild (i.e. removes it from it's owner).";
+		}
+
+		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+		{
+			var target = trigger.Args.Target;
+			var chr = trigger.Args.Character;
+			if (target == chr)
 			{
-				return true;
+				target = chr.Target;
 			}
+
+			if (!(target is NPC))
+			{
+				trigger.Reply("Invalid target - Need to target an NPC.");
+			}
+			else
+			{
+				var npc = (NPC)target;
+				if (trigger.Text.NextModifiers() == "p")
+				{
+					chr.MakePet(npc, 0);
+				}
+				else
+				{
+					chr.Enslave(npc, 0);
+				}
+			}
+		}
+
+		public override bool RequiresCharacter
+		{
+			get { return true; }
 		}
 	}
 	#endregion
@@ -600,7 +663,7 @@ namespace WCell.RealmServer.Commands
 			}
 		}
 
-		public override bool NeedsCharacter
+		public override bool RequiresCharacter
 		{
 			get
 			{

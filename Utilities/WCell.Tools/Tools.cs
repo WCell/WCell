@@ -63,14 +63,24 @@ namespace WCell.Tools
 		/// <summary>
 		/// Little trick to get Constants initialized right away
 		/// </summary>
-
-		public static PATool PATool
+        public static PATool PATool
 		{
 			get { return ToolConfig.Instance.PATool; }
 		}
 
-		public static bool Init(params Assembly[] assemblies)
+		internal static bool Init(params Assembly[] assemblies)
 		{
+			return Init(ToolConfig.ToolsRoot, assemblies);
+		}
+
+		public static bool Init(string toolsRoot, params Assembly[] assemblies)
+		{
+			ToolConfig.ToolsRoot = toolsRoot;
+			RealmServ.EntryLocation = Path.GetFullPath(ToolConfig.WCellRealmServerConsoleExe);
+			var realmServ = RealmServ.Instance; // make sure to create the RealmServ instance first
+
+			ToolConfig.InitCfg();
+
 			LogUtil.SetupConsoleLogging();
 
 			Console.WriteLine("Output Directory: " + new DirectoryInfo(ToolConfig.OutputDir).FullName);
@@ -79,16 +89,12 @@ namespace WCell.Tools
 				Directory.CreateDirectory(ToolConfig.OutputDir);
 			}
 
-			RealmServ.EntryLocation = ToolConfig.WCellRealmServerConsoleExe;
-			var realmServ = RealmServ.Instance; // make sure to create the RealmServ instance first
-
-
 			RealmServerConfiguration.Instance.AutoSave = false;
 			RealmServerConfiguration.ContentDirName = Path.GetFullPath(ToolConfig.ContentDir);
 			RealmServerConfiguration.Initialize();
 			RealmAddonMgr.AddonDir = ToolConfig.AddonDir;
 
-			Console.WriteLine("Content Directory: " + new DirectoryInfo(RealmServ.Instance.Configuration.ContentDir).FullName);
+			Console.WriteLine("Content Directory: " + new DirectoryInfo(RealmServerConfiguration.ContentDir).FullName);
 
 			if (!InitMgr.Initialize(typeof(Tools).Assembly) ||
 				!InitMgr.Initialize(typeof(PacketAnalyzer).Assembly))
@@ -214,7 +220,7 @@ namespace WCell.Tools
 					return;
 				}
 			}
-			ToolCommandHandler.Instance.Trigger(trigger);
+			ToolCommandHandler.Instance.Execute(trigger);
 		}
 
 #if TESTS
@@ -307,10 +313,10 @@ namespace WCell.Tools
 					QuestMgr.LoadAll();
 				});
 
-				Region.AutoSpawn = true;
-				var easternKD = World.GetRegion(MapId.EasternKingdoms);
-				var kalimdor = World.GetRegion(MapId.Kalimdor);
-				var outlands = World.GetRegion(MapId.Outland);
+				Map.AutoSpawnMaps = true;
+				var easternKD = World.GetNonInstancedMap(MapId.EasternKingdoms);
+				var kalimdor = World.GetNonInstancedMap(MapId.Kalimdor);
+				var outlands = World.GetNonInstancedMap(MapId.Outland);
 				Utility.Measure("Spawning Main Maps", 1, () =>
 				{
 					//easternKD.Start();
@@ -319,8 +325,7 @@ namespace WCell.Tools
 
 
 				GC.Collect();
-				Console.WriteLine("Total memory usage with fully spawned world: {0}",
-								  GC.GetTotalMemory(true));
+				Console.WriteLine("Total memory usage with fully spawned world: {0}", GC.GetTotalMemory(true));
 			});
 		}
 
@@ -337,16 +342,16 @@ namespace WCell.Tools
 		{
 			StartRealm();
 
-			Utility.Measure("Loading of Items and NPCs", 1, ContentHandler.FetchAll);
+			Utility.Measure("Loading of Items and NPCs", 1, ContentMgr.FetchAll);
 		}
 
 		[Tool]
 		public static void WriteContentStubs()
 		{
-			Utility.Measure("DBSetup.Initialize()", 1, () => RealmDBUtil.Initialize());
-			Utility.Measure("ContentHandler.SaveDefaultStubs()", 1, ContentHandler.SaveDefaultStubs);
+			Utility.Measure("DBSetup.Initialize()", 1, () => RealmDBMgr.Initialize());
+			Utility.Measure("ContentHandler.SaveDefaultStubs()", 1, ContentMgr.SaveDefaultStubs);
 
-			ContentHandler.SaveDefaultStubs();
+			ContentMgr.SaveDefaultStubs();
 		}
 
 		#endregion

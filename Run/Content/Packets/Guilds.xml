@@ -504,85 +504,78 @@
     </Simple>
     <Switch CompareWith="Has Tab Names">
       <Case GreaterThan="0">
-        <Switch CompareWith="Tab Id">
-          <Case Equals="0">
-            <Simple>
-              <Name>Number of Purchased Bank Tabs</Name>
-              <Type>Byte</Type>
-            </Simple>
-            <Simple>
-              <Name>Tab Name</Name>
-              <Type>CString</Type>
-            </Simple>
-            <Simple>
-              <Name>Tab Icon</Name>
-              <Type>CString</Type>
-            </Simple>
-          </Case>
-        </Switch>
+        <List>
+          <Name>Number of Purchased Bank Tabs</Name>
+          <Type>Byte</Type>
+          <Simple>
+            <Name>Tab Name</Name>
+            <Type>CString</Type>
+          </Simple>
+          <Simple>
+            <Name>Tab Icon</Name>
+            <Type>CString</Type>
+          </Simple>
+        </List>
       </Case>
     </Switch>
-    <Simple>
-      <Name>Has Item Info</Name>
+    <List>
+      <Name>Guild Bank Items Count</Name>
       <Type>Byte</Type>
-    </Simple>
-    <Switch CompareWith="Has Item Info">
-      <Case GreaterThan="0">
-        <StaticList Length="98">
-          <Name>Bank Tab Items</Name>
+      <Simple>
+        <Name>Slot Id</Name>
+        <Type>Byte</Type>
+      </Simple>
+      <Simple>
+        <Name>Item Entry Id</Name>
+        <Type>UInt</Type>
+        <SegmentType>Items.ItemId</SegmentType>
+      </Simple>
+      <Switch CompareWith="Item Entry Id">
+        <Case NotEqual="None">
           <Simple>
-            <Name>Slot Id</Name>
-            <Type>Byte</Type>
-          </Simple>
-          <Simple>
-            <Name>Item Entry Id</Name>
+            <Name>Unknown value</Name>
             <Type>UInt</Type>
-            <SegmentType>Items.ItemId</SegmentType>
           </Simple>
-          <Switch CompareWith="Item Entry Id">
-            <Case NotEqual="None">
+          <Simple>
+            <Name>Random Property</Name>
+            <Type>UInt</Type>
+          </Simple>
+          <Switch CompareWith="Random Property">
+            <Case GreaterThan="0">
               <Simple>
-                <Name>Random Property</Name>
+                <Name>Random Suffix</Name>
                 <Type>UInt</Type>
               </Simple>
-              <Switch CompareWith="Random Property">
-                <Case GreaterThan="0">
-                  <Simple>
-                    <Name>Random Suffix</Name>
-                    <Type>UInt</Type>
-                  </Simple>
-                </Case>
-              </Switch>
-              <Simple>
-                <Name>Amount</Name>
-                <Type>UInt</Type>
-              </Simple>
-              <Simple>
-                <Name>Unknown 1</Name>
-                <Type>UInt</Type>
-              </Simple>
-              <Simple>
-                <Name>Unknown 2</Name>
-                <Type>Byte</Type>
-              </Simple>
-              <List>
-                <Name>Enchantment List</Name>
-                <Type>Byte</Type>
-                <Simple>
-                  <Name>Enchantment Slot</Name>
-                  <Type>Byte</Type>
-                  <SegmentType>Items.EnchantSlot</SegmentType>
-                </Simple>
-                <Simple>
-                  <Name>Enchantment Id</Name>
-                  <Type>UInt</Type>
-                </Simple>
-              </List>
             </Case>
           </Switch>
-        </StaticList>
-      </Case>
-    </Switch>
+          <Simple>
+            <Name>Amount</Name>
+            <Type>UInt</Type>
+          </Simple>
+          <Simple>
+            <Name>Unknown 1</Name>
+            <Type>UInt</Type>
+          </Simple>
+          <Simple>
+            <Name>Unknown 2</Name>
+            <Type>Byte</Type>
+          </Simple>
+          <List>
+            <Name>Enchantment List</Name>
+            <Type>Byte</Type>
+            <Simple>
+              <Name>Enchantment Slot</Name>
+              <Type>Byte</Type>
+              <SegmentType>Items.EnchantSlot</SegmentType>
+            </Simple>
+            <Simple>
+              <Name>Enchantment Id</Name>
+              <Type>UInt</Type>
+            </Simple>
+          </List>
+        </Case>
+      </Switch>
+    </List>
   </RealmPacket>
 
   <RealmPacket OpCode="CMSG_GUILD_BANK_QUERY_TAB">
@@ -698,7 +691,7 @@
           <Type>Byte</Type>
         </Simple>
         <Simple>
-          <Name>To Tab Slot</Name>
+          <Name>From Tab Slot</Name>
           <Type>Byte</Type>
         </Simple>
         <Simple>

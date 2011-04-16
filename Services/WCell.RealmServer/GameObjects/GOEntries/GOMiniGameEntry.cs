@@ -10,7 +10,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// <summary>
 		/// ???
 		/// </summary>
-    	public uint GameType
+    	public int GameType
     	{
 			get { return Fields[ 0 ]; }
     	}

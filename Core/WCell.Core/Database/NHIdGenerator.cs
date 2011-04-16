@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -32,23 +32,12 @@ namespace WCell.RealmServer.Database
 		private Type m_type;
 		private long m_highestId, m_minId;
 
-		public NHIdGenerator(Type type, string idMember)
-			: this(type, idMember, long.MinValue)
-		{
-
-		}
-
-		public NHIdGenerator(Type type, string tableName, string idMember)
-			: this(type, idMember, tableName, long.MinValue)
-		{
-		}
-
-		public NHIdGenerator(Type type, string idMember, long minId)
+		public NHIdGenerator(Type type, string idMember, long minId = 1)
 			: this(type, idMember, type.Name, minId)
 		{
 		}
 
-		public NHIdGenerator(Type type, string idMember, string tableName, long minId)
+		public NHIdGenerator(Type type, string idMember, string tableName, long minId = 1)
 		{
 			m_type = type;
 			m_table = tableName;

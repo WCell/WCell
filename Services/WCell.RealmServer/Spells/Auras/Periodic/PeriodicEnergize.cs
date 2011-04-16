@@ -3,7 +3,7 @@
  *   file		: PeriodicEnergize.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
- *   last changed	: $LastChangedDate: 2009-03-07 07:58:12 +0100 (lÃ¸, 07 mar 2009) $
+ *   last changed	: $LastChangedDate: 2009-03-07 07:58:12 +0100 (lø, 07 mar 2009) $
  *   last author	: $LastChangedBy: ralekdev $
  *   revision		: $Rev: 784 $
  *
@@ -21,14 +21,25 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	public class PeriodicEnergizeHandler : AuraEffectHandler
 	{
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			var type = (PowerType)m_spellEffect.MiscValue;
 			if (type == m_aura.Auras.Owner.PowerType)
 			{
-				m_aura.Auras.Owner.Energize(m_aura.Caster, EffectValue, m_spellEffect);
+				m_aura.Auras.Owner.Energize(EffectValue, m_aura.CasterUnit, m_spellEffect);
 			}
 		}
+	}
 
+	public class PeriodicEnergizePctHandler : AuraEffectHandler
+	{
+		protected override void Apply()
+		{
+			var type = (PowerType)m_spellEffect.MiscValue;
+			if (type == Owner.PowerType)
+			{
+				m_aura.Auras.Owner.EnergizePercent(EffectValue, m_aura.CasterUnit, m_spellEffect);
+			}
+		}
 	}
 };

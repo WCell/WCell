@@ -1,4 +1,4 @@
-﻿// 
+// 
 // System.Web.HttpUtility
 //
 // Authors:

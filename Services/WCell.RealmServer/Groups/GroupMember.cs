@@ -45,7 +45,7 @@ namespace WCell.RealmServer.Groups
 		/// <summary>
 		/// Is set when player logs out
 		/// </summary>
-		Region m_region;
+		Map m_Map;
 
 		#region Constructors
 		public GroupMember(Character character, GroupMemberFlags flags)
@@ -113,21 +113,21 @@ namespace WCell.RealmServer.Groups
 		}
 
 		/// <summary>
-		/// The current or last Region in which this GroupMember was
+		/// The current or last Map in which this GroupMember was
 		/// </summary>
-		public Region Region
+		public Map Map
 		{
 			get
 			{
 				if (m_chr != null)
 				{
-					return m_chr.Region;
+					return m_chr.Map;
 				}
-				return m_region;
+				return m_Map;
 			}
 			internal set
 			{
-				m_region = value;
+				m_Map = value;
 			}
 		}
 
@@ -268,8 +268,8 @@ namespace WCell.RealmServer.Groups
 		{
 			foreach (var member in Group)
 			{
-				var sqDistance = Position.GetDistanceSquared(member.Position);
-				if (member == this || member.Region == Region && Utility.IsInRange(sqDistance, radius))
+				var sqDistance = Position.DistanceSquared(member.Position);
+				if (member == this || member.Map == Map && Utility.IsInRange(sqDistance, radius))
 				{
 					handler(member);
 				}

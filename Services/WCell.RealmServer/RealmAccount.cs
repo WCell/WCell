@@ -21,13 +21,13 @@ using WCell.Constants;
 using WCell.Constants.Login;
 using WCell.Core;
 using WCell.Core.Cryptography;
+using WCell.RealmServer.Res;
 using WCell.Util.Threading;
 using WCell.Intercommunication.DataTypes;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Handlers;
-using WCell.RealmServer.Localization;
 using WCell.RealmServer.Network;
 using WCell.RealmServer.Privileges;
 
@@ -157,7 +157,7 @@ namespace WCell.RealmServer
 			set
 			{
 				m_HighestCharLevel = value;
-				RealmServer.Instance.AddMessage(new Message(() => {
+				RealmServer.IOQueue.AddMessage(new Message(() => {
 					if (RealmServer.Instance.AuthClient.IsRunning)
 					{
 						RealmServer.Instance.AuthClient.Channel.SetHighestLevel(AccountId,
@@ -285,12 +285,12 @@ namespace WCell.RealmServer
 					var chr = ActiveCharacter;
 					if (chr != null)
 					{
-						var region = chr.Region;
+						var map = chr.Map;
 						var context = chr.ContextHandler;
 						if (context != null)
 						{
 							context.AddMessage(() => {
-								if (!chr.IsInWorld || chr.Region != context)
+								if (!chr.IsInWorld || chr.Map != context)
 								{
 									return;
 								}
@@ -299,13 +299,13 @@ namespace WCell.RealmServer
 								{
 									// not staff anymore
 									World.StaffMemberCount--;
-									region.AddPlayerCount(chr);
+									map.AddPlayerCount(chr);
 								}
 								else
 								{
 									// new staff
 									World.StaffMemberCount++;
-									region.RemovePlayerCount(chr);
+									map.RemovePlayerCount(chr);
 								}
 							});
 						}
@@ -330,7 +330,7 @@ namespace WCell.RealmServer
 
 		/// <summary>
 		/// Sets the e-mail address for this account and persists it to the DB.
-		/// Blocking call. Make sure to call this from outside the Region-Thread.
+		/// Blocking call. Make sure to call this from outside the Map-Thread.
 		/// </summary>
 		/// <param name="email">the new e-mail address for this account</param>
 		/// <returns>true if the e-mail address was set; false otherwise</returns>
@@ -352,7 +352,7 @@ namespace WCell.RealmServer
 
 		/// <summary>
 		/// Sets the password for this account and sends it to the Authserver to be saved.
-		/// Blocking call. Make sure to call this from outside the Region-Thread.
+		/// Blocking call. Make sure to call this from outside the Map-Thread.
 		/// </summary>
 		/// <returns>true if the e-mail address was set; false otherwise</returns>
 		public bool SetPass(string oldPassStr, string passStr)
@@ -371,7 +371,7 @@ namespace WCell.RealmServer
 
 		/// <summary>
 		/// Reloads all characters belonging to this account from the database.
-		/// Blocking call. Make sure to call this from outside the Region-Thread.
+		/// Blocking call. Make sure to call this from outside the Map-Thread.
 		/// </summary>
 		void LoadCharacters()
 		{

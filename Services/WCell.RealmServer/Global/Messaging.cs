@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +9,7 @@ namespace WCell.RealmServer.Global
 	public enum RealmMessageBoundary
 	{
 		Global,
-		Regional
+		Mapal
 	}
 
 	/// <summary>
@@ -19,7 +19,7 @@ namespace WCell.RealmServer.Global
 	{
 		/// <summary>
 		/// Indicates where the message is valid.
-		/// Regional messages must be disposed when object is moved to a different Region.
+		/// Mapal messages must be disposed when object is moved to a different Map.
 		/// </summary>
 		RealmMessageBoundary Boundary
 		{

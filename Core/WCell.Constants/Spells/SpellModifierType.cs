@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -48,9 +48,9 @@ namespace WCell.Constants.Spells
 		/// </summary>
 		AllEffectValues = 8,
 		/// <summary>
-		/// Modifies chance to be pushed back while casting in %
+		/// Reduces the pushback time when interrupted while casting
 		/// </summary>
-		Pushback = 9,
+		PushbackReduction = 9,
 		/// <summary>
 		/// Spell cast time in ms
 		/// </summary>
@@ -76,8 +76,7 @@ namespace WCell.Constants.Spells
 		/// </summary>
 		TargetResistance = 16,
 		/// <summary>
-		/// Only in: Chain Healing Wave (Id: 23573)
-		/// Seems to add additional ChainTargets
+		/// Adds additional ChainTargets
 		/// </summary>
 		ChainTargets = 17,
 		/// <summary>
@@ -89,18 +88,26 @@ namespace WCell.Constants.Spells
 		/// Lets the totems be activated faster
 		/// </summary>
 		ActivationTime = 19,
+
+		/// <summary>
+		/// Modifies the factor applied to successive targets of chain hits (only with AddModifierPercent)
+		/// </summary>
+		ChainValueFactor = 20,
+
+		/// <summary>
+		/// 
+		/// </summary>
+		GlobalCooldown = 21,
+
 		/// <summary>
 		/// Modifies the EffectValue (positive) for periodic aura effects
 		/// </summary>
 		PeriodicEffectValue = 22,
-		/// <summary>
-		/// 
-		/// </summary>
-		Dot = 22,
+
 		/// <summary>
 		/// Modifies the third effect
 		/// </summary>
-		EffectValue3 = 22,
+		EffectValue3 = 23,
 		/// <summary>
 		/// Increases by % of SpellPower
 		/// </summary>
@@ -112,6 +119,17 @@ namespace WCell.Constants.Spells
 		/// <summary>
 		/// Chance of this spell being resisted against dispel
 		/// </summary>
-		DispelResistance = 28
+		DispelResistance = 28,
+
+		/// <summary>
+		/// Only used in DruidFeralCombatPrimalPrecision:
+		/// "you are refunded $s2% of the energy cost of a finishing move if it fails to land."
+		/// </summary>
+		RefundFailedFinishingMoveEnergy = 30,
+
+		/// <summary>
+		/// CUSTOM: To hack around the DBC hack-arounds
+		/// </summary>
+		EffectValue4AndBeyond = 100
 	}
 }

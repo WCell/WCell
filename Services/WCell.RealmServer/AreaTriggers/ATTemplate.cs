@@ -89,7 +89,7 @@ namespace WCell.RealmServer.AreaTriggers
 			var trigger = AreaTriggerMgr.AreaTriggers.Get(Id);
 			if (trigger == null)
 			{
-				ContentHandler.OnInvalidDBData("AreaTriggerEntry {0} (#{1}, Type: {2}) had invalid AreaTrigger-id.", Name, Id, Type);
+				ContentMgr.OnInvalidDBData("AreaTriggerEntry {0} (#{1}, Type: {2}) had invalid AreaTrigger-id.", Name, Id, Type);
 				return;
 			}
 			else
@@ -99,11 +99,11 @@ namespace WCell.RealmServer.AreaTriggers
 
 			if (TargetPos.IsSet)
 			{
-				var region = World.GetRegionInfo(TargetMap);
-				if (region != null)
+				var map = World.GetMapTemplate(TargetMap);
+				if (map != null)
 				{
 					Type = AreaTriggerType.Teleport;
-					ArrayUtil.AddOnlyOne(ref region.EntrancePositions, TargetPos);
+					ArrayUtil.AddOnlyOne(ref map.EntrancePositions, TargetPos);
 				}
 			}
 

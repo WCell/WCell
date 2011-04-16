@@ -53,7 +53,7 @@ namespace WCell.AuthServer.Commands
 			public override void Process(CmdTrigger<AuthServerCmdArgs> trigger)
 			{
 				trigger.Reply("Recreating Database Schema...");
-				DatabaseUtil.RecreateSchema();
+				DatabaseUtil.CreateSchema();
 				AccountMgr.Instance.ResetCache();
 				trigger.Reply("Done.");
 			}
@@ -71,7 +71,7 @@ namespace WCell.AuthServer.Commands
 			public override void Process(CmdTrigger<AuthServerCmdArgs> trigger)
 			{
 				var settings = DatabaseUtil.Settings;
-				var session = DatabaseUtil.Session.GetSession();
+				var session = DatabaseUtil.Session;
 
 				trigger.Reply("DB Provider: " + settings.Dialect.GetType().Name);
 				trigger.Reply(" State: " + session.Connection.State);

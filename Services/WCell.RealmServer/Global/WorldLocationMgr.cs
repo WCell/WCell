@@ -5,6 +5,7 @@ using WCell.Core.Initialization;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Gossips;
+using WCell.RealmServer.Lang;
 
 namespace WCell.RealmServer.Global
 {
@@ -39,7 +40,7 @@ namespace WCell.RealmServer.Global
 		[Initialization(InitializationPass.Third, "Initialize WorldLocations")]
 		public static void Initialize()
 		{
-			ContentHandler.Load<WorldZoneLocation>();
+			ContentMgr.Load<WorldZoneLocation>();
 			LocationCache = WorldLocations.Values.ToArray();
 
 			Stormwind = GetFirstMatch("Stormwind");
@@ -132,8 +133,10 @@ namespace WCell.RealmServer.Global
 			var menu = new GossipMenu();
 			foreach (var location in locations)
 			{
-				var loc = location;		// allocate a local copy
-				menu.AddItem(new LocalizedGossipMenuItem(loc.Names, convo =>
+				var loc = location;		// create local reference
+
+				// TODO: Localize names
+				menu.AddItem(new GossipMenuItem(loc.Names.LocalizeWithDefaultLocale(), convo =>
 				{
 					callback(convo, loc);
 				}));

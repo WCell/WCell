@@ -6,6 +6,7 @@ using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.NPCs;
+using WCell.RealmServer.NPCs.Pets;
 using WCell.Util;
 using WCell.Util.Data;
 using WCell.Util.Variables;
@@ -68,6 +69,11 @@ namespace WCell.RealmServer.Formulas
 		public static int DefaultXpBaseValueOutland = 235;
 
 		/// <summary>
+		/// The default base value for Xp-calculations from NPCs in Northrend.
+		/// </summary>
+		public static int DefaultXpBaseValueNorthrend = 580;
+
+		/// <summary>
 		/// The factor to be applied to Xp that is gained when exploring a new Zone
 		/// </summary>
 		public static int ExplorationXpFactor = 1;
@@ -86,7 +92,7 @@ namespace WCell.RealmServer.Formulas
 		[Initialization(InitializationPass.Fifth, "Initialize Experience-Table")]
 		public static void Initialize()
 		{
-			ContentHandler.Load<LevelXp>();
+			ContentMgr.Load<LevelXp>();
 		}
 
 		/// <summary>
@@ -100,16 +106,6 @@ namespace WCell.RealmServer.Formulas
 		/// </summary>
 		//public static readonly BaseExperienceCalculator DefaultCalculator = ;
 
-		public static int CalcDefaultBaseXp(int targetLevel, int receiverLvl)
-		{
-			return CalcXp(targetLevel, receiverLvl, DefaultXpLevelFactor, DefaultXpBaseValueAzeroth);
-		}
-
-		public static int CalcOutlandBaseXp(int targetLevel, int receiverLvl)
-		{
-			return CalcXp(targetLevel, receiverLvl, DefaultXpLevelFactor, DefaultXpBaseValueOutland);
-		}
-
 		public static int CalcDefaultXp(int targetLevel, NPC npc)
 		{
 			return CalcXp(npc.Level, targetLevel, DefaultXpLevelFactor, DefaultXpBaseValueAzeroth);
@@ -118,8 +114,17 @@ namespace WCell.RealmServer.Formulas
 
 		public static int CalcOutlandXp(int targetLevel, NPC npc)
 		{
+			if(targetLevel < 55)
+			{
+				return CalcDefaultXp(targetLevel, npc);
+			}
 			return CalcXp(npc.Level, targetLevel, DefaultXpLevelFactor, DefaultXpBaseValueOutland);
 			// TODO: Extra calcs
+		}
+
+		public static int CalcNorthrendXp(int targetLevel, NPC npc)
+		{
+			return CalcXp(npc.Level, targetLevel, DefaultXpLevelFactor, DefaultXpBaseValueNorthrend);
 		}
 
 		public static int CalcXp(int targetLvl, int receiverLvl, int factor, int baseValue)
@@ -187,7 +192,7 @@ namespace WCell.RealmServer.Formulas
 			return Math.Max(0, xp);
 		}
 
-		public static int GetExplorationXp(ZoneInfo zone, Character character)
+		public static int GetExplorationXp(ZoneTemplate zone, Character character)
 		{
 			return ExplorationXpFactor * (zone.AreaLevel * 20);
 		}
@@ -195,7 +200,7 @@ namespace WCell.RealmServer.Formulas
 		/// <summary>
 		/// Distributes the given amount of XP over the group of the given Character (or adds it only to the Char, if not in Group).
 		/// </summary>
-		/// <remarks>Requires Region-Context.</remarks>
+		/// <remarks>Requires Map-Context.</remarks>
 		/// <param name="chr"></param>
 		public static void DistributeCombatXp(Character chr, INamed killed, int xp)
 		{
@@ -249,7 +254,7 @@ namespace WCell.RealmServer.Formulas
 
 		public static int GetPetXPForLevel(int level)
 		{
-			return ((GetXpForlevel(level) * PetMgr.PetExperienceModifier) / 100);
+			return ((GetXpForlevel(level) * PetMgr.PetExperienceOfOwnerPercent + 50) / 100);		// rounding
 		}
 
 		public static int GetGrayLevel(int playerLevel)

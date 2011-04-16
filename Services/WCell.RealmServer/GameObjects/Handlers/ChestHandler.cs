@@ -12,8 +12,6 @@ namespace WCell.RealmServer.GameObjects.Handlers
 	/// </summary>
 	public class ChestHandler : GameObjectHandler
 	{
-		private static readonly Logger sLog = LogManager.GetCurrentClassLogger();
-
 		public override bool Use(Character user)
 		{
 			if (m_go.Entry.IsConsumable)
@@ -27,7 +25,7 @@ namespace WCell.RealmServer.GameObjects.Handlers
 			}
 			else
 			{
-				LootMgr.CreateAndSendObjectLoot(m_go, user, LootEntryType.GameObject, user.Region.IsHeroic);
+				LootMgr.CreateAndSendObjectLoot(m_go, user, LootEntryType.GameObject, user.Map.IsHeroic);
 			}
 			return true;
 		}

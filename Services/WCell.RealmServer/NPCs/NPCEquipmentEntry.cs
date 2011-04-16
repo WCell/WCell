@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,13 +16,13 @@ namespace WCell.RealmServer.NPCs
 		public uint EquipmentId;
 
 		[Persistent(3)]
-		public ItemId[] ItemIds;
+		public ItemId[] ItemIds = new ItemId[3];
 
 		public void FinalizeDataHolder()
 		{
 			if (EquipmentId > 100000)
 			{
-				ContentHandler.OnInvalidDBData("NPCEquipmentEntry had invalid Id: " + EquipmentId);
+				ContentMgr.OnInvalidDBData("NPCEquipmentEntry had invalid Id: " + EquipmentId);
 				return;
 			}
 			ArrayUtil.Set(ref NPCMgr.EquipmentEntries, EquipmentId, this);

@@ -18,16 +18,16 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 {
 	public class ModDecreaseSpeedHandler : AuraEffectHandler
 	{
-		float val;
+		public float Value;
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
-			m_aura.Auras.Owner.SpeedFactor += (val = EffectValue / 100f);
+			m_aura.Auras.Owner.SpeedFactor += (Value = EffectValue / 100f);
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
-			m_aura.Auras.Owner.SpeedFactor -= val;
+			m_aura.Auras.Owner.SpeedFactor -= Value;
 		}
 	}
 };

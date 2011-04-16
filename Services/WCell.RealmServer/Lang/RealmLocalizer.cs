@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +9,7 @@ using WCell.Util.NLog;
 
 namespace WCell.RealmServer.Lang
 {
-	public class RealmLocalizer : Localizer<ClientLocale, LangKey>
+	public class RealmLocalizer : Localizer<ClientLocale, RealmLangKey>
 	{
 		private static RealmLocalizer instance;
 
@@ -24,9 +24,7 @@ namespace WCell.RealmServer.Lang
 
 				try
 				{
-					instance = new RealmLocalizer(ClientLocale.English,
-												  RealmServerConfiguration.DefaultLocale, RealmServerConfiguration.LangDir);
-
+					instance = new RealmLocalizer(ClientLocale.English, RealmServerConfiguration.DefaultLocale, RealmServerConfiguration.LangDir);
 					instance.LoadTranslations();
 				}
 				catch (Exception e)
@@ -45,6 +43,28 @@ namespace WCell.RealmServer.Lang
 		public RealmLocalizer(ClientLocale baseLocale, ClientLocale defaultLocale, string folder)
 			: base(baseLocale, defaultLocale, folder)
 		{
+		}
+
+		/// <summary>
+		/// TODO: Localize (use TranslatableItem)
+		/// </summary>
+		public static string FormatTimeSecondsMinutes(int seconds)
+		{
+			string time;
+			if (seconds < 60)
+			{
+				time = seconds + " seconds";
+			}
+			else
+			{
+				var mins = seconds / 60;
+				time = mins + (mins == 1 ? " minute" : " minutes");
+				if (seconds % 60 != 0)
+				{
+					time += " and " + seconds + (seconds == 1 ? " second" : " seconds");
+				}
+			}
+			return time;
 		}
 	}
 }

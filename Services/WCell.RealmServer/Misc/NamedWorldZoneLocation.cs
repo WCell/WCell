@@ -20,18 +20,23 @@ namespace WCell.RealmServer.Misc
 			set;
 		}
 
-		public MapId RegionId
+		public MapId MapId
 		{
 			get;
 			set;
 		}
 
-		public Region Region
+		public Map Map
 		{
 			get
 			{
-				return World.GetRegion(RegionId);
+				return World.GetNonInstancedMap(MapId);
 			}
+		}
+
+		public uint Phase
+		{
+			get { return WorldObject.DefaultPhase; }
 		}
 
 		public ZoneId ZoneId
@@ -40,14 +45,14 @@ namespace WCell.RealmServer.Misc
 			set;
 		}
 
-		public ZoneInfo ZoneInfo
+		public ZoneTemplate ZoneTemplate
 		{
 			get { return World.GetZoneInfo(ZoneId); }
 		}
 
 		public static bool operator ==(NamedWorldZoneLocation left, NamedWorldZoneLocation right)
 		{
-			return (left.Position == right.Position && left.RegionId == right.RegionId);
+			return (left.Position == right.Position && left.MapId == right.MapId);
 		}
 
 		public static bool operator !=(NamedWorldZoneLocation left, NamedWorldZoneLocation right)
@@ -57,7 +62,7 @@ namespace WCell.RealmServer.Misc
 
 		public bool IsValid
 		{
-			get { return RegionId != MapId.End; }
+			get { return MapId != MapId.End; }
 		}
 
 		public override bool Equals(object obj)
@@ -71,7 +76,7 @@ namespace WCell.RealmServer.Misc
 
 		public override int GetHashCode()
 		{
-			return (int)((int)RegionId * (Position.X * Position.Y * Position.Z));
+			return (int)((int)MapId * (Position.X * Position.Y * Position.Z));
 		}
 	}
 }

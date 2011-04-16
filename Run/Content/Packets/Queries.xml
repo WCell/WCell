@@ -506,9 +506,9 @@
       <SegmentType>WCell.Constants.Items.ItemBagFamilyMask</SegmentType>
     </Simple>
     <Simple>
-      <Name>TotemCategory</Name>
+      <Name>ToolCategory</Name>
       <Type>UInt</Type>
-      <SegmentType>WCell.Constants.Items.TotemCategory</SegmentType>
+      <SegmentType>WCell.Constants.Items.ToolCategory</SegmentType>
     </Simple>
 
     <StaticList Length="3">

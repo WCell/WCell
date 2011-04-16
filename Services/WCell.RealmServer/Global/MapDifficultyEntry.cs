@@ -1,11 +1,11 @@
-﻿using WCell.Constants;
+using WCell.Constants;
 using WCell.RealmServer.Instances;
 
 namespace WCell.RealmServer.Global
 {
 	public class MapDifficultyEntry : MapDifficultyDBCEntry
 	{
-		public RegionInfo Region;
+		public MapTemplate Map;
 
 		public bool IsHeroic;
 
@@ -14,25 +14,33 @@ namespace WCell.RealmServer.Global
 		/// </summary>
 		public BindingType BindingType;
 
-		public void Finalize(RegionInfo region)
+		internal void Finalize(MapTemplate map)
 		{
-			Region = region;
+			Map = map;
 			if (ResetTime == 0)
 			{
-				ResetTime = region.DefaultResetTime;
+				ResetTime = map.DefaultResetTime;
 			}
 
-			foreach (var diff in Region.Difficulties)
+			if (Map.Type == MapType.Dungeon)
 			{
-				if (diff.MaxPlayerCount == MaxPlayerCount)
+				IsHeroic = Index == 1;
+			}
+			else if (MaxPlayerCount != 0)
+			{
+				// use heuristics to determine whether we have a heroic difficulty:
+				foreach (var diff in Map.Difficulties)
 				{
-					// Second entry with the same player count -> Probably heroic
-					IsHeroic = true;
-					break;
+					if (diff != null && diff.MaxPlayerCount == MaxPlayerCount)
+					{
+						// Second entry with the same player count -> Probably heroic
+						IsHeroic = true;
+						break;
+					}
 				}
 			}
 
-			BindingType = !IsHeroic && Region.Type == MapType.Dungeon ? BindingType.Soft : BindingType.Hard;
+			BindingType = !IsHeroic && Map.Type == MapType.Dungeon ? BindingType.Soft : BindingType.Hard;
 		}
 	}
 }

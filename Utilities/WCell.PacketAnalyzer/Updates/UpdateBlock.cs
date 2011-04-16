@@ -1,8 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using Cell.Core;
 using NLog;
 using WCell.Constants.Updates;
 using WCell.Core;

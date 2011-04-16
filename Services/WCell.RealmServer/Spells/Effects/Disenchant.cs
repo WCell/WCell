@@ -35,14 +35,21 @@ namespace WCell.RealmServer.Spells.Effects
 
 		public override void Initialize(ref SpellFailedReason failReason)
 		{
-			var templ = m_cast.UsedItem.Template;
-			if (templ.RequiredDisenchantingLevel == -1)
+			if (m_cast.TargetItem == null)
 			{
-				failReason = SpellFailedReason.CantBeDisenchanted;
+				failReason = SpellFailedReason.ItemNotReady;
 			}
-			else if (templ.RequiredDisenchantingLevel > m_cast.CasterChar.Skills.GetValue(SkillId.Enchanting))
+			else
 			{
-				failReason = SpellFailedReason.CantBeDisenchantedSkill;
+				var templ = m_cast.TargetItem.Template;
+				if (templ.RequiredDisenchantingLevel == -1)
+				{
+					failReason = SpellFailedReason.CantBeDisenchanted;
+				}
+				else if (templ.RequiredDisenchantingLevel > m_cast.CasterChar.Skills.GetValue(SkillId.Enchanting))
+				{
+					failReason = SpellFailedReason.CantBeDisenchantedSkill;
+				}
 			}
 		}
 
@@ -50,24 +57,18 @@ namespace WCell.RealmServer.Spells.Effects
 		{
 			var caster = m_cast.CasterChar;
 			caster.Emote(EmoteType.SimpleTalk);
-			LootMgr.CreateAndSendObjectLoot(m_cast.UsedItem, caster, LootEntryType.Disenchanting, false);
+			LootMgr.CreateAndSendObjectLoot(m_cast.TargetItem, caster, LootEntryType.Disenchanting, false);
 			//m_cast.CasterChar.Inventory.AddAllUnchecked(loot, slots);
 		}
 
 		public override bool HasOwnTargets
 		{
-			get
-			{
-				return false;
-			}
+			get { return false; }
 		}
 
 		public override ObjectTypes CasterType
 		{
-			get
-			{
-				return ObjectTypes.Player;
-			}
+			get { return ObjectTypes.Player; }
 		}
 	}
 }

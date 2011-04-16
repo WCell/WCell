@@ -99,7 +99,7 @@ namespace WCell.RealmServer.NPCs.Armorer
 				return false;
 			if (armorer == null)
 				return false;
-			if (!armorer.CanInteractWith(curChar))
+			if (!armorer.CheckVendorInteraction(curChar))
 				return false;
 
 			// Remove Auras not compatible with NPC interaction
@@ -164,11 +164,11 @@ namespace WCell.RealmServer.NPCs.Armorer
 		public static void Initialize()
 		{
 			var durabilityCostsReader = new ListDBCReader<DurabilityCost, DBCDurabilityCostsConverter>(
-				RealmServerConfiguration.GetDBCFile("DurabilityCosts.dbc"));
+				RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_DURABILITYCOSTS));
 
 
 			var durabilityQualityReader = new ListDBCReader<DurabilityQuality, DBCDurabilityQualityConverter>(
-				RealmServerConfiguration.GetDBCFile("DurabilityQuality.dbc"));
+				RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_DURABILITYQUALITY));
 
 
 			itemClassRepairModifiers = durabilityCostsReader.EntryList.ToArray();

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Instances xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Setting>
-    <Name>CashTest</Name>
+    <Name>Unkkk</Name>
     <Type> </Type>
   </Setting>
   <Setting>
@@ -130,15 +130,15 @@
   </Setting>
   <Setting>
     <Name>HellfireCitadelTheShatteredHalls</Name>
-    <Type> </Type>
+    <Type>WCell.Addons.Default.Instances.HellfireCitadelTheShatteredHalls</Type>
   </Setting>
   <Setting>
     <Name>HellfireCitadelTheBloodFurnace</Name>
-    <Type> </Type>
+    <Type>WCell.Addons.Default.Instances.HellfireCitadelTheBloodFurnace</Type>
   </Setting>
   <Setting>
     <Name>HellfireCitadelRamparts</Name>
-    <Type> </Type>
+    <Type>WCell.Addons.Default.Instances.HellfireCitadelRamparts</Type>
   </Setting>
   <Setting>
     <Name>MagtheridonsLair</Name>
@@ -146,15 +146,15 @@
   </Setting>
   <Setting>
     <Name>CoilfangTheSteamvault</Name>
-    <Type> </Type>
+    <Type>WCell.Addons.Default.Instances.CoilfangTheSteamvault</Type>
   </Setting>
   <Setting>
     <Name>CoilfangTheUnderbog</Name>
-    <Type> </Type>
+    <Type>WCell.Addons.Default.Instances.CoilfangTheUnderbog</Type>
   </Setting>
   <Setting>
     <Name>CoilfangTheSlavePens</Name>
-    <Type> </Type>
+    <Type>WCell.Addons.Default.Instances.CoilfangTheSlavePens</Type>
   </Setting>
   <Setting>
     <Name>CoilfangSerpentshrineCavern</Name>
@@ -166,31 +166,31 @@
   </Setting>
   <Setting>
     <Name>TempestKeepTheArcatraz</Name>
-    <Type> </Type>
+    <Type>WCell.Addons.Default.Instances.TempestKeepTheArcatraz</Type>
   </Setting>
   <Setting>
     <Name>TempestKeepTheBotanica</Name>
-    <Type> </Type>
+    <Type>WCell.Addons.Default.Instances.TempestKeepTheBotanica</Type>
   </Setting>
   <Setting>
     <Name>TempestKeepTheMechanar</Name>
-    <Type> </Type>
+    <Type>WCell.Addons.Default.Instances.TempestKeepTheMechanar</Type>
   </Setting>
   <Setting>
     <Name>AuchindounShadowLabyrinth</Name>
-    <Type> </Type>
+    <Type>WCell.Addons.Default.Instances.AuchindounShadowLabyrinth</Type>
   </Setting>
   <Setting>
     <Name>AuchindounSethekkHalls</Name>
-    <Type> </Type>
+    <Type>WCell.Addons.Default.Instances.AuchindounSethekkHalls</Type>
   </Setting>
   <Setting>
     <Name>AuchindounManaTombs</Name>
-    <Type> </Type>
+    <Type>WCell.Addons.Default.Instances.AuchindounManaTombs</Type>
   </Setting>
   <Setting>
     <Name>AuchindounAuchenaiCrypts</Name>
-    <Type> </Type>
+    <Type>WCell.Addons.Default.Instances.AuchindounAuchenaiCrypts</Type>
   </Setting>
   <Setting>
     <Name>TheEscapeFromDurnholde</Name>
@@ -218,11 +218,11 @@
   </Setting>
   <Setting>
     <Name>TheNexus</Name>
-    <Type> </Type>
+    <Type>WCell.Addons.Default.Instances.TheNexus</Type>
   </Setting>
   <Setting>
     <Name>TheOculus</Name>
-    <Type> </Type>
+    <Type>WCell.Addons.Default.Instances.TheOculus</Type>
   </Setting>
   <Setting>
     <Name>TheSunwell</Name>
@@ -234,7 +234,7 @@
   </Setting>
   <Setting>
     <Name>TheCullingOfStratholme</Name>
-    <Type> </Type>
+    <Type>WCell.Addons.Default.Instances.TheCullingOfStratholme</Type>
   </Setting>
   <Setting>
     <Name>SunwellFixUnused</Name>
@@ -242,19 +242,19 @@
   </Setting>
   <Setting>
     <Name>HallsOfStone</Name>
-    <Type> </Type>
+    <Type>WCell.Addons.Default.Instances.HallsOfStone</Type>
   </Setting>
   <Setting>
     <Name>DrakTharonKeep</Name>
-    <Type> </Type>
+    <Type>WCell.Addons.Default.Instances.DrakTharonKeep</Type>
   </Setting>
   <Setting>
     <Name>AzjolNerub</Name>
-    <Type> </Type>
+    <Type>WCell.Addons.Default.Instances.AzjolNerub</Type>
   </Setting>
   <Setting>
     <Name>HallsOfLightning</Name>
-    <Type> </Type>
+    <Type>WCell.Addons.Default.Instances.HallsOfLightning</Type>
   </Setting>
   <Setting>
     <Name>Ulduar</Name>
@@ -262,11 +262,11 @@
   </Setting>
   <Setting>
     <Name>Gundrak</Name>
-    <Type> </Type>
+    <Type>WCell.Addons.Default.Instances.Gundrak</Type>
   </Setting>
   <Setting>
     <Name>VioletHold</Name>
-    <Type> </Type>
+    <Type>WCell.Addons.Default.Instances.VioletHold</Type>
   </Setting>
   <Setting>
     <Name>TheObsidianSanctum</Name>
@@ -278,11 +278,11 @@
   </Setting>
   <Setting>
     <Name>AhnKahetTheOldKingdom</Name>
-    <Type> </Type>
+    <Type>WCell.Addons.Default.Instances.AhnKahetTheOldKingdom</Type>
   </Setting>
   <Setting>
     <Name>VaultOfArchavon</Name>
-    <Type> </Type>
+    <Type>WCell.Addons.Default.Instances.VaultOfArchavon</Type>
   </Setting>
   <Setting>
     <Name>Unused</Name>
@@ -290,11 +290,11 @@
   </Setting>
   <Setting>
     <Name>IcecrownCitadel</Name>
-    <Type> </Type>
+    <Type>WCell.Addons.Default.Instances.IcecrownCitadel</Type>
   </Setting>
   <Setting>
     <Name>TheForgeOfSouls</Name>
-    <Type> </Type>
+    <Type>WCell.Addons.Default.Instances.TheForgeOfSouls</Type>
   </Setting>
   <Setting>
     <Name>AbyssalMawExterior</Name>
@@ -314,11 +314,11 @@
   </Setting>
   <Setting>
     <Name>TrialOfTheCrusader</Name>
-    <Type> </Type>
+    <Type>WCell.Addons.Default.Instances.TrialOfTheCrusader</Type>
   </Setting>
   <Setting>
     <Name>TrialOfTheChampion</Name>
-    <Type> </Type>
+    <Type>WCell.Addons.Default.Instances.TrialOfTheChampion</Type>
   </Setting>
   <Setting>
     <Name>SkywallDungeon</Name>
@@ -326,11 +326,11 @@
   </Setting>
   <Setting>
     <Name>PitOfSaron</Name>
-    <Type> </Type>
+    <Type>WCell.Addons.Default.Instances.PitOfSaron</Type>
   </Setting>
   <Setting>
     <Name>HallsOfReflection</Name>
-    <Type> </Type>
+    <Type>WCell.Addons.Default.Instances.HallsOfReflection</Type>
   </Setting>
   <Setting>
     <Name>BlackwingDescent</Name>

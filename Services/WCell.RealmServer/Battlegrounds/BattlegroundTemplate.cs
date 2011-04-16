@@ -1,5 +1,6 @@
 using WCell.Constants;
 using WCell.RealmServer.Global;
+using WCell.Util;
 using WCell.Util.Data;
 using WCell.Constants.World;
 using WCell.RealmServer.Content;
@@ -18,16 +19,10 @@ namespace WCell.RealmServer.Battlegrounds
 	[DataHolder]
 	public class BattlegroundTemplate : IDataHolder
 	{
-		/// <summary>
-		/// The range of levels per Queue (one queue will hold players of this many different levels)
-		/// </summary>
-		[Variable("DefaultBGLevelRange")]
-		public static int DefaultLevelRange = 10;
-
 		public BattlegroundId Id;
 
 		[NotPersistent]
-		public MapId RegionId;
+		public MapId MapId;
 
 		public int MinPlayersPerTeam, MaxPlayersPerTeam;
 
@@ -41,19 +36,17 @@ namespace WCell.RealmServer.Battlegrounds
 		public Vector3 AllianceStartPosition, HordeStartPosition;
 		public float AllianceStartOrientation, HordeStartOrientation;
 
-		/// <summary>
-		/// The range of levels per Queue (one queue will hold players of this many different levels)
-		/// </summary>
-		public int LevelRange = DefaultLevelRange;
-
 		[NotPersistent]
 		public BattlegroundCreator Creator;
 
 		[NotPersistent]
-		public RegionInfo RegionInfo;
+		public MapTemplate MapTemplate;
 
 		[NotPersistent]
 		public GlobalBattlegroundQueue[] Queues;
+
+		[NotPersistent]
+		public PvPDifficultyEntry[] Difficulties;
 
 		public int MinPlayerCount
 		{
@@ -62,7 +55,7 @@ namespace WCell.RealmServer.Battlegrounds
 
 		public uint GetId()
 		{
-			return (uint) Id;
+			return (uint)Id;
 		}
 
 		public DataHolderState DataHolderState
@@ -73,66 +66,67 @@ namespace WCell.RealmServer.Battlegrounds
 
 		public void FinalizeDataHolder()
 		{
-			RegionId = BattlegroundMgr.BattlemasterListReader.Entries[(int)Id].MapId;
+			MapId = BattlegroundMgr.BattlemasterListReader.Entries[(int)Id].MapId;
 
-			RegionInfo = World.GetRegionInfo(RegionId);
-			if (RegionInfo == null)
+			MapTemplate = World.GetMapTemplate(MapId);
+			if (MapTemplate == null)
 			{
-				ContentHandler.OnInvalidDBData("BattlegroundTemplate had invalid RegionId: {0} (#{1})",
-					RegionId, (int)RegionId);
+				ContentMgr.OnInvalidDBData("BattlegroundTemplate had invalid MapId: {0} (#{1})",
+					MapId, (int)MapId);
 				return;
 			}
 
 			if (BattlegroundMgr.Templates.Length <= (int)Id)
 			{
-				ContentHandler.OnInvalidDBData("BattlegroundTemplate had invalid BG-Id: {0} (#{1})",
+				ContentMgr.OnInvalidDBData("BattlegroundTemplate had invalid BG-Id: {0} (#{1})",
 					Id, (int)Id);
 				return;
 			}
+			MapTemplate.BattlegroundTemplate = this;
 
-			RegionInfo.MinLevel = Math.Max(1, MinLevel);
-			RegionInfo.MaxLevel = Math.Max(MinLevel, MaxLevel);
+			Difficulties = new PvPDifficultyEntry[BattlegroundMgr.PVPDifficultyReader.Entries.Values.Count(entry => (entry.mapId == MapId))];
 
+			foreach (var entry in BattlegroundMgr.PVPDifficultyReader.Entries.Values.Where(entry => (entry.mapId == MapId)))
+			{
+				Difficulties[entry.bracketId] = entry;
+			}
+
+			MinLevel = MapTemplate.MinLevel = Difficulties.First().minLevel;
+			MaxLevel = MapTemplate.MaxLevel = Difficulties.Last().maxLevel;
 			BattlegroundMgr.Templates[(int)Id] = this;
 
 			CreateQueues();
-            SetStartPos();
+			SetStartPos();
+		}
+
+		public int GetBracketIdForLevel(int level)
+		{
+			var diff = Difficulties.FirstOrDefault(entry => (level >= entry.minLevel && level <= entry.maxLevel));
+			if (diff != null)
+			{
+				return diff.bracketId;
+			}
+			else
+			{
+				return -1;
+			}
 		}
 
 		private void CreateQueues()
 		{
-			if (MaxLevel == 0)
+			Queues = new GlobalBattlegroundQueue[Difficulties.Length];
+			foreach (var entry in Difficulties)
 			{
-				MaxLevel = RealmServerConfiguration.MaxCharacterLevel;
-			}
-			if (MinLevel == 0)
-			{
-				MinLevel = 1;
-			}
-
-			Queues = new GlobalBattlegroundQueue[RealmServerConfiguration.MaxCharacterLevel];
-
-			var lvl = Math.Min(RealmServerConfiguration.MaxCharacterLevel, MaxLevel);
-			var bracket = 0;
-
-			AddQueue(new GlobalBattlegroundQueue(this, ++bracket, lvl, lvl));
-
-			while (lvl >= MinLevel)
-			{
-				var maxLvl = Math.Min(RealmServerConfiguration.MaxCharacterLevel, lvl - 1);
-				var minLvl = Math.Max(lvl - LevelRange, MinLevel);
-				AddQueue(new GlobalBattlegroundQueue(this, ++bracket, minLvl, maxLvl));
-
-				lvl -= LevelRange;
+				if (entry != null)
+				{
+					AddQueue(new GlobalBattlegroundQueue(this, entry.bracketId, entry.minLevel, entry.maxLevel));
+				}
 			}
 		}
 
 		void AddQueue(GlobalBattlegroundQueue queue)
 		{
-			for (var i = queue.MinLevel - 1; i < queue.MaxLevel; i++)
-			{
-				Queues[i] = queue;
-			}
+			Queues[queue.BracketId] = queue;
 		}
 
 		/// <summary>
@@ -152,11 +146,7 @@ namespace WCell.RealmServer.Battlegrounds
 		/// <returns>the appropriate queue for the given character level</returns>
 		public GlobalBattlegroundQueue GetQueue(int level)
 		{
-			// normalize level
-			level = Math.Max(1, level);
-			level = Math.Min(level, Queues.Length);
-
-			return Queues[level - 1];
+			return Queues.Get((uint)GetBracketIdForLevel(level));
 		}
 
 		#region Enqueue
@@ -232,32 +222,32 @@ namespace WCell.RealmServer.Battlegrounds
 		{
 			return GetType().Name +
 				string.Format(" (Id: {0} (#{1}), Map: {2} (#{3})",
-				Id, (int)Id, RegionId, (int)RegionId);
+				Id, (int)Id, MapId, (int)MapId);
 		}
 
-        public void SetStartPos()
-        {
-            WorldSafeLocation allianceStartPos;
-            BattlegroundMgr.WorldSafeLocs.TryGetValue(AllianceStartPosIndex, out allianceStartPos);
-            if (allianceStartPos != null)
-            {
-                var allianceStartPosVector = new Vector3(allianceStartPos.X, allianceStartPos.Y, allianceStartPos.Z);
+		public void SetStartPos()
+		{
+			WorldSafeLocation allianceStartPos;
+			BattlegroundMgr.WorldSafeLocs.TryGetValue(AllianceStartPosIndex, out allianceStartPos);
+			if (allianceStartPos != null)
+			{
+				var allianceStartPosVector = new Vector3(allianceStartPos.X, allianceStartPos.Y, allianceStartPos.Z);
 
-                if (allianceStartPosVector.X != 0.0f && allianceStartPosVector.Y != 0.0f && allianceStartPosVector.Z != 0.0f)
-                    AllianceStartPosition = allianceStartPosVector;
+				if (allianceStartPosVector.X != 0.0f && allianceStartPosVector.Y != 0.0f && allianceStartPosVector.Z != 0.0f)
+					AllianceStartPosition = allianceStartPosVector;
 
-            }
+			}
 
-            WorldSafeLocation hordeStartPos;
-            BattlegroundMgr.WorldSafeLocs.TryGetValue(HordeStartPosIndex, out hordeStartPos);
-            if(hordeStartPos != null)
-            {
-                var hordeStartPosVector = new Vector3(hordeStartPos.X, hordeStartPos.Y, hordeStartPos.Z);
+			WorldSafeLocation hordeStartPos;
+			BattlegroundMgr.WorldSafeLocs.TryGetValue(HordeStartPosIndex, out hordeStartPos);
+			if (hordeStartPos != null)
+			{
+				var hordeStartPosVector = new Vector3(hordeStartPos.X, hordeStartPos.Y, hordeStartPos.Z);
 
-                if (hordeStartPosVector.X != 0.0f && hordeStartPosVector.Y != 0.0f && hordeStartPosVector.Z != 0.0f)
-                    HordeStartPosition = hordeStartPosVector;
-            }
-        }
+				if (hordeStartPosVector.X != 0.0f && hordeStartPosVector.Y != 0.0f && hordeStartPosVector.Z != 0.0f)
+					HordeStartPosition = hordeStartPosVector;
+			}
+		}
 	}
 }
 

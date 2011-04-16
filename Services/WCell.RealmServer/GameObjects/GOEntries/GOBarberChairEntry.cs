@@ -8,7 +8,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 	    /// <summary>
 	    /// MapId from Maps.dbc
 	    /// </summary>
-	    public uint ChairHeight
+	    public int ChairHeight
     	{
 			get { return Fields[0]; }
     	}
@@ -16,7 +16,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// <summary>
 		/// In inches
 		/// </summary>
-    	public uint HeightOffset
+    	public int HeightOffset
     	{
 			get { return Fields[1]; }
     	}

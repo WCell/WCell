@@ -27,7 +27,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	{
 		private static Logger log = LogManager.GetCurrentClassLogger();
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			var creatureId = (uint)SpellEffect.MiscValue;
 			var entry = NPCMgr.GetEntry(creatureId);
@@ -47,7 +47,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			}
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			// some flying mounts dont have a flying effect, so we need to remove it here:
 			if (m_aura.Spell.IsFlyingMount && !m_aura.Spell.HasFlyEffect)

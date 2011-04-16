@@ -19,25 +19,25 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Win32;
-using MpqReader;
+//using MpqReader;
 using WCell.Constants;
+using WCell.MPQTool.StormLibWrapper;
 using WCell.MPQTool.DBC.Compare;
-using WCell.Util;
+using WCell.Util.NLog;
 
 namespace WCell.MPQTool
 {
 	public class DBCTool
 	{
 		//static string DBCOutputDir = string.Format(@"{0}\Content\dbc", Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
-		public static readonly string DBCDir = new DirectoryInfo(string.Format(@"../Content/dbc")).FullName;
-		public static readonly string DefaultDBCOutputDir = DBCDir + WCellInfo.RequiredVersion.BasicString + "/";
-		public static string DBCOutputDir = DefaultDBCOutputDir;
-		public static DirectoryInfo DumpDir = new DirectoryInfo(string.Format("Output"));
-		public static List<string> InstallFolders = new List<string>();
+	    public string DBCDir;
+	    public string DefaultDBCOutputDir;
+		public string DBCOutputDir;
+		public DirectoryInfo DumpDir = new DirectoryInfo(string.Format("Output"));
 
 		static string m_wowDir;
 
-		public static string WowDir
+		public string WowDir
 		{
 			get
 			{
@@ -51,7 +51,7 @@ namespace WCell.MPQTool
 		/// </summary>
 		/// <param name="strDataFolder">The Folder in which the locale is</param>
 		/// <returns>List of ALL MPQ Files that will have DBC Files in</returns>
-		public static List<string> GetMPQFiles(string strDataFolder)
+		public List<string> GetMPQFiles(string strDataFolder)
 		{
 			//Get all the MPQ Files inside the Locale Folder
 			List<string> lstAllMPQs = GetFiles(string.Format(@"{0}\", strDataFolder));
@@ -75,76 +75,76 @@ namespace WCell.MPQTool
 		/// </summary>
 		/// <param name="strParentFolder">The folder to search inside</param>
 		/// <returns>List of files inside this folder</returns>
-		public static List<string> GetFiles(string strParentFolder)
+		public List<string> GetFiles(string strParentFolder)
 		{
 			string[] arrFiles = Directory.GetFiles(strParentFolder, "*.MPQ");
 
 			return new List<string>(arrFiles);
 		}
 
-		public static void ProcessMPQ(List<string> lstAllMPQFiles)
+		public void ProcessMPQ(List<string> lstAllMPQFiles)
 		{
-			// Create a folder to dump all this into
+		    // Create a folder to dump all this into
 			Directory.CreateDirectory(DBCOutputDir);
 
 			// Go through all the files, getting all DBCs
-			for (int i = 0; i < lstAllMPQFiles.Count; i++)
-			{
-				using (var oArchive = new MpqArchive(lstAllMPQFiles[i]))
-				{
-					var dbcsFiles = from a in oArchive.Files
-									where a.Name.EndsWith(".dbc")
-									select a.Name;
+		    foreach (var mpqFileName in lstAllMPQFiles)
+		    {
+		        //Directory.CreateDirectory(Path.Combine(DBCOutputDir, Path.GetFileNameWithoutExtension(mpqFileName)));
 
-					foreach (var strFileName in dbcsFiles)
-					{
-						var strLocalFilePath = string.Format(@"{0}\{1}", DBCOutputDir, Path.GetFileName(strFileName));
+		        using (var oArchive = new MpqArchive(mpqFileName))
+		        {
+		            var dbcFiles = oArchive.FindAllFiles("*.dbc");
+		            //var dbcsFiles = from a in oArchive.Files
+		            //                where a.Name.EndsWith(".dbc")
+		            //                select a.Name;
 
-						// Does it already exist? If it does then it'll be one from a previous package, so let's leave it
-						if (!File.Exists(strLocalFilePath))
-						{
-							using (Stream stmOutput = new FileStream(strLocalFilePath, FileMode.Create))
-							{
-								using (Stream stmInput = oArchive.OpenFile(strFileName))
-								{
-									// Writing...
-									Console.Write(string.Format("Writing File {0}....", Path.GetFileName(strFileName)));
+		            foreach (var strFileName in dbcFiles)
+		            {
+		                var strLocalFilePath = string.Format(@"{0}\{1}", DBCOutputDir, Path.GetFileName(strFileName));
+		                //var strLocalFilePath = Path.Combine(DBCOutputDir, Path.GetFileNameWithoutExtension(mpqFileName));
+		                //strLocalFilePath = Path.Combine(strLocalFilePath, Path.GetFileName(strFileName));
 
-									// Create an 8kb buffer
-									var byFileContents = new byte[8192];
+                        if (File.Exists(strLocalFilePath)) continue;
 
-									// Loop until we're out of data
-									while (true)
-									{
-										// Read from the MPQ
-										int intBytesRead = stmInput.Read(byFileContents, 0, byFileContents.Length);
+		                using (Stream stmOutput = new FileStream(strLocalFilePath, FileMode.Create))
+		                {
+		                    using (Stream stmInput = oArchive.OpenFile(strFileName).GetStream())
+		                    {
+		                        // Writing...
+		                        Console.Write(string.Format("Writing File {0}....", Path.GetFileName(strFileName)));
 
-										// Was there anything to read?
-										if (intBytesRead == 0)
-											break;
+		                        // Create an 8kb buffer
+		                        var byFileContents = new byte[8192];
 
-										// Write to the file
-										stmOutput.Write(byFileContents, 0, intBytesRead);
-									}
-								}
+		                        // Loop until we're out of data
+		                        while (true)
+		                        {
+		                            // Read from the MPQ
+		                            int intBytesRead = stmInput.Read(byFileContents, 0, byFileContents.Length);
 
-								// Close the File
-								stmOutput.Close();
+		                            // Was there anything to read?
+		                            if (intBytesRead == 0)
+		                                break;
 
-								Console.WriteLine("Done");
-							}
-						}
-					}
-				}
-			}
+		                            // Write to the file
+		                            stmOutput.Write(byFileContents, 0, intBytesRead);
+		                        }
+		                    }
+
+		                    Console.WriteLine("Done");
+		                }
+		            }
+		        }
+		    }
 		}
 
-		/// <summary>
+	    /// <summary>
 		/// Gets the locale.
 		/// </summary>
 		/// <param name="strDataFolder">The Wow data folder.</param>
 		/// <returns></returns>
-		private static string GetLocale(string strDataFolder)
+		private string GetLocale(string strDataFolder)
 		{
 			string strLocale = "";
 
@@ -157,8 +157,8 @@ namespace WCell.MPQTool
 				//Get this folders info
 				var dirInfo = new DirectoryInfo(arrFoundFolders[intFolder]);
 
-				//4 Characters long, could be enGB for example
-				if (dirInfo.Name.Length == 4)
+				//4 Characters long, could be enGB for example and contains mpq files
+				if (dirInfo.Name.Length == 4 && dirInfo.GetFiles("*.mpq").Length > 0)
 				{
 					//Let's just use this one.
 					strLocale = dirInfo.Name;
@@ -191,13 +191,19 @@ namespace WCell.MPQTool
 				Console.WriteLine("Found WoW in: " + m_wowDir);
 				return Path.GetFullPath(m_wowDir);
 			}
-			throw new Exception("Could not find WoW directory.");
+			return null;
 		}
 
-		public static void Dump()
+		public void Dump()
 		{
 			Dump(null, true, true);
 		}
+
+        public static void DumpToDir(string dumpDir)
+        {
+            var tool = new DBCTool {DBCOutputDir = dumpDir};
+            tool.Dump();
+        }
 
 		/// <summary>
 		/// Looks up the wow dir (if not specified) and dumps the DBC files from there)
@@ -205,66 +211,59 @@ namespace WCell.MPQTool
 		/// <param name="wowDir"></param>
 		/// <param name="clear">Whether to clear the DBC-dir</param>
 		/// <param name="checkClient"></param>
-		public static void Dump(string wowDir, bool clear, bool checkClient)
+		public void Dump(string wowDir, bool clear, bool checkClient)
 		{
 			try
 			{
 				if (checkClient)
 				{
 					Console.ForegroundColor = ConsoleColor.Yellow;
-					Console.WriteLine("Required Client Version: " + WCellInfo.RequiredVersion);
+					Console.WriteLine("Required Client Version: " + WCellInfo.RequiredVersion.BasicString);
 					Console.ResetColor();
 				}
 				Console.WriteLine();
 
 				m_wowDir = FindWowDir(wowDir);
 
-
-				if (wowDir == null)
+				if (m_wowDir != null)
 				{
-					if (InstallFolders.Count > 1)
-					{
-						string installResponse;
-						int i = 1;
-						Console.WriteLine();
-						Console.WriteLine("WoW found in the following folders");
-						Console.ForegroundColor = ConsoleColor.Green;
-						foreach (string dir in InstallFolders)
-						{
-							Console.WriteLine("{0}: {1}", i++, dir);
-						}
-						Console.ResetColor();
-
-						Console.WriteLine("Which installation do you wish to use?");
-						Console.WriteLine("Please enter the number of the installation.");
-						Console.WriteLine("Or to quit press q.");
-						installResponse = Console.ReadLine();
-						Console.WriteLine();
-
-						if (installResponse == null || installResponse.StartsWith("q"))
-						{
-							// program shutdown
-							return;
-						}
-						int num = int.Parse(installResponse);
-						num -= 1;
-						if (num >= InstallFolders.Count)
-						{
-							// program shutdown
-							return;
-						}
-						m_wowDir = InstallFolders[num];
-
-					}
-					else
-						m_wowDir = InstallFolders[0];
+					Console.WriteLine("Found WoW in: " + m_wowDir);
 				}
-
-				Console.WriteLine("Found and using WoW in: " + m_wowDir);
-				Console.WriteLine();
 
 				string response;
 				var curDir = new FileInfo(".");
+
+				do
+				{
+					if (m_wowDir != null)
+					{
+						Console.WriteLine("Is this the correct path for your WoW installation?");
+						Console.WriteLine("Press y to confirm or n to re-enter location.");
+					}
+					else
+					{
+						Console.WriteLine("Could not find a valid WoW installation - Please enter the path manually.");
+					}
+					response = Console.ReadLine();
+					if (response == null)
+					{
+						// program shutdown
+						return;
+					}
+
+					if (!response.StartsWith("y"))
+					{
+						Console.WriteLine("Please enter your wow directory.");
+						m_wowDir = Console.ReadLine();
+						if (m_wowDir == null)
+						{
+							// program shutdown
+							return;
+						}
+					}
+				}
+				while (!response.StartsWith("y"));
+
 				do
 				{
 					var outputDir = new DirectoryInfo(DBCOutputDir);
@@ -272,7 +271,6 @@ namespace WCell.MPQTool
 					Console.WriteLine("Do you want to export to that directory?");
 					Console.WriteLine("Press y to confirm or n to re-enter destination.");
 					response = Console.ReadLine();
-					Console.WriteLine();
 					if (response == null)
 					{
 						// program shutdown
@@ -285,7 +283,11 @@ namespace WCell.MPQTool
 						Console.WriteLine(curDir.FullName);
 						Console.WriteLine("Please enter the Output Directory - You can also use a relative path.");
 						DBCOutputDir = Console.ReadLine();
-						Console.WriteLine();
+						if (DBCOutputDir == null)
+						{
+							// program shutdown
+							return;
+						}
 					}
 				}
 				while (!response.StartsWith("y"));
@@ -297,7 +299,7 @@ namespace WCell.MPQTool
 				if (clear && Directory.Exists(DBCOutputDir))
 				{
 					Console.WriteLine();
-					Console.Write("Clearing Output directory... ");
+					Console.Write("Deleting Ouput directory... ");
 					Directory.Delete(DBCOutputDir, true);
 					Console.WriteLine("Done.");
 				}
@@ -312,24 +314,20 @@ namespace WCell.MPQTool
 					{
 						Console.ForegroundColor = ConsoleColor.Red;
 						Console.WriteLine();
-						Console.WriteLine("Please make sure that you were exporting from Client v" + WCellInfo.RequiredVersion);
+						Console.WriteLine("Please make sure that you were exporting from Client v" + WCellInfo.RequiredVersion.BasicString);
 					}
 					Console.ResetColor();
 				}
 			}
-
 			catch (Exception ex)
 			{
-				Console.ForegroundColor = ConsoleColor.Red;
-				Console.WriteLine(ex.Message);
-				Console.WriteLine("Export failed. Make sure, you configured your build correctly.");
-				Console.ResetColor();
+				LogUtil.ErrorException(ex, "Export failed. Make sure, you configured your build correctly.");
 			}
 		}
 
-		private static bool Export()
+		private bool Export()
 		{
-			var dir = m_wowDir + @"\Data";
+			var dir = Path.Combine(m_wowDir, "Data");
 
 			// Is there even a Data folder?
 			if (Directory.Exists(dir))
@@ -339,7 +337,7 @@ namespace WCell.MPQTool
 				// Did we find a locale?
 				if (strLocale != string.Empty)
 				{
-					dir = string.Format(@"{0}\{1}", dir, strLocale);
+					dir = Path.Combine(dir, strLocale);
 				}
 				else
 				{
@@ -357,7 +355,7 @@ namespace WCell.MPQTool
 
 			if (lstAllMPQFiles.Count > 0)
 			{
-				Console.WriteLine(string.Format("Found {0} MPQ's", lstAllMPQFiles.Count));
+				Console.WriteLine(string.Format("Found {0} MPQ files", lstAllMPQFiles.Count));
 				ProcessMPQ(lstAllMPQFiles);
 				return true;
 			}
@@ -379,7 +377,6 @@ namespace WCell.MPQTool
 
 			if (configInfo.Exists)
 			{
-				InstallFolders.Add(m_wowDir);
 				//DBCOutputDir = m_wowDir + "/DBC";
 				return true;
 			}
@@ -401,13 +398,13 @@ namespace WCell.MPQTool
 				return false;
 			}
 
-			if (!Environment.Is64BitOperatingSystem)
+		    if (!Environment.Is64BitProcess)
 			{
 				key = key.OpenSubKey("Blizzard Entertainment");
 			}
 			else
 			{
-				key = key.OpenSubKey("Wow6432Node");
+                key = key.OpenSubKey("Wow6432Node");
 				if (key == null)
 				{
 					return false;
@@ -424,16 +421,7 @@ namespace WCell.MPQTool
 				// So, did it exist?
 				if (oWoWKey != null)
 				{
-					List<string> subKeys = oWoWKey.GetSubKeyNames().ToList();
-					foreach (string subKeyStr in subKeys)
-					{
-						if (oWoWKey.OpenSubKey(subKeyStr).GetValue("InstallPath") != null)
-							InstallFolders.Add(oWoWKey.OpenSubKey(subKeyStr).GetValue("InstallPath").ToString());
-					}
-
 					//Let's get the install folder...
-					if (oWoWKey.GetValue("InstallPath") != null)
-						InstallFolders.Add(oWoWKey.GetValue("InstallPath").ToString());
 					m_wowDir = oWoWKey.GetValue("InstallPath").ToString();
 					return true;
 				}
@@ -445,7 +433,7 @@ namespace WCell.MPQTool
 
 		/// <param name="minColChangePct">The percentage of changed rows for a column to assume that it moved</param>
 		/// <param name="minColMatchPct">The percentage of matching rows between 2 columns to assume that they are identical (col might have moved to that one)</param>
-		public static void Compare(float minColChangePct, float minColMatchPct)
+		public void Compare(float minColChangePct, float minColMatchPct)
 		{
 			DBCFileComparer.MinColumnChangePct = minColChangePct;
 			DBCFileComparer.MinColumnMatchPct = minColMatchPct;
@@ -454,23 +442,41 @@ namespace WCell.MPQTool
 			Console.WriteLine("Writing Comparison Dump file to: \n" + outputFile);
 			using (var writer = new StreamWriter(outputFile, false))
 			{
-				var oldDir = Path.Combine(new DirectoryInfo(DefaultDBCOutputDir).Parent.FullName, "dbc 2.3");
+			    var dirInfo = new DirectoryInfo(DefaultDBCOutputDir).Parent;
+                if (dirInfo == null) throw new DirectoryNotFoundException();
+
+				var oldDir = Path.Combine(dirInfo.FullName, "dbc 2.3");
 				var newDir = DefaultDBCOutputDir;
 				var comparer = new DBCDirComparer(newDir, oldDir);
 				comparer.Compare(writer);
 			}
 		}
 
-		static void Main(string[] args)
-		{
-			Dump();
-			// Compare(40f, 90f);
-			//Dump(@"F:\games\wow\");
-			Console.ResetColor();
-			Console.WriteLine();
-			Console.WriteLine("Press ANY key to continue...");
-			Console.ReadKey();
-		}
+        public DBCTool()
+        {
+            var config = MPQToolConfig.Instance;
 
+            DBCDir = MPQToolConfig.DBCDirPrefix;
+            DefaultDBCOutputDir = MPQToolConfig.DefaultDBCOutputDir;
+            DBCOutputDir = DefaultDBCOutputDir;
+        }
 	}
+
+    public class DBCToolRunner
+    {
+        static void Main(string[] args)
+        {
+        	//LogUtil.SetupConsoleLogging();
+            var config = MPQToolConfig.Instance;
+            NativeMethods.InitAPI();
+            new DBCTool().Dump();
+            
+            // Compare(40f, 90f);
+            //Dump(@"F:\games\wow\");
+            Console.ResetColor();
+            Console.WriteLine();
+            Console.WriteLine("Press ANY key to continue...");
+            Console.ReadKey();
+        }
+    }
 }

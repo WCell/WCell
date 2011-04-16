@@ -52,7 +52,7 @@ namespace WCell.RealmServer.Spells.Effects
 			}
 			else
 			{
-				lockable = m_cast.UsedItem;
+				lockable = m_cast.TargetItem;
 			}
 
 			if (lockable == null)
@@ -62,10 +62,17 @@ namespace WCell.RealmServer.Spells.Effects
 			else
 			{
 				var lck = lockable.Lock;
+				var chr = m_cast.CasterChar;
 
 				if (lck == null)
 				{
 					log.Warn("Using OpenLock on object without Lock: " + lockable);
+					failReason = SpellFailedReason.Error;
+					return;
+				}
+				if (chr == null)
+				{
+					log.Warn("Using OpenLock without Character: " + chr);
 					failReason = SpellFailedReason.Error;
 					return;
 				}
@@ -95,14 +102,10 @@ namespace WCell.RealmServer.Spells.Effects
 							{
 								if (openingMethod.RequiredSkill != SkillId.None)
 								{
-									var chr = m_cast.CasterChar;
-									if (chr != null)
+									skill = chr.Skills[openingMethod.RequiredSkill];
+									if (skill == null || skill.ActualValue < openingMethod.RequiredSkillValue)
 									{
-										skill = chr.Skills[openingMethod.RequiredSkill];
-										if (skill == null || skill.ActualValue < openingMethod.RequiredSkillValue)
-										{
-											failReason = SpellFailedReason.MinSkill;
-										}
+										failReason = SpellFailedReason.MinSkill;
 									}
 								}
 								method = openingMethod;
@@ -135,25 +138,31 @@ namespace WCell.RealmServer.Spells.Effects
 			if (skill != null)
 			{
 				// check if the skill works
-				var skillVal = skill.ActualValue;
 				var reqSkill = method.RequiredSkillValue;
 				var diff = skill.ActualValue - (reqSkill == 1 ? 0 : reqSkill);
 
-				if (CheckSuccess(diff))
-				{
-					// skill gain?
-					skillVal += (ushort)Gain(diff);
-					skillVal = Math.Min(skillVal, skill.MaxValue);
-					skill.CurrentValue = (ushort)skillVal;
-
-					LockEntry.Handle(m_cast.CasterChar, lockable, method != null ? method.InteractionType : LockInteractionType.None);
-				}
-				else
+				if (!CheckSuccess(diff))
 				{
 					// failed
 					m_cast.Cancel(SpellFailedReason.TryAgain);
+					return;
 				}
+
+				// skill gain
+				var skillVal = skill.ActualValue;
+				skillVal += (ushort)Gain(diff);
+				skillVal = Math.Min(skillVal, skill.MaxValue);
+				skill.CurrentValue = (ushort)skillVal;
 			}
+
+			// open lock
+			var chr = m_cast.CasterChar;
+			chr.AddMessage(() =>
+			{
+				if (lockable is ObjectBase && !((ObjectBase)lockable).IsInWorld) return;
+
+				LockEntry.Handle(chr, lockable, method != null ? method.InteractionType : LockInteractionType.None);
+			});
 		}
 
 		protected override void Apply(WorldObject target)

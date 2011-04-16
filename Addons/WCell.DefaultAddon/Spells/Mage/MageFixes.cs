@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +9,9 @@ using WCell.Core.Initialization;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
+using WCell.RealmServer.Spells.Auras.Misc;
+using WCell.RealmServer.Spells.Effects;
+using WCell.RealmServer.Misc;
 using WCell.Util.Graphics;
 
 namespace WCell.Addons.Default.Spells.Mage
@@ -18,6 +21,12 @@ namespace WCell.Addons.Default.Spells.Mage
 		[Initialization(InitializationPass.Second)]
 		public static void FixMage()
 		{
+			// The improved counterspell aura should apply to Counterspell only
+			SpellLineId.MageArcaneImprovedCounterspell.Apply(spell =>
+			{
+				spell.AddCasterProcSpells(SpellLineId.MageCounterspell);
+			});
+
 			// Cone of cold is missing Range
 			SpellLineId.MageConeOfCold.Apply(spell =>
 			{
@@ -45,27 +54,36 @@ namespace WCell.Addons.Default.Spells.Mage
 				spell.AttributesExC = SpellAttributesExC.PersistsThroughDeath;
 				spell.CanOverrideEqualAuraRank = false;
 			});
-			SpellHandler.Apply(spell =>
-			{
-				spell.Effects[1].TriggerSpellId = SpellId.ClassSkillLivingBombRank1;
-				spell.Effects[1].AuraEffectHandlerCreator =
-					() => new TriggerSpellAfterAuraRemovedHandler();
-			}, SpellId.MageFireLivingBombRank1);
-			SpellHandler.Apply(spell =>
-			{
-				spell.Effects[1].TriggerSpellId = SpellId.ClassSkillLivingBombRank2_2;
-				spell.Effects[1].AuraEffectHandlerCreator =
-					() => new TriggerSpellAfterAuraRemovedHandler();
-			}, SpellId.ClassSkillLivingBombRank2);
-			SpellHandler.Apply(spell =>
-			{
-				spell.Effects[1].TriggerSpellId = SpellId.ClassSkillLivingBombRank3_2;
-				spell.Effects[1].AuraEffectHandlerCreator =
-					() => new TriggerSpellAfterAuraRemovedHandler();
-			}, SpellId.ClassSkillLivingBombRank3);
+            //SpellHandler.Apply(spell =>
+            //{
+            //    spell.Effects[1].TriggerSpellId = SpellId.ClassSkillLivingBombRank1;
+            //    spell.Effects[1].AuraEffectHandlerCreator =
+            //        () => new TriggerSpellAfterAuraRemovedHandler();
+            //}, SpellId.MageFireLivingBombRank1);
+            //SpellHandler.Apply(spell =>
+            //{
+            //    spell.Effects[1].TriggerSpellId = SpellId.ClassSkillLivingBombRank2_2;
+            //    spell.Effects[1].AuraEffectHandlerCreator =
+            //        () => new TriggerSpellAfterAuraRemovedHandler();
+            //}, SpellId.ClassSkillLivingBombRank2);
+            //SpellHandler.Apply(spell =>
+            //{
+            //    spell.Effects[1].TriggerSpellId = SpellId.ClassSkillLivingBombRank3_2;
+            //    spell.Effects[1].AuraEffectHandlerCreator =
+            //        () => new TriggerSpellAfterAuraRemovedHandler();
+            //}, SpellId.ClassSkillLivingBombRank3);
 
 			// These spells cancel eachother
-			AuraHandler.AddAuraGroup(SpellLineId.MageFrostArmor, SpellLineId.MageIceArmor, SpellLineId.MageArmor);
+			AuraHandler.AddAuraGroup(SpellLineId.MageIceArmor, SpellLineId.MageArmor, SpellLineId.MageMoltenArmor);
+
+			// Mana gems don't have a limit
+			SpellHandler.Apply(spell =>
+			{
+				spell.RemoveEffect(SpellEffectType.CreateItem);
+				var efct = spell.GetEffect(SpellEffectType.Dummy);
+				efct.EffectType = SpellEffectType.TriggerSpell;
+				efct.TriggerSpellId = (SpellId)efct.CalcEffectValue();
+			}, SpellLineId.MageConjureManaGem);
 		}
 
 		public class TriggerSpellAfterAuraRemovedHandler : AuraEffectHandler
@@ -76,7 +94,7 @@ namespace WCell.Addons.Default.Spells.Mage
 				{
 					var triggerSpell = m_spellEffect.TriggerSpell;
 
-					var caster = m_aura.Caster;
+					var caster = m_aura.CasterUnit;
 					if (caster != null)
 					{
 						var loc = m_aura.Auras.Owner.Position;

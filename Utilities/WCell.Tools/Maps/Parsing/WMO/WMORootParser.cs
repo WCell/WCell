@@ -1,26 +1,35 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
+using NLog;
 using WCell.MPQTool;
+using WCell.Tools.Maps.Parsing.WMO.Components;
+using WCell.Tools.Maps.Structures;
+using WCell.Tools.Maps.Utils;
 using WCell.Util.Graphics;
 
-namespace WCell.Tools.Maps
+namespace WCell.Tools.Maps.Parsing.WMO
 {
     public static class WMORootParser
     {
-        public static WMORoot Process(MpqManager manager, string filePath)
-        {
-            if (!manager.FileExists(filePath)) return null;
-            var root = new WMORoot(filePath);
-            
+        private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-            using (var fileReader = new BinaryReader(manager.OpenFile(filePath)))
+
+        public static WMORoot Process(MpqManager mpqManager, string filePath)
+        {
+            var root = new WMORoot(filePath);
+
+            if (!mpqManager.FileExists(filePath))
+            {
+                log.Error("WMO file does not exist: ", filePath);
+            }
+
+            using (var file = mpqManager.OpenFile(filePath))
+            using (var fileReader = new BinaryReader(file))
             {
                 uint type = 0;
                 uint size = 0;
-                var curPos = AdvanceToNextChunk(fileReader, 0, ref type, ref size);
+                long curPos = AdvanceToNextChunk(fileReader, 0, ref type, ref size);
 
                 if (type == Signatures.MVER)
                 {
@@ -156,7 +165,7 @@ namespace WCell.Tools.Maps
                 if (type == Signatures.MOLT)
                 {
                     // Lights
-                    ReadMOLT(fileReader, root, size);
+                    ReadMOLT(fileReader, root);
                 }
                 else
                 {
@@ -200,7 +209,7 @@ namespace WCell.Tools.Maps
                 if (type == Signatures.MFOG)
                 {
                     // Fog info
-                    ReadMFOG(fileReader, root);
+                    ReadMFOG(fileReader, root, size);
                 }
                 else
                 {
@@ -227,20 +236,20 @@ namespace WCell.Tools.Maps
 
         static long AdvanceToNextChunk(BinaryReader br, long curPos, ref uint type, ref uint size)
         {
-            if (br.BaseStream.Length <= (curPos + size))
+            if ((curPos + size) >= br.BaseStream.Length)
             {
                 return br.BaseStream.Length;
             }
 
             br.BaseStream.Seek(curPos + size, SeekOrigin.Begin);
-            if (br.BaseStream.Position == br.BaseStream.Length)
-            {
-                return br.BaseStream.Length;
-            }
+            //if (br.BaseStream.Position == br.BaseStream.Length)
+            //{
+            //    return br.BaseStream.Length;
+            //}
 
             type = br.ReadUInt32();
             size = br.ReadUInt32();
-            var newCurPos = br.BaseStream.Position;
+            long newCurPos = br.BaseStream.Position;
             return newCurPos;
         }
 
@@ -262,53 +271,67 @@ namespace WCell.Tools.Maps
             wmo.Header.DoodadCount = br.ReadUInt32();
             wmo.Header.DoodadSetCount = br.ReadUInt32();
 
-            //wmo.AmbientColor = new ImVector(br.ReadBytes(4));
-            wmo.Header.AmbientColor = br.ReadUInt32();
+            wmo.Header.AmbientColor = br.ReadColor4();
             wmo.Header.WMOId = br.ReadUInt32();
 
-            Vector3 min;
-            min.X = br.ReadSingle() * -1;
-            min.Z = br.ReadSingle();
-            min.Y = br.ReadSingle();
-
-            Vector3 max;
-            max.X = br.ReadSingle() * -1;
-            max.Z = br.ReadSingle();
-            max.Y = br.ReadSingle();
-            wmo.Header.BoundingBox = new BoundingBox(min, max);
+            wmo.Header.BoundingBox = new BoundingBox(br.ReadWMOVector3(), br.ReadWMOVector3());
 
             wmo.Header.Flags = (WMORootHeaderFlags)br.ReadUInt32();
 
             wmo.Groups = new WMOGroup[wmo.Header.GroupCount];
-
         }
 
         static void ReadMOTX(BinaryReader br, WMORoot wmo, uint size)
         {
-            wmo.Textures = new Dictionary<int, string>();
+            //wmo.Textures = new Dictionary<int, string>();
 
-            long endPos = br.BaseStream.Position + size;
-            while (br.BaseStream.Position < endPos)
-            {
-                if (br.PeekByte() == 0)
-                {
-                    br.BaseStream.Position++;
-                }
-                else
-                {
-                    wmo.Textures.Add((int)(size - (endPos - br.BaseStream.Position)), br.ReadCString());
-                }
-            }
-
-            if (wmo.Header.TextureCount != wmo.Textures.Count)
-            {
-                //Console.WriteLine();
-            }
+            //long endPos = br.BaseStream.Position + size;
+            //while (br.BaseStream.Position < endPos)
+            //{
+            //    if (br.PeekByte() == 0)
+            //    {
+            //        br.BaseStream.Position++;
+            //    }
+            //    else
+            //    {
+            //        wmo.Textures.Add((int) (size - (endPos - br.BaseStream.Position)), br.ReadCString());
+            //    }
+            //}
         }
 
         static void ReadMOMT(BinaryReader br, WMORoot wmo)
         {
-            // http://www.madx.dk/wowdev/wiki/index.php?title=WMO#MOMT_chunk
+            //wmo.Materials = new Material[wmo.Header.TextureCount];
+
+            //for (int i = 0; i < wmo.Materials.Length; i++)
+            //{
+            //    var mt = new Material
+            //                 {
+            //                     Flags = (MOPY.MaterialFlags)br.ReadUInt32(),
+            //                     Int_1 = br.ReadUInt32(),
+            //                     BlendMode = br.ReadInt32(),
+            //                     TextureNameStart = br.ReadInt32(),
+            //                     SidnColor = br.ReadColor4(),
+            //                     FrameSidnColor = br.ReadColor4(),
+            //                     TextureNameEnd = br.ReadInt32(),
+            //                     DiffColor = br.ReadColor4(),
+            //                     GroundType = br.ReadInt32(),
+            //                     Float_1 = br.ReadSingle(),
+            //                     Float_2 = br.ReadSingle(),
+            //                     Int_2 = br.ReadInt32(),
+            //                     Int_3 = br.ReadInt32(),
+            //                     Int_4 = br.ReadInt32()
+            //                 };
+
+            //    // these 2 are set in RAM in the client to the associated HTEXTUREs
+            //    br.ReadUInt32();// 0x38
+            //    br.ReadUInt32();// 0x3C
+
+            //    wmo.Materials[i] = mt;
+
+            //    if (mt.Flags != 0)
+            //        Console.WriteLine();
+            //}
         }
 
         static void ReadMOGN(BinaryReader br, WMORoot wmo, uint size)
@@ -335,12 +358,11 @@ namespace WCell.Tools.Maps
 
             for (int i = 0; i < wmo.GroupInformation.Length; i++)
             {
-                var g = new GroupInformation
-                {
-                    Flags = (WMOGroupFlags)br.ReadUInt32(),
-                    BoundingBox = br.ReadBoundingBox(),
-                    NameIndex = br.ReadInt32()
-                };
+                var g = new GroupInformation {
+                                                 Flags = (WMOGroupFlags) br.ReadUInt32(),
+                                                 BoundingBox = new BoundingBox(br.ReadWMOVector3(), br.ReadWMOVector3()),
+                                                 NameIndex = br.ReadInt32()
+                                             };
 
                 wmo.GroupInformation[i] = g;
             }
@@ -354,87 +376,111 @@ namespace WCell.Tools.Maps
         static void ReadMOPV(BinaryReader br, WMORoot wmo)
         {
             // PortalCount of 4 x Vector3 to form a rectangle for the doorway
-            uint vertexCount = wmo.Header.PortalCount * 4;
-            wmo.PortalVertices = new Vector3[vertexCount];
+            //uint vertexCount = wmo.Header.PortalCount*4;
+            //wmo.PortalVertices = new Vector3[vertexCount];
 
-            for (int i = 0; i < vertexCount; i++)
-            {
-                wmo.PortalVertices[i] = br.ReadVector3();
-            }
+            //for (var i=0; i<vertexCount; i++)
+            //{
+            //    wmo.PortalVertices[i] = br.ReadVector3();
+            //}
         }
 
         static void ReadMOPT(BinaryReader br, WMORoot wmo)
         {
-            wmo.PortalInformation = new PortalInformation[wmo.Header.PortalCount];
+            //wmo.PortalInformation = new PortalInformation[wmo.Header.PortalCount];
 
-            for (int i = 0; i < wmo.Header.PortalCount; i++)
-            {
-                var p = new PortalInformation
-                {
-                    Vertices = new VertexSpan
-                    {
-                        StartVertex = br.ReadInt16(),
-                        VertexCount = br.ReadInt16(),
-                    },
-                    Plane = br.ReadPlane()
-                };
-                wmo.PortalInformation[i] = p;
-            }
+            //for (var i = 0; i < wmo.Header.PortalCount; i++)
+            //{
+            //    var p = new PortalInformation
+            //                {
+            //                    Vertices = new VertexSpan
+            //                                   {
+            //                                       StartVertex = br.ReadInt16(),
+            //                                       VertexCount = br.ReadInt16(),
+            //                                   },
+            //                    Plane = br.ReadPlane()
+            //                };
+            //    wmo.PortalInformation[i] = p;
+            //}
         }
 
         static void ReadMOPR(BinaryReader br, WMORoot wmo)
         {
-            wmo.PortalRelations = new PortalRelation[wmo.Header.PortalCount];
+            //wmo.PortalRelations = new PortalRelation[wmo.Header.PortalCount];
 
-            for (int i = 0; i < wmo.PortalRelations.Length; i++)
-            {
-                var r = new PortalRelation
-                {
-                    PortalIndex = br.ReadUInt16(),
-                    GroupIndex = br.ReadUInt16(),
-                    Side = br.ReadInt16()
-                };
-                br.ReadInt16(); // filler
+            //for (int i = 0; i < wmo.PortalRelations.Length; i++)
+            //{
+            //    var r = new PortalRelation
+            //    {
+            //        PortalIndex = br.ReadUInt16(),
+            //        GroupIndex = br.ReadUInt16(),
+            //        Side = br.ReadInt16()
+            //    };
+            //    br.ReadInt16(); // filler
 
-                wmo.PortalRelations[i] = r;
-            }
+            //    wmo.PortalRelations[i] = r;
+            //}
         }
 
         static void ReadMOVV(BinaryReader br, WMORoot wmo, uint size)
         {
-            wmo.VisibleVertices = new Vector3[size / 12]; // 12 = sizeof(Vector3), but we can't use sizeof with Vector3
+            //wmo.VisibleVertices = new Vector3[size/12]; // 12 = sizeof(Vector3), but we can't use sizeof with Vector3
 
-            for (int i = 0; i < wmo.VisibleVertices.Length; i++)
-            {
-                wmo.VisibleVertices[i] = br.ReadVector3();
-            }
+            //for (int i = 0; i < wmo.VisibleVertices.Length; i++)
+            //{
+            //    wmo.VisibleVertices[i] = br.ReadVector3();
+            //}
         }
 
         static void ReadMOVB(BinaryReader br, WMORoot wmo, uint size)
         {
-            uint blockCount = size / 4;
-            wmo.VisibleBlocks = new VertexSpan[blockCount];
+            //uint blockCount = size/4;
+            //wmo.VisibleBlocks = new VertexSpan[blockCount];
 
-            for (int i = 0; i < blockCount; i++)
-            {
-                wmo.VisibleBlocks[i] = new VertexSpan
-                {
-                    StartVertex = br.ReadInt16(),
-                    VertexCount = br.ReadInt16()
-                };
-            }
+            //for (int i = 0; i < blockCount; i++)
+            //{
+            //    wmo.VisibleBlocks[i] = new VertexSpan
+            //                               {
+            //                                   StartVertex = br.ReadInt16(),
+            //                                   VertexCount = br.ReadInt16()
+            //                               };
+            //}
         }
-
-        static void ReadMOLT(BinaryReader br, WMORoot wmo, uint size)
+        
+        static void ReadMOLT(BinaryReader br, WMORoot wmo)
         {
-            // TODO: http://www.madx.dk/wowdev/wiki/index.php?title=WMO#MOLT_chunk
+            //wmo.LightInfo = new LightInformation[wmo.Header.LightCount];
+
+            //for (int i = 0; i < wmo.LightInfo.Length; i++)
+            //{
+            //    var light = new LightInformation
+            //                    {
+            //                        Byte_1 = br.ReadByte(),
+            //                        Byte_2 = br.ReadByte(),
+            //                        Byte_3 = br.ReadByte(),
+            //                        Byte_4 = br.ReadByte(),
+            //                        Color = br.ReadColor4(),
+            //                        Position = br.ReadVector3(),
+            //                        Intensity = br.ReadSingle(),
+            //                        AttenStart = br.ReadSingle(),
+            //                        AttenEnd = br.ReadSingle(),
+            //                        Float_4 = br.ReadSingle(),
+            //                        Float_5 = br.ReadSingle(),
+            //                        Float_6 = br.ReadSingle(),
+            //                        Float_7 = br.ReadSingle()
+            //                    };
+
+            //    //FixVector3(ref light.position);
+
+            //    wmo.LightInfo[i] = light;
+            //}
         }
 
         static void ReadMODS(BinaryReader br, WMORoot wmo)
         {
             wmo.DoodadSets = new DoodadSet[wmo.Header.DoodadSetCount];
 
-            for (var i = 0; i < wmo.Header.DoodadSetCount; i++)
+            for (int i = 0; i < wmo.Header.DoodadSetCount; i++)
             {
                 var d = new DoodadSet
                 {
@@ -462,7 +508,7 @@ namespace WCell.Tools.Maps
                 else
                 {
                     //doodadNames.Add(size - (endPos - br.BaseStream.Position), br.ReadCString());
-                    wmo.DoodadFiles.Add((int)(size - (endPos - br.BaseStream.Position)), br.ReadCString());
+                    wmo.DoodadFiles.Add((int) (size - (endPos - br.BaseStream.Position)), br.ReadCString());
                 }
             }
         }
@@ -470,46 +516,70 @@ namespace WCell.Tools.Maps
         static void ReadMODD(BinaryReader br, WMORoot wmo, uint size)
         {
             // Why oh why is wmo.Header.DoodadCount wrong sometimes
-            uint count = size / 40; // 40 is the size of DoodadDefinition
-            wmo.DoodadDefinitions = new DoodadDefinition[count];
+            // 40 is the size of DoodadDefinition
+            wmo.DoodadDefinitions = new DoodadDefinition[size / 40];
 
-            for (int i = 0; i < wmo.DoodadDefinitions.Length; i++)
+            for (var i = 0; i < wmo.DoodadDefinitions.Length; i++)
             {
                 var dd = new DoodadDefinition
-                {
-                    NameIndex = br.ReadInt32(),
-                    Position = br.ReadVector3(),
-                    Rotation = br.ReadQuaternion(),
-                    Scale = br.ReadSingle(),
-                    Color = br.ReadUInt32()
-                };
+                             {
+                                 NameIndex = br.ReadInt32(),
+                                 Position = br.ReadWMOVector3(),
+                                 Rotation = br.ReadQuaternion(),
+                                 Scale = br.ReadSingle(),
+                                 Color = br.ReadColor4()
+                             };
 
                 if (dd.NameIndex != -1)
                 {
-                    if (!wmo.DoodadFiles.TryGetValue(dd.NameIndex, out dd.FilePath))
-                    {
-                        Console.WriteLine("Erroneous dd.NameIndex in WmoRoot: {0}", wmo.FilePath);
-                    }
+                    string filePath;
+                    if (wmo.DoodadFiles.TryGetValue(dd.NameIndex, out filePath))
+                        dd.FilePath = filePath;
                 }
 
                 wmo.DoodadDefinitions[i] = dd;
             }
         }
 
-        static void ReadMFOG(BinaryReader br, WMORoot wmo)
+        static void ReadMFOG(BinaryReader br, WMORoot wmo, uint size)
         {
-            // TODO: http://www.madx.dk/wowdev/wiki/index.php?title=WMO#MFOG_chunk
+            //wmo.Fogs = new Fog[size/48];
+
+            //for (int i = 0; i < wmo.Fogs.Length; i++)
+            //{
+            //    var fog = new Fog
+            //                  {
+            //                      Flags = (FogFlags)br.ReadUInt32(),
+            //                      Position = br.ReadVector3(),
+            //                      Start = br.ReadSingle(),
+            //                      End = br.ReadSingle(),
+            //                      FogInfo_FOG = new FogInfo
+            //                                     {
+            //                                         End = br.ReadSingle(),
+            //                                         StartScalar = br.ReadSingle(),
+            //                                         Color = br.ReadColor4()
+            //                                     },
+            //                      FogInfo_UWFOG = new FogInfo
+            //                                     {
+            //                                         End = br.ReadSingle(),
+            //                                         StartScalar = br.ReadSingle(),
+            //                                         Color = br.ReadColor4()
+            //                                     }
+            //                  };
+
+            //    wmo.Fogs[i] = fog;
+            //}
         }
 
         static void ReadMCVP(BinaryReader br, WMORoot wmo, uint size)
         {
-            // TODO: http://www.madx.dk/wowdev/wiki/index.php?title=WMO#MCVP_chunk
-            wmo.ConvexVolumePlanes = new Plane[size / (4 * sizeof(float))];
+            //wmo.ComplexVolumePlanes = new Plane[size/(4*sizeof (float))];
 
-            for (int i = 0; i < wmo.ConvexVolumePlanes.Length; i++)
-            {
-                wmo.ConvexVolumePlanes[i] = br.ReadPlane();
-            }
+            //for (int i = 0; i < wmo.ComplexVolumePlanes.Length; i++)
+            //{
+            //    wmo.ComplexVolumePlanes[i] = br.ReadPlane();
+            //}
         }
     }
+
 }

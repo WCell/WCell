@@ -25,54 +25,29 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	/// </summary>
 	public class PeriodicTriggerSpellHandler : AuraEffectHandler
 	{
-		protected Spell spell;
-		protected SpellCast cast, origCast;
-
-		protected internal override void Apply()
+		protected override void Apply()
 		{
-			if (spell == null)
-			{
-				var channel = m_aura.Controller as SpellChannel;
-				if (channel != null)
-				{
-					origCast = channel.Cast;
-				}
-				else
-				{
-					origCast = m_aura.Auras.Owner.SpellCast;
-				}
-
-				if (origCast == null)
-				{
-					return;
-					//throw new Exception("Cannot apply a Periodic Trigger Spell Aura on anyone but the Caster");
-				}
-
-				spell = m_spellEffect.TriggerSpell;
-				if (spell == null)
-				{
-					LogManager.GetCurrentClassLogger().Warn("Found invalid periodic TriggerSpell in Spell {0} ({1}) ",
-						m_spellEffect.Spell, 
-						(uint)m_spellEffect.TriggerSpellId);
-					return;
-				}
-			}
-
-			cast = SpellCast.ObtainPooledCast(origCast.Caster);
-			cast.TargetLoc = origCast.TargetLoc;
-			cast.Selected = origCast.Selected;
-			//cast.Start(spell, m_spellEffect, true);
-			cast.Start(spell, true);
+			TriggerSpell(m_spellEffect.TriggerSpell);
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected void TriggerSpell(Spell spell)
 		{
-			if (cast != null && cast.IsChanneling)
+			SpellCast cast = m_aura.SpellCast;
+
+			if (spell == null)
 			{
-				cast.Cancel(SpellFailedReason.Ok);
-				cast.Dispose();
-				cast = null;
+				LogManager.GetCurrentClassLogger().Warn("Found invalid periodic TriggerSpell in Spell {0} ({1}) ",
+					m_aura.Spell,
+					(uint)m_spellEffect.TriggerSpellId);
+				return;
 			}
+			
+			SpellCast.ValidateAndTriggerNew(spell, m_aura.CasterReference, Owner, Owner,  m_aura.Controller as SpellChannel, cast != null ? cast.TargetItem : null,
+				null, m_spellEffect);
+		}
+
+		protected override void Remove(bool cancelled)
+		{
 		}
 
 

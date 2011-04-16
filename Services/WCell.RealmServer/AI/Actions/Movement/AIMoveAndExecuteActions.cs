@@ -1,4 +1,4 @@
-﻿using WCell.RealmServer.Entities;
+using WCell.RealmServer.Entities;
 using WCell.RealmServer.Misc;
 using WCell.Util;
 using WCell.Util.Graphics;
@@ -26,8 +26,8 @@ namespace WCell.RealmServer.AI.Actions.Movement
 
 		public int TimeoutMillis
 		{
-			get { return m_TimeoutTicks / m_owner.Region.UpdateDelay; }
-			set { m_TimeoutTicks = value / m_owner.Region.UpdateDelay; }
+			get { return m_TimeoutTicks / m_owner.Map.UpdateDelay; }
+			set { m_TimeoutTicks = value / m_owner.Map.UpdateDelay; }
 		}
 
 		public int TimeoutTicks
@@ -38,8 +38,8 @@ namespace WCell.RealmServer.AI.Actions.Movement
 
 		public int RuntimeMillis
 		{
-			get { return m_RuntimeTicks / m_owner.Region.UpdateDelay; }
-			set { m_RuntimeTicks = value / m_owner.Region.UpdateDelay; }
+			get { return m_RuntimeTicks / m_owner.Map.UpdateDelay; }
+			set { m_RuntimeTicks = value / m_owner.Map.UpdateDelay; }
 		}
 
 		public int RuntimeTicks

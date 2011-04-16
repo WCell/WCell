@@ -35,127 +35,138 @@ namespace WCell.RealmServer.Handlers
 			var talentId = (TalentId)packet.ReadUInt32();
 			var rank = packet.ReadInt32();	// zero-based Rank-mask
 
-			client.ActiveCharacter.SpecProfile.LearnTalent(new SimpleTalentDescriptor() {
-			    TalentId = talentId,
-                Rank = rank
-			});
+			var talents = client.ActiveCharacter.Talents;
+
+			if (talents.Learn(talentId, rank) == null) return;
+			
+			// send new talent group list
+			SendTalentGroupList(talents);
 		}
 
 		[ClientPacketHandler(RealmServerOpCode.MSG_TALENT_WIPE_CONFIRM)]
 		public static void HandleClearTalents(IRealmClient client, RealmPacketIn packet)
 		{
-			client.ActiveCharacter.ResetTalents();
+			client.ActiveCharacter.Talents.ResetTalents();
 		}
 
-        [ClientPacketHandler(RealmServerOpCode.CMSG_LEARN_PREVIEW_TALENTS)]
-        public static void HandleSaveTalentGroup(IRealmClient client, RealmPacketIn packet)
-        {
-            var count = packet.ReadInt32();
+		[ClientPacketHandler(RealmServerOpCode.CMSG_LEARN_PREVIEWED_TALENTS)]
+		public static void HandleSaveTalentGroup(IRealmClient client, RealmPacketIn packet)
+		{
+			var count = packet.ReadInt32();
 
-            var list = new List<SimpleTalentDescriptor>(count);
-            for (var i = 0; i < count; i++)
-            {
-                list.Add(new SimpleTalentDescriptor() {
-                    TalentId = (TalentId)packet.ReadUInt32(),
-                    Rank = packet.ReadInt32()
-                });
-            }
+			var list = new List<SimpleTalentDescriptor>(count);
+			for (var i = 0; i < count; i++)
+			{
+				list.Add(new SimpleTalentDescriptor()
+				{
+					TalentId = (TalentId)packet.ReadUInt32(),
+					Rank = packet.ReadInt32()
+				});
+			}
 
-            var chr = client.ActiveCharacter;
-			if (chr.SpecProfile != null)
-            {
-				// TODO: Set Talent Group
-				//chr.SpecProfile.LearnTalentGroupTalents(list);
-            }
-        }
+			var chr = client.ActiveCharacter.CurrentSpecProfile;
+			// TODO: Set Talent Group
+			//chr.SpecProfile.LearnTalentGroupTalents(list);
+		}
 
 		/// <summary>
 		/// Sends a request to wipe all talents, which must be confirmed by the player
 		/// </summary>
-		public static void SendClearQuery(IHasTalents thing)
+		public static void SendClearQuery(TalentCollection talents)
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.MSG_TALENT_WIPE_CONFIRM, 12))
 			{
-				packet.Write(thing.EntityId);
-				packet.Write(thing.Talents.ResetAllPrice);
+				packet.Write(talents.Owner.EntityId);
+				packet.Write(talents.GetResetPrice());
 
-				thing.Client.Send(packet);
+				talents.OwnerCharacter.Send(packet);
 			}
 		}
 
-        public static void SendTalentGroupList(IHasTalents hasTalents)
-        {
-			SendTalentGroupList(hasTalents, hasTalents.SpecProfile != null ? hasTalents.SpecProfile.TalentGroupInUse : 0);
-        }
+		public static void SendTalentGroupList(TalentCollection talents)
+		{
+			SendTalentGroupList(talents, talents.CurrentSpecIndex);
+		}
 
 		/// <summary>
-        /// Sends the client the list of talents
-        /// </summary>
-        /// <param name="hasTalents">The IHasTalents to send the list from</param>
-        public static void SendTalentGroupList(IHasTalents hasTalents, int talentGroupId)
-        {
-            using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_TALENTS_INFO))
-            {
-                var isPlayer = (hasTalents is Character);
+		/// Sends the client the list of talents
+		/// </summary>
+		/// <param name="hasTalents">The IHasTalents to send the list from</param>
+		public static void SendTalentGroupList(TalentCollection talents, int talentGroupId)
+		{
+			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_TALENTS_INFO))
+			{
+				var owner = talents.Owner;
+				var isPlayer = owner is Character;
 
-                packet.Write((byte)(isPlayer ? 0 : 1));
-                if (isPlayer)
+				packet.Write((byte)(isPlayer ? 0 : 1));
+				if (isPlayer)
 				{
-					WritePlayerTalentList(packet, (Character)hasTalents, talentGroupId);
-                }
-                else
+					WritePlayerTalentList(packet, (Character)owner, talentGroupId);
+				}
+				else
 				{
-					packet.Write(hasTalents.FreeTalentPoints);
-					packet.Write((byte)hasTalents.Talents.Count);
-					foreach (var talent in hasTalents.Talents)
+					packet.Write(talents.FreeTalentPoints);
+					packet.Write((byte)talents.Count);
+					foreach (var talent in talents)
 					{
 						packet.Write((int)talent.Entry.Id);
 						packet.Write((byte)talent.Rank);
 					}
-                }
-                hasTalents.Client.Send(packet);
-            }
-        }
+				}
+				talents.OwnerCharacter.Send(packet);
+			}
+		}
 
-        public static void SendInspectTalents(Character chr)
-        {
-            using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_INSPECT_TALENT))
-            {
-                chr.EntityId.WritePacked(packet);
-                WritePlayerTalentList(packet, chr, chr.SpecProfile.TalentGroupInUse);
-                
-                chr.Client.Send(packet);
-            }
-        }
+		public static void SendInspectTalents(Character chr)
+		{
+			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_INSPECT_TALENT))
+			{
+				chr.EntityId.WritePacked(packet);
+				WritePlayerTalentList(packet, chr, chr.Talents.CurrentSpecIndex);
+
+				chr.Client.Send(packet);
+			}
+		}
 
 		private static void WritePlayerTalentList(BinaryWriter packet, Character chr, int talentGroupId)
-        {
-        	var spec = chr.SpecProfile;
-            var talentGroupCount = (byte)spec.TalentGroupCount;
+		{
+			var spec = chr.CurrentSpecProfile;
+			var talentGroupCount = (byte)chr.Talents.SpecProfileCount;
 
-            packet.Write(chr.FreeTalentPoints);
-            packet.Write(talentGroupCount);
-            packet.Write((byte)talentGroupId);
+			packet.Write(chr.FreeTalentPoints);
+			packet.Write(talentGroupCount);
+			packet.Write((byte)talentGroupId);
 
-            if (talentGroupCount <= 0) return;
+			if (talentGroupCount <= 0) return;
 
-            var talentList = chr.Talents.ById;
-            var glyphList = spec.GlyphGroups[talentGroupId] ?? new List<GlyphRecord>();
+			var talentList = chr.Talents.ById;
+			var glyphs = spec.GlyphIds;
 
-            for (var i = 0; i < talentGroupCount; i++)
-            {
-                packet.Write((byte)talentList.Count);
-                foreach (var pair in talentList)
-                {
-                    packet.Write((int)pair.Key);
-                    packet.Write((byte)pair.Value.Rank);
-                }
-                packet.Write((byte)glyphList.Count);
-                foreach (var record in glyphList)
-                {
-                    packet.Write(record.GlyphPropertiesId);
-                }
-            }
-        }
+			for (var i = 0; i < talentGroupCount; i++)
+			{
+				packet.Write((byte)talentList.Count);
+				foreach (var pair in talentList)
+				{
+					packet.Write((int)pair.Key);
+					packet.Write((byte)pair.Value.Rank);
+				}
+
+				if (glyphs != null)
+				{
+					// TODO: Glyphs
+					packet.Write((byte) 0);
+					//packet.Write((byte)glyphList.Length);
+					//foreach (var record in glyphList)
+					//{
+					//    packet.Write(record.GlyphPropertiesId);
+					//}
+				}
+				else
+				{
+					packet.Write((byte)0);
+				}
+			}
+		}
 	}
 }

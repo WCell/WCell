@@ -12,6 +12,15 @@ namespace WCell.RealmServer.Commands
 		public TranslatableItem ParamInfo;
 
 		/// <summary>
+		/// The status that is required by a Command by default
+		/// </summary>
+		public virtual RoleStatus RequiredStatusDefault
+		{
+			// make Staff default
+			get { return RoleStatus.Staff; }
+		}
+
+		/// <summary>
 		/// The kind of target that is required for this command 
 		/// (Target is set to the command-calling User, if he/she has none selected or not doubled the Command-Prefix).
 		/// </summary>
@@ -22,13 +31,13 @@ namespace WCell.RealmServer.Commands
 
 		public virtual bool RequiresContext
 		{
-			get { return NeedsCharacter || TargetTypes != 0; }
+			get { return RequiresCharacter || TargetTypes != 0; }
 		}
 
 		/// <summary>
 		/// Whether the Character argument needs to be supplied by the trigger's Args
 		/// </summary>
-		public virtual bool NeedsCharacter
+		public virtual bool RequiresCharacter
 		{
 			get { return false; }
 		}
@@ -44,15 +53,6 @@ namespace WCell.RealmServer.Commands
 			{
 				return true;
 			}
-		}
-
-		/// <summary>
-		/// The status that is required by a Command by default
-		/// </summary>
-		public virtual RoleStatus RequiredStatusDefault
-		{
-			// make Staff default
-			get { return RoleStatus.Staff; }
 		}
 
 		public void ProcessNth(CmdTrigger<RealmServerCmdArgs> trigger)
@@ -71,7 +71,7 @@ namespace WCell.RealmServer.Commands
 			}
 			else
 			{
-				trigger.Reply(LangKey.SubCommandNotFound, subAlias);
+				trigger.Reply(RealmLangKey.SubCommandNotFound, subAlias);
 				trigger.Text.Skip(trigger.Text.Length);
 				mgr.DisplayCmd(trigger, this);
 			}
@@ -86,7 +86,7 @@ namespace WCell.RealmServer.Commands
 			}
 			else if (!silent)
 			{
-				trigger.Reply(LangKey.MustNotUseCommand, cmd.Name);
+				trigger.Reply(RealmLangKey.MustNotUseCommand, cmd.Name);
 			}
 			return false;
 		}
@@ -109,10 +109,46 @@ namespace WCell.RealmServer.Commands
 			return trigger.Translate(ParamInfo);
 		}
 
+		#region SubCommand
 		public abstract new class SubCommand : BaseCommand<RealmServerCmdArgs>.SubCommand
 		{
 			public TranslatableItem Description;
 			public TranslatableItem ParamInfo;
+
+			///// <summary>
+			///// The kind of target that is required for this command 
+			///// (Target is set to the command-calling User, if he/she has none selected or not doubled the Command-Prefix).
+			///// </summary>
+			//public virtual ObjectTypeCustom TargetTypes
+			//{
+			//    get { return ((RealmServerCommand)m_parentCmd).TargetTypes; }
+			//}
+
+			//public virtual bool RequiresContext
+			//{
+			//    get { return ((RealmServerCommand)m_parentCmd).RequiresContext; }
+			//}
+
+			///// <summary>
+			///// Whether the Character argument needs to be supplied by the trigger's Args
+			///// </summary>
+			//public virtual bool RequiresCharacter
+			//{
+			//    get { return ((RealmServerCommand)m_parentCmd).RequiresCharacter; }
+			//}
+
+			///// <summary>
+			///// Whether the command-user must be of equal or higher rank of the target.
+			///// Used to prevent staff members of lower ranks to perform any kind
+			///// of unwanted commands on staff members of higher ranks.
+			///// </summary>
+			//public virtual bool RequiresEqualOrHigherRank
+			//{
+			//    get
+			//    {
+			//        return ((RealmServerCommand)m_parentCmd).RequiresEqualOrHigherRank;
+			//    }
+			//}
 
 			public virtual RoleStatus DefaultRequiredStatus
 			{
@@ -137,5 +173,6 @@ namespace WCell.RealmServer.Commands
 				return trigger.Translate(ParamInfo);
 			}
 		}
+		#endregion
 	}
 }

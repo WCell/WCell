@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <DataHolder Name="AchievementCriteriaRequirement">
+	<DefaultTable>achievement_criteria_requirement</DefaultTable>
+	<Flat Name="CriteriaId" Column="criteria_id" />
+	<Flat Name="Type" Column="type" />
+	<Flat Name="Value1" Column="value1" />
+	<Flat Name="Value2" Column="value2" />
+  </DataHolder>
+</DataHolders>

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -48,7 +48,7 @@ namespace WCell.RealmServer.Instances
 			}
 			catch (Exception e)
 			{
-				LogUtil.WarnException(e, "Unable to save Instance Config");
+				LogUtil.WarnException(e, "Unable to save Configuration file");
 			}
 
 			return settings;

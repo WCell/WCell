@@ -4,19 +4,70 @@ using System.Linq;
 using System.Text;
 using System.Globalization;
 using System.Runtime.CompilerServices;
+using WCell.Util;
 
 namespace WCell.Core.Timers
 {
+	/// <summary>
+	/// New even more lightweight Timer class to replace the old TimerEntry class
+	/// </summary>
+	public class SimpleTimerEntry
+	{
+		/// <summary>
+		/// Whether this is a one-shot timer
+		/// </summary>
+		public readonly bool IsOneShot;
+
+		internal SimpleTimerEntry(int delayMillis, Action callback, long time, bool isOneShot)
+		{
+			Callback = callback;
+			Delay = delayMillis;
+			LastCallTime = time;
+			IsOneShot = isOneShot;
+		}
+
+		public long LastCallTime { get; private set; }
+
+		public Action Callback { get; set; }
+
+		public int Delay { get; set; }
+
+		internal void Execute(SelfRunningTaskQueue queue)
+		{
+			Callback();
+			LastCallTime = queue.LastUpdateTime;
+			if (IsOneShot)
+			{
+				queue.CancelTimer(this);
+			}
+		}
+
+		public override bool Equals(object obj)
+		{
+			return obj is SimpleTimerEntry && Callback == ((SimpleTimerEntry)obj).Callback;
+		}
+
+		public override int GetHashCode()
+		{
+			return Callback.GetHashCode();
+		}
+
+		public override string ToString()
+		{
+			return string.Format("{0} (Callback = {1}, Delay = {2})", GetType(), Callback, Delay);
+		}
+	}
+
 	/// <summary>
 	/// Lightweight timer object that supports one-shot or repeated firing.
 	/// </summary>
 	/// <remarks>This timer is not standalone, and must be driven via the <see cref="IUpdatable" /> interface.</remarks>
 	public class TimerEntry : IDisposable, IUpdatable
 	{
-		private float m_SecondsSinceLastTick;
+		private int m_millisSinceLastTick;
 
-		public float RemainingInitialDelay, Interval;
-		public Action<float> Action;
+		public int RemainingInitialDelayMillis, IntervalMillis;
+		public Action<int> Action;
 
 		public TimerEntry()
 		{
@@ -26,48 +77,26 @@ namespace WCell.Core.Timers
 		/// Creates a new timer with the given start delay, interval, and callback.
 		/// </summary>
 		/// <param name="delay">the delay before firing initially</param>
-		/// <param name="interval">the interval between firing</param>
+		/// <param name="intervalMillis">the interval between firing</param>
 		/// <param name="callback">the callback to fire</param>
-		public TimerEntry(float delay, float interval, Action<float> callback)
+		public TimerEntry(int delay, int intervalMillis, Action<int> callback)
 		{
-			m_SecondsSinceLastTick = -1.0f;
+			m_millisSinceLastTick = -1;
 			Action = callback;
-			RemainingInitialDelay = delay;
-			Interval = interval;
+			RemainingInitialDelayMillis = delay;
+			IntervalMillis = intervalMillis;
 		}
 
-		/// <summary>
-		/// Creates a new timer with the given start delay, interval, and callback.
-		/// </summary>
-		/// <param name="delay">the delay before firing initially</param>
-		/// <param name="interval">the interval between firing</param>
-		/// <param name="callback">the callback to fire</param>
-		public TimerEntry(int delay, int interval, Action<float> callback)
-			: this(delay / 1000.0f, interval / 1000.0f, callback)
+		public TimerEntry(Action<int> callback) : this(0,0,callback)
 		{
 		}
 
 		/// <summary>
-		/// Creates a new timer with the given start delay, interval, and callback.
+		/// The amount of time in milliseconds that elapsed between the last timer tick and the last update.
 		/// </summary>
-		/// <param name="delay">the delay before firing initially</param>
-		/// <param name="interval">the interval between firing</param>
-		/// <param name="callback">the callback to fire</param>
-		public TimerEntry(uint delay, uint interval, Action<float> callback)
-			: this(delay / 1000.0f, interval / 1000.0f, callback)
+		public int MillisSinceLastTick
 		{
-		}
-
-		public TimerEntry(Action<float> callback) : this(0,0,callback)
-		{
-		}
-
-		/// <summary>
-		/// The amount of time elapsed since the last firing.
-		/// </summary>
-		public float SecondsSinceLastTick
-		{
-			get { return m_SecondsSinceLastTick; }
+			get { return m_millisSinceLastTick; }
 		}
 
 		/// <summary>
@@ -75,29 +104,7 @@ namespace WCell.Core.Timers
 		/// </summary>
 		public void Start()
 		{
-			m_SecondsSinceLastTick = 0.0f;
-		}
-
-		/// <summary>
-		/// Starts the timer with the given delay.
-		/// </summary>
-		/// <param name="initialDelay">the delay before firing initially</param>
-		public void Start(float initialDelay)
-		{
-			RemainingInitialDelay = initialDelay;
-			m_SecondsSinceLastTick = 0.0f;
-		}
-
-		/// <summary>
-		/// Starts the time with the given delay and interval.
-		/// </summary>
-		/// <param name="initialDelay">the delay before firing initially</param>
-		/// <param name="interval">the interval between firing</param>
-		public void Start(float initialDelay, float interval)
-		{
-			RemainingInitialDelay = initialDelay;
-			Interval = interval;
-			m_SecondsSinceLastTick = 0.0f;
+			m_millisSinceLastTick = 0;
 		}
 
 		/// <summary>
@@ -106,7 +113,8 @@ namespace WCell.Core.Timers
 		/// <param name="initialDelay">the delay before firing initially</param>
 		public void Start(int initialDelay)
 		{
-			Start(initialDelay / 1000.0f);
+			RemainingInitialDelayMillis = initialDelay;
+			m_millisSinceLastTick = 0;
 		}
 
 		/// <summary>
@@ -116,20 +124,9 @@ namespace WCell.Core.Timers
 		/// <param name="interval">the interval between firing</param>
 		public void Start(int initialDelay, int interval)
 		{
-			Start(initialDelay / 1000.0f, interval / 1000.0f);
-		}
-
-		/// <summary>
-		/// Starts the time with the given delay and interval.
-		/// </summary>
-		/// <param name="initialDelay">the delay before firing initially</param>
-		/// <param name="interval">the interval between firing</param>
-		/// <param name="callback">the callback to invoke after a lapse of the timer interval</param>
-		public void Start(uint initialDelay, uint interval, Action<float> callback)
-		{
-			Action = callback;
-
-			Start(initialDelay / 1000.0f, interval / 1000.0f);
+			RemainingInitialDelayMillis = initialDelay;
+			IntervalMillis = interval;
+			m_millisSinceLastTick = 0;
 		}
 		
 		/// <summary>
@@ -137,7 +134,7 @@ namespace WCell.Core.Timers
 		/// </summary>
 		public bool IsRunning
 		{
-			get { return m_SecondsSinceLastTick >= 0; }
+			get { return m_millisSinceLastTick >= 0; }
 		}
 
 		/// <summary>
@@ -145,50 +142,52 @@ namespace WCell.Core.Timers
 		/// </summary>
 		public void Stop()
 		{
-			m_SecondsSinceLastTick = -1f;
+			m_millisSinceLastTick = -1;
 		}
 
 		/// <summary>
 		/// Updates the timer, firing the callback if enough time has elapsed.
 		/// </summary>
-		/// <param name="updateDelta">the time change since the last update</param>
-		public void Update(float updateDelta)
+		/// <param name="dtMillis">the time change since the last update</param>
+		public void Update(int dtMillis)
 		{
 			// means this timer is not running.
-			if (m_SecondsSinceLastTick == -1f)
+			if (m_millisSinceLastTick == -1)
 				return;
 
-			if (RemainingInitialDelay > 0.0f)
+			if (RemainingInitialDelayMillis > 0)
 			{
-				RemainingInitialDelay -= updateDelta;
+				RemainingInitialDelayMillis -= dtMillis;
 
-				if (RemainingInitialDelay <= 0.0f)
+				if (RemainingInitialDelayMillis <= 0)
 				{
-                    if (Interval == 0.0f)
+                    if (IntervalMillis == 0)
                     {
                         // we need to stop the timer if it's only
 						// supposed to fire once.
-                        Stop();
+                    	var millis = m_millisSinceLastTick;
+                    	Stop();
+						Action(millis);
 					}
-
-                    Action(m_SecondsSinceLastTick);
-					if (m_SecondsSinceLastTick != -1)
-					{
-						m_SecondsSinceLastTick = 0;
-					}
+					else
+                    {
+						Action(m_millisSinceLastTick);
+						m_millisSinceLastTick = 0;
+                    }
                 }
 			}
 			else
 			{
 				// update our idle time
-				m_SecondsSinceLastTick += updateDelta;
+				m_millisSinceLastTick += dtMillis;
 
-				if (m_SecondsSinceLastTick >= Interval)
+				if (m_millisSinceLastTick >= IntervalMillis)
 				{
-					Action(m_SecondsSinceLastTick);
-					if (m_SecondsSinceLastTick != -1)
+					// time to tick
+					Action(m_millisSinceLastTick);
+					if (m_millisSinceLastTick != -1)
 					{
-						m_SecondsSinceLastTick -= Interval;
+						m_millisSinceLastTick -= IntervalMillis;
 					}
 				}
 			}
@@ -212,14 +211,14 @@ namespace WCell.Core.Timers
 		public bool Equals(TimerEntry obj)
 		{
 			// needs to be improved
-			return obj.Interval == Interval && Equals(obj.Action, Action);
+			return obj.IntervalMillis == IntervalMillis && Equals(obj.Action, Action);
 		}
 
 		public override int GetHashCode()
 		{
 			unchecked
 			{
-				var result = ((int)(Interval*397)) ^ (Action != null ? Action.GetHashCode() : 0);
+				var result = IntervalMillis*397 ^ (Action != null ? Action.GetHashCode() : 0);
 				return result;
 			}
 		}

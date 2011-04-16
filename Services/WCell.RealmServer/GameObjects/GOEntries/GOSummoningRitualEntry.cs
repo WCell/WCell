@@ -11,7 +11,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         /// <summary>
         /// Amount of casters?
         /// </summary>
-        public uint CasterCount
+        public int CasterCount
         {
             get { return Fields[0]; }
         }
@@ -64,7 +64,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 					return false;
 				}
 			}
-			set { Fields[ 5 ] = ( value ? 1u : 0u ); }
+			set { Fields[ 5 ] = ( value ? 1 : 0 ); }
     	}
 
         /// <summary>

@@ -16,6 +16,7 @@
 
 using WCell.Constants;
 using WCell.Constants.Talents;
+using WCell.Core;
 using WCell.Core.DBC;
 using WCell.Core.Initialization;
 using WCell.Util;
@@ -31,7 +32,18 @@ namespace WCell.RealmServer.Talents
 		/// </summary>
         public const int MaxTabCount = 5;
 
-	    public static readonly int[] TalentResetPriceTiers = {1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50};
+		/// <summary>
+		/// Player talent reset price in copper
+		/// </summary>
+		public static readonly uint[] PlayerTalentResetPricesPerTier = { 1000, 5000, 10000, 15000, 20000, 25000, 30000, 35000, 40000, 45000, 50000 };
+
+		/// <summary>
+		/// Pet talent reset price in copper
+		/// </summary>
+		public static readonly uint[] PetTalentResetPricesPerTier = {
+            1000, 5000, 10000, 20000, 30000, 40000, 50000, 60000,
+            70000, 80000, 90000, 100000
+        };
 
 		internal const int MaxTalentRowCount = 20;
 		internal const int MaxTalentColCount = 8;
@@ -43,7 +55,7 @@ namespace WCell.RealmServer.Talents
 		public static TalentTree[][] TreesByClass = new TalentTree[12][];
 
 		[NotVariable]
-		public static TalentEntry[] Entries = new TalentEntry[1900];
+		public static TalentEntry[] Entries = new TalentEntry[2000];
 
 		/// <summary>
 		/// Returns all Trees of the given class
@@ -75,7 +87,9 @@ namespace WCell.RealmServer.Talents
 		internal static void Initialize()
 		{
 			var treeReader = new MappedDBCReader<TalentTree, TalentTreeConverter>(
-				RealmServerConfiguration.GetDBCFile("TalentTab.dbc"));
+                RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_TALENTTREES));
+			//Init our GlyphInfoHolder
+			GlyphInfoHolder.Init();
 
 			foreach (var tree in treeReader.Entries.Values)
 			{
@@ -91,8 +105,8 @@ namespace WCell.RealmServer.Talents
 			}
 
 
-            var talentReader = new ListDBCReader<TalentEntry, TalentConverter>(
-                RealmServerConfiguration.GetDBCFile("Talent.dbc"));
+			var talentReader = new ListDBCReader<TalentEntry, TalentConverter>(
+				RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_TALENTS));
 
 			foreach (var talent in talentReader.EntryList)
 			{
@@ -108,8 +122,9 @@ namespace WCell.RealmServer.Talents
 				}
 				talentRow[talent.Col] = talent;
 
-				foreach (var spell in talent.Spells)
+				for (var i = 0; i < talent.Spells.Length; i++)
 				{
+					var spell = talent.Spells[i];
 					if (spell != null)
 					{
 						//if (spell.Talent != null)
@@ -118,6 +133,7 @@ namespace WCell.RealmServer.Talents
 						//}
 						spell.Talent = talent;
 						spell.ClassId = talent.Tree.Class;
+						spell.Rank = i + 1;
 					}
 				}
 			}

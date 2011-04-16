@@ -15,6 +15,7 @@
  *************************************************************************/
 
 using System;
+using System.Linq;
 using WCell.Constants;
 using WCell.Constants.Guilds;
 using WCell.Util.Threading;
@@ -159,10 +160,14 @@ namespace WCell.RealmServer.Guilds
 
 				if (m_chr != null)
 				{
-					m_chr.GuildRank = (uint) value;
+				    m_chr.GuildRank = (uint) value;
+				    foreach (var right in m_chr.GuildMember.Rank.BankTabRights.Where(right => right != null))
+				    {
+				        right.GuildRankId = (uint) value;
+				    }
 				}
 
-				SaveLater();
+			    SaveLater();
 			}
         }
 
@@ -268,7 +273,7 @@ namespace WCell.RealmServer.Guilds
 
         public void SaveLater()
 		{
-			RealmServer.Instance.AddMessage(SaveAndFlush);
+			RealmServer.IOQueue.AddMessage(SaveAndFlush);
 		}
         #endregion
     }

@@ -78,7 +78,7 @@ namespace WCell.RealmServer.Tests.Groups
 		[TestMethod]
 		public void TestGroupCreation()
 		{
-			//Setup.AllianceCharacterPool.EnsureSameRegion = true;
+			//Setup.AllianceCharacterPool.EnsureSameMap = true;
 			DebugUtil.Dumps = true;
 			var pool = Setup.AllianceCharacterPool;
 
@@ -108,7 +108,7 @@ namespace WCell.RealmServer.Tests.Groups
 
 			Assert.IsNull(leader.GroupMember);
 			Assert.IsNull(leaderMember.Next);
-			Assert.AreEqual(count - 1, group.Count);
+			Assert.AreEqual(count - 1, group.CharacterCount);
 			Assert.AreEqual(nextMember, group.Leader);
 
 			// new leader
@@ -121,7 +121,7 @@ namespace WCell.RealmServer.Tests.Groups
 			leader.FakeClient.PurgeSMSGs();
 
 			nextMember.Character.Logout(false, 0);
-			nextMember.Region.WaitOneTick();
+			nextMember.Map.WaitOneTick();
 			Assert.IsNull(nextMember.Character);
 			Assert.IsNull(client.ActiveCharacter);
 
@@ -149,7 +149,7 @@ namespace WCell.RealmServer.Tests.Groups
 
 			group.Disband();
 
-			Assert.AreEqual(0, group.Count);
+			Assert.AreEqual(0, group.CharacterCount);
 		}
 
 		[TestMethod]
@@ -163,8 +163,8 @@ namespace WCell.RealmServer.Tests.Groups
 			var leaderChr = leader.Character;
 			Assert.IsNotNull(leaderChr, "Group was not created properly");
 
-			leaderChr.Region.WaitOneTick();
-			foreach (TestCharacter chr in group.GetCharacters())
+			leaderChr.Map.WaitOneTick();
+			foreach (TestCharacter chr in group.GetAllCharacters())
 			{
 				// purge all pending packets - we don't care for them
 				chr.FakeClient.PurgeSMSGs();
@@ -172,9 +172,9 @@ namespace WCell.RealmServer.Tests.Groups
 
 			var text = "Hello test";
 			leaderChr.SayGroup(text);
-			leaderChr.Region.WaitOneTick();
+			leaderChr.Map.WaitOneTick();
 
-			foreach (TestCharacter chr in group.GetCharacters())
+			foreach (TestCharacter chr in group.GetAllCharacters())
 			{
 				var chatPacket = chr.FakeClient.DequeueSMSG(RealmServerOpCode.SMSG_MESSAGECHAT);
 				Assert.IsNotNull(chatPacket, "Character did not receive Group-Chat: " + chr);
@@ -209,7 +209,7 @@ namespace WCell.RealmServer.Tests.Groups
 			}
 
 			var group = leader.Group;
-			Assert.AreEqual(count, group.Count);
+			Assert.AreEqual(count, group.CharacterCount);
 
 			return group;
 		}

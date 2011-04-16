@@ -16,6 +16,7 @@
 
 using System;
 using System.Threading;
+using Cell.Core;
 using WCell.AuthServer.Accounts;
 using WCell.AuthServer.Network;
 using WCell.Constants;
@@ -28,13 +29,13 @@ using System.ServiceModel;
 namespace WCell.AuthServer
 {
     /// <summary>
-    /// Defines one Entry in the Realm-list.
+    /// Defines one Entry in the Realm-list
     /// </summary>
     public class RealmEntry
     {
-        private static readonly int MaintenanceInterval = (int)(WCellDef.RealmServerUpdateInterval.TotalMilliseconds);
-        private static readonly TimeSpan MaxUpdateOfflineDelay = TimeSpan.FromSeconds(WCellDef.RealmServerUpdateInterval.TotalSeconds * 1.5);
-        private static readonly TimeSpan MaxUpdateDeadDelay = TimeSpan.FromSeconds(WCellDef.RealmServerUpdateInterval.TotalSeconds * 10);
+        private static readonly int MaintenanceInterval = (int)(WCellConstants.RealmServerUpdateInterval.TotalMilliseconds);
+        private static readonly TimeSpan MaxUpdateOfflineDelay = TimeSpan.FromSeconds(WCellConstants.RealmServerUpdateInterval.TotalSeconds * 1.5);
+        private static readonly TimeSpan MaxUpdateDeadDelay = TimeSpan.FromSeconds(WCellConstants.RealmServerUpdateInterval.TotalSeconds * 10);
         //private readonly Timer m_maintenanceTimer;
 
         public RealmEntry()
@@ -96,7 +97,7 @@ namespace WCell.AuthServer
         }
 
         /// <summary>
-        /// Realm address. ("IP:PORT")
+        /// Realm address
         /// </summary>
         public string Address
         {
@@ -110,9 +111,14 @@ namespace WCell.AuthServer
             internal set;
         }
 
+		public string GetAddress(string address)
+		{
+			return address + ":" + Port;
+		}
+
         public string AddressString
         {
-            get { return Address + ":" + Port; }
+            get { return GetAddress(Address); }
         }
 
 		/// <summary>
@@ -213,6 +219,11 @@ namespace WCell.AuthServer
 		//    }
 		//}
 
+		/// <summary>
+		/// Disconnects the given Realm and flags it as offline, or removes it from the RealmList entirely.
+		/// Also removes all logged in accounts.
+		/// </summary>
+		/// <param name="remove">Whether to remove it entirely (true) or only show as offline (false)</param>
 		public void Disconnect(bool remove)
 		{
 			if (Channel != null)
@@ -223,9 +234,10 @@ namespace WCell.AuthServer
 		}
 
         /// <summary>
-        /// Removes this realm from the RealmList
+        /// Flags this realm as offline, or removes it from the RealmList entirely.
+        /// Also removes all logged in accounts.
         /// </summary>
-        public void SetOffline(bool remove)
+        internal void SetOffline(bool remove)
         {
             var serv = AuthenticationServer.Instance;
 
@@ -236,7 +248,7 @@ namespace WCell.AuthServer
 
 			if (remove)
 			{
-				AuthenticationServer.Realms.Remove(ChannelId);
+				AuthenticationServer.RemoveRealm(this);
 			}
 			else
 			{
@@ -275,10 +287,10 @@ namespace WCell.AuthServer
             	//var cpos = packet.Position;
             	//packet.Position = cpos + 2;
 
-            	packet.Write((short)client.Server.RealmCount);
+            	packet.Write((short)AuthenticationServer.RealmCount);
 
             	//var count = 0;
-                foreach (var realm in AuthenticationServer.Realms.Values)
+                foreach (var realm in AuthenticationServer.Realms)
                 {
                 	// check for client version
                 	//if (realm.ClientVersion.IsSupported(client.Info.Version))
@@ -310,30 +322,35 @@ namespace WCell.AuthServer
 			var status = Status;
 			var flags = Flags;
 			var name = Name;
+
 			if (!ClientVersion.IsSupported(client.Info.Version))
 			{
+				// if client is not supported, flag realm as offline and append the required client version
 				flags = RealmFlags.Offline;
 				name += " [" + ClientVersion.BasicString + "]";
 			}
             else if (Flags.HasFlag(RealmFlags.Offline) && Status == RealmStatus.Locked)
             {
-            	var acc = client.Account;
-                var role = acc.Role;
-                if (role.IsStaff)
+				// let staff members join anyway
+				if (client.Account.Role.IsStaff)
                 {
                     status = RealmStatus.Open;
                 	flags = RealmFlags.None;
                 }
 			}
 
-            // TODO: Change char-count to amount of Characters of the querying account on this Realm
+
+			var addr = NetworkUtil.GetMatchingLocalIP(client.ClientAddress) ?? (object)Address;
+
 			packet.Write((byte)ServerType);
             packet.Write((byte)status);
             packet.Write((byte)flags);
             packet.WriteCString(name);
-            packet.WriteCString(AddressString);
+
+			packet.WriteCString(GetAddress(addr.ToString()));
+
             packet.Write(Population);
-            packet.Write(Chars);
+			packet.Write(Chars); // TODO: Change to amount of Characters of the querying account on this Realm
             packet.Write((byte)Category);
             packet.Write((byte)0x00); // realm separator?
         }
@@ -342,7 +359,7 @@ namespace WCell.AuthServer
 
 		public override string ToString()
 		{
-			return Name + " @ " + Address;
+			return Name + " @ " + AddressString;
 		}
     }
 }

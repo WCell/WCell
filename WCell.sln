@@ -1,10 +1,5 @@
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{AC40F8CE-35B9-4A2B-A22D-E98F36273F6F}"
-	ProjectSection(SolutionItems) = preProject
-		LocalTestRun.testrunconfig = LocalTestRun.testrunconfig
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.AuthServerConsole", "Applications\WCell.AuthServerConsole\WCell.AuthServerConsole.csproj", "{4515099C-386E-4CF2-9441-B683481549DB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.RealmServerConsole", "Applications\WCell.RealmServerConsole\WCell.RealmServerConsole.csproj", "{A003175E-EA71-49CC-8660-C975BABC9A99}"
@@ -26,9 +21,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cell.Core", "Core\Cell.Core\Cell.Core.csproj", "{71AB07AD-4D94-4693-8560-47862E5B6E61}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.Core", "Core\WCell.Core\WCell.Core.csproj", "{EEA9DEB6-8EA6-46F1-B1B7-AB38D8BBCA6C}"
-	ProjectSection(ProjectDependencies) = postProject
-		{5909BFE7-93CF-4E5F-BE22-6293368AF01D} = {5909BFE7-93CF-4E5F-BE22-6293368AF01D}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.Intercommunication", "Core\WCell.Intercommunication\WCell.Intercommunication.csproj", "{5997613F-D2A5-4B86-BEE2-C823BC07D5AF}"
 EndProject
@@ -41,7 +33,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.PostBuild", "Utilitie
 		{4515099C-386E-4CF2-9441-B683481549DB} = {4515099C-386E-4CF2-9441-B683481549DB}
 		{08E1A2AF-DF71-42C1-8375-D4AF278E068A} = {08E1A2AF-DF71-42C1-8375-D4AF278E068A}
 		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8} = {6C52AEC1-2920-4E34-83A2-93E6E719D1B8}
-		{5909BFE7-93CF-4E5F-BE22-6293368AF01D} = {5909BFE7-93CF-4E5F-BE22-6293368AF01D}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.DefaultAddon", "Addons\WCell.DefaultAddon\WCell.DefaultAddon.csproj", "{38846B91-92C5-4ED0-A77C-5480FA06EDBE}"
@@ -51,11 +42,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.Constants", "Core\WCell.Constants\WCell.Constants.csproj", "{42F497A4-0347-491D-8FA8-50E4D8AD19EB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.Util", "Utilities\WCell.Util\WCell.Util.csproj", "{F753AF28-A251-4C12-9335-07E8236184F2}"
-	ProjectSection(ProjectDependencies) = postProject
-		{5909BFE7-93CF-4E5F-BE22-6293368AF01D} = {5909BFE7-93CF-4E5F-BE22-6293368AF01D}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate-3.5", "Libraries\Source\NHibernate\NHibernate-3.5.csproj", "{5909BFE7-93CF-4E5F-BE22-6293368AF01D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.MPQTool", "Utilities\WCell.MPQTool\WCell.MPQTool.csproj", "{5F96293A-1276-4515-8048-EBC49CD81D71}"
 EndProject
@@ -72,7 +58,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{B710971E-54E8-4802-8EC5-C07B24120937}"
 	ProjectSection(SolutionItems) = preProject
 		LICENSE.txt = LICENSE.txt
-		README.txt = README.txt
 		THANKS.txt = THANKS.txt
 	EndProjectSection
 EndProject
@@ -80,15 +65,112 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution", "Solution", "{E9
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Applications", "Applications", "{10A0B4C6-BD1F-4517-9FF8-D9F142944383}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.Core.Tests", "Tests\WCell.Core.Tests\WCell.Core.Tests.csproj", "{C447618A-0B7B-4B57-9217-CB2AB4DBC57D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.RealmServer.Tests", "Tests\WCell.RealmServer.Tests\WCell.RealmServer.Tests.csproj", "{1025C512-AF25-4887-9E7B-9DE58B5D0C70}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Translations", "Translations", "{009B84F0-3E1E-4674-9318-7B6BECF748E1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RealmServer", "RealmServer", "{B6E8E045-B27D-47A8-A2F1-94B7BB351A80}"
 	ProjectSection(SolutionItems) = preProject
 		Run\Content\Lang\English.xml = Run\Content\Lang\English.xml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AuthServer", "AuthServer", "{19AE8D2C-F941-46B9-933F-3A5E5CBA134F}"
+	ProjectSection(SolutionItems) = preProject
+		Run\AuthContent\Lang\English.xml = Run\AuthContent\Lang\English.xml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DefaultAddon", "DefaultAddon", "{2029346D-5B87-4B5B-A5BD-4CB64AB0BC79}"
+	ProjectSection(SolutionItems) = preProject
+		Run\RealmServerAddons\DefaultAddon\Lang\English.xml = Run\RealmServerAddons\DefaultAddon\Lang\English.xml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UDB", "UDB", "{22AD2989-C47E-499D-B4EB-72A2D43EF5B7}"
+	ProjectSection(SolutionItems) = preProject
+		Run\Content\Impl\UDB\Data\AchievementCriteriaRequirement.xml = Run\Content\Impl\UDB\Data\AchievementCriteriaRequirement.xml
+		Run\Content\Impl\UDB\Data\AchievementReward.xml = Run\Content\Impl\UDB\Data\AchievementReward.xml
+		Run\Content\Impl\UDB\Data\Archetype.xml = Run\Content\Impl\UDB\Data\Archetype.xml
+		Run\Content\Impl\UDB\Data\ATTemplate.xml = Run\Content\Impl\UDB\Data\ATTemplate.xml
+		Run\Content\Impl\UDB\Data\BattlegroundTemplate.xml = Run\Content\Impl\UDB\Data\BattlegroundTemplate.xml
+		Run\Content\Impl\UDB\Data\BattlemasterRelation.xml = Run\Content\Impl\UDB\Data\BattlemasterRelation.xml
+		Run\Content\Impl\UDB\Data\ClassLevelSetting.xml = Run\Content\Impl\UDB\Data\ClassLevelSetting.xml
+		Run\Content\Impl\UDB\Data\FishingLootItemEntry.xml = Run\Content\Impl\UDB\Data\FishingLootItemEntry.xml
+		Run\Content\Impl\UDB\Data\GameEvent.xml = Run\Content\Impl\UDB\Data\GameEvent.xml
+		Run\Content\Impl\UDB\Data\GOEntry.xml = Run\Content\Impl\UDB\Data\GOEntry.xml
+		Run\Content\Impl\UDB\Data\GOLootItemEntry.xml = Run\Content\Impl\UDB\Data\GOLootItemEntry.xml
+		Run\Content\Impl\UDB\Data\GOQuestGiverRelation.xml = Run\Content\Impl\UDB\Data\GOQuestGiverRelation.xml
+		Run\Content\Impl\UDB\Data\GOSpawnPoolTemplate.xml = Run\Content\Impl\UDB\Data\GOSpawnPoolTemplate.xml
+		Run\Content\Impl\UDB\Data\GossipEntry.xml = Run\Content\Impl\UDB\Data\GossipEntry.xml
+		Run\Content\Impl\UDB\Data\ItemLootItemEntry.xml = Run\Content\Impl\UDB\Data\ItemLootItemEntry.xml
+		Run\Content\Impl\UDB\Data\ItemRandomEnchantEntry.xml = Run\Content\Impl\UDB\Data\ItemRandomEnchantEntry.xml
+		Run\Content\Impl\UDB\Data\ItemTemplate.xml = Run\Content\Impl\UDB\Data\ItemTemplate.xml
+		Run\Content\Impl\UDB\Data\LevelStatInfo.xml = Run\Content\Impl\UDB\Data\LevelStatInfo.xml
+		Run\Content\Impl\UDB\Data\LevelXp.xml = Run\Content\Impl\UDB\Data\LevelXp.xml
+		Run\Content\Impl\UDB\Data\LootEntries.xml = Run\Content\Impl\UDB\Data\LootEntries.xml
+		Run\Content\Impl\UDB\Data\MapTemplate.xml = Run\Content\Impl\UDB\Data\MapTemplate.xml
+		Run\Content\Impl\UDB\Data\NpcAiText.xml = Run\Content\Impl\UDB\Data\NpcAiText.xml
+		Run\Content\Impl\UDB\Data\NPCEntry.xml = Run\Content\Impl\UDB\Data\NPCEntry.xml
+		Run\Content\Impl\UDB\Data\NPCEquipmentEntry.xml = Run\Content\Impl\UDB\Data\NPCEquipmentEntry.xml
+		Run\Content\Impl\UDB\Data\NPCLootItemEntry.xml = Run\Content\Impl\UDB\Data\NPCLootItemEntry.xml
+		Run\Content\Impl\UDB\Data\NPCQuestGiverRelation.xml = Run\Content\Impl\UDB\Data\NPCQuestGiverRelation.xml
+		Run\Content\Impl\UDB\Data\NPCSpawnEntry.xml = Run\Content\Impl\UDB\Data\NPCSpawnEntry.xml
+		Run\Content\Impl\UDB\Data\PageTextEntry.xml = Run\Content\Impl\UDB\Data\PageTextEntry.xml
+		Run\Content\Impl\UDB\Data\Pets.xml = Run\Content\Impl\UDB\Data\Pets.xml
+		Run\Content\Impl\UDB\Data\PlayerActionButtonEntry.xml = Run\Content\Impl\UDB\Data\PlayerActionButtonEntry.xml
+		Run\Content\Impl\UDB\Data\PlayerItemEntry.xml = Run\Content\Impl\UDB\Data\PlayerItemEntry.xml
+		Run\Content\Impl\UDB\Data\PlayerSpellEntry.xml = Run\Content\Impl\UDB\Data\PlayerSpellEntry.xml
+		Run\Content\Impl\UDB\Data\QuestPOI.xml = Run\Content\Impl\UDB\Data\QuestPOI.xml
+		Run\Content\Impl\UDB\Data\QuestTemplate.xml = Run\Content\Impl\UDB\Data\QuestTemplate.xml
+		Run\Content\Impl\UDB\Data\SpawnPoolTemplateEntry.xml = Run\Content\Impl\UDB\Data\SpawnPoolTemplateEntry.xml
+		Run\Content\Impl\UDB\Data\Spell.xml = Run\Content\Impl\UDB\Data\Spell.xml
+		Run\Content\Impl\UDB\Data\SpellEffect.xml = Run\Content\Impl\UDB\Data\SpellEffect.xml
+		Run\Content\Impl\UDB\Data\SpellLearnRelation.xml = Run\Content\Impl\UDB\Data\SpellLearnRelation.xml
+		Run\Content\Impl\UDB\Data\SpellProcEventEntry.xml = Run\Content\Impl\UDB\Data\SpellProcEventEntry.xml
+		Run\Content\Impl\UDB\Data\TrainerEntry.xml = Run\Content\Impl\UDB\Data\TrainerEntry.xml
+		Run\Content\Impl\UDB\Data\TrainerSpellEntry.xml = Run\Content\Impl\UDB\Data\TrainerSpellEntry.xml
+		Run\Content\Impl\UDB\Data\TransportEntry.xml = Run\Content\Impl\UDB\Data\TransportEntry.xml
+		Run\Content\Impl\UDB\Data\UnitModelInfo.xml = Run\Content\Impl\UDB\Data\UnitModelInfo.xml
+		Run\Content\Impl\UDB\Data\VendorItemEntry.xml = Run\Content\Impl\UDB\Data\VendorItemEntry.xml
+		Run\Content\Impl\UDB\Data\WaypointEntry.xml = Run\Content\Impl\UDB\Data\WaypointEntry.xml
+		Run\Content\Impl\UDB\Data\WorldZoneLocation.xml = Run\Content\Impl\UDB\Data\WorldZoneLocation.xml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Content", "Content", "{352C7D18-D5CA-41EA-815F-65DECA33D17E}"
+	ProjectSection(SolutionItems) = preProject
+		Run\Content\Battlegrounds.xml = Run\Content\Battlegrounds.xml
+		Run\Content\Instances.xml = Run\Content\Instances.xml
+		Run\Content\Impl\UDB\Tables.xml = Run\Content\Impl\UDB\Tables.xml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Packets", "Packets", "{D18CDB4B-0134-41C0-AE6F-DEE59586F470}"
+	ProjectSection(SolutionItems) = preProject
+		Run\Content\Packets\Achievements.xml = Run\Content\Packets\Achievements.xml
+		Run\Content\Packets\BattleGrounds.xml = Run\Content\Packets\BattleGrounds.xml
+		Run\Content\Packets\Calendar.xml = Run\Content\Packets\Calendar.xml
+		Run\Content\Packets\Chat.xml = Run\Content\Packets\Chat.xml
+		Run\Content\Packets\Combat.xml = Run\Content\Packets\Combat.xml
+		Run\Content\Packets\Duel.xml = Run\Content\Packets\Duel.xml
+		Run\Content\Packets\Factions.xml = Run\Content\Packets\Factions.xml
+		Run\Content\Packets\GameObjects.xml = Run\Content\Packets\GameObjects.xml
+		Run\Content\Packets\Gossips.xml = Run\Content\Packets\Gossips.xml
+		Run\Content\Packets\Groups.xml = Run\Content\Packets\Groups.xml
+		Run\Content\Packets\Guilds.xml = Run\Content\Packets\Guilds.xml
+		Run\Content\Packets\Items.xml = Run\Content\Packets\Items.xml
+		Run\Content\Packets\Login.xml = Run\Content\Packets\Login.xml
+		Run\Content\Packets\Loot.xml = Run\Content\Packets\Loot.xml
+		Run\Content\Packets\Mail.xml = Run\Content\Packets\Mail.xml
+		Run\Content\Packets\Misc.xml = Run\Content\Packets\Misc.xml
+		Run\Content\Packets\Movement.xml = Run\Content\Packets\Movement.xml
+		Run\Content\Packets\Pets.xml = Run\Content\Packets\Pets.xml
+		Run\Content\Packets\Queries.xml = Run\Content\Packets\Queries.xml
+		Run\Content\Packets\Quests.xml = Run\Content\Packets\Quests.xml
+		Run\Content\Packets\Relations.xml = Run\Content\Packets\Relations.xml
+		Run\Content\Packets\Spells.xml = Run\Content\Packets\Spells.xml
+		Run\Content\Packets\Talents.xml = Run\Content\Packets\Talents.xml
+		Run\Content\Packets\Ticket.xml = Run\Content\Packets\Ticket.xml
+		Run\Content\Packets\Trade.xml = Run\Content\Packets\Trade.xml
+		Run\Content\Packets\Trainers.xml = Run\Content\Packets\Trainers.xml
+		Run\Content\Packets\Vendors.xml = Run\Content\Packets\Vendors.xml
+		Run\Content\Packets\VoiceChat.xml = Run\Content\Packets\VoiceChat.xml
+		Run\Content\Packets\WhoList.xml = Run\Content\Packets\WhoList.xml
+		Run\Content\Packets\World.xml = Run\Content\Packets\World.xml
 	EndProjectSection
 EndProject
 Global
@@ -343,22 +425,6 @@ Global
 		{F753AF28-A251-4C12-9335-07E8236184F2}.Release|x64.Build.0 = Release|x64
 		{F753AF28-A251-4C12-9335-07E8236184F2}.Release|x86.ActiveCfg = Release|x86
 		{F753AF28-A251-4C12-9335-07E8236184F2}.Release|x86.Build.0 = Release|x86
-		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Debug|Itanium.ActiveCfg = Debug|Itanium
-		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Debug|Itanium.Build.0 = Debug|Itanium
-		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Debug|x64.ActiveCfg = Debug|x64
-		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Debug|x64.Build.0 = Debug|x64
-		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Debug|x86.ActiveCfg = Debug|x86
-		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Debug|x86.Build.0 = Debug|x86
-		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Release|Itanium.ActiveCfg = Release|Itanium
-		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Release|Itanium.Build.0 = Release|Itanium
-		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Release|x64.ActiveCfg = Release|x64
-		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Release|x64.Build.0 = Release|x64
-		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Release|x86.ActiveCfg = Release|x86
-		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Release|x86.Build.0 = Release|x86
 		{5F96293A-1276-4515-8048-EBC49CD81D71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5F96293A-1276-4515-8048-EBC49CD81D71}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5F96293A-1276-4515-8048-EBC49CD81D71}.Debug|Itanium.ActiveCfg = Debug|Itanium
@@ -375,41 +441,19 @@ Global
 		{5F96293A-1276-4515-8048-EBC49CD81D71}.Release|x64.Build.0 = Release|x64
 		{5F96293A-1276-4515-8048-EBC49CD81D71}.Release|x86.ActiveCfg = Release|x86
 		{5F96293A-1276-4515-8048-EBC49CD81D71}.Release|x86.Build.0 = Release|x86
-		{C447618A-0B7B-4B57-9217-CB2AB4DBC57D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C447618A-0B7B-4B57-9217-CB2AB4DBC57D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C447618A-0B7B-4B57-9217-CB2AB4DBC57D}.Debug|Itanium.ActiveCfg = Debug|Any CPU
-		{C447618A-0B7B-4B57-9217-CB2AB4DBC57D}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{C447618A-0B7B-4B57-9217-CB2AB4DBC57D}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{C447618A-0B7B-4B57-9217-CB2AB4DBC57D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C447618A-0B7B-4B57-9217-CB2AB4DBC57D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C447618A-0B7B-4B57-9217-CB2AB4DBC57D}.Release|Itanium.ActiveCfg = Release|Any CPU
-		{C447618A-0B7B-4B57-9217-CB2AB4DBC57D}.Release|x64.ActiveCfg = Release|Any CPU
-		{C447618A-0B7B-4B57-9217-CB2AB4DBC57D}.Release|x86.ActiveCfg = Release|Any CPU
-		{1025C512-AF25-4887-9E7B-9DE58B5D0C70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1025C512-AF25-4887-9E7B-9DE58B5D0C70}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1025C512-AF25-4887-9E7B-9DE58B5D0C70}.Debug|Itanium.ActiveCfg = Debug|Any CPU
-		{1025C512-AF25-4887-9E7B-9DE58B5D0C70}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{1025C512-AF25-4887-9E7B-9DE58B5D0C70}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{1025C512-AF25-4887-9E7B-9DE58B5D0C70}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1025C512-AF25-4887-9E7B-9DE58B5D0C70}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1025C512-AF25-4887-9E7B-9DE58B5D0C70}.Release|Itanium.ActiveCfg = Release|Any CPU
-		{1025C512-AF25-4887-9E7B-9DE58B5D0C70}.Release|x64.ActiveCfg = Release|Any CPU
-		{1025C512-AF25-4887-9E7B-9DE58B5D0C70}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{C447618A-0B7B-4B57-9217-CB2AB4DBC57D} = {AC40F8CE-35B9-4A2B-A22D-E98F36273F6F}
-		{1025C512-AF25-4887-9E7B-9DE58B5D0C70} = {AC40F8CE-35B9-4A2B-A22D-E98F36273F6F}
 		{A003175E-EA71-49CC-8660-C975BABC9A99} = {10A0B4C6-BD1F-4517-9FF8-D9F142944383}
 		{4515099C-386E-4CF2-9441-B683481549DB} = {10A0B4C6-BD1F-4517-9FF8-D9F142944383}
 		{A38FAA6D-86B5-4429-85D0-BC93EB5E2C56} = {60BC37D8-E1E8-460D-BE36-DD66C21E42BE}
 		{926BA681-C960-45D7-B02A-CA9AE2B80C4B} = {60BC37D8-E1E8-460D-BE36-DD66C21E42BE}
 		{99463C8A-1598-4715-A390-A1B7E7FEDA2E} = {642FFF76-CE08-425D-A31E-B9905EFA9856}
+		{7D8696B9-80E3-4E28-8D70-27B1534A66FA} = {642FFF76-CE08-425D-A31E-B9905EFA9856}
 		{5F96293A-1276-4515-8048-EBC49CD81D71} = {642FFF76-CE08-425D-A31E-B9905EFA9856}
 		{65B2B094-13BB-4685-95AD-402FC9A4473A} = {642FFF76-CE08-425D-A31E-B9905EFA9856}
-		{7D8696B9-80E3-4E28-8D70-27B1534A66FA} = {E9692B93-A05C-490C-A8FE-260FA002E12D}
 		{08E1A2AF-DF71-42C1-8375-D4AF278E068A} = {E9692B93-A05C-490C-A8FE-260FA002E12D}
 		{EEA9DEB6-8EA6-46F1-B1B7-AB38D8BBCA6C} = {372CB0F3-1BA6-4157-8CCB-E10D0912AD02}
 		{5997613F-D2A5-4B86-BEE2-C823BC07D5AF} = {372CB0F3-1BA6-4157-8CCB-E10D0912AD02}
@@ -417,14 +461,18 @@ Global
 		{71AB07AD-4D94-4693-8560-47862E5B6E61} = {372CB0F3-1BA6-4157-8CCB-E10D0912AD02}
 		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8} = {A5244776-5B87-4499-A1BA-4CC318FDAAE0}
 		{38846B91-92C5-4ED0-A77C-5480FA06EDBE} = {A5244776-5B87-4499-A1BA-4CC318FDAAE0}
-		{5909BFE7-93CF-4E5F-BE22-6293368AF01D} = {E858B607-246D-4056-A56E-A27312A4FDEE}
 		{F753AF28-A251-4C12-9335-07E8236184F2} = {E858B607-246D-4056-A56E-A27312A4FDEE}
+		{009B84F0-3E1E-4674-9318-7B6BECF748E1} = {352C7D18-D5CA-41EA-815F-65DECA33D17E}
+		{22AD2989-C47E-499D-B4EB-72A2D43EF5B7} = {352C7D18-D5CA-41EA-815F-65DECA33D17E}
+		{D18CDB4B-0134-41C0-AE6F-DEE59586F470} = {352C7D18-D5CA-41EA-815F-65DECA33D17E}
+		{19AE8D2C-F941-46B9-933F-3A5E5CBA134F} = {009B84F0-3E1E-4674-9318-7B6BECF748E1}
+		{2029346D-5B87-4B5B-A5BD-4CB64AB0BC79} = {009B84F0-3E1E-4674-9318-7B6BECF748E1}
 		{B6E8E045-B27D-47A8-A2F1-94B7BB351A80} = {009B84F0-3E1E-4674-9318-7B6BECF748E1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		ISWCFSolution = True
-		Locked = False
 		UnLocked = True
+		Locked = False
+		ISWCFSolution = True
 	EndGlobalSection
 	GlobalSection(TextTemplating) = postSolution
 		TextTemplating = 1

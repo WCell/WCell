@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -17,7 +17,7 @@ namespace WCell.Tools.Domi.Output
 
 		private static void Init()
 		{
-			RealmDBUtil.Initialize();
+			RealmDBMgr.Initialize();
 			SpellHandler.LoadSpells();
 			AreaTriggerMgr.Initialize();
 		}

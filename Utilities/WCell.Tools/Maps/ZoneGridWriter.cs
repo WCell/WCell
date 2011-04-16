@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -47,23 +47,25 @@ namespace WCell.Tools.Maps
 
 				writer.WriteLine("sets[(int)MapId.{0}] = tiles = new ZoneTileSet();", map);
 
-				for (var y = 0; y < TerrainConstants.TilesPerMapSide; y++)
+                // Rows along the x-axis
+				for (var x = 0; x < TerrainConstants.TilesPerMapSide; x++)
 				{
-					for (var x = 0; x < TerrainConstants.TilesPerMapSide; x++)
+                    // Columns along the y-axis
+					for (var y = 0; y < TerrainConstants.TilesPerMapSide; y++)
 					{
-						var grid = tileSet.ZoneGrids[x, y];
+						var grid = tileSet.ZoneGrids[y, x];
 						if (grid is ZoneGrid && ((ZoneGrid)grid).ZoneIds != null)
 						{
 							var sameId = true;
 							var str = new StringBuilder(10000);
-							var declStr = string.Format("tiles.ZoneGrids[{0},{1}] = ", x, y);
+							var declStr = string.Format("tiles.ZoneGrids[{0},{1}] = ", y, x);
 							str.Append(string.Format("new ZoneGrid(new uint[{0},{0}] ", TerrainConstants.ChunksPerTileSide));
 							str.Append("{");
-							for (var row = 0; row < TerrainConstants.ChunksPerTileSide; row++)
+							for (var col = 0; col < TerrainConstants.ChunksPerTileSide; col++)
 							{
 								//str.Append(writer.BaseWriter.Indent + "\t");
-								str.Append(GetLine(((ZoneGrid)grid).ZoneIds, row, TerrainConstants.ChunksPerTileSide, ref sameId));
-								if (row < TerrainConstants.ChunksPerTileSide - 1)
+								str.Append(GetLine(((ZoneGrid)grid).ZoneIds, col, TerrainConstants.ChunksPerTileSide, ref sameId));
+								if (col < TerrainConstants.ChunksPerTileSide - 1)
 								{
 									str.Append(",");
 								}
@@ -84,20 +86,20 @@ namespace WCell.Tools.Maps
 			writer.WriteLine("return sets;");
 		}
 
-		static string GetLine(this uint[,] arr, int x, int maxY, ref bool same)
+		static string GetLine(this uint[,] arr, int col, int maxRow, ref bool same)
 		{
 			var last = (uint)ZoneId.End;
 			var str = new StringBuilder("{ ", 1000);
-			for (var y = 0; y < maxY; y++)
+			for (var row = 0; row < maxRow; row++)
 			{
-				var id = arr[x, y];
+				var id = arr[col, row];
 				str.Append(id);
 				if (last != (uint)ZoneId.End)
 				{
 					same = same && last == id;
 				}
 				last = id;
-				if (y < maxY - 1)
+				if (row < maxRow - 1)
 				{
 					str.Append(", ");
 				}

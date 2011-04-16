@@ -105,7 +105,7 @@ namespace WCell.RealmServer.Commands
 				{
 					if (!mod.Contains("n") || !trigger.Text.HasNext)
 					{
-						trigger.Reply(LangKey.CmdKickMustProvideName);
+						trigger.Reply(RealmLangKey.CmdKickMustProvideName);
 						return;
 					}
 					else
@@ -114,18 +114,18 @@ namespace WCell.RealmServer.Commands
 						chr = World.GetCharacter(name, false);
 						if (chr == null)
 						{
-							trigger.Reply(LangKey.PlayerNotOnline, name);
+							trigger.Reply(RealmLangKey.PlayerNotOnline, name);
 							return;
 						}
 					}
 				}
 
-				var delay = Character.DefaultLogoutDelay;
+				var delay = Character.DefaultLogoutDelayMillis;
 
 				// check for different delay
 				if (mod.Contains("d"))
 				{
-					delay = trigger.Text.NextFloat(delay);
+					delay = trigger.Text.NextInt(delay) * 1000;
 				}
 
 				// optional reason
@@ -161,11 +161,11 @@ namespace WCell.RealmServer.Commands
 			var chr = trigger.Args.Target as Character;
 			var banner = trigger.Args.User;
 
-			if (chr != null && chr == banner)
+			if (chr != null && ReferenceEquals(chr, banner))
 			{
 				chr = chr.Target as Character;
 			}
-			if (chr == null || chr == banner)
+			if (chr == null || ReferenceEquals(chr, banner))
 			{
 				trigger.Reply("Invalid Target.");
 				return;
@@ -189,11 +189,11 @@ namespace WCell.RealmServer.Commands
 				until = null;
 			}
 
-			var timeStr = until != null ? "until " + until : "(indefinitely)";
+			var timeStr = until != null ? ("until " + until) : "(indefinitely)";
 			trigger.Reply("Banning Account {0} ({1}) {2}...", chr.Account.Name, chr.Name,
 				timeStr);
 
-			RealmServer.Instance.AddMessage(new Message(() =>
+			RealmServer.IOQueue.AddMessage(new Message(() =>
 			{
 				var context = chr.ContextHandler;
 				var acc = chr.Account;
@@ -263,8 +263,8 @@ namespace WCell.RealmServer.Commands
 				var oldRole = chr.Account.Role;
 
 				// Since setting the role is a task sent to the Auth-Server, this is a blocking call
-				// and thus must not be executed within the Region context (which is the default context for Commands)
-				RealmServer.Instance.AddMessage(new Message(() =>
+				// and thus must not be executed within the Map context (which is the default context for Commands)
+				RealmServer.IOQueue.AddMessage(new Message(() =>
 				{
 					if (chr.Account.SetRole(role))
 					{
@@ -334,10 +334,10 @@ namespace WCell.RealmServer.Commands
 				if (chr.Role <= trigger.Args.Role)
 				{
 					if ((!playersOnly || chr.Role.Status == RoleStatus.Player) &&
-						(inclSelf || chr != trigger.Args.User))
+						(inclSelf || !object.ReferenceEquals(chr, trigger.Args.User)))
 					{
 						chrTrigger.Args.Target = chr;
-						RealmCommandHandler.Instance.Trigger(chrTrigger, cmd, true);
+						RealmCommandHandler.Instance.Execute(chrTrigger, cmd, true);
 						chrCount++;
 					}
 				}
@@ -367,7 +367,7 @@ namespace WCell.RealmServer.Commands
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
-				ContentHandler.PurgeCache();
+				ContentMgr.PurgeCache();
 				trigger.Reply("Done.");
 			}
 		}
@@ -695,7 +695,7 @@ namespace WCell.RealmServer.Commands
 			}
 		}
 
-		public override bool NeedsCharacter
+		public override bool RequiresCharacter
 		{
 			get
 			{
@@ -750,7 +750,7 @@ namespace WCell.RealmServer.Commands
 			get { return RoleStatus.Admin; }
 		}
 
-		public override bool NeedsCharacter
+		public override bool RequiresCharacter
 		{
 			get { return false; }
 		}
@@ -815,7 +815,7 @@ namespace WCell.RealmServer.Commands
 			}
 		}
 
-		public override bool NeedsCharacter
+		public override bool RequiresCharacter
 		{
 			get
 			{
@@ -863,7 +863,7 @@ namespace WCell.RealmServer.Commands
 			}
 		}
 
-		public override bool NeedsCharacter
+		public override bool RequiresCharacter
 		{
 			get
 			{

@@ -28,7 +28,7 @@ namespace WCell.RealmServer.Spells.Effects
 		{
 		}
 
-		public override SpellFailedReason CheckValidTarget(WorldObject target)
+		public override SpellFailedReason InitializeTarget(WorldObject target)
 		{
 			if (((Unit)target).MaxPower == 0 || ((Unit)target).PowerType != (PowerType)Effect.MiscValue)
 			{
@@ -48,7 +48,7 @@ namespace WCell.RealmServer.Spells.Effects
 				value /= 1000;
 			}
 
-			((Unit)target).LeechPower(m_cast.Caster, value, Effect.RealPointsPerLevel, Effect);
+			((Unit)target).LeechPower(value, Effect.RealPointsPerLevel, m_cast.CasterUnit, Effect);
 		}
 
 		public override ObjectTypes TargetType

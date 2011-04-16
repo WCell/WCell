@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,10 +13,10 @@ using WCell.RealmServer.Database;
 namespace WCell.RealmServer.NPCs.Pets
 {
 	/// <summary>
-	/// Classic Hunter pets with talents and everything
+	/// Record for Hunter pets with talents and everything
 	/// </summary>
 	[ActiveRecord("Pets_Permanent", Access = PropertyAccess.Property)]
-	public class PermanentPetRecord : PetRecordBase<PermanentPetRecord>, IPetRecord
+	public class PermanentPetRecord : PetRecordBase<PermanentPetRecord>
 	{
 		public PermanentPetRecord()
 		{
@@ -33,8 +33,8 @@ namespace WCell.RealmServer.NPCs.Pets
 
 		public override uint PetNumber
 		{
-			get { return (uint) m_PetNumber; }
-			set { m_PetNumber = (int) value; }
+			get { return (uint)m_PetNumber; }
+			set { m_PetNumber = (int)value; }
 		}
 
 		[Property]
@@ -80,7 +80,7 @@ namespace WCell.RealmServer.NPCs.Pets
 		}
 
 		/// <summary>
-		/// TODO: Fix Spells
+		///
 		/// </summary>
 		public IList<PetTalentSpellRecord> Spells
 		{
@@ -88,17 +88,6 @@ namespace WCell.RealmServer.NPCs.Pets
 			set;
 		}
 
-        public override PetType Type
-        {
-            get
-            {
-                return PetType.Pet;
-            }
-            set
-            {
-                base.Type = value;
-            }
-        }
 		public override void SetupPet(NPC pet)
 		{
 			base.SetupPet(pet);
@@ -106,7 +95,10 @@ namespace WCell.RealmServer.NPCs.Pets
 			pet.PetExperience = Experience;
 			pet.Level = Level;
 			pet.LastTalentResetTime = LastTalentResetTime;
-			pet.FreeTalentPoints = FreeTalentPoints;
+			if (pet.HasTalents)
+			{
+				pet.FreeTalentPoints = FreeTalentPoints;
+			}
 		}
 
 		public override void UpdateRecord(NPC pet)
@@ -118,18 +110,21 @@ namespace WCell.RealmServer.NPCs.Pets
 			Entry = pet.Entry;
 			Level = pet.Level;
 			LastTalentResetTime = pet.LastTalentResetTime;
-			FreeTalentPoints = pet.FreeTalentPoints;
+			if (pet.HasTalents)
+			{
+				FreeTalentPoints = pet.FreeTalentPoints;
+			}
 		}
 
 		public static PermanentPetRecord[] LoadPermanentPetRecords(uint ownerId)
 		{
 			try
 			{
-				return FindAllByProperty("_OwnerLowId", (int) ownerId);
+				return FindAllByProperty("_OwnerLowId", (int)ownerId);
 			}
 			catch (Exception e)
 			{
-				RealmDBUtil.OnDBError(e);
+				RealmDBMgr.OnDBError(e);
 				return FindAllByProperty("_OwnerLowId", (int)ownerId);
 			}
 		}

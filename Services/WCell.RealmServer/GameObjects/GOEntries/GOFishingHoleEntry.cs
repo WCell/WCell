@@ -11,7 +11,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 	    /// <summary>
 	    /// The activation radius (?)
 	    /// </summary>
-	    public uint Radius
+	    public int Radius
 	    {
             get { return Fields[0]; }
 	    }
@@ -21,14 +21,14 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// </summary>
         public uint LootId
         {
-            get { return Fields[1]; }
+            get { return (uint) Fields[1]; }
             set { }
         }
 
 		/// <summary>
 		/// Minimum number of consecutive times this object can be "fished".
 		/// </summary>
-        public uint MinRestock
+        public int MinRestock
         {
             get { return Fields[2]; }
             set { }
@@ -37,7 +37,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// <summary>
 		/// Maximum number of consecutive times this object can be "fished".
 		/// </summary>
-        public uint MaxRestock
+        public int MaxRestock
         {
             get { return Fields[3]; }
             set { }
@@ -45,7 +45,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 
 		protected internal override void InitEntry()
 		{
-			Lock = LockEntry.Entries.Get(Fields[4]);
+			Lock = LockEntry.Entries.Get((uint)Fields[4]);
 		}
 	}
 }

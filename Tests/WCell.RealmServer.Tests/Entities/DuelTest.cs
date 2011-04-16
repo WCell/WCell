@@ -77,11 +77,11 @@ namespace WCell.RealmServer.Tests.Entities
 			chr2.EnsureInWorldAndLiving();
 			chr2.EnsureXDistance(chr1, 2, true);
 
-			Assert.IsNotNull(chr1.Region);
-			Assert.AreEqual(chr1.Region, chr2.Region);
-			Assert.AreEqual(2, chr1.Region.CharacterCount);
+			Assert.IsNotNull(chr1.Map);
+			Assert.AreEqual(chr1.Map, chr2.Map);
+			Assert.AreEqual(2, chr1.Map.CharacterCount);
 
-			chr1.Region.ForceUpdateCharacters();
+			chr1.Map.ForceUpdateCharacters();
 
 			Assert.IsTrue(chr1.KnowsOf(chr2));
 			Assert.IsFalse(chr1.CanHarm(chr2));
@@ -101,7 +101,7 @@ namespace WCell.RealmServer.Tests.Entities
 				chr1.FakeClient.ReceiveCMSG(packet, false, true);
 			}
 
-			chr1.Region.WaitTicks(3);
+			chr1.Map.WaitTicks(3);
 
 			Assert.IsFalse(chr1.IsUsingSpell, "Character is still casting Duel Spell.");
 
@@ -126,9 +126,9 @@ namespace WCell.RealmServer.Tests.Entities
 
 			var flag = duel.Flag;
 			Assert.IsNotNull(flag);
-			Assert.AreEqual(chr1.Region, duel.Flag.Region);
+			Assert.AreEqual(chr1.Map, duel.Flag.Map);
 
-			var region = chr1.Region;
+			var map = chr1.Map;
 
 			Assert.IsFalse(duel.IsActive);
 
@@ -142,21 +142,21 @@ namespace WCell.RealmServer.Tests.Entities
 			}
 
 			Assert.IsFalse(duel.IsActive);
-			if (Duel.DefaultStartDelay > 0)
+			if (Duel.DefaultStartDelayMillis > 0)
 			{
-				Asser.InBetween(0.001f, Duel.DefaultStartDelay, duel.StartDelay);
+				Asser.InBetween(0.001f, Duel.DefaultStartDelayMillis, duel.StartDelay);
 				// lets speed it up
-				duel.StartDelay = 0.00001f;
+				duel.StartDelay = 1;
 			}
 
-			region.WaitTicks(2);
+			map.WaitTicks(2);
 
 			// duel started
 			Assert.IsTrue(duel.IsActive);
 			Assert.IsTrue(chr1.CanHarm(chr2));
 			Assert.IsTrue(chr2.CanHarm(chr1));
 
-			region.AddMessage(() => {
+			map.AddMessage(() => {
 				// finish duel by having chr1 knockout chr2
 				duel.Finish(DuelWin.Knockout, chr2);
 
@@ -166,7 +166,7 @@ namespace WCell.RealmServer.Tests.Entities
 				Assert.AreEqual(chr2.Name, winMsg["Looser"].Value);
 
 				// duel ended
-				Assert.IsNull(flag.Region);
+				Assert.IsNull(flag.Map);
 
 				Assert.IsNull(chr1.DuelOpponent);
 				Assert.IsNull(chr1.Duel);

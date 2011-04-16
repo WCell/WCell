@@ -28,7 +28,7 @@ namespace WCell.RealmServer.Tests.Misc
 			: base(name ?? "TestAccount" + id, new AccountInfo
 			{
 				AccountId = id,
-				ClientId = ClientId.WrathOfTheLichKing,
+				ClientId = ClientId.Wotlk,
 				EmailAddress = "",
 				RoleGroupName = role.Name
 			})

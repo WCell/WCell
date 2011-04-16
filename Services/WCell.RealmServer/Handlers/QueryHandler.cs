@@ -13,6 +13,7 @@ using WCell.RealmServer.NPCs;
 using WCell.Util;
 using WCell.RealmServer.Misc;
 
+
 namespace WCell.RealmServer.Handlers
 {
 	public static class QueryHandler
@@ -71,7 +72,7 @@ namespace WCell.RealmServer.Handlers
 			}
 			else
 			{
-				RealmServer.Instance.AddMessage(new Message(() =>
+				RealmServer.IOQueue.AddMessage(new Message(() =>
 				{
 					var record = CharacterRecord.LoadRecordByEntityId(id.Low);
 					if (record == null)
@@ -173,8 +174,8 @@ namespace WCell.RealmServer.Handlers
 					pkt.Write(0);
 				}
 
-				pkt.Write(entry.Float1);
-				pkt.Write(entry.Float2);
+				pkt.Write(0);						// hp mod?
+				pkt.Write(0);						// mana mod?
 				pkt.Write(entry.IsLeader);
 
 				for (i = 0; i < 4; i++)
@@ -200,7 +201,7 @@ namespace WCell.RealmServer.Handlers
 			var textId = packet.ReadUInt32();
 			var entityId = packet.ReadEntityId();
 
-			//var obj = client.ActiveCharacter.Region.GetObject(entityId) as IGossipEntry;
+			//var obj = client.ActiveCharacter.Map.GetObject(entityId) as IGossipEntry;
 
 			//if (obj != null)
 			//{
@@ -208,14 +209,8 @@ namespace WCell.RealmServer.Handlers
 			//}
 			//else
 
-			var text = GossipMgr.NPCTexts.GetValue(textId);
-
-			if (text == null)
-			{
-				SendNPCTextUpdateSimple(client.ActiveCharacter,
-										textId, GossipMgr.DefaultTitleMale, GossipMgr.DefaultTitleFemale);
-			}
-			else
+			var text = GossipMgr.GetEntry(textId);
+			if (text != null)
 			{
 				SendNPCTextUpdate(client.ActiveCharacter, text);
 			}
@@ -233,34 +228,25 @@ namespace WCell.RealmServer.Handlers
 				packet.Write(text.GossipId);
 
 				var i = 0;
-				for (; i < text.GossipEntries.Length; i++)
+				for (; i < text.GossipTexts.Length; i++)
 				{
-					var entry = text.GossipEntries[i];
+					var entry = text.GossipTexts[i];
 					packet.WriteFloat(entry.Probability);
 
-					var isMaleTextEmpty = string.IsNullOrEmpty(entry.TextMale);
-					var isFemaleTextEmpty = string.IsNullOrEmpty(entry.TextFemale);
-
-					if (isMaleTextEmpty && isFemaleTextEmpty)
+					var maleText = entry.GetTextMale(character.GossipConversation);
+					string femaleText;
+					if (text.IsDynamic)
 					{
-						packet.WriteCString(" ");
-						packet.WriteCString(" ");
-					}
-					else if (isMaleTextEmpty)
-					{
-						packet.WriteCString(entry.TextFemale);
-						packet.WriteCString(entry.TextFemale);
-					}
-					else if (isFemaleTextEmpty)
-					{
-						packet.WriteCString(entry.TextMale);
-						packet.WriteCString(entry.TextMale);
+						// generated dynamically anyway
+						femaleText = maleText;
 					}
 					else
 					{
-						packet.WriteCString(entry.TextMale);
-						packet.WriteCString(entry.TextFemale);
+						femaleText = entry.GetTextFemale(character.GossipConversation);
 					}
+					packet.WriteCString(maleText);
+					packet.WriteCString(femaleText);
+
 
 					packet.Write((uint)entry.Language);
 
@@ -322,10 +308,19 @@ namespace WCell.RealmServer.Handlers
 		{
 			var pageId = packet.ReadUInt32();
 
+			SendPageText(client.ActiveCharacter, pageId);
+		}
+
+		public static void SendPageText(Character chr, uint pageId)
+		{
 			var entry = PageTextEntry.GetEntry(pageId);
 			if (entry != null)
 			{
-				SendPageText(client.ActiveCharacter, entry);
+				do
+				{
+					SendPageText(chr, entry);
+					entry = entry.NextPageEntry;
+				} while (entry != null);
 			}
 			else
 			{
@@ -333,7 +328,7 @@ namespace WCell.RealmServer.Handlers
 				{
 					outPack.Write("-page is missing-");
 					outPack.Write(0);
-					client.Send(outPack);
+					chr.Send(outPack);
 				}
 			}
 		}
@@ -345,6 +340,7 @@ namespace WCell.RealmServer.Handlers
 			{
 				using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PAGE_TEXT_QUERY_RESPONSE, 100))
 				{
+					packet.Write(entry.PageId);
 					packet.Write(entry.Texts.Localize(locale));
 					packet.Write(entry.NextPageId);
 					chr.Send(packet);

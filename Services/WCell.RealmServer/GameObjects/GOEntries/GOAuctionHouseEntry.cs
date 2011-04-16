@@ -10,7 +10,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// <summary>
 		/// The AuctionHouseId from AuctionHouse.dbc
 		/// </summary>
-    	public uint AuctionHouseId
+    	public int AuctionHouseId
     	{
 			get { return Fields[ 0 ]; }
 			set { Fields[ 0 ] = value; }

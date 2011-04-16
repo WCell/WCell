@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,6 +7,7 @@ using WCell.Core.Network;
 using WCell.Constants.NPCs;
 using WCell.Constants.Updates;
 using WCell.Core;
+using WCell.RealmServer.NPCs.Spawns;
 
 
 namespace WCell.RealmServer.NPCs.Vehicles
@@ -25,12 +26,19 @@ namespace WCell.RealmServer.NPCs.Vehicles
 			get { return HighId.Vehicle; }
 		}
 
-		protected internal override void SetupNPC(NPCEntry entry, SpawnPoint spawnPoint)
+		protected internal override void SetupNPC(NPCEntry entry, NPCSpawnPoint spawnPoint)
 		{
 			base.SetupNPC(entry, spawnPoint);
 
 			NPCFlags = NPCFlags.SpellClick;
 			SetupSeats();
+
+			AddMessage(() =>
+			{
+				// Set Level/Scale ingame:
+				var level = entry.GetRandomLevel();
+				Level = level;
+			});
 		}
 
 		private void SetupSeats()
@@ -85,7 +93,7 @@ namespace WCell.RealmServer.NPCs.Vehicles
 
 		public bool CanEnter(Unit unit)
 		{
-			return IsFriendlyWith(unit) && !IsFull;
+            return IsNeutralWith(unit) && !IsFull;
 		}
 
 		public VehicleSeat GetFirstFreeSeat()

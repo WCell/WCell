@@ -75,7 +75,7 @@ namespace WCell.Core.Initialization
         public static bool Initialize(Type type)
         {
             var initMgr = new InitMgr();
-            var dependencies = new List<InitializationDependency>();
+            var dependencies = new List<DependentInitializationStep>();
             initMgr.AddStepsOfType(type, dependencies);
             initMgr.InitDependencies(dependencies);
 
@@ -125,6 +125,11 @@ namespace WCell.Core.Initialization
             get { return m_currentPass; }
         }
 
+		public int GetStepCount(InitializationPass pass)
+		{
+			return InitSteps[pass].Count;
+		}
+
         /// <summary>
         /// Finds, reads, and stores all initialization steps to be completed.
         /// </summary>
@@ -147,7 +152,7 @@ namespace WCell.Core.Initialization
         public void AddStepsOfAsm(Assembly asm)
         {
             // Go through every type in this assembly.
-            var dependentInitors = new List<InitializationDependency>();
+            var dependentInitors = new List<DependentInitializationStep>();
             foreach (var checkType in asm.GetTypes())
             {
                 AddStepsOfType(checkType, dependentInitors);
@@ -164,36 +169,30 @@ namespace WCell.Core.Initialization
             return info;
         }
 
-        private void InitDependencies(List<InitializationDependency> dependencies)
+        private void InitDependencies(IEnumerable<DependentInitializationStep> dependentSteps)
         {
-            foreach (var depInitor in dependencies)
+            foreach (var dependentStep in dependentSteps)
             {
-                var canInit = true;
-                foreach (var dep in depInitor.Info)
+				// Add step to all managers that it depends on
+                foreach (var dep in dependentStep.Dependency)
                 {
                     var info = GetGlobalMgrInfo(dep.DependentType);
                     if (info == null)
                     {
                         throw new InitializationException("Invalid Dependency - " +
                                                           "{0} is dependent on {1} which is not a GlobalMgr.",
-                                                          depInitor.Step.InitMethod.GetMemberName(), dep.DependentType.FullName);
+                                                          dependentStep.Step.InitMethod.GetFullMemberName(), dep.DependentType.FullName);
                     }
-                    info.Dependencies.Add(depInitor);
+                    info.Dependencies.Add(dependentStep);
                     dep.DependentMgr = info;
-                    if (!info.IsInitialized)
-                    {
-                        canInit = false;
-                    }
                 }
 
-                if (canInit)
-                {
-                    DoExecute(depInitor.Step);
-                }
+				// try to resolve step
+            	TryResolve(dependentStep);
             }
         }
 
-        public void AddStepsOfType(Type type, List<InitializationDependency> dependentInitors)
+        public void AddStepsOfType(Type type, List<DependentInitializationStep> dependentInitors)
         {
             var mgrAttr = type.GetCustomAttributes<GlobalMgrAttribute>().FirstOrDefault();
             if (mgrAttr != null)
@@ -213,17 +212,17 @@ namespace WCell.Core.Initialization
                 // Can't have multiple instances of the attribute on a single method, so we check for 1.
                 if (attribute != null)
                 {
-                    var part = new InitializationStep(attribute.Name, attribute.IsRequired, method);
+					var step = new InitializationStep(attribute.Pass, attribute.Name, attribute.IsRequired, method);
 
                     if (depInitorAttrs.Length > 0)
                     {
-                        var dep = new InitializationDependency(new InitializationStep(attribute.Name, attribute.IsRequired, method),
-                            depInitorAttrs.TransformArray(attr => new DependentInitializationInfo(attr)));
+						var dep = new DependentInitializationStep(step,
+                            depInitorAttrs.TransformArray(attr => new InitializationDependency(attr)));
                         dependentInitors.Add(dep);
                     }
                     else
                     {
-                        InitSteps[attribute.Pass].Add(part);
+                    	AddIndipendentStep(step);
                     }
 
                     m_newSteps = true;
@@ -235,14 +234,19 @@ namespace WCell.Core.Initialization
                         throw new InitializationException("Invalid {0} - Requires missing {1} for: {2}",
                             typeof(DependentInitializationAttribute).Name,
                             typeof(InitializationAttribute).Name,
-                            method.GetMemberName());
+                            method.GetFullMemberName());
                     }
                 }
 
             }
         }
 
-        /// <summary>
+    	private void AddIndipendentStep(InitializationStep step)
+    	{
+			InitSteps[step.Pass].Add(step);
+    	}
+
+    	/// <summary>
         /// Tries to execute all initialization steps, and returns the initialization result, 
         /// logging every failure and success.
         /// </summary>
@@ -250,17 +254,16 @@ namespace WCell.Core.Initialization
         public bool PerformInitialization()
         {
             m_newSteps = false;
-            // Go through every pass level.
+
+            // Go through every pass level
             foreach (InitializationPass pass in Enum.GetValues(typeof(InitializationPass)))
             {
-                var steps = InitSteps[pass];
-
-                // Make sure we have steps to go through.
-                if (steps.Count > 0)
-                {
+				if (GetStepCount(pass) > 0)
+				{
+					// Execute steps of pass, if there are any
                     m_currentPass = pass;
                     s_log.Info(string.Format(Resources.InitPass, (int)m_currentPass));
-                    if (!Init(steps))
+					if (!Execute(pass))
                     {
                         return false;
                     }
@@ -272,9 +275,9 @@ namespace WCell.Core.Initialization
             return true;
         }
 
-        private bool Init(List<InitializationStep> steps)
+		private bool Execute(InitializationPass pass)
         {
-            var currentSteps = steps.ToArray(); // create copy since collection might get modified
+			var currentSteps = InitSteps[pass].ToArray(); // create copy since collection might get modified
 
             foreach (var step in currentSteps)
             {
@@ -288,13 +291,13 @@ namespace WCell.Core.Initialization
                 }
             }
 
-            if (m_newSteps)
+            while (m_newSteps)
             {
                 // step added further steps -> Retroactively init all steps of previous passes that have been added
                 m_newSteps = false;
-                for (var pass = InitializationPass.First; pass <= m_currentPass; pass++)
+				for (var previousPass = InitializationPass.First; previousPass <= m_currentPass; previousPass++)
                 {
-                    Init(InitSteps[pass]);
+					Execute(previousPass);
                 }
             }
             return true;
@@ -389,24 +392,29 @@ namespace WCell.Core.Initialization
             info.IsInitialized = true;
             foreach (var depList in info.Dependencies)
             {
-                var done = true;
-                foreach (var dep in depList.Info)
-                {
-                    if (!dep.DependentMgr.IsInitialized)
-                    {
-                        done = false;
-                        break;
-                    }
-                }
-
-                if (done)
-                {
-                    DoExecute(depList.Step);
-                }
+            	TryResolve(depList);
             }
         }
 
-        private void DoExecute(InitializationStep step)
+    	private void TryResolve(DependentInitializationStep depList)
+    	{
+			if (depList.Dependency.All(dep => dep.DependentMgr.IsInitialized))
+			{
+				// all dependencies resolved
+				if (depList.Step.Pass != InitializationPass.Any && depList.Step.Pass > m_currentPass)
+				{
+					// not ready yet -> Add to list
+					AddIndipendentStep(depList.Step);
+				}
+				else
+				{
+					// can execute immediately
+					DoExecute(depList.Step);
+				}
+			}
+    	}
+
+    	private void DoExecute(InitializationStep step)
         {
             if (!Execute(step))
             {

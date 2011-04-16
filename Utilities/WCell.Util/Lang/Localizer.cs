@@ -5,7 +5,13 @@ using System.Reflection;
 namespace WCell.Util.Lang
 {
 	/// <summary>
-	/// 
+	/// Localizer class that converts the elements of the Locale and Key enums to array indices to look up strings with minimal
+	/// overhead. Values defined in supplied Enum types must all be positive and not too big.
+	/// <typeparam name="Locale">
+	/// int-Enum that contains a set of usable Locales. For every Locale, one XML file is created in the supplied folder to contain
+	/// all pairs of keys their string-representations.
+	/// </typeparam>
+	/// <typeparam name="Key">int-Enum that contains language keys which are mapped to string values in an XML file</typeparam>
 	/// </summary>
 	public class Localizer<Locale, Key> : ILocalizer<Locale>
 		where Locale : IConvertible
@@ -122,7 +128,7 @@ namespace WCell.Util.Lang
 			DefaultTranslation = null;
 			foreach (Locale locale in Enum.GetValues(typeof(Locale)))
 			{
-				LoadTranslation(locale);
+				LoadTranslations(locale);
 			}
 
 			VerifyIntegrity();
@@ -136,14 +142,18 @@ namespace WCell.Util.Lang
 			LoadTranslations();
 		}
 
-		private void LoadTranslation(Locale locale)
+		/// <summary>
+		/// Loads all translations for the given locale from the folder
+		/// with the name of the locale.
+		/// </summary>
+		private void LoadTranslations(Locale locale)
 		{
 			var translation = Translation<Locale, Key>.Load(this, locale);
 			if (translation != null)
 			{
 				translation.Localizer = this;
 				Translations[locale.ToInt32(null)] = translation;
-
+                
 				if (BaseLocale.Equals(locale))
 				{
 					BaseTranslation = translation;
@@ -196,7 +206,7 @@ namespace WCell.Util.Lang
 
 		public string Translate(Key key, params object[] args)
 		{
-			return Translate(key, DefaultLocale);
+			return Translate(DefaultLocale, key, args);
 		}
 
 		public string Translate(Locale locale, Key key, params object[] args)

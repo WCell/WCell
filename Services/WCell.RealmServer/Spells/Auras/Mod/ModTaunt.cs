@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,31 +12,51 @@ namespace WCell.RealmServer.Spells.Auras.Mod
 	/// </summary>
 	public class ModTauntAuraHandler : AuraEffectHandler
 	{
-		private Unit caster;
-		private NPC npc;
-
-		protected internal override void CheckInitialize(CasterInfo casterInfo, Unit target, ref SpellFailedReason failReason)
+		protected internal override void CheckInitialize(SpellCast creatingCast, ObjectReference casterRef, Unit target, ref SpellFailedReason failReason)
 		{
-			caster = casterInfo.Caster as Unit;
-			
-			if (!(target is NPC) || caster == null)
+			if (!(target is NPC))
 			{
 				failReason = SpellFailedReason.BadTargets;
 			}
+
+			if (casterRef != null && casterRef.Object is Unit)
+			{
+				var caster = (Unit)casterRef.Object;
+				//if (target.Target == caster)
+				//{
+				//    failReason = SpellFailedReason.NoValidTargets;
+				//}
+				//else
+				{
+					var spell = m_aura.Spell;
+					var hasSingleFriendTarget = spell.HasBeneficialEffects && !spell.IsAreaSpell && spell.HasTargets;
+					if (hasSingleFriendTarget && caster.Target != null && caster.IsFriendlyWith(caster.Target))
+					{
+						// taunting a friend, means we want to taunt his attackers
+						// needed for Righteous defense, amongst others
+						if (target.Target != caster.Target)
+						{
+							failReason = SpellFailedReason.NoValidTargets;
+						}
+					}
+				}
+			}
 		}
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
-			npc = (NPC)m_aura.Auras.Owner;
-			if (caster != null && caster.IsInWorld)
+			var npc = (NPC)Owner;
+			var caster = m_aura.CasterUnit;
+			if (caster != null)
 			{
 				npc.ThreatCollection.Taunter = caster;
 			}
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
-			if (npc.ThreatCollection.Taunter == caster)
+			var npc = (NPC)Owner;
+			if (npc.ThreatCollection.Taunter == m_aura.CasterUnit)
 			{
 				npc.ThreatCollection.Taunter = null;
 			}

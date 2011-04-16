@@ -212,7 +212,7 @@ namespace WCell.Util.DynamicAccess
 			}
 
 			var targetType = ctor.DeclaringType;
-			var typeName = NextTypeName(ctor.GetMemberName());
+			var typeName = NextTypeName(ctor.GetFullMemberName());
 			var myType = module.DefineType(typeName, TypeAttributes.Public);
 
 			myType.AddInterfaceImplementation(typeof(IProducer));
@@ -248,13 +248,14 @@ namespace WCell.Util.DynamicAccess
 
 		private static string NextTypeName(string s)
 		{
-			return "Dynamic" + s.Replace('.','_') + nextTypeId++;
+			s = s.Replace('.', '_').Replace(" ", "_").Replace(',', '_').Replace("`", "_").Replace("[", "_").Replace("]", "_").Replace("=", "_");
+			return "Dynamic" + s + nextTypeId++;
 		}
 
 
 		public static IGetterSetter AddToModule(ModuleBuilder module, FieldInfo field)
 		{
-			var typeName = NextTypeName(field.GetMemberName());
+			var typeName = NextTypeName(field.GetFullMemberName());
 
 			var targetType = field.DeclaringType;
 			var fieldType = field.FieldType;
@@ -382,7 +383,7 @@ namespace WCell.Util.DynamicAccess
 
 		public static IGetterSetter AddToModule(ModuleBuilder module, PropertyInfo prop)
 		{
-			var typeName = NextTypeName(prop.GetMemberName());
+			var typeName = NextTypeName(prop.GetFullMemberName());
 
 			var targetType = prop.DeclaringType;
 			//		
@@ -516,7 +517,7 @@ namespace WCell.Util.DynamicAccess
 			var accessor = module.Assembly.CreateInstance(typeName) as IGetterSetter;
 			if (accessor == null)
 			{
-				throw new Exception("Unable to create property accessor.");
+				throw new Exception("Unable to create property accessor for \"" + prop + "\" of type: " + prop.DeclaringType.FullName);
 			}
 			return accessor;
 		}

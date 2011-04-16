@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,7 +13,7 @@ namespace WCell.Util.Threading
 	public interface IContextHandler
 	{
 		/// <summary>
-		/// Whether the currently executing Thread belongs to this ContextHandler
+		/// Whether this ContextHandler currently belongs to the calling Thread
 		/// </summary>
 		bool IsInContext { get; }
 
@@ -22,7 +22,8 @@ namespace WCell.Util.Threading
 		void AddMessage(Action action);
 
 		/// <summary>
-		/// Executes action now or enqueues a Message, depending on the current Context
+		/// Executes action instantly, if in context.
+		/// Enqueues a Message to execute it later, if not in context.
 		/// </summary>
 		bool ExecuteInContext(Action action);
 

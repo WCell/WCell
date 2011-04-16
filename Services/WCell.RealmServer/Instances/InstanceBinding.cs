@@ -6,7 +6,7 @@ using WCell.Util;
 
 namespace WCell.RealmServer.Instances
 {
-	public class InstanceBinding : WCellRecord<InstanceBinding>, IRegionId
+	public class InstanceBinding : WCellRecord<InstanceBinding>, IMapId
 	{
 		private int m_DifficultyIndex;
 
@@ -15,7 +15,7 @@ namespace WCell.RealmServer.Instances
 			BindTime = DateTime.Now;
 			DifficultyIndex = difficultyIndex;
 			InstanceId = id;
-			RegionId = mapId;
+			MapId = mapId;
 		}
 
 		public DateTime BindTime
@@ -30,7 +30,7 @@ namespace WCell.RealmServer.Instances
 			set { m_DifficultyIndex = (int)value; }
 		}
 
-		public MapId RegionId
+		public MapId MapId
 		{
 			get;
 			set;
@@ -42,27 +42,27 @@ namespace WCell.RealmServer.Instances
 			set;
 		}
 
-		public RegionInfo RegionInfo
+		public MapTemplate MapTemplate
 		{
-			get { return World.GetRegionInfo(RegionId); }
+			get { return World.GetMapTemplate(MapId); }
 		}
 
 		public MapDifficultyEntry Difficulty
 		{
-			get { return RegionInfo.Difficulties.Get(DifficultyIndex); }
+			get { return MapTemplate.Difficulties.Get(DifficultyIndex); }
 		}
 
 		/// <summary>
 		/// Might Return null
 		/// </summary>
-		public InstancedRegion Instance
+		public InstancedMap Instance
 		{
-			get { return World.GetInstance(RegionId, InstanceId); }
+			get { return InstanceMgr.Instances.GetInstance(MapId, InstanceId); }
 		}
 
 		public DateTime NextResetTime
 		{
-			get { return InstanceMgr.GetNextResetTime(RegionId, DifficultyIndex); }
+			get { return InstanceMgr.GetNextResetTime(MapId, DifficultyIndex); }
 		}
 
 		#region Misc Overrides
@@ -74,7 +74,7 @@ namespace WCell.RealmServer.Instances
 			}
 			return !ReferenceEquals(right, null) &&
 				left.m_DifficultyIndex == right.m_DifficultyIndex &&
-				left.RegionId == right.RegionId &&
+				left.MapId == right.MapId &&
 				left.InstanceId == right.InstanceId;
 		}
 
@@ -87,16 +87,14 @@ namespace WCell.RealmServer.Instances
 		{
 			if (ReferenceEquals(null, obj)) return false;
 			if (ReferenceEquals(this, obj)) return true;
-			return obj.m_DifficultyIndex == m_DifficultyIndex &&
-				obj.RegionId == RegionId &&
-				obj.InstanceId == InstanceId;
+			return obj.m_DifficultyIndex == m_DifficultyIndex && obj.BindTime.Equals(BindTime) && Equals(obj.MapId, MapId) && obj.InstanceId == InstanceId;
 		}
 
 		public override bool Equals(object obj)
 		{
 			if (ReferenceEquals(null, obj)) return false;
 			if (ReferenceEquals(this, obj)) return true;
-			if (obj.GetType() != typeof (InstanceBinding)) return false;
+			if (!(obj is InstanceBinding)) return false;
 			return Equals((InstanceBinding) obj);
 		}
 
@@ -106,7 +104,7 @@ namespace WCell.RealmServer.Instances
 			{
 				var result = m_DifficultyIndex;
 				result = (result*397) ^ BindTime.GetHashCode();
-				result = (result*397) ^ RegionId.GetHashCode();
+				result = (result*397) ^ MapId.GetHashCode();
 				result = (result*397) ^ InstanceId.GetHashCode();
 				return result;
 			}

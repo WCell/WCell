@@ -10,7 +10,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         /// <summary>
         /// Show the floating tooltip for this object (?)
         /// </summary>
-        public uint ShowFloatingTooltip
+        public int ShowFloatingTooltip
         {
             get { return Fields[0]; }
         }
@@ -18,7 +18,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         /// <summary>
         /// Whether or nor to show a highlight around this object (?)
         /// </summary>
-        public uint Highlight
+        public int Highlight
         {
             get { return Fields[1]; }
         }
@@ -26,7 +26,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         /// <summary>
         /// ???
         /// </summary>
-        public uint ServerOnly
+        public int ServerOnly
         {
             get { return Fields[2]; }
         }
@@ -34,7 +34,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         /// <summary>
         /// ???
         /// </summary>
-        public uint Large
+        public int Large
         {
             get { return Fields[3]; }
         }
@@ -42,17 +42,18 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         /// <summary>
         /// Whether or not this object floats on water (?)
         /// </summary>
-        public uint FloatOnWater
+        public int FloatOnWater
         {
             get { return Fields[4]; }
         }
 
+
 		/// <summary>
-		/// The Id of the quest required to be active in order to activate this object.
+		/// The Id of the quest required to be active
 		/// </summary>
-		public uint QuestId
-        {
-            get { return Fields[5]; }
-        }
+		public override uint QuestId
+		{
+			get { return (uint)Fields[5]; }
+		}
 	}
 }

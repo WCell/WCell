@@ -14,12 +14,14 @@
  *
  *************************************************************************/
 
+using System;
 using System.Collections.Generic;
 using NLog;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Spells.Auras;
+using WCell.Util;
 
 namespace WCell.RealmServer.Spells
 {
@@ -41,8 +43,11 @@ namespace WCell.RealmServer.Spells
 		private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
 		public readonly SpellEffect Effect;
+
 		protected SpellCast m_cast;
-		internal protected SpellTargetCollection Targets;
+		internal protected SpellTargetCollection m_targets;
+
+		private int CurrentTargetNo;
 
 		protected SpellEffectHandler(SpellCast cast, SpellEffect effect)
 		{
@@ -54,6 +59,11 @@ namespace WCell.RealmServer.Spells
 		public SpellCast Cast
 		{
 			get { return m_cast; }
+		}
+
+		public SpellTargetCollection Targets
+		{
+			get { return m_targets; }
 		}
 
 		/// <summary>
@@ -69,7 +79,7 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public virtual ObjectTypes CasterType
 		{
-			get { return ObjectTypes.All; }
+			get { return ObjectTypes.None; }
 		}
 
 		/// <summary>
@@ -81,8 +91,19 @@ namespace WCell.RealmServer.Spells
 		}
 		#endregion
 
+		#region Validate & Initialize
+		internal SpellFailedReason ValidateAndInitializeTarget(WorldObject target)
+		{
+			if (!target.CheckObjType(TargetType))
+			{
+				return SpellFailedReason.BadTargets;
+			}
+
+			return InitializeTarget(target);
+		}
+
 		/// <summary>
-		/// Initializes this effect and checks whether the effect can be casted before Targets have been initialized.
+		/// Initializes this effect and checks whether the effect can be casted *before* Targets have been initialized.
 		/// Use CheckValidTarget to validate Targets.
 		/// </summary>
 		public virtual void Initialize(ref SpellFailedReason failReason) { }
@@ -92,10 +113,11 @@ namespace WCell.RealmServer.Spells
 		/// Invalid targets either lead to Spell-Fail or the target being removed from Target-List.
 		/// </summary>
 		/// <returns>whether the given target is valid.</returns>
-		public virtual SpellFailedReason CheckValidTarget(WorldObject target)
+		public virtual SpellFailedReason InitializeTarget(WorldObject target)
 		{
 			return SpellFailedReason.Ok;
 		}
+		#endregion
 
 		/// <summary>
 		/// Apply the effect (by default to all targets of the targettype)
@@ -103,11 +125,12 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public virtual void Apply()
 		{
-			if (Targets != null)
+			if (m_targets != null)
 			{
-				foreach (var target in Targets)
+				for (CurrentTargetNo = 0; CurrentTargetNo < m_targets.Count; CurrentTargetNo++)
 				{
-					if (!target.IsInWorld)
+					var target = m_targets[CurrentTargetNo];
+					if (!target.IsInContext)
 					{
 						continue;
 					}
@@ -153,10 +176,10 @@ namespace WCell.RealmServer.Spells
 		internal protected virtual void Cleanup()
 		{
 			m_cast = null;
-			if (Targets != null)
+			if (m_targets != null)
 			{
-				Targets.Dispose();
-				Targets = null;
+				m_targets.Dispose();
+				m_targets = null;
 			}
 		}
 
@@ -166,21 +189,53 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		protected internal void CheckCasterType(ref SpellFailedReason failReason)
 		{
-			if (!m_cast.Caster.CheckObjType(CasterType))
+			if (CasterType != ObjectTypes.None && (m_cast.CasterObject == null || !m_cast.CasterObject.CheckObjType(CasterType)))
 			{
 				failReason = SpellFailedReason.Error;
-				log.Warn("Invalid caster type in EffectHandler: " + this);
+				log.Warn("Invalid caster {0} for spell {1} in EffectHandler: {2}", Effect.Spell, m_cast.CasterObject, this);
 			}
+		}
+
+		/// <summary>
+		/// Used for one-shot damage and healing effects
+		/// </summary>
+		public int CalcDamageValue()
+		{
+			var val = CalcEffectValue();
+			if (CurrentTargetNo > 0)
+			{
+				// chain target damage comes with diminishing returns
+				return Effect.GetMultipliedValue(m_cast.CasterUnit, val, CurrentTargetNo);
+			}
+			return val;
+		}
+
+		/// <summary>
+		/// Used for one-shot damage and healing effects
+		/// </summary>
+		public int CalcDamageValue(int targetNo)
+		{
+			var val = CalcEffectValue();
+			if (targetNo > 0)
+			{
+				// chain target damage comes with diminishing returns
+				return Effect.GetMultipliedValue(m_cast.CasterUnit, val, targetNo);
+			}
+			return val;
 		}
 
 		public int CalcEffectValue()
 		{
-			return Effect.CalcEffectValue(m_cast.CasterUnit);
+			if (m_cast.TriggerEffect != null && m_cast.TriggerEffect.OverrideEffectValue)
+			{
+				return m_cast.TriggerEffect.CalcEffectValue(m_cast.CasterReference);
+			}
+			return Effect.CalcEffectValue(m_cast.CasterReference);
 		}
 
 		public float GetRadius()
 		{
-			return Effect.GetRadius(m_cast.Caster);
+			return Effect.GetRadius(m_cast.CasterReference);
 		}
 		#endregion
 
@@ -196,7 +251,7 @@ namespace WCell.RealmServer.Spells
 
 		public override string ToString()
 		{
-			return GetType().Name + " - Spell: " + Effect.Spell.FullName + (m_cast != null ? (", Caster: " + m_cast.Caster) : "");
+			return GetType().Name + " - Spell: " + Effect.Spell.FullName + (m_cast != null ? (", Caster: " + m_cast.CasterObject) : "");
 		}
 	}
 }

@@ -1,5 +1,6 @@
 using System;
 using WCell.Constants;
+using WCell.Constants.Achievements;
 using WCell.Constants.GameObjects;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
@@ -18,7 +19,7 @@ namespace WCell.RealmServer.Misc
 {
 	/// <summary>
 	/// Represents the progress of a duel between 2 Characters.
-	/// Most methods require the context of the Flag's region
+	/// Most methods require the context of the Flag's map
 	/// </summary>
 	public class Duel : IDisposable, IUpdatable
 	{
@@ -47,14 +48,14 @@ namespace WCell.RealmServer.Misc
 		}
 
 		/// <summary>
-		/// The delay until a duel starts in seconds
+		/// The delay until a duel starts in milliseconds
 		/// </summary>
-		public static float DefaultStartDelay = 3.0f;
+		public static int DefaultStartDelayMillis = 3000;
 
 		/// <summary>
 		/// If Duelist leaves the area around the flag for longer than this delay, he/she will loose the duel
 		/// </summary>
-		public static float DefaultCancelDelay = 10.0f;
+		public static int DefaultCancelDelayMillis = 10000;
 
 		static Duel()
 		{
@@ -73,7 +74,7 @@ namespace WCell.RealmServer.Misc
 			{
 				return SpellFailedReason.CantDuelWhileStealthed;
 			}
-			if (challenger.Zone != null && challenger.Zone.Info.IsSanctuary)
+			if (challenger.Zone != null && challenger.Zone.Template.IsSanctuary)
 			{
 				return SpellFailedReason.NotHere;
 			}
@@ -97,7 +98,7 @@ namespace WCell.RealmServer.Misc
 				// can't duel with someone who is already dueling
 				return SpellFailedReason.TargetDueling;
 			}
-			if (challenger.Region is Battleground)
+			if (challenger.Map is Battleground)
 			{
 				// can't duel in Battlegrounds
 				return SpellFailedReason.NotHere;
@@ -113,22 +114,24 @@ namespace WCell.RealmServer.Misc
 		/// <returns></returns>
 		public static Duel InitializeDuel(Character challenger, Character rival)
 		{
-			return new Duel(challenger, rival, DefaultStartDelay, DefaultCancelDelay);
+			challenger.EnsureContext();
+			rival.EnsureContext();
+			return new Duel(challenger, rival, DefaultStartDelayMillis, DefaultCancelDelayMillis);
 		}
 		#endregion
 
 		private Character m_challenger;
 		private Character m_rival;
-		private float m_startDelay;
-		private float m_challengerCountdown;
-		private float m_rivalCountdown;
-		private float m_cancelDelay;
+		private int m_startDelay;
+		private int m_challengerCountdown;
+		private int m_rivalCountdown;
+		private int m_cancelDelay;
 		private bool m_active;
 		private bool m_accepted;
 		private bool m_challengerInRange;
 		private bool m_rivalInRange;
 		private GameObject m_flag;
-		private Region m_region;
+		private Map m_Map;
 
 		/// <summary>
 		/// Creates a new duel between the 2 parties.
@@ -137,11 +140,11 @@ namespace WCell.RealmServer.Misc
 		/// <param name="rival"></param>
 		/// <param name="startDelay"></param>
 		/// <param name="cancelDelay"></param>
-		public Duel(Character challenger, Character rival, float startDelay, float cancelDelay)
+		internal Duel(Character challenger, Character rival, int startDelay, int cancelDelay)
 		{
 			m_challenger = challenger;
 			m_rival = rival;
-			m_region = challenger.Region;
+			m_Map = challenger.Map;
 			m_startDelay = startDelay;
 			m_cancelDelay = cancelDelay;
 
@@ -181,18 +184,18 @@ namespace WCell.RealmServer.Misc
 			}
 		}
 
-		public float CancelDelay
+		public int CancelDelay
 		{
 			get { return m_cancelDelay; }
 			set { m_cancelDelay = value; }
 		}
 
 		/// <summary>
-		/// Delay left in seconds until the Duel starts. 
+		/// Delay left in milliseconds until the Duel starts. 
 		/// If countdown did not start yet, will be set to the total delay.
 		/// If countdown is already over, this value is redundant.
 		/// </summary>
-		public float StartDelay
+		public int StartDelay
 		{
 			get { return m_startDelay; }
 			set { m_startDelay = value; }
@@ -229,15 +232,19 @@ namespace WCell.RealmServer.Misc
 		/// </summary>
 		void Initialize()
 		{
-			m_flag = GameObject.Create(GOEntryId.DuelFlag);
-			m_flag.Phase = m_challenger.Phase;
+			// place flag in between the two
+			var pos = ((m_challenger.Position + m_rival.Position) / 2);
+
+			m_flag = GameObject.Create(GOEntryId.DuelFlag, new WorldLocationStruct(m_Map, pos));
 			if (m_flag == null)
 			{
-				ContentHandler.OnInvalidDBData("Cannot start Duel: DuelFlag-GameObject (ID: {0}) does not exist.", (int)GOEntryId.DuelFlag);
+				ContentMgr.OnInvalidDBData("Cannot start Duel: DuelFlag-GameObject (ID: {0}) does not exist.", (int)GOEntryId.DuelFlag);
 				Cancel();
 			}
 			else
 			{
+				m_flag.Phase = m_challenger.Phase;
+
 				((DuelFlagHandler)m_flag.Handler).Duel = this;
 				m_flag.CreatedBy = m_challenger.EntityId;
 				m_flag.Level = m_challenger.Level;
@@ -246,16 +253,9 @@ namespace WCell.RealmServer.Misc
 				m_flag.Faction = m_challenger.Faction;
 				m_flag.ScaleX = m_challenger.ScaleX;
 				m_flag.ParentRotation4 = 1;
+				m_flag.Orientation = m_challenger.Orientation;
 
-				m_region.AddMessage(new Message(() =>
-				{
-					if (m_flag == null) return;
-					m_flag.Orientation = m_challenger.Orientation;
-					m_flag.Position = ((m_challenger.Position + m_rival.Position) / 2);
-					m_region.AddObjectNow(m_flag);
-				}));
-
-				m_region.AddMessage(new Message(() => DuelHandler.SendRequest(m_flag, m_challenger, m_rival)));
+				m_Map.AddMessage(new Message(() => DuelHandler.SendRequest(m_flag, m_challenger, m_rival)));
 				m_challenger.SetEntityId(PlayerFields.DUEL_ARBITER, m_flag.EntityId);
 				m_rival.SetEntityId(PlayerFields.DUEL_ARBITER, m_flag.EntityId);
 			}
@@ -268,19 +268,19 @@ namespace WCell.RealmServer.Misc
 		{
 			if (m_challenger == acceptingCharacter) return;
 
-			var delay = (uint)(m_startDelay * 1000);
+			var delay = (uint)m_startDelay;
 
 			DuelHandler.SendCountdown(m_challenger, delay);
 			DuelHandler.SendCountdown(m_rival, delay);
 
-			m_region.RegisterUpdatableLater(this);
+			m_Map.RegisterUpdatableLater(this);
 			m_accepted = true;
 		}
 
 		/// <summary>
 		/// Starts the Duel (automatically called after countdown)
 		/// </summary>
-		/// <remarks>Requires region context</remarks>
+		/// <remarks>Requires map context</remarks>
 		public void Start()
 		{
 			m_active = true;
@@ -298,7 +298,7 @@ namespace WCell.RealmServer.Misc
 		/// Ends the duel with the given win-condition and the given loser
 		/// </summary>
 		/// <param name="loser">The opponent that lost the match or null if its a draw</param>
-		/// <remarks>Requires region context</remarks>
+		/// <remarks>Requires map context</remarks>
 		public void Finish(DuelWin win, Character loser)
 		{
 			if (IsActive)
@@ -308,14 +308,16 @@ namespace WCell.RealmServer.Misc
 					// user casts stun on himself
 					loser.SpellCast.Start(SpellId.NotDisplayedGrovel, false);
 					var winner = loser.DuelOpponent;
+					winner.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.WinDuel, 1);
+					loser.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.LoseDuel, 1);
 					DuelHandler.SendWinner(win, winner, loser);
 				}
 
 				// remove all debuffs
 				m_challenger.FirstAttacker = null;
 				m_rival.FirstAttacker = null;
-				m_challenger.Auras.RemoveWhere(aura => !aura.IsBeneficial && aura.CasterInfo.CasterId == m_rival.EntityId);
-				m_rival.Auras.RemoveWhere(aura => !aura.IsBeneficial && aura.CasterInfo.CasterId == m_challenger.EntityId);
+				m_challenger.Auras.RemoveWhere(aura => !aura.IsBeneficial && aura.CasterReference.EntityId == m_rival.EntityId);
+				m_rival.Auras.RemoveWhere(aura => !aura.IsBeneficial && aura.CasterReference.EntityId == m_challenger.EntityId);
 				if (m_rival.ComboTarget == m_challenger)
 				{
 					m_rival.ResetComboPoints();
@@ -332,8 +334,8 @@ namespace WCell.RealmServer.Misc
 		/// <summary>
 		/// Updates the Duel
 		/// </summary>
-		/// <param name="dt">the time since the last update in seconds</param>
-		public void Update(float dt)
+		/// <param name="dt">the time since the last update in milliseconds</param>
+		public void Update(int dt)
 		{
 			if (m_challenger == null || m_rival == null)
 			{
@@ -341,9 +343,9 @@ namespace WCell.RealmServer.Misc
 				return;
 			}
 
-			if (!m_challenger.IsInWorld ||
-				!m_rival.IsInWorld ||
-				!m_flag.IsInWorld)
+			if (!m_challenger.IsInContext ||
+				!m_rival.IsInContext ||
+				!m_flag.IsInContext)
 			{
 				Dispose();
 				return;
@@ -367,16 +369,17 @@ namespace WCell.RealmServer.Misc
 				// check if challenger in-range status changed
 				if (m_challengerInRange != m_challenger.IsInRadiusSq(m_flag, s_duelRadiusSq))
 				{
-					if (!(m_challengerInRange = !m_challengerInRange))
+					m_challengerInRange = !m_challengerInRange;		// in range status toggled
+					if (m_challengerInRange)
 					{
-						// out of range: Start the cancel-timer
-						DuelHandler.SendOutOfBounds(m_challenger, (uint)(m_cancelDelay * 1000));
+						// back in range: Cancel the cancel-timer
+						m_challengerCountdown = 0;
+						DuelHandler.SendInBounds(m_challenger);
 					}
 					else
 					{
-						// back in range: Cancel the cancel-timer
-						m_challengerCountdown = 0f;
-						DuelHandler.SendInBounds(m_challenger);
+						// out of range: Start the cancel-timer
+						DuelHandler.SendOutOfBounds(m_challenger, m_cancelDelay);
 					}
 				}
 				else
@@ -397,16 +400,16 @@ namespace WCell.RealmServer.Misc
 				// check if rival in-range status changed
 				if (m_rivalInRange != m_rival.IsInRadiusSq(m_flag, s_duelRadiusSq))
 				{
-					if (!(m_rivalInRange = !m_rivalInRange))
+					m_rivalInRange = !m_rivalInRange;		// in range status toggled
+					if (m_rivalInRange)
 					{
 						// out of range: Start the cancel-timer
-						var delay = (uint)(m_cancelDelay * 1000);
-						DuelHandler.SendOutOfBounds(m_rival, delay);
+						DuelHandler.SendOutOfBounds(m_rival, m_cancelDelay);
 					}
 					else
 					{
 						// back in range: Cancel the cancel-timer
-						m_rivalCountdown = 0f;
+						m_rivalCountdown = 0;
 						DuelHandler.SendInBounds(m_rival);
 					}
 				}
@@ -434,7 +437,7 @@ namespace WCell.RealmServer.Misc
 		{
 			// don't die
 			duelist.Health = 1;
-			duelist.Auras.RemoveWhere(aura => aura.Caster == duelist.DuelOpponent);
+			duelist.Auras.RemoveWhere(aura => aura.CasterUnit == duelist.DuelOpponent);
 			Finish(DuelWin.Knockout, duelist);
 		}
 
@@ -443,10 +446,10 @@ namespace WCell.RealmServer.Misc
 			DuelHandler.SendComplete(m_challenger, m_rival, m_active);
 
 			m_active = false;
-			var region = m_region;
-			region.ExecuteInContext(() =>
+			var map = m_Map;
+			map.ExecuteInContext(() =>
 			{
-				region.UnregisterUpdatable(this);
+				map.UnregisterUpdatable(this);
 
 				if (m_challenger != null)
 				{
@@ -476,7 +479,7 @@ namespace WCell.RealmServer.Misc
 		/// <summary>
 		/// Disposes the duel (called automatically when duel ends)
 		/// </summary>
-		/// <remarks>Requires region context</remarks>
+		/// <remarks>Requires map context</remarks>
 		public void Dispose()
 		{
 			if (m_flag != null)

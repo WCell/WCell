@@ -1,4 +1,6 @@
+using System;
 using WCell.Constants;
+using WCell.Constants.Items;
 using WCell.Constants.Skills;
 using WCell.RealmServer.Entities;
 
@@ -13,67 +15,55 @@ namespace WCell.RealmServer.Items
 
 		public static readonly DamageInfo[] RangedDamage = new[] { new DamageInfo(DamageSchoolMask.Physical, 1f, 2f) };
 
+		public static readonly DamageInfo[] DefaultDamage = new[] { new DamageInfo(DamageSchoolMask.Physical, 1f, 3f) };
+
 		/// <summary>
 		/// Default Fists
 		/// </summary>
-		public static GenericWeapon Fists = new GenericWeapon(false, FistDamage, SkillId.Unarmed, 0f, Unit.DefaultMeleeDistance, 2000);
+		public static GenericWeapon Fists = new GenericWeapon(InventorySlotTypeMask.WeaponMainHand, FistDamage, SkillId.Unarmed, 0f, Unit.DefaultMeleeAttackRange, 2000);
 
 		/// <summary>
 		/// Default Ranged Weapon
 		/// </summary>
-		public static GenericWeapon Ranged = new GenericWeapon(true, RangedDamage, SkillId.Bows, Unit.DefaultMeleeDistance, Unit.DefaultRangedDistance, 2000);
+		public static GenericWeapon Ranged = new GenericWeapon(InventorySlotTypeMask.WeaponRanged, RangedDamage, SkillId.Bows, Unit.DefaultMeleeAttackRange, Unit.DefaultRangedAttackRange, 2000);
 
 		/// <summary>
 		/// No damage weapon
 		/// </summary>
-		public static GenericWeapon Peace = new GenericWeapon(false, FistDamage, SkillId.None, 0, 0, 10000);
+		public static GenericWeapon Peace = new GenericWeapon(InventorySlotTypeMask.WeaponMainHand, FistDamage, SkillId.None, 0, 0, 10000);
 
-		public static readonly DamageInfo[] DefaultDamage = new[] { new DamageInfo(DamageSchoolMask.Physical, 1f, 3f) };
-
-		public GenericWeapon(bool isRanged, int damageCount)
+		public GenericWeapon(InventorySlotTypeMask slot, int damageCount)
 		{
-			IsRanged = isRanged;
-			IsMelee = !isRanged;
+			InventorySlotMask = slot;
 			Damages = new DamageInfo[damageCount];
 		}
 
-		public GenericWeapon(float minDmg, float maxDmg)
-			: this(false, minDmg, maxDmg)
+		public GenericWeapon(InventorySlotTypeMask slot, float minDmg, float maxDmg)
+			: this(slot, minDmg, maxDmg, DamageSchoolMask.Physical)
 		{
 		}
 
-		public GenericWeapon(bool isRanged, float minDmg, float maxDmg)
-			: this(isRanged, minDmg, maxDmg, DamageSchoolMask.Physical)
+		public GenericWeapon(InventorySlotTypeMask slot, float minDmg, float maxDmg, DamageSchoolMask dmgType)
+			: this(slot, minDmg, maxDmg, Fists.AttackTime, dmgType)
 		{
 		}
 
-		public GenericWeapon(bool isRanged, float minDmg, float maxDmg, DamageSchoolMask dmgType)
-			: this(isRanged, minDmg, maxDmg, Fists.AttackTime, dmgType)
+		public GenericWeapon(InventorySlotTypeMask slot, float minDmg, float maxDmg, int attackTime)
+			: this(slot, minDmg, maxDmg, attackTime, DamageSchoolMask.Physical)
 		{
 		}
 
-		public GenericWeapon(float minDmg, float maxDmg, int attackTime)
-			: this(false, minDmg, maxDmg, attackTime)
+		public GenericWeapon(InventorySlotTypeMask slot, float minDmg, float maxDmg, int attackTime, DamageSchoolMask dmgType)
 		{
-		}
-
-		public GenericWeapon(bool isRanged, float minDmg, float maxDmg, int attackTime)
-			: this(isRanged, minDmg, maxDmg, attackTime, DamageSchoolMask.Physical)
-		{
-		}
-
-		public GenericWeapon(bool isRanged, float minDmg, float maxDmg, int attackTime, DamageSchoolMask dmgType)
-		{
-			IsRanged = isRanged;
-			IsMelee = !isRanged;
+			InventorySlotMask = slot;
 			AttackTime = attackTime;
+			MaxRange = Unit.DefaultMeleeAttackRange;
 			Damages = new[] { new DamageInfo(dmgType, minDmg, maxDmg) };
 		}
 
-		public GenericWeapon(bool isRanged, DamageInfo[] damages, SkillId skill, float minRange, float maxRange, int attackTime)
+		public GenericWeapon(InventorySlotTypeMask slot, DamageInfo[] damages, SkillId skill, float minRange, float maxRange, int attackTime)
 		{
-			IsRanged = isRanged;
-			IsMelee = !isRanged;
+			InventorySlotMask = slot;
 			Damages = damages;
 			Skill = skill;
 			MinRange = minRange;
@@ -87,6 +77,12 @@ namespace WCell.RealmServer.Items
 			set;
 		}
 
+		public int BonusDamage
+		{
+			get { return 0; }
+			set {  }
+		}
+
 		public SkillId Skill
 		{
 			get;
@@ -95,14 +91,18 @@ namespace WCell.RealmServer.Items
 
 		public bool IsRanged
 		{
-			get;
-			protected set;
+			get
+			{
+				return InventorySlotMask == InventorySlotTypeMask.WeaponRanged;
+			}
 		}
 
 		public bool IsMelee
 		{
-			get;
-			protected set;
+			get
+			{
+				return !IsRanged;
+			}
 		}
 
 		/// <summary>
@@ -130,6 +130,12 @@ namespace WCell.RealmServer.Items
 		{
 			get;
 			set;
+		}
+
+		public InventorySlotTypeMask InventorySlotMask
+		{
+			get;
+			private set;
 		}
 	}
 }

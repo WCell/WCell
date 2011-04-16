@@ -9,7 +9,7 @@ namespace WCell.RealmServer.Taxi
 	{
 		private static Logger sLog = LogManager.GetCurrentClassLogger();
 
-		# region Fields
+		#region Fields
 
 		private uint[] fields;
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,16 +23,19 @@ namespace WCell.Constants.World
 
 		public ZoneId GetZoneId(float x, float y)
 		{
-			x = TerrainConstants.TilesPerMapSide / 2 - x / TerrainConstants.TileSize;
-			y = TerrainConstants.TilesPerMapSide / 2 - y / TerrainConstants.TileSize;
+		    x = ((TerrainConstants.CenterPoint - x)/TerrainConstants.TileSize);
+		    y = ((TerrainConstants.CenterPoint - y)/TerrainConstants.TileSize);
 
-			if (x >= TerrainConstants.TilesPerMapSide || y >= TerrainConstants.TilesPerMapSide ||
-				x < 0 || y < 0)
+		    var tileX = (int) x;
+		    var tileY = (int) y;
+			if (tileX >= TerrainConstants.TilesPerMapSide || tileY >= TerrainConstants.TilesPerMapSide ||
+				tileX < 0 || tileY < 0)
 			{
 				return ZoneId.None;
 			}
 
-			var grid = ZoneGrids[(int)y, (int)x];
+            // ZoneGrids are per tile
+			var grid = ZoneGrids[tileY, tileX];
 			if (grid == null)
 			{
 				// hole in the terrain
@@ -40,17 +43,19 @@ namespace WCell.Constants.World
 			}
 
 			// take away the whole part and set the range from 0-0.999 to 0-(ChunksPerTileSide-1)
-			x = (x - (int)x) * TerrainConstants.ChunksPerTileSide;
-			y = (y - (int)y) * TerrainConstants.ChunksPerTileSide;
+		    x = (x - tileX)*TerrainConstants.ChunksPerTileSide;
+		    y = (y - tileY)*TerrainConstants.ChunksPerTileSide;
 
-			if (x < TerrainConstants.ChunksPerTileSide && y < TerrainConstants.ChunksPerTileSide &&
-				x >= 0 && y >= 0)
-			{
-				return grid.GetZoneId((int)y, (int)x);
-			}
+		    var chunkX = (int) x;
+		    var chunkY = (int) y;
+		    if (chunkX >= TerrainConstants.ChunksPerTileSide || chunkY >= TerrainConstants.ChunksPerTileSide || 
+                chunkX < 0 || chunkY < 0)
+		    {
+		        return ZoneId.None;
+		    }
 
-			//TODO: Finish
-			return ZoneId.None;
+		    //TODO: Finish
+		    return grid.GetZoneId(chunkY, chunkX);
 		}
 	}
 }

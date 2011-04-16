@@ -34,7 +34,7 @@ namespace WCell.RealmServer.Spells.Effects
 		protected override void Apply(WorldObject target)
 		{
 			var skillId = (SkillId)Effect.MiscValue;
-			var tier = (uint)Effect.BasePoints;
+			var tier = (SkillTierId)Effect.BasePoints;
 
 			if (!((Character)target).Skills.TryLearn(skillId, tier))
 			{

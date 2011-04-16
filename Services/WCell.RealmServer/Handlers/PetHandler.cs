@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using NLog;
 using WCell.Constants;
+using WCell.Constants.NPCs;
 using WCell.Constants.Pets;
 using WCell.Constants.Spells;
 using WCell.Constants.Talents;
@@ -29,7 +30,7 @@ namespace WCell.RealmServer.Handlers
 			var petEntityId = packet.ReadEntityId();
 
 			var chr = client.ActiveCharacter;
-			var pet = chr.Region.GetObject(petEntityId) as NPC;
+			var pet = chr.Map.GetObject(petEntityId) as NPC;
 
 			if (pet != null)
 			{
@@ -40,8 +41,8 @@ namespace WCell.RealmServer.Handlers
 		[PacketHandler(RealmServerOpCode.CMSG_REQUEST_PET_INFO)]
 		public static void HandleInfoRequest(IRealmClient client, RealmPacketIn packet)
 		{
-			log.Warn("Client {0} sent CMSG_REQUEST_PET_INFO", client);
-			// TODO: CMSG_REQUEST_PET_INFO
+			// seems useless?
+			// log.Warn("Client {0} sent CMSG_REQUEST_PET_INFO", client);
 		}
 
 
@@ -51,7 +52,7 @@ namespace WCell.RealmServer.Handlers
 			var entityId = packet.ReadEntityId();
 
 			var chr = client.ActiveCharacter;
-			var pet = chr.Region.GetObject(entityId) as NPC;
+			var pet = chr.Map.GetObject(entityId) as NPC;
 
 			if (pet != null && pet == chr.ActivePet && pet.IsAlive)
 			{
@@ -73,7 +74,7 @@ namespace WCell.RealmServer.Handlers
 							break;
 						default:
 							// spell cast
-							var target = chr.Region.GetObject(packet.ReadEntityId());
+							var target = chr.Map.GetObject(packet.ReadEntityId());
 							pet.CastPetSpell(data.SpellId, target);
 							break;
 					}
@@ -92,14 +93,14 @@ namespace WCell.RealmServer.Handlers
 			var entityId = packet.ReadEntityId();
 
 			var chr = client.ActiveCharacter;
-			var pet = chr.Region.GetObject(entityId) as NPC;
+			var pet = chr.Map.GetObject(entityId) as NPC;
 
 			if (pet == null || pet.PermanentPetRecord == null || (pet != chr.ActivePet && !chr.GodMode))
 			{
 				return;
 			}
 
-			while (packet.Length - packet.Position >= 8)
+			while (packet.Length - packet.Position >= 8)	// a button has 8 bytes in the packet
 			{
 				ReadButton(pet, packet);
 			}
@@ -112,13 +113,13 @@ namespace WCell.RealmServer.Handlers
 
 			var record = pet.PermanentPetRecord;
 
-			if (index > record.Actions.Length)
+			if (index > record.ActionButtons.Length)
 			{
 				return;
 			}
 
-			// TODO: Spell settings
-			record.Actions[index] = newAction;
+			// TODO: Interpret spell settings (auto-cast etc)
+			record.ActionButtons[index] = newAction;
 		}
 
 		[PacketHandler(RealmServerOpCode.CMSG_PET_RENAME)]
@@ -127,7 +128,7 @@ namespace WCell.RealmServer.Handlers
 			var entityId = packet.ReadEntityId();
 
 			var chr = client.ActiveCharacter;
-			var pet = chr.Region.GetObject(entityId) as NPC;
+			var pet = chr.Map.GetObject(entityId) as NPC;
 
 			if (pet != null)
 			{
@@ -144,7 +145,7 @@ namespace WCell.RealmServer.Handlers
 #if DEBUG
 			else
 			{
-				chr.SendSystemMessage("You sent CMSG_PET_RENAME for a pet that does not exist in the same Region.");
+				chr.SendSystemMessage("You sent CMSG_PET_RENAME for a pet that does not exist in the same Map.");
 			}
 #endif
 		}
@@ -155,19 +156,19 @@ namespace WCell.RealmServer.Handlers
 			var petId = packet.ReadEntityId();
 
 			var chr = client.ActiveCharacter;
-			var pet = chr.Region.GetObject(petId) as NPC;
+			var pet = chr.Map.GetObject(petId) as NPC;
 
-			if (pet != null && pet.IsAlive)
+			if (pet != null && pet.IsAlive && pet.IsInContext)
 			{
 				if (pet == chr.ActivePet || chr.GodMode)
 				{
-					chr.ActivePet = null;
+					chr.AbandonActivePet();
 				}
 			}
 #if DEBUG
 			else
 			{
-				chr.SendSystemMessage("You sent CMSG_PET_ABANDON for a pet that does not exist in the same Region.");
+				chr.SendSystemMessage("You sent CMSG_PET_ABANDON for a pet that does not exist in the same Map.");
 			}
 #endif
 		}
@@ -178,7 +179,7 @@ namespace WCell.RealmServer.Handlers
 			var petId = packet.ReadEntityId();
 
 			var chr = client.ActiveCharacter;
-			var pet = chr.Region.GetObject(petId) as NPC;
+			var pet = chr.Map.GetObject(petId) as NPC;
 
 			if (pet != null)
 			{
@@ -190,7 +191,7 @@ namespace WCell.RealmServer.Handlers
 #if DEBUG
 			else
 			{
-				chr.SendSystemMessage("You sent CMSG_PET_SPELL_AUTOCAST for a pet that does not exist in the same Region.");
+				chr.SendSystemMessage("You sent CMSG_PET_SPELL_AUTOCAST for a pet that does not exist in the same Map.");
 			}
 #endif
 		}
@@ -202,14 +203,14 @@ namespace WCell.RealmServer.Handlers
 			var spellId = (SpellId)packet.ReadUInt32();
 
 			var chr = client.ActiveCharacter;
-			var pet = chr.Region.GetObject(petId) as NPC;
+			var pet = chr.Map.GetObject(petId) as NPC;
 
 			if (pet != null)
 			{
-				if (pet.Master == chr || chr.GodMode)
+				if (pet.Master == chr)
 				{
 					var aura = pet.Auras[spellId, true];
-					if (aura != null && aura.CanBeCancelled)
+					if (aura != null && aura.CanBeRemoved)
 					{
 						aura.TryRemove(true);
 					}
@@ -223,11 +224,11 @@ namespace WCell.RealmServer.Handlers
 			var petId = packet.ReadEntityId();
 
 			var chr = client.ActiveCharacter;
-			var pet = chr.Region.GetObject(petId) as NPC;
+			var pet = chr.Map.GetObject(petId) as NPC;
 
 			if (pet != null && pet.IsAlive)
 			{
-				if (pet == chr.ActivePet || chr.GodMode)
+				if (pet == chr.ActivePet)
 				{
 					pet.Brain.EnterDefaultState();
 				}
@@ -235,7 +236,7 @@ namespace WCell.RealmServer.Handlers
 #if DEBUG
 			else
 			{
-				chr.SendSystemMessage("You sent CMSG_PET_STOP_ATTACK for a pet that does not exist in the same Region.");
+				chr.SendSystemMessage("You sent CMSG_PET_STOP_ATTACK for a pet that does not exist in the same Map.");
 			}
 #endif
 		}
@@ -259,12 +260,24 @@ namespace WCell.RealmServer.Handlers
 
 
 		#region Spells
-		public static void SendPetGUIDs(IPacketReceiver receiver)
+		public static void SendPetGUIDs(Character chr)
 		{
-			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PET_GUIDS, 8))
+			if (chr.ActivePet == null)
 			{
-				packet.Write(0);
-				receiver.Send(packet);
+				using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PET_GUIDS, 12))
+				{
+					packet.Write(0); // list count
+					chr.Send(packet);
+				}
+			}
+			else
+			{
+				using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PET_GUIDS, 12))
+				{
+					packet.Write(1); // list count
+					packet.Write(chr.ActivePet.EntityId);
+					chr.Send(packet);
+				}
 			}
 		}
 
@@ -281,20 +294,31 @@ namespace WCell.RealmServer.Handlers
 		{
 			// TODO: Cooldowns
 			var record = pet.PetRecord;
-			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PET_SPELLS, 20 + (PetConstants.PetActionCount * 4) + 1 + (pet.Spells.Count) + 1 + (0)))
+            var mode = pet.Entry.Type == CreatureType.NonCombatPet ? PetAttackMode.Passive : PetAttackMode.Defensive;
+		    var flags = PetFlags.None;
+		    uint[] actions = null;
+            if(record != null)
+            {
+                mode = record.AttackMode;
+                flags = record.Flags;
+                actions = record.ActionButtons;
+            }
+            if (actions == null)
+                actions = pet.BuildPetActionBar();
+
+		    using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PET_SPELLS, 20 + (PetConstants.PetActionCount * 4) + 1 + (pet.Spells.Count) + 1 + (0)))
 			{
 				packet.Write(pet.EntityId);
 				packet.Write((ushort)pet.Entry.FamilyId);
-				//packet.Write((ushort)0);
-				packet.Write((int)(pet.RemainingDecayDelay * 1000));			// duration
-				packet.Write((byte)record.AttackMode);
+				packet.Write(pet.RemainingDecayDelayMillis);			// duration
+				packet.Write((byte)mode);
 				packet.Write((byte)currentAction);
-				packet.Write((ushort)record.Flags);
+				packet.Write((ushort)flags);
 
 				for (var i = 0; i < PetConstants.PetActionCount; i++)
 				{
-					var action = record.Actions[i];
-					packet.Write(action.Raw);
+					var action = actions[i];
+					packet.Write(action);
 				}
 
 				var spellPos = packet.Position;
@@ -304,7 +328,8 @@ namespace WCell.RealmServer.Handlers
 				{
 					if (!spell.IsPassive)
 					{
-						packet.Write(spell.Id | ((uint)PetSpellState.Default << 24));
+						packet.Write((ushort)spell.Id);
+                        packet.Write((ushort)PetSpellState.Enabled);
 						++spellCount;
 					}
 				}
@@ -317,6 +342,43 @@ namespace WCell.RealmServer.Handlers
 				owner.Send(packet);
 			}
 		}
+
+        public static void SendPlayerPossessedPetSpells(Character owner, Character possessed)
+        {
+
+            using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PET_SPELLS, 20 + (PetConstants.PetActionCount * 4) + 1 + (0) + 1 + (0)))
+            {
+                packet.Write(possessed.EntityId);
+                packet.Write((ushort) CreatureFamilyId.None);
+                packet.Write(0); // duration
+                packet.Write((byte) PetAttackMode.Passive);
+                packet.Write((byte) PetAction.Stay);
+                packet.Write((ushort) PetFlags.None);
+
+                var action = new PetActionEntry
+                                 {
+                                     Action = PetAction.Attack,
+                                     Type = PetActionType.SetAction
+                                 }.Raw;
+
+                packet.Write(action);
+
+                for (var i = 1; i < PetConstants.PetActionCount; i++)
+                {
+                    action = new PetActionEntry
+                                 {
+                                     Type = PetActionType.SetAction
+                                 }.Raw;
+                    packet.Write(action);
+                }
+
+                packet.Write((byte) 0); // No Spells
+
+                packet.Write((byte) 0); // No Cooldowns
+
+                owner.Send(packet);
+            }
+        }
 
 		public static void SendEmptySpells(IPacketReceiver receiver)
 		{
@@ -360,6 +422,16 @@ namespace WCell.RealmServer.Handlers
 			}
 		}
 
+		public static void SendPetLearnedSpell(IPacketReceiver receiver, SpellId spellId)
+		{
+			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PET_LEARNED_SPELL, 4))
+			{
+				packet.Write((uint)spellId);
+
+				receiver.Send(packet);
+			}
+		}
+
 		public static void SendUnlearnedSpell(IPacketReceiver receiver, ushort spell)
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PET_REMOVED_SPELL, 4))
@@ -398,6 +470,7 @@ namespace WCell.RealmServer.Handlers
 		}
 		#endregion
 
+		#region Action & Mode
 		public static void SendActionSound(IPacketReceiver receiver, IEntity pet, uint soundId)
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PET_ACTION_SOUND, 12))
@@ -432,8 +505,9 @@ namespace WCell.RealmServer.Handlers
 				receiver.Send(packet);
 			}
 		}
+		#endregion
 
-		public static void SendPetRenameable(IPacketReceiver receiver, ushort spell)
+		public static void SendPetRenameable(IPacketReceiver receiver)
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PET_RENAMEABLE, 0))
 			{
@@ -441,7 +515,7 @@ namespace WCell.RealmServer.Handlers
 			}
 		}
 
-		public static void SendPetBroken(IPacketReceiver receiver, ushort spell)
+		public static void SendPetBroken(IPacketReceiver receiver)
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PET_BROKEN, 0))
 			{
@@ -458,7 +532,7 @@ namespace WCell.RealmServer.Handlers
 			var petNumber = packet.ReadUInt32();
 
 			var chr = client.ActiveCharacter;
-			var stableMaster = chr.Region.GetObject(npcGuid) as NPC;
+			var stableMaster = chr.Map.GetObject(npcGuid) as NPC;
 
 			PetMgr.DeStablePet(chr, stableMaster, petNumber);
 		}
@@ -468,7 +542,7 @@ namespace WCell.RealmServer.Handlers
 		{
 			var guid = packet.ReadEntityId();
 			var chr = client.ActiveCharacter;
-			var stableMaster = chr.Region.GetObject(guid) as NPC;
+			var stableMaster = chr.Map.GetObject(guid) as NPC;
 
 			PetMgr.StablePet(chr, stableMaster);
 		}
@@ -478,7 +552,7 @@ namespace WCell.RealmServer.Handlers
 		{
 			var guid = packet.ReadEntityId();
 			var chr = client.ActiveCharacter;
-			var stableMaster = chr.Region.GetObject(guid) as NPC;
+			var stableMaster = chr.Map.GetObject(guid) as NPC;
 
 			PetMgr.BuyStableSlot(chr, stableMaster);
 		}
@@ -490,7 +564,7 @@ namespace WCell.RealmServer.Handlers
 			var petNumber = packet.ReadUInt32();
 
 			var chr = client.ActiveCharacter;
-			var stableMaster = chr.Region.GetObject(guid) as NPC;
+			var stableMaster = chr.Map.GetObject(guid) as NPC;
 
 			PetMgr.SwapStabledPet(chr, stableMaster, petNumber);
 		}
@@ -500,7 +574,7 @@ namespace WCell.RealmServer.Handlers
 		{
 			var guid = packet.ReadEntityId();
 			var chr = client.ActiveCharacter;
-			var stableMaster = chr.Region.GetObject(guid) as NPC;
+			var stableMaster = chr.Map.GetObject(guid) as NPC;
 
 			PetMgr.ListStabledPets(chr, stableMaster);
 		}
@@ -569,12 +643,17 @@ namespace WCell.RealmServer.Handlers
 		{
 			var petGuid = packet.ReadEntityId();
 			var talentId = (TalentId)packet.ReadInt32();
-			var rank = packet.ReadInt32(); // 0 based rank
+			var rank = packet.ReadInt32();						// 0 based rank
 
 			var chr = client.ActiveCharacter;
-			var pet = chr.Region.GetObject(petGuid) as NPC;
+			var pet = chr.Map.GetObject(petGuid) as NPC;
 
-			PetMgr.PetLearnTalent(chr, pet, talentId, rank + 1);
+			if (pet != null)
+			{
+				if (chr.ActivePet != pet) return;
+
+				pet.Talents.Learn(talentId, rank);
+			}
 		}
 
 		[PacketHandler(RealmServerOpCode.CMSG_PET_UNLEARN)]
@@ -583,18 +662,11 @@ namespace WCell.RealmServer.Handlers
 			var petGuid = packet.ReadEntityId();
 
 			var chr = client.ActiveCharacter;
-			var pet = chr.Region.GetObject(petGuid) as NPC;
+			var pet = chr.Map.GetObject(petGuid) as NPC;
 
-			PetMgr.ResetPetTalents(chr, pet);
-		}
-
-		public static void SendPetLearnedSpell(IPacketReceiver receiver, SpellId spellId)
-		{
-			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PET_LEARNED_SPELL))
+			if (pet != null && pet.HasTalents && pet.Master == chr)
 			{
-				packet.Write((ushort)spellId);
-
-				receiver.Send(packet);
+				pet.Talents.ResetTalents();
 			}
 		}
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -72,9 +72,6 @@ namespace WCell.Constants.Items
 	{
 		None = 0,
 
-		AnyMeleeWeapon = 0x2A5F3,
-		AnyRangedWeapon = 0x4000C,
-
 		WeaponAxe = 1,
 		WeaponTwoHandAxe = 0x000000002,
 		WeaponBow = 0x000000004,
@@ -104,5 +101,9 @@ namespace WCell.Constants.Items
 		ArmorMail = 8,
 		ArmorPlate = 0x10,
 		ArmorShield = 0x40,
+
+		AnyMeleeWeapon = 0x2A5F3,
+		AnyRangedWeapon = WeaponCrossbow | WeaponBow | WeaponGun,
+		AnyRangedAndThrownWeapon = AnyRangedWeapon | WeaponThrown
 	}
 }

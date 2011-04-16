@@ -1,37 +1,42 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Castle.ActiveRecord;
 using Castle.ActiveRecord.Queries;
 using NHibernate.Criterion;
 using NLog;
 using WCell.Constants;
 using WCell.Constants.Login;
+using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.Constants.World;
 using WCell.Core;
 using WCell.Core.Database;
-using WCell.RealmServer.NPCs.Pets;
-using WCell.RealmServer.Talents;
-using WCell.Util.Threading;
+using WCell.RealmServer.Achievements;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Global;
+using WCell.RealmServer.Groups;
+using WCell.RealmServer.Guilds;
+using WCell.RealmServer.Instances;
 using WCell.RealmServer.Interaction;
+using WCell.RealmServer.Mail;
+using WCell.RealmServer.NPCs;
+using WCell.RealmServer.NPCs.Pets;
 using WCell.RealmServer.RacesClasses;
+using WCell.RealmServer.Talents;
 using WCell.Util;
 using WCell.Util.NLog;
-using WCell.RealmServer.Global;
-using WCell.RealmServer.Instances;
-using WCell.RealmServer.Groups;
-using WCell.Constants.NPCs;
-using WCell.RealmServer.NPCs;
-using WCell.RealmServer.Mail;
-using WCell.RealmServer.Guilds;
+using WCell.Util.Threading;
+
+using Alias = System.Collections.Generic.KeyValuePair<string, string>;
+
 
 namespace WCell.RealmServer.Database
 {
 	[ActiveRecord(Access = PropertyAccess.Property)]
-	public class CharacterRecord : WCellRecord<CharacterRecord>, ILivingEntity, IRegionId, IActivePetSettings
+	public class CharacterRecord : WCellRecord<CharacterRecord>, ILivingEntity, IMapId, IActivePetSettings
 	{
 		#region Static
 		private static readonly Logger s_log = LogManager.GetCurrentClassLogger();
@@ -101,7 +106,7 @@ namespace WCell.RealmServer.Database
 			}
 			catch (Exception ex)
 			{
-				RealmDBUtil.OnDBError(ex);
+				RealmDBMgr.OnDBError(ex);
 				return null;
 			}
 		}
@@ -119,7 +124,7 @@ namespace WCell.RealmServer.Database
 			}
 			catch (Exception ex)
 			{
-				RealmDBUtil.OnDBError(ex);
+				RealmDBMgr.OnDBError(ex);
 				return false;
 			}
 		}
@@ -135,7 +140,7 @@ namespace WCell.RealmServer.Database
 			}
 			catch (Exception ex)
 			{
-				RealmDBUtil.OnDBError(ex);
+				RealmDBMgr.OnDBError(ex);
 				return false;
 			}
 		}
@@ -164,23 +169,22 @@ namespace WCell.RealmServer.Database
 		}
 		#endregion
 
-
 		[Field("DisplayId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
 		private int _displayId;
 		[Field("WatchedFaction", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
 		private int _watchedFaction;
 		[Field("ClassId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
 		private int m_Class;
-		[Field("Region", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
-		private int m_Region;
-		[Field("CorpseRegion", Access = PropertyAccess.FieldCamelcase)]
-		private int m_CorpseRegion;
+		[Field("Map", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
+		private int m_Map;
+		[Field("CorpseMap", Access = PropertyAccess.FieldCamelcase)]
+		private int m_CorpseMap;
 		[Field("Zone", Access = PropertyAccess.FieldCamelcase)]
 		private int m_zoneId;
 		[Field("BindZone", Access = PropertyAccess.FieldCamelcase)]
 		private int m_BindZone;
-		[Field("BindRegion", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
-		private int m_BindRegion;
+		[Field("BindMap", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
+		private int m_BindMap;
 
 		private DateTime? m_lastLogin;
 
@@ -189,16 +193,16 @@ namespace WCell.RealmServer.Database
 		protected CharacterRecord()
 		{
 			CanSave = true;
+			AbilitySpells = new List<SpellRecord>();
 		}
 
 		public CharacterRecord(long accountId)
+			: this()
 		{
-			New = true;
+			State = RecordState.New;
 			JustCreated = true;
 
 			AccountId = accountId;
-			CanSave = true;
-			Spells = new Dictionary<uint, SpellRecord>();
 			ExploredZones = new byte[UpdateFieldMgr.ExplorationZoneFieldSize * 4];
 		}
 
@@ -395,26 +399,14 @@ namespace WCell.RealmServer.Database
 
 		public int WatchedFaction
 		{
-			get
-			{
-				return _watchedFaction;
-			}
-			set
-			{
-				_watchedFaction = value;
-			}
+			get { return _watchedFaction; }
+			set { _watchedFaction = value; }
 		}
 
 		public uint DisplayId
 		{
-			get
-			{
-				return (uint)_displayId;
-			}
-			set
-			{
-				_displayId = (int)value;
-			}
+			get { return (uint)_displayId; }
+			set { _displayId = (int)value; }
 		}
 
 		[Property(NotNull = true)]
@@ -433,13 +425,6 @@ namespace WCell.RealmServer.Database
 
 		[Property(ColumnType = "BinaryBlob", Length = 32, NotNull = true)]
 		public byte[] TutorialFlags
-		{
-			get;
-			set;
-		}
-
-		[Property(ColumnType = "BinaryBlob")]
-		public byte[] ActionButtons
 		{
 			get;
 			set;
@@ -483,10 +468,10 @@ namespace WCell.RealmServer.Database
 			set;
 		}
 
-		public MapId RegionId
+		public MapId MapId
 		{
-			get { return (MapId)m_Region; }
-			set { m_Region = (int)value; }
+			get { return (MapId)m_Map; }
+			set { m_Map = (int)value; }
 		}
 
 		public uint InstanceId
@@ -519,10 +504,10 @@ namespace WCell.RealmServer.Database
 			set;
 		}
 
-		public MapId CorpseRegion
+		public MapId CorpseMap
 		{
-			get { return (MapId)m_CorpseRegion; }
-			set { m_CorpseRegion = (int)value; }
+			get { return (MapId)m_CorpseMap; }
+			set { m_CorpseMap = (int)value; }
 		}
 
 		/// <summary>
@@ -579,10 +564,10 @@ namespace WCell.RealmServer.Database
 			set;
 		}
 
-		public MapId BindRegion
+		public MapId BindMap
 		{
-			get { return (MapId)m_BindRegion; }
-			set { m_BindRegion = (int)value; }
+			get { return (MapId)m_BindMap; }
+			set { m_BindMap = (int)value; }
 		}
 
 		public ZoneId BindZone
@@ -593,85 +578,30 @@ namespace WCell.RealmServer.Database
 
 		#endregion
 
-		#region Spells
-
+		#region Spells & Auras & Runes
 		/// <summary>
-		/// Adds the given Spell and returns the newly created SpellRecord object.
-		/// Returns null if Spell already existed
+		/// Default spells; talents excluded.
+		/// Talent spells can be found in <see cref="SpecProfile"/>.
 		/// </summary>
-		internal SpellRecord AddSpell(uint spellId)
-		{
-			if (Spells != null)
-			{
-				if (Spells.ContainsKey(spellId))
-				{
-					LogUtil.ErrorException(new ArgumentException("Spell cannot be added twice"),
-						string.Format("Spell ({0}, Id: {1}) added twice to Character {2} (Race: {3}, Class: {4})",
-									  (SpellId)spellId,
-									  spellId,
-									  this,
-									  Race,
-									  Class));
-					return null;
-				}
-
-				var record = new SpellRecord(spellId, EntityLowId);
-				Spells.Add(spellId, record);
-
-				RealmServer.Instance.AddMessage(new Message(record.Save));
-
-				return record;
-			}
-			return null;
-		}
-
-		internal bool RemoveSpell(uint id)
-		{
-			SpellRecord spell;
-			if (Spells.TryGetValue(id, out spell))
-			{
-				return RemoveSpell(spell);
-			}
-			return false;
-		}
-
-		bool RemoveSpell(SpellRecord record)
-		{
-			RealmServer.Instance.AddMessage(new Message(record.Delete));
-			Spells.Remove(record.SpellId);
-			return true;
-		}
-
-		internal void LoadSpells()
-		{
-			if (Spells == null)
-			{
-				Spells = new Dictionary<uint, SpellRecord>();
-				var dbSpells = SpellRecord.FindAllByProperty("m_OwnerId", (int)EntityLowId);
-				foreach (var spell in dbSpells)
-				{
-					try
-					{
-						Spells.Add(spell.SpellId, spell);
-					}
-					catch (Exception e)
-					{
-						LogUtil.ErrorException(e,
-							string.Format("Spell {0} of {1} was fetched twice from DB. Loaded spells: {2}", spell.SpellId, this, dbSpells.ToString(", ")));
-					}
-				}
-			}
-		}
-
-		public AuraRecord[] LoadAuraRecords()
-		{
-			return AuraRecord.FindAllByProperty("m_OwnerId", (int)EntityLowId);
-		}
-
-		public IDictionary<uint, SpellRecord> Spells
+		public List<SpellRecord> AbilitySpells
 		{
 			get;
 			private set;
+		}
+
+		[Property]
+		public int RuneSetMask
+		{
+			get;
+			set;
+		}
+
+		[Property]
+		public float[] RuneCooldowns
+		{
+
+			get;
+			set;
 		}
 		#endregion
 
@@ -830,7 +760,7 @@ namespace WCell.RealmServer.Database
 			}
 			catch (Exception e)
 			{
-				RealmDBUtil.OnDBError(e);
+				RealmDBMgr.OnDBError(e);
 				m_loadedItems = ItemRecord.LoadItems(EntityLowId);
 			}
 		}
@@ -931,7 +861,7 @@ namespace WCell.RealmServer.Database
 		}
 
 		/// <summary>
-		/// Action-bar information etc for summoned pets
+		/// Amount of action-bar information etc for summoned pets
 		/// </summary>
 		[Property]
 		public int PetSummonedCount
@@ -941,7 +871,7 @@ namespace WCell.RealmServer.Database
 		}
 
 		/// <summary>
-		/// Hunter pets
+		/// Amount of Hunter pets
 		/// </summary>
 		[Property]
 		public int PetCount
@@ -995,10 +925,8 @@ namespace WCell.RealmServer.Database
 		}
 		#endregion
 
-		# region Talents
-
-		[Property("FreeTalentPoints", NotNull = true)]
-		public int FreeTalentPoints
+		#region Talents
+		public int CurrentSpecIndex
 		{
 			get;
 			set;
@@ -1023,21 +951,14 @@ namespace WCell.RealmServer.Database
 				{
 					value = 0;
 				}
-				if (value > (TalentMgr.TalentResetPriceTiers.Length - 1))
+				if (value > (TalentMgr.PlayerTalentResetPricesPerTier.Length - 1))
 				{
-					value = (TalentMgr.TalentResetPriceTiers.Length - 1);
+					value = (TalentMgr.PlayerTalentResetPricesPerTier.Length - 1);
 				}
 				_talentResetPriceTier = value;
 			}
 		}
-
-		public SpecProfile SpecProfile
-		{
-			get;
-			set;
-		}
-
-		# endregion
+		#endregion
 
 		#region Instances & BGs
 		private BattlegroundSide m_BattlegroundTeam = BattlegroundSide.End;
@@ -1120,7 +1041,7 @@ namespace WCell.RealmServer.Database
 		#region Delete
 		public void DeleteLater()
 		{
-			RealmServer.Instance.AddMessage(new Message(Delete));
+			RealmServer.IOQueue.AddMessage(new Message(Delete));
 		}
 
 		public override void Delete()
@@ -1146,7 +1067,7 @@ namespace WCell.RealmServer.Database
 
 		public static void DeleteChar(uint charId)
 		{
-			RealmServer.Instance.ExecuteInContext(() =>
+			RealmServer.IOQueue.ExecuteInContext(() =>
 			{
 				var chr = World.GetCharacter(charId);
 				uint guildId;
@@ -1188,6 +1109,7 @@ namespace WCell.RealmServer.Database
 				AuraRecord.DeleteAll("OwnerId = " + charId);
 				ItemRecord.DeleteAll("OwnerId = " + charId);
 				SkillRecord.DeleteAll("OwnerId = " + charId);
+				SpecProfile.DeleteAll("CharacterId = " + charId);
 				ReputationRecord.DeleteAll("OwnerId = " + charId);
 				QuestRecord.DeleteAll("OwnerId = " + charId);
 				SummonedPetRecord.DeleteAll("OwnerLowId = " + charId);
@@ -1199,6 +1121,8 @@ namespace WCell.RealmServer.Database
 				RelationMgr.Instance.RemoveRelations(charId);
 				InstanceMgr.RemoveLog(charId);
 				GroupMgr.Instance.RemoveOfflineCharacter(charId);
+				AchievementRecord.DeleteAll("CharacterId = " + charId);
+				AchievementProgressRecord.DeleteAll("CharacterId = " + charId);
 
 				return true;
 			}
@@ -1211,6 +1135,28 @@ namespace WCell.RealmServer.Database
 		}
 		#endregion
 
+		#region Setup
+		public void SetupNewRecord(Archetype archetype)
+		{
+			Race = archetype.Race.Id;
+			Class = archetype.Class.Id;
+			Level = archetype.Class.ActualStartLevel;
+			PositionX = archetype.StartPosition.X;
+			PositionY = archetype.StartPosition.Y;
+			PositionZ = archetype.StartPosition.Z;
+			Orientation = archetype.StartOrientation;
+			MapId = archetype.StartMapId;
+			Zone = archetype.StartZoneId;
+			TotalPlayTime = 0;
+			LevelPlayTime = 0;
+			TutorialFlags = new byte[32];
+			WatchedFaction = -1;
+
+			DisplayId = archetype.Race.GetDisplayId(Gender);
+		}
+		#endregion
+
+		#region Find & Get
 		/// <summary>
 		/// Gets the characters for the given account.
 		/// </summary>
@@ -1218,58 +1164,21 @@ namespace WCell.RealmServer.Database
 		/// <returns>a collection of character objects of the characters on the given account</returns>
 		public static CharacterRecord[] FindAllOfAccount(RealmAccount account)
 		{
+			CharacterRecord[] chrs;
 			try
 			{
-				return FindAll(CreatedOrder, Restrictions.Eq("AccountId", account.AccountId));
+				chrs = FindAllByProperty("Created", "AccountId", account.AccountId);
 				//var chrs = FindAllByProperty("Created", "AccountId", account.AccountId);
 				//chrs.Reverse();
 				//return chrs;
 			}
 			catch (Exception ex)
 			{
-				//log.ErrorException("Failed to get characters for account!", ex);
-				RealmDBUtil.OnDBError(ex);
-				//return FindAll(CreatedOrder, Restrictions.Eq("AccountId", account.AccountId));
-				var chrs = FindAllByProperty("Created", "AccountId", account.AccountId);
-				chrs.Reverse();
-				return chrs;
+				RealmDBMgr.OnDBError(ex);
+				chrs = FindAllByProperty("Created", "AccountId", account.AccountId);
 			}
-		}
-
-		public override string ToString()
-		{
-			return string.Format("{0} (Id: {1}, Account: {2})", Name, EntityLowId, AccountId);
-		}
-
-		public void SetupNewRecord(Archetype archetype)
-		{
-			Race = archetype.Race.Id;
-			Class = archetype.Class.Id;
-			Level = Math.Max(archetype.Class.StartLevel, BaseClass.DefaultStartLevel);
-			PositionX = archetype.StartPosition.X;
-			PositionY = archetype.StartPosition.Y;
-			PositionZ = archetype.StartPosition.Z;
-			Orientation = archetype.StartOrientation;
-			RegionId = archetype.StartMapId;
-			Zone = archetype.StartZoneId;
-			TotalPlayTime = 0;
-			LevelPlayTime = 0;
-			TutorialFlags = new byte[32];
-			WatchedFaction = -1;
-
-			var setting = archetype.Class.GetLevelSetting(Level);
-			BaseHealth = setting.Health;
-			BasePower = archetype.Class.GetPowerForLevel(Level);
-
-			var stats = archetype.GetLevelStats((uint)Level);
-			BaseStrength = stats.Strength;
-			BaseStamina = stats.Stamina;
-			BaseSpirit = stats.Spirit;
-			BaseIntellect = stats.Intellect;
-			BaseAgility = stats.Agility;
-
-			DisplayId = archetype.Race.GetDisplayId(Gender);
-			ActionButtons = (byte[])archetype.ActionButtons.Clone();
+			//chrs.Reverse();
+			return chrs;
 		}
 
 		public static CharacterRecord GetRecord(uint id)
@@ -1307,6 +1216,73 @@ namespace WCell.RealmServer.Database
 				charId);
 			var query = new ScalarQuery<int>(typeof(CharacterRecord), QueryLanguage.Sql, sql);
 			return (uint)query.Execute();
+		}
+		#endregion
+
+		#region Aliases
+		//[Property]
+		public byte[] RawAliases
+		{
+			get;
+			set;
+		}
+
+		public void SetAliases(IEnumerable<Alias> aliases)
+		{
+			var bytes = new List<byte>(100);
+			foreach (var alias in aliases)
+			{
+				// todo: Use client locale to identify correct encoding
+				bytes.AddRange(Encoding.UTF8.GetBytes(alias.Key));
+				bytes.Add(0);	// 0 is definitely neither in key, nor in value
+				bytes.AddRange(Encoding.UTF8.GetBytes(alias.Value));
+				bytes.Add(0);	// 0 is definitely neither in key, nor in value
+			}
+			RawAliases = bytes.ToArray();
+		}
+
+		public Dictionary<string, string> ParseAliases()
+		{
+			var map = new Dictionary<string, string>();
+			if (RawAliases != null)
+			{
+				var isKey = true;
+				var keyIndex = 0;
+				var valueIndex = -1;
+				for (var i = 0; i < RawAliases.Length; i++)
+				{
+					var b = RawAliases[i];
+					if (b == 0)
+					{
+						// found new key or value
+						isKey = !isKey;
+						if (isKey)
+						{
+							// new alias
+							if (valueIndex >= 0)
+							{
+								var key = Encoding.UTF8.GetString(RawAliases, keyIndex, valueIndex - keyIndex);
+								var value = Encoding.UTF8.GetString(RawAliases, valueIndex, i - valueIndex);
+								map[key] = value;
+							}
+							keyIndex = i;
+							valueIndex = -1;
+						}
+						else
+						{
+							// read key already, now read value
+							valueIndex = i;
+						}
+					}
+				}
+			}
+			return map;
+		}
+		#endregion
+
+		public override string ToString()
+		{
+			return string.Format("{0} (Id: {1}, Account: {2})", Name, EntityLowId, AccountId);
 		}
 	}
 }

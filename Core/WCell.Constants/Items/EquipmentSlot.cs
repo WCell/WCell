@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,6 +7,9 @@ namespace WCell.Constants.Items
 {
 	public enum EquipmentSlot
 	{
+		/// <summary>
+		/// Special handling
+		/// </summary>
 		Invalid = -1,
 		Head = 0,
 		Neck = 1,

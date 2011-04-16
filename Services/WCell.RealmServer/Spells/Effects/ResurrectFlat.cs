@@ -31,21 +31,28 @@ namespace WCell.RealmServer.Spells.Effects
 
 		protected override void Apply(WorldObject target)
 		{
+			Unit unit;
 			if (target is Unit)
 			{
-				((Unit)target).Health = CalcEffectValue();
-				if (((Unit)target).PowerType == PowerType.Mana)
-				{
-					((Unit)target).Energize(m_cast.Caster, Effect.MiscValue, Effect);
-				}
+				unit = (Unit) target;
 			}
 			else if (target is Corpse)
 			{
-				var owner = ((Corpse)target).Owner;
-				if (owner != null && !owner.IsGhost && !owner.IsAlive)
+				unit = ((Corpse)target).Owner;
+				if (unit == null  || unit.IsAlive)
 				{
-					owner.Resurrect();
+					return;
 				}
+			}
+			else
+			{
+				return;
+			}
+
+			unit.Health = CalcEffectValue();
+			if (((Unit)target).PowerType == PowerType.Mana)
+			{
+				((Unit)target).Energize(Effect.MiscValue, m_cast.CasterUnit, Effect);
 			}
 		}
 	}

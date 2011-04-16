@@ -1,28 +1,31 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using WCell.Util;
 using WCell.Util.Collections;
 using WCell.Constants.Updates;
 using WCell.Constants.World;
+using WCell.Util.NLog;
 using WCell.Util.Threading;
 using WCell.Core.Timers;
 
 namespace WCell.RealmServer.Entities
 {
-	public interface IUpdateObjectAction
+	public class ObjectUpdateTimer
 	{
-		Action<WorldObject> Callback { get; }
+		public ObjectUpdateTimer() { }
 
-		int Ticks { get; }
-	}
-
-	public class SimpleObjectUpdateAction : IUpdateObjectAction
-	{
-		public SimpleObjectUpdateAction() { }
-
-		public SimpleObjectUpdateAction(int ticks, Action<WorldObject> callback)
+		public ObjectUpdateTimer(int delayMillis, Action<WorldObject> callback)
 		{
 			Callback = callback;
-			Ticks = ticks;
+			Delay = delayMillis;
+			LastCallTime = DateTime.Now;
+		}
+
+		public DateTime LastCallTime
+		{
+			get;
+			internal set;
 		}
 
 		public Action<WorldObject> Callback
@@ -31,15 +34,26 @@ namespace WCell.RealmServer.Entities
 			set;
 		}
 
-		public int Ticks
+		public int Delay
 		{
 			get;
 			set;
 		}
 
+		public int GetDelayUntilNextExecution(WorldObject obj)
+		{
+			return Delay - (obj.LastUpdateTime - LastCallTime).ToMilliSecondsInt();
+		}
+
+		public void Execute(WorldObject owner)
+		{
+			Callback(owner);
+			LastCallTime = owner.LastUpdateTime;
+		}
+
 		public override bool Equals(object obj)
 		{
-			return obj is SimpleObjectUpdateAction && Callback == ((SimpleObjectUpdateAction)obj).Callback;
+			return obj is ObjectUpdateTimer && Callback == ((ObjectUpdateTimer)obj).Callback;
 		}
 
 		public override int GetHashCode()
@@ -48,12 +62,13 @@ namespace WCell.RealmServer.Entities
 		}
 	}
 
-	public class OneShotUpdateObjectAction : SimpleObjectUpdateAction
+	public class OneShotObjectUpdateTimer : ObjectUpdateTimer
 	{
-		public OneShotUpdateObjectAction(int ticks, Action<WorldObject> callback)
+		public OneShotObjectUpdateTimer(int delayMillis, Action<WorldObject> callback)
 		{
-			Ticks = ticks;
-			Callback = obj => {
+			Delay = delayMillis;
+			Callback = obj =>
+			{
 				//if (!Cancelled)
 				{
 					callback(obj);
@@ -72,25 +87,31 @@ namespace WCell.RealmServer.Entities
 	public partial class WorldObject
 	{
 		protected UpdatePriority m_UpdatePriority = DefaultObjectUpdatePriority;
-		int m_ticks;
+		protected DateTime m_lastUpdateTime;
 
-		protected List<IUpdateObjectAction> m_updateActions;
+		protected List<ObjectUpdateTimer> m_updateActions;
 
 
-		internal protected virtual void OnEnterRegion()
+		internal protected virtual void OnEnterMap()
 		{
 		}
 
-		internal protected virtual void OnLeavingRegion()
+		internal protected virtual void OnLeavingMap()
 		{
 		}
 
 		/// <summary>
-		/// The queue of messages. Messages are executed on every region tick.
+		/// The queue of messages. Messages are executed on every map tick.
 		/// </summary>
 		public LockfreeQueue<IMessage> MessageQueue
 		{
 			get { return m_messageQueue; }
+		}
+
+		public DateTime LastUpdateTime
+		{
+			get { return m_lastUpdateTime; }
+			internal set { m_lastUpdateTime = value; }
 		}
 
 		#region Object Updating
@@ -104,18 +125,10 @@ namespace WCell.RealmServer.Entities
 			m_UpdatePriority = priority;
 		}
 
-		public OneShotUpdateObjectAction CallDelayed(int millis, Action<WorldObject> callback)
+		public OneShotObjectUpdateTimer CallDelayed(int millis, Action<WorldObject> callback)
 		{
-			var ticks = millis / m_region.UpdateDelay;
-			var action = new OneShotUpdateObjectAction(ticks, callback);
-			CallPeriodically(action);
-			return action;
-		}
-
-		public OneShotUpdateObjectAction CallDelayedTicks(int ticks, Action<WorldObject> callback)
-		{
-			var action = new OneShotUpdateObjectAction(ticks, callback);
-			CallPeriodically(action);
+			var action = new OneShotObjectUpdateTimer(millis, callback);
+			AddUpdateAction(action);
 			return action;
 		}
 
@@ -123,70 +136,108 @@ namespace WCell.RealmServer.Entities
 		/// Adds a new Action to the list of Actions to be executed every millis.
 		/// </summary>
 		/// <param name="callback"></param>
-		public IUpdateObjectAction CallPeriodically(int millis, Action<WorldObject> callback)
+		public ObjectUpdateTimer CallPeriodically(int millis, Action<WorldObject> callback)
 		{
-			var ticks = millis / m_region.UpdateDelay;
-			var action = new SimpleObjectUpdateAction(ticks, callback);
-			CallPeriodically(action);
+			var action = new ObjectUpdateTimer(millis, callback);
+			AddUpdateAction(action);
 			return action;
 		}
 
-		/// <summary>
-		/// Adds a new Action to the list of Actions to be executed every ticks Region-Ticks.
-		/// </summary>
-		/// <param name="callback"></param>
-		public IUpdateObjectAction CallPeriodicallyTicks(int ticks, Action<WorldObject> callback)
-		{
-			var action = new SimpleObjectUpdateAction(ticks, callback);
-			CallPeriodically(action);
-			return action;
-		}
+        /// <summary>
+        /// Adds a new Action to the list of Actions to be executed every millis.
+        /// </summary>
+        /// <param name="callback"></param>
+        public ObjectUpdateTimer CallPeriodicallyUntil(int callIntervalMillis, int callUntilMillis, Action<WorldObject> callback)
+        {
+            var action = new ObjectUpdateTimer(callIntervalMillis, callback);
+            AddUpdateAction(action);
+            CallDelayed(callUntilMillis, obj => RemoveUpdateAction(action));
+            return action;
+        }
 
 		/// <summary>
-		/// Adds a new Action to the list of Actions to be executed every action.Ticks Region-Ticks.
+		/// Adds a new Action to the list of Actions to be executed every action.Delay milliseconds
 		/// </summary>
-		public void CallPeriodically(IUpdateObjectAction action)
+		public void AddUpdateAction(ObjectUpdateTimer timer)
 		{
 			if (m_updateActions == null)
 			{
-				m_updateActions = new List<IUpdateObjectAction>(3);
+				m_updateActions = new List<ObjectUpdateTimer>(3);
 			}
-			m_updateActions.Add(action);
+			timer.LastCallTime = m_lastUpdateTime;
+			m_updateActions.Add(timer);
+		}
+
+		public bool HasUpdateAction(Func<ObjectUpdateTimer, bool> predicate)
+		{
+			EnsureContext();
+
+			return m_updateActions != null && m_updateActions.Any(predicate);
+		}
+
+		public void RemoveUpdateAction(Action<WorldObject> callback)
+		{
+			if (m_updateActions != null)
+			{
+				ExecuteInContext(() =>
+									{
+										var action = m_updateActions.FirstOrDefault(act => act.Callback == callback);
+										if (action != null)
+										{
+											RemoveUpdateAction(action);
+										}
+									});
+			}
 		}
 
 		/// <summary>
 		/// Removes the given Action
 		/// </summary>
-		/// <param name="action"></param>
-		public void RemoveUpdateAction(IUpdateObjectAction action)
+		/// <param name="timer"></param>
+		public bool RemoveUpdateAction(ObjectUpdateTimer timer)
 		{
 			if (m_updateActions != null)
 			{
-				if (m_updateActions.Remove(action) 
-					//&& m_updateActions.Count == 0
-					)
+				if (m_updateActions.Remove(timer))
 				{
-					//m_updateActions = null;
+					return true;
 				}
 			}
+			return false;
 		}
 
 		/// <summary>
 		/// Make sure to call this before updating anything else (required for reseting UpdateInfo)
 		/// </summary>
-		public virtual void Update(float dt)
+		public virtual void Update(int dt)
 		{
-			m_ticks++;
-
 			IMessage msg;
 			while (m_messageQueue.TryDequeue(out msg))
 			{
-				msg.Execute();
+				try
+				{
+					msg.Execute();
+				}
+				catch (Exception e)
+				{
+					LogUtil.ErrorException(e, "Exception raised when processing Message for: {0}", this);
+					Delete();
+				}
 			}
 
-			if (m_areaAura != null)
+			if (m_areaAuras != null)
 			{
-				m_areaAura.Update(dt);
+				var count = m_areaAuras.Count;
+				for (var i = 0; i < count; i++)
+				{
+					var aura = m_areaAuras[i];
+					aura.Update(dt);
+					if (m_areaAuras.Count != count)
+					{
+						// areaauras changed -> break and continue on next tick
+						break;
+					}
+				}
 			}
 
 			if (m_spellCast != null)
@@ -197,17 +248,17 @@ namespace WCell.RealmServer.Entities
 			if (m_updateActions != null)
 			{
 				var count = m_updateActions.Count;
-				for (var i = count-1; i >= 0; i--)
+				for (var i = count - 1; i >= 0; i--)
 				{
 					var action = m_updateActions[i];
-					if (action.Ticks == 0)
+					if (action.Delay == 0)
 					{
 						// Keep an eye out for this...
-						action.Callback(this);
+						action.Execute(this);
 					}
-					else if (CheckTicks(action.Ticks))
+					else if ((m_lastUpdateTime - action.LastCallTime).ToMilliSecondsInt() >= action.Delay)
 					{
-						action.Callback(this);
+						action.Execute(this);
 					}
 				}
 			}
@@ -234,24 +285,42 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public IContextHandler ContextHandler
 		{
-			get { return m_region; }
+			get { return m_Map; }
 		}
 
+		/// <summary>
+		/// Whether this object is in the world and within the current
+		/// execution context.
+		/// </summary>
 		public bool IsInContext
 		{
-			get { return ContextHandler != null && ContextHandler.IsInContext; }
+			get
+			{
+				if (IsInWorld)
+				{
+					var context = ContextHandler;	// thread-safe
+					if (context != null && context.IsInContext)
+					{
+						return true;
+					}
+				}
+				return false;
+			}
 		}
 
 		public void EnsureContext()
 		{
-			var handler = ContextHandler;
-			if (handler == null)
+			if (IsInWorld)
 			{
-				//throw new InvalidOperationException("Could not ensure Context because ContextHandler was not set for: " + this);
-			}
-			else
-			{
-				handler.EnsureContext();
+				var handler = ContextHandler;
+				if (handler == null)
+				{
+					//throw new InvalidOperationException("Could not ensure Context because ContextHandler was not set for: " + this);
+				}
+				else
+				{
+					handler.EnsureContext();
+				}
 			}
 		}
 	}

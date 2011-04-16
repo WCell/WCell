@@ -27,7 +27,7 @@ namespace WCell.RealmServer.Stats
 	/// </summary>
 	public class RealmStatsExtended : NetworkStatistics
 	{
-		private float m_consumeInterval = 300.0f; // 5 minutes
+		private int m_consumeIntervalMillis = 300000; // 5 minutes
 
 		public static RealmStatsExtended Instance
 		{
@@ -84,22 +84,19 @@ namespace WCell.RealmServer.Stats
 
 		public void Start()
 		{
-			m_consumerTimer.Start(m_consumeInterval, m_consumeInterval);
-			// global timer register
+			m_consumerTimer.Start(m_consumeIntervalMillis, m_consumeIntervalMillis);
 		}
 
-		public void Start(float interval)
+		public void Start(int interval)
 		{
-			m_consumeInterval = interval;
+			m_consumeIntervalMillis = interval;
 
-			m_consumerTimer.Start(m_consumeInterval, m_consumeInterval);
-			// global register timer
+			m_consumerTimer.Start(m_consumeIntervalMillis, m_consumeIntervalMillis);
 		}
 
 		public void Stop()
 		{
 			m_consumerTimer.Stop();
-			// global unregister timer
 		}
 
 		#region Singleton

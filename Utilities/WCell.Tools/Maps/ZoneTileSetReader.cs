@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using NLog;
 using WCell.Constants;
 using WCell.Constants.World;
 using WCell.Tools.Maps.Parsing.ADT;
+using WCell.Tools.Maps.Parsing.WDT;
 
 namespace WCell.Tools.Maps
 {
@@ -33,31 +34,33 @@ namespace WCell.Tools.Maps
 
 				ZoneGrid grid;
 
-				// Read in the Tiles
-				for (var y = 0; y < 64; y++)
+                // Rows are along the x-axis
+				for (var x = 0; x < 64; x++)
 				{
-					for (var x = 0; x < 64; x++)
+                    // Columns are along the y-axis
+					for (var y = 0; y < 64; y++)
 					{
-						if (!wdt.TileProfile[x, y]) continue;
+						if (!wdt.TileProfile[y, x]) continue;
 						++count;
-						var adtName = TerrainConstants.GetADTFile(wdt.Name, x, y);
-						var adt = ADTParser.Process(WDTParser.MpqManager, wdt.Path, adtName);
+						var adt = ADTParser.Process(WDTParser.MpqManager, wdt.Entry, y, x);
 						if (adt == null) continue;
 
-						tileSet.ZoneGrids[x, y] = grid = new ZoneGrid(new uint[TerrainConstants.ChunksPerTileSide, TerrainConstants.ChunksPerTileSide]);
-						// Read in the TileChunks 
-						for (var j = 0; j < 16; j++)
+						tileSet.ZoneGrids[y, x] = grid = new ZoneGrid(new uint[TerrainConstants.ChunksPerTileSide, TerrainConstants.ChunksPerTileSide]);
+						
+                        // Rows along the x-axis 
+						for (var chunkX = 0; chunkX < 16; chunkX++)
 						{
-							for (var i = 0; i < 16; i++)
+                            // Columns along the y-axis
+							for (var chunkY = 0; chunkY < 16; chunkY++)
 							{
-								var areaId = adt.MapChunks[i, j].AreaId;
+								var areaId = adt.MapChunks[chunkY, chunkX].Header.AreaId;
 								if (Enum.IsDefined(typeof(ZoneId), areaId))
 								{
-									grid.ZoneIds[i, j] = areaId;
+									grid.ZoneIds[chunkY, chunkX] = (uint)areaId;
 								}
 								else
 								{
-									grid.ZoneIds[i, j] = 0;
+									grid.ZoneIds[chunkY, chunkX] = 0;
 								}
 							}
 						}
@@ -70,10 +73,5 @@ namespace WCell.Tools.Maps
 				log.Info("Could not read Zones from WMO: " + (MapId)wdt.Entry.Id);
 			}
 		}
-
-
-
-
-
 	}
 }

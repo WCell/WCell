@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using WCell.Constants.Spells;
 using WCell.Core.Timers;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Misc;
 using WCell.Util.Graphics;
 using WCell.Util.Variables;
 
@@ -22,17 +24,26 @@ namespace WCell.RealmServer.Spells.Auras
 		[Variable("DefaultAreaAuraAmplitude")]
 		public static int DefaultAmplitude = 1000;
 
+		#region Fields
 		WorldObject m_holder;
 		Spell m_spell;
 		Dictionary<Unit, Aura> m_targets;
 		float m_radius;
 		ITickTimer m_controller;
 		TimerEntry m_timer;
-		CasterInfo m_casterInfo;
-		float m_duration;
-		float m_elapsed;
+		ObjectReference m_CasterReference;
+		int m_duration;
+		int m_elapsed;
 		ISpellParameters m_params;
-		private uint m_remainingCharges;
+		private int m_remainingCharges;
+		private bool m_IsActivated;
+		#endregion
+
+		#region C-tor & Init
+		///// <summary>
+		///// The two filters for the two target types of a SpellEffect (assuming all area aura effects share the same target type)
+		///// </summary>
+		//private TargetFilter m_targetFilter, m_targetFilter2;
 
 		/// <summary>
 		/// Creates a new AreaAura that will auto-trigger the given Spell on everyone, according
@@ -52,7 +63,7 @@ namespace WCell.RealmServer.Spells.Auras
 		public AreaAura(WorldObject holder, Spell spell)
 		{
 			Init(holder, spell);
-			m_radius = spell.Effects[0].GetRadius(holder);
+			m_radius = spell.Effects[0].GetRadius(holder.SharedReference);
 		}
 
 		/// <summary>
@@ -63,11 +74,11 @@ namespace WCell.RealmServer.Spells.Auras
 			m_holder = holder;
 			if (holder is DynamicObject)
 			{
-				m_casterInfo = holder.Master.CasterInfo;
+				m_CasterReference = holder.Master.SharedReference;
 			}
 			else
 			{
-				m_casterInfo = holder.CasterInfo;
+				m_CasterReference = holder.SharedReference;
 			}
 
 			m_spell = spell;
@@ -76,12 +87,9 @@ namespace WCell.RealmServer.Spells.Auras
 				m_targets = new Dictionary<Unit, Aura>();
 			}
 
-			if (holder.AreaAura != null)
-			{
-				holder.AreaAura.Remove(true);
-			}
-			holder.AreaAura = this;
+			holder.AddAreaAura(this);
 		}
+		#endregion
 
 		#region Properties
 		/// <summary>
@@ -124,7 +132,7 @@ namespace WCell.RealmServer.Spells.Auras
 			{
 				if (m_controller == null)
 				{
-					return (int)((m_duration - m_elapsed) * 1000);
+					return m_duration - m_elapsed;
 				}
 
 				return m_controller.TimeLeft;
@@ -134,17 +142,101 @@ namespace WCell.RealmServer.Spells.Auras
 		/// <summary>
 		/// Aura is active if its still applied to a <c>Holder</c>
 		/// </summary>
-		public bool IsActive
+		public bool IsAdded
 		{
 			get { return m_holder != null; }
 		}
 
+		/// <summary>
+		/// Whether this AreaAura is currently activated and applies it's effects to the area
+		/// </summary>
+		public bool IsActivated
+		{
+			get { return m_IsActivated; }
+			set
+			{
+				if (m_IsActivated != value)
+				{
+					m_IsActivated = value;
+					if (value)
+					{
+						if (m_timer != null)
+						{
+							m_timer.Start();
+						}
+					}
+					else
+					{
+						if (m_timer != null)
+						{
+							m_timer.Stop();
+						}
+						if (m_targets != null)
+						{
+							RemoveEffects(m_targets);
+							m_targets.Clear();
+						}
+					}
+				}
+			}
+		}
+		#endregion
+
+		#region Apply & Start & Remove
 		/// <summary>
 		/// Called by a SpellChannel when channeling
 		/// </summary>
 		public void Apply()
 		{
 			RevalidateTargetsAndApply(0);
+		}
+
+		/// <summary>
+		/// Initializes this AreaAura with the given controller. 
+		/// If no controller is given, the AreaAura controls timing and disposal itself.
+		/// </summary>
+		/// <param name="controller">A controller controls timing and disposal of this AreaAura</param>
+		/// <param name="noTimeout">whether the Aura should not expire (ignore the Spell's duration).</param>
+		public void Start(ITickTimer controller, bool noTimeout)
+		{
+			if (m_IsActivated)
+			{
+				return;
+			}
+
+			if (m_radius == 0)
+			{
+				m_radius = 5;
+			}
+
+			m_controller = controller;
+
+			if (m_controller == null || m_controller.MaxTicks == 1)
+			{
+				if (m_params != null)
+				{
+					m_timer = new TimerEntry(m_params.StartDelay,
+											 m_params.Amplitude != 0 ? m_params.Amplitude : DefaultAmplitude, RevalidateTargetsAndApply);
+				}
+				else
+				{
+					m_timer = new TimerEntry(DefaultAmplitude, DefaultAmplitude, RevalidateTargetsAndApply);
+				}
+			}
+
+			if (noTimeout)
+			{
+				m_duration = int.MaxValue;
+			}
+			else
+			{
+				m_duration = m_spell.GetDuration(m_CasterReference);
+				if (m_duration < 1)
+				{
+					m_duration = int.MaxValue;
+				}
+			}
+			IsActivated = true;
 		}
 
 		public void TryRemove(bool cancelled)
@@ -157,75 +249,29 @@ namespace WCell.RealmServer.Spells.Auras
 		/// </summary>
 		public void Remove(bool cancelled)
 		{
-			m_holder.AreaAura = null;
+			IsActivated = false;
+
+			m_holder.CancelAreaAura(this);
 			m_holder = null;
+			m_remainingCharges = 0; // make sure Remove will not be called again
 
 			if (m_timer != null)
 			{
 				m_timer.Dispose();
 			}
-
-			if (m_targets != null)
-			{
-				RemoveEffects(m_targets);
-				m_targets.Clear();
-			}
 		}
+
 		#endregion
 
-		/// <summary>
-		/// Initializes this AreaAura with the given controller. 
-		/// If no controller is given, the AreaAura controls timing and disposal itself.
-		/// </summary>
-		/// <param name="controller">A controller controls timing and disposal of this AreaAura</param>
-		/// <param name="noTimeout">whether the Aura should not expire (ignore the Spell's duration).</param>
-		public void Start(ITickTimer controller, bool noTimeout)
-		{
-			if (m_radius == 0)
-			{
-				m_radius = 5;
-			}
-			if (m_timer == null)
-			{
-				m_controller = controller;
-
-				if (m_controller == null)
-				{
-					if (m_params != null)
-					{
-						m_timer = new TimerEntry(m_params.StartDelay,
-							m_params.Amplitude != 0 ? m_params.Amplitude : DefaultAmplitude, RevalidateTargetsAndApply);
-					}
-					else
-					{
-						m_timer = new TimerEntry(DefaultAmplitude, DefaultAmplitude, RevalidateTargetsAndApply);
-					}
-					m_timer.Start();
-				}
-
-				if (noTimeout)
-				{
-					m_duration = int.MaxValue;
-				}
-				else
-				{
-					m_duration = m_spell.GetDuration(m_casterInfo) / 1000f;
-					if (m_duration < 1)
-					{
-						m_duration = int.MaxValue;
-					}
-				}
-			}
-		}
-
+		#region Update Logic
 		/// <summary>
 		/// Check for all targets in radius, kick out invalid ones and add new ones
 		/// </summary>
-		protected internal void RevalidateTargetsAndApply(float timeElapsed)
+		protected internal void RevalidateTargetsAndApply(int timeElapsed)
 		{
 			if (m_controller == null)
 			{
-				m_elapsed += m_timer.Interval;
+				m_elapsed += timeElapsed;
 				if (m_elapsed >= m_duration)
 				{
 					Remove(false);
@@ -243,17 +289,15 @@ namespace WCell.RealmServer.Spells.Auras
 
 			// find new targets
 			var newTargets = new List<WorldObject>();
-			var exclMobs = m_holder.Faction.Id == 0;
+			var exclMobs = m_holder.Faction.Id == 0;	// neutral aura holders, for events etc
 
-			m_holder.IterateEnvironment(
-				m_radius,
+			m_holder.IterateEnvironment(m_radius,
 				obj =>
 				{
 					if (obj != m_holder &&
-						((exclMobs && obj is Character) || (!exclMobs && obj is Unit)) &&
-						((Unit)obj).IsAlive &&
-						((m_spell.HasHarmfulEffects && !obj.IsInSanctuary && m_holder.CanHarm(obj)) ||
-						(m_spell.HasBeneficialEffects && m_holder.IsAlliedWith(obj))))
+						((exclMobs && obj.IsPlayerOwned) || (!exclMobs && obj is Unit)) &&
+						(m_spell.HasHarmfulEffects == m_holder.MayAttack(obj)) &&
+						m_spell.CheckValidTarget(m_holder, obj) == SpellFailedReason.Ok)
 					{
 						if (!auraEffects || !m_targets.ContainsKey((Unit)obj))
 						{
@@ -261,13 +305,14 @@ namespace WCell.RealmServer.Spells.Auras
 						}
 					}
 					return true;
-				});
+				}
+			);
 
 			for (var i = 0; i < newTargets.Count; i++)
 			{
 				var target = (Unit)newTargets[i];
 
-				if (!IsActive)
+				if (!IsAdded)
 				{
 					// got cancelled
 					return;
@@ -284,6 +329,11 @@ namespace WCell.RealmServer.Spells.Auras
 					m_holder.SpellCast.Trigger(m_spell, target);
 				}
 
+				if (m_holder.IsTrap)
+				{
+					OnTrapTriggered(target);
+				}
+
 				if (m_remainingCharges != 0)
 				{
 					m_remainingCharges--;
@@ -295,20 +345,49 @@ namespace WCell.RealmServer.Spells.Auras
 			}
 		}
 
+		/// <summary>
+		/// Called when the holder is a trap and the given triggerer triggered it.
+		/// </summary>
+		/// <param name="triggerer"></param>
+		private void OnTrapTriggered(Unit triggerer)
+		{
+			// trap trigger proc
+			var owner = ((GameObject)m_holder).Owner;
+			if (owner != null)
+			{
+				triggerer.Proc(ProcTriggerFlags.TrapTriggered, triggerer,
+					new TrapTriggerAction { Attacker = owner, Spell = m_spell, Victim = triggerer },
+					false);
+			}
+		}
+
 		private void RemoveInvalidTargets()
 		{
 			if (m_targets != null)
 			{
-				var toRemove = m_targets.Where(target => !target.Key.IsInRadius(m_holder, m_radius));
+				var toRemove = m_targets.Where(target => !target.Key.IsInRadius(m_holder, m_radius)).ToArray();
 
-			    foreach (var target in toRemove)
+				foreach (var target in toRemove)
 				{
-					if (target.Value.IsActive)
+					if (target.Value.IsAdded)
 					{
 						var auras = target.Key.Auras;
 						if (auras != null)
 						{
-							target.Value.Remove(false);
+							if (!target.Key.IsInContext && target.Key.IsInWorld)
+							{
+								// target has been teleported away
+								var aura = target.Value;
+								target.Key.AddMessage(() =>
+								{
+									if (aura.IsAdded)
+										aura.Remove(false);
+								});
+							}
+							else
+							{
+								target.Value.Remove(false);
+							}
 						}
 					}
 					m_targets.Remove(target.Key);
@@ -321,20 +400,21 @@ namespace WCell.RealmServer.Spells.Auras
 		/// </summary>
 		protected void ApplyAuraEffects(Unit target)
 		{
-			var beneficial = m_spell.IsBeneficialFor(m_casterInfo, target);
+			var beneficial = m_spell.IsBeneficialFor(m_CasterReference, target);
 
 			// checks
-			var missReason = SpellCast.CheckDebuffResist(target, m_spell, m_casterInfo.Level, !beneficial);
+			var missReason = SpellCast.CheckDebuffResist(target, m_spell, m_CasterReference.Level, !beneficial);
 			if (missReason != CastMissReason.None)
 			{
 				// TODO: Flash message ontop of the head
 				return;
 			}
-			
+
 			// try to stack/apply aura
-			var aura = target.Auras.AddAura(m_casterInfo, m_spell, false);
+			var aura = target.Auras.CreateAura(m_CasterReference, m_spell);
 			if (aura != null)
 			{
+				aura.Start(m_controller, false);
 				m_targets.Add(target, aura);
 			}
 		}
@@ -349,10 +429,11 @@ namespace WCell.RealmServer.Spells.Auras
 				pair.Value.Remove(false);
 			}
 		}
+		#endregion
 
 		#region IUpdatable
 
-		public void Update(float dt)
+		public void Update(int dt)
 		{
 			if (m_timer != null)
 			{

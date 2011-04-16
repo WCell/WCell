@@ -2,17 +2,17 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 {
 	public class GOTrapDoorEntry : GOEntry
 	{
-	    public uint WhenToPause
+	    public int WhenToPause
 	    {
             get { return Fields[0]; }
 	    }
 
-	    public uint StartOpen
+	    public int StartOpen
 	    {
             get { return Fields[1]; }
 	    }
 
-	    public uint AutoClose
+	    public int AutoClose
 	    {
             get { return Fields[2]; }
 	    }

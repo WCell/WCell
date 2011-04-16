@@ -14,6 +14,7 @@
  *
  *************************************************************************/
 
+using NLog;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Misc;
 
@@ -24,17 +25,24 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	/// </summary>
 	public class ProcTriggerDamageHandler : AuraEffectHandler
 	{
-		public override void OnProc(Unit target, IUnitAction action)
+		public override void OnProc(Unit triggerer, IUnitAction action)
 		{
-			var val = m_spellEffect.CalcEffectValue(m_aura.CasterInfo);
+			var val = m_spellEffect.CalcEffectValue(m_aura.CasterReference);
 
-			if (action is IDamageAction)
+			//if (action is IDamageAction)
+			//{
+			//    ((IDamageAction)action).Damage += val;
+			//}
+			//else
+
+			if (Owner.MayAttack(triggerer))
 			{
-				((IDamageAction)action).Damage += val;
+				Owner.DealSpellDamage(triggerer, m_spellEffect, val);
 			}
 			else
 			{
-				m_aura.Auras.Owner.DoSpellDamage(target, m_spellEffect, val);
+				LogManager.GetCurrentClassLogger().Warn("Invalid damage effect on Spell {0} was triggered by {1} who cannot be attacked by Aura-Owner {2}.",
+					m_aura.Spell, triggerer, Owner);
 			}
 		}
 	}

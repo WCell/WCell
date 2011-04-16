@@ -33,7 +33,7 @@ namespace WCell.AuthServer.Firewall
 			}
 			catch (Exception e)
 			{
-				AuthDBUtil.OnDBError(e);
+				AuthDBMgr.OnDBError(e);
 				m_bans = BanEntry.FindAll().ToList();
 			}
 		}

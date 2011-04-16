@@ -26,7 +26,7 @@ namespace WCell.RealmServer.Handlers
 
 			var mailboxId = packet.ReadEntityId();
 
-			if (!CheckMailBox(chr, chr.Region.GetObject(mailboxId) as GameObject))
+			if (!CheckMailBox(chr, chr.Map.GetObject(mailboxId) as GameObject))
 			{
 				return;
 			}
@@ -39,7 +39,7 @@ namespace WCell.RealmServer.Handlers
 			var unkowwn1 = packet.ReadUInt32();			// 4 unknown bytes
 
 			var itemCount = packet.ReadByte();
-			if (itemCount > MailMgr.MaxStoredItems)
+            if (itemCount > MailMgr.MaxItemsPerMail)
 				return;
 
 			var items = new List<Item>(itemCount);
@@ -47,7 +47,7 @@ namespace WCell.RealmServer.Handlers
 			{
 				var slot = packet.ReadByte();
 				var itemId = packet.ReadEntityId();
-				var item = chr.Mail.GetItemToMail(itemId);
+				var item = chr.MailAccount.GetItemToMail(itemId);
 
 				if (item != null)
 				{
@@ -63,11 +63,10 @@ namespace WCell.RealmServer.Handlers
 			var money = packet.ReadUInt32();
 			var cod = packet.ReadUInt32();
 
-			var unknown2 = packet.ReadUInt32();
-			var unknown3 = packet.ReadUInt32();
+			var unknown2 = packet.ReadUInt64();
 			var unknown4 = packet.ReadByte();
 
-			chr.Mail.SendMail(recipientName, subject, msg, stationary, items, money, cod);
+			chr.MailAccount.SendMail(recipientName, subject, msg, stationary, items, money, cod);
 		}
 
 		[ClientPacketHandler(RealmServerOpCode.CMSG_GET_MAIL_LIST)]
@@ -76,12 +75,12 @@ namespace WCell.RealmServer.Handlers
 			var chr = client.ActiveCharacter;
 			var mailboxId = packet.ReadEntityId();
 
-			if (!CheckMailBox(chr, chr.Region.GetObject(mailboxId) as GameObject))
+			if (!CheckMailBox(chr, chr.Map.GetObject(mailboxId) as GameObject))
 			{
 				return;
 			}
 
-			chr.Mail.SendMailList();
+			chr.MailAccount.SendMailList();
 		}
 
 		[ClientPacketHandler(RealmServerOpCode.CMSG_MAIL_TAKE_MONEY)]
@@ -91,12 +90,12 @@ namespace WCell.RealmServer.Handlers
 			var mailboxId = packet.ReadEntityId();
 			var mailId = packet.ReadUInt32();
 
-			if (!CheckMailBox(chr, chr.Region.GetObject(mailboxId) as GameObject))
+			if (!CheckMailBox(chr, chr.Map.GetObject(mailboxId) as GameObject))
 			{
 				return;
 			}
 
-			chr.Mail.TakeMoney(mailId);
+			chr.MailAccount.TakeMoney(mailId);
 		}
 
 		[ClientPacketHandler(RealmServerOpCode.CMSG_MAIL_TAKE_ITEM)]
@@ -107,12 +106,12 @@ namespace WCell.RealmServer.Handlers
 			var mailId = packet.ReadUInt32();
 			var itemId = packet.ReadUInt32();
 
-			if (!CheckMailBox(chr, chr.Region.GetObject(mailboxId) as GameObject))
+			if (!CheckMailBox(chr, chr.Map.GetObject(mailboxId) as GameObject))
 			{
 				return;
 			}
 
-			chr.Mail.TakeItem(mailId, itemId);
+			chr.MailAccount.TakeItem(mailId, itemId);
 		}
 
 		[ClientPacketHandler(RealmServerOpCode.CMSG_MAIL_MARK_AS_READ)]
@@ -122,12 +121,12 @@ namespace WCell.RealmServer.Handlers
 			var mailboxId = packet.ReadEntityId();
 			var mailId = packet.ReadUInt32();
 
-			if (!CheckMailBox(chr, chr.Region.GetObject(mailboxId) as GameObject))
+			if (!CheckMailBox(chr, chr.Map.GetObject(mailboxId) as GameObject))
 			{
 				return;
 			}
 
-			chr.Mail.MarkAsRead(mailId);
+			chr.MailAccount.MarkAsRead(mailId);
 		}
 
 		[ClientPacketHandler(RealmServerOpCode.CMSG_MAIL_RETURN_TO_SENDER)]
@@ -137,12 +136,12 @@ namespace WCell.RealmServer.Handlers
 			var mailboxId = packet.ReadEntityId();
 			var mailId = packet.ReadUInt32();
 
-			if (!CheckMailBox(chr, chr.Region.GetObject(mailboxId) as GameObject))
+			if (!CheckMailBox(chr, chr.Map.GetObject(mailboxId) as GameObject))
 			{
 				return;
 			}
 
-			chr.Mail.ReturnToSender(mailId);
+			chr.MailAccount.ReturnToSender(mailId);
 		}
 
 		[ClientPacketHandler(RealmServerOpCode.CMSG_MAIL_DELETE)]
@@ -152,12 +151,12 @@ namespace WCell.RealmServer.Handlers
 			var mailboxId = packet.ReadEntityId();
 			var mailId = packet.ReadUInt32();
 
-			if (!CheckMailBox(chr, chr.Region.GetObject(mailboxId) as GameObject))
+			if (!CheckMailBox(chr, chr.Map.GetObject(mailboxId) as GameObject))
 			{
 				return;
 			}
 
-			chr.Mail.DeleteMail(mailId);
+			chr.MailAccount.DeleteMail(mailId);
 		}
 
 		[ClientPacketHandler(RealmServerOpCode.CMSG_MAIL_CREATE_TEXT_ITEM)]
@@ -167,18 +166,18 @@ namespace WCell.RealmServer.Handlers
 			var mailboxId = packet.ReadEntityId();
 			var mailId = packet.ReadUInt32();
 
-			if (!CheckMailBox(chr, chr.Region.GetObject(mailboxId) as GameObject))
+			if (!CheckMailBox(chr, chr.Map.GetObject(mailboxId) as GameObject))
 			{
 				return;
 			}
 
-			chr.Mail.CreateTextItem(mailId);
+			chr.MailAccount.CreateTextItem(mailId);
 		}
 
 		[ClientPacketHandler(RealmServerOpCode.MSG_QUERY_NEXT_MAIL_TIME)]
 		public static void HandleNextTime(IRealmClient client, RealmPacketIn packet)
 		{
-			client.ActiveCharacter.Mail.GetNextMailTime();
+			client.ActiveCharacter.MailAccount.GetNextMailTime();
 		}
 
 		[ClientPacketHandler(RealmServerOpCode.CMSG_ITEM_TEXT_QUERY)]
@@ -190,7 +189,7 @@ namespace WCell.RealmServer.Handlers
 			var mailOrItemId = packet.ReadUInt32();
 			var unknown = packet.ReadUInt32();
 
-			chr.Mail.SendItemText(itemTextId, mailOrItemId);
+			chr.MailAccount.SendItemText(itemTextId, mailOrItemId);
 		}
 
 		static bool CheckMailBox(Character chr, GameObject mailbox)
@@ -253,7 +252,7 @@ namespace WCell.RealmServer.Handlers
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_MAIL_LIST_RESULT, 128 * messages.Count))
 			{
-				const int EnchantCount = (int)EnchantSlot.Prismatic + 1;
+				const int enchantCount = (int)EnchantSlot.Prismatic + 1;
 
 				packet.Write(messages.Count);
 				var count = Math.Min(messages.Count, 0xFF);
@@ -262,6 +261,10 @@ namespace WCell.RealmServer.Handlers
 				for (var m = 0; m < count; m++)
 				{
 					var letter = messages[m];
+
+                    // Skip deleted mails
+                    if(letter.IsDeleted)
+                        continue;
 
 					var sizePos = packet.Position;
 					packet.Position = sizePos + 2; // size of message
@@ -291,7 +294,7 @@ namespace WCell.RealmServer.Handlers
 					}
 
 					packet.Write(letter.CashOnDelivery);
-					packet.Write(letter.TextId);
+					//packet.Write(letter.TextId);
 
 					packet.Write(0u);
 					packet.Write((uint) letter.MessageStationary);
@@ -315,7 +318,8 @@ namespace WCell.RealmServer.Handlers
 
 					packet.Write((float) ((letter.ExpireTime - DateTime.Now).TotalMilliseconds/(24*60*60*1000)));
 					packet.Write(0u);
-					packet.Write(letter.Subject);
+                    packet.Write(letter.Subject);
+                    packet.Write(letter.Body);
 
 					if (letter.IncludedItemCount == 0)
 					{
@@ -338,7 +342,7 @@ namespace WCell.RealmServer.Handlers
 
 								if (record.EnchantIds != null)
 								{
-									for (var j = 0; j < EnchantCount; ++j)
+									for (var j = 0; j < enchantCount; ++j)
 									{
 										var enchantId = record.EnchantIds[j];
 										if (enchantId != 0)
@@ -366,7 +370,7 @@ namespace WCell.RealmServer.Handlers
 								}
 								else
 								{
-									for (var j = 0; j < EnchantCount; ++j)
+									for (var j = 0; j < enchantCount; ++j)
 									{
 										packet.Write(0u);
 										packet.Write(0);
@@ -387,7 +391,7 @@ namespace WCell.RealmServer.Handlers
 								packet.Write(0u);
 								packet.Write(0u);
 
-								for (byte j = 0; j < EnchantCount; ++j)
+								for (byte j = 0; j < enchantCount; ++j)
 								{
 									packet.Write(0u);
 									packet.Write(0u);
@@ -449,15 +453,14 @@ namespace WCell.RealmServer.Handlers
 						case MailType.Auction:
 							packet.Write(2u);
 							packet.Write(2u);
-							packet.Write((uint)letter.MessageStationary);
 							break;
 						default:
 							packet.Write(0u);
 							packet.Write(0u);
-							packet.Write((uint)letter.MessageStationary);
 							break;
 					}
-					packet.Write(-9f); // what does this represent ??
+					packet.Write((uint)letter.MessageStationary);
+					packet.Write(0xC6000000u); // what does this represent ??
 				}
 				client.Send(packet);
 			}

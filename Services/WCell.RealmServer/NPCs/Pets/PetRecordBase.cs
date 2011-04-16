@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,9 +16,6 @@ namespace WCell.RealmServer.NPCs.Pets
 		[Field("OwnerLowId", NotNull = true)]
 		protected int _OwnerLowId;
 
-		[Field("EntryId", NotNull = true)]
-		protected int _EntryId;
-
 		[Field("NameTimeStamp")]
 		protected int _NameTimeStamp;
 
@@ -31,11 +28,10 @@ namespace WCell.RealmServer.NPCs.Pets
 		[Field("PetFlags", NotNull = true)]
 		protected int _petFlags;
 
-		private PetActionEntry[] m_Actions;
-		private uint[] m_savedActions;
+		private uint[] m_ActionButtons;
 
-		[PrimaryKey(PrimaryKeyType.Native)]
-		int Guid
+		[PrimaryKey(PrimaryKeyType.Assigned, "EntryId")]
+		int _EntryId
 		{
 			get;
 			set;
@@ -47,13 +43,7 @@ namespace WCell.RealmServer.NPCs.Pets
 			set { _OwnerLowId = (int)value; }
 		}
 
-	    public virtual PetType Type
-	    {
-	        get { return PetType.None; }
-	        set { }
-	    }
-
-	    public NPCId EntryId
+		public NPCId EntryId
 		{
 			get { return (NPCId)_EntryId; }
 			set { _EntryId = (int)value; }
@@ -91,48 +81,6 @@ namespace WCell.RealmServer.NPCs.Pets
 			set { _NameTimeStamp = (int)value; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		[Property(NotNull = true)]
-		public uint[] SavedActions
-		{
-			get { return m_savedActions; }
-			set
-			{
-				m_savedActions = value;
-				m_Actions = new PetActionEntry[value.Length];
-				for (var i = 0; i < value.Length; i++)
-				{
-					var action = value[i];
-					m_Actions[i] = action;
-				}
-			}
-		}
-
-		public PetActionEntry[] Actions
-		{
-			get { return m_Actions; }
-			set
-			{
-				m_Actions = value;
-				CopySavedActions();
-			}
-		}
-
-		void CopySavedActions()
-		{
-			if (m_savedActions == null)
-			{
-				m_savedActions = new uint[m_Actions.Length];
-			}
-			for (var i = 0; i < m_Actions.Length; i++)
-			{
-				var action = m_Actions[i];
-				m_savedActions[i] = action;
-			}
-		}
-
 		public PetState PetState
 		{
 			get { return (PetState)(_PetState); }
@@ -153,7 +101,7 @@ namespace WCell.RealmServer.NPCs.Pets
 
 		public bool IsStabled
 		{
-            get { return Flags.HasFlag(PetFlags.Stabled); }
+			get { return Flags.HasFlag(PetFlags.Stabled); }
 			set
 			{
 				if (value)
@@ -178,9 +126,20 @@ namespace WCell.RealmServer.NPCs.Pets
 			internal set;
 		}
 
-		public override void Save()
+		/// <summary>
+		/// 
+		/// </summary>
+		[Property(NotNull = true)]
+		public uint[] ActionButtons
 		{
-			base.Save();
+			get { return m_ActionButtons; }
+			set { m_ActionButtons = value; }
+		}
+
+		#region Create / Setup / Update
+		public override void Create()
+		{
+			base.Create();
 			IsDirty = false;
 		}
 
@@ -198,7 +157,7 @@ namespace WCell.RealmServer.NPCs.Pets
 			}
 
 			pet.PetState = PetState;
-			IsDirty = true;
+			// IsDirty = true;		// save after load?
 		}
 
 		public virtual void UpdateRecord(NPC pet)
@@ -210,8 +169,8 @@ namespace WCell.RealmServer.NPCs.Pets
 			}
 			PetState = pet.PetState;
 			EntryId = (NPCId)pet.EntryId;
-			CopySavedActions();
 			IsDirty = true;
 		}
+		#endregion
 	}
 }

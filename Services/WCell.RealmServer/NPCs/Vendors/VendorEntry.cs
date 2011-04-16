@@ -6,6 +6,7 @@ using WCell.Core;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Items;
+using WCell.Util;
 
 namespace WCell.RealmServer.NPCs.Vendors
 {
@@ -210,7 +211,7 @@ namespace WCell.RealmServer.NPCs.Vendors
 			InventoryError err;
 			if (inv.IsValidSlot(slot))
 			{
-				err = inv.TryAdd(item.Template, ref amount, slot, true);
+				err = inv.TryAdd(item.Template, ref amount, slot);
 			}
 			else
 			{
@@ -272,7 +273,7 @@ namespace WCell.RealmServer.NPCs.Vendors
 
 		private bool CheckVendorInteraction(Character chr)
 		{
-			if (!NPC.CanInteractWith(chr))
+			if (!NPC.CheckVendorInteraction(chr))
 				return false;
 
 			// Remove illegal Auras for vendor interaction
@@ -471,5 +472,10 @@ namespace WCell.RealmServer.NPCs.Vendors
 		//    }
 		//    return listDict;
 		//}
+
+		public override string ToString()
+		{
+			return Utility.GetStringRepresentation(ItemsForSale);
+		}
 	}
 }

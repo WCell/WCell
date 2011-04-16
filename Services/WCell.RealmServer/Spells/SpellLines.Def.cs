@@ -8,14 +8,14 @@ using WCell.Constants.Spells;
 
 namespace WCell.RealmServer.Spells
 {
-	public static partial class SpellLines 
-	{
-		private static void SetupSpellLines()
-		{
-			SpellLine[] lines;
+    public static partial class SpellLines
+    {
+        private static void SetupSpellLines()
+        {
+            SpellLine[] lines;
 
-			#region Other (105)
-			lines = new SpellLine[]
+            #region Other (105)
+            lines = new SpellLine[]
 			{
 				new SpellLine(SpellLineId.ProfessionFindHerbs, 
 					SpellHandler.Get(SpellId.ProfessionFindHerbsRank2)),
@@ -261,11 +261,11 @@ namespace WCell.RealmServer.Spells
 				new SpellLine(SpellLineId.PathOfFrost, 
 					SpellHandler.Get(SpellId.ClassSkillPathOfFrost))};
 
-			AddSpellLines((ClassId)0, lines);
-			#endregion
+            AddSpellLines((ClassId)0, lines);
+            #endregion
 
-			#region Warrior (124)
-			lines = new SpellLine[]
+            #region Warrior (124)
+            lines = new SpellLine[]
 			{
 				new SpellLine(SpellLineId.WarriorArmsTwoHandedWeaponSpecialization, 
 					SpellHandler.Get(SpellId.WarriorArmsTwoHandedWeaponSpecializationRank1),
@@ -659,11 +659,11 @@ namespace WCell.RealmServer.Spells
 				new SpellLine(SpellLineId.WarriorSpellReflection, 
 					SpellHandler.Get(SpellId.ClassSkillSpellReflection))};
 
-			AddSpellLines(ClassId.Warrior , lines);
-			#endregion
+            AddSpellLines(ClassId.Warrior, lines);
+            #endregion
 
-			#region Paladin (122)
-			lines = new SpellLine[]
+            #region Paladin (122)
+            lines = new SpellLine[]
 			{
 				new SpellLine(SpellLineId.PaladinHolyHolyPower, 
 					SpellHandler.Get(SpellId.PaladinHolyHolyPowerRank1),
@@ -1043,11 +1043,11 @@ namespace WCell.RealmServer.Spells
 				new SpellLine(SpellLineId.PaladinWarhorseSummon, 
 					SpellHandler.Get(SpellId.ClassSkillWarhorseSummon))};
 
-			AddSpellLines(ClassId.Paladin , lines);
-			#endregion
+            AddSpellLines(ClassId.Paladin, lines);
+            #endregion
 
-			#region Hunter (104)
-			lines = new SpellLine[]
+            #region Hunter (104)
+            lines = new SpellLine[]
 			{
 				new SpellLine(SpellLineId.HunterSurvivalSavageStrikes, 
 					SpellHandler.Get(SpellId.HunterSurvivalSavageStrikesRank1),
@@ -1357,11 +1357,11 @@ namespace WCell.RealmServer.Spells
 				new SpellLine(SpellLineId.HunterKillCommand, 
 					SpellHandler.Get(SpellId.ClassSkillKillCommand))};
 
-			AddSpellLines(ClassId.Hunter , lines);
-			#endregion
+            AddSpellLines(ClassId.Hunter, lines);
+            #endregion
 
-			#region Rogue (81)
-			lines = new SpellLine[]
+            #region Rogue (81)
+            lines = new SpellLine[]
 			{
 				new SpellLine(SpellLineId.RogueCombatPrecision, 
 					SpellHandler.Get(SpellId.RogueCombatPrecisionRank1),
@@ -1605,11 +1605,11 @@ namespace WCell.RealmServer.Spells
 				new SpellLine(SpellLineId.RogueShiv, 
 					SpellHandler.Get(SpellId.ClassSkillShiv))};
 
-			AddSpellLines(ClassId.Rogue , lines);
-			#endregion
+            AddSpellLines(ClassId.Rogue, lines);
+            #endregion
 
-			#region Priest (86)
-			lines = new SpellLine[]
+            #region Priest (86)
+            lines = new SpellLine[]
 			{
 				new SpellLine(SpellLineId.PriestDisciplineMentalAgility, 
 					SpellHandler.Get(SpellId.PriestDisciplineMentalAgilityRank1),
@@ -1857,11 +1857,11 @@ namespace WCell.RealmServer.Spells
 				new SpellLine(SpellLineId.PriestFlashHeal, 
 					SpellHandler.Get(SpellId.ClassSkillFlashHeal))};
 
-			AddSpellLines(ClassId.Priest , lines);
-			#endregion
+            AddSpellLines(ClassId.Priest, lines);
+            #endregion
 
-			#region DeathKnight (141)
-			lines = new SpellLine[]
+            #region DeathKnight (141)
+            lines = new SpellLine[]
 			{
 				new SpellLine(SpellLineId.DeathKnightUnholyVirulence, 
 					SpellHandler.Get(SpellId.DeathKnightUnholyVirulenceRank1),
@@ -2277,11 +2277,11 @@ namespace WCell.RealmServer.Spells
 				new SpellLine(SpellLineId.DeathKnightRuneOfTheNerubianCarapace, 
 					SpellHandler.Get(SpellId.ClassSkillRuneOfTheNerubianCarapace))};
 
-			AddSpellLines(ClassId.DeathKnight , lines);
-			#endregion
+            AddSpellLines(ClassId.DeathKnight, lines);
+            #endregion
 
-			#region Shaman (90)
-			lines = new SpellLine[]
+            #region Shaman (90)
+            lines = new SpellLine[]
 			{
 				new SpellLine(SpellLineId.ShamanElementalConcussion, 
 					SpellHandler.Get(SpellId.ShamanElementalConcussionRank1),
@@ -2555,11 +2555,11 @@ namespace WCell.RealmServer.Spells
 				new SpellLine(SpellLineId.ShamanHeroism, 
 					SpellHandler.Get(SpellId.ClassSkillHeroism))};
 
-			AddSpellLines(ClassId.Shaman , lines);
-			#endregion
+            AddSpellLines(ClassId.Shaman, lines);
+            #endregion
 
-			#region Mage (78)
-			lines = new SpellLine[]
+            #region Mage (78)
+            lines = new SpellLine[]
 			{
 				new SpellLine(SpellLineId.MageFireMoltenShields, 
 					SpellHandler.Get(SpellId.MageFireMoltenShieldsRank1),
@@ -2753,11 +2753,11 @@ namespace WCell.RealmServer.Spells
 				new SpellLine(SpellLineId.MagePortalDalaran, 
 					SpellHandler.Get(SpellId.ClassSkillPortalDalaran))};
 
-			AddSpellLines(ClassId.Mage, lines);
-			#endregion
+            AddSpellLines(ClassId.Mage, lines);
+            #endregion
 
-			#region Warlock (105)
-			lines = new SpellLine[]
+            #region Warlock (105)
+            lines = new SpellLine[]
 			{
 				new SpellLine(SpellLineId.WarlockDestructionCataclysm, 
 					SpellHandler.Get(SpellId.WarlockDestructionCataclysmRank1),
@@ -3060,11 +3060,11 @@ namespace WCell.RealmServer.Spells
 				new SpellLine(SpellLineId.WarlockIncinerate, 
 					SpellHandler.Get(SpellId.ClassSkillIncinerate))};
 
-			AddSpellLines(ClassId.Warlock, lines);
-			#endregion
+            AddSpellLines(ClassId.Warlock, lines);
+            #endregion
 
-			#region Druid (118)
-			lines = new SpellLine[]
+            #region Druid (118)
+            lines = new SpellLine[]
 			{
 				new SpellLine(SpellLineId.DruidBalanceStarlightWrath, 
 					SpellHandler.Get(SpellId.DruidBalanceStarlightWrathRank1),
@@ -3401,12 +3401,11 @@ namespace WCell.RealmServer.Spells
 				new SpellLine(SpellLineId.DruidFlightFormShapeshift, 
 					SpellHandler.Get(SpellId.ClassSkillFlightFormShapeshift))};
 
-			AddSpellLines(ClassId.Druid, lines);
-			#endregion
+            AddSpellLines(ClassId.Druid, lines);
+            #endregion
 
-		}
+        }
 
-	}
+    }
 
 }
-

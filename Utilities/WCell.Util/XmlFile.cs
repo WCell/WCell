@@ -233,7 +233,14 @@ namespace WCell.Util
 			var ser = new XmlSerializer(typeof(T));
 			using (var rdr = XmlReader.Create(filename))
 			{
-				cfg = (T)ser.Deserialize(rdr);
+				try
+				{
+					cfg = (T) ser.Deserialize(rdr);
+				}
+				catch (Exception e)
+				{
+					throw new Exception("Failed to read XML file: " + filename, e);
+				}
 			}
 			cfg.FileName = filename;
 			(((XmlFile<T>)(XmlFileBase)cfg)).OnLoad();

@@ -143,9 +143,9 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Castle.ActiveRecord, Version=1.0.3.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+    <Reference Include="Castle.ActiveRecord, Version=2.1.2.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Libraries\Source\Castle\bin\Castle.ActiveRecord.dll</HintPath>
+      <HintPath>..\..\Libraries\Binaries\Castle.ActiveRecord\Castle.ActiveRecord.dll</HintPath>
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.85.5.452, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -192,34 +192,54 @@
     <Compile Include="Domi\Output\ATOutput.cs" />
     <Compile Include="Domi\Output\QuestOutput.cs" />
     <Compile Include="Commands\DumpCommands.cs" />
-    <Compile Include="Maps\Extensions.cs" />
-    <Compile Include="Maps\HeightMapExtractor.cs" />
+    <Compile Include="Maps\Parsing\WMO\Components\DoodadSet.cs" />
+    <Compile Include="Maps\Parsing\WMO\Components\Fog.cs" />
+    <Compile Include="Maps\Parsing\WMO\Components\GroupHeader.cs" />
+    <Compile Include="Maps\Parsing\WMO\Components\GroupInformation.cs" />
+    <Compile Include="Maps\Parsing\WMO\Components\LightInformation.cs" />
+    <Compile Include="Maps\Parsing\WMO\Components\LiquidInfo.cs" />
+    <Compile Include="Maps\Parsing\WMO\Components\MapPoly.cs" />
+    <Compile Include="Maps\Parsing\WMO\Components\PortalInformation.cs" />
+    <Compile Include="Maps\Parsing\WMO\Components\PortalRelation.cs" />
+    <Compile Include="Maps\Parsing\WMO\Components\RenderBatch.cs" />
+    <Compile Include="Maps\Parsing\WMO\Components\RootHeader.cs" />
+    <Compile Include="Maps\Parsing\WMO\Components\WMOGroupFlags.cs" />
+    <Compile Include="Maps\Structures\Index3.cs" />
+    <Compile Include="Maps\Utils\Extensions.cs" />
+    <Compile Include="Maps\MapTileExtractor.cs" />
+    <Compile Include="Maps\Parsing\ADT\ADT.cs" />
+    <Compile Include="Maps\Parsing\ADT\ADTChunk.cs" />
+    <Compile Include="Maps\Parsing\ADT\ADTChunkParser.cs" />
+    <Compile Include="Maps\Parsing\ADT\Components\MapChunkHeader.cs" />
+    <Compile Include="Maps\Parsing\ADT\Components\MapVertices.cs" />
+    <Compile Include="Maps\Structures\Color4.cs" />
+    <Compile Include="Maps\Parsing\M2s\M2.cs" />
+    <Compile Include="Maps\Structures\OffsetLocation.cs" />
+    <Compile Include="Maps\Constants\TerrainConstants.cs" />
+    <Compile Include="Maps\Structures\VertexSpan.cs" />
+    <Compile Include="Maps\Parsing\WMO\WMO.cs" />
+    <Compile Include="Maps\Utils\MathHelper.cs" />
     <Compile Include="Maps\WorldObjectExtractor.cs" />
-    <Compile Include="Maps\Parsing\ADT\ADTFile.cs" />
     <Compile Include="Maps\Parsing\ADT\ADTParser.cs" />
     <Compile Include="Maps\Parsing\ADT\Components\MapChunkInfo.cs" />
     <Compile Include="Maps\Parsing\ADT\Components\MapDoodadDefinition.cs" />
     <Compile Include="Maps\Parsing\ADT\Components\MapHeader.cs" />
     <Compile Include="Maps\Parsing\ADT\Components\MapObjectDefinition.cs" />
-    <Compile Include="Maps\Parsing\ADT\Components\MCNK.cs" />
-    <Compile Include="Maps\Parsing\ADT\Components\MCVT.cs" />
     <Compile Include="Maps\Parsing\ADT\Components\MH2O.cs" />
-    <Compile Include="Maps\Parsing\DBCMapEntry.cs" />
+    <Compile Include="Maps\Structures\DBCMapEntry.cs" />
     <Compile Include="Maps\Parsing\M2s\Components\ModelHeader.cs" />
     <Compile Include="Maps\Parsing\M2s\Components\ModelVertices.cs" />
     <Compile Include="Maps\Parsing\M2s\M2Model.cs" />
     <Compile Include="Maps\Parsing\M2s\M2ModelParser.cs" />
     <Compile Include="Maps\Parsing\WDT\WDTFile.cs" />
     <Compile Include="Maps\Parsing\WDT\WDTParser.cs" />
-    <Compile Include="Maps\Parsing\WMO\Components\BSPNode.cs" />
+    <Compile Include="Maps\Structures\BSPNode.cs" />
     <Compile Include="Maps\Parsing\WMO\Components\DoodadDefinition.cs" />
-    <Compile Include="Maps\Parsing\WMO\Components\MOPY.cs" />
-    <Compile Include="Maps\Parsing\WMO\Components\Portals.cs" />
     <Compile Include="Maps\Parsing\WMO\WMOGroup.cs" />
     <Compile Include="Maps\Parsing\WMO\WMOGroupParser.cs" />
     <Compile Include="Maps\Parsing\WMO\WMORoot.cs" />
     <Compile Include="Maps\Parsing\WMO\WMORootParser.cs" />
-    <Compile Include="Maps\RegionBoundaryUtil.cs" />
+    <Compile Include="Maps\MapBoundaryUtil.cs" />
     <Compile Include="Domi\WCellEnumWriter.cs" />
     <Compile Include="Domi\Output\ClassesRaces.cs" />
     <Compile Include="Domi\Output\GOOutput.cs" />
@@ -227,12 +247,14 @@
     <Compile Include="Domi\Output\MiscOutput.cs" />
     <Compile Include="Domi\Output\NPCOutput.cs" />
     <Compile Include="Domi\Output\TalentOutput.cs" />
-    <Compile Include="Maps\RegionBoundaryWriter.cs" />
-    <Compile Include="Maps\Parsing\Signatures.cs" />
+    <Compile Include="Maps\MapBoundaryWriter.cs" />
+    <Compile Include="Maps\Structures\Signatures.cs" />
     <Compile Include="Maps\ObjectFileReader.cs" />
     <Compile Include="Maps\ZoneTileSetReader.cs" />
     <Compile Include="Maps\ZoneGridWriter.cs" />
+    <Compile Include="Misc\LineConverter.cs" />
     <Compile Include="Mokrago\CombatRatingsOutput.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Spells\SpellEffectCreator.cs" />
     <Compile Include="Domi\Output\SkillOutput.cs" />
     <Compile Include="Domi\Output\SpellOutput.cs" />
@@ -273,47 +295,42 @@
     <ProjectReference Include="..\..\Core\Cell.Core\Cell.Core.csproj">
       <Project>{71AB07AD-4D94-4693-8560-47862E5B6E61}</Project>
       <Name>Cell.Core</Name>
-	  <Private>False</Private>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Core\WCell.Constants\WCell.Constants.csproj">
       <Project>{42F497A4-0347-491D-8FA8-50E4D8AD19EB}</Project>
       <Name>WCell.Constants</Name>
-	  <Private>False</Private>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Core\WCell.Core\WCell.Core.csproj">
       <Project>{EEA9DEB6-8EA6-46F1-B1B7-AB38D8BBCA6C}</Project>
       <Name>WCell.Core</Name>
-	  <Private>False</Private>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Core\WCell.Intercommunication\WCell.Intercommunication.csproj">
       <Project>{5997613F-D2A5-4B86-BEE2-C823BC07D5AF}</Project>
       <Name>WCell.Intercommunication</Name>
-	  <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Libraries\Source\NHibernate\NHibernate-3.5.csproj">
-      <Project>{5909BFE7-93CF-4E5F-BE22-6293368AF01D}</Project>
-      <Name>NHibernate-3.5</Name>
-	  <Private>False</Private>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Services\WCell.RealmServer\WCell.RealmServer.csproj">
       <Project>{A38FAA6D-86B5-4429-85D0-BC93EB5E2C56}</Project>
       <Name>WCell.RealmServer</Name>
-	  <Private>False</Private>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\WCell.MPQTool\WCell.MPQTool.csproj">
       <Project>{5F96293A-1276-4515-8048-EBC49CD81D71}</Project>
       <Name>WCell.MPQTool</Name>
-	  <Private>False</Private>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\WCell.PacketAnalyzer\WCell.PacketAnalyzer.csproj">
       <Project>{65B2B094-13BB-4685-95AD-402FC9A4473A}</Project>
       <Name>WCell.PacketAnalyzer</Name>
-	  <Private>False</Private>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\WCell.Util\WCell.Util.csproj">
       <Project>{F753AF28-A251-4C12-9335-07E8236184F2}</Project>
       <Name>WCell.Util</Name>
-	  <Private>False</Private>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

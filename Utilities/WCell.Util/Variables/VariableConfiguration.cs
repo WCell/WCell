@@ -14,9 +14,9 @@ using System.Threading;
 
 namespace WCell.Util.Variables
 {
-	public abstract class VariableConfiguration<C, T> : VariableConfiguration<T>
-		where C : VariableConfiguration<T>
-		where T : TypeVariableDefinition, new()
+	public abstract class VariableConfiguration<C, V> : VariableConfiguration<V>
+		where C : VariableConfiguration<V>
+		where V : TypeVariableDefinition, new()
 	{
 		protected VariableConfiguration(Action<string> onError)
 			: base(onError)
@@ -24,8 +24,8 @@ namespace WCell.Util.Variables
 		}
 	}
 
-	public class VariableConfiguration<T> : IConfiguration
-		where T : TypeVariableDefinition, new()
+	public class VariableConfiguration<V> : IConfiguration
+		where V : TypeVariableDefinition, new()
 	{
 		private static readonly Logger log = LogManager.GetCurrentClassLogger();
 		protected string RootNodeName = "Config";
@@ -39,19 +39,19 @@ namespace WCell.Util.Variables
 		/// Holds an array of static variable fields
 		/// </summary>
 		[XmlIgnore]
-		public readonly Dictionary<string, T> Definitions;
+		public readonly Dictionary<string, V> Definitions;
 
 		[XmlIgnore]
-		public readonly Dictionary<string, T> ByFullName =
-			new Dictionary<string, T>(StringComparer.InvariantCultureIgnoreCase);
+		public readonly Dictionary<string, V> ByFullName =
+			new Dictionary<string, V>(StringComparer.InvariantCultureIgnoreCase);
 
 		[XmlIgnore]
-		public Action<T> VariableDefinintionInitializor = DefaultDefinitionInitializor;
+		public Action<V> VariableDefinintionInitializor = DefaultDefinitionInitializor;
 
 		public VariableConfiguration(Action<string> onError)
 		{
 			Tree = new StringTree<TypeVariableDefinition>(onError, "\t", '.');
-			Definitions = new Dictionary<string, T>(StringComparer.InvariantCultureIgnoreCase);
+			Definitions = new Dictionary<string, V>(StringComparer.InvariantCultureIgnoreCase);
 			AutoSave = true;
 		}
 
@@ -173,6 +173,7 @@ namespace WCell.Util.Variables
 			Save(true, false);
 		}
 
+		#region Save
 		public virtual void Save(bool backupFirst, bool auto)
 		{
 			try
@@ -250,15 +251,17 @@ namespace WCell.Util.Variables
 				File.WriteAllBytes(FilePath, stream.ToArray());
 			}
 		}
+		#endregion
 
-		public static void DefaultDefinitionInitializor(T def)
+		public static void DefaultDefinitionInitializor(V def)
 		{
 			// do nothing
 		}
 
+		#region Get
 		public object Get(string name)
 		{
-			T def;
+			V def;
 			if (Definitions.TryGetValue(name, out def))
 			{
 				return def.Value;
@@ -266,16 +269,18 @@ namespace WCell.Util.Variables
 			return null;
 		}
 
-		public T GetDefinition(string name)
+		public V GetDefinition(string name)
 		{
-			T def;
+			V def;
 			Definitions.TryGetValue(name, out def);
 			return def;
 		}
+		#endregion
 
+		#region Set
 		public bool Set(string name, object value)
 		{
-			T def;
+			V def;
 			if (Definitions.TryGetValue(name, out def))
 			{
 				def.Value = value;
@@ -286,17 +291,19 @@ namespace WCell.Util.Variables
 
 		public bool Set(string name, string value)
 		{
-			T def;
+			V def;
 			if (Definitions.TryGetValue(name, out def))
 			{
 				return def.TrySet(value);
 			}
 			return false;
 		}
+		#endregion
 
-		public T CreateDefinition(string name, MemberInfo member, bool serialized, bool readOnly)
+		#region Create & Add
+		public V CreateDefinition(string name, MemberInfo member, bool serialized, bool readOnly)
 		{
-			var def = new T { Name = name, Member = member, Serialized = serialized, IsReadOnly = readOnly };
+			var def = new V { Name = name, Member = member, Serialized = serialized, IsReadOnly = readOnly };
 			VariableDefinintionInitializor(def);
 			return def;
 		}
@@ -328,6 +335,7 @@ namespace WCell.Util.Variables
 				}
 			}
 		}
+		#endregion
 
 		public void Foreach(Action<IVariableDefinition> callback)
 		{
@@ -356,7 +364,8 @@ namespace WCell.Util.Variables
 					((memberType = member.GetVariableType()).IsSimpleType() ||
 					readOnly ||
 					memberType.IsArray ||
-					memberType.GetInterface(TypeVariableDefinition.GenericListType.Name) != null))
+					memberType.GetInterface(TypeVariableDefinition.GenericListType.Name) != null ||
+					memberType.GetInterface(typeof(IXmlSerializable).Name) != null))
 				{
 					string name;
 					var serialized = VariableAttribute.DefaultSerialized && !readOnly;
@@ -377,14 +386,14 @@ namespace WCell.Util.Variables
 				{
 					throw new Exception(string.Format(
 						"public static member \"{0}\" has VariableAttribute but invalid type.",
-						member.GetMemberName()));
+						member.GetFullMemberName()));
 				}
 			}
 		}
 
-		public T Add(string name, MemberInfo member, bool serialized, bool readOnly)
+		public V Add(string name, MemberInfo member, bool serialized, bool readOnly)
 		{
-			T existingDef;
+			V existingDef;
 			if (Definitions.TryGetValue(name, out existingDef))
 			{
 				throw new AmbiguousMatchException("Found Variable with name \"" + name + "\" twice (" + existingDef + "). " +
@@ -400,7 +409,7 @@ namespace WCell.Util.Variables
 			return def;
 		}
 
-		public void Add(T def, bool serialize)
+		public void Add(V def, bool serialize)
 		{
 			Definitions.Add(def.Name, def);
 			ByFullName.Add(def.FullName, def);

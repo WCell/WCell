@@ -1,26 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
+using NLog;
 using WCell.MPQTool;
+using WCell.Tools.Maps.Parsing.M2s.Components;
+using WCell.Tools.Maps.Structures;
+using WCell.Tools.Maps.Utils;
 using WCell.Util.Graphics;
 
-namespace WCell.Tools.Maps
+namespace WCell.Tools.Maps.Parsing.M2s
 {
     public class M2ModelParser
     {
-        public static M2Model Process(MpqManager manager, string fileName)
+        private static readonly Logger log = LogManager.GetCurrentClassLogger();
+
+        public static M2Model Process(MpqManager mpqManager, string filePath)
         {
-            if (!manager.FileExists(fileName))
+            if (!mpqManager.FileExists(filePath))
             {
-                throw new Exception("File does not exist: " + fileName);
+                var altFilePath = Path.ChangeExtension(filePath, ".m2");
+                if (!mpqManager.FileExists(altFilePath))
+                {
+                    log.Error("M2 file does not exist: ", altFilePath);
+                }
+
+                filePath = altFilePath;
             }
 
             var model = new M2Model();
 
-            using (var fs = manager.OpenFile(fileName))
-            using (var br = new BinaryReader(fs))
+            using (var br = new BinaryReader(mpqManager.OpenFile(filePath)))
             {
                 ReadHeader(br, model);
                 ReadGlobalSequences(br, model);
@@ -58,6 +65,7 @@ namespace WCell.Tools.Maps
                 }
             }
 
+            model.FilePath = filePath;
             return model;
         }
 
@@ -69,7 +77,7 @@ namespace WCell.Tools.Maps
             header.Version = br.ReadUInt32();
             header.NameLength = br.ReadInt32();
             header.NameOffset = br.ReadInt32();
-            header.GlobalModelFlags = (GlobalModelFlags)br.ReadUInt32();
+            header.GlobalModelFlags = (GlobalModelFlags) br.ReadUInt32();
 
             br.ReadOffsetLocation(ref header.GlobalSequences);
             br.ReadOffsetLocation(ref header.Animations);
@@ -143,26 +151,26 @@ namespace WCell.Tools.Maps
         }
         static void ReadVertices(BinaryReader br, M2Model model)
         {
-            var vertInfo = model.Header.Vertices;
+            //var vertInfo = model.Header.Vertices;
 
-            model.Vertices = new ModelVertices[vertInfo.Count];
+            //model.Vertices = new ModelVertices[vertInfo.Count];
 
-            br.BaseStream.Position = vertInfo.Offset;
-            for (int i = 0; i < vertInfo.Count; i++)
-            {
-                var mv = new ModelVertices
-                {
-                    Position = br.ReadVector3(),
-                    BoneWeight = br.ReadBytes(4),
-                    BoneIndices = br.ReadBytes(4),
-                    Normal = br.ReadVector3(),
-                    TextureCoordinates = br.ReadVector2(),
-                    Float_1 = br.ReadSingle(),
-                    Float_2 = br.ReadSingle()
-                };
+            //br.BaseStream.Position = vertInfo.Offset;
+            //for (int i = 0; i < vertInfo.Count; i++)
+            //{
+            //    var mv = new ModelVertices
+            //                 {
+            //                     Position = br.ReadVector3(),
+            //                     BoneWeight = br.ReadBytes(4),
+            //                     BoneIndices = br.ReadBytes(4),
+            //                     Normal = br.ReadVector3(),
+            //                     TextureCoordinates = br.ReadVector2(),
+            //                     Float_1 = br.ReadSingle(),
+            //                     Float_2 = br.ReadSingle()
+            //                 };
 
-                model.Vertices[i] = mv;
-            }
+            //    model.Vertices[i] = mv;
+            //}
         }
         static void ReadColors(BinaryReader br, M2Model model)
         {
@@ -200,16 +208,18 @@ namespace WCell.Tools.Maps
         static void ReadBoundingTriangles(BinaryReader br, M2Model model)
         {
             var btInfo = model.Header.BoundingTriangles;
-            model.BoundingTriangles = new ushort[btInfo.Count / 3][];
+            model.BoundingTriangles = new Index3[btInfo.Count/3];
 
             br.BaseStream.Position = btInfo.Offset;
 
             for (int i = 0; i < model.BoundingTriangles.Length; i++)
             {
-                model.BoundingTriangles[i] = new ushort[3];
-                model.BoundingTriangles[i][0] = br.ReadUInt16();
-                model.BoundingTriangles[i][1] = br.ReadUInt16();
-                model.BoundingTriangles[i][2] = br.ReadUInt16();
+                model.BoundingTriangles[i] = new Index3 {
+                                                            Index2 = br.ReadInt16(),
+                                                            Index1 = br.ReadInt16(),
+                                                            Index0 = br.ReadInt16()
+                                                        };
+                
             }
         }
         static void ReadBoundingVertices(BinaryReader br, M2Model model)
@@ -219,22 +229,22 @@ namespace WCell.Tools.Maps
             model.BoundingVertices = new Vector3[bvInfo.Count];
             br.BaseStream.Position = bvInfo.Offset;
 
-            for (int i = 0; i < bvInfo.Count; i++)
+            for (var i = 0; i < bvInfo.Count; i++)
             {
                 model.BoundingVertices[i] = br.ReadVector3();
             }
         }
         static void ReadBoundingNormals(BinaryReader br, M2Model model)
         {
-            var bnInfo = model.Header.BoundingVertices;
+            //var bnInfo = model.Header.BoundingVertices;
 
-            model.BoundingNormals = new Vector3[bnInfo.Count];
-            br.BaseStream.Position = bnInfo.Offset;
+            //model.BoundingNormals = new Vector3[bnInfo.Count];
+            //br.BaseStream.Position = bnInfo.Offset;
 
-            for (int i = 0; i < bnInfo.Count; i++)
-            {
-                model.BoundingNormals[i] = br.ReadVector3();
-            }
+            //for (var i = 0; i < bnInfo.Count; i++)
+            //{
+            //    model.BoundingNormals[i] = br.ReadVector3();
+            //}
         }
         static void ReadAttachments(BinaryReader br, M2Model model)
         {

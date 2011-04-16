@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using WCell.RealmServer.Entities;
 using WCell.Util;
 
 namespace WCell.RealmServer.Spells.Effects
@@ -14,10 +15,12 @@ namespace WCell.RealmServer.Spells.Effects
 
         public override void Apply()
         {
-            var numTalentGroups = Effect.BasePoints + 1;
-            if (Cast.CasterChar.SpecProfile != null)
+			var numTalentGroups = Effect.BasePoints + 1;
+			var target = Cast.CasterObject as Character;
+
+			if (target != null)
             {
-                Cast.CasterChar.SpecProfile.TalentGroupCount = numTalentGroups;
+				target.Talents.SpecProfileCount = numTalentGroups;
             }
         }
     }

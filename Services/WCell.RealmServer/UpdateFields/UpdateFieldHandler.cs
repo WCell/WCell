@@ -16,6 +16,7 @@
 
 using System;
 using WCell.Constants;
+using WCell.Constants.GameObjects;
 using WCell.Constants.Updates;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Entities;
@@ -118,7 +119,25 @@ namespace WCell.RealmServer.UpdateFields
 
 		private static void WriteGODynamic(ObjectBase obj, Character receiver, UpdatePacket packet)
 		{
-			packet.Write(obj.GetUInt32(GameObjectFields.DYNAMIC));
+			var go = (GameObject)obj;
+			if (go is Transport || !go.Flags.HasAnyFlag(GameObjectFlags.ConditionalInteraction))
+			{
+				packet.Write(obj.GetUInt32(GameObjectFields.DYNAMIC));
+			}
+			else
+			{
+				GODynamicLowFlags lowFlags;
+				if (go.CanBeUsedBy(receiver))
+				{
+					lowFlags = GODynamicLowFlags.Clickable | GODynamicLowFlags.Sparkle;
+				}
+				else
+				{
+					lowFlags = GODynamicLowFlags.None;
+				}
+				packet.Write((ushort)lowFlags);
+				packet.Write(ushort.MaxValue);
+			}
 		}
 
 		private static void WriteUnitDynFlags(ObjectBase obj, Character receiver, UpdatePacket packet)
@@ -128,7 +147,7 @@ namespace WCell.RealmServer.UpdateFields
 			var flags = unit.DynamicFlags;
 
 			var loot = obj.Loot;
-			if (loot != null && receiver.LooterEntry.MayLoot(loot))
+			if (loot != null && receiver.LooterEntry.MayLoot(loot) && !unit.IsAlive)
 			{
 				flags |= UnitDynamicFlags.Lootable;
 			}

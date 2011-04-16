@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -76,7 +76,7 @@ namespace WCell.Addons.Default.Samples
 				//    attacker => attacker.SpellCast.Start(SpellId.ClassSkillBackstabRank1, false, killer));
 
 				// cast some AoE spell (ignoring all restrictions)
-				ambusher.SpellCast.Trigger(SpellId.ClassSkillFrostNovaRank6);
+				ambusher.SpellCast.Trigger(SpellId.ClassSkillFrostNova);
 
 				// Is now friendly with everyone
 				ambusher.FactionId = FactionId.Friendly;
@@ -106,7 +106,7 @@ namespace WCell.Addons.Default.Samples
 		{
 			if (killer.IsInWorld &&
 						killer.IsAlive &&
-						killer.Region == ambusher.Region &&
+						killer.Map == ambusher.Map &&
 						killer.IsInRadius(ambusher, MaxForgivenessDistance))
 			{
 				// make sure we are using the right means of transportation
@@ -146,9 +146,10 @@ namespace WCell.Addons.Default.Samples
 				var chr = (Character)chatter;
 				var selected = chr.Target as NPC;
 				if (selected != null &&
+					selected.FactionId == FactionId.Friendly &&							// Ambusher is frienddly
+					selected.FirstAttacker == chr &&									// Ambusher was tagged by Chr
 					selected.Entry.NPCId == NPCId.WitchwingAmbusher &&					// Chr selected the ambusher
 					(chatType == ChatMsgType.Say || chatType == ChatMsgType.Yell) &&	// Chr speaks out loud
-					selected.StandState == StandState.Kneeling &&						// Ambusher is kneeling
 					message == "I forgive thee!")										// Chr says the right words
 				{
 					if (!selected.IsInFrontOf(chr))

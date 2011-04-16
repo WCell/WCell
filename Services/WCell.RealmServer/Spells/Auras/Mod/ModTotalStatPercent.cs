@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  *   file		: ModIncreaseEnergyPercent.cs
  *   copyright		: (C) The WCell Team
@@ -20,9 +20,14 @@ using WCell.RealmServer.Modifiers;
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
 	/// <summary>
-	/// Same as ModStatPercent, but including item boni
+	/// Same as ModStatPercent, but including item bonuses
+	/// TODO: Include item bonuses
 	/// </summary>
 	public class ModTotalStatPercentHandler : ModStatPercentHandler
 	{
+		//protected override int GetStatValue(StatType stat)
+		//{
+			
+		//}
 	}
 };

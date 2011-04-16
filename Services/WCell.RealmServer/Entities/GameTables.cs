@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Written by Mokrago from the WCell team.
  * Please see the wiki article on my findings and more documentation.
  * 
@@ -11,7 +11,7 @@ using WCell.Constants;
 using WCell.Constants.Misc;
 using WCell.Core;
 using WCell.Core.DBC;
-using WCell.RealmServer.Localization;
+using WCell.RealmServer.Res;
 using WCell.Util.Variables;
 
 namespace WCell.RealmServer.Entities
@@ -137,7 +137,7 @@ namespace WCell.RealmServer.Entities
         /// </summary>
         /// <param name="level"></param>
         /// <param name="id"></param>
-        /// <returns>The modified value matching the format "XX crit rating for 1% chance"</returns>
+        /// <returns>The modified value matching the format "XX stat for 1% chance"</returns>
         public static float GetClassSpellCritChanceValue(int level, ClassId id)
         {
             var value = GetValuePerRating(ClassSpellCritChance, level, id);
@@ -146,7 +146,7 @@ namespace WCell.RealmServer.Entities
 
         /// <summary>
         /// Gets the modified value from the table ClassMeleeCritChance from the correct index.
-        /// Returns the modified value matching the format "XX rating for 1% chance"
+        /// Returns the modified value matching the format "XX stat for 1% chance"
         /// </summary>
         /// <param name="level"></param>
         /// <param name="id"></param>
@@ -170,7 +170,8 @@ namespace WCell.RealmServer.Entities
 
         /// <summary>
         /// Modifies the values from ClassSpellCritChance, ClassMeleeCritChance
-        /// to match the format of "XX rating for 1% chance"
+        /// to match the format of "XX stat for 1% chance"
+        /// TODO: Phase out use for optimization (use the unmodified value)
         /// </summary>
         /// <param name="level"></param>
         /// <param name="id"></param>
@@ -230,47 +231,47 @@ namespace WCell.RealmServer.Entities
 
         private static bool LoadGtBaseSpellCritChanceDBC()
         {
-            return LoadRatingChanceDBC(WCellDef.DBC_SPELLCRITBASE, out s_baseSpellCritChance);
+            return LoadRatingChanceDBC(WCellConstants.DBC_SPELLCRITBASE, out s_baseSpellCritChance);
         }
 
         private static bool LoadGtClassSpellCritChanceDBC()
         {
-            return LoadRatingChanceDBC(WCellDef.DBC_SPELLCRITCLASS, out s_classSpellCritChance);
+            return LoadRatingChanceDBC(WCellConstants.DBC_SPELLCRITCLASS, out s_classSpellCritChance);
         }
 
         private static bool LoadGtBaseMeleeCritChanceDBC()
         {
-            return LoadRatingChanceDBC(WCellDef.DBC_MELEECRITBASE, out s_baseMeleeCritChance);
+            return LoadRatingChanceDBC(WCellConstants.DBC_MELEECRITBASE, out s_baseMeleeCritChance);
         }
 
         private static bool LoadGtClassMeleeCritChanceDBC()
         {
-            return LoadRatingChanceDBC(WCellDef.DBC_MELEECRITCLASS, out s_classMeleeCritChance);
+            return LoadRatingChanceDBC(WCellConstants.DBC_MELEECRITCLASS, out s_classMeleeCritChance);
         }
 
         private static bool LoadGtClassHealthRegenPerSpiritDBC()
         {
-            return LoadRatingChanceDBC(WCellDef.DBC_REGENHPPERSPIRIT, out s_octHealthRegenPerSpirit);
+            return LoadRatingChanceDBC(WCellConstants.DBC_REGENHPPERSPIRIT, out s_octHealthRegenPerSpirit);
         }
 
         private static bool LoadGtClassManaRegenPerSpiritDBC()
         {
-            return LoadRatingChanceDBC(WCellDef.DBC_REGENMPPERSPIRIT, out s_octManaRegenPerSpirit);
+            return LoadRatingChanceDBC(WCellConstants.DBC_REGENMPPERSPIRIT, out s_octManaRegenPerSpirit);
         }
 
         private static bool LoadGtClassOCTHealthRegenDBC()
         {
-            return LoadRatingChanceDBC(WCellDef.DBC_OCTREGENHP, out s_octHealthRegen);
+            return LoadRatingChanceDBC(WCellConstants.DBC_OCTREGENHP, out s_octHealthRegen);
         }
 
         private static bool LoadGtClassOCTManaRegenDBC()
         {
-            return LoadRatingChanceDBC(WCellDef.DBC_OCTREGENMP, out s_octManaRegen);
+            return LoadRatingChanceDBC(WCellConstants.DBC_OCTREGENMP, out s_octManaRegen);
         }
 
         private static bool LoadGtBarberShopCostDBC(out float[] vals)
         {
-            string gtDbcPath = RealmServerConfiguration.GetDBCFile(WCellDef.DBC_BARBERSHOPCOST);
+            string gtDbcPath = RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_BARBERSHOPCOST);
 
             var dbcRdr = new ListDBCReader<float, GameTableConverter>(gtDbcPath);
 
@@ -287,7 +288,7 @@ namespace WCell.RealmServer.Entities
         {
             combatRatings = new Dictionary<CombatRating, float[]>();
 
-            string gtDbcPath = RealmServerConfiguration.GetDBCFile(WCellDef.DBC_COMBATRATINGS);
+            string gtDbcPath = RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_COMBATRATINGS);
 
             if (!File.Exists(gtDbcPath))
             {
@@ -318,70 +319,70 @@ namespace WCell.RealmServer.Entities
         {
             if (!LoadGtBaseSpellCritChanceDBC())
             {
-                s_log.Info(string.Format(Resources.DBCLoadFailed, WCellDef.DBC_SPELLCRITBASE));
+                s_log.Info(string.Format(Resources.DBCLoadFailed, WCellConstants.DBC_SPELLCRITBASE));
 
                 return false;
             }
 
             if (!LoadGtClassSpellCritChanceDBC())
             {
-                s_log.Info(string.Format(Resources.DBCLoadFailed, WCellDef.DBC_SPELLCRITCLASS));
+                s_log.Info(string.Format(Resources.DBCLoadFailed, WCellConstants.DBC_SPELLCRITCLASS));
 
                 return false;
             }
 
             if (!LoadGtBaseMeleeCritChanceDBC())
             {
-                s_log.Info(string.Format(Resources.DBCLoadFailed, WCellDef.DBC_MELEECRITBASE));
+                s_log.Info(string.Format(Resources.DBCLoadFailed, WCellConstants.DBC_MELEECRITBASE));
 
                 return false;
             }
 
             if (!LoadGtClassMeleeCritChanceDBC())
             {
-                s_log.Info(string.Format(Resources.DBCLoadFailed, WCellDef.DBC_MELEECRITCLASS));
+                s_log.Info(string.Format(Resources.DBCLoadFailed, WCellConstants.DBC_MELEECRITCLASS));
 
                 return false;
             }
 
             if (!LoadGtBarberShopCostDBC(out s_barberShopCosts))
             {
-                s_log.Info(string.Format(Resources.DBCLoadFailed, WCellDef.DBC_MELEECRITCLASS));
+                s_log.Info(string.Format(Resources.DBCLoadFailed, WCellConstants.DBC_MELEECRITCLASS));
 
                 return false;
             }
 
             if (!LoadGtCombatRatingsDBC(out s_combatRatings))
             {
-                s_log.Info(string.Format(Resources.DBCLoadFailed, WCellDef.DBC_COMBATRATINGS));
+                s_log.Info(string.Format(Resources.DBCLoadFailed, WCellConstants.DBC_COMBATRATINGS));
 
                 return false;
             }
 
             if(!LoadGtClassHealthRegenPerSpiritDBC())
             {
-                s_log.Info(string.Format(Resources.DBCLoadFailed, WCellDef.DBC_REGENHPPERSPIRIT));
+                s_log.Info(string.Format(Resources.DBCLoadFailed, WCellConstants.DBC_REGENHPPERSPIRIT));
 
                 return false;
             }
 
             if (!LoadGtClassManaRegenPerSpiritDBC())
             {
-                s_log.Info(string.Format(Resources.DBCLoadFailed, WCellDef.DBC_REGENMPPERSPIRIT));
+                s_log.Info(string.Format(Resources.DBCLoadFailed, WCellConstants.DBC_REGENMPPERSPIRIT));
 
                 return false;
             }
 
             if(!LoadGtClassOCTHealthRegenDBC())
             {
-                s_log.Info(string.Format(Resources.DBCLoadFailed, WCellDef.DBC_OCTREGENHP));
+                s_log.Info(string.Format(Resources.DBCLoadFailed, WCellConstants.DBC_OCTREGENHP));
 
                 return false;
             }
 
             if (!LoadGtClassOCTManaRegenDBC())
             {
-                s_log.Info(string.Format(Resources.DBCLoadFailed, WCellDef.DBC_OCTREGENMP));
+                s_log.Info(string.Format(Resources.DBCLoadFailed, WCellConstants.DBC_OCTREGENMP));
 
                 return false;
             }

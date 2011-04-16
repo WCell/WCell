@@ -7,21 +7,17 @@ namespace WCell.Constants
 	public enum ClientId
 	{
 		/// <summary>
-		/// World of Warcraft
+		/// Classic WoW
 		/// </summary>
-		WorldOfWarcraft = 0,
+		Original = 0,
 		/// <summary>
 		/// The Burning Crusade
 		/// </summary>
-		TheBurningCrusade = 1,
+		TBC = 1,
 		/// <summary>
 		/// Wrath of the Lich King
 		/// </summary>
-		WrathOfTheLichKing = 2,
-        /// <summary>
-        /// Cataclysm
-        /// </summary>
-        Cataclysm = 3
+		Wotlk = 2
 	}
 
 	public enum SkillCategory
@@ -264,15 +260,6 @@ namespace WCell.Constants
 	}
 
 	/// <summary>
-	/// Mask of NPCType
-	/// </summary>
-	[Flags]
-	public enum CreatureTrackingMask : uint
-	{
-		None = 0,
-	}
-
-	/// <summary>
 	/// Mask of LockInteractionType
 	/// </summary>
 	[Flags]
@@ -318,7 +305,7 @@ namespace WCell.Constants
 	}
 
 	[Flags]
-	public enum ShapeShiftMask : uint
+	public enum ShapeshiftMask : uint
 	{
 		Cat = 1,
 		TreeOfLife = 2,
@@ -454,19 +441,17 @@ namespace WCell.Constants
 
 	public enum StatModifierFloat
 	{
-		Health = 0,
-		Power,
-		AttackerCritChance,
-        BlockValue,
-		AttackTime,
-		PowerRegen,
+		BlockValue,
+		MeleeAttackTime,
+		RangedAttackTime,
 		HealthRegen,
-		CritChance,
 	}
 
 	public enum StatModifierInt
 	{
 		Power = 1,
+
+		PowerPct,
 
 		/// <summary>
 		/// Overall HealthRegen
@@ -480,17 +465,29 @@ namespace WCell.Constants
 		/// HealthRegen while not in Combat
 		/// </summary>
 		HealthRegenNoCombat,
-
+		
 		PowerRegen,
-		CritChance,
+		PowerRegenPercent,
 		BlockChance,
 		BlockValue,
         ParryChance,
         RangedCritChance,
+		HitChance,
 
-		RangedAttackPowerByPercentOfIntellect,
+		DodgeChance,
 
-		DodgeChance
+		CritDamageBonusPct,
+
+		AttackerMeleeHitChance,
+		AttackerRangedHitChance,
+		/// <summary>
+		/// A negative chance that reduces target's dodge chance
+		/// </summary>
+		TargetDodgesAttackChance,
+
+		CriticalHealValuePct,
+
+		Expertise
 	}
 
 	public enum AreaTriggerType : uint
@@ -519,10 +516,26 @@ namespace WCell.Constants
 
 	public enum PetitionType
 	{
-		None,
-		Guild,
-		Arena2vs2,
-		Arena3vs3,
-		Arena5vs5
+		None = 0,
+		Arena2vs2 = 2,
+		Arena3vs3 = 3,
+		Arena5vs5 = 5,
+        Guild = 9
 	}
+
+    public enum PetitionTurns : uint
+    {
+        OK = 0,
+        ALREADY_IN_GUILD = 2,
+        NEED_MORE_SIGNATURES = 4,
+    };
+
+    public enum PetitionSigns : uint
+    {
+        OK = 0,
+        ALREADY_SIGNED = 1,
+        ALREADY_IN_GUILD = 2,
+        CANT_SIGN_OWN = 3,
+        NOT_SERVER = 4,
+    };
 }

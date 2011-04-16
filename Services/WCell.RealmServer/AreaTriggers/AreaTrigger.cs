@@ -59,7 +59,7 @@ namespace WCell.RealmServer.AreaTriggers
 		/// <returns></returns>
 		public bool IsInArea(Character chr)
 		{
-            if (chr.Region.Id != MapId)
+            if (chr.Map.Id != MapId)
             {
                 return false;
             }
@@ -131,7 +131,7 @@ namespace WCell.RealmServer.AreaTriggers
 		/// <summary>
 		/// Triggers this trigger
 		/// </summary>
-		/// <remarks>Requires region context.</remarks>
+		/// <remarks>Requires map context.</remarks>
 		public bool Trigger(Character chr)
 		{
 			if (CheckTrigger(chr))

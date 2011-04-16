@@ -19,6 +19,9 @@ using WCell.Constants.Updates;
 
 namespace WCell.RealmServer.Spells.Effects
 {
+	/// <summary>
+	/// Used for weapon proficiencies
+	/// </summary>
 	public class WeaponEffectHandler : SpellEffectHandler
 	{
 		public WeaponEffectHandler(SpellCast cast, SpellEffect effect)
@@ -28,7 +31,7 @@ namespace WCell.RealmServer.Spells.Effects
 
 		protected override void Apply(WorldObject target)
 		{
-			// does nothing, extra damage is applied on Hit
+			// add/send proficiency?
 		}
 
 		public override ObjectTypes CasterType

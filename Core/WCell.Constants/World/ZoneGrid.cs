@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,9 +24,9 @@ namespace WCell.Constants.World
 			ZoneIds = ids;
 		}
 
-		public ZoneId GetZoneId(int x, int y)
+		public ZoneId GetZoneId(int col, int row)
 		{
-			return (ZoneId)ZoneIds[x, y];
+			return (ZoneId)ZoneIds[col, row];
 		}
 	}
 

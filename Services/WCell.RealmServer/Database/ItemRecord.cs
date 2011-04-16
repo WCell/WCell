@@ -11,6 +11,7 @@ using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Constants.Updates;
 using WCell.Core;
+using WCell.Core.Database;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Items;
@@ -25,7 +26,7 @@ namespace WCell.RealmServer.Database
 	/// TODO: Charges
 	/// </summary>
 	[ActiveRecord(Access = PropertyAccess.Property)]
-	public class ItemRecord : ActiveRecordBase<ItemRecord>
+	public class ItemRecord : WCellRecord<ItemRecord>
 	{
 		private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
@@ -48,7 +49,7 @@ namespace WCell.RealmServer.Database
 				var itemRecord = new ItemRecord
 				{
 					Guid = (uint)_idGenerator.Next(),
-					m_isNew = true
+					State = RecordState.New
 				};
 
 				//s_log.Debug("creating new item with EntityId {0}", itemRecord.EntityId);
@@ -65,7 +66,7 @@ namespace WCell.RealmServer.Database
 
 		void InitItemRecord()
 		{
-			var cfg = ActiveRecordBase.Holder.GetConfiguration(typeof(ActiveRecordBase));
+			var cfg = ActiveRecordMediator.GetSessionFactoryHolder().GetConfiguration(typeof(ActiveRecordBase));
 			// cfg.SetListener(MyIPostLoadEventListener);
 		}
 
@@ -77,13 +78,6 @@ namespace WCell.RealmServer.Database
 		private byte _containerSlot;
 		[Field("ItemFlags", NotNull = true)]
 		private int flags;
-
-		internal bool m_isNew;
-
-		public bool IsNew
-		{
-			get { return m_isNew; }
-		}
 
 		[Property(NotNull = true)]
 		public int OwnerId
@@ -310,6 +304,10 @@ namespace WCell.RealmServer.Database
 				EnchantIds = new int[(int)EnchantSlot.End];
 			}
 			EnchantIds[(int)slot] = id;
+			if (slot == EnchantSlot.Temporary)
+			{
+				EnchantTempTime = timeLeft;
+			}
 			//switch (slot)
 			//{
 			//    case EnchantSlot.Permanent:
@@ -429,44 +427,6 @@ namespace WCell.RealmServer.Database
 		//        m_lastLifetimeUpdate = DateTime.Now; ;
 		//    }
 		//}
-
-		public override void Save()
-		{
-			//ExistingDuration += (uint)(DateTime.Now - m_lastLifetimeUpdate).TotalSeconds;
-
-			if (m_isNew)
-			{
-				Create();
-			}
-			else
-			{
-				Update();
-			}
-		}
-
-		public override void SaveAndFlush()
-		{
-			if (m_isNew)
-			{
-				CreateAndFlush();
-			}
-			else
-			{
-				UpdateAndFlush();
-			}
-		}
-
-		public override void Create()
-		{
-			m_isNew = false;
-			base.Create();
-		}
-
-		public override void CreateAndFlush()
-		{
-			m_isNew = false;
-			base.CreateAndFlush();
-		}
 
 		public ItemTemplate Template
 		{

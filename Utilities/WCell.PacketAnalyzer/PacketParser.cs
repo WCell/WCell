@@ -16,10 +16,6 @@ namespace WCell.PacketAnalysis
 {
 	/// <summary>
 	/// Parses Packets into a human-readable format
-	/// 
-	/// TODO: Special Packets (special treatment, eg. UpdatePackets, MovementPackets etc)
-	/// TODO: Get rid of segment-value array and change to proper parsing
-	/// TODO: 100 character simultaneously login test
 	/// </summary>
 	public class PacketParser : IParsedPacket, IDisposable
 	{

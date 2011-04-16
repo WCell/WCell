@@ -1,4 +1,4 @@
-﻿using WCell.RealmServer.Entities;
+using WCell.RealmServer.Entities;
 using WCell.RealmServer.Gossips;
 
 namespace WCell.RealmServer.GameObjects.Handlers
@@ -8,16 +8,8 @@ namespace WCell.RealmServer.GameObjects.Handlers
 	/// </summary>
 	public class GossipGOHandler : GameObjectHandler
 	{
-		public GossipMenu Menu { get; set; }
-
-		public GossipGOHandler(GossipMenu menu)
-		{
-			Menu = menu;
-		}
-
 		public override bool Use(Character user)
 		{
-			user.StartGossip(Menu);
 			return true;
 		}
 	}

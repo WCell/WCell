@@ -26,20 +26,23 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	public class ModSkillTalentHandler : AuraEffectHandler
 	{
 		Skill skill;
-		
-		protected internal override void Apply()
+
+		protected override void Apply()
 		{
-			if (m_aura.Auras.Owner is Character) {
+			if (m_aura.Auras.Owner is Character)
+			{
 				skill = ((Character)m_aura.Auras.Owner).Skills[(SkillId)m_spellEffect.MiscValue];
-				if (skill != null) {
+				if (skill != null)
+				{
 					skill.Modifier += (short)EffectValue;
 				}
 			}
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
-			if (skill != null) {
+			if (skill != null)
+			{
 				skill.Modifier -= (short)EffectValue;
 			}
 		}

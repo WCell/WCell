@@ -4,31 +4,38 @@
     <DefaultTable>creature_template</DefaultTable>
 
     <Flat Name="Id" Column="entry" Type="UInt32" />
+    <FlatArray Name="DifficultyOverrideEntryIds">
+      <Column Name="difficulty_entry_1"/>
+      <Column Name="difficulty_entry_2"/>
+      <Column Name="difficulty_entry_3"/>
+    </FlatArray>
     <FlatArray Name="DisplayIds">
-      <Column Name="modelid_A"/>
-      <Column Name="modelid_A2"/>
-      <Column Name="modelid_H"/>
-      <Column Name="modelid_H2"/>
+      <Column Name="modelid_1"/>
+      <Column Name="modelid_2"/>
+      <Column Name="modelid_3"/>
+      <Column Name="modelid_4"/>
     </FlatArray>
     <FlatArray Name="Names">
       <Column Name="name" />
+      <Column Name="name_loc1" Table="locales_creature" />
       <Column Name="name_loc2" Table="locales_creature" />
       <Column Name="name_loc3" Table="locales_creature" />
       <Column Name="name_loc4" Table="locales_creature" />
       <Column Name="name_loc5" Table="locales_creature" />
       <Column Name="name_loc6" Table="locales_creature" />
       <Column Name="name_loc7" Table="locales_creature" />
-      <Column Name="name_loc8" Table="locales_creature" />
+      <!--<Column Name="name_loc8" Table="locales_creature" />-->
     </FlatArray>
     <FlatArray Name="Titles">
       <Column Name="subname" />
+      <Column Name="subname_loc1" Table="locales_creature" />
       <Column Name="subname_loc2" Table="locales_creature" />
       <Column Name="subname_loc3" Table="locales_creature" />
       <Column Name="subname_loc4" Table="locales_creature" />
       <Column Name="subname_loc5" Table="locales_creature" />
       <Column Name="subname_loc6" Table="locales_creature" />
       <Column Name="subname_loc7" Table="locales_creature" />
-      <Column Name="subname_loc8" Table="locales_creature" />
+      <!--<Column Name="subname_loc8" Table="locales_creature" />-->
     </FlatArray>
     <Flat Name="InfoString" Column="IconName" />
     <Flat Name="MinLevel" Column="minlevel" />
@@ -96,8 +103,13 @@
       <Flat Name="RequiredSpellId" Column="trainer_spell" />
     </Nested>
 
-    <Flat Name="AuraIdStr" Table="creature_template_addon" Column="auras" />
-    <Flat Name="Emote" Table="creature_template_addon" Column="emote" />
+    <Nested Name="AddonData">
+      <Flat Name="AuraIdStr" Table="creature_template_addon" Column="auras" />
+      <Flat Name="Bytes" Table="creature_template_addon" Column="bytes1" />
+      <Flat Name="Bytes2" Table="creature_template_addon" Column="b2_0_sheath" />
+      <Flat Name="EmoteState" Table="creature_template_addon" Column="emote" />
+      <Flat Name="MountModelId" Table="creature_template_addon" Column="mount" />
+    </Nested>
   </DataHolder>
   <!--not in UDB
     <Flat Name="IsIdle" Column="" />

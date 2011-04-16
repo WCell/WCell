@@ -14,6 +14,7 @@
  *
  *************************************************************************/
 
+using System;
 using System.Collections.Generic;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
@@ -29,68 +30,48 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	}
 
 	/// <summary>
-	/// All kinds of different Talent modifiers (mostly caused by talents)
+	/// All kinds of different Spell modifiers (mostly caused by talents)
 	/// </summary>
 	public class AddModifierFlatHandler : AddModifierEffectHandler
 	{
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			var owner = m_aura.Auras.Owner as Character;
 			if (owner != null)
 			{
-				Charges = m_spellEffect.Spell.ProcCharges;
-				if (Charges > 0)
-				{
-					owner.PlayerSpells.ModifiersWithCharges++;
-				}
-				owner.PlayerSpells.SpellModifiersFlat.Add(this);
-				AuraHandler.SendModifierUpdate(owner, m_spellEffect, false);
+				Charges = m_aura.Spell.ProcCharges;
+				owner.PlayerAuras.AddSpellModifierFlat(this);
 			}
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			var owner = m_aura.Auras.Owner as Character;
 			if (owner != null)
 			{
-				if (m_spellEffect.Spell.ProcCharges > 0)
-				{
-					owner.PlayerSpells.ModifiersWithCharges--;
-				}
-				owner.PlayerSpells.SpellModifiersFlat.Remove(this);
-				AuraHandler.SendModifierUpdate(owner, m_spellEffect, false);
+				owner.PlayerAuras.RemoveSpellModifierFlat(this);
 			}
 		}
 	}
 
 	public class AddModifierPercentHandler : AddModifierEffectHandler
 	{
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			var owner = m_aura.Auras.Owner as Character;
 			if (owner != null)
 			{
-				Charges = m_spellEffect.Spell.ProcCharges;
-				if (Charges > 0)
-				{
-					owner.PlayerSpells.ModifiersWithCharges += 1;
-				}
-				owner.PlayerSpells.SpellModifiersPct.Add(this);
-				AuraHandler.SendModifierUpdate(owner, m_spellEffect, true);
+				Charges = m_aura.Spell.ProcCharges;
+				owner.PlayerAuras.AddSpellModifierPercent(this);
 			}
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			var owner = m_aura.Auras.Owner as Character;
 			if (owner != null)
 			{
-				if (m_spellEffect.Spell.ProcCharges > 0)
-				{
-					owner.PlayerSpells.ModifiersWithCharges -= 1;
-				}
-				owner.PlayerSpells.SpellModifiersPct.Remove(this);
-				AuraHandler.SendModifierUpdate(owner, m_spellEffect, true);
+				owner.PlayerAuras.RemoveSpellModifierPercent(this);
 			}
 		}
 	}

@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using WCell.Constants;
 using WCell.Constants.Pets;
+
 using WCell.RealmServer.NPCs;
+using WCell.RealmServer.NPCs.Spawns;
 using WCell.Util;
 using WCell.Util.Toolshed;
 using WCell.RealmServer.Spells;
@@ -90,7 +92,7 @@ namespace WCell.Tools.Domi.Output
 		{
 			using (var writer = new StreamWriter(ToolConfig.OutputDir + "/NPCBytes" + name + ".txt", false))
 			{
-				var set = new Dictionary<uint, SpawnEntry>();
+				var set = new Dictionary<uint, NPCSpawnEntry>();
 				foreach (var spawn in NPCMgr.SpawnEntries)
 				{
 					if (spawn == null)
@@ -101,19 +103,23 @@ namespace WCell.Tools.Domi.Output
 
 				foreach (var spawn in set.Values)
 				{
-					uint byteSet = ((bytes0 ? spawn.Bytes : spawn.Bytes2) >> (no*8)) & 0xff;
-					if (byteSet != 0)
+					var data = spawn.AddonData ?? spawn.Entry.AddonData;
+					if (data != null)
 					{
-						string str;
-						if (enumType != null)
+						uint byteSet = ((bytes0 ? data.Bytes : data.Bytes2) >> (no * 8)) & 0xff;
+						if (byteSet != 0)
 						{
-							var obj = Convert.ChangeType(byteSet, convertType);
-							str = Enum.Format(enumType, obj, "g");
+							string str;
+							if (enumType != null)
+							{
+								var obj = Convert.ChangeType(byteSet, convertType);
+								str = Enum.Format(enumType, obj, "g");
+							}
+							else
+								str = byteSet.ToString();
+							writer.WriteLine("Spawn #{0} (Entry:{1}, {2}): {3}", spawn.SpawnId, spawn.Entry.Id, spawn.Entry.DefaultName, str);
+							//return;
 						}
-						else
-							str = byteSet.ToString();
-						writer.WriteLine("Spawn #{0} (Entry:{1}, {2}): {3}", spawn.SpawnId, spawn.Entry.Id, spawn.Entry.DefaultName, str);
-						//return;
 					}
 				}
 			}

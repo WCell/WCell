@@ -74,7 +74,7 @@ namespace WCell.AuthServer.Accounts
 			EmailAddress = email;
 		    LastIP = IPAddress.Any.GetAddressBytes();
 			AccountId = NextId();
-			New = true;
+			State = RecordState.New;
 		}
 
 		internal void OnLogin(IAuthClient client)
@@ -243,7 +243,6 @@ namespace WCell.AuthServer.Accounts
 		}
 
 		#endregion
-
 
 		public string LastIPStr
 		{

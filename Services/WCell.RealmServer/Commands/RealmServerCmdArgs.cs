@@ -21,22 +21,30 @@ namespace WCell.RealmServer.Commands
 		protected IGenericChatTarget m_chatTarget;
 		private Unit m_target;
 
+		public RealmServerCmdArgs(RealmServerCmdArgs args)
+		{
+			m_user = args.m_user;
+			m_chr = args.Character;
+			m_chatTarget = args.m_chatTarget;
+			Role = args.Role;
+			m_dbl = args.m_dbl;
+			InitArgs();
+		}
+
 		public RealmServerCmdArgs(IUser user, bool dbl, IGenericChatTarget chatTarget)
 		{
 			m_user = user;
 			m_chr = m_user as Character;
 			m_chatTarget = chatTarget;
 			Role = m_user != null ? m_user.Role : PrivilegeMgr.Instance.HighestRole;
-			Double = dbl;
-        }
+			m_dbl = dbl;
+			InitArgs();
+		}
 
-		public RealmServerCmdArgs(RealmServerCmdArgs args)
+		void InitArgs()
 		{
-			m_user = args.m_user;
-			m_chr = m_user as Character;
-			m_chatTarget = args.m_chatTarget;
-			Role = args.Role;
-			Double = args.m_dbl;
+			Context = m_chr;
+			SetTarget();
 		}
 
 		/// <summary>
@@ -59,7 +67,8 @@ namespace WCell.RealmServer.Commands
 		/// </summary>
 		public IContextHandler Context
 		{
-			get { return Character; }
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -101,15 +110,24 @@ namespace WCell.RealmServer.Commands
 			get { return m_chatTarget; }
 		}
 
+		public bool HasCharacter
+		{
+			get { return Character != null; }
+		}
+
 		/// <summary>
 		/// The Character who is performing this or null (if not ingame-triggered)
 		/// </summary>
 		public Character Character
 		{
-			get { return m_chr; }
+			get
+			{
+				return m_chr != null && m_chr.IsInWorld ? m_chr : null;
+			}
 			set
 			{
 				m_chr = value;
+				Context = value;
 				SetTarget();
 			}
 		}
@@ -172,13 +190,16 @@ namespace WCell.RealmServer.Commands
 
 		private void SetTarget()
 		{
-			if (Double && Character != null)
+			if (Character != null)
 			{
-				m_target = Character.Target;
-			}
-			else
-			{
-				m_target = Character;
+				if (Double)
+				{
+					m_target = Character.Target;
+				}
+				else
+				{
+					m_target = Character;
+				}
 			}
 		}
 
@@ -192,7 +213,7 @@ namespace WCell.RealmServer.Commands
 				var realmCmd = (RealmServerCommand)cmd;
 				var target = Target;
 				var reqTargets = realmCmd.TargetTypes;
-				return (!realmCmd.NeedsCharacter || m_user != null) &&
+				return (!realmCmd.RequiresCharacter || m_chr != null) &&
 					   (reqTargets == ObjectTypeCustom.None ||
 						(target != null && reqTargets.HasAnyFlag(target.CustomType)));
 			}
@@ -223,8 +244,8 @@ namespace WCell.RealmServer.Commands
 				chr = (Character)trigger.Args.Target;
 			}
 			return chr;
-        }
-    }
+		}
+	}
 
 	public class RealmServerNCmdArgs : RealmServerCmdArgs
 	{

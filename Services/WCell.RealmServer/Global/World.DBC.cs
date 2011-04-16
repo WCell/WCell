@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using WCell.Constants;
 using WCell.Constants.World;
 using WCell.Core.DBC;
@@ -22,7 +22,7 @@ namespace WCell.RealmServer.Global
 			entry.ResetTime = GetInt32(rawData, 4);
 			entry.MaxPlayerCount = GetInt32(rawData, 5);
 
-			var map = World.GetRegionInfo(entry.MapId);
+			var map = World.GetMapTemplate(entry.MapId);
 			if (map != null)
 			{
 				if (entry.Index >= (double) RaidDifficulty.End)
@@ -40,9 +40,9 @@ namespace WCell.RealmServer.Global
 				{
 					map.Difficulties = new MapDifficultyEntry[(int) RaidDifficulty.End];
 				}
-				map.Difficulties[entry.Index] = entry;
 
 				entry.Finalize(map);
+				map.Difficulties[entry.Index] = entry;
 			}
 		}
 	}
@@ -51,7 +51,7 @@ namespace WCell.RealmServer.Global
 	{
 		public override void Convert(byte[] rawData)
 		{
-			var rgn = new RegionInfo();
+			var rgn = new MapTemplate();
 
             int i = 0;
 			rgn.Id = (MapId)GetUInt32(rawData, i++);
@@ -70,7 +70,7 @@ namespace WCell.RealmServer.Global
             i++; //rgn.HordeText = GetString(rawData, i++);
             i++; //rgn.AllianceText = GetString(rawData, i++);
             rgn.ParentMapId = (MapId)GetUInt32(rawData, i++); //multi map id
-			rgn.RepopRegionId = rgn.ParentMapId;
+			rgn.RepopMapId = rgn.ParentMapId;
             i++; //battlefield map icon scale
             i++; //Repop map id
             rgn.RepopPosition = new Vector3(GetFloat(rawData, i++), GetFloat(rawData, i++), 500);
@@ -83,7 +83,38 @@ namespace WCell.RealmServer.Global
 			//rgn.HeroicResetTime = GetUInt32(rawData, 113);
 			//rgn.RaidResetTime = GetUInt32(rawData, 112);
 
-			ArrayUtil.Set(ref World.s_regionInfos, (uint)rgn.Id, rgn);
+			ArrayUtil.Set(ref World.s_MapTemplates, (uint)rgn.Id, rgn);
 		}
 	}
+
+    public class WorldMapOverlayConverter : DBCRecordConverter
+    {
+        public override void Convert(byte[] rawData)
+        {
+            var worldMapOverlayEntry = new WorldMapOverlayEntry();
+            worldMapOverlayEntry.WorldMapOverlayId = (WorldMapOverlayId) GetUInt32(rawData, 0);
+
+            for (var i = 0; i < worldMapOverlayEntry.ZoneTemplateId.Length; i++)
+            {
+                var zoneId = (ZoneId) GetUInt32(rawData, 2 + i);
+                if(zoneId == 0)
+                    // We reached to the last ZoneId reference.
+                    break;
+
+                worldMapOverlayEntry.ZoneTemplateId[i] = zoneId;
+                var zoneTemplate = World.s_ZoneTemplates[(int) zoneId];
+                if(zoneTemplate == null)
+                {
+                    LogManager.GetCurrentClassLogger().Warn(string.Format(
+                        "Invalid ZoneId #{0} found at WorldMapOverlay #{1} during the DBC loading.", zoneId, worldMapOverlayEntry.WorldMapOverlayId));
+                    continue;
+                }
+                zoneTemplate.WorldMapOverlays.Add(worldMapOverlayEntry.WorldMapOverlayId);
+            }
+
+            ArrayUtil.Set(ref World.s_WorldMapOverlayEntries, (uint) worldMapOverlayEntry.WorldMapOverlayId,
+                          worldMapOverlayEntry);
+
+        }
+    }
 }

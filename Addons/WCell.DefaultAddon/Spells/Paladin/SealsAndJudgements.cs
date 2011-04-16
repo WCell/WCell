@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,7 +21,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 		public static readonly SpellLineId[] AllSeals = new[] {
 				SpellLineId.PaladinSealOfJustice,
 				SpellLineId.PaladinSealOfLight,
-				SpellLineId.PaladinSealOfRighteousness,
+				SpellLineId.PaladinSealOfCorruption,
 				SpellLineId.PaladinSealOfVengeance,
 				SpellLineId.PaladinSealOfWisdom,
 				SpellLineId.PaladinRetributionSealOfCommand
@@ -63,7 +63,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 				triggerEffect.AuraType = AuraType.ProcTriggerSpell;
 				triggerEffect.TriggerSpellId = (SpellId)triggerEffect.BasePoints;
 			},
-			SpellLineId.PaladinSealOfVengeance, SpellLineId.PaladinSealOfRighteousness);
+			SpellLineId.PaladinSealOfVengeance);
 
 			/*
 			 * Most Judgements' ProcTriggerSpells need to be changed to use customized values, depending on spellpower, weapon damage etc...
@@ -93,7 +93,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 		{
 			SealDamageCalculators[SpellLineId.PaladinSealOfJustice] = CalcJusticeDamage;
 			SealDamageCalculators[SpellLineId.PaladinSealOfLight] = CalcLightDamage;
-			SealDamageCalculators[SpellLineId.PaladinSealOfRighteousness] = CalcRighteousnessDamage;
+            //SealDamageCalculators[SpellLineId.PaladinSealOfCorruption] = CalcCorruptionDamage;
 			SealDamageCalculators[SpellLineId.PaladinSealOfVengeance] = CalcVengeanceDamage;
 			SealDamageCalculators[SpellLineId.PaladinSealOfWisdom] = CalcWisdomDamage;
 			SealDamageCalculators[SpellLineId.PaladinRetributionSealOfCommand] = CalcCommandDamage;
@@ -117,6 +117,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 			return 1 + (caster.GetDamageDoneMod(DamageSchool.Holy) >> 2) + (caster.TotalMeleeAP / 6);
 		}
 
+        /*
 		/// <summary>
 		/// Righteousness: ${1+0.2*$AP+0.32*$SPH}
 		/// </summary>
@@ -124,7 +125,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 		{
 			var caster = cast.CasterChar;
 			return 1 + (caster.GetDamageDoneMod(DamageSchool.Holy) / 3) + (caster.TotalMeleeAP / 5);
-		}
+		}*/
 
 		/// <summary>
 		/// Vengeance: ${1+0.22*$SPH+0.14*$AP} + 10% for each application
@@ -133,7 +134,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 		{
 			var caster = cast.CasterChar;
 			var val = 1 + (int)((0.22f * caster.GetDamageDoneMod(DamageSchool.Holy)) + (caster.TotalMeleeAP / 0.14f));
-			var aura = caster.Auras[SpellId.ClassSkillHolyVengeanceRank1, false];
+			var aura = caster.Auras[SpellId.ClassSkillHolyVengeance, false];
 			if (aura != null)
 			{
 				val = (int)(val * (1f + (aura.StackCount / 10f)));
@@ -226,7 +227,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 			if (calc != null)
 			{
 				var dmg = calc(m_cast, (Unit)target);
-				((Unit)target).DoSpellDamage(m_cast.CasterUnit, Effect, dmg);
+				((Unit)target).DealSpellDamage(m_cast.CasterUnit, Effect, dmg);
 			}
 		}
 

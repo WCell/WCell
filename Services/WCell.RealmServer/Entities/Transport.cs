@@ -5,7 +5,9 @@ using WCell.Constants.Pathing;
 using WCell.Constants.Updates;
 using WCell.Constants.World;
 using WCell.Core.Network;
+using WCell.RealmServer.GameObjects;
 using WCell.RealmServer.GameObjects.GOEntries;
+using WCell.RealmServer.GameObjects.Spawns;
 using WCell.RealmServer.Misc;
 using WCell.Core.Paths;
 using WCell.RealmServer.Paths;
@@ -51,9 +53,9 @@ namespace WCell.RealmServer.Entities
 			m_passengers = new List<Unit>();
 		}
 
-		internal override void Init(GameObjects.GOEntry entry, GameObjects.GOTemplate templ)
+		internal override void Init(GOEntry entry, GOSpawnEntry spawnEntry, GOSpawnPoint spawnPoint)
 		{
-			base.Init(entry, templ);
+			base.Init(entry, spawnEntry, spawnPoint);
 
 			m_goTransportEntry = Entry as GOMOTransportEntry;
 			TransportMgr.TransportEntries.TryGetValue(m_entry.GOId, out m_transportEntry);
@@ -231,11 +233,11 @@ namespace WCell.RealmServer.Entities
 		}
 
 
-		public override void Update(float dt)
+		public override void Update(int dt)
 		{
 			base.Update(dt);
 
-			// no transports moving across regions
+			// no transports moving across maps
 			//if (m_transportPathVertices == null || m_transportPathVertices.Count <= 1 || m_mapIds.Length > 1)
 			//    return;
 
@@ -266,7 +268,7 @@ namespace WCell.RealmServer.Entities
 		{
 			var newMapId = m_CurrentPathVertex.Value.MapId;
 
-			if (newMapId != Region.Id || m_CurrentPathVertex.Value.Teleport)
+			if (newMapId != Map.Id || m_CurrentPathVertex.Value.Teleport)
 			{
 				//foreach (Unit unit in Passengers)
 				//{

@@ -7,6 +7,7 @@ using WCell.Core.Initialization;
 using WCell.RealmServer.Spells;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Skills;
+using WCell.RealmServer.Spells.Auras.Handlers;
 using WCell.Util;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Spells.Auras;
@@ -53,10 +54,80 @@ namespace WCell.Addons.Default.Spells
 			// Stoneform is missing a trigger spell (because it already has 3 other effects)
 			SpellHandler.Apply(spell =>
 			{
-				spell.AddTriggerSpellEffect(SpellId.StoneformRacial, ImplicitTargetType.Self);
+				spell.AddTriggerSpellEffect(SpellId.StoneformRacial, ImplicitSpellTargetType.Self);
 			},
 			SpellId.SecondarySkillStoneformRacial);
+
+			// Escape Artist is missing an effect
+			SpellHandler.Apply(spell =>
+			{
+				var spellEffect = spell.GetEffect(SpellEffectType.ScriptEffect);
+				spellEffect.SpellEffectHandlerCreator = (cast, effect) => new EscapeArtistEffectHandler(cast, effect);
+			}, SpellId.SecondarySkillEscapeArtistRacial);
+
+			// Gift of the Naaru: "The amount healed is increased by your spell power or attack power, whichever is higher."
+			SpellHandler.Apply(spell =>
+			{
+				var effect = spell.GetEffect(AuraType.PeriodicHeal);
+				effect.AuraEffectHandlerCreator = () => new GiftOfTheNaaruPaladinHandler();
+			}, SpellId.SecondarySkillGiftOfTheNaaruRacial_2);
 		}
+
+		#region GiftOfTheNaaruPaladinHandler
+		public class GiftOfTheNaaruPaladinHandler : PeriodicHealHandler
+		{
+			private int totalBonus;
+			public GiftOfTheNaaruPaladinHandler()
+			{
+			}
+
+			protected override void CheckInitialize(SpellCast creatingCast, ObjectReference casterReference, Unit target, ref SpellFailedReason failReason)
+			{
+				if (target is Character)
+				{
+					var chr = (Character)target;
+					var ap = target.TotalMeleeAP;
+					var sp = chr.GetDamageDoneMod(DamageSchool.Holy);
+					if (ap > sp)
+					{
+						totalBonus = ap;
+					}
+					else
+					{
+						totalBonus = sp;
+					}
+				}
+			}
+
+			protected override void Apply()
+			{
+				var val = totalBonus / (m_aura.TicksLeft + 1);
+				totalBonus -= val;
+
+				val += EffectValue;
+
+				Owner.Heal(val, m_aura.CasterUnit, m_spellEffect);
+			}
+		}
+		#endregion
+
+		#region EscapeArtistEffectHandler
+		public class EscapeArtistEffectHandler : SpellEffectHandler
+		{
+			public EscapeArtistEffectHandler(SpellCast cast, SpellEffect effect)
+				: base(cast, effect)
+			{
+			}
+
+			protected override void Apply(WorldObject target)
+			{
+				var character = (Unit)target;
+
+				character.Auras.RemoveWhere(aura => SpellConstants.MoveMechanics[(int)aura.Spell.Mechanic] ||
+					aura.Handlers.Any(handler => SpellConstants.MoveMechanics[(int)handler.SpellEffect.Mechanic]));
+			}
+		};
+		#endregion
 		#endregion
 
 		#region Skills

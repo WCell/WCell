@@ -22,7 +22,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	public class AddCasterHitTriggerHandler : AuraEffectHandler
 	{
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 
 		}

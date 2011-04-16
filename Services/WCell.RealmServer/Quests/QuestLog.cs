@@ -3,7 +3,7 @@
  *   file		: QuestLog.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
- *   last changed	: $LastChangedDate: 2008-04-08 11:02:58 +0200 (út, 08 IV 2008) $
+ *   last changed	: $LastChangedDate: 2008-04-08 11:02:58 +0200 (ï¿½t, 08 IV 2008) $
  *   last author	: $LastChangedBy: domiii $
  *   revision		: $Rev: 244 $
  *
@@ -16,17 +16,23 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.SqlCommand;
 using WCell.Constants.GameObjects;
 using WCell.Constants.Items;
+using WCell.Constants.Looting;
 using WCell.Constants.Quests;
 using WCell.Constants.Updates;
 using WCell.Core;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Global;
 using WCell.RealmServer.Handlers;
 using WCell.Constants.NPCs;
 using NLog;
+using WCell.RealmServer.Items;
+using WCell.RealmServer.Looting;
+using WCell.RealmServer.Spells;
 using WCell.Util.Threading;
 
 namespace WCell.RealmServer.Quests
@@ -65,6 +71,7 @@ namespace WCell.RealmServer.Quests
 		internal List<Quest> m_RequireGOsQuests = new List<Quest>();
 		internal List<Quest> m_NPCInteractionQuests = new List<Quest>();
 		internal List<Quest> m_RequireItemsQuests = new List<Quest>();
+		internal List<Quest> m_RequireSpellCastsQuests = new List<Quest>();
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="QuestLog"/> class.
@@ -293,6 +300,10 @@ namespace WCell.RealmServer.Quests
 			{
 				m_NPCInteractionQuests.Add(quest);
 			}
+			if (qt.RequiresSpellCasts)
+			{
+				m_RequireSpellCastsQuests.Add(quest);
+			}
 
 			if (quest.CollectedItems != null)
 			{
@@ -360,13 +371,18 @@ namespace WCell.RealmServer.Quests
 				m_timedQuest = null;
 			}
 
-			if (quest.UsedGOs != null)
+			var qt = quest.Template;
+			if (qt.HasGOEvent)
 			{
 				m_RequireGOsQuests.Remove(quest);
 			}
-			if (quest.KilledNPCs != null)
+			if (qt.HasNPCInteractionEvent)
 			{
 				m_NPCInteractionQuests.Remove(quest);
+			}
+			if (qt.RequiresSpellCasts)
+			{
+				m_RequireSpellCastsQuests.Remove(quest);
 			}
 
 			if (quest.CollectedItems != null)
@@ -376,22 +392,32 @@ namespace WCell.RealmServer.Quests
 				for (var i = 0; i < amt; i++)
 				{
 					// remove all collected Items
-					m_Owner.Inventory.Consume(true, (uint)quest.Template.CollectableItems[i].ItemId, quest.CollectedItems[i]);
+					m_Owner.Inventory.Consume((uint)quest.Template.CollectableItems[i].ItemId, true, quest.CollectedItems[i]);
 				}
 			}
 
-			if (quest.Template.InitialItems.Count > 0)
+			// remove all provided Items
+			if (quest.Template.ProvidedItems.Count > 0)
 			{
-				var amt = quest.Template.InitialItems.Count;
+				var amt = quest.Template.ProvidedItems.Count;
 				for (var i = 0; i < amt; i++)
 				{
-					// remove all initial Items
-					m_Owner.Inventory.Consume(true, (uint)quest.Template.InitialItems[i].ItemId, quest.Template.InitialItems[i].Amount);
+					var template = quest.Template.ProvidedItems[i];
+					m_Owner.Inventory.Consume((uint)template.ItemId, true, template.Amount);
+				}
+			}
+
+			// remove starter Item
+			foreach (var starter in quest.Template.Starters)
+			{
+				if (starter is ItemTemplate)
+				{
+					m_Owner.Inventory.Consume(((ItemTemplate)starter).ItemId, true);
 				}
 			}
 
 			// TODO: remove other Items that belong to this Quest
-			RealmServer.Instance.AddMessage(new Message(quest.Delete));
+			RealmServer.IOQueue.AddMessage(new Message(quest.Delete));
 
 			m_activeQuestCount--;
 			m_ActiveQuests[quest.Slot] = null;
@@ -423,19 +449,6 @@ namespace WCell.RealmServer.Quests
 
 		#region Checks/Getters
 
-		/// <summary>
-		/// Resets the daily quest count. Needs to be called in midnight (servertime) or when character logs in after the midnight
-		/// </summary>
-		public void ResetDailyQuests()
-		{
-			m_DailyQuestsToday.Clear();
-		}
-
-		//public void UpdateQuest(byte slot)
-		//{
-
-		//}
-
 		public bool HasActiveQuest(QuestTemplate templ)
 		{
 			return GetActiveQuest(templ.Id) != null;
@@ -444,6 +457,11 @@ namespace WCell.RealmServer.Quests
 		public bool HasActiveQuest(uint questId)
 		{
 			return GetActiveQuest(questId) != null;
+		}
+
+		public bool HasFinishedQuest(uint questId)
+		{
+			return FinishedQuests.Contains(questId);
 		}
 
 		public bool CanFinish(uint questId)
@@ -518,7 +536,7 @@ namespace WCell.RealmServer.Quests
 		}
 
 		/// <summary>
-		/// Gets the QuestGiver with the given guid from the current Region (in case of a <see cref="WorldObject"/>) or 
+		/// Gets the QuestGiver with the given guid from the current Map (in case of a <see cref="WorldObject"/>) or 
 		/// Inventory (in case of an <see cref="Item">Item</see>)
 		/// </summary>
 		/// <param name="guid"></param>
@@ -528,7 +546,7 @@ namespace WCell.RealmServer.Quests
 			IQuestHolder holder;
 			if (guid.ObjectType != ObjectTypeId.Item)
 			{
-				holder = m_Owner.Region.GetObject(guid) as IQuestHolder;
+				holder = m_Owner.Map.GetObject(guid) as IQuestHolder;
 			}
 			else
 			{
@@ -544,13 +562,28 @@ namespace WCell.RealmServer.Quests
 		}
 		#endregion
 
+		#region Repeatable Quests
+		/// <summary>
+		/// Resets the daily quest count. Needs to be called in midnight (servertime) or when character logs in after the midnight
+		/// </summary>
+		public void ResetDailyQuests()
+		{
+			m_DailyQuestsToday.Clear();
+		}
+
+		//public void UpdateQuest(byte slot)
+		//{
+
+		//}
+		#endregion
+
 		#region NPCs
 		/// <summary>
 		/// Is called when the owner of this QuestLog did
 		/// the required interaction with the given NPC (usually killing)
 		/// </summary>
 		/// <param name="npc"></param>
-		public void OnNPCInteraction(NPC npc)
+		internal void OnNPCInteraction(NPC npc)
 		{
 			foreach (var quest in m_NPCInteractionQuests)
 			{
@@ -561,14 +594,7 @@ namespace WCell.RealmServer.Quests
 						var interaction = quest.Template.NPCInteractions[i];
 						if (interaction.TemplateId == npc.Entry.Id)
 						{
-							if (quest.KilledNPCs[i] < interaction.Amount)
-							{
-								quest.KilledNPCs[i]++;
-								m_Owner.SetQuestCount(quest.Slot, interaction.Index, (byte)quest.KilledNPCs[i]);
-								QuestHandler.SendUpdateInteractionCount(quest, npc, interaction, quest.KilledNPCs[i], m_Owner);
-								quest.UpdateStatus();
-							}
-							quest.Template.NotifyNPCInteracted(quest, npc);
+							UpdateInteractionCount(quest, interaction, npc);
 						}
 					}
 				}
@@ -612,38 +638,62 @@ namespace WCell.RealmServer.Quests
 						var interaction = quest.Template.GOInteractions[i];
 						if (interaction.TemplateId == go.Entry.Id)
 						{
-							if (quest.UsedGOs[i] < interaction.Amount)
-							{
-								quest.UsedGOs[i]++;
-								m_Owner.SetQuestCount(quest.Slot, interaction.Index, (byte)quest.UsedGOs[i]);
-								QuestHandler.SendUpdateInteractionCount(quest, go, interaction, quest.UsedGOs[i], m_Owner);
-								quest.UpdateStatus();
-							}
-							quest.Template.NotifyGOUsed(quest, go);
+							UpdateInteractionCount(quest, interaction, go);
 						}
 					}
 				}
 			}
 		}
 
-		/// <summary>
-		/// The Quest that requires the given GO to be used
-		/// </summary>
-		public Quest GetReqObjectQuest(GOEntryId npc)
+		void UpdateInteractionCount(Quest quest, QuestInteractionTemplate interaction, WorldObject obj)
 		{
-			for (var j = 0; j < m_RequireItemsQuests.Count; j++)
+			var count = quest.Interactions[interaction.Index];
+			if (count < interaction.Amount)
 			{
-				var quest = m_RequireItemsQuests[j];
-				for (var i = 0; i < quest.Template.CollectableItems.Length; i++)
+				++quest.Interactions[interaction.Index];
+				m_Owner.SetQuestCount(quest.Slot, interaction.Index, (byte)(count+1));
+				QuestHandler.SendUpdateInteractionCount(quest, obj, interaction, count+1, m_Owner);
+				quest.UpdateStatus();
+			}
+			//quest.Template.NotifyGOUsed(quest, go);
+		}
+
+		/// <summary>
+		/// Whether the given GO can be used by the player to start or progress a quest
+		/// </summary>
+		public bool IsRequiredForAnyQuest(GameObject go)
+		{
+			// check quest start/end status
+			//var questId = go.Entry.QuestId;
+			//if (questId != 0)
+			//{
+			//    var templ = QuestMgr.GetTemplate(questId);
+			//    if (templ != null)
+			//    {
+			//    }
+			//}
+			if (go.QuestHolderInfo != null && go.QuestHolderInfo.GetHighestQuestGiverStatus(Owner).CanStartOrFinish())
+			{
+				// GO can be used by this Character to start or finish a quest
+				return true;
+			}
+
+			// check quests that require GO interaction
+			for (var j = 0; j < m_RequireGOsQuests.Count; j++)
+			{
+				var quest = m_RequireGOsQuests[j];
+				for (var i = 0; i < quest.Template.GOInteractions.Length; i++)
 				{
 					var interaction = quest.Template.GOInteractions[i];
-					if (interaction.TemplateId == (uint)npc)
+					if (interaction.TemplateId == go.EntryId)
 					{
-						return quest;
+						return true;
 					}
 				}
 			}
-			return null;
+
+			// check if it can contain quest loot
+			return go.ContainsQuestItemsFor(Owner, LootEntryType.GameObject);
 		}
 		#endregion
 
@@ -652,7 +702,7 @@ namespace WCell.RealmServer.Quests
 		/// Is called when the owner of this QuestLog receives or looses the given amount of Items
 		/// </summary>
 		/// <param name="item"></param>
-		internal void OnItemAmountChanged(Item item, int diff)
+		internal void OnItemAmountChanged(Item item, int delta)
 		{
 			for (var j = 0; j < m_RequireItemsQuests.Count; j++)
 			{
@@ -663,15 +713,14 @@ namespace WCell.RealmServer.Quests
 					if (requiredItem.ItemId == item.Template.ItemId)
 					{
 						var amount = quest.CollectedItems[i];
-						var newAmount = amount + diff;
+						var newAmount = amount + delta;
 
-						var needsUpdate = amount < requiredItem.Amount ||
-							newAmount < requiredItem.Amount;
+						var needsUpdate = amount < requiredItem.Amount || newAmount < requiredItem.Amount;
 
 						quest.CollectedItems[i] = newAmount;
 						if (needsUpdate)
 						{
-							QuestHandler.SendUpdateItems(item.Template.ItemId, diff, m_Owner);
+							QuestHandler.SendUpdateItems(item.Template.ItemId, delta, m_Owner);
 							quest.UpdateStatus();
 						}
 						break;
@@ -723,6 +772,48 @@ namespace WCell.RealmServer.Quests
 		}
 		#endregion
 
+		#region Spell Casts
+		internal void OnSpellCast(SpellCast cast)
+		{
+			if (m_RequireSpellCastsQuests.Count > 0)
+			{
+				foreach (var q in m_RequireSpellCastsQuests)
+				{
+					foreach (var interaction in q.Template.SpellInteractions)
+					{
+						if (interaction.RequiredSpellId == cast.Spell.SpellId)
+						{
+							switch (interaction.ObjectType)
+							{
+								case ObjectTypeId.GameObject:
+									// GO
+									var go = cast.Targets.FirstOrDefault(target => target is GameObject && target.EntryId == interaction.TemplateId);
+									if (go != null)
+									{
+										UpdateInteractionCount(q, interaction, go);
+									}
+									break;
+								case ObjectTypeId.Unit:
+									// NPC
+									var npc = cast.Targets.FirstOrDefault(target => target is NPC && target.EntryId == interaction.TemplateId);
+									if (npc != null)
+									{
+										UpdateInteractionCount(q, interaction, npc);
+									}
+									break;
+								default:
+									// No target requirement
+									UpdateInteractionCount(q, interaction, null);
+									break;
+							}
+						}
+					}
+				}
+			}
+		}
+		#endregion
+
+		#region Save
 		public void SaveQuests()
 		{
 			for (var i = 0; i < MaxQuestCount; i++)
@@ -733,7 +824,9 @@ namespace WCell.RealmServer.Quests
 				}
 			}
 		}
+		#endregion
 
+		#region Load
 		/// <summary>
 		/// If we want this method to be public, 
 		/// it should update all Quests correctly (remove non-existant ones etc)
@@ -747,30 +840,38 @@ namespace WCell.RealmServer.Quests
 			}
 			catch (Exception e)
 			{
-				RealmDBUtil.OnDBError(e);
+				RealmDBMgr.OnDBError(e);
 				records = QuestRecord.GetQuestRecordForCharacter(Owner.EntityId.Low);
 			}
 
 			if (records != null)
 			{
-				for (var i = 0; i < records.Length; i++)
+				foreach (var record in records)
 				{
-					var record = records[i];
-					var templ = QuestMgr.GetTemplate(record.QuestTemplateId);
-					if (templ != null)
-					{
-						var quest = new Quest(this, record, templ);
-						AddQuest(quest);
-					}
-					else
-					{
-						log.Error("Character {0} had Invalid Quest: {1} (Record: {2})", Owner,
-							record.QuestTemplateId, record.QuestRecordId);
-					}
+				    var templ = QuestMgr.GetTemplate(record.QuestTemplateId);
+				    if (templ != null)
+				    {
+				        var quest = new Quest(this, record, templ);
+				        AddQuest(quest);
+
+                        //Cancel any quests relating to inactive events
+				        if(templ.EventIds.Count > 0)
+				        {
+				            if(!templ.EventIds.Where(WorldEventMgr.IsEventActive).Any())
+				                quest.Cancel(false);
+				        }
+				    }
+				    else
+				    {
+				        log.Error("Character {0} had Invalid Quest: {1} (Record: {2})", Owner,
+				                  record.QuestTemplateId, record.QuestRecordId);
+				    }
 				}
 			}
 		}
+		#endregion
 
+		#region Remove
 		/// <summary>
 		/// Removes the given quest from the list of finished quests
 		/// </summary>
@@ -780,13 +881,19 @@ namespace WCell.RealmServer.Quests
 		{
 			if (m_FinishedQuests.Remove(id))
 			{
-				Owner.FindAndSendQGStatus();
+				Owner.FindAndSendAllNearbyQuestGiverStatuses();
 				return true;
 			}
 			return false;
 		}
+		#endregion
+
+
+		#region Quest interaction
+		public bool CanGiveQuestTo(Character chr)
+		{
+			return chr.IsAlliedWith(Owner); // since 3.0 you can share quests within any range
+		}
+		#endregion
 	}
 }
-
-
-

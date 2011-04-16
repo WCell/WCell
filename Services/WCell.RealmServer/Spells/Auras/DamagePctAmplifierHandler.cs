@@ -1,28 +1,28 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using WCell.Constants.Spells;
+using WCell.RealmServer.Misc;
+using WCell.RealmServer.Spells.Auras.Misc;
 
 namespace WCell.RealmServer.Spells.Auras
 {
-	public class DamagePctAmplifierHandler : AuraEffectHandler
+	public class DamagePctAmplifierHandler : AttackEventEffectHandler
 	{
-		protected internal override void Apply()
+		public override void OnBeforeAttack(DamageAction action)
 		{
-			var owner = Owner;
-			if (owner.Auras.DamagePctAmplifiers == null)
-			{
-				owner.Auras.DamagePctAmplifiers = new List<SpellEffect>(3);
-			}
-			owner.Auras.DamagePctAmplifiers.Add(SpellEffect);
 		}
 
-		protected internal override void Remove(bool cancelled)
+		public override void OnAttack(DamageAction action)
 		{
-			var owner = Owner;
-			if (owner.Auras.DamagePctAmplifiers != null)
+		}
+
+		public override void OnDefend(DamageAction action)
+		{
+			if (m_spellEffect.Spell.SchoolMask.HasAnyFlag(action.UsedSchool))
 			{
-				owner.Auras.DamagePctAmplifiers.Remove(SpellEffect);
+				action.ModDamagePercent(EffectValue);
 			}
 		}
 	}

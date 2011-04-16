@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,11 +18,12 @@ namespace WCell.RealmServer.Spells
 		private readonly Spell m_firstSpell;
 
 		public readonly SpellLineId LineId;
+		private int count;
 
 		public SpellLine(SpellLineId id, params Spell[] spells)
 		{
 			LineId = id;
-			AuraUID =  (uint)id;
+			AuraUID = (uint)id;
 			Spells = new List<Spell>();
 			if (spells.Length > 0)
 			{
@@ -41,12 +42,17 @@ namespace WCell.RealmServer.Spells
 
 		public string Name
 		{
-			get { return GetSpellLineName(m_firstSpell); }
+			get { return LineId.ToString(); }
 		}
 
 		public ClassId ClassId
 		{
 			get { return m_firstSpell.ClassId; }
+		}
+
+		public int SpellCount
+		{
+			get { return count; }
 		}
 
 		public Spell FirstRank
@@ -84,6 +90,17 @@ namespace WCell.RealmServer.Spells
 			}
 			Spells.Add(spell);
 			spell.Line = this;
+			count++;
+		}
+
+		public Spell GetRank(int rank)
+		{
+			var spell = m_firstSpell;
+			while (spell.Rank != rank)
+			{
+				spell = spell.NextRank;
+			}
+			return spell;
 		}
 
 		public IEnumerator<Spell> GetEnumerator()
@@ -94,31 +111,6 @@ namespace WCell.RealmServer.Spells
 		IEnumerator IEnumerable.GetEnumerator()
 		{
 			return GetEnumerator();
-		}
-
-		public static SpellLineId GetSpellLineId(Spell spell)
-		{
-			return EnumUtil.Parse<SpellLineId>(GetSpellLineName(spell));
-		}
-
-		public static string GetSpellLineName(Spell spell)
-		{
-			var name = spell.SpellId.ToString().Replace("ClassSkill", "").Replace("Rank", "");
-
-			var len = name.Length;
-
-			char c;
-			while (Char.IsDigit(c = name[len - 1]) || c == '_')
-			{
-				len--;
-			}
-
-			name = name.Substring(0, len);
-			if (spell.ClassId != 0 && !name.StartsWith(spell.ClassId.ToString()))
-			{
-				name = spell.ClassId + name;
-			}
-			return name;
 		}
 
 		public override string ToString()

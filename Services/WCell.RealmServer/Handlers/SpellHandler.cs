@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using NLog;
 using WCell.Constants;
 using WCell.Core;
 using WCell.Constants.Items;
@@ -7,6 +8,7 @@ using WCell.Constants.Spells;
 using WCell.Core.Network;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Network;
+using WCell.RealmServer.NPCs.Vehicles;
 using WCell.Util;
 using WCell.RealmServer.NPCs;
 
@@ -14,6 +16,9 @@ namespace WCell.RealmServer.Spells
 {
 	public static partial class SpellHandler
 	{
+		private static Logger log = LogManager.GetCurrentClassLogger();
+
+		#region OUT Packets
 		/// <summary>
 		/// Sends initially all spells and item cooldowns to the character
 		/// </summary>
@@ -24,14 +29,14 @@ namespace WCell.RealmServer.Spells
 			var len = 5 + (4 * spells.Count); // +(14 * cooldowns);
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_INITIAL_SPELLS, len))
 			{
-				packet.Write((byte)0);
-				packet.Write((ushort)spells.Count);
+				packet.Write((byte) 0);
+				packet.Write((ushort) spells.Count);
 
-				foreach (var spell in spells.SpellsById.Values)
+				foreach (var spell in spells.AllSpells)
 				{
 					packet.Write(spell.Id);
 					//packet.Write((ushort)0xEEEE);
-					packet.Write((ushort)0);
+					packet.Write((ushort) 0);
 				}
 
 				var countPos = packet.Position;
@@ -40,37 +45,31 @@ namespace WCell.RealmServer.Spells
 
 				// cooldowns
 				var now = DateTime.Now.Ticks;
-				if (spells.IdCooldowns != null)
+				foreach (var idCd in spells.IdCooldowns)
 				{
-					foreach (var idCd in spells.IdCooldowns.Values)
+					var delay = (int)(idCd.Until.Ticks - now);
+					if (delay > 10)
 					{
-						var delay = idCd.Until.Ticks - now;
-						if (delay > 10)
-						{
-							cooldownCount++;
-							packet.Write(idCd.SpellId);
-							packet.Write((ushort)idCd.ItemId);
-							packet.Write((ushort)0);
-							packet.Write(delay / 10000);
-							packet.Write(0);
-						}
+						cooldownCount++;
+						packet.Write(idCd.SpellId);
+						packet.Write((ushort) idCd.ItemId);
+						packet.Write((ushort) 0);
+						packet.Write(Utility.ToMilliSecondsInt(delay));
+						packet.Write(0);
 					}
 				}
-
-				if (spells.CategoryCooldowns != null)
+				
+				foreach (var catCd in spells.CategoryCooldowns)
 				{
-					foreach (var catCd in spells.CategoryCooldowns.Values)
+					var delay = (int)(catCd.Until.Ticks - now);
+					if (delay > 10)
 					{
-						var delay = catCd.Until.Ticks - now;
-						if (delay > 10)
-						{
-							cooldownCount++;
-							packet.Write(catCd.SpellId);
-							packet.Write((ushort)catCd.ItemId);
-							packet.Write((ushort)catCd.CategoryId);
-							packet.Write(0);
-							packet.Write(delay / 10000);
-						}
+						cooldownCount++;
+						packet.Write(catCd.SpellId);
+						packet.Write((ushort) catCd.ItemId);
+						packet.Write((ushort) catCd.CategoryId);
+						packet.Write(0);
+						packet.Write(Utility.ToMilliSecondsInt(delay));
 					}
 				}
 
@@ -86,7 +85,7 @@ namespace WCell.RealmServer.Spells
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_LEARNED_SPELL, 4))
 			{
 				packet.WriteUInt(spellId);
-			    packet.WriteUShort(0); // 3.3.3a
+				packet.WriteUShort(0); // 3.3.3a
 
 				client.Send(packet);
 			}
@@ -133,26 +132,27 @@ namespace WCell.RealmServer.Spells
 			return SpellTargetFlags.Self;
 		}
 
-        public static void SendUnitCastStart(IRealmClient client, SpellCast cast, WorldObject target)
-        {
-            // TODO: research and implement this.
-            // maybe sent for all targets in SpellCast object?
+		public static void SendUnitCastStart(IRealmClient client, SpellCast cast, WorldObject target)
+		{
+			// TODO: research and implement this.
+			// maybe sent for all targets in SpellCast object?
 
-            using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_UNIT_SPELLCAST_START, 28))
-            {
-                cast.Caster.EntityId.WritePacked(packet);   // caster pguid
-                target.EntityId.WritePacked(packet);        // target pguid
-                packet.Write(cast.Spell.Id);                // spell id
-                packet.Write(cast.Spell.CastDelay);         // cast time?
-                packet.Write(cast.Spell.CastDelay);         // cast time mod?
+			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_UNIT_SPELLCAST_START, 28))
+			{
+				cast.CasterReference.EntityId.WritePacked(packet);   // caster pguid
+				target.EntityId.WritePacked(packet);        // target pguid
+				packet.Write(cast.Spell.Id);                // spell id
+				packet.Write(cast.Spell.CastDelay);         // cast time?
+				packet.Write(cast.Spell.CastDelay);         // cast time mod?
 
-                client.Send(packet);
-            }
-        }
+				client.Send(packet);
+			}
+		}
 
 		public static void SendCastStart(SpellCast cast)
 		{
-			// TODO: can len be dynamic?
+			if (cast.CasterObject != null && !cast.CasterObject.IsAreaActive) return;
+
 			int len = 150;
 
 			var spell = cast.Spell;
@@ -172,12 +172,12 @@ namespace WCell.RealmServer.Spells
 				packet.Write(cast.CastDelay);
 				WriteTargets(packet, cast);
 
-				if (cast.StartFlags.HasFlag(CastFlags.Flag_0x800))
+				if (cast.StartFlags.HasFlag(CastFlags.RunicPowerGain))
 				{
 					packet.Write(0);
 				}
 
-				if (cast.StartFlags.HasFlag(CastFlags.Flag_0x200000))
+				if (cast.StartFlags.HasFlag(CastFlags.RuneCooldownList))
 				{
 					byte b1 = 0;
 					byte b2 = 0;
@@ -208,18 +208,18 @@ namespace WCell.RealmServer.Spells
 					packet.Write(0);
 				}
 
-                if (cast.TargetFlags.HasAnyFlag(SpellTargetFlags.DestinationLocation))
-                {
-                    packet.Write((byte)0); // unk 3.3.x?
-                }
+				if (cast.TargetFlags.HasAnyFlag(SpellTargetFlags.DestinationLocation))
+				{
+					packet.Write((byte)0); // unk 3.3.x?
+				}
 
-			    cast.Caster.SendPacketToArea(packet, true);
+				cast.SendPacketToArea(packet);
 			}
 		}
 
 		static void WriteAmmoInfo(SpellCast cast, RealmPacketOut packet)
 		{
-			var caster = cast.Caster;
+			var caster = cast.CasterObject;
 			if (caster is Character)
 			{
 				var weapon = ((Unit)caster).RangedWeapon as Item;
@@ -253,7 +253,7 @@ namespace WCell.RealmServer.Spells
 			{
 				var spell = cast.Spell;
 				if (cast.Selected is Unit && !spell.IsAreaSpell &&
-					(spell.Visual != 0 || spell.IsWeaponAbility))
+					(spell.Visual != 0 || spell.IsPhysicalAbility))
 				{
 					flags = SpellTargetFlags.Unit;
 				}
@@ -270,7 +270,7 @@ namespace WCell.RealmServer.Spells
 				{
 #if DEBUG
 					log.Warn("{0} casted Spell {1} with TargetFlags {2} but with nothing Selected",
-						cast.Caster, cast.Spell, flags);
+						cast.CasterObject, cast.Spell, flags);
 #endif
 					packet.Write((byte)0);
 				}
@@ -280,11 +280,11 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 			// 0x1010
-            if (flags.HasAnyFlag(SpellTargetFlags.TradeItem | SpellTargetFlags.Item))
+			if (flags.HasAnyFlag(SpellTargetFlags.TradeItem | SpellTargetFlags.Item))
 			{
-				if (cast.UsedItem != null)
+				if (cast.TargetItem != null)
 				{
-					cast.UsedItem.EntityId.WritePacked(packet);
+					cast.TargetItem.EntityId.WritePacked(packet);
 				}
 			}
 			// 0x20
@@ -343,9 +343,11 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// Sent after spell start. Triggers the casting animation
 		/// </summary>
-		public static void SendSpellGo(ObjectBase caster2, SpellCast cast,
-			ICollection<WorldObject> hitTargets, ICollection<CastMiss> missedTargets)
+		public static void SendSpellGo(IEntity caster2, SpellCast cast,
+			ICollection<WorldObject> hitTargets, ICollection<CastMiss> missedTargets, byte previousRuneMask)
 		{
+			if (cast.CasterObject != null && !cast.CasterObject.IsAreaActive) return;
+
 			// TODO: Dynamic packet length?
 			if (!cast.IsCasting)
 			{
@@ -358,7 +360,7 @@ namespace WCell.RealmServer.Spells
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_SPELL_GO, len))
 			{
 				//caster1.EntityId.WritePacked(packet);
-				cast.Caster.EntityId.WritePacked(packet);
+				cast.CasterReference.EntityId.WritePacked(packet);
 				caster2.EntityId.WritePacked(packet);
 				packet.Write(cast.Id);
 				packet.Write(cast.Spell.Id);
@@ -372,7 +374,7 @@ namespace WCell.RealmServer.Spells
 
 				packet.WriteByte(hitTargets != null ? hitTargets.Count : 0);
 
-				if (hitTargets != null)
+				if (hitTargets != null && cast.CasterObject != null)
 				{
 					foreach (var target in hitTargets)
 					{
@@ -380,7 +382,7 @@ namespace WCell.RealmServer.Spells
 
 						if (target is Character)
 						{
-							SendCastSuccess(cast.Caster, cast.Spell.Id, target as Character);
+							SendCastSuccess(cast.CasterObject, cast.Spell.Id, target as Character);
 						}
 					}
 				}
@@ -402,23 +404,24 @@ namespace WCell.RealmServer.Spells
 
 				WriteTargets(packet, cast);
 
-				if (castGoFlags.HasFlag(CastFlags.Flag_0x800))
+				// runes
+				if (castGoFlags.HasFlag(CastFlags.RunicPowerGain))
 				{
 					packet.Write(0);
 				}
 
-				if (castGoFlags.HasFlag(CastFlags.Flag_0x200000))
+				if (castGoFlags.HasFlag(CastFlags.RuneCooldownList))
 				{
-					byte b1 = 0;
-					byte b2 = 0;
-					packet.Write(b1);
-					packet.Write(b2);
-					for (int i = 0; i < 6; i++)
+					var chr = cast.CasterChar;
+					var newRuneMask = chr.PlayerSpells.Runes.GetActiveRuneMask();
+					packet.Write(previousRuneMask);
+					packet.Write(newRuneMask);
+					for (int i = 0; i < SpellConstants.MaxRuneCount; i++)
 					{
-						byte mask = (byte)(1 << i);
-						if ((mask & b1) != 0)
+						var mask = (byte)(1 << i);
+						if ((mask & previousRuneMask) != 0)
 						{
-							if ((mask & b2) == 0)
+							if ((mask & newRuneMask) == 0)
 							{
 								packet.WriteByte(0);
 							}
@@ -443,32 +446,30 @@ namespace WCell.RealmServer.Spells
 					packet.Write(0);
 				}
 
-                if (cast.TargetFlags.HasAnyFlag(SpellTargetFlags.DestinationLocation))
-                {
-                    packet.Write((byte)0); // unk 3.3.x?
-                }
+				if (cast.TargetFlags.HasAnyFlag(SpellTargetFlags.DestinationLocation))
+				{
+					packet.Write((byte)0); // unk 3.3.x?
+				}
 
-				cast.Caster.SendPacketToArea(packet, true);
+				cast.SendPacketToArea(packet);
 			}
 		}
 
 		private static void WriteCaster(SpellCast cast, RealmPacketOut packet)
 		{
-			if (cast.Caster == null) return;
-
-			if (cast.UsedItem != null)
+			if (cast.TargetItem != null)
 			{
 				//packet.Write(cast.UsedItem.EntityId);
-				cast.UsedItem.EntityId.WritePacked(packet);
+				cast.CasterItem.EntityId.WritePacked(packet);
 			}
 			else
 			{
 				//cast.UsedItem.EntityId.WritePacked(packet);
-				cast.Caster.EntityId.WritePacked(packet);
+				cast.CasterReference.EntityId.WritePacked(packet);
 			}
 
 			//packet.Write(cast.Caster.EntityId);
-			cast.Caster.EntityId.WritePacked(packet);
+			cast.CasterReference.EntityId.WritePacked(packet);
 		}
 
 		/// <summary>
@@ -520,12 +521,12 @@ namespace WCell.RealmServer.Spells
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_SPELL_FAILURE, 15))
 			{
-				spellCast.Caster.EntityId.WritePacked(packet);
+				spellCast.CasterReference.EntityId.WritePacked(packet);
 				packet.Write(spellCast.Id);
 				packet.Write(spellCast.Spell.Id);
 				packet.Write((byte)reason);
 
-				spellCast.Caster.SendPacketToArea(packet);
+				spellCast.SendPacketToArea(packet);
 			}
 		}
 
@@ -533,26 +534,26 @@ namespace WCell.RealmServer.Spells
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_SPELL_FAILED_OTHER, 15))
 			{
-				spellCast.Caster.EntityId.WritePacked(packet);
+				spellCast.CasterReference.EntityId.WritePacked(packet);
 				packet.Write(spellCast.Id);
 				packet.Write(spellCast.Spell.Id);
 				packet.Write((byte)reason);
 
-				spellCast.Caster.SendPacketToArea(packet);
+				spellCast.SendPacketToArea(packet);
 			}
 		}
 
 		/// <summary>
 		/// Delays the spell-cast
 		/// </summary>
-		public static void SendCastDelayed(WorldObject caster, int delay)
+		public static void SendCastDelayed(SpellCast cast, int delay)
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_SPELL_DELAYED, 12))
 			{
-				caster.EntityId.WritePacked(packet);
+				cast.CasterReference.EntityId.WritePacked(packet);
 				packet.Write(delay);
 
-				caster.SendPacketToArea(packet, true);
+				cast.SendPacketToArea(packet);
 			}
 		}
 
@@ -560,33 +561,29 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// Starts Channeling
 		/// </summary>
-		public static void SendChannelStart(WorldObject caster, SpellId spellId, int duration)
+		public static void SendChannelStart(SpellCast cast, SpellId spellId, int duration)
 		{
-			if (caster == null) return;
-
 			using (var packet = new RealmPacketOut(RealmServerOpCode.MSG_CHANNEL_START, 12))
 			{
-				caster.EntityId.WritePacked(packet);
+				cast.CasterReference.EntityId.WritePacked(packet);
 				packet.Write((uint)spellId);
 				packet.Write(duration);
 
-				caster.SendPacketToArea(packet, true);
+				cast.SendPacketToArea(packet);
 			}
 		}
 
 		/// <summary>
 		/// Changes the time of the channel
 		/// </summary>
-		public static void SendChannelUpdate(WorldObject caster, uint delay)
+		public static void SendChannelUpdate(SpellCast cast, uint delay)
 		{
-			if (caster == null) return;
-
 			using (var packet = new RealmPacketOut(RealmServerOpCode.MSG_CHANNEL_UPDATE, 12))
 			{
-				caster.EntityId.WritePacked(packet);
+				cast.CasterReference.EntityId.WritePacked(packet);
 				packet.Write(delay);
 
-				caster.SendPacketToArea(packet, true);
+				cast.SendPacketToArea(packet);
 			}
 		}
 
@@ -709,13 +706,15 @@ namespace WCell.RealmServer.Spells
 			using (var packet = new RealmPacketOut(opcode, 6))
 			{
 				packet.Write(groupBitNumber);
-				packet.Write((byte) type);
+				packet.Write((byte)type);
 				packet.Write(amount);
 
 				chr.Send(packet);
 			}
 		}
+		#endregion
 
+		#region IN Packets
 		[ClientPacketHandler(RealmServerOpCode.CMSG_CAST_SPELL)]
 		public static void HandleCastSpell(IRealmClient client, RealmPacketIn packet)
 		{
@@ -752,6 +751,12 @@ namespace WCell.RealmServer.Spells
 			uint spellId = packet.ReadUInt32();
 
 			var chr = client.ActiveCharacter;
+            var mover = chr.MoveControl.Mover;
+
+            //If the player is controlling another unit, ignore this
+            if (mover != chr)
+                return;
+
 			SpellCast cast = chr.SpellCast;
 			if (cast != null /* && cast.Spell.Id == spellId*/)
 			{
@@ -781,13 +786,44 @@ namespace WCell.RealmServer.Spells
 		{
 			var chr = client.ActiveCharacter;
 			var guid = packet.ReadEntityId();
-			var mob = chr.Region.GetObject(guid) as NPC;
+			var mob = chr.Map.GetObject(guid) as NPC;
+
+            if (mob == null)
+                return;
+
+            if(mob.Entry.IsVehicle)
+            {
+                var vehicle = mob as Vehicle;
+                var seat = vehicle.GetSeatFor(chr);
+				if (seat == null)
+				{
+					// must never happen since Vehicle is unclickable when full
+					return;
+				}
+                seat.Enter(chr);
+                return;
+            }
+
 			SpellTriggerInfo spellInfo;
 
-			if (mob != null && (spellInfo = mob.Entry.SpellTriggerInfo) != null)
+			if ((spellInfo = mob.Entry.SpellTriggerInfo) != null)
 			{
 				chr.SpellCast.Start(spellInfo.Spell, false);
 			}
 		}
+		#endregion
+
+		#region Runes
+		public static void SendConvertRune(IRealmClient client, uint index, RuneType type)
+		{
+			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_CONVERT_RUNE, 2))
+			{
+				packet.Write((byte)index);
+				packet.Write((byte)type);
+
+				client.Send(packet);
+			}
+		}
+		#endregion
 	}
 }

@@ -102,40 +102,6 @@ namespace WCell.RealmServer.Commands
 		}
 		#endregion
 
-		#region SendSpellMiss
-		public class SendSpellMissCommand : SubCommand
-		{
-			protected SendSpellMissCommand() { }
-
-			protected override void Initialize()
-			{
-				Init("SpellMiss", "SM");
-				EnglishParamInfo = "<spellId> <0/1> <defaultReason>";
-				EnglishDescription = "Sends a SpellMissLog packet to everyone in the area where you are the caster and everyone within 10y radius is the targets.";
-			}
-
-			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
-			{
-				var spell = trigger.Text.NextEnum(SpellId.None);
-				var doIt = trigger.Text.NextBool();
-				var reason = trigger.Text.NextEnum(CastMissReason.None);
-
-				var objs = trigger.Args.Target.GetObjectsInRadius(10f, ObjectTypes.All, false, 0);
-
-				var misses = new List<CastMiss>();
-				foreach (var obj in objs)
-				{
-					if (obj != trigger.Args.Character)
-					{
-						misses.Add(new CastMiss(obj, reason));
-					}
-				}
-
-				CombatLogHandler.SendSpellMiss(spell, trigger.Args.Character, doIt, misses);
-			}
-		}
-		#endregion
-
 		#region SendBGError
 		public class SendBGErrorCommand : SubCommand
 		{
@@ -171,41 +137,42 @@ namespace WCell.RealmServer.Commands
 		protected override void Initialize()
 		{
 			Init("POI");
-			EnglishParamInfo = "[-[e][f] <extra> <flags>] <x> <y> [<name>]";
+			EnglishParamInfo = "[-[d][f] <Data> <Flags>] <x> <y> [<name>]";
 			EnglishDescription = "Sends a Point of interest entry to the target (shows up on the minimap while not too close).";
 		}
 
 		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 		{
 			var mod = trigger.Text.NextModifiers();
-			int extra;
-			GossipPOIFlags flags;
-			if (mod.Contains("e"))
+			int Data;
+			GossipPOIFlags Flags;
+			if (mod.Contains("d"))
 			{
-				extra = trigger.Text.NextInt(0);
+				Data = trigger.Text.NextInt(0);
 			}
 			else
 			{
-				extra = 0;
+				Data = 0;
 			}
 			if (mod.Contains("f"))
 			{
-				flags = trigger.Text.NextEnum(GossipPOIFlags.None);
+				Flags = trigger.Text.NextEnum(GossipPOIFlags.None);
 			}
 			else
 			{
-				flags = GossipPOIFlags.None;
+				Flags = GossipPOIFlags.Six;
 			}
-			var x = trigger.Text.NextFloat();
-			var y = trigger.Text.NextFloat();
-			var name = trigger.Text.Remainder;
+			var X = trigger.Text.NextFloat();
+			var Y = trigger.Text.NextFloat();
+            var Icon = 7;
+            var Name = trigger.Text.Remainder;
 
-			if (name.Length == 0)
+			if (Name.Length == 0)
 			{
-				name = trigger.Args.User.Name;
+				Name = trigger.Args.User.Name;
 			}
 
-			GossipHandler.SendGossipPOI(trigger.Args.Target as Character, flags, x, y, extra, name);
+			GossipHandler.SendGossipPOI(trigger.Args.Target as Character, Flags, X, Y, Data, Icon, Name);
 		}
 
 		public override ObjectTypeCustom TargetTypes
@@ -286,7 +253,7 @@ namespace WCell.RealmServer.Commands
 			}
 		}
 
-		public override bool NeedsCharacter
+		public override bool RequiresCharacter
 		{
 			get
 			{
@@ -320,9 +287,9 @@ namespace WCell.RealmServer.Commands
 			get { return RoleStatus.Admin; }
 		}
 
-		public class ItemsCommand : SubCommand
+		public class LoadItemsCommand : SubCommand
 		{
-			protected ItemsCommand() { }
+			protected LoadItemsCommand() { }
 
 			protected override void Initialize()
 			{
@@ -338,7 +305,7 @@ namespace WCell.RealmServer.Commands
 				}
 				else
 				{
-					RealmServer.Instance.AddMessage(() =>
+					RealmServer.IOQueue.AddMessage(() =>
 					{
 						trigger.Reply("Loading Items...");
 						ItemMgr.LoadAll();
@@ -349,9 +316,9 @@ namespace WCell.RealmServer.Commands
 		}
 
 
-		public class GOsCommand : SubCommand
+		public class LoadGOsCommand : SubCommand
 		{
-			protected GOsCommand() { }
+			protected LoadGOsCommand() { }
 
 			protected override void Initialize()
 			{
@@ -367,14 +334,14 @@ namespace WCell.RealmServer.Commands
 				}
 				else
 				{
-					RealmServer.Instance.AddMessage(() =>
+					RealmServer.IOQueue.AddMessage(() =>
 					{
 						trigger.Reply("Loading GOs...");
 						GOMgr.LoadAll();
 
-						if (Region.AutoSpawn)
+						if (Map.AutoSpawnMaps)
 						{
-							RegionCommand.SpawnRegionCommand.SpawnAllRegions(trigger);
+							MapCommand.MapSpawnCommand.SpawnAllMaps(trigger);
 						}
 						trigger.Reply("Done.");
 					});
@@ -383,9 +350,9 @@ namespace WCell.RealmServer.Commands
 		}
 
 
-		public class NPCsCommand : SubCommand
+		public class LoadNPCsCommand : SubCommand
 		{
-			protected NPCsCommand() { }
+			protected LoadNPCsCommand() { }
 
 			protected override void Initialize()
 			{
@@ -402,7 +369,7 @@ namespace WCell.RealmServer.Commands
 				}
 				else
 				{
-					RealmServer.Instance.AddMessage(() =>
+					RealmServer.IOQueue.AddMessage(() =>
 					{
 						trigger.Reply("Loading NPCs...");
 						if (!trigger.Text.HasNext)
@@ -426,9 +393,9 @@ namespace WCell.RealmServer.Commands
 							}
 						}
 
-						if (Region.AutoSpawn)
+						if (Map.AutoSpawnMaps)
 						{
-							RegionCommand.SpawnRegionCommand.SpawnAllRegions(trigger);
+							MapCommand.MapSpawnCommand.SpawnAllMaps(trigger);
 						}
 
 						trigger.Reply("Done.");
@@ -438,9 +405,9 @@ namespace WCell.RealmServer.Commands
 		}
 
 
-		public class LoadQuestCommand : SubCommand
+		public class LoadQuestsCommand : SubCommand
 		{
-			protected LoadQuestCommand() { }
+			protected LoadQuestsCommand() { }
 
 			protected override void Initialize()
 			{
@@ -456,7 +423,7 @@ namespace WCell.RealmServer.Commands
 				}
 				else
 				{
-					RealmServer.Instance.AddMessage(() =>
+					RealmServer.IOQueue.AddMessage(() =>
 					{
 						trigger.Reply("Loading Quests...");
 						QuestMgr.LoadAll();
@@ -466,9 +433,9 @@ namespace WCell.RealmServer.Commands
 			}
 		}
 
-		public class LootCommand : SubCommand
+		public class LoadLootCommand : SubCommand
 		{
-			protected LootCommand() { }
+			protected LoadLootCommand() { }
 
 			protected override void Initialize()
 			{
@@ -484,7 +451,7 @@ namespace WCell.RealmServer.Commands
 				}
 				else
 				{
-					RealmServer.Instance.AddMessage(() =>
+					RealmServer.IOQueue.AddMessage(() =>
 					{
 						trigger.Reply("Loading Loot...");
 						LootMgr.LoadAll();
@@ -494,16 +461,16 @@ namespace WCell.RealmServer.Commands
 			}
 		}
 
-		public class AllCommand : SubCommand
+		public class LoadAllCommand : SubCommand
 		{
-			protected AllCommand() { }
+			protected LoadAllCommand() { }
 
 			protected override void Initialize()
 			{
 				Init("All");
 				EnglishParamInfo = "[-w]";
 				EnglishDescription = "Loads all static content definitions from DB. "
-						+ "The -w switch will ensure that execution (of the current Region) won't continue until Loading finished.";
+						+ "The -w switch will ensure that execution (of the current Map) won't continue until Loading finished.";
 			}
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
@@ -514,13 +481,31 @@ namespace WCell.RealmServer.Commands
 				}
 				else
 				{
-					RealmServer.Instance.AddMessage(() => LoadAll(trigger));
+					RealmServer.IOQueue.AddMessage(() => LoadAll(trigger));
 				}
 			}
 
 			void LoadAll(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
 				var start = DateTime.Now;
+
+                try
+                {
+                    if (ItemMgr.Loaded)
+                    {
+                        trigger.Reply("Item definitions have already been loaded.");
+                    }
+                    else
+                    {
+                        trigger.Reply("Loading Items...");
+                        ItemMgr.LoadAll();
+                        trigger.Reply("Done.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    FailNotify(trigger, ex);
+                }
 
 				try
 				{
@@ -560,25 +545,6 @@ namespace WCell.RealmServer.Commands
 
 				try
 				{
-					if (ItemMgr.Loaded)
-					{
-						trigger.Reply("Item definitions have already been loaded.");
-					}
-					else
-					{
-						trigger.Reply("Loading Items...");
-						ItemMgr.LoadAll();
-						trigger.Reply("Done.");
-					}
-				}
-				catch (Exception ex)
-				{
-					FailNotify(trigger, ex);
-				}
-
-
-				try
-				{
 					if (QuestMgr.Loaded)
 					{
 						trigger.Reply("Quest definitions have already been loaded.");
@@ -613,30 +579,12 @@ namespace WCell.RealmServer.Commands
 					FailNotify(trigger, ex);
 				}
 
-                try
-                {
-                    if (NPCAiTextMgr.Loaded)
-                    {
-                        trigger.Reply("NPC AI texts has already been loaded.");
-                    }
-                    else
-                    {
-                        trigger.Reply("Loading NPC AI texts...");
-                        NPCAiTextMgr.LoadEntries();
-                        trigger.Reply("Done.");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    FailNotify(trigger, ex);
-                }
-
 				trigger.Reply("All done - Loading took: " + (DateTime.Now - start));
 				GC.Collect(2, GCCollectionMode.Optimized);
 
-				if (Region.AutoSpawn)
+				if (Map.AutoSpawnMaps)
 				{
-					RegionCommand.SpawnRegionCommand.SpawnAllRegions(trigger);
+					MapCommand.MapSpawnCommand.SpawnAllMaps(trigger);
 				}
 			}
 		}
@@ -648,17 +596,14 @@ namespace WCell.RealmServer.Commands
 	{
 		protected override void Initialize()
 		{
-			Init("ForgetSelf");
+			Init("ResetWorld");
 			EnglishParamInfo = "";
 		}
 
 		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 		{
 			var chr = (Character)trigger.Args.Target;
-			var pos = chr.Position;
-
-			MovementHandler.SendNewWorld(chr.Client, chr.RegionId, ref pos, chr.Orientation);
-			chr.ClearSelfKnowledge();
+			chr.ResetOwnWorld();
 		}
 
 		public override ObjectTypeCustom TargetTypes
@@ -705,7 +650,7 @@ namespace WCell.RealmServer.Commands
 					var value = trigger.Text.NextInt();
 					//states.Add(new WorldState(key, value));
 				}
-				MiscHandler.SendInitWorldStates(chr, chr.Region.Id, chr.ZoneId, (uint)area, states.ToArray());
+				WorldStateHandler.SendInitWorldStates(chr, chr.Map.Id, chr.ZoneId, (uint)area, states.ToArray());
 			}
 		}
 
@@ -863,7 +808,7 @@ namespace WCell.RealmServer.Commands
 
 		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 		{
-			RealmServer.Instance.WaitOne();
+			RealmServer.IOQueue.WaitOne();
 		}
 	}
 	#endregion

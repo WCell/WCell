@@ -25,7 +25,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	/// </summary>
 	public class GhostHandler : AuraEffectHandler
 	{
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			var owner = m_aura.Auras.Owner;
 			if (owner is Character)
@@ -39,14 +39,14 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			}
 
 			// run faster
-			owner.SpeedFactor += Character.DeathSpeedIncrease;
+			owner.SpeedFactor += Character.DeathSpeedFactorIncrease;
 
 			// walk on water
 			owner.WaterWalk++;
 			m_aura.Auras.GhostAura = m_aura;
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			var owner = m_aura.Auras.Owner;
 			if (owner is Character)
@@ -56,13 +56,13 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			if (owner.Race == RaceId.NightElf)
 			{
 				// Whisp
-				m_aura.Auras.Cancel(SpellId.Ghost_3);
+				m_aura.Auras.Remove(SpellId.Ghost_3);
 			}
 
 			if (m_aura.Auras.GhostAura == m_aura)
 				m_aura.Auras.GhostAura = null;
 
-			owner.SpeedFactor -= Character.DeathSpeedIncrease;
+			owner.SpeedFactor -= Character.DeathSpeedFactorIncrease;
 			owner.WaterWalk--;
 			m_aura.Auras.Owner.OnResurrect();
 		}

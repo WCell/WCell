@@ -142,7 +142,7 @@ namespace WCell.Core
 
 		public virtual void GetStats(ICollection<string> statLines)
 		{
-			GC.Collect(2, GCCollectionMode.Optimized);
+			//GC.Collect(2, GCCollectionMode.Optimized);
 			var thisProcess = Process.GetCurrentProcess();
 
 			var processUptime = DateTime.Now - thisProcess.StartTime;
@@ -150,16 +150,16 @@ namespace WCell.Core
 			var totalBytesSent = TotalBytesSent;
 			var totalBytesRcvd = TotalBytesReceived;
 
-			var averageThroughputUp = totalBytesSent/processUptime.TotalSeconds;
-			var averageThroughputDown = totalBytesRcvd/processUptime.TotalSeconds;
+			var averageThroughputUp = totalBytesSent / processUptime.TotalSeconds;
+			var averageThroughputDown = totalBytesRcvd / processUptime.TotalSeconds;
 
 			double currentUploadSpeed, currentDownloadSpeed;
 
 			var delta = (DateTime.Now - m_lastUpdate).TotalSeconds;
 			m_lastUpdate = DateTime.Now;
 
-			currentUploadSpeed = (totalBytesSent - m_lastBytesSent)/delta;
-			currentDownloadSpeed = (totalBytesRcvd - m_lastBytesReceived)/delta;
+			currentUploadSpeed = (totalBytesSent - m_lastBytesSent) / delta;
+			currentDownloadSpeed = (totalBytesRcvd - m_lastBytesReceived) / delta;
 			m_lastBytesSent = totalBytesSent;
 			m_lastBytesReceived = totalBytesRcvd;
 
@@ -169,19 +169,18 @@ namespace WCell.Core
 
 			statLines.Add(string.Format("+ CPU Usage: {0:0.00}% <-> Memory Usage: {1}", cpuUsage, WCellUtil.FormatBytes(memUsage)));
 			statLines.Add(string.Format("+ Upload: Total {0} - Avg {1}/s - Current {2}/s",
-			                            WCellUtil.FormatBytes(totalBytesSent), WCellUtil.FormatBytes(averageThroughputUp),
-			                            WCellUtil.FormatBytes(currentUploadSpeed)));
+										WCellUtil.FormatBytes(totalBytesSent), WCellUtil.FormatBytes(averageThroughputUp),
+										WCellUtil.FormatBytes(currentUploadSpeed)));
 			statLines.Add(string.Format("+ Download: Total: {0} - Avg: {1}/s - Current {2}/s",
-			                            WCellUtil.FormatBytes(totalBytesRcvd), WCellUtil.FormatBytes(averageThroughputDown),
-			                            WCellUtil.FormatBytes(currentDownloadSpeed)));
+										WCellUtil.FormatBytes(totalBytesRcvd), WCellUtil.FormatBytes(averageThroughputDown),
+										WCellUtil.FormatBytes(currentDownloadSpeed)));
 
-			var gcCounts = new int[GC.MaxGeneration];
-			for (var i = 0; i < GC.MaxGeneration; i++)
+			var gcCounts = new int[GC.MaxGeneration + 1];
+			for (var i = 0; i <= GC.MaxGeneration; i++)
 			{
 				gcCounts[i] = GC.CollectionCount(i);
 			}
-			statLines.Add(string.Format("+ Thread Count: {0} - GC Counts: {1}", thisProcess.Threads.Count,
-			                            gcCounts.ToString(", ")));
+			statLines.Add(string.Format("+ Thread Count: {0} - GC Counts: {1}", thisProcess.Threads.Count, gcCounts.ToString(", ")));
 		}
 	}
 }

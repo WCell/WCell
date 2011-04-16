@@ -129,7 +129,24 @@ namespace WCell.Util
 			}
 		}
 
+		#region Times
+		public const int TicksPerSecond = 10000;
 		private const long TICKS_SINCE_1970 = 621355968000000000; // .NET ticks for 1970
+
+		public static int ToMilliSecondsInt(this DateTime time)
+		{
+			return (int)(time.Ticks / TicksPerSecond);
+		}
+
+		public static int ToMilliSecondsInt(this TimeSpan time)
+		{
+			return (int)(time.Ticks / TicksPerSecond);
+		}
+
+		public static int ToMilliSecondsInt(int ticks)
+		{
+			return ticks / TicksPerSecond;
+		}
 
 		/// <summary>
 		/// Gets the system uptime.
@@ -211,7 +228,7 @@ namespace WCell.Util
 		/// Gets the time between the Unix epich and a specific <see cref="DateTime">time</see>.
 		/// </summary>
 		/// <param name="time">the end time</param>
-		/// <returns>the time between the unix epoch and the supplied <see cref="DateTime">time</see> in ticks</returns>
+		/// <returns>the time between the unix epoch and the supplied <see cref="DateTime">time</see> in seconds</returns>
 		public static uint GetEpochTimeFromDT()
 		{
 			return GetEpochTimeFromDT(DateTime.Now);
@@ -221,37 +238,12 @@ namespace WCell.Util
 		/// Gets the time between the Unix epich and a specific <see cref="DateTime">time</see>.
 		/// </summary>
 		/// <param name="time">the end time</param>
-		/// <returns>the time between the unix epoch and the supplied <see cref="DateTime">time</see> in ticks</returns>
+		/// <returns>the time between the unix epoch and the supplied <see cref="DateTime">time</see> in seconds</returns>
 		public static uint GetEpochTimeFromDT(DateTime time)
 		{
 			return (uint)((time.Ticks - TICKS_SINCE_1970) / 10000000L);
 		}
-
-		/// <summary>
-		/// Reverses the contents of an array.
-		/// </summary>
-		/// <typeparam name="T">type of the array</typeparam>
-		/// <param name="buffer">array of objects to reverse</param>
-		public static void Reverse<T>(T[] buffer)
-		{
-			Reverse(buffer, buffer.Length);
-		}
-
-		/// <summary>
-		/// Reverses the contents of an array.
-		/// </summary>
-		/// <typeparam name="T">type of the array</typeparam>
-		/// <param name="buffer">array of objects to reverse</param>
-		/// <param name="length">number of objects in the array</param>
-		public static void Reverse<T>(T[] buffer, int length)
-		{
-			for (int i = 0; i < length / 2; i++)
-			{
-				T temp = buffer[i];
-				buffer[i] = buffer[length - i - 1];
-				buffer[length - i - 1] = temp;
-			}
-		}
+		#endregion
 
 		/// <summary>
 		/// Swaps one reference with another atomically.
@@ -503,38 +495,6 @@ namespace WCell.Util
 
 		#endregion
 
-		public static void ReverseArr<T>(this T[] arr)
-		{
-			var len = arr.Length - 1;
-			for (int i = 0; i < arr.Length / 2; i++)
-			{
-				var bottom = arr[i];
-				var top = arr[len - i];
-
-				arr[i] = top;
-				arr[len - i] = bottom;
-			}
-		}
-
-		/// <summary>
-		/// Sets all values of the given array between offset and length to the given obj
-		/// </summary>
-		public static void Fill<T>(this T[] arr, T obj, int offset, int until)
-		{
-			for (var i = offset; i <= until; i++)
-			{
-				arr[i] = obj;
-			}
-		}
-
-		public static void Fill(this int[] arr, int offset, int until, int startVal)
-		{
-			for (var i = offset; i <= until; i++)
-			{
-				arr[i] = startVal++;
-			}
-		}
-
 		#region Random
 
 		private static long holdrand = DateTime.Now.Ticks;
@@ -770,6 +730,11 @@ namespace WCell.Util
 			return indices.ToArray();
 		}
 
+		public static uint Sum(this IEnumerable<uint> arr)
+		{
+			return arr.Aggregate(0u, (current, n) => current + n);
+		}
+
 		/// <summary>
 		/// Creates and returns an array of all indices that are set within the given flag field.
 		/// eg. 11000011 would result into an array containing: 0,1,6,7
@@ -968,6 +933,7 @@ namespace WCell.Util
 			return addr ?? IPAddress.Loopback;
 		}
 
+		#region Format
 		public static string FormatMoney(uint money)
 		{
 			var str = "";
@@ -999,34 +965,7 @@ namespace WCell.Util
 			return string.Format("{0:00}h {1:00}m {2:00}s {3:00}ms", time.Hour, time.Minute,
 								 time.Second, time.Millisecond);
 		}
-
-		public static List<TOutput> TransformList<TInput, TOutput>(this IEnumerable<TInput> enumerable,
-																   Func<TInput, TOutput> transformer)
-		{
-			var output = new List<TOutput>(enumerable.Count());
-
-			foreach (var input in enumerable)
-			{
-				output.Add(transformer(input));
-			}
-
-			return output;
-		}
-
-		public static TOutput[] TransformArray<TInput, TOutput>(this IEnumerable<TInput> enumerable,
-																Func<TInput, TOutput> transformer)
-		{
-			var output = new TOutput[enumerable.Count()];
-
-			var enumerator = enumerable.GetEnumerator();
-			for (var i = 0; i < output.Length; i++)
-			{
-				enumerator.MoveNext();
-				output[i] = transformer(enumerator.Current);
-			}
-
-			return output;
-		}
+		#endregion
 
 		public static O GetRandom<O>(this IList<O> os)
 		{
@@ -1038,7 +977,7 @@ namespace WCell.Util
 		/// </summary>
 		public static bool IsValidEMailAddress(string mail)
 		{
-			return EmailSyntaxValidator.Valid(mail, false);
+			return EmailAddressParser.Valid(mail, false);
 		}
 
 		#region Types
@@ -1257,6 +1196,7 @@ namespace WCell.Util
 
 		#endregion
 
+		#region Strings
 		public static string GetStringRepresentation(object val)
 		{
 			if (val is string)
@@ -1275,12 +1215,25 @@ namespace WCell.Util
 			{
 				return ((TimeSpan)val).Format();
 			}
+			var valType = val.GetType();
+			if (valType.IsEnum)
+			{
+				var underlyingType = Enum.GetUnderlyingType(valType);
+				var underVal = Convert.ChangeType(val, underlyingType);
+				return val + " (" + underVal + ")";
+			}
 			return val.ToString();
 		}
 
 		public static bool ContainsIgnoreCase(this string str, string part)
 		{
 			return str.IndexOf(part, StringComparison.InvariantCultureIgnoreCase) > -1;
+		}
+		#endregion
+
+		public static long MakeLong(int low, int high)
+		{
+			return low | ((long)high << 32);
 		}
 
 		private static readonly Random rnd = new Random();
@@ -1300,6 +1253,10 @@ namespace WCell.Util
 		}
 	}
 
+	#region SingleEnumerator
+	/// <summary>
+	/// Returns a single element
+	/// </summary>
 	public class SingleEnumerator<T> : IEnumerator<T>
 		where T : class
 	{
@@ -1331,7 +1288,7 @@ namespace WCell.Util
 			{
 				var current = m_Current;
 				m_Current = null;
-				return Current;
+				return current;
 			}
 			private set { m_Current = value; }
 		}
@@ -1341,4 +1298,5 @@ namespace WCell.Util
 			get { return Current; }
 		}
 	}
+	#endregion
 }

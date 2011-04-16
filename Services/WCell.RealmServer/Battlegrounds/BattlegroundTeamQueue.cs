@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using WCell.Constants;
 using WCell.RealmServer.Entities;
 using System.Threading;
@@ -60,7 +60,7 @@ namespace WCell.RealmServer.Battlegrounds
 				}
 				else
 				{
-					var chrs = group.GetCharacters();
+					var chrs = group.GetAllCharacters();
 
 					// if no characters in the group, return the original character
 					if (chrs.Length == 0)
@@ -120,13 +120,13 @@ namespace WCell.RealmServer.Battlegrounds
 				lock (PendingRequests)
 				{
 					PendingRequests.AddLast(request);
-					m_chrCount += request.Characters.Count;
+					m_chrCount += request.Characters.CharacterCount;
 				}
 			}
 			else
 			{
 				PendingRequests.AddLast(request);
-				m_chrCount += request.Characters.Count;
+				m_chrCount += request.Characters.CharacterCount;
 			}
 		}
 
@@ -180,7 +180,7 @@ namespace WCell.RealmServer.Battlegrounds
 			{
 				if (node.Value == relation)
 				{
-					m_chrCount -= relation.Characters.Count;
+					m_chrCount -= relation.Characters.CharacterCount;
 
 					var next = node.Next;
 					relation.IsEnqueued = false;
@@ -240,7 +240,7 @@ namespace WCell.RealmServer.Battlegrounds
 				var relation = node.Value;
 				if (relation.Count <= amount)
 				{
-					m_chrCount -= relation.Characters.Count;
+					m_chrCount -= relation.Characters.CharacterCount;
 
 					added += team.Invite(relation.Characters);
 

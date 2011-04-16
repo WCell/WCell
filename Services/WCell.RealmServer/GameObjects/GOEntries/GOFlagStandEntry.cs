@@ -17,7 +17,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// <summary>
 		/// Activation radius (?)
 		/// </summary>
-    	public uint Radius
+    	public int Radius
     	{
     		get { return Fields[ 2 ]; }
     	}
@@ -25,7 +25,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// <summary>
 		/// SpellId from Spells.dbc
 		/// </summary>
-    	public uint ReturnAuraId
+    	public int ReturnAuraId
     	{
     		get { return Fields[ 3 ]; }
     	}
@@ -46,14 +46,14 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// <summary>
 		/// Id of a text object that is shown when the object is activated (?)
 		/// </summary>
-    	public override uint OpenTextId
+    	public override int OpenTextId
     	{
     		get { return Fields[ 6 ]; }
     	}
 
 		protected internal override void InitEntry()
 		{
-			Lock = LockEntry.Entries.Get(LockId);
+			Lock = LockEntry.Entries.Get((uint)LockId);
 		    LosOk = Fields[7] != 0;
 		}
 	}

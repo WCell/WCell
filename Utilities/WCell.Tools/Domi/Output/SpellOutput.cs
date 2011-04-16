@@ -21,6 +21,7 @@ using System.Text;
 using System.IO;
 using WCell.RealmServer;
 using WCell.RealmServer.Addons;
+using WCell.RealmServer.Entities;
 using WCell.RealmServer.Factions;
 using WCell.RealmServer.Items;
 using WCell.RealmServer.Spells;
@@ -52,9 +53,9 @@ namespace WCell.Tools.Domi.Output
 
 		public static void Init()
 		{
-			RealmDBUtil.Initialize();
+			RealmDBMgr.Initialize();
 			RealmAddonMgr.Initialize(RealmServer.RealmServer.InitMgr);
-			ContentHandler.Initialize();
+			ContentMgr.Initialize();
 
 			SpellHandler.LoadSpells();
 			FactionMgr.Initialize();
@@ -215,7 +216,7 @@ namespace WCell.Tools.Domi.Output
 
 			using (var writer = new StreamWriter(ToolConfig.OutputDir + "ChanneledSpells.txt", false))
 			{
-				var caster = new CasterInfo();
+				var caster = new ObjectReference();
 				foreach (var spell in spells)
 				{
 					writer.WriteLine("Spell: " + spell);
@@ -239,10 +240,10 @@ namespace WCell.Tools.Domi.Output
 
 		private struct TargetPair
 		{
-			public ImplicitTargetType TargetA;
-			public ImplicitTargetType TargetB;
+			public ImplicitSpellTargetType TargetA;
+			public ImplicitSpellTargetType TargetB;
 
-			public TargetPair(ImplicitTargetType targetA, ImplicitTargetType targetB)
+			public TargetPair(ImplicitSpellTargetType targetA, ImplicitSpellTargetType targetB)
 			{
 				TargetA = targetA;
 				TargetB = targetB;
@@ -277,7 +278,7 @@ namespace WCell.Tools.Domi.Output
 					bool contin = false;
 					foreach (SpellEffect effect in spell.Effects)
 					{
-						if (effect.ImplicitTargetA != ImplicitTargetType.None && effect.ImplicitTargetB != ImplicitTargetType.None)
+						if (effect.ImplicitTargetA != ImplicitSpellTargetType.None && effect.ImplicitTargetB != ImplicitSpellTargetType.None)
 						{
 							contin = true;
 

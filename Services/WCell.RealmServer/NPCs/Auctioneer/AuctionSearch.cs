@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using WCell.Constants.Items;
 using WCell.RealmServer.Database;
@@ -82,7 +82,4 @@ namespace WCell.RealmServer.NPCs.Auctioneer
         }
     }
 }
-
-
-
 

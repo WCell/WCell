@@ -14,62 +14,39 @@
  *
  *************************************************************************/
 
+using System;
 using WCell.Constants;
+using WCell.Constants.Spells;
+using WCell.RealmServer.Misc;
+using WCell.RealmServer.Spells.Auras.Misc;
+
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
-	public interface IDamageAbsorber
-	{
-		int AbsorbValue
-		{
-			get;
-			set;
-		}
-
-		DamageSchoolMask AbsorbSchool
-		{
-			get;
-		}
-	}
 
 	/// <summary>
 	/// Adds damage absorption.
 	/// 
-	/// Effect is now two-fold:
-	/// 1. Will absorb damage every time wearer is hit
-	/// 2. "You have a chance equal to your Parry chance of taking $s1% less damage from a direct damage spell."
+	/// There are two kinds of absorbtions:
+	/// 1. 100% absorbtion, up until a max is absorbed (usually)
+	/// 2. Less than 100% absorption until time runs out (or max is absorbed -> Needs customization, since its usually different each time)
 	/// </summary>
-	public class SchoolAbsorbHandler : AuraEffectHandler, IDamageAbsorber
+	public class SchoolAbsorbHandler : AttackEventEffectHandler
 	{
-		public int AbsorbValue
+		public int RemainingValue;
+
+		protected override void Apply()
 		{
-			get { return EffectValue; }
-			set
+			RemainingValue = EffectValue;
+			base.Apply();
+		}
+
+		public override void OnDefend(DamageAction action)
+		{
+			RemainingValue = action.Absorb(RemainingValue, (DamageSchoolMask)m_spellEffect.MiscValue);
+			if (RemainingValue <= 0)
 			{
-				BaseEffectValue = value;
-				if (EffectValue == 0)
-				{
-					if (m_aura.IsActive)
-					{
-						m_aura.Remove(false);
-					}
-				}
+				Owner.AddMessage(m_aura.Cancel);
 			}
-		}
-
-		public DamageSchoolMask AbsorbSchool
-		{
-			get { return (DamageSchoolMask)m_spellEffect.MiscValue; }
-		}
-
-		protected internal override void Apply()
-		{
-			m_aura.Auras.Owner.AddDmgAbsorption(this);
-		}
-
-
-		protected internal override void Remove(bool cancelled)
-		{
-			m_aura.Auras.Owner.RemoveDmgAbsorption(this);
 		}
 	}
 };

@@ -1,4 +1,4 @@
-﻿namespace WCell.Constants.Items
+namespace WCell.Constants.Items
 {
 	/// <summary>
 	/// Item modifiers
@@ -6,7 +6,13 @@
 	public enum ItemModType
 	{
 		None = -1,
+		/// <summary>
+		/// Unused?
+		/// </summary>
 		Power = 0,
+		/// <summary>
+		/// Unused?
+		/// </summary>
 		Health = 1,
 		/// <summary>
 		/// Unused
@@ -67,6 +73,9 @@
 		/// </summary>
 		HitRating = 31,
 
+		/// <summary>
+		/// Used
+		/// </summary>
 		CriticalStrikeRating = 32,
 		/// <summary>
 		/// Unused
@@ -95,16 +104,6 @@
 		SpellPenetration = 47,
 		BlockValue = 48,
 
-        // 4.0.0
-        MasteryRating = 49,
-        ExtraArmor = 50,
-        FireResistance = 51,
-        FrostResistance = 52,
-        HolyResistance = 53,
-        ShadowResistance = 54,
-        NatureResistence = 55,
-        ArcaneResistance = 56,
-
-		End
+		End = 100
 	}
 }

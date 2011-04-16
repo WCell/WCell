@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,7 +14,7 @@ namespace WCell.Constants.World
 
 		public static WorldState[] GlobalStates = new WorldState[1];
 
-		public static readonly WorldState[][] RegionStates = new WorldState[(int)MapId.End][];
+		public static readonly WorldState[][] MapStates = new WorldState[(int)MapId.End][];
 
 		public static readonly WorldState[][] ZoneStates = new WorldState[(int)ZoneId.End][];
 
@@ -45,7 +45,7 @@ namespace WCell.Constants.World
 							arr = new WorldState[1];
 						}
 						ArrayUtil.AddOnlyOne(ref arr, state);
-						RegionStates[(int)state.MapId] = arr;
+						MapStates[(int)state.MapId] = arr;
 					}
 					else
 					{
@@ -62,9 +62,9 @@ namespace WCell.Constants.World
 			AllStates[(int)state.Key] = state;
 		}
 
-		public static WorldState[] GetStates(MapId region)
+		public static WorldState[] GetStates(MapId map)
 		{
-			return RegionStates.Get((uint)region) ?? new WorldState[0];
+			return MapStates.Get((uint)map) ?? new WorldState[0];
 		}
 
 		public static WorldState[] GetStates(ZoneId zone)
@@ -102,6 +102,36 @@ namespace WCell.Constants.World
 
             // Arathi Basin
             AddState(new WorldState(MapId.ArathiBasin, WorldStateId.ABMaxResources, 1600));
+            AddState(new WorldState(MapId.ArathiBasin, WorldStateId.ABOccupiedBasesAlliance, 0));
+            AddState(new WorldState(MapId.ArathiBasin, WorldStateId.ABOccupiedBasesHorde, 0));
+            AddState(new WorldState(MapId.ArathiBasin, WorldStateId.ABResourcesAlliance, 0));
+            AddState(new WorldState(MapId.ArathiBasin, WorldStateId.ABResourcesHorde, 0));
+            AddState(new WorldState(MapId.ArathiBasin, WorldStateId.ABShowStableIcon, 1));
+            AddState(new WorldState(MapId.ArathiBasin, WorldStateId.ABShowStableIconAlliance, 0));
+            AddState(new WorldState(MapId.ArathiBasin, WorldStateId.ABShowStableIconHorde, 0));
+            AddState(new WorldState(MapId.ArathiBasin, WorldStateId.ABShowStableIconAllianceContested, 0));
+            AddState(new WorldState(MapId.ArathiBasin, WorldStateId.ABShowStableIconHordeContested, 0));
+            AddState(new WorldState(MapId.ArathiBasin, WorldStateId.ABShowGoldMineIcon, 1));
+            AddState(new WorldState(MapId.ArathiBasin, WorldStateId.ABShowGoldMineIconAlliance, 0));
+            AddState(new WorldState(MapId.ArathiBasin, WorldStateId.ABShowGoldMineIconHorde, 0));
+            AddState(new WorldState(MapId.ArathiBasin, WorldStateId.ABShowGoldMineIconAllianceContested, 0));
+            AddState(new WorldState(MapId.ArathiBasin, WorldStateId.ABShowGoldMineIconHordeContested, 0));
+            AddState(new WorldState(MapId.ArathiBasin, WorldStateId.ABShowLumberMillIcon, 1));
+            AddState(new WorldState(MapId.ArathiBasin, WorldStateId.ABShowLumberMillIconAlliance, 0));
+            AddState(new WorldState(MapId.ArathiBasin, WorldStateId.ABShowLumberMillIconHorde, 0));
+            AddState(new WorldState(MapId.ArathiBasin, WorldStateId.ABShowLumberMillIconAllianceContested, 0));
+            AddState(new WorldState(MapId.ArathiBasin, WorldStateId.ABShowLumberMillIconHordeContested, 0));
+            AddState(new WorldState(MapId.ArathiBasin, WorldStateId.ABShowFarmIcon, 1));
+            AddState(new WorldState(MapId.ArathiBasin, WorldStateId.ABShowFarmIconAlliance, 0));
+            AddState(new WorldState(MapId.ArathiBasin, WorldStateId.ABShowFarmIconHorde, 0));
+            AddState(new WorldState(MapId.ArathiBasin, WorldStateId.ABShowFarmIconAllianceContested, 0));
+            AddState(new WorldState(MapId.ArathiBasin, WorldStateId.ABShowFarmIconHordeContested, 0));
+            AddState(new WorldState(MapId.ArathiBasin, WorldStateId.ABShowBlacksmithIcon, 1));
+            AddState(new WorldState(MapId.ArathiBasin, WorldStateId.ABShowBlacksmithIconAlliance, 0));
+            AddState(new WorldState(MapId.ArathiBasin, WorldStateId.ABShowBlacksmithIconHorde, 0));
+            AddState(new WorldState(MapId.ArathiBasin, WorldStateId.ABShowBlacksmithIconAllianceContested, 0));
+            AddState(new WorldState(MapId.ArathiBasin, WorldStateId.ABShowBlacksmithIconHordeContested, 0));
+            AddState(new WorldState(MapId.ArathiBasin, WorldStateId.ABNearVictoryWarning, 1400));
 		}
 		#endregion
 	}

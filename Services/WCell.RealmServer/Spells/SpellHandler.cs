@@ -17,6 +17,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using WCell.RealmServer.Lang;
+using WCell.RealmServer.NPCs;
+using WCell.RealmServer.NPCs.Pets;
 using WCell.Util.Collections;
 using NLog;
 using WCell.Constants.Spells;
@@ -41,19 +44,20 @@ namespace WCell.RealmServer.Spells
 	public delegate SpellEffectHandler SpellEffectHandlerCreator(SpellCast cast, SpellEffect effect);
 
 	/// <summary>
-	/// Static helper class for packet sending/receiving and srcCont of all spells.
+	/// Static helper class for packet sending/receiving and container of all spells
 	/// </summary>
 	public static partial class SpellHandler
 	{
-		private static Logger log = LogManager.GetCurrentClassLogger();
-
 		/// <summary>
 		/// Whether to cast the learn spell when adding spells
 		/// </summary>
 		[NotVariable]
 		public static bool AnimateSpellAdd = true;
 
-		public static TimeSpan DefaultCooldownSaveDelay = TimeSpan.FromMinutes(30);
+		/// <summary>
+		/// Minimum length of cooldowns that are to be saved to DB in milliseconds
+		/// </summary>
+		public static int MinCooldownSaveTimeMillis = 30;
 
 		public static float SpellCritBaseFactor = 1.5f;
 
@@ -64,6 +68,12 @@ namespace WCell.RealmServer.Spells
 		/// All spells by id.
 		/// </summary>
 		public static Spell[] ById = new Spell[70000];
+
+		public static uint HighestId
+		{
+			get;
+			internal set;
+		}
 
 		/// <summary>
 		/// All spells that require tools
@@ -84,22 +94,10 @@ namespace WCell.RealmServer.Spells
 
 		public static readonly List<Spell> QuestCompletors = new List<Spell>(100);
 
-		/// <summary>
-		/// All PlayerSpellCollections of logged out Characters with pending cooldown updates
-		/// </summary>
-		public static readonly Dictionary<uint, PlayerSpellCollection> PlayerSpellCollections =
-			new SynchronizedDictionary<uint, PlayerSpellCollection>(500);
-
 		public static readonly Dictionary<uint, Dictionary<uint, Spell>> NPCSpells =
 			new Dictionary<uint, Dictionary<uint, Spell>>(1000);
 
-		public static readonly Dictionary<SummonType, SpellSummonHandler> SummonHandlers =
-			new Dictionary<SummonType, SpellSummonHandler>();
-
-		public static readonly ShapeshiftEntry[] ShapeshiftEntries = new ShapeshiftEntry[(int) (ShapeshiftForm.End + 10)];
-
-		public static readonly SpellSummonHandler DefaultSummonHandler = new SpellSummonHandler(),
-			PetSummonHandler = new SpellSummonPetHandler();
+		public static readonly ShapeshiftEntry[] ShapeshiftEntries = new ShapeshiftEntry[(int)(ShapeshiftForm.End + 10)];
 
 		/// <summary>
 		/// Returns the spell with the given spellId or null if it doesn't exist
@@ -122,23 +120,42 @@ namespace WCell.RealmServer.Spells
 		}
 
 		#region Add / Remove
+
+		internal static void AddSpell(Spell spell)
+		{
+			ArrayUtil.Set(ref ById, spell.Id, spell);
+			HighestId = Math.Max(spell.Id, HighestId);
+		}
+
 		/// <summary>
-		/// Can be used to exist a Spell that does not exist.
+		/// Can be used to add a Spell that does not exist.
+		/// </summary>
+		public static Spell AddCustomSpell(string name)
+		{
+			return AddCustomSpell(HighestId + 1, name);
+		}
+
+		/// <summary>
+		/// Can be used to add a Spell that does not exist.
 		/// Usually used for spells that are unknown to the client to signal a certain state.
 		/// </summary>
 		/// <param name="id"></param>
 		/// <returns></returns>
 		public static Spell AddCustomSpell(uint id, string name)
 		{
+			if (Get(id) != null)
+			{
+				throw new ArgumentException("Invalid custom spell id is already in use: " + id + " - " + name);
+			}
 			var spell = new Spell
 			{
 				Id = id,
 				SpellId = (SpellId)id,
-				Name = name,
+				Name = "[" + RealmLocalizer.Instance.Translate(RealmLangKey.Custom).ToUpper() + "] " + name,
 				Effects = new SpellEffect[0],
 				RequiredToolIds = new uint[0]
 			};
-			ArrayUtil.Set(ref ById, id, spell);
+			AddSpell(spell);
 			return spell;
 		}
 
@@ -256,10 +273,13 @@ namespace WCell.RealmServer.Spells
 		}
 		#endregion
 
-		public static List<SpellLine> GetAffectedSpellLines(ClassId clss, uint[] mask)
+		/// <summary>
+		/// Returns a list of all SpellLines that are affected by the given spell family set (very long bit field)
+		/// </summary>
+		public static IEnumerable<SpellLine> GetAffectedSpellLines(ClassId clss, uint[] mask)
 		{
 			var lines = SpellLines.GetLines(clss);
-			var affected = new List<SpellLine>();
+			var affected = new HashSet<SpellLine>();
 			if (lines != null)
 			{
 				foreach (var line in lines)
@@ -273,6 +293,17 @@ namespace WCell.RealmServer.Spells
 						}
 					}
 				}
+				//foreach (var spell in ById)
+				//{
+				//    if (spell != null && spell.ClassId == clss && spell.MatchesMask(mask))
+				//    {
+				//        if (spell.Line != null)
+				//        {
+				//            affected.Add(line);
+				//        }
+				//        break;
+				//    }
+				//}
 			}
 			return affected;
 		}
@@ -281,27 +312,37 @@ namespace WCell.RealmServer.Spells
 		[Initialization(InitializationPass.First, "Initialize Spells")]
 		public static void LoadSpells()
 		{
-			InitEffectHandlers();
-			InitSummonHandlers();
-			InitShapeShiftInfos();
-
 			LoadSpells(false);
-			SkillHandler.Initialize();
-			TalentMgr.Initialize();
-
-			SpellLines.InitSpellLines();
 		}
 
 		public static void LoadSpells(bool init)
 		{
-			SpellEffect.InitMiscValueTypes();
 			if (!loaded)
 			{
+				InitEffectHandlers();
+				LoadOtherDBCs();
+
+				SpellEffect.InitMiscValueTypes();
 				loaded = true;
 				Spell.InitDbcs();
-				new DBCReader<Spell.SpellDBCConverter>(RealmServerConfiguration.GetDBCFile("Spell.dbc"));
+				new DBCReader<Spell.SpellDBCConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELL));
 
-				ContentHandler.Load<SpellLearnRelation>();
+				ContentMgr.Load<SpellLearnRelation>();
+				InitSummonHandlers();
+				SkillHandler.Initialize();
+				TalentMgr.Initialize();
+
+				SpellLines.InitSpellLines();
+
+				ContentMgr.Load<SpellProcEventEntry>();
+				foreach (var spell in ById)
+				{
+					if (spell != null)
+					{
+						// set custom proc settings
+						ProcEventHelper.PatchAffectMasks(spell);
+					}
+				}
 			}
 
 			if (init)
@@ -346,11 +387,6 @@ namespace WCell.RealmServer.Spells
 				if (spell != null)
 				{
 					spell.Init2();
-
-					if (spell.GetEffect(SpellEffectType.QuestComplete) != null)
-					{
-						QuestCompletors.Add(spell);
-					}
 				}
 			}
 			SkillHandler.Initialize2();
@@ -361,9 +397,9 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		private static void LoadOverrides()
 		{
-			var mapper = ContentHandler.GetMapper<Spell>();
+			var mapper = ContentMgr.GetMapper<Spell>();
 			mapper.AddObjectsUInt(ById);
-			ContentHandler.Load(mapper);
+			ContentMgr.Load(mapper);
 		}
 
 		internal static void InitTools()
@@ -392,11 +428,13 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 		}
-		#endregion
 
-		/*UNUSED:
-		 * CMSG_NEW_SPELL_SLOT
-		 */
+		private static void LoadOtherDBCs()
+		{
+			new DBCReader<ShapeshiftEntryConverter>(RealmServerConfiguration.GetDBCFile("SpellShapeshiftForm"));
+			new DBCReader<SummonPropertiesConverter>(RealmServerConfiguration.GetDBCFile("SummonProperties"));
+		}
+		#endregion
 
 		#region SpellEffectHandlers
 
@@ -424,7 +462,7 @@ namespace WCell.RealmServer.Spells
 			SpellEffectCreators[(int)SpellEffectType.PersistantAreaAura] = (cast, effect) => new PersistantAreaAuraEffectHandler(cast, effect);
 			SpellEffectCreators[(int)SpellEffectType.Summon] = (cast, effect) => new SummonEffectHandler(cast, effect);
 			SpellEffectCreators[(int)SpellEffectType.Energize] = (cast, effect) => new EnergizeEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.WeaponPercentDamage] = (cast, effect) => new WeaponPercentDamageEffectHandler(cast, effect);
+			SpellEffectCreators[(int)SpellEffectType.WeaponPercentDamage] = (cast, effect) => new WeaponDamageEffectHandler(cast, effect);
 			SpellEffectCreators[(int)SpellEffectType.OpenLock] = (cast, effect) => new OpenLockEffectHandler(cast, effect);
 			SpellEffectCreators[(int)SpellEffectType.ApplyAreaAura] = (cast, effect) => new ApplyAreaAuraEffectHandler(cast, effect);
 			SpellEffectCreators[(int)SpellEffectType.ApplyGroupAura] = (cast, effect) => new ApplyAreaAura2EffectHandler(cast, effect);
@@ -483,16 +521,21 @@ namespace WCell.RealmServer.Spells
 			SpellEffectCreators[(int)SpellEffectType.SummonObjectSlot3] = (cast, effect) => new SummonObjectSlot1Handler(cast, effect);
 			SpellEffectCreators[(int)SpellEffectType.SummonObjectSlot4] = (cast, effect) => new SummonObjectSlot2Handler(cast, effect);
 			SpellEffectCreators[(int)SpellEffectType.DestroyAllTotems] = (cast, effect) => new DestroyAllTotemsHandler(cast, effect);
+			SpellEffectCreators[(int)SpellEffectType.CreateManaGem] = (cast, effect) => new CreateManaGemEffectHandler(cast, effect);
+			SpellEffectCreators[(int)SpellEffectType.Sanctuary] = (cast, effect) => new RemoveImpairingEffectsHandler(cast, effect);
+            SpellEffectCreators[(int)SpellEffectType.Inebriate] = (cast, effect) => new Inebriate(cast, effect);
+			SpellEffectCreators[(int)SpellEffectType.ApplyGlyph] = (cast, effect) => new ApplyGlyphEffectHandler(cast, effect);
 
 			for (var i = 0; i < SpellEffectCreators.Length; i++)
 			{
 				if (SpellEffectCreators[i] == null)
 				{
-					SpellEffectCreators[i] = (cast, effect) => new NotImplementedEffect(cast, effect);
+					SpellEffectCreators[i] = (cast, effect) => new NotImplementedEffectHandler(cast, effect);
 				}
 			}
 
 			// useless effects
+			UnsetHandler(SpellEffectType.None);
 			UnsetHandler(SpellEffectType.Dodge);
 			UnsetHandler(SpellEffectType.Defense);
 			UnsetHandler(SpellEffectType.SpellDefense);
@@ -503,51 +546,95 @@ namespace WCell.RealmServer.Spells
 			UnsetHandler(SpellEffectType.Parry);
 		}
 
-		#endregion
-
-		#region SummonHandlers
-		static void InitSummonHandlers()
-		{
-			// non combat pets
-			SummonHandlers[SummonType.Pet] = PetSummonHandler;
-
-			SummonHandlers[SummonType.Critter] = DefaultSummonHandler;
-			SummonHandlers[SummonType.Critter2] = DefaultSummonHandler;
-			SummonHandlers[SummonType.Critter3] = DefaultSummonHandler;
-
-			// default
-			SummonHandlers[SummonType.Demon] = DefaultSummonHandler;
-
-			// Totems
-			SummonHandlers[SummonType.TotemSlot1] = new SpellSummonTotemHandler(0);
-			SummonHandlers[SummonType.TotemSlot2] = new SpellSummonTotemHandler(1);
-			SummonHandlers[SummonType.TotemSlot3] = new SpellSummonTotemHandler(2);
-			SummonHandlers[SummonType.TotemSlot4] = new SpellSummonTotemHandler(3);
-
-			// 
-			SummonHandlers[SummonType.DoomGuard] = new SpellSummonDoomguardHandler();
-		}
-
-		public static SpellSummonHandler GetSummonHandler(SummonType type)
-		{
-			SpellSummonHandler handler;
-			if (!SummonHandlers.TryGetValue(type, out handler))
-			{
-				handler = DefaultSummonHandler;
-			}
-			return handler;
-		}
-		#endregion
-
-		private static void InitShapeShiftInfos()
-		{
-			new DBCReader<ShapeshiftEntryConverter>(RealmServerConfiguration.GetDBCFile("SpellShapeshiftForm"));
-		}
-
 		public static void UnsetHandler(SpellEffectType type)
 		{
-			SpellEffectCreators[(int)type] = null;
+			//if (SpellEffectCreators[(int)type] != null && SpellEffectCreators[(int)type].GetType() == typeof(NotImplementedEffectHandler))
+			{
+				SpellEffectCreators[(int)type] = null;
+			}
 		}
+
+		#endregion
+
+		#region Summons
+		public static readonly Dictionary<SummonType, SpellSummonEntry> SummonEntries =
+			new Dictionary<SummonType, SpellSummonEntry>();
+
+
+
+		public static readonly SpellSummonHandler
+			DefaultSummonHandler = new SpellSummonHandler(),
+			PetSummonHandler = new SpellSummonPetHandler();
+
+		static void InitSummonHandlers()
+		{
+			foreach (var entry in SummonEntries.Values)
+			{
+				if (entry.Id == SummonType.Totem)
+				{
+					// "Totem" entries do not have Type set to Totem!
+					entry.Type = SummonPropertyType.Totem;
+				}
+				if (entry.Type == SummonPropertyType.Totem)
+				{
+					// totem
+					entry.Handler = new SpellSummonTotemHandler(MathUtil.ClampMinMax(entry.Slot - 1, 0, PetMgr.MaxTotemSlots - 1));
+					entry.DetermineAmountBySpellEffect = false;	// totem effect values are always health
+				}
+				else
+				{
+					switch (entry.Group)
+					{
+						case SummonGroup.Controllable:
+							entry.Handler = DefaultSummonHandler;
+							break;
+						case SummonGroup.Friendly:
+							entry.Handler = DefaultSummonHandler;
+							break;
+						case SummonGroup.Pets:
+							entry.Handler = PetSummonHandler;
+							break;
+						case SummonGroup.Wild:
+							entry.Handler = DefaultSummonHandler;
+							break;
+						default:
+							entry.Handler = DefaultSummonHandler;
+							break;
+					}
+				}
+			}
+
+			// non combat pets
+			SummonEntries[SummonType.Critter].Handler = DefaultSummonHandler;
+			SummonEntries[SummonType.Critter2].Handler = DefaultSummonHandler;
+			SummonEntries[SummonType.Critter3].Handler = DefaultSummonHandler;
+
+			// default
+			SummonEntries[SummonType.Demon].Handler = DefaultSummonHandler;
+
+
+			// 
+			SummonEntries[SummonType.DoomGuard].Handler = new SpellSummonDoomguardHandler();
+		}
+
+		public static SpellSummonEntry GetSummonEntry(SummonType type)
+		{
+			SpellSummonEntry entry;
+			if (!SummonEntries.TryGetValue(type, out entry))
+			{
+				log.Warn("Missing SpellSummonEntry for type: " + type);
+				return SummonEntries[SummonType.SummonPet];
+			}
+			return entry;
+		}
+		#endregion
+
+		#region Shapeshifting
+		public static ShapeshiftEntry GetShapeshiftEntry(ShapeshiftForm form)
+		{
+			return ShapeshiftEntries[(int)form];
+		}
+		#endregion
 
 		public static ClassId ToClassId(this SpellClassSet classSet)
 		{

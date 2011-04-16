@@ -25,7 +25,6 @@ namespace WCell.Util.Variables
 		/// <summary>
 		/// The object that holds the field or property (or null if static)
 		/// </summary>
-
 		public readonly Object Object;
 
 		public bool Serialized;
@@ -119,30 +118,18 @@ namespace WCell.Util.Variables
 
 		public Type VariableType
 		{
-			get
-			{
-				return m_Member.GetVariableType();
-			}
+			get { return m_Member.GetVariableType(); }
 		}
 
 		public object Value
 		{
-			get
-			{
-				return m_Member.GetUnindexedValue(Object);
-			}
-			set
-			{
-				m_Member.SetUnindexedValue(Object, value);
-			}
+			get { return m_Member.GetUnindexedValue(Object); }
+			set { m_Member.SetUnindexedValue(Object, value); }
 		}
 
 		public string TypeName
 		{
-			get
-			{
-				return VariableType.Name;
-			}
+			get { return VariableType.Name; }
 		}
 
 		public bool TrySet(string strValue)
@@ -152,8 +139,13 @@ namespace WCell.Util.Variables
 				return false;
 			}
 
-			Value = TryParse(strValue, VariableType);
-			return Value != null;
+			var val = TryParse(strValue, VariableType);
+			if (val != null)
+			{
+				Value = val;
+				return true;
+			}
+			return false;
 		}
 
 		static object TryParse(string strValue, Type type)
@@ -187,7 +179,7 @@ namespace WCell.Util.Variables
 					{
 						Value = Activator.CreateInstance(type);
 					}
-					((IXmlSerializable) Value).ReadXml(reader);
+					((IXmlSerializable)Value).ReadXml(reader);
 				}
 				else if (type.IsSimpleType())
 				{
@@ -213,7 +205,7 @@ namespace WCell.Util.Variables
 						}
 						else
 						{
-							collection = (IList) Activator.CreateInstance(type);
+							collection = (IList)Activator.CreateInstance(type);
 							ReadCollection(reader, collection);
 							Value = collection;
 						}

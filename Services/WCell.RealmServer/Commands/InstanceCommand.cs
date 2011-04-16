@@ -1,3 +1,4 @@
+using System.Linq;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Instances;
 using WCell.Util.Commands;
@@ -18,7 +19,7 @@ namespace WCell.RealmServer.Commands
 			EnglishDescription = "Provides some Commands to manage and use Instances.";
 		}
 
-		public static InstancedRegion GetInstance(CmdTrigger<RealmServerCmdArgs> trigger)
+		public static InstancedMap GetInstance(CmdTrigger<RealmServerCmdArgs> trigger)
 		{
 			if (!trigger.Text.HasNext)
 			{
@@ -38,10 +39,10 @@ namespace WCell.RealmServer.Commands
 			}
 
 			var id = trigger.Text.NextUInt();
-			var instance = World.GetInstance(mapId, id);
+			var instance = InstanceMgr.Instances.GetInstance(mapId, id);
 			if (instance == null)
 			{
-				trigger.Reply("Instance does not exist: {0} (#{1})", mapId, id);
+				trigger.Reply("Instance id does not exist: #{1} (for {0})", mapId, id);
 			}
 			return instance;
 		}
@@ -60,49 +61,26 @@ namespace WCell.RealmServer.Commands
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
-				var list = new List<InstancedRegion>(50);
+				IEnumerable<BaseInstance> instances;
 				if (trigger.Text.HasNext)
 				{
-					var mapId = trigger.Text.NextEnum(MapId.End);
-					if (mapId == MapId.End)
+					var id = trigger.Text.NextEnum(MapId.End);
+					if (id == MapId.End)
 					{
-						trigger.Reply("Invalid MapId.");
+						trigger.Reply("Invalid BattlegroundId.");
 						return;
 					}
-					var instances = World.GetInstances(mapId);
-					foreach (var inst in instances)
-					{
-						if (inst != null)
-						{
-							list.Add(inst);
-						}
-					}
+					instances = InstanceMgr.Instances.GetInstances(id);
 				}
 				else
 				{
-					var instances = World.GetAllInstances();
-
-					foreach (var arr in instances)
-					{
-						if (arr == null)
-						{
-							continue;
-						}
-						foreach (var inst in arr)
-						{
-							if (inst != null && !inst.IsBattleground)
-							{
-								list.Add(inst);
-							}
-						}
-					}
+					instances = InstanceMgr.Instances.GetAllInstances();
 				}
 
-				trigger.Reply("== [ Current Instances: {0} ] ==", list.Count);
-				for (var i = 0; i < list.Count; i++)
+				trigger.Reply("Found {0} instances:", instances.Count());
+				foreach (var instance in instances)
 				{
-					var inst = list[i];
-					trigger.Reply(inst.ToString());
+					trigger.Reply(instance.ToString());
 				}
 			}
 		}
@@ -116,18 +94,14 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Create", "C");
-				EnglishParamInfo = "[-e] <MapId>";
-				EnglishDescription = "Creates a new Instance of the given Map. -e enters it right away.";
+				EnglishParamInfo = "[-e[d]] <MapId> [<difficulty>]";
+				EnglishDescription = "Creates a new Instance of the given Map. -d allows to specify the difficulty (value between 0 and 3). -e enters it right away.";
 			}
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
 				var chr = trigger.Args.Target as Character;
-				if (chr == null)
-				{
-					trigger.Reply("Must use this command on a Character.");
-					return;
-				}
+
 				var mod = trigger.Text.NextModifiers();
 				var mapid = trigger.Text.NextEnum(MapId.End);
 				if (mapid == MapId.End)
@@ -136,17 +110,35 @@ namespace WCell.RealmServer.Commands
 					return;
 				}
 
-				var region = World.GetRegionInfo(mapid);
+				var mapTemplate = World.GetMapTemplate(mapid);
 
-				if (region != null && region.IsInstance)
+				if (mapTemplate != null && mapTemplate.IsInstance)
 				{
-					var instance = InstanceMgr.CreateInstance(chr, region.InstanceTemplate, chr.GetInstanceDifficulty(region.IsRaid));
+					uint diffIndex;
+					if (mod.Contains("d"))
+					{
+						diffIndex = trigger.Text.NextUInt();
+						var diff = mapTemplate.GetDifficulty(diffIndex);
+						if (diff == null)
+						{
+							trigger.Reply("Invalid Difficulty: {0}");
+						}
+					}
+					else if (chr != null)
+					{
+						diffIndex = chr.GetInstanceDifficulty(mapTemplate.IsRaid);
+					}
+					else
+					{
+						diffIndex = 0;
+					}
+					var instance = InstanceMgr.CreateInstance(chr, mapTemplate.InstanceTemplate, diffIndex);
 					if (instance != null)
 					{
 						trigger.Reply("Instance created: " + instance);
-						if (mod == "e")
+						if (mod.Contains("e"))
 						{
-							if (trigger.Args.Target is Character)
+							if (chr != null)
 							{
 								instance.TeleportInside((Character)trigger.Args.Target);
 							}
@@ -154,7 +146,7 @@ namespace WCell.RealmServer.Commands
 					}
 					else
 					{
-						trigger.Reply("Unable to create Instance of: " + region);
+						trigger.Reply("Unable to create Instance of: " + mapTemplate);
 					}
 				}
 				else
@@ -202,13 +194,13 @@ namespace WCell.RealmServer.Commands
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
-				InstancedRegion instance;
+				InstancedMap instance;
 				if (!trigger.Text.HasNext && trigger.Args.Character != null)
 				{
-					instance = trigger.Args.Character.Region as InstancedRegion;
+					instance = trigger.Args.Character.Map as InstancedMap;
 					if (instance == null)
 					{
-						trigger.Reply("Current Region is not an Instance.");
+						trigger.Reply("Current Map is not an Instance.");
 						return;
 					}
 				}

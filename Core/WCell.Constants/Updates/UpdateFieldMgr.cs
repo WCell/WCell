@@ -10,7 +10,7 @@ namespace WCell.Constants.Updates
 		public static readonly UpdateFieldCollection[] Collections = new UpdateFieldCollection[UpdateField.ObjectTypeCount];
 		public static readonly ObjectTypeId[] InheritedTypeIds = new ObjectTypeId[UpdateField.ObjectTypeCount];
 
-		public static uint ExplorationZoneFieldSize;
+		public static int ExplorationZoneFieldSize;
 
 		public static void Init()
 		{
@@ -80,7 +80,7 @@ namespace WCell.Constants.Updates
 		private static void FixFields()
 		{
 			//ExplorationZoneFieldSize = Get(ObjectTypeId.Player).Fields[(uint)PlayerFields.EXPLORED_ZONES_1].Size;
-			ExplorationZoneFieldSize = UpdateFields.AllFields[(int)ObjectTypeId.Player][(uint)PlayerFields.EXPLORED_ZONES_1].Size;
+			ExplorationZoneFieldSize = (int) UpdateFields.AllFields[(int)ObjectTypeId.Player][(uint)PlayerFields.EXPLORED_ZONES_1].Size;
 		}
 
 		private static void InitInheritance()

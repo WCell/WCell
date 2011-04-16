@@ -28,7 +28,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	{
 		ShapeshiftForm form;
 
-		protected internal override void CheckInitialize(CasterInfo casterInfo, Unit target, ref SpellFailedReason failReason)
+		protected internal override void CheckInitialize(SpellCast creatingCast, ObjectReference casterReference, Unit target, ref SpellFailedReason failReason)
 		{
 			form = (ShapeshiftForm)SpellEffect.MiscValue;
 			if (target.ShapeshiftForm == form)
@@ -38,18 +38,21 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 					form != ShapeshiftForm.BerserkerStance &&
 					form != ShapeshiftForm.DefensiveStance)
 				{
-					target.Auras.RemoveWhere(aura => aura.Spell.Id == m_spellEffect.Spell.Id);
-					failReason = SpellFailedReason.DontReport;
+                    if (Aura != null)
+                    {
+                        target.Auras.RemoveWhere(aura => aura.Spell.Id == Aura.Spell.Id);
+                    }
+				    failReason = SpellFailedReason.DontReport;
 				}
 			}
 		}
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			Owner.ShapeshiftForm = form;
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			Owner.ShapeshiftForm = ShapeshiftForm.Normal;
 		}

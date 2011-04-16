@@ -29,7 +29,7 @@ namespace WCell.RealmServer.Spells.Effects
 
 		public override void Initialize(ref SpellFailedReason failReason)
 		{
-			if (!m_cast.UsedItem.Template.Flags.HasFlag(ItemFlags.Millable))
+			if (!m_cast.TargetItem.Template.Flags.HasFlag(ItemFlags.Millable))
 			{
 				failReason = SpellFailedReason.CantBeMilled;
 			}

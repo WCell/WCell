@@ -1,5 +1,6 @@
 using NLog;
 using WCell.Constants;
+using WCell.Core;
 using WCell.Core.DBC;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Content;
@@ -62,26 +63,26 @@ namespace WCell.RealmServer.AreaTriggers
 		/// <returns></returns>
 		public static bool HandleTeleport(Character chr, AreaTrigger trigger)
 		{
-			var regionInfo = World.GetRegionInfo(trigger.Template.TargetMap);
+			var mapInfo = World.GetMapTemplate(trigger.Template.TargetMap);
 #if DEBUG
 			chr.SendSystemMessage("Target location: {0}", trigger.Template.TargetMap);
 #endif
 
-			if (regionInfo.IsInstance)
+			if (mapInfo.IsInstance)
 			{
-				if (regionInfo.Type == MapType.Normal)
+				if (mapInfo.Type == MapType.Normal)
 				{
-					InstanceMgr.LeaveInstance(chr, regionInfo, trigger.Template.TargetPos);
+					InstanceMgr.LeaveInstance(chr, mapInfo, trigger.Template.TargetPos);
 					return true;
 				}
 				else
 				{
-					return InstanceMgr.EnterInstance(chr, regionInfo, trigger.Template.TargetPos);
+					return InstanceMgr.EnterInstance(chr, mapInfo, trigger.Template.TargetPos);
 				}
 			}
-			else if (regionInfo.BGTemplate == null)
+			else if (mapInfo.BattlegroundTemplate == null)
 			{
-				var rgn = World.GetRegion(regionInfo.Id);
+				var rgn = World.GetNonInstancedMap(mapInfo.Id);
 				if (rgn != null)
 				{
 					chr.TeleportTo(rgn, trigger.Template.TargetPos, trigger.Template.TargetOrientation);
@@ -89,7 +90,7 @@ namespace WCell.RealmServer.AreaTriggers
 				}
 				else
 				{
-					ContentHandler.OnInvalidDBData("Invalid Region: " + rgn);
+					ContentMgr.OnInvalidDBData("Invalid Map: " + rgn);
 				}
 			}
 			return true;
@@ -153,14 +154,14 @@ namespace WCell.RealmServer.AreaTriggers
 		[Initialization(InitializationPass.Fourth, "Initialize AreaTriggers")]
 		public static void Initialize()
 		{
-			var reader = new MappedDBCReader<AreaTrigger, ATConverter>(RealmServerConfiguration.GetDBCFile("AreaTrigger.dbc"));
+            var reader = new MappedDBCReader<AreaTrigger, ATConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_AREATRIGGER));
 
 			foreach (var at in reader.Entries)
 			{
 				ArrayUtil.Set(ref AreaTriggers, (uint)at.Key, at.Value);
 			}
 
-			ContentHandler.Load<ATTemplate>();
+			ContentMgr.Load<ATTemplate>();
 
 			if (RealmServer.InitMgr != null)
 			{

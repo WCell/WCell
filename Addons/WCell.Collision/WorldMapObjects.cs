@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using WCell.Constants.World;
@@ -15,8 +15,8 @@ namespace WCell.Collision
         private static readonly Dictionary<string, bool> tileLoaded = new Dictionary<string, bool>();
         private static readonly Dictionary<string, bool> noTileExists = new Dictionary<string, bool>();
         private static readonly Dictionary<MapId, bool> mapData = new Dictionary<MapId, bool>();
-        private static readonly Dictionary<MapId, TreeReference<Building>> worldBuildings =
-            new Dictionary<MapId, TreeReference<Building>>();
+        private static readonly Dictionary<MapId, TreeReference<WMO>> worldBuildings =
+            new Dictionary<MapId, TreeReference<WMO>>();
 
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace WCell.Collision
         }
 
 
-        private static float? CollideWithRay(IList<Building> buildings, float tMax, Ray ray)
+        private static float? CollideWithRay(IList<WMO> buildings, float tMax, Ray ray)
         {
             float? result = tMax;
             for(var i = 0; i < buildings.Count; i++)
@@ -91,12 +91,12 @@ namespace WCell.Collision
         }
 
         #region Load Data
-        internal static QuadTree<Building> GetBuildingTree(MapId mapId, TileCoord tileCoord)
+        internal static QuadTree<WMO> GetBuildingTree(MapId mapId, TileCoord tileCoord)
         {
             if (!MapDataExists(mapId))
                 return null;
 
-            TreeReference<Building> treeRef;
+            TreeReference<WMO> treeRef;
 
             lock (worldBuildings)
             {
@@ -109,8 +109,8 @@ namespace WCell.Collision
                 else
                 {
                     // Create map tree
-                    var box = RegionBoundaries.GetRegionBoundaries()[(int)mapId];
-                    worldBuildings[mapId] = treeRef = new TreeReference<Building>(new QuadTree<Building>(box));
+                    var box = MapBoundaries.GetMapBoundaries()[(int)mapId];
+                    worldBuildings[mapId] = treeRef = new TreeReference<WMO>(new QuadTree<WMO>(box));
                 }
             }
 
@@ -121,7 +121,7 @@ namespace WCell.Collision
             }
         }
 
-        private static List<Building> GetPotentialColliders(MapId map, ref Vector3 startPos, ref Vector3 endPos)
+        private static List<WMO> GetPotentialColliders(MapId map, ref Vector3 startPos, ref Vector3 endPos)
         {
             var startCoord = LocationHelper.GetTileXYForPos(startPos);
             var endCoord = LocationHelper.GetTileXYForPos(endPos);
@@ -136,7 +136,7 @@ namespace WCell.Collision
             return tree.Query(footPrint);
         }
 
-        private static bool EnsureGroupLoaded(TreeReference<Building> tree, MapId map, TileCoord tileCoord)
+        private static bool EnsureGroupLoaded(TreeReference<WMO> tree, MapId map, TileCoord tileCoord)
         {
             var result = true;
 
@@ -162,7 +162,7 @@ namespace WCell.Collision
             return result;
         }
 
-        private static bool EnsureTileLoaded(MapId map, TileCoord tile, TreeReference<Building> tree)
+        private static bool EnsureTileLoaded(MapId map, TileCoord tile, TreeReference<WMO> tree)
         {
             if (IsTileLoaded(map, tile) || noTileExists.ContainsKey(GenerateKey(map, tile))) return true;
 
@@ -174,7 +174,7 @@ namespace WCell.Collision
             return true;
         }
 
-        private static bool LoadTile(TreeReference<Building> tree, MapId mapId, TileCoord tileCoord)
+        private static bool LoadTile(TreeReference<WMO> tree, MapId mapId, TileCoord tileCoord)
         {
 			var dir = Path.Combine(WorldMap.HeightMapFolder, ((int)mapId).ToString());
             if (!Directory.Exists(dir)) return false;
@@ -226,7 +226,7 @@ namespace WCell.Collision
             return new BoundingBox(newMin, newMax);
         }
         
-        private static bool LoadTileBuildings(TreeReference<Building> tree, string filePath)
+        private static bool LoadTileBuildings(TreeReference<WMO> tree, string filePath)
         {
             using(var file = File.OpenRead(filePath))
             using(var br = new BinaryReader(file))
@@ -246,7 +246,7 @@ namespace WCell.Collision
             return true;
         }
 
-        private static void ReadBuildings(BinaryReader br, TreeReference<Building> tree)
+        private static void ReadBuildings(BinaryReader br, TreeReference<WMO> tree)
         {
             var numBuildings = br.ReadInt32();
             for (var i = 0; i < numBuildings; i++)
@@ -256,11 +256,11 @@ namespace WCell.Collision
                 var matrix = Matrix.CreateRotationY(((-1.0f*(invRot - 90)))*RadiansPerDegree);
                 var center = br.ReadVector3();
 
-                BuildingGroup[] groups;
+                WMOGroup[] groups;
                 var numGroups = br.ReadInt32();
                 if (numGroups > 0)
                 {
-                    groups = new BuildingGroup[numGroups];
+                    groups = new WMOGroup[numGroups];
                     for (var j = 0; j < numGroups; j++)
                     {
                         groups[j] = ReadBuildingGroup(br);
@@ -271,20 +271,20 @@ namespace WCell.Collision
                     groups = null;
                 }
 
-                var building = new Building {
+                var building = new WMO {
                     Bounds = bounds,
                     Center = center,
                     InverseRotation = matrix,
-                    BuildingGroups = groups
+                    WmoGroups = groups
                 };
 
                 tree.Tree.Insert(building);
             }
         }
 
-        private static BuildingGroup ReadBuildingGroup(BinaryReader br)
+        private static WMOGroup ReadBuildingGroup(BinaryReader br)
         {
-            var group = new BuildingGroup {
+            var group = new WMOGroup {
                 Bounds = br.ReadBoundingBox()
             };
 

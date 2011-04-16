@@ -81,9 +81,9 @@ namespace WCell.RealmServer.Commands
 		{
 			protected override void Initialize()
 			{
-				Init("Cancel");
+				Init("Remove", "Cancel");
 				EnglishParamInfo = "<questid>";
-				EnglishDescription = "Cancels the given active Quest.";
+				EnglishDescription = "Removes the given finished or active Quest.";
 			}
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
@@ -111,7 +111,16 @@ namespace WCell.RealmServer.Commands
 					}
 					else
 					{
-						chr.QuestLog.Cancel(id);
+						if (!chr.QuestLog.RemoveFinishedQuest(id))
+						{
+							// if its not already been finished, maybe it's still in progress?
+							chr.QuestLog.Cancel(id);
+							trigger.Reply("Removed active quest: {0}", quest);
+						}
+						else
+						{
+							trigger.Reply("Removed finished quest: {0}", quest);
+						}
 					}
 				}
 			}
@@ -246,7 +255,7 @@ namespace WCell.RealmServer.Commands
 							else
 							{
 								trigger.Reply("Template is located in {0} ({1}) and not accessible.",
-									template.RegionId, template.Position);
+									template.MapId, template.Position);
 							}
 						}
 					}
@@ -269,7 +278,7 @@ namespace WCell.RealmServer.Commands
 			{
 				var searchTerms = trigger.Text.Remainder.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 				var templates = QuestMgr.Templates.Where(templ => templ != null &&
-					searchTerms.Iterate(term => !templ.Title.ContainsIgnoreCase(term)));
+					searchTerms.Iterate(term => !templ.DefaultTitle.ContainsIgnoreCase(term)));
 
 				var count = templates.Count();
 				trigger.Reply("Found {0} matching Quests.", count);

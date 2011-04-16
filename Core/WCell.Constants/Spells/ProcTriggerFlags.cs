@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -37,64 +37,94 @@ namespace WCell.Constants.Spells
 		/// <summary>
 		/// We attack
 		/// </summary>
-		MeleeAttackSelf = 0x4,
+		MeleeHitOther = 0x4,
 		/// <summary>
 		/// We are critically hit
 		/// </summary>
 		MeleeCriticalHit = 0x8,
 
 		/// <summary>
-		/// We cast a spell
+		/// We cast a damage spell.
+		/// If you want this to proc on non-damaging spells,
+		/// make sure to use Spell.AddCasterProcSpells.
 		/// </summary>
 		SpellCast = 0x10,
+
 		/// <summary>
 		/// We are attacked physically
 		/// </summary>
 		PhysicalAttack = 0x20,
 		/// <summary>
-		/// We attack physically with ranged weapon
+		/// We hit someone with a ranged weapon's ammo
 		/// </summary>
-		RangedAttackSelf = 0x40,
+		RangedHitOther = 0x40,
 		/// <summary>
 		/// We are critcally hit with a ranged weapon
 		/// </summary>
 		RangedCriticalHit = 0x80,
 
 		/// <summary>
-		/// We land a critical hit
+		/// We physically attack someone else
 		/// </summary>
-		PhysicalAttackSelf = 0x100,
+		PhysicalAttackOther = 0x100,
 		/// <summary>
-		/// We are attacked physically
+		/// We are struck by a melee weapon
 		/// </summary>
-		MeleeAttack = 0x200,
+		MeleeHit = 0x200,
 		/// <summary>
-		/// 
+		/// We do something with someone else
 		/// </summary>
-		ActionSelf = 0x400,
+		ActionOther = 0x400,
 		/// <summary>
 		/// Unused
 		/// </summary>
 		ProcTrigger0x800 = 0x800,
 
-		MeleeCriticalHitSelf = 0x1000,
-		RangedAttack = 0x2000,
-
-		PositiveSpell = 0x4000,
-		PositiveSpellSelf = 0x8000,
-
-		SpellCastSpecific = 0x10000,
 		/// <summary>
-		/// We get hit by a spell
+		/// We critically hit someone
+		/// </summary>
+		MeleeCriticalHitOther = 0x1000,
+
+		/// <summary>
+		/// We are hit by a ranged weapon
+		/// </summary>
+		RangedHit = 0x2000,
+
+		/// <summary>
+		/// We heal sb else
+		/// </summary>
+		HealOther = 0x4000,
+		/// <summary>
+		/// We get healed
+		/// </summary>
+		Heal = 0x8000,
+
+		/// <summary>
+		/// We cast a critical damage spell.
+		/// See SpellCast for reference.
+		/// </summary>
+		SpellCastCritical = 0x10000,
+
+		/// <summary>
+		/// We get hit by a damage spell
 		/// </summary>
 		SpellHit = 0x20000,
+
 		/// <summary>
-		/// Also spellcast-specific
+		/// We get critically hit by a damage spell
 		/// </summary>
-		SpellCastSpecific2 = 0x40000,
+		SpellHitCritical = 0x40000,
 		ProcFlag0x80000 = 0x80000,
 
-		AnyDamage = 0x100000,
+		/// <summary>
+		/// We are hit by anything hostile
+		/// </summary>
+		AnyHit = SpellHit | MeleeHit | RangedHit,
+
+		/// <summary>
+		/// Unused
+		/// </summary>
+		_AnyDamage = 0x100000,
 
 		/// <summary>
 		/// Someone stepped in our trap
@@ -114,6 +144,16 @@ namespace WCell.Constants.Spells
 		 * Custom Flags
 		 * The Following effects were added to provide additional functionality:
 		 */
+		/// <summary>
+		/// Triggered for the caster, when an Aura is started on a target
+		/// </summary>
+		AuraStarted = 0x20000000,
+
+		/// <summary>
+		/// Triggered for the caster, when an Aura gets removed
+		/// </summary>
+		AuraRemoved = 0x40000000,
+
 		/// <summary>
 		/// Triggered when blocking damage
 		/// </summary>

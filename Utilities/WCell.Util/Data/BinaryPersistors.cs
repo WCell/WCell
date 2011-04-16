@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -72,7 +72,7 @@ namespace WCell.Util.Data
 			if (i < m_DataField.Length)
 			{
 				// write default Item as a filler
-				var type = m_DataField.MappedMember.GetActualType();
+				var type = m_DataField.ActualMemberType;
 
 				object deflt;
 				if (type == typeof(string))

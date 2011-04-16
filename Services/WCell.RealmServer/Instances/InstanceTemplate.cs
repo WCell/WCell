@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,17 +10,17 @@ namespace WCell.RealmServer.Instances
 
 	public class InstanceTemplate
 	{
-		private readonly RegionInfo m_regionInfo;
+		private readonly MapTemplate m_MapTemplate;
 		public InstanceCreator Creator;
 
-		public InstanceTemplate(RegionInfo info)
+		public InstanceTemplate(MapTemplate template)
 		{
-			m_regionInfo = info;
+			m_MapTemplate = template;
 		}
 
-		public RegionInfo RegionInfo
+		public MapTemplate MapTemplate
 		{
-			get { return m_regionInfo; }
+			get { return m_MapTemplate; }
 		}
 
 		internal BaseInstance Create()

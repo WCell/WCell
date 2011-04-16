@@ -18,7 +18,7 @@ namespace WCell.RealmServer.Handlers
 		public static void SendPeriodicAuraLog(IPacketReceiver client, WorldObject caster, WorldObject target,
 			uint spellId, uint extra, AuraTickFlags flags, int amount)
 		{
-			// TODO: Update struct for 3.0.2
+			// TODO: Update struct
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PERIODICAURALOG, 32))
 			{
 				caster.EntityId.WritePacked(packet);
@@ -56,20 +56,20 @@ namespace WCell.RealmServer.Handlers
 		/// <summary>
 		/// Correct 3.0.9
 		/// </summary>
-		public static void SendSpellMiss(SpellId spell, WorldObject caster, bool doIt, ICollection<CastMiss> missedTargets)
+		public static void SendSpellMiss(SpellCast cast, bool display, ICollection<CastMiss> missedTargets)
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_SPELLLOGMISS, 34))
 			{
-				packet.Write((uint)spell);
-				packet.Write(caster.EntityId);
-				packet.Write(doIt);// TODO: test this value. Its a bool that seems to determine whether to display this packet in the combat log
+				packet.Write(cast.Spell.Id);
+				packet.Write(cast.CasterReference.EntityId);
+				packet.Write(display);// TODO: test this value. Its a bool that seems to determine whether to display this packet in the combat log
 				packet.Write(missedTargets.Count);
 				foreach (var miss in missedTargets)
 				{
 					packet.Write(miss.Target.EntityId);
 					packet.Write((byte)miss.Reason);
 				}
-				caster.SendPacketToArea(packet);
+				cast.SendPacketToArea(packet);
 			}
 		}
 
@@ -256,7 +256,7 @@ namespace WCell.RealmServer.Handlers
 			return packet;
 		}
 
-		public static void SendHealLog(WorldObject caster, Unit target, uint spellId, int value, bool critical)
+		public static void SendHealLog(WorldObject caster, Unit target, uint spellId, int value, bool critical, int overheal)
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_SPELLHEALLOG, 25))
 			{
@@ -265,10 +265,10 @@ namespace WCell.RealmServer.Handlers
 
 				packet.Write(spellId);
 				packet.Write(value);
-				packet.Write((uint)0);		// overheal
+				packet.Write(overheal);		// overheal
+				packet.Write(0);			// absorb
 				packet.Write((byte)(critical ? 1 : 0));
 				packet.Write((byte)0);		// unused
-				packet.Write(0);			// unknown wotlk
 
 				target.SendPacketToArea(packet, true);
 			}
@@ -331,7 +331,7 @@ namespace WCell.RealmServer.Handlers
 				packet.Write(state.Absorbed);
 				packet.Write(state.Resisted);
 				//packet.Write(0);				// is always 0
-			    packet.Write(state.Schools.HasFlag(DamageSchoolMask.Physical));
+			    packet.Write(state.Schools.HasAnyFlag(DamageSchoolMask.Physical));
 				packet.Write((byte)0);			// 0 or 1
 				packet.Write(state.Blocked);
 

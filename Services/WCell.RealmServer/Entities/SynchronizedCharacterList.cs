@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -35,6 +35,11 @@ namespace WCell.RealmServer.Entities
 			protected set;
 		}
 
+		public int CharacterCount
+		{
+			get { return Count; }
+		}
+
 		/// <summary>
 		/// Threadsafe iteration
 		/// </summary>
@@ -65,7 +70,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Creates a Copy of the set
 		/// </summary>
-		public Character[] GetCharacters()
+		public Character[] GetAllCharacters()
 		{
 			return ToArray();
 		}

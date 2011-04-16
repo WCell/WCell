@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Castle.ActiveRecord;
 using WCell.Core.Database;
 
@@ -69,27 +69,10 @@ namespace WCell.RealmServer.Database
 		}
 
 		[Property(NotNull = false)]
-		public uint[] KilledNPCs
-		{
-			get;
-			set;
-		}
-
-		[Property(NotNull = false)]
 		/// <summary>
-		/// Amounts of interacted GameObjects
+		/// Amounts of interactions
 		/// </summary>
-		public uint[] UsedGOs
-		{
-			get;
-			set;
-		}
-
-		[Property(NotNull = false)]
-		/// <summary>
-		/// Spells casted
-		/// </summary>
-		public int[] CastedSpells
+		public uint[] Interactions
 		{
 			get;
 			set;

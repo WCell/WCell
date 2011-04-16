@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using WCell.Constants;
 using WCell.Constants.Items;
+using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Items;
 using WCell.Util.Data;
@@ -80,18 +81,17 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// SpellShapeshiftForm.dbc
 		/// </summary>
-		public ShapeShiftMask ShapeshiftMask;//13
+		public ShapeshiftMask RequiredShapeshiftMask;//13
 		/// <summary>
 		/// SpellShapeshiftForm.dbc
 		/// </summary>
-		public ShapeShiftMask ExcludeShapeshiftMask;//14
+		public ShapeshiftMask ExcludeShapeshiftMask;//14
 
 		public SpellTargetFlags TargetFlags;
 		/// <summary>
 		/// CreatureType.dbc
 		/// </summary>
-		//public uint TargetCreatureTypeMask;//16
-		public TargetCreatureMask TargetCreatureTypes;
+		public CreatureMask CreatureMask;
 		/// <summary>
 		/// SpellFocusObject.dbc
 		/// </summary>
@@ -108,19 +108,19 @@ namespace WCell.RealmServer.Spells
 		/// Can only cast if caster has this Aura
 		/// Used for some new BG features (Homing missiles etc)
 		/// </summary>
-		public uint RequiredCasterAuraId;
+		public SpellId RequiredCasterAuraId;
 		/// <summary>
 		/// Can only cast if target has this Aura
 		/// </summary>
-		public uint RequiredTargetAuraId;
+		public SpellId RequiredTargetAuraId;
 		/// <summary>
 		/// Cannot be cast if caster has this
 		/// </summary>
-		public uint ExcludeCasterAuraId;
+		public SpellId ExcludeCasterAuraId;
 		/// <summary>
 		/// Cannot be cast on target if he has this
 		/// </summary>
-		public uint ExcludeTargetAuraId;
+		public SpellId ExcludeTargetAuraId;
 
 		/// <summary>
 		/// Cast delay in milliseconds
@@ -138,6 +138,9 @@ namespace WCell.RealmServer.Spells
 		public InterruptFlags InterruptFlags;//25
 		public AuraInterruptFlags AuraInterruptFlags;//26
 		public ChannelInterruptFlags ChannelInterruptFlags;//27
+		/// <summary>
+		/// Indicates the events that let this Spell proc (if it is a proc spell)
+		/// </summary>
 		public ProcTriggerFlags ProcTriggerFlags;//28
 		public uint ProcChance;//29
 		public int ProcCharges;//30
@@ -176,7 +179,9 @@ namespace WCell.RealmServer.Spells
 		/// Hunter ranged spells have this. It seems always to be 75
 		/// </summary>
 		public SpellId ModalNextSpell;//42
+
 		public int MaxStackCount;//43
+
 		[Persistent(2)]
 		public uint[] RequiredToolIds;//44 - 45
 		[Persistent(8)]
@@ -245,13 +250,13 @@ namespace WCell.RealmServer.Spells
 					var rank = numberRegex.Match(value);
 					if (rank.Success)
 					{
-						byte.TryParse(rank.Value, out Rank);
+						int.TryParse(rank.Value, out Rank);
 					}
 				}
 			}
 		}
 
-		public byte Rank;
+		public int Rank;
 		public string Description; // 158 - 174
 		public string BuffDescription; // 175 - 191
 
@@ -275,7 +280,7 @@ namespace WCell.RealmServer.Spells
 		public ClassId ClassId;
 
 		[Persistent(3)]
-		public uint[] SpellClassMask = new uint[3];
+		public uint[] SpellClassMask = new uint[SpellConstants.SpellClassMaskSize];
 		public uint MaxTargets;                      //199 
 		public SpellDefenseType DefenseType;
 		public SpellPreventionType PreventionType;
@@ -299,8 +304,9 @@ namespace WCell.RealmServer.Spells
 		/// only one spellid:26869  has this flag = 1 
 		/// </summary>
 		public uint RequiredAuraVision;
-		[Persistent(2)]
-		public TotemCategory[] RequiredTotemCategories = new TotemCategory[2];// 209 - 210
+
+		[NotPersistent]
+		public ToolCategory[] RequiredToolCategories = new ToolCategory[2];// 209 - 210
 		/// <summary>
 		/// AreaGroup.dbc
 		/// </summary>
@@ -310,7 +316,8 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// SpellRuneCost.dbc
 		/// </summary>
-		public uint RuneCostId;
+		public RuneCostEntry RuneCostEntry;
+
 		/// <summary>
 		/// SpellMissile.dbc
 		/// </summary>

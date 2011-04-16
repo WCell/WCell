@@ -33,6 +33,11 @@ namespace WCell.RealmServer.Spells.Auras
 		protected internal SpellEffect m_spellEffect;
 		public int BaseEffectValue;
 
+		/// <summary>
+		/// The value of the underlying SpellEffect that was calculated when
+		/// this Aura was last applied or refreshed (see <see cref="WCell.RealmServer.Spells.SpellEffect.CalcEffectValue(Unit)"/>).
+		/// The value is multiplied by the StackCount of the Aura (<see cref="WCell.RealmServer.Spells.Auras.Aura.StackCount"/>).
+		/// </summary>
 		public int EffectValue
 		{
 			get
@@ -65,6 +70,25 @@ namespace WCell.RealmServer.Spells.Auras
 			get { return EffectValue >= 0; }
 		}
 
+		private bool m_IsActivated;
+
+		public bool IsActivated
+		{
+			get { return m_IsActivated; }
+			internal set
+			{
+				if (m_IsActivated == value) return;
+				if ((m_IsActivated = value))
+				{
+					Apply();
+				}
+				else
+				{
+					Remove(false);
+				}
+			}
+		}
+
 		/// <summary>
 		/// The Aura to which this AuraEffect belongs
 		/// </summary>
@@ -79,39 +103,75 @@ namespace WCell.RealmServer.Spells.Auras
 		}
 
 		/// <summary>
-		/// The SpellEffect which triggered this AuraEffect
+		/// The SpellEffect which created this AuraEffect OR:
+		/// If the Aura was triggered by another Spell and the original SpellEffect had OverrideEffectValue = true,
+		/// this is the SpellEffect that triggered the creation of the Aura (through TriggerSpell, ProcTriggerSpell etc).
 		/// </summary>
 		public SpellEffect SpellEffect
 		{
 			get { return m_spellEffect; }
 		}
 
-		/// <summary>		
-		/// /// Check whether this handler can be applied to the given target
-		///  </summary>
-		protected internal virtual void CheckInitialize(CasterInfo casterInfo, Unit target, ref SpellFailedReason failReason)
+		public void UpdateEffectValue()
 		{
+			BaseEffectValue = m_spellEffect.CalcEffectValue(m_aura.CasterUnit);
+		}
+
+		/// <summary>		
+		/// Check whether this handler can be applied to the given target.
+		/// m_aura, as well as some other fields are not set when this method gets called.
+		/// </summary>
+		protected internal virtual void CheckInitialize(SpellCast creatingCast, ObjectReference casterReference, Unit target, ref SpellFailedReason failReason)
+		{
+		}
+
+		/// <summary>
+		/// To be called by Aura.Apply on periodic effects
+		/// </summary>
+		internal void DoApply()
+		{
+			if (m_IsActivated && !m_spellEffect.IsPeriodic) return;
+			m_IsActivated = true;
+			Apply();
+		}
+
+		/// <summary>
+		/// To be called by Aura.Apply on periodic effects
+		/// </summary>
+		internal void DoRemove(bool cancelled)
+		{
+			if (!m_IsActivated) return;
+			m_IsActivated = false;
+			Remove(cancelled);
 		}
 
 		/// <summary>
 		/// Applies this EffectHandler's effect to its holder
 		/// </summary>
-		protected internal virtual void Apply()
+		protected virtual void Apply()
 		{
 		}
 
 		/// <summary>
-		/// Is called by Aura to remove the effect from its holder
+		/// Removes the effect from its holder
 		/// </summary>
-		protected internal virtual void Remove(bool cancelled)
+		protected virtual void Remove(bool cancelled)
 		{
 		}
 
 		/// <summary>
-		/// Triggers a proc on this EffectHandler with the given target.
+		/// Whether this proc handler can be triggered by the given action
 		/// </summary>
-		/// <param name="target"></param>
-		public virtual void OnProc(Unit target, IUnitAction action)
+		public virtual bool CanProcBeTriggeredBy(IUnitAction action)
+		{
+			return true;
+		}
+
+		/// <summary>
+		/// Called when a matching proc event triggers this proc handler with the given
+		/// triggerer and action.
+		/// </summary>
+		public virtual void OnProc(Unit triggerer, IUnitAction action)
 		{
 		}
 	}

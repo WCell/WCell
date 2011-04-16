@@ -3,7 +3,7 @@
  *   file		: PeriodicDamage.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
- *   last changed	: $LastChangedDate: 2010-01-10 13:00:10 +0100 (sø, 10 jan 2010) $
+ *   last changed	: $LastChangedDate: 2010-01-10 13:00:10 +0100 (s? 10 jan 2010) $
  *   last author	: $LastChangedBy: dominikseifert $
  *   revision		: $Rev: 1185 $
  *
@@ -14,6 +14,8 @@
  *
  *************************************************************************/
 
+using System;
+using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Auras.Handlers
@@ -23,14 +25,46 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	/// </summary>
 	public class PeriodicDamageHandler : AuraEffectHandler
 	{
-		protected internal override void Apply()
+		protected override void Apply()
 		{
-			var holder = m_aura.Auras.Owner;
+			var holder = Owner;
 			if (holder.IsAlive)
 			{
-				holder.DoSpellDamage(m_aura.Caster as Unit, m_spellEffect, EffectValue);
+				var value = EffectValue;
+				if (m_aura.Spell.Mechanic == SpellMechanic.Bleeding)
+				{
+					var bonus = m_aura.Auras.GetBleedBonusPercent();
+					value += ((value * bonus) + 50) / 100;
+					m_aura.Owner.IncMechanicCount(SpellMechanic.Bleeding);
+				}
+
+				holder.DealSpellDamage(m_aura.CasterUnit, m_spellEffect, value);
 			}
 		}
-
+		protected override void Remove(bool cancelled)
+		{
+			if (m_aura.Spell.Mechanic == SpellMechanic.Bleeding)
+				m_aura.Owner.DecMechanicCount(SpellMechanic.Bleeding);
+		}
 	}
-};
+
+	public class ParameterizedPeriodicDamageHandler : PeriodicDamageHandler
+	{
+		public int TotalDamage { get; set; }
+
+		public ParameterizedPeriodicDamageHandler() : this(0)
+		{
+		}
+
+		public ParameterizedPeriodicDamageHandler(int totalDmg)
+		{
+			TotalDamage = totalDmg;
+		}
+
+		protected override void Apply()
+		{
+			BaseEffectValue = TotalDamage / (m_aura.TicksLeft + 1);
+			TotalDamage -= BaseEffectValue;
+		}
+	}
+}

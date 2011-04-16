@@ -85,6 +85,30 @@ namespace WCell.RealmServer.Misc
 				aaction.Blocked > 0;
 		};
 
+		public static ProcValidator DodgeValidator = (target, action) =>
+		{
+			var aaction = action as DamageAction;
+			if (aaction == null)
+			{
+				return false;
+			}
+
+			return aaction.VictimState == VictimState.Dodge;
+		};
+
+		public static ProcValidator StunValidator = (target, action) =>
+		{
+			var aaction = action as DamageAction;
+			if (aaction == null || aaction.Spell == null || 
+				!aaction.Spell.IsAura || !action.Attacker.MayAttack(action.Victim))
+			{
+				return false;
+			}
+
+			//var stunEffect = aaction.Spell.GetEffectsWhere(effect => effect.AuraType == AuraType.ModStun);
+			return aaction.Spell.Attributes.HasAnyFlag(SpellAttributes.MovementImpairing);
+		};
+
 		public readonly WeakRef CreatorRef;
 		public readonly ProcHandlerTemplate Template;
 		private int m_stackCount;
@@ -144,7 +168,7 @@ namespace WCell.RealmServer.Misc
 		/// <param name="active">Whether the triggerer is the attacker/caster (true), or the victim (false)</param>
 		public bool CanBeTriggeredBy(Unit triggerer, IUnitAction action, bool active)
 		{
-			return Template.IsAttackerTriggerer == (triggerer == action.Attacker) && Template.Validator(triggerer, action);
+			return Template.Validator == null || Template.Validator(triggerer, action);
 		}
 
 		public void TriggerProc(Unit triggerer, IUnitAction action)
@@ -181,31 +205,23 @@ namespace WCell.RealmServer.Misc
 		{
 		}
 
-		public ProcHandlerTemplate(ProcValidator validator, ProcCallback procAction)
-			: this(ProcTriggerFlags.All, validator, procAction)
-		{
-		}
-
-		public ProcHandlerTemplate(ProcTriggerFlags triggerFlags, ProcValidator validator, ProcCallback procAction)
-			: this(triggerFlags, validator, procAction, 100)
-		{
-		}
-
-		public ProcHandlerTemplate(ProcTriggerFlags triggerFlags, ProcValidator validator, ProcCallback procAction, uint procChance)
-			: this(triggerFlags, validator, procAction, procChance, 0)
-		{
-		}
-
-		public ProcHandlerTemplate(ProcTriggerFlags triggerFlags, ProcValidator validator, ProcCallback procAction, uint procChance, int stackCount)
+		public ProcHandlerTemplate(ProcTriggerFlags triggerFlags, ProcCallback procAction, uint procChance = 100u, int stackCount = 0)
 		{
 			ProcTriggerFlags = triggerFlags;
-			Validator = validator;
 			ProcChance = procChance;
+			Validator = null;
 			ProcAction = procAction;
 			m_stackCount = stackCount;
 		}
 
-		public bool IsAttackerTriggerer { get; internal set; }
+		public ProcHandlerTemplate(ProcTriggerFlags triggerFlags, ProcCallback procAction, ProcValidator validator = null, uint procChance = 100u, int stackCount = 0)
+		{
+			ProcTriggerFlags = triggerFlags;
+			ProcChance = procChance;
+			Validator = validator;
+			ProcAction = procAction;
+			m_stackCount = stackCount;
+		}
 
 		public ProcValidator Validator { get; set; }
 
@@ -252,39 +268,26 @@ namespace WCell.RealmServer.Misc
 	/// <summary>
 	/// Triggers a spell on proc
 	/// </summary>
-	public class TriggerSpellProcHandler : ProcHandlerTemplate
+	public class TriggerSpellProcHandlerTemplate : ProcHandlerTemplate
 	{
 		public Spell Spell { get; set; }
-
-		public TriggerSpellProcHandler(ProcValidator validator, Spell spell)
+		
+		public TriggerSpellProcHandlerTemplate(Spell spell, ProcTriggerFlags triggerFlags, uint procChance = 100u, int stackCount = 0)
+			: this(spell, triggerFlags, null, procChance, stackCount)
 		{
-			Validator = validator;
-			ProcAction = ProcSpell;
+		}
+
+		public TriggerSpellProcHandlerTemplate(Spell spell, ProcTriggerFlags triggerFlags, ProcValidator validator = null, uint procChance = 100u, int stackCount = 0)
+			: base(triggerFlags, null, validator, procChance, stackCount)
+		{
 			Spell = spell;
-		}
-
-		public TriggerSpellProcHandler(ProcTriggerFlags triggerFlags, ProcValidator validator, Spell spell) :
-			this(validator, spell)
-		{
-			ProcTriggerFlags = triggerFlags;
-		}
-
-		public TriggerSpellProcHandler(ProcTriggerFlags triggerFlags, ProcValidator validator, Spell spell, uint procChance)
-			: this(triggerFlags, validator, spell)
-		{
-			ProcChance = procChance;
-		}
-
-		public TriggerSpellProcHandler(ProcTriggerFlags triggerFlags, ProcValidator validator, Spell spell, uint procChance, int stackCount)
-			: this(triggerFlags, validator, spell, procChance)
-		{
-			StackCount = stackCount;
+			ProcAction = ProcSpell;
 		}
 
 		public bool ProcSpell(Unit creator, Unit triggerer, IUnitAction action)
 		{
 			//if (triggerer != null)
-			creator.SpellCast.ValidateAndTrigger(Spell, triggerer);
+			SpellCast.ValidateAndTriggerNew(Spell, creator, triggerer, null, null, action);
 			return false;
 		}
 	}

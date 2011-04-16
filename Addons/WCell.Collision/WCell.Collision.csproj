@@ -24,19 +24,20 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\Run\Debug\RealmServerAddons\</OutputPath>
+    <OutputPath>..\..\Run\RealmServerAddons\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <DocumentationFile>..\..\Run\Debug\RealmServerAddons\WCell.Collision.xml</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
     <NoWarn>1591,1587,1570,1573,1572</NoWarn>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\Run\Release\RealmServerAddons\</OutputPath>
+    <OutputPath>..\..\Run\RealmServerAddons\</OutputPath>
     <DefineConstants>
     </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -46,7 +47,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\..\Run\Debug\RealmServerAddons\</OutputPath>
+    <OutputPath>..\..\Run\RealmServerAddons\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
@@ -55,10 +56,11 @@
     <ErrorReport>prompt</ErrorReport>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <NoWarn>1591,1587,1570,1573,1572</NoWarn>
-    <DocumentationFile>..\..\Run\Debug\RealmServerAddons\WCell.Collision.xml</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <OutputPath>..\..\Run\Release\RealmServerAddons\</OutputPath>
+    <OutputPath>..\..\Run\RealmServerAddons\</OutputPath>
     <DefineConstants>
     </DefineConstants>
     <Optimize>true</Optimize>
@@ -71,7 +73,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\..\Run\Debug\RealmServerAddons\</OutputPath>
+    <OutputPath>..\..\Run\RealmServerAddons\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
@@ -80,10 +82,11 @@
     <ErrorReport>prompt</ErrorReport>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <NoWarn>1591,1587,1570,1573,1572</NoWarn>
-    <DocumentationFile>..\..\Run\Debug\RealmServerAddons\WCell.Collision.xml</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
-    <OutputPath>..\..\Run\Release\RealmServerAddons\</OutputPath>
+    <OutputPath>..\..\Run\RealmServerAddons\</OutputPath>
     <DefineConstants>
     </DefineConstants>
     <Optimize>true</Optimize>
@@ -96,7 +99,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|Itanium' ">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\..\Run\Debug\RealmServerAddons\</OutputPath>
+    <OutputPath>..\..\Run\RealmServerAddons\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>Itanium</PlatformTarget>
@@ -104,11 +107,12 @@
     <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
     <ErrorReport>prompt</ErrorReport>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>..\..\Run\Debug\RealmServerAddons\WCell.Collision.xml</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
     <NoWarn>1591,1587,1570,1573,1572</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|Itanium' ">
-    <OutputPath>..\..\Run\Release\RealmServerAddons\</OutputPath>
+    <OutputPath>..\..\Run\RealmServerAddons\</OutputPath>
     <DefineConstants>
     </DefineConstants>
     <Optimize>true</Optimize>
@@ -139,11 +143,15 @@
     <Compile Include="Addon\FullTerrainProvider.cs" />
     <Compile Include="Addon\CollisionAddon.cs" />
     <Compile Include="BSPTree.cs" />
-    <Compile Include="Building.cs" />
+    <Compile Include="Components\M2Reference.cs" />
+    <Compile Include="Components\ReferenceBase.cs" />
+    <Compile Include="Components\WMO.cs" />
+    <Compile Include="Components\WMOGroup.cs" />
     <Compile Include="CollisionHelper.cs" />
+    <Compile Include="Components\WMOReference.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="LocationHelper.cs" />
-    <Compile Include="Model.cs" />
+    <Compile Include="Components\M2.cs" />
     <Compile Include="QuadTree.cs" />
     <Compile Include="TileReference.cs" />
     <Compile Include="TreeReference.cs" />

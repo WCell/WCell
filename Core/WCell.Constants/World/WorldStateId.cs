@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -49,6 +49,37 @@ namespace WCell.Constants.World
         ABResourcesAlliance = 1776,
         ABResourcesHorde = 1777,
         ABMaxResources = 1780,
+
+        ABShowStableIcon = 1842,                    // Neutral
+        ABShowStableIconAlliance = 1767,            // Alliance controlled
+        ABShowStableIconHorde = 1768,               // Horde controlled
+        ABShowStableIconAllianceContested = 1769,   // Alliance contested
+        ABShowStableIconHordeContested = 1770,      // Horde contested
+        
+        ABShowGoldMineIcon = 1843,                  // Neutral
+        ABShowGoldMineIconAlliance = 1787,          // Alliance controlled
+        ABShowGoldMineIconHorde = 1788,             // Horde controlled
+        ABShowGoldMineIconAllianceContested = 1789, // Alliance contested
+        ABShowGoldMineIconHordeContested = 1790,    // Horde contested
+
+        ABShowLumberMillIcon = 1844,                // Neutral
+        ABShowLumberMillIconAlliance = 1792,        // Alliance controlled
+        ABShowLumberMillIconHorde = 1793,           // Horde controlled
+        ABShowLumberMillIconAllianceContested = 1794, // Alliance contested
+        ABShowLumberMillIconHordeContested = 1795,  // Horde contested
+
+        ABShowFarmIcon = 1845,                      // Neutral
+        ABShowFarmIconAlliance = 1772,              // Alliance controlled
+        ABShowFarmIconHorde = 1773,                 // Horde controlled
+        ABShowFarmIconAllianceContested = 1774,     // Alliance contested
+        ABShowFarmIconHordeContested = 1775,        // Horde contested
+
+        ABShowBlacksmithIcon = 1846,                // Neutral
+        ABShowBlacksmithIconAlliance = 1782,        // Alliance controlled
+        ABShowBlacksmithIconHorde = 1783,           // Horde controlled
+        ABShowBlacksmithIconAllianceContested = 1784, // Alliance contested
+        ABShowBlacksmithIconHordeContested = 1785,  // Horde contested
+
         ABNearVictoryWarning = 1955,
 
         AlgalonTimeToSignal = 4131,

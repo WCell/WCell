@@ -1,4 +1,4 @@
-﻿using WCell.RealmServer.Quests;
+using WCell.RealmServer.Quests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WCell.Constants.Quests;
 using WCell.RealmServer.Database;

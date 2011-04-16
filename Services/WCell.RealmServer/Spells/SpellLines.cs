@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,7 +13,7 @@ namespace WCell.RealmServer.Spells
 		public static readonly SpellLine[][] SpellLinesByClass = new SpellLine[(int)ClassId.End][];
 		public static readonly SpellLine[] ById = new SpellLine[(int)SpellLineId.End + 100];
 
-		public static SpellLine GetLine(SpellLineId id)
+		public static SpellLine GetLine(this SpellLineId id)
 		{
 			return ById[(int)id];
 		}
@@ -42,7 +42,6 @@ namespace WCell.RealmServer.Spells
 						spell.PreviousRank = last;
 						last.NextRank = spell;
 					}
-					spell.SpellLine = line;
 					last = spell;
 				}
 			}

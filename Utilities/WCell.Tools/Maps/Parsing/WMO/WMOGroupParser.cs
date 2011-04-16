@@ -1,15 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 using System.IO;
-using System.Linq;
-using System.Text;
+using NLog;
 using WCell.MPQTool;
+using WCell.Tools.Maps.Parsing.WMO.Components;
+using WCell.Tools.Maps.Structures;
+using WCell.Tools.Maps.Utils;
 using WCell.Util.Graphics;
 
-namespace WCell.Tools.Maps
+namespace WCell.Tools.Maps.Parsing.WMO
 {
     public static class WMOGroupParser
     {
+        private static readonly Logger log = LogManager.GetCurrentClassLogger();
+
+
         /// <summary>
         /// Gets a WMOGroup from the WMO Group file
         /// </summary>
@@ -19,10 +23,15 @@ namespace WCell.Tools.Maps
         /// <returns>A WMOGroup from the WMO Group file</returns>
         public static WMOGroup Process(MpqManager manager, string filePath, WMORoot root, int groupIndex)
         {
-            if (!manager.FileExists(filePath)) return null;
+            if (!manager.FileExists(filePath))
+            {
+                log.Error("WMOGroup file does not exist: ", filePath);
+            }
+
             var currentWMOGroup = new WMOGroup(root, groupIndex);
 
-            using (var br = new BinaryReader(manager.OpenFile(filePath)))
+            using (var fs = manager.OpenFile(filePath))
+            using (var br = new BinaryReader(fs))
             {
                 ReadRequiredChunks(br, currentWMOGroup);
                 ReadOptionalChunks(br, currentWMOGroup);
@@ -33,11 +42,11 @@ namespace WCell.Tools.Maps
 
         static long AdvanceToNextChunk(BinaryReader br, long curPos, ref uint type, ref uint size)
         {
-            if (br.BaseStream.Length <= (curPos + size))
+            if (curPos + size >= br.BaseStream.Length)
             {
                 return br.BaseStream.Length;
             }
-
+            
             br.BaseStream.Seek(curPos + size, SeekOrigin.Begin);
             if (br.BaseStream.Position == br.BaseStream.Length)
             {
@@ -73,7 +82,7 @@ namespace WCell.Tools.Maps
             }
             else
             {
-                Console.WriteLine("ERROR: WMO Group did not have required chunk MVER");
+                Console.WriteLine("ERROR: WMO Group did not have required chunk MOGP");
             }
 
             curPos = AdvanceToNextChunk(br, curPos, ref type, ref size);
@@ -119,7 +128,7 @@ namespace WCell.Tools.Maps
             curPos = AdvanceToNextChunk(br, curPos, ref type, ref size);
             if (type == Signatures.MOTV)
             {
-                ReadMOTV1(br, currentWMOGroup);
+                ReadMOTV1(br, currentWMOGroup, size);
             }
             else
             {
@@ -129,7 +138,7 @@ namespace WCell.Tools.Maps
             curPos = AdvanceToNextChunk(br, curPos, ref type, ref size);
             if (type == Signatures.MOBA)
             {
-                ReadMOBA(br, currentWMOGroup);
+                ReadMOBA(br, currentWMOGroup, size);
             }
             else
             {
@@ -150,7 +159,7 @@ namespace WCell.Tools.Maps
             {
                 if (type == Signatures.MOLR)
                 {
-                    ReadMOLR(br, currentWMOGroup);
+                    ReadMOLR(br, currentWMOGroup, size);
                 }
                 else
                 {
@@ -161,11 +170,11 @@ namespace WCell.Tools.Maps
                 curPos = AdvanceToNextChunk(br, curPos, ref type, ref size);
             }
 
-            if (currentWMOGroup.Header.HasMODR)
+            if (currentWMOGroup.Header.HasDoodadReferences)
             {
                 if (type == Signatures.MODR)
                 {
-                    ReadMODR(br, currentWMOGroup);
+                    ReadMODR(br, currentWMOGroup, size);
                 }
                 else
                 {
@@ -254,7 +263,7 @@ namespace WCell.Tools.Maps
             {
                 if (type == Signatures.MOCV)
                 {
-                    ReadMOCV1(br, currentWMOGroup);
+                    ReadMOCV1(br, currentWMOGroup, size);
                 }
                 else
                 {
@@ -307,7 +316,7 @@ namespace WCell.Tools.Maps
             {
                 if (type == Signatures.MOTV)
                 {
-                    ReadMOTV2(br, currentWMOGroup);
+                    ReadMOTV2(br, currentWMOGroup, size);
                 }
                 else
                 {
@@ -322,7 +331,7 @@ namespace WCell.Tools.Maps
             {
                 if (type == Signatures.MOCV)
                 {
-                    ReadMOCV2(br, currentWMOGroup);
+                    ReadMOCV2(br, currentWMOGroup, size);
                 }
                 else
                 {
@@ -358,7 +367,7 @@ namespace WCell.Tools.Maps
         private static void ReadMPBG(BinaryReader br, WMOGroup group)
         {
         }
-
+        
         static void ReadMVER(BinaryReader br, WMOGroup group)
         {
             group.Version = br.ReadUInt32();
@@ -380,11 +389,7 @@ namespace WCell.Tools.Maps
 
             group.Header.Flags = (WMOGroupFlags)file.ReadUInt32();
 
-            group.Header.BoundingBox = new BoundingBox
-            {
-                Min = file.ReadVector3(),
-                Max = file.ReadVector3()
-            };
+            group.Header.BoundingBox = new BoundingBox(file.ReadWMOVector3(), file.ReadWMOVector3());
 
             group.Header.PortalStart = file.ReadUInt16();
             group.Header.PortalCount = file.ReadUInt16();
@@ -411,7 +416,7 @@ namespace WCell.Tools.Maps
 			 *  0x20 - Always set?
 			 *  0x40 - sometimes set- 
 			 *  0x80 - ??? never set
-			 * 
+			 *  
 			 */
             group.TriangleMaterials = new MOPY[group.TriangleCount];
 
@@ -440,28 +445,26 @@ namespace WCell.Tools.Maps
                 var two = br.ReadInt16();
                 var three = br.ReadInt16();
 
-                var ind = new Index3 { Index0 = three, Index1 = two, Index2 = one };
-                group.Indicies.Add(ind);
+                var ind = new Index3 {Index0 = three, Index1 = two, Index2 = one};
+                //var ind = new Index3 { Index0 = one, Index1 = two, Index2 = three };
+                group.Indices.Add(ind);
             }
         }
 
         /// <summary>
-        /// Reads the vertices for this wmo
+        /// Reads the vertices for this wmo group
         /// </summary>
         /// <param name="file"></param>
         /// <param name="group"></param>
         /// <param name="size"></param>
         static void ReadMOVT(BinaryReader file, WMOGroup group, uint size)
         {
-            group.VertexCount = size / (sizeof(float) * 3);
+            group.VertexCount = size/(sizeof (float)*3);
             // let's hope it's padded to 12 bytes, not 16...
-
+            
             for (uint i = 0; i < group.VertexCount; i++)
             {
-                var vectX = file.ReadSingle() * -1;
-                var vectZ = file.ReadSingle();
-                var vectY = file.ReadSingle();
-                group.Verticies.Add(new Vector3(vectX, vectY, vectZ));
+                group.Vertices.Add(file.ReadWMOVector3());
             }
         }
 
@@ -472,61 +475,108 @@ namespace WCell.Tools.Maps
         /// <param name="group"></param>
         static void ReadMONR(BinaryReader file, WMOGroup group)
         {
-            for (int i = 0; i < group.VertexCount; i++)
+            for (var i=0;i<group.VertexCount;i++)
             {
                 var vectX = file.ReadSingle() * -1;
-                var vectZ = file.ReadSingle();
                 var vectY = file.ReadSingle();
+                var vectZ = file.ReadSingle();
                 group.Normals.Add(new Vector3(vectX, vectY, vectZ));
             }
         }
 
-        static void ReadMOTV1(BinaryReader br, WMOGroup group)
+        static void ReadMOTV1(BinaryReader br, WMOGroup group, uint size)
         {
             // Texture coordinates, 2 floats per vertex in (X,Y) order. The values range from 0.0 to 1.0.
             // Vertices, normals and texture coordinates are in corresponding order, of course. 
+            group.TextureVertices1 = new Vector2[size/8];
+
+            for (int i = 0; i < group.TextureVertices1.Length; i++)
+            {
+                group.TextureVertices1[i] = br.ReadVector2();
+            }
         }
 
-        static void ReadMOTV2(BinaryReader br, WMOGroup group)
+        static void ReadMOTV2(BinaryReader br, WMOGroup group, uint size)
         {
-            // Presumably the same as MOTV1
+            // Texture coordinates, 2 floats per vertex in (X,Y) order. The values range from 0.0 to 1.0.
+            // Vertices, normals and texture coordinates are in corresponding order, of course. 
+            group.TextureVertices2 = new Vector2[size / 8];
+
+            for (int i = 0; i < group.TextureVertices2.Length; i++)
+            {
+                group.TextureVertices2[i] = br.ReadVector2();
+            }
         }
 
-        static void ReadMOBA(BinaryReader br, WMOGroup group)
+        static void ReadMOBA(BinaryReader br, WMOGroup group, uint size)
         {
             // Render batches. Records of 24 bytes.
+            group.Batches = new RenderBatch[size/24];
+
+            for (int i = 0; i < group.Batches.Length; i++)
+            {
+                var batch = new RenderBatch
+                                {
+                                    BottomX = br.ReadInt16(),
+                                    BottomY = br.ReadInt16(),
+                                    BottomZ = br.ReadInt16(),
+                                    TopX = br.ReadInt16(),
+                                    TopY = br.ReadInt16(),
+                                    TopZ = br.ReadInt16(),
+                                    StartIndex = br.ReadInt32(),
+                                    IndexCount = br.ReadUInt16(),
+                                    VertexStart = br.ReadUInt16(),
+                                    VertexEnd = br.ReadUInt16(),
+                                    Byte_13 = br.ReadByte(),
+                                    TextureIndex = br.ReadByte()
+                                };
+
+                group.Batches[i] = batch;
+            }
         }
 
-        static void ReadMOLR(BinaryReader br, WMOGroup group)
+        static void ReadMOLR(BinaryReader br, WMOGroup group, uint size)
         {
             // Light references, one 16-bit integer per light reference. 
             // This is basically a list of lights used in this WMO group, 
             // the numbers are indices into the WMO root file's MOLT table.
+            group.LightReferences = new ushort[size/2];
+
+            for (int i = 0; i < group.LightReferences.Length; i++)
+            {
+                group.LightReferences[i] = br.ReadUInt16();
+            }
         }
 
-        static void ReadMODR(BinaryReader br, WMOGroup group)
+        static void ReadMODR(BinaryReader br, WMOGroup group, uint size)
         {
             // Doodad references, one 16-bit integer per doodad. 
             // The numbers are indices into the doodad instance table (MODD chunk) of the WMO root file. 
-            // These have to be filtered to the doodad set being used in any given WMO instance. 
+            // These have to be filtered to the doodad set being used in any given WMO instance.
+            group.DoodadReferences = new ushort[size / 2];
+
+            for (int i = 0; i < group.DoodadReferences.Length; i++)
+            {
+                group.DoodadReferences[i] = br.ReadUInt16();
+            }
         }
 
         static void ReadMOBN(BinaryReader file, WMOGroup group, uint size)
         {
-            uint count = size / 0x10;
+            uint count = size/0x10;
 
             group.BSPNodes = new BSPNode[count];
-            for (var i = 0; i < count; i++)
+            for (var i=0;i<count;i++)
             {
                 var node = new BSPNode
-                {
-                    flags = (BSPNodeFlags)file.ReadUInt16(),
-                    negChild = file.ReadInt16(),
-                    posChild = file.ReadInt16(),
-                    nFaces = file.ReadUInt16(),
-                    faceStart = file.ReadUInt32(),
-                    planeDist = file.ReadSingle()
-                };
+                               {
+                                   flags = (BSPNodeFlags) file.ReadUInt16(),
+                                   negChild = file.ReadInt16(),
+                                   posChild = file.ReadInt16(),
+                                   nFaces = file.ReadUInt16(),
+                                   faceStart = file.ReadUInt32(),
+                                   planeDist = file.ReadSingle()
+                               };
 
                 group.BSPNodes[i] = node;
             }
@@ -547,9 +597,18 @@ namespace WCell.Tools.Maps
 
         static void LinkBSPNodes(WMOGroup group)
         {
-            for (var i = 0; i < group.BSPNodes.Length; i++)
+            for (int i = 0; i < group.BSPNodes.Length; i++)
             {
                 var n = group.BSPNodes[i];
+
+                //if (n.posChild != -1)
+                //{
+                //    n.Positive = group.BSPNodes[n.posChild];
+                //}
+                //if (n.negChild != -1)
+                //{
+                //    n.Negative = group.BSPNodes[n.negChild];
+                //}
 
                 if (n.faceStart == 0 && n.nFaces == 0)
                 {
@@ -557,47 +616,76 @@ namespace WCell.Tools.Maps
                     continue;
                 }
 
+                //var faces = new ushort[n.nFaces];
                 n.TriIndices = new Index3[n.nFaces];
                 for (var j = 0; j < n.nFaces; j++)
                 {
-                    n.TriIndices[j] = group.Indicies[group.MOBR[n.faceStart + j]];
+                    var triIndex = group.Indices[group.MOBR[n.faceStart + j]];
+                    n.TriIndices[j] = (triIndex);
                 }
+            }
+
+            //group.DumpBSPNodes();
+        }
+
+
+        static void ReadMOCV1(BinaryReader br, WMOGroup group, uint size)
+        {
+            // Vertex colors, 4 bytes per vertex (BGRA), for WMO groups using indoor lighting.
+            group.VertexColors1 = new Color4[size/4];
+
+            for (int i = 0; i < group.VertexColors1.Length; i++)
+            {
+                group.VertexColors1[i] = br.ReadColor4();
             }
         }
 
-
-        static void ReadMOCV1(BinaryReader br, WMOGroup group)
+        static void ReadMOCV2(BinaryReader br, WMOGroup group, uint size)
         {
             // Vertex colors, 4 bytes per vertex (BGRA), for WMO groups using indoor lighting.
-        }
+            group.VertexColors2 = new Color4[size / 4];
 
-        static void ReadMOCV2(BinaryReader br, WMOGroup group)
-        {
+            for (int i = 0; i < group.VertexColors2.Length; i++)
+            {
+                group.VertexColors2[i] = br.ReadColor4();
+            }
         }
 
         static void ReadMLIQ(BinaryReader file, WMOGroup group)
         {
-            group.LiquidInfo = new LiquidInfo
-            {
-                XVertexCount = file.ReadInt32(),
-                YVertexCount = file.ReadInt32(),
-                XTileCount = file.ReadInt32(),
-                YTileCount = file.ReadInt32(),
-                BaseCoordinates = file.ReadVector3(),
-                MaterialId = file.ReadUInt16()
-            };
+            group.LiquidInfo = new LiquidInfo {
+                                                  XVertexCount = file.ReadInt32(),
+                                                  YVertexCount = file.ReadInt32(),
+                                                  XTileCount = file.ReadInt32(),
+                                                  YTileCount = file.ReadInt32(),
+                                                  BaseCoordinates = file.ReadVector3(),
+                                                  MaterialId = file.ReadUInt16()
+                                              };
 
             // The following is untested, but is what the client appears to be doing
             // These are probably similar to the 2 floats in the old adt water chunk
-            group.LiquidInfo.UnkFloatPairs = new Vector2[group.LiquidInfo.VertexCount];
-            for (int i = 0; i < group.LiquidInfo.VertexCount; i++)
+            group.LiquidInfo.HeightMapMin = new float[group.LiquidInfo.XVertexCount, group.LiquidInfo.YVertexCount];
+            group.LiquidInfo.HeightMapMax = new float[group.LiquidInfo.XVertexCount, group.LiquidInfo.YVertexCount];
+
+            // This is different from the other ADT files, these are stored as [row, col] instead of [col, row]
+            for (var y = 0; y < group.LiquidInfo.YVertexCount; y++)
             {
-                group.LiquidInfo.UnkFloatPairs[i].X = file.ReadSingle();
-                group.LiquidInfo.UnkFloatPairs[i].Y = file.ReadSingle();
+                for (var x = 0; x < group.LiquidInfo.XVertexCount; x++)
+                {
+                    // The min is never used
+                    group.LiquidInfo.HeightMapMin[x, y] = file.ReadSingle();
+                    group.LiquidInfo.HeightMapMax[x, y] = file.ReadSingle();
+                }
             }
 
-            group.LiquidInfo.LiquidTileFlags = file.ReadBytes(group.LiquidInfo.TileCount);
-
+            group.LiquidInfo.LiquidTileFlags = new byte[group.LiquidInfo.XTileCount, group.LiquidInfo.YTileCount];
+            for (var y = 0; y < group.LiquidInfo.YTileCount; y++)
+            {
+                for (var x = 0; x < group.LiquidInfo.XTileCount; x++)
+                {
+                    group.LiquidInfo.LiquidTileFlags[x, y] = file.ReadByte();
+                }
+            }
         }
     }
 }

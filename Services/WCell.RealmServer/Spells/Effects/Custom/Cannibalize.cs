@@ -18,17 +18,14 @@ namespace WCell.RealmServer.Spells.Effects.Custom
 			var cast = m_cast;
 			if (cast != null)
 			{
-				var caster = cast.Caster;
+				var caster = cast.CasterObject;
 				//((Unit)caster).EmoteState
 			}
 		}
 
 		public override ObjectTypes CasterType
 		{
-			get
-			{
-				return ObjectTypes.Unit;
-			}
+			get { return ObjectTypes.Unit; }
 		}
 	}
 }

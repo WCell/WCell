@@ -17,7 +17,9 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using WCell.Core;
+using WCell.Core.DBC;
 using WCell.RealmServer.Commands;
 using WCell.Core.Database;
 using System.IO;
@@ -129,9 +131,13 @@ namespace WCell.RealmServerConsole
 							}
 							else
 							{
-								RealmCommandHandler.Instance.ExecuteInContext(DefaultTrigger, true,
-									OnExecuted,
-									OnFail);
+								bool dbl;
+								RealmCommandHandler.ConsumeCommandPrefix(text, out dbl);
+								DefaultTrigger.Args.Double = dbl;
+
+								RealmCommandHandler.Instance.ExecuteInContext(DefaultTrigger,
+								                                              OnExecuted,
+								                                              OnFail);
 							}
 						}
 					}

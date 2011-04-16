@@ -3,7 +3,7 @@
  *   file		: AuraCollection.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
- *   last changed	: $LastChangedDate: 2010-02-20 06:16:32 +0100 (lø, 20 feb 2010) $
+ *   last changed	: $LastChangedDate: 2010-02-20 06:16:32 +0100 (l? 20 feb 2010) $
  *   last author	: $LastChangedBy: dominikseifert $
  *   revision		: $Rev: 1257 $
  *
@@ -15,11 +15,11 @@
  *************************************************************************/
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using NLog;
 using WCell.Constants.Spells;
-using WCell.Constants.Updates;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.Util;
@@ -30,19 +30,18 @@ namespace WCell.RealmServer.Spells.Auras
 {
 	/// <summary>
 	/// Represents the collection of all Auras of a Unit
-	/// TODO: Uniqueness of Auras?
 	/// </summary>
-	public class AuraCollection
+	public class AuraCollection : IEnumerable<Aura>
 	{
 		public const byte InvalidIndex = 0xFF;
-		private static Logger log = LogManager.GetCurrentClassLogger();
 
 		protected Unit m_owner;
 		protected Dictionary<AuraIndexId, Aura> m_auras;
 
 		/// <summary>
 		/// An immutable array that contains all Auras and is re-created
-		/// whenever an Aura is added or removed (for faster iteration during Updating).
+		/// whenever an Aura is added or removed (lazily prevents threading and update issues -> Find something better).
+		/// TODO: Recycle
 		/// </summary>
 		protected Aura[] m_AuraArray;
 
@@ -54,12 +53,6 @@ namespace WCell.RealmServer.Spells.Auras
 		protected readonly Aura[] m_visibleAuras = new Aura[64];
 
 		protected int m_visAuraCount;
-
-		/// <summary>
-		/// TODO: 
-		/// </summary>
-		protected internal List<SpellEffect> DamagePctAmplifiers;
-
 
 		public AuraCollection(Unit owner)
 		{
@@ -90,12 +83,17 @@ namespace WCell.RealmServer.Spells.Auras
 			internal set { m_owner = value; }
 		}
 
+		public Character OwnerChar
+		{
+			get { return m_owner as Character; }
+		}
+
 		public int Count
 		{
 			get { return m_auras.Count; }
 		}
 
-		#region Get & Contains
+		#region Get
 		public Aura this[SpellId spellId, bool positive]
 		{
 			get
@@ -158,28 +156,29 @@ namespace WCell.RealmServer.Spells.Auras
 		{
 			get
 			{
-				if (spell.CanApplyMultipleTimes)
+				Aura aura;
+				if (spell.HarmType == HarmType.Beneficial || spell.HarmType == HarmType.Neutral)
 				{
-					foreach (var aura in m_AuraArray)
-					{
-						if (aura.Spell == spell)
-						{
-							return aura;
-						}
-					}
+					aura = this[spell, true];
 				}
 				else
 				{
-					Aura aura;
-					m_auras.TryGetValue(new AuraIndexId(spell.AuraUID, !spell.HasHarmfulEffects), out aura);
-					if (aura != null && aura.Spell.Id == spell.Id)
-					{
-						return aura;
-					}
+					aura = null;
+				}
+
+				if (aura == null && spell.HasHarmfulEffects)
+				{
+					aura = this[spell, false];
+				}
+
+				if (aura != null && aura.Spell == spell)
+				{
+					return aura;
 				}
 				return null;
 			}
 		}
+
 		public Aura this[SpellLineId id, bool positive]
 		{
 			get
@@ -203,7 +202,7 @@ namespace WCell.RealmServer.Spells.Auras
 				{
 					return aura;
 				}
-				return aura;
+				return null;
 			}
 		}
 
@@ -230,12 +229,14 @@ namespace WCell.RealmServer.Spells.Auras
 			get
 			{
 				Aura aura;
-				m_auras.TryGetValue(new AuraIndexId(line.AuraUID, !line.BaseSpell.HasHarmfulEffects), out aura);
-				if (aura != null && aura.Spell.Line == line)
+				if (!m_auras.TryGetValue(new AuraIndexId(line.AuraUID, !line.BaseSpell.HasHarmfulEffects), out aura))
 				{
-					return aura;
+					if (!m_auras.TryGetValue(new AuraIndexId(line.AuraUID, line.BaseSpell.HasHarmfulEffects), out aura))
+					{
+						return null;
+					}
 				}
-				return aura;
+				return aura.Spell.Line == line ? aura : null;
 			}
 		}
 
@@ -252,7 +253,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// <summary>
 		/// Returns the first visible (not passive) Aura with the given Type (if any).
 		/// </summary>
-		/// <remarks>Requires region context.</remarks>
+		/// <remarks>Requires map context.</remarks>
 		/// <param name="type"></param>
 		/// <returns></returns>
 		public Aura this[AuraType type]
@@ -274,7 +275,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// Returns the first Aura that matches the given Predicate.
 		/// Only looks in active Auras.
 		/// </summary>
-		/// <remarks>Requires region context.</remarks>
+		/// <remarks>Requires map context.</remarks>
 		public Aura FindFirst(Predicate<Aura> condition)
 		{
 			//foreach (Aura aura in m_nonPassiveAuras)
@@ -302,10 +303,10 @@ namespace WCell.RealmServer.Spells.Auras
 		}
 
 		/// <summary>
-		/// Get an Aura that is incompatible with the one represented by the given spell.
+		/// Get an Aura that is incompatible with the one represented by the given spell
 		/// </summary>
 		/// <returns>Whether or not another Aura may be applied</returns>
-		public Aura GetAura(CasterInfo caster, AuraIndexId id, Spell spell)
+		public Aura GetAura(ObjectReference caster, AuraIndexId id, Spell spell)
 		{
 			var oldAura = this[id];
 			if (oldAura != null)
@@ -321,7 +322,7 @@ namespace WCell.RealmServer.Spells.Auras
 					var count = 0;
 					foreach (var aura in m_AuraArray)
 					{
-						if (aura.CasterInfo.CasterId == caster.CasterId && spell.AuraCasterGroup == aura.Spell.AuraCasterGroup)
+						if (aura.CasterReference.EntityId == caster.EntityId && spell.AuraCasterGroup == aura.Spell.AuraCasterGroup)
 						{
 							count++;
 							if (count >= spell.AuraCasterGroup.MaxCount)
@@ -334,7 +335,39 @@ namespace WCell.RealmServer.Spells.Auras
 			}
 			return null;
 		}
+		public int GetTotalAuraModifier(AuraType type)
+		{
+			int totalmods = 0;
+			foreach (var aura in this)
+			{
+				foreach (var effect in aura.Spell.Effects)
+				{
+					if (effect.AuraType == type)
+						totalmods += effect.CalcEffectValue();
+				}
+			}
+			return totalmods;
+		}
+		/// <summary>
+		/// Gets the total modifiers of an AuraType in this AuraCollection.
+		/// Takes only auras with a given miscvalue into account.
+		/// </summary>
+		public int GetTotalAuraModifier(AuraType type, int miscvalue)
+		{
+			int totalmods = 0;
+			foreach (var aura in this)
+			{
+				foreach (var effect in aura.Spell.Effects)
+				{
+					if (effect.AuraType == type && effect.MiscValue == miscvalue)
+						totalmods += effect.CalcEffectValue();
+				}
+			}
+			return totalmods;
+		}
+		#endregion
 
+		#region Contains
 		public bool Contains(AuraIndexId id)
 		{
 			return this[id] != null;
@@ -347,9 +380,19 @@ namespace WCell.RealmServer.Spells.Auras
 
 		public bool Contains(SpellId id)
 		{
-			foreach (var aura in m_AuraArray)
+			return this[id] != null;
+		}
+
+		public bool Contains(Spell spell)
+		{
+			return this[spell] != null;
+		}
+
+		public bool ContainsAny(params Spell[] spells)
+		{
+			foreach (var spell in spells)
 			{
-				if (aura.Spell.SpellId == id)
+				if (this[spell] != null)
 				{
 					return true;
 				}
@@ -357,48 +400,48 @@ namespace WCell.RealmServer.Spells.Auras
 			return false;
 		}
 
-		public bool Contains(uint id)
+		/// <summary>
+		/// Returns the first visible Aura with the given SpellId
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		public bool Contains(SpellLineId id)
 		{
-			foreach (var aura in m_AuraArray)
+			var line = id.GetLine();
+			if (line != null)
 			{
-				if (aura.Spell.Id == id)
-				{
-					return true;
-				}
+				return this[line] != null;
 			}
 			return false;
+		}
+
+		public bool Contains(SpellLine line)
+		{
+			Aura aura;
+			m_auras.TryGetValue(new AuraIndexId(line.AuraUID, !line.BaseSpell.HasHarmfulEffects), out aura);
+			return aura != null && aura.Spell.Line == line;
 		}
 		#endregion
 
 		#region Add
 		/// <summary>
-		/// Applies the given spell as a buff or debuff (the owner being the caster).
+		/// Applies the given spell as an Aura (the owner being the caster) to the owner of this AuraCollection.
 		/// Also initializes the new Aura.
 		/// </summary>
 		/// <returns>null if Spell is not an Aura</returns>
-		public Aura AddSelf(SpellId id)
+		public Aura CreateSelf(SpellId id, bool noTimeout = false)
 		{
-			return AddSelf(id, false);
+			return CreateAndStartAura(m_owner.SharedReference, SpellHandler.Get(id), noTimeout);
 		}
 
 		/// <summary>
-		/// Applies the given spell as a buff or debuff (the owner being the caster).
+		/// Applies the given spell as an Aura (the owner being the caster) to the owner of this AuraCollection.
 		/// Also initializes the new Aura.
 		/// </summary>
 		/// <returns>null if Spell is not an Aura</returns>
-		public Aura AddSelf(SpellId id, bool noTimeout)
+		public Aura CreateSelf(Spell spell, bool noTimeout = false)
 		{
-			return AddAura(m_owner.CasterInfo, SpellHandler.Get(id), noTimeout);
-		}
-
-		/// <summary>
-		/// Applies the given spell as a buff or debuff (the owner being the caster).
-		/// Also initializes the new Aura.
-		/// </summary>
-		/// <returns>null if Spell is not an Aura</returns>
-		public Aura AddSelf(Spell spell, bool noTimeout)
-		{
-			return AddAura(m_owner.CasterInfo, spell, noTimeout);
+			return CreateAndStartAura(m_owner.SharedReference, spell, noTimeout);
 		}
 
 		/// <summary>
@@ -406,60 +449,55 @@ namespace WCell.RealmServer.Spells.Auras
 		/// Also initializes the new Aura.
 		/// </summary>
 		/// <returns>null if Spell is not an Aura</returns>
-		public Aura AddAura(CasterInfo caster, Spell spell, bool noTimeout)
+		public Aura CreateAndStartAura(ObjectReference caster, SpellId spell, bool noTimeout, Item usedItem = null)
+		{
+			return CreateAndStartAura(caster, SpellHandler.Get(spell), noTimeout, usedItem);
+		}
+
+		/// <summary>
+		/// Applies the given spell as a buff or debuff.
+		/// Also initializes the new Aura.
+		/// </summary>
+		/// <returns>null if Spell is not an Aura or an already existing version of the Aura that was refreshed</returns>
+		public Aura CreateAndStartAura(ObjectReference caster, Spell spell, bool noTimeout, Item usedItem = null)
 		{
 			try
 			{
-				var beneficial = spell.IsBeneficialFor(caster, m_owner);
-				var id = spell.GetAuraUID(beneficial);
-				var err = SpellFailedReason.Ok;
-
-				// check for existing auras & stacking
-				var oldAura = GetAura(caster, id, spell);
-				if (oldAura != null)
+				var aura = CreateAura(caster, spell, usedItem);
+				if (aura != null)
 				{
-					if (!CheckStackOrOverride(oldAura, caster, spell, ref err))
-					{
-						if (err == SpellFailedReason.Ok)
-						{
-							// Stacked
-							return oldAura;
-						}
-						if (caster.Caster is Character)
-						{
-							SpellHandler.SendCastFailed((Character)caster.Caster, 0, spell, err);
-						}
-						return null;
-					}
-				}
-
-				// create new Aura
-				var handlers = AuraHandler.CreateEffectHandlers(spell, caster, m_owner, beneficial);
-				if (handlers != null)
-				{
-					var aura = AddAura(caster, spell, handlers, beneficial);
-					if (aura != null)
-					{
-						aura.Start(null, noTimeout);
-					}
-					return aura;
+					aura.Start(null, noTimeout);
+				    return aura;
 				}
 			}
 			catch (Exception ex)
 			{
-				LogUtil.ErrorException(ex, "Unable to Add Aura {0} to {1}", spell, m_owner);
+				LogUtil.ErrorException(ex, "Unable to add new Aura \"{0}\" by \"{1}\" to: {2}", spell, caster, m_owner);
 			}
 			return null;
 		}
 
 		/// <summary>
+		/// Called when an Aura has been dynamically created (not called, when applying via SpellCast)
+		/// </summary>
+		private void OnCreated(Aura aura)
+		{
+			// create AreaAura
+			if (aura.Spell.IsAreaAura && Owner.EntityId == aura.CasterReference.EntityId)
+			{
+				// AreaAura is created at the target location if it is a DynamicObject, else its applied to the caster
+				new AreaAura(Owner, aura.Spell);
+			}
+		}
+
+		/// <summary>
 		/// Adds a new Aura with the given information to the Owner. 
 		/// Does not initialize the new Aura.
-		/// If you use this method, make sure to call <c>Initialize(ITickTimer)</c> on the newly created Aura.
+        /// If you use this method, make sure to call <see cref="WCell.RealmServer.Spells.Auras.Aura.Start()"/> on the newly created Aura.
 		/// Overrides any existing Aura that matches.
 		/// </summary>
 		/// <returns>null if Spell is not an Aura</returns>
-		public Aura AddAura(CasterInfo casterInfo, Spell spell, List<AuraEffectHandler> handlers, bool beneficial)
+		internal Aura CreateAura(ObjectReference casterReference, Spell spell, List<AuraEffectHandler> handlers, Item usedItem, bool beneficial)
 		{
 			// create new Aura
 			// Get an index for the aura
@@ -471,25 +509,76 @@ namespace WCell.RealmServer.Spells.Auras
 				return null;
 			}
 
-			var aura = new Aura(this, casterInfo, spell, handlers, index, beneficial);
+			var aura = new Aura(this, casterReference, spell, handlers, index, beneficial);
+			aura.UsedItem = usedItem;
 			AddAura(aura, false);
 			return aura;
 		}
 
 		/// <summary>
-		/// Adds an already created Aura (eg for SpellSteal)
+		/// Applies the given spell as a buff or debuff.
+		/// Does not necessarily create
+		/// Also, initializes new Auras.
 		/// </summary>
-		public void AddAura(Aura aura)
+		/// <returns>null if Spell is not an Aura or an already existing version of the Aura that was refreshed</returns>
+		public Aura CreateAura(ObjectReference caster, Spell spell, Item usedItem = null)
 		{
-			AddAura(aura, true);
+			try
+			{
+				var beneficial = spell.IsBeneficialFor(caster, m_owner);
+				var id = spell.GetAuraUID(beneficial);
+				var err = SpellFailedReason.Ok;
+
+				// check for existing auras & stacking
+				var oldAura = GetAura(caster, id, spell);
+				if (oldAura != null)
+				{
+					if (!PrepareStackOrOverride(caster, oldAura, spell, ref err))
+					{
+						if (err == SpellFailedReason.Ok)
+						{
+							// Stacked
+							return oldAura;
+						}
+
+						if (caster.Object is Character)
+						{
+							SpellHandler.SendCastFailed((Character)caster.Object, 0, spell, err);
+						}
+						return null;
+					}
+				}
+
+				// create new Aura
+				var handlers = spell.CreateAuraEffectHandlers(caster, m_owner, beneficial);
+				if (handlers != null)
+				{
+					var aura = CreateAura(caster, spell, handlers, usedItem, beneficial);
+					if (aura != null)
+					{
+						OnCreated(aura);
+					}
+					return aura;
+				}
+			}
+			catch (Exception ex)
+			{
+				LogUtil.ErrorException(ex, "Unable to add new Aura \"{0}\" by \"{1}\" to: {2}", spell, caster, m_owner);
+			}
+			return null;
 		}
 
 		/// <summary>
-		/// Adds an already created Aura (eg for SpellSteal)
+		/// Adds an already created Aura and optionally starts it
 		/// </summary>
-		public void AddAura(Aura aura, bool update)
+		public virtual void AddAura(Aura aura, bool start = true)
 		{
 			var id = aura.Id;
+			if (m_auras.ContainsKey(aura.Id))
+			{
+				LogManager.GetCurrentClassLogger().Warn("Tried to add Aura \"{0}\" by \"{1}\" when it was already added, to: {2}", aura, aura.CasterReference, Owner);
+				return;
+			}
 			m_auras.Add(id, aura);
 			if (!aura.Spell.IsPassive)
 			{
@@ -498,9 +587,9 @@ namespace WCell.RealmServer.Spells.Auras
 			}
 			InvalidateAurasCopy();
 
-			aura.IsActive = true;
+			aura.IsAdded = true;
 
-			if (update)
+			if (start)
 			{
 				aura.Start();
 			}
@@ -509,65 +598,59 @@ namespace WCell.RealmServer.Spells.Auras
 
 		#region Checks
 		/// <summary>
+		/// 
+		/// </summary>
+		public Aura.AuraOverrideStatus GetOverrideStatus(ObjectReference caster, Spell spell)
+		{
+			var oldAura = this[spell];
+			if (oldAura != null)
+			{
+				return oldAura.GetOverrideStatus(caster, spell);
+			}
+			return Aura.AuraOverrideStatus.NotPresent;
+		}
+
+		/// <summary>
 		/// Stack or removes the Aura represented by the given spell, if possible.
-		/// Returns true if there is no incompatible Aura or if it could be removed.
+		/// Returns true if there is no incompatible Aura or if the Aura could be removed.
 		/// <param name="err">Ok, if stacked or no incompatible Aura is blocking a new Aura</param>
 		/// </summary>
-		public bool CheckStackOrOverride(CasterInfo caster, AuraIndexId id, Spell spell, ref SpellFailedReason err)
+		internal bool PrepareStackOrOverride(ObjectReference caster, AuraIndexId id, Spell spell, ref SpellFailedReason err, SpellCast triggeringCast = null)
 		{
 			var oldAura = GetAura(caster, id, spell);
 			if (oldAura != null)
 			{
-				return CheckStackOrOverride(oldAura, caster, spell, ref err);
+				return PrepareStackOrOverride(caster, oldAura, spell, ref err, triggeringCast);
 			}
 			return true;
 		}
 
-		/// <summary>
-		/// Stack or removes the given Aura, if possible.
-		/// Returns whether the given incompatible Aura was removed or stacked.
-		/// <param name="err">Ok, if stacked or no incompatible Aura was found</param>
-		/// </summary>
-		public static bool CheckStackOrOverride(Aura oldAura, CasterInfo caster, Spell spell, ref SpellFailedReason err)
+
+		internal bool PrepareStackOrOverride(ObjectReference caster, Aura oldAura, Spell spell, ref SpellFailedReason err, SpellCast triggeringCast = null)
 		{
-			if (oldAura.Spell.IsPreventionDebuff)
+			var status = oldAura.GetOverrideStatus(caster, spell);
+
+			if (status == Aura.AuraOverrideStatus.Replace)
 			{
-				err = SpellFailedReason.AuraBounced;
-				return false;
+				status = oldAura.TryRemove(true) ? Aura.AuraOverrideStatus.NotPresent : Aura.AuraOverrideStatus.Bounced;
 			}
 
-			if (oldAura.Spell.CanStack && oldAura.Spell == spell)
+			switch (status)
 			{
-				// stack aura
-				oldAura.Stack(caster);
-			}
-			else
-			{
-				if (caster == oldAura.CasterInfo)
-				{
-					if (spell != oldAura.Spell &&
-						spell.AuraCasterGroup != null &&
-						spell.AuraCasterGroup == oldAura.Spell.AuraCasterGroup &&
-						spell.AuraCasterGroup.Count > 1)
-					{
-						err = SpellFailedReason.AuraBounced;
-						return false;
-					}
-				}
-				else if (!spell.CanOverride(oldAura.Spell))
-				{
-					err = SpellFailedReason.AuraBounced;
+				case Aura.AuraOverrideStatus.NotPresent:
+					return true;							// no obstacles in the way
+				case Aura.AuraOverrideStatus.Refresh:
+					oldAura.Refresh(caster);
+					return false;							// don't need to create a new one
+				default:
+					err = SpellFailedReason.AuraBounced;	// cannot help it
 					return false;
-				}
-
-				// cancel previously existing Aura
-				return oldAura.TryRemove(true);
 			}
-			return false;
 		}
 		#endregion
 
 		#region Remove
+
 		/// <summary>
 		/// Removes all visible Auras that match the given predicate
 		/// </summary>
@@ -580,9 +663,30 @@ namespace WCell.RealmServer.Spells.Auras
 			{
 				if (aura != null && predicate(aura))
 				{
-					aura.Remove(true);
+					aura.Remove(false);
 				}
+			}
+		}
 
+		/// <summary>
+		/// Removes up to the given max amount of visible Auras that match the given predicate
+		/// </summary>
+		/// <param name="predicate"></param>
+		public void RemoveWhere(Predicate<Aura> predicate, int max)
+		{
+			//Aura[] auras = m_nonPassiveAuras.ToArray();
+			var auras = m_visibleAuras;
+			var count = 0;
+			foreach (var aura in auras)
+			{
+				if (aura != null && predicate(aura))
+				{
+					aura.Remove(false);
+					if (++count >= max)
+					{
+						break;
+					}
+				}
 			}
 		}
 
@@ -598,7 +702,7 @@ namespace WCell.RealmServer.Spells.Auras
 			{
 				if (aura != null && predicate(aura))
 				{
-					aura.Remove(true);
+					aura.Remove(false);
 					break;
 				}
 			}
@@ -615,34 +719,64 @@ namespace WCell.RealmServer.Spells.Auras
 			{
 				if (aura != null && (aura.Spell.AuraInterruptFlags & interruptFlags) != 0)
 				{
-					aura.Remove(true);
+					aura.Remove(false);
 				}
 			}
 		}
 
-		public bool Cancel(uint auraUID, bool positive)
+		public bool Remove(uint auraUID, bool positive)
 		{
 			var id = new AuraIndexId { AuraUID = auraUID, IsPositive = positive };
-			return Cancel(id);
+			return Remove(id);
 		}
 
-		public bool Cancel(AuraIndexId auraId)
+		public bool Remove(AuraIndexId auraId)
 		{
 			Aura aura;
 			if (m_auras.TryGetValue(auraId, out aura))
 			{
-				aura.Cancel();
+				aura.Remove();
 				return true;
 			}
 			return false;
 		}
 
-		public bool Cancel(SpellId id)
+		public bool Remove(SpellId id)
 		{
 			var spell = SpellHandler.Get(id);
 			if (spell != null)
 			{
-				return Cancel(spell);
+				return Remove(spell);
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// Removes and cancels the first Aura of the given SpellLine
+		/// </summary>
+		public bool Remove(SpellLineId spellLine)
+		{
+			var aura = this[spellLine];
+
+			if (aura != null)
+			{
+				aura.Remove();
+				return true;
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// Removes and cancels the first Aura of the given SpellLine
+		/// </summary>
+		public bool Remove(SpellLine spellLine)
+		{
+			var aura = this[spellLine];
+
+			if (aura != null)
+			{
+				aura.Remove();
+				return true;
 			}
 			return false;
 		}
@@ -650,26 +784,13 @@ namespace WCell.RealmServer.Spells.Auras
 		/// <summary>
 		/// Removes and cancels the first Aura of the given Spell
 		/// </summary>
-		public bool Cancel(Spell spell)
+		public bool Remove(Spell spell)
 		{
-			Aura aura;
-			if (spell.HasBeneficialEffects)
-			{
-				aura = this[spell, true];
-			}
-			else
-			{
-				aura = null;
-			}
+			var aura = this[spell];
 
-			if (aura == null && spell.HasHarmfulEffects)
+			if (aura != null)
 			{
-				aura = this[spell, false];
-			}
-
-			if (aura != null && aura.Spell.Id == spell.Id)
-			{
-				aura.Cancel();
+				aura.Remove();
 				return true;
 			}
 			return false;
@@ -679,7 +800,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// Removes the given Aura without cancelling it.
 		/// Automatically called by <see cref="Aura.Remove"/>.
 		/// </summary>
-		public void Cancel(Aura aura)
+		internal protected virtual void Remove(Aura aura)
 		{
 			m_auras.Remove(aura.Id);
 			if (aura.Spell.IsProc)
@@ -713,14 +834,14 @@ namespace WCell.RealmServer.Spells.Auras
 		}
 
 		/// <summary>
-		/// Removes all auras that are casted by anyone but myself
+		/// Removes all auras that are casted by anyone but this unit itself
 		/// </summary>
 		public void RemoveOthersAuras()
 		{
 			for (var i = 0; i < m_visibleAuras.Length; i++)
 			{
 				var aura = m_visibleAuras[i];
-				if (aura != null && aura.Caster != m_owner)
+				if (aura != null && aura.CasterUnit != m_owner)
 				{
 					aura.Remove(true);
 				}
@@ -751,6 +872,17 @@ namespace WCell.RealmServer.Spells.Auras
 			foreach (var aura in m_AuraArray)
 			{
 				aura.Remove(true);
+			}
+		}
+
+		/// <summary>
+		/// Removes all auras, including passive auras, when owner is deleted.
+		/// </summary>
+		internal void ClearWithoutCleanup()
+		{
+			foreach (var aura in m_AuraArray)
+			{
+				aura.RemoveWithoutCleanup();
 			}
 		}
 		#endregion
@@ -839,9 +971,9 @@ namespace WCell.RealmServer.Spells.Auras
 				if (aura.Spell.IsPassive &&
 					!aura.HasTimeout &&
 					aura.Spell != spell &&
-					aura.Spell.MatchesMask(spell.AllAffectingMasks))
+					aura.Spell.IsAffectedBy(spell))
 				{
-					aura.ReApplyEffects();
+					aura.ReApplyNonPeriodicEffects();
 				}
 			}
 		}
@@ -853,55 +985,50 @@ namespace WCell.RealmServer.Spells.Auras
 		{
 			foreach (var aura in m_AuraArray)
 			{
-				aura.ReApplyEffects();
+				aura.ReApplyNonPeriodicEffects();
 			}
 		}
 		#endregion
 
-		#region Persistence
+		#region Spell Modifiers
 		/// <summary>
-		/// Called after Character entered world
+		/// Returns the modified value (modified by certain talent bonusses) of the given type for the given spell (as int)
 		/// </summary>
-		internal void PlayerInitialize(AuraRecord[] records)
+		public virtual int GetModifiedInt(SpellModifierType type, Spell spell, int value)
 		{
-			foreach (var record in records)
+			if (Owner.Master is Character)
 			{
-				var index = GetFreeIndex(record.IsBeneficial);
-
-				if (index == InvalidIndex)			// no more free index fields
-				{
-					record.DeleteLater();
-					continue;
-				}
-
-				var caster = record.GetCasterInfo(m_owner.Region);
-				var handlers = AuraHandler.CreateEffectHandlers(record.Spell, caster, m_owner, record.IsBeneficial);
-
-				if (handlers == null)				// couldn't create handlers
-				{
-					record.DeleteLater();
-					continue;
-				}
-
-				var aura = new Aura(this, caster, record, handlers, index);
-				AddAura(aura);
+				return ((Character)Owner.Master).PlayerAuras.GetModifiedInt(type, spell, value);
 			}
+			return value;
 		}
 
-		internal void SaveAurasNow()
+		/// <summary>
+		/// Returns the given value minus bonuses through certain talents, of the given type for the given spell (as int)
+		/// </summary>
+		public virtual int GetModifiedIntNegative(SpellModifierType type, Spell spell, int value)
 		{
-			foreach (var aura in m_visibleAuras)
+			if (Owner.Master is Character)
 			{
-				if (aura != null &&
-					aura != GhostAura &&
-					!aura.Spell.AttributesExC.HasFlag(SpellAttributesExC.HonorlessTarget) &&
-					!aura.CasterInfo.IsItem &&
-					(!aura.HasTimeout || aura.TimeLeft > 20000)
-					)
-				{
-					aura.SaveNow();
-				}
+				return ((Character)Owner.Master).PlayerAuras.GetModifiedIntNegative(type, spell, value);
 			}
+			return value;
+		}
+
+		/// <summary>
+		/// Returns the modified value (modified by certain talents) of the given type for the given spell (as float)
+		/// </summary>
+		public virtual float GetModifiedFloat(SpellModifierType type, Spell spell, float value)
+		{
+			if (Owner.Master is Character)
+			{
+				return ((Character)Owner.Master).PlayerAuras.GetModifiedFloat(type, spell, value);
+			}
+			return value;
+		}
+
+		public virtual void OnCasted(SpellCast cast)
+		{
 		}
 		#endregion
 
@@ -915,28 +1042,117 @@ namespace WCell.RealmServer.Spells.Auras
 			return FindFirst(aura => !aura.IsBeneficial) != null;
 		}
 
-		#region Utilities
-		public IEnumerator<Aura> GetEnumerator()
+		/// <summary>
+		/// Returns whether the given spell was modified to be casted 
+		/// in any shapeshift form, (even if it usually requires a specific one).
+		/// </summary>
+		public bool IsShapeshiftRequirementIgnored(Spell spell)
 		{
-			if (m_auras.Count == 0)
+			foreach (var aura in m_AuraArray)
 			{
-				return Aura.EmptyEnumerator;
+				if (aura.Spell.SpellClassSet != spell.SpellClassSet)
+				{
+					// must be same class
+					continue;
+				}
+				foreach (var handler in aura.Handlers)
+				{
+					// check whether there is a IgnoreShapeshiftRequirement aura effect and it's AffectMask matches the spell mask
+					if (handler.SpellEffect.AuraType == AuraType.IgnoreShapeshiftRequirement &&
+						handler.SpellEffect.MatchesSpell(spell))
+					{
+						return true;
+					}
+				}
 			}
-			return _GetEnumerator();
+			return false;
 		}
 
 		/// <summary>
-		/// We need a second method because yield return and return statements cannot
-		/// co-exist in one method.
+		/// Extra damage to be applied against a bleeding target
 		/// </summary>
-		/// <returns></returns>
-		IEnumerator<Aura> _GetEnumerator()
+		public int GetBleedBonusPercent()
 		{
-			for (var i = 0; i < m_AuraArray.Length; i++)
+			var bonus = 0;
 			{
-				yield return m_AuraArray[i];
+				foreach (var aura in m_AuraArray)
+				{
+					foreach (var handler in aura.Handlers)
+					{
+						if (handler.SpellEffect.AuraType == AuraType.IncreaseBleedEffectPct)
+						{
+							bonus += handler.EffectValue;
+						}
+					}
+				}
+			}
+			return bonus;
+		}
+
+		/// <summary>
+		/// Returns the amount of visible Auras that are casted by the given caster
+		/// and have the given DispelType.
+		/// </summary>
+		public int GetVisibleAuraCount(ObjectReference caster, DispelType type)
+		{
+			var count = 0;
+			foreach (var aura in m_visibleAuras)
+			{
+				if (aura != null && aura.CasterReference == caster && aura.Spell.DispelType == type)
+				{
+					count++;
+				}
+			}
+			return count;
+		}
+
+		#region Persistence
+		/// <summary>
+		/// Called after Character entered world to load all it's active Auras
+		/// </summary>
+		internal void InitializeAuras(AuraRecord[] records)
+		{
+			foreach (var record in records)
+			{
+				var index = GetFreeIndex(record.IsBeneficial);
+
+				if (index == InvalidIndex)			// no more free index fields
+				{
+					record.DeleteLater();
+					continue;
+				}
+
+				var caster = record.GetCasterInfo(m_owner.Map);
+				var handlers = record.Spell.CreateAuraEffectHandlers(caster, m_owner, record.IsBeneficial);
+
+				if (handlers == null)				// couldn't create handlers
+				{
+					record.DeleteLater();
+					continue;
+				}
+
+				var aura = new Aura(this, caster, record, handlers, index);
+				OnCreated(aura);
+				AddAura(aura);
 			}
 		}
+
+		/// <summary>
+		/// Save all savable auras
+		/// </summary>
+		internal void SaveAurasNow()
+		{
+			foreach (var aura in m_visibleAuras)
+			{
+				if (aura != null && aura.CanBeSaved && (!aura.HasTimeout || aura.TimeLeft > 5000))
+				{
+					aura.SaveNow();
+				}
+			}
+		}
+		#endregion
+
+		#region Utilities
 
 		/// <summary>
 		/// Dumps all currently applied auras to the given chr
@@ -962,5 +1178,50 @@ namespace WCell.RealmServer.Spells.Auras
 			}
 		}
 		#endregion
+
+		#region Enumerators
+		/// <summary>
+		/// We need a second method because yield return and return statements cannot
+		/// co-exist in one method.
+		/// </summary>
+		/// <returns></returns>
+		IEnumerator<Aura> _GetEnumerator()
+		{
+			for (var i = 0; i < m_AuraArray.Length; i++)
+			{
+				yield return m_AuraArray[i];
+			}
+		}
+
+		public IEnumerator<Aura> GetEnumerator()
+		{
+			if (m_auras.Count == 0)
+			{
+				return Aura.EmptyEnumerator;
+			}
+			return _GetEnumerator();
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return GetEnumerator();
+		}
+		#endregion
+
+		/// <summary>
+		/// Checks whether the given Aura may be activated (see PlayerAuraCollection)
+		/// </summary>
+		internal protected virtual bool MayActivate(Aura aura)
+		{
+			return true;
+		}
+
+		/// <summary>
+		/// Checks whether the given Handler may be activated (see PlayerAuraCollection)
+		/// </summary>
+		internal protected virtual bool MayActivate(AuraEffectHandler handler)
+		{
+			return true;
+		}
 	}
 }

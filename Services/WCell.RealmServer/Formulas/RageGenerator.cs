@@ -1,4 +1,5 @@
-﻿using WCell.Constants.Spells;
+using System;
+using WCell.Constants.Spells;
 using WCell.RealmServer.Misc;
 
 namespace WCell.RealmServer.Formulas
@@ -43,10 +44,14 @@ namespace WCell.RealmServer.Formulas
 
 				var lvl = attacker.Level;
 				var c = 0.0092f * lvl * lvl + 3.23f * lvl + 4.27f;
+				var rageRight = ((15 * action.ActualDamage / (4f * c)) + (hitFactor / 2000));
+				var rageLeft = 15 * action.ActualDamage / c;
 
-				var rage = ((15 * action.ActualDamage / c) + (hitFactor / 2000f)) + 1;
-                // Multiplied by 2 to match an approximate value, check the formula instead.
-				attacker.Power += (int)(rage*2);
+				var rage = rageRight;
+				if(rageRight <= rageLeft)
+					rage = rageLeft;
+				// Multiplied by 2 to match an approximate value, check the formula instead.
+				attacker.Power += (int)(rage)*10;
 			}
 		}
 
@@ -59,7 +64,7 @@ namespace WCell.RealmServer.Formulas
 
 			var lvl = victim.Level;
 			var c = (int)(0.0092 * lvl * lvl + 3.23f * lvl + 4.27f);			// polynomial rage co-efficient
-			victim.Power += ((5 * (action.ActualDamage + 1)) / (2 * c))*10;
+			victim.Power += (5 / 2 * action.ActualDamage / c)*10;
 		}
 	}
 }

@@ -26,14 +26,13 @@ using WCell.Constants.Realm;
 using WCell.Core;
 using WCell.Core.Initialization;
 using WCell.Core.Variables;
-using WCell.RealmServer.Localization;
 using WCell.RealmServer.Privileges;
+using WCell.RealmServer.Res;
 using WCell.Util;
 using WCell.Util.Variables;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Handlers;
 using WCell.Util.NLog;
-using WCell.RealmServer.Addons;
 
 namespace WCell.RealmServer
 {
@@ -56,14 +55,16 @@ namespace WCell.RealmServer
 
 		public override string FilePath
 		{
-			get { return RealmServer.Instance.Configuration.GetFullPath(ConfigFilename); }
+			get { return GetFullPath(ConfigFilename); }
 			set
 			{// cannot modify Filename
 				throw new InvalidOperationException("Cannot modify Filename");
 			}
 		}
 
-		private static string contentDirName = "../Content/";
+		public static readonly string BinaryRoot = "../";
+
+		private static string contentDirName = BinaryRoot + "Content/";
 
 		public readonly static HashSet<string> BadWords = new HashSet<string>();
 
@@ -84,10 +85,7 @@ namespace WCell.RealmServer
 
 		public static string LangDir
 		{
-			get
-			{
-				return GetContentPath(LangDirName) + "/";
-			}
+			get { return GetContentPath(LangDirName) + "/"; }
 		}
 
 		private static ClientLocale defaultLocale = ClientLocale.English;
@@ -98,7 +96,7 @@ namespace WCell.RealmServer
 			set
 			{
 				defaultLocale = value;
-				WCellDef.DefaultLocale = value;
+				WCellConstants.DefaultLocale = value;
 			}
 		}
 
@@ -353,7 +351,7 @@ namespace WCell.RealmServer
 		/// <summary>
 		/// The highest supported version
 		/// </summary>
-		public static ClientId ClientId = ClientId.Cataclysm;
+		public static ClientId ClientId = ClientId.Wotlk;
 
 		/// <summary>
 		/// whether or not to use blizz like character name restrictions (blizzlike = 'Lama', not blizzlike = 'lAmA').
@@ -412,7 +410,7 @@ namespace WCell.RealmServer
 			set { contentDirName = value; }
 		}
 
-		public string ContentDir
+		public static string ContentDir
 		{
 			get { return GetFullPath(contentDirName); }
 		}
@@ -426,7 +424,7 @@ namespace WCell.RealmServer
 		{
 			get
 			{
-			    var dir = Path.Combine(ContentDir, DBCFolderName) + "/";
+				var dir = Path.Combine(ContentDir, DBCFolderName) + "/";
 				if (!Directory.Exists(dir))
 				{
 					var msg = String.Format(WCell_RealmServer.NotFound, "DBC Directory", new DirectoryInfo(dir).FullName + " (Please export the DBC files of the correct version, using the MPQTool)");
@@ -454,17 +452,16 @@ namespace WCell.RealmServer
 			return path;
 		}
 
-
 		public static string GetContentPath(string file)
 		{
 			if (!Path.IsPathRooted(file))
 			{
-				return Path.Combine(s_instance.ContentDir, file);
+				return Path.Combine(GetFullPath(ContentDir), file);
 			}
 			return file;
 		}
 
-		public string GetFullPath(string file)
+		public static string GetFullPath(string file)
 		{
 			if (!Path.IsPathRooted(file))
 			{

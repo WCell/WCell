@@ -15,7 +15,7 @@ namespace WCell.RealmServer.Network
 	/// A PacketManager to handle packets sent by the server to IRealmClients.
 	/// Use this to register/unregister PacketHandlers that handle packet sent by the server
 	/// to this FakeClient.
-	/// TODO: Consider whether to also enqueue packets on Region threads
+	/// TODO: Consider whether to also enqueue packets on Map threads
 	/// </summary>
 	public class FakePacketMgr : PacketManager<IRealmClient, RealmPacketIn, ClientPacketHandlerAttribute>
 	{

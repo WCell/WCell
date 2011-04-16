@@ -13,6 +13,7 @@ using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Factions;
 using WCell.RealmServer.Items.Enchanting;
+using WCell.RealmServer.Lang;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Quests;
 using WCell.RealmServer.Skills;
@@ -27,13 +28,14 @@ namespace WCell.RealmServer.Items
 	[DataHolder]
 	public partial class ItemTemplate : IDataHolder, IMountableItem, IQuestHolderEntry
 	{
+		#region Standard Fields
 		[Persistent((int)ClientLocale.End)]
 		public string[] Names;
 
 		[NotPersistent]
 		public string DefaultName
 		{
-			get { return Names[(int)RealmServerConfiguration.DefaultLocale]; }
+			get { return Names.LocalizeWithDefaultLocale(); }
 			set
 			{
 				if (Names == null)
@@ -53,13 +55,15 @@ namespace WCell.RealmServer.Items
 
 		public ItemSubClass SubClass;
 
+		public int Unk0;
+
 		public uint DisplayId;
 
 		public ItemQuality Quality;
 
 		public ItemFlags Flags;
 
-		public FactionId Faction;
+		public ItemFlags2 Flags2;
 
 		public uint BuyPrice;
 
@@ -90,6 +94,14 @@ namespace WCell.RealmServer.Items
 		public StandingLevel RequiredFactionStanding;
 
 		public int UniqueCount;
+
+		public uint ScalingStatDistributionId;
+
+		public uint ScalingStatValueFlags;
+
+		public uint ItemLimitCategoryId;
+
+		public uint HolidayId;
 
 		/// <summary>
 		/// The size of a stack of this item.
@@ -125,7 +137,7 @@ namespace WCell.RealmServer.Items
 		[NotPersistent]
 		public string DefaultDescription
 		{
-			get { return Descriptions[(int)RealmServerConfiguration.DefaultLocale]; }
+			get { return Descriptions.LocalizeWithDefaultLocale(); }
 			set
 			{
 				if (Names == null)
@@ -143,8 +155,7 @@ namespace WCell.RealmServer.Items
 		public PageMaterial PageMaterial;
 
 		/// <summary>
-		/// The Id of the Quest that will be started
-		/// when this Item is used.
+		/// The Id of the Quest that will be started when this Item is used
 		/// </summary>
 		public uint QuestId;
 
@@ -170,7 +181,7 @@ namespace WCell.RealmServer.Items
 
 		public ItemBagFamilyMask BagFamily;
 
-		public TotemCategory TotemCategory;
+		public ToolCategory ToolCategory;
 
 		[Persistent(ItemConstants.MaxSocketCount)]
 		public SocketInfo[] Sockets;
@@ -220,8 +231,19 @@ namespace WCell.RealmServer.Items
 			}
 		}
 
-		[Persistent(5)]
+		[Persistent(ItemConstants.MaxSpellCount)]
 		public ItemSpell[] Spells;
+
+		public ItemSpell GetSpell(ItemSpellTrigger trigger)
+		{
+			return Spells.Where(itemSpell => itemSpell != null && itemSpell.Trigger == trigger && itemSpell.Id != 0).FirstOrDefault();
+		}
+
+		public int GetResistance(DamageSchool school)
+		{
+			return Resistances[(int)school];
+		}
+		#endregion
 
 		#region Vendor-Info
 		public uint StockRefillDelay;
@@ -234,9 +256,13 @@ namespace WCell.RealmServer.Items
 		public int BuyStackSize;
 		#endregion
 
-		#region Custom
+		#region Auto-generated fields
 		[NotPersistent]
-		public InventorySlotTypeMask InventorySlotMask;
+		public InventorySlotTypeMask InventorySlotMask
+		{
+			get;
+			set;
+		}
 
 		[NotPersistent]
 		public uint RandomSuffixFactor;
@@ -375,15 +401,14 @@ namespace WCell.RealmServer.Items
 
 		[NotPersistent]
 		/// <summary>
-		/// The Quest for which this Item needs to be collected
+		/// The Quests for which this Item needs to be collected
 		/// </summary>
 		public QuestTemplate[] CollectQuests;
 
-		/// <summary>
-		/// The Quest that will be started by this Item
-		/// </summary>
-		[NotPersistent]
-		public QuestTemplate StartQuest;
+		public bool HasQuestRequirements
+		{
+			get { return QuestHolderInfo == null && CollectQuests == null; }
+		}
 
 		[NotPersistent]
 		/// <summary>
@@ -414,11 +439,6 @@ namespace WCell.RealmServer.Items
 		}
 		#endregion
 
-		public void AddMod(ItemModType modType, int value)
-		{
-			ArrayUtil.AddOnlyOne(ref Mods, new StatModifier { Type = modType, Value = value });
-		}
-
 		#region Init
 		/// <summary>
 		/// Set custom fields etc
@@ -426,7 +446,11 @@ namespace WCell.RealmServer.Items
 		public void FinalizeDataHolder()
 		{
 			CheckId();
+			ArrayUtil.Set(ref ItemMgr.Templates, Id, this);
+		}
 
+		internal void InitializeTemplate()
+		{
 			if (Names == null)
 			{
 				Names = new string[(int)ClientLocale.End];
@@ -456,7 +480,7 @@ namespace WCell.RealmServer.Items
 			RequiredFaction = FactionMgr.Get(RequiredFactionId);
 			RequiredProfession = SpellHandler.Get(RequiredProfessionId);
 			SubClassMask = (ItemSubClassMask)(1 << (int)SubClass);
-			EquipmentSlots = ItemMgr.EquipmentSlotMap.Get((uint)InventorySlotType);
+			EquipmentSlots = ItemMgr.EquipmentSlotsByInvSlot.Get((uint)InventorySlotType);
 			InventorySlotMask = (InventorySlotTypeMask)(1 << (int)InventorySlotType);
 			IsAmmo = InventorySlotType == InventorySlotType.Ammo;
 			IsKey = Class == ItemClass.Key;
@@ -468,10 +492,10 @@ namespace WCell.RealmServer.Items
 			IsTwoHandWeapon = InventorySlotType == InventorySlotType.TwoHandWeapon;
 			SetIsWeapon();
 
-			if (TotemCategory != 0// && TotemCategory != TotemCategory.SkinningKnife)
+			if (ToolCategory != 0// && TotemCategory != TotemCategory.SkinningKnife)
 				)
 			{
-				ArrayUtil.Set(ref ItemMgr.FirstTotemsPerCat, (uint)TotemCategory, this);
+				ItemMgr.FirstTotemsPerCat[(uint)ToolCategory] = this;
 			}
 
 			if (GemPropertiesId != 0)
@@ -526,9 +550,10 @@ namespace WCell.RealmServer.Items
 			if (Spells != null)
 			{
 				ArrayUtil.Prune(ref Spells);
-				foreach (var spell in Spells)
+				for (int i = 0; i < 5; i++)
 				{
-					spell.FinalizeAfterLoad();
+					Spells[i].Index = (uint)i;
+					Spells[i].FinalizeAfterLoad();
 				}
 			}
 			else
@@ -561,7 +586,7 @@ namespace WCell.RealmServer.Items
 			ConsumesAmount =
 				(Class == ItemClass.Consumable ||
 				Spells.Contains(spell => spell.Trigger == ItemSpellTrigger.Consume)) &&
-				(UseSpell == null || !UseSpell.ConsumesCharges);
+				(UseSpell == null || !UseSpell.HasCharges);
 
 			IsHearthStone = UseSpell != null && UseSpell.Spell.IsHearthStoneSpell;
 
@@ -594,8 +619,6 @@ namespace WCell.RealmServer.Items
 
 			RandomSuffixFactor = EnchantMgr.GetRandomSuffixFactor(this);
 
-			ArrayUtil.Set(ref ItemMgr.Templates, Id, this);
-
 			if (IsCharter)
 			{
 				Creator = () => new PetitionCharter();
@@ -612,34 +635,59 @@ namespace WCell.RealmServer.Items
 		#endregion
 
 		/// <summary>
-		/// 
+		/// Adds a new modifier to this Template
+		/// </summary>
+		public void AddMod(ItemModType modType, int value)
+		{
+			ArrayUtil.AddOnlyOne(ref Mods, new StatModifier { Type = modType, Value = value });
+		}
+
+		#region Checks
+		/// <summary>
+		/// Returns false if the looter may not take one of these items.
+		/// E.g. due to quest requirements, if this is a quest item and the looter does not need it (yet, or anymore).
 		/// </summary>
 		/// <param name="looter">Can be null</param>
-		/// <returns></returns>
-		public bool CheckLootRequirements(Character looter)
+		public bool CheckLootConstraints(Character looter)
 		{
-			if (CollectQuests != null)
+			return CheckQuestConstraints(looter);
+		}
+
+		public bool CheckQuestConstraints(Character looter)
+		{
+			if (HasQuestRequirements)			// no quest requirements
+				return true;
+
+			if (looter == null)
 			{
-				if (looter == null)
+				// cannot determine quest constraints if looter is offline
+				return false;
+			}
+
+			if (QuestHolderInfo != null)
+			{
+				// starts a quest
+				if (QuestHolderInfo.QuestStarts.Any(quest => looter.QuestLog.HasActiveQuest(quest)))
 				{
 					return false;
 				}
+			}
 
+			if (CollectQuests != null)
+			{
+				// is collectable for one or more quests
 				// check whether the looter has any of the required quests
-				var count = 0;
 				for (var i = 0; i < CollectQuests.Length; i++)
 				{
 					var q = CollectQuests[i];
 					if (q != null)
 					{
-						count++;
 						if (looter.QuestLog.HasActiveQuest(q.Id))
 						{
-							return true;
+							return false;
 						}
 					}
 				}
-				return count == 0;
 			}
 			return true;
 		}
@@ -726,6 +774,12 @@ namespace WCell.RealmServer.Items
 				}
 			}
 
+			// Disarmed
+			if (IsWeapon && !chr.MayCarry(InventorySlotMask))
+			{
+				return InventoryError.CANT_DO_WHILE_DISARMED;
+			}
+
 			// TODO: Add missing restrictions
 			// if (template.RequiredLockpickSkill
 			// if (template.RequiredPvPRank
@@ -738,7 +792,7 @@ namespace WCell.RealmServer.Items
 		{
 			IsThrowable = InventorySlotType == InventorySlotType.Thrown;
 			IsRangedWeapon = IsThrowable ||
-				InventorySlotType == InventorySlotType.Ranged ||
+				InventorySlotType == InventorySlotType.WeaponRanged ||
 				InventorySlotType == InventorySlotType.RangedRight;
 			IsMeleeWeapon = InventorySlotType == InventorySlotType.TwoHandWeapon ||
 							InventorySlotType == InventorySlotType.Weapon ||
@@ -755,12 +809,61 @@ namespace WCell.RealmServer.Items
 				throw new Exception("Found item-template (" + Id + ") with Id > " + ItemMgr.MaxId + ". Items with such a high ID would blow the item storage array.");
 			}
 		}
+		#endregion
 
-		public override string ToString()
+		#region Interface implementations
+		public ItemTemplate Template
 		{
-			return string.Format("{0} (Id: {1}{2})", DefaultName, Id,
-				InventorySlotType != InventorySlotType.None ? " (" + InventorySlotType + ")" : "");
+			get { return this; }
 		}
+
+		public ItemEnchantment[] Enchantments
+		{
+			get { return null; }
+		}
+
+		public bool IsEquipped
+		{
+			get { return false; }
+		}
+
+		public static IEnumerable<ItemTemplate> GetAllDataHolders()
+		{
+			return ItemMgr.Templates;
+		}
+
+		/// <summary>
+		/// Contains the quests that this item can start (items usually can only start one)
+		/// </summary>
+		public QuestHolderInfo QuestHolderInfo
+		{
+			get;
+			internal set;
+		}
+
+		public IWorldLocation[] GetInWorldTemplates()
+		{
+			return null;
+		}
+
+		public Item Create()
+		{
+			return Creator();
+		}
+		#endregion
+
+		private void OnRecordCreated(ItemRecord record)
+		{
+			if (IsCharter)
+			{
+				if (!record.IsNew)
+				{
+					// this is executed in the IO-context
+					PetitionRecord.LoadRecord(record.OwnerId);
+				}
+			}
+		}
+
 
 		#region Dump
 		public void Dump(TextWriter writer)
@@ -798,9 +901,9 @@ namespace WCell.RealmServer.Items
 			{
 				writer.WriteLine(indent + "Flags: " + Flags);
 			}
-			if ((int)Faction != 0)
+			if ((int)Flags2 != 0)
 			{
-				writer.WriteLine(indent + "Faction: " + Faction);
+				writer.WriteLine(indent + "Flags2: " + Flags2);
 			}
 			if ((int)BuyPrice != 0)
 			{
@@ -917,10 +1020,6 @@ namespace WCell.RealmServer.Items
 			{
 				writer.WriteLine(indent + "PageCount: " + PageCount);
 			}
-			if ((int)QuestId != 0)
-			{
-				writer.WriteLine(indent + "Quest: " + QuestId);
-			}
 			if ((int)LockId != 0)
 			{
 				writer.WriteLine(indent + "Lock: " + LockId);
@@ -966,9 +1065,9 @@ namespace WCell.RealmServer.Items
 			{
 				writer.WriteLine(indent + "BagFamily: " + BagFamily);
 			}
-			if ((int)TotemCategory != 0)
+			if ((int)ToolCategory != 0)
 			{
-				writer.WriteLine(indent + "TotemCategory: " + TotemCategory);
+				writer.WriteLine(indent + "TotemCategory: " + ToolCategory);
 			}
 
 			var sockets = new List<string>(3);
@@ -1033,60 +1132,28 @@ namespace WCell.RealmServer.Items
 			{
 				writer.WriteLine(indent + "Faction: " + RequiredFactionId + " (" + RequiredFactionStanding + ")");
 			}
+			if ((int)QuestId != 0)
+			{
+				writer.WriteLine(indent + "Quest: " + QuestId);
+			}
+			if (QuestHolderInfo != null)
+			{
+				if (QuestHolderInfo.QuestStarts.Count > 0)
+				{
+					writer.WriteLine(indent + "QuestStarts: " + QuestHolderInfo.QuestStarts.ToString(", "));
+				}
+				if (QuestHolderInfo.QuestEnds.Count > 0)
+				{
+					writer.WriteLine(indent + "QuestEnds: " + QuestHolderInfo.QuestEnds.ToString(", "));
+				}
+			}
 		}
 		#endregion
 
-		public ItemTemplate Template
+		public override string ToString()
 		{
-			get { return this; }
-		}
-
-		public ItemEnchantment[] Enchantments
-		{
-			get { return null; }
-		}
-
-		public bool IsEquipped
-		{
-			get { return false; }
-		}
-
-		public static IEnumerable<ItemTemplate> GetAllDataHolders()
-		{
-			return ItemMgr.Templates;
-		}
-
-		public QuestHolderInfo QuestHolderInfo
-		{
-			get;
-			internal set;
-		}
-
-		public IWorldLocation[] GetInWorldTemplates()
-		{
-			return null;
-		}
-
-		public Item Create()
-		{
-			return Creator();
-		}
-
-		private void OnRecordCreated(ItemRecord record)
-		{
-			if (IsCharter)
-			{
-				PetitionRecord charter;
-				if (!record.IsNew)
-				{
-					// this is executed in the IO-context
-					charter = PetitionRecord.LoadRecord(record.EntityLowId);
-				}
-				else
-				{
-					charter = new PetitionRecord((uint)record.OwnerId, record.EntityLowId);
-				}
-			}
+			return string.Format("{0} (Id: {1}{2})", DefaultName, Id,
+				InventorySlotType != InventorySlotType.None ? " (" + InventorySlotType + ")" : "");
 		}
 	}
 }

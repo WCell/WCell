@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,7 +24,7 @@ namespace WCell.RealmServer.NPCs
 		{
 			if (DisplayId > 100000)
 			{
-				ContentHandler.OnInvalidDBData("ModelInfo has invalid Id: " + this);
+				ContentMgr.OnInvalidDBData("ModelInfo has invalid Id: " + this);
 				return;
 			}
 			if (CombatReach < 1.5f)

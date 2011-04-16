@@ -1,12 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using NLog;
 using WCell.Constants.Items;
 using WCell.Constants.Updates;
 using WCell.Core;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
+using WCell.Util;
 using WCell.Util.NLog;
 
 namespace WCell.RealmServer.Items
@@ -15,7 +17,7 @@ namespace WCell.RealmServer.Items
 	{
 		public const int INVALID_SLOT = 0xff;
 
-		protected int m_baseField;
+        protected int m_baseField;
 		protected Item[] m_Items;
 		protected int m_count;
 
@@ -25,17 +27,17 @@ namespace WCell.RealmServer.Items
 		internal protected IContainer m_container;
 
 		protected BaseInventory(IContainer owner, UpdateFieldId baseField, int invSize) :
-			this(owner, baseField, new Item[invSize])
+            this(owner, baseField, new Item[invSize])
 		{
 		}
 
 		/// <summary>
 		/// Inventory for shared item-array
 		/// </summary>
-		protected BaseInventory(IContainer owner, UpdateFieldId baseField, Item[] items)
+        protected BaseInventory(IContainer owner, UpdateFieldId baseField, Item[] items)
 		{
 			m_container = owner;
-			m_baseField = baseField.RawId;
+            m_baseField = baseField.RawId;
 			m_Items = items;
 			m_count = 0;
 		}
@@ -169,12 +171,11 @@ namespace WCell.RealmServer.Items
 					return;
 				}
 
-				var field = m_baseField + (slot * 2);
-
 				m_count++;
 				value.Container = this;
 				value.Slot = slot;
-				m_container.SetEntityId(field, value.EntityId);
+                SetContainerEntityId(value.EntityId, slot, this);
+				
 				m_Items[slot] = value;
 
 				var handler = GetHandler(slot);
@@ -307,10 +308,9 @@ namespace WCell.RealmServer.Items
 				cont1.m_Items[slot1] = item2;
 				cont2.m_Items[slot2] = item1;
 
-				var field1 = cont2.m_baseField + (slot2 * 2);
 				if (item1 != null)
 				{
-					cont2.Container.SetEntityId(field1, item1.EntityId);
+                    SetContainerEntityId(item1.EntityId, slot2, cont2);
 					item1.Container = cont2;
 					if (handler2 != null)
 					{
@@ -319,13 +319,12 @@ namespace WCell.RealmServer.Items
 				}
 				else
 				{
-					cont2.Container.SetEntityId(field1, EntityId.Zero);
+                    SetContainerEntityId(EntityId.Zero, slot2, cont2);
 				}
 
-				var field2 = cont1.m_baseField + (slot1 * 2);
 				if (item2 != null)
 				{
-					cont1.Container.SetEntityId(field2, item2.EntityId);
+                    SetContainerEntityId(item2.EntityId, slot1, cont1);
 					item2.Container = cont1;
 					if (handler1 != null)
 					{
@@ -334,7 +333,7 @@ namespace WCell.RealmServer.Items
 				}
 				else
 				{
-					cont1.Container.SetEntityId(field2, EntityId.Zero);
+                    SetContainerEntityId(EntityId.Zero, slot1, cont1);
 				}
 			}
 		}
@@ -360,25 +359,8 @@ namespace WCell.RealmServer.Items
 			m_Items[slot1] = item2;
 			m_Items[slot2] = item1;
 
-			var field1 = m_baseField + (slot2 * 2);
-			if (item1 != null)
-			{
-				Container.SetEntityId(field1, item1.EntityId);
-			}
-			else
-			{
-				Container.SetEntityId(field1, EntityId.Zero);
-			}
-
-			var field2 = m_baseField + (slot1 * 2);
-			if (item2 != null)
-			{
-				Container.SetEntityId(field2, item2.EntityId);
-			}
-			else
-			{
-				Container.SetEntityId(field2, EntityId.Zero);
-			}
+		    SetContainerEntityId(item1 != null ? item1.EntityId : EntityId.Zero, slot2, this);
+		    SetContainerEntityId(item2 != null ? item2.EntityId : EntityId.Zero, slot1, this);
 		}
 
 		public bool IsValidSlot(int slot)
@@ -410,9 +392,10 @@ namespace WCell.RealmServer.Items
 
 		public virtual SimpleSlotId FindFreeSlot(IMountableItem item, int amount)
 		{
-			return new SimpleSlotId {
-			    Container = this, 
-                Slot = FindFreeSlot()
+			return new SimpleSlotId
+			{
+				Container = this,
+				Slot = FindFreeSlot()
 			};
 		}
 
@@ -431,7 +414,7 @@ namespace WCell.RealmServer.Items
 		/// <summary>
 		/// Find a free slot within the given range
 		/// </summary>
-		public int FindFreeSlot(int offset, int end)
+		public virtual int FindFreeSlot(int offset, int end)
 		{
 			for (int i = offset; i < end; i++)
 			{
@@ -449,60 +432,6 @@ namespace WCell.RealmServer.Items
 		public abstract IItemSlotHandler GetHandler(int slot);
 
 		public abstract PlayerInventory OwnerInventory { get; }
-
-		/// <summary>
-		/// Checks for whether the given amount of that Item can still be added 
-		/// (due to max unique count).
-		/// </summary>
-		/// <param name="mountItem"></param>
-		/// <returns></returns>
-		internal InventoryError CheckEquipCount(IMountableItem mountItem)
-		{
-			var templ = mountItem.Template;
-			if (templ.Flags.HasFlag(ItemFlags.UniqueEquipped))
-			{
-				// may only equip a certain maximum of this item
-				foreach (var slot in templ.EquipmentSlots)
-				{
-					var item = m_Items[(uint)slot];
-					if (item != null && item.Template.Id == templ.Id)
-					{
-						return InventoryError.ITEM_UNIQUE_EQUIPABLE;
-					}
-				}
-			}
-
-			// also check for unique gems
-			if (mountItem.Enchantments != null)
-			{
-				for (var i = EnchantSlot.Socket1; i < EnchantSlot.Socket1 + ItemConstants.MaxSocketCount; i++)
-				{
-					var enchant = mountItem.Enchantments[(uint)i];
-					if (enchant != null && !CheckEquippedGems(enchant.Entry.GemTemplate))
-					{
-						return InventoryError.ITEM_UNIQUE_EQUIPPABLE_SOCKETED;
-					}
-				}
-			}
-			return InventoryError.OK;
-		}
-
-		internal bool CheckEquippedGems(ItemTemplate gemTempl)
-		{
-			if (gemTempl != null && gemTempl.Flags.HasFlag(ItemFlags.UniqueEquipped))
-			{
-				// may only equip a certain maximum of this kind of gem
-				for (var slot = EquipmentSlot.Head; slot < EquipmentSlot.Bag1; slot++)
-				{
-					var item = m_Items[(uint)slot];
-					if (item != null && item.HasGem(gemTempl.ItemId))
-					{
-						return false;
-					}
-				}
-			}
-			return true;
-		}
 
 		/// <summary>
 		/// Is called before adding the given amount of the given Item. 
@@ -535,8 +464,8 @@ namespace WCell.RealmServer.Items
 					for (var i = EnchantSlot.Socket1; i < EnchantSlot.Socket1 + ItemConstants.MaxSocketCount; i++)
 					{
 						var enchant = item.Enchantments[(uint)i];
-						if (enchant != null && 
-							enchant.Entry.GemTemplate != null && 
+						if (enchant != null &&
+							enchant.Entry.GemTemplate != null &&
 							enchant.Entry.GemTemplate.UniqueCount > 0 &&
 							OwnerInventory.GetUniqueCount(enchant.Entry.GemTemplate.ItemId) >= enchant.Entry.GemTemplate.UniqueCount)
 						{
@@ -550,19 +479,55 @@ namespace WCell.RealmServer.Items
 
 		#region Add / Ensure
 		/// <summary>
-		/// Tries to add a new item with the given id to a free slot.
+		/// Tries to add a new item with the given template and amount ot the given slot.
+		/// Make sure the given targetSlot is valid before calling this method.
+		/// If slot is occupied, method will find another unoccupied slot.
 		/// </summary>
 		/// <returns>The result (InventoryError.OK in case that it worked)</returns>
-		public InventoryError TryAdd(ItemId id)
+		public InventoryError TryAdd(ItemId id, ref int amount, InventorySlot targetSlot, ItemReceptionType reception = ItemReceptionType.Receive)
 		{
-			return TryAdd(ItemMgr.GetTemplate(id));
+			var templ = ItemMgr.GetTemplate(id);
+			if (templ != null)
+			{
+				return TryAdd(templ, ref amount, (int)targetSlot, reception);
+			}
+			return InventoryError.Invalid;
+		}
+
+		/// <summary>
+		/// Tries to add ONE new item with the given template to the given slot.
+		/// Make sure the given targetSlot is valid before calling this method.
+		/// </summary>
+		public InventoryError TryAdd(ItemTemplate template, InventorySlot targetSlot, ItemReceptionType reception = ItemReceptionType.Receive)
+		{
+			var amount = 1;
+			return TryAdd(template, ref amount, (int)targetSlot, reception);
+		}
+
+		/// <summary>
+		/// Tries to add a single new item with the given template to the given slot.
+		/// Make sure the given targetSlot is valid before calling this method.
+		/// </summary>
+		public InventoryError TryAdd(ItemTemplate template, EquipmentSlot targetSlot, ItemReceptionType reception = ItemReceptionType.Receive)
+		{
+			var amount = 1;
+			return TryAdd(template, ref amount, (int)targetSlot, reception);
 		}
 
 		/// <summary>
 		/// Tries to add a new item with the given id to a free slot.
 		/// </summary>
 		/// <returns>The result (InventoryError.OK in case that it worked)</returns>
-		public InventoryError TryAdd(ItemTemplate templ)
+		public InventoryError TryAdd(ItemId id, ItemReceptionType reception = ItemReceptionType.Receive)
+		{
+			return TryAdd(ItemMgr.GetTemplate(id), reception);
+		}
+
+		/// <summary>
+		/// Tries to add a new item with the given id to a free slot.
+		/// </summary>
+		/// <returns>The result (InventoryError.OK in case that it worked)</returns>
+		public InventoryError TryAdd(ItemTemplate templ, ItemReceptionType reception = ItemReceptionType.Receive)
 		{
 			if (templ != null)
 			{
@@ -571,7 +536,7 @@ namespace WCell.RealmServer.Items
 				{
 					return FullError;
 				}
-				return slotId.Container.TryAdd(templ, slotId.Slot);
+				return slotId.Container.TryAdd(templ, slotId.Slot, reception);
 			}
 			return InventoryError.Invalid;
 		}
@@ -581,12 +546,12 @@ namespace WCell.RealmServer.Items
 		/// Make sure the given targetSlot is valid before calling this method.
 		/// </summary>
 		/// <returns>The result (InventoryError.OK in case that it worked)</returns>
-		public InventoryError TryAdd(ItemId id, int targetSlot)
+		public InventoryError TryAdd(ItemId id, int targetSlot, ItemReceptionType reception = ItemReceptionType.Receive)
 		{
 			var templ = ItemMgr.GetTemplate(id);
 			if (templ != null)
 			{
-				return TryAdd(templ, targetSlot);
+				return TryAdd(templ, targetSlot, reception);
 			}
 			return InventoryError.Invalid;
 		}
@@ -596,35 +561,26 @@ namespace WCell.RealmServer.Items
 		/// Make sure the given targetSlot is valid before calling this method.
 		/// </summary>
 		/// <returns>The result (InventoryError.OK in case that it worked)</returns>
-		public InventoryError TryAdd(ItemId id, InventorySlot targetSlot)
+		public InventoryError TryAdd(ItemId id, InventorySlot targetSlot, ItemReceptionType reception = ItemReceptionType.Receive)
 		{
 			var templ = ItemMgr.GetTemplate(id);
 			if (templ != null)
 			{
-				return TryAdd(templ, (int)targetSlot);
+				return TryAdd(templ, (int)targetSlot, reception);
 			}
 			return InventoryError.ITEM_NOT_FOUND;
-		}
-
-		/// <summary>
-		/// Tries to add a new item with the given template and amount
-		/// </summary>
-		/// <returns>The result (InventoryError.OK in case that it worked)</returns>
-		public InventoryError TryAdd(ItemId templId, ref int amount)
-		{
-			return TryAdd(templId, ref amount, true);
 		}
 
 		/// <summary>
 		/// Tries to add an item with the given template and amount
 		/// </summary>
 		/// <returns>The result (InventoryError.OK in case that it worked)</returns>
-		public InventoryError TryAdd(ItemId templId, ref int amount, bool isNew)
+		public InventoryError TryAdd(ItemId templId, ref int amount, ItemReceptionType reception = ItemReceptionType.Receive)
 		{
 			var templ = ItemMgr.GetTemplate(templId);
 			if (templ != null)
 			{
-				return TryAdd(templ, ref amount, isNew);
+				return TryAdd(templ, ref amount, reception);
 			}
 			return InventoryError.ITEM_NOT_FOUND;
 		}
@@ -633,29 +589,19 @@ namespace WCell.RealmServer.Items
 		/// Tries to add a new item with the given template and amount
 		/// </summary>
 		/// <returns>The result (InventoryError.OK in case that it worked)</returns>
-		public InventoryError TryAdd(uint templId, ref int amount)
+		public InventoryError TryAdd(uint templId, ref int amount, ItemReceptionType reception = ItemReceptionType.Receive)
 		{
-			return TryAdd((ItemId)templId, ref amount);
+			return TryAdd((ItemId)templId, ref amount, reception);
 		}
 
 		/// <summary>
 		/// Tries to add ONE new item with the given template to the given slot.
 		/// Make sure the given targetSlot is valid before calling this method.
 		/// </summary>
-		public InventoryError TryAdd(ItemTemplate template, int targetSlot)
+		public InventoryError TryAdd(ItemTemplate template, int targetSlot, ItemReceptionType reception = ItemReceptionType.Receive)
 		{
 			var amount = 1;
-			return TryAdd(template, ref amount, targetSlot, true);
-		}
-
-		/// <summary>
-		/// Tries to add a new item with the given template and amount ot the given slot.
-		/// Make sure the given targetSlot is valid before calling this method.
-		/// </summary>
-		/// <returns>The result (InventoryError.OK in case that it worked)</returns>
-		public InventoryError TryAdd(ItemId id, ref int amount, int targetSlot)
-		{
-			return TryAdd(id, ref amount, targetSlot, true);
+			return TryAdd(template, ref amount, targetSlot, reception);
 		}
 
 		/// <summary>
@@ -663,12 +609,12 @@ namespace WCell.RealmServer.Items
 		/// Make sure the given targetSlot is valid before calling this method.
 		/// </summary>
 		/// <returns>The result (InventoryError.OK in case that it worked)</returns>
-		public InventoryError TryAdd(ItemId id, ref int amount, int targetSlot, bool isNew)
+		public InventoryError TryAdd(ItemId id, ref int amount, int targetSlot, ItemReceptionType reception = ItemReceptionType.Receive)
 		{
 			var templ = ItemMgr.GetTemplate(id);
 			if (templ != null)
 			{
-				return TryAdd(templ, ref amount, targetSlot, isNew);
+				return TryAdd(templ, ref amount, targetSlot, reception);
 			}
 			return InventoryError.ITEM_NOT_FOUND;
 		}
@@ -678,7 +624,7 @@ namespace WCell.RealmServer.Items
 		/// Make sure the given targetSlot is valid before calling this method.
 		/// </summary>
 		/// <returns>The result (InventoryError.OK in case that it worked)</returns>
-		public InventoryError TryAdd(ItemTemplate template, ref int amount, int slot, bool isNew)
+		public InventoryError TryAdd(ItemTemplate template, ref int amount, int slot, ItemReceptionType reception = ItemReceptionType.Receive)
 		{
 			if (m_Items[slot] != null)
 			{
@@ -687,7 +633,7 @@ namespace WCell.RealmServer.Items
 			}
 
 			var err = InventoryError.OK;
-			CheckUniqueness(template, ref amount, ref err, isNew);
+			CheckUniqueness(template, ref amount, ref err, true);
 			if (err == InventoryError.OK)
 			{
 				var handler = GetHandler(slot);
@@ -701,48 +647,10 @@ namespace WCell.RealmServer.Items
 					}
 				}
 
-				AddUnchecked(slot, template, amount, isNew);
+				var item = AddUnchecked(slot, template, amount, true);
+				OnAdded(item, template, amount, reception);
 			}
 			return err;
-		}
-
-        /// <summary>
-        /// Tries to merge an item with the given template and amount to the stack at the given slot.
-        /// If the given slot is empty it adds the item to the slot.
-        /// Make sure the given targetSlot is valid before calling this method.
-        /// </summary>
-        /// <param name="amount">Set to the number of items actually added.</param>
-        /// <returns>The result (InventoryError.OK in case that it worked)</returns>
-        public InventoryError TryMerge(ItemTemplate template, ref int amount, int slot, bool isNew)
-        {
-            var err = InventoryError.OK;
-            CheckUniqueness(template, ref amount, ref err, isNew);
-            if (err == InventoryError.OK)
-            {
-                var handler = GetHandler(slot);
-                if (handler != null)
-                {
-                    err = InventoryError.OK;
-                    handler.CheckAdd(slot, amount, template, ref err);
-                    if (err != InventoryError.OK)
-                    {
-                        return err;
-                    }
-                }
-
-                MergeUnchecked(slot, template, ref amount, isNew);
-            }
-            return err;
-        }
-
-		/// <summary>
-		/// Tries to add a new item with the given template and amount
-		/// </summary>
-		/// <param name="amount">Amount of items to be added: Will be set to the amount of Items that have actually been added.</param>
-		/// <returns>The result (InventoryError.OK in case that it worked)</returns>
-		public InventoryError TryAdd(ItemTemplate template, ref int amount)
-		{
-			return TryAdd(template, ref amount, true);
 		}
 
 		/// <summary>
@@ -750,14 +658,15 @@ namespace WCell.RealmServer.Items
 		/// </summary>
 		/// <param name="amount">Amount of items to be added: Will be set to the amount of Items that have actually been added.</param>
 		/// <returns>The result (InventoryError.OK in case that it worked)</returns>
-		public InventoryError TryAdd(ItemTemplate template, ref int amount, bool isNew)
+		public InventoryError TryAdd(ItemTemplate template, ref int amount, ItemReceptionType reception = ItemReceptionType.Receive)
 		{
 			var distributedAmount = amount;
 			var err = InventoryError.OK;
+			Item item = null;
 			if (!Distribute(template, ref distributedAmount))
 			{
 				amount -= distributedAmount;
-				CheckUniqueness(template, ref amount, ref err, isNew);
+				CheckUniqueness(template, ref amount, ref err, true);
 				if (err == InventoryError.OK)
 				{
 					var slotId = FindFreeSlot(template, amount);
@@ -765,9 +674,11 @@ namespace WCell.RealmServer.Items
 					{
 						return FullError;
 					}
-					slotId.Container.AddUnchecked(slotId.Slot, template, amount, true);
+					item = slotId.Container.AddUnchecked(slotId.Slot, template, amount, true);
 				}
 			}
+
+			OnAdded(item, template, distributedAmount + (item != null ? item.Amount : 0), reception);
 			return err;
 		}
 
@@ -780,7 +691,7 @@ namespace WCell.RealmServer.Items
 		/// item.Amount will hold the remaining amount.
 		/// </summary>
 		/// <returns>The result (InventoryError.OK in case that it worked)</returns>
-		public InventoryError TryAdd(Item item, bool isNew)
+		public InventoryError TryAdd(Item item, bool isNew, ItemReceptionType reception = ItemReceptionType.Receive)
 		{
 			var amount = item.Amount;
 			var err = InventoryError.OK;
@@ -802,7 +713,12 @@ namespace WCell.RealmServer.Items
 			}
 			else
 			{
-				item.Amount = amount - distributedAmount;
+				amount -= distributedAmount;
+				item.Amount = amount;
+			}
+			if (isNew)
+			{
+				OnAdded(item, item.Template, distributedAmount + item.Amount, reception);
 			}
 			return err;
 		}
@@ -812,7 +728,7 @@ namespace WCell.RealmServer.Items
 		/// Parts of the stack might have distributed over existing stacks, even if adding the remainder failed.
 		/// </summary>
 		/// <returns>InventoryError.OK in case that it could be added</returns>
-		public InventoryError TryAddAmount(Item item, int amount, bool isNew)
+		public InventoryError TryAddAmount(Item item, int amount, bool isNew, ItemReceptionType reception = ItemReceptionType.Receive)
 		{
 			var distributedAmount = amount;
 			var err = InventoryError.OK;
@@ -831,15 +747,24 @@ namespace WCell.RealmServer.Items
 					slotId.Container.AddUnchecked(slotId.Slot, item.Template, amount, isNew);
 				}
 			}
+			else
+			{
+				amount -= distributedAmount;
+				item.Amount = amount;
+			}
+			if (isNew)
+			{
+				OnAdded(item, item.Template, distributedAmount + amount, reception);
+			}
 			return err;
 		}
 
-        /// <summary>
+		/// <summary>
 		/// Tries to add the given item to the given slot (make sure the slot is valid and not occupied).
 		/// Fails if not all items of this stack can be added.
 		/// </summary>
 		/// <returns>InventoryError.OK in case that it worked</returns>
-		public InventoryError TryAdd(int slot, Item item, bool isNew)
+		public InventoryError TryAdd(int slot, Item item, bool isNew, ItemReceptionType reception = ItemReceptionType.Receive)
 		{
 			var amount = item.Amount;
 			var err = CheckAdd(slot, item, amount);
@@ -853,7 +778,49 @@ namespace WCell.RealmServer.Items
 				else
 				{
 					AddUnchecked(slot, item, isNew);
+					if (isNew)
+					{
+						OnAdded(item, item.Template, amount, reception);
+					}
 				}
+			}
+			return err;
+		}
+
+		public virtual void OnAdded(Item item, ItemTemplate templ, int amount, ItemReceptionType reception = ItemReceptionType.Receive)
+		{
+			if (item == null || !item.IsBuyback)
+			{
+				// TODO: Sometimes we need to send this to the entire group
+				ItemHandler.SendItemPushResult(Owner, item, templ, amount, reception);
+			}
+		}
+
+		/// <summary>
+		/// Tries to merge an item with the given template and amount to the stack at the given slot.
+		/// If the given slot is empty it adds the item to the slot.
+		/// Make sure the given targetSlot is valid before calling this method.
+		/// </summary>
+		/// <param name="amount">Set to the number of items actually added.</param>
+		/// <returns>The result (InventoryError.OK in case that it worked)</returns>
+		public InventoryError TryMerge(ItemTemplate template, ref int amount, int slot, bool isNew)
+		{
+			var err = InventoryError.OK;
+			CheckUniqueness(template, ref amount, ref err, isNew);
+			if (err == InventoryError.OK)
+			{
+				var handler = GetHandler(slot);
+				if (handler != null)
+				{
+					err = InventoryError.OK;
+					handler.CheckAdd(slot, amount, template, ref err);
+					if (err != InventoryError.OK)
+					{
+						return err;
+					}
+				}
+
+				MergeUnchecked(slot, template, ref amount, isNew);
 			}
 			return err;
 		}
@@ -885,30 +852,6 @@ namespace WCell.RealmServer.Items
 		}
 
 		/// <summary>
-		/// Tries to distribute the given amount of the given template and add the remainder to a free slot.
-		/// Does not make any checks (eg for unqueness).
-		/// </summary>
-		/// <param name="template"></param>
-		/// <param name="amount"></param>
-		/// <param name="isNew"></param>
-		/// <returns>The newly created stack that has not been distributed or null.</returns>
-		public Item DistributeUnchecked(ItemTemplate template, int amount, bool isNew)
-		{
-			var distributedAmount = amount;
-			if (!Distribute(template, ref distributedAmount))
-			{
-				amount -= distributedAmount;
-				var slotId = FindFreeSlot(template, amount);
-				if (slotId.Slot == INVALID_SLOT)
-				{
-					return null;
-				}
-				return slotId.Container.AddUnchecked(slotId.Slot, template, amount, true);
-			}
-			return null;
-		}
-
-		/// <summary>
 		/// Adds the Item to the given slot without any further checks.
 		/// Make sure all parameters are valid (eg by calling <code>CheckAdd</code> beforehand)
 		/// or use <code>TryAdd</code> instead.
@@ -920,36 +863,36 @@ namespace WCell.RealmServer.Items
 			this[slot] = item;
 			if (isNew)
 			{
-				OwnerInventory.OnAdd(item);
+				OwnerInventory.OnNewStack(item);
 			}
 			return item;
 		}
 
-        /// <summary>
-        /// Adds an amount of Items with ItemTemplate to the Item in the given slot, without further checks.
-        /// If the given slot is empty, it AddsUnchecked.
-        /// </summary>
-        /// <param name="amount">Set to the number of Items actually added.</param>
-        /// <returns>The Item in the slot you merged to.</returns>
-        public Item MergeUnchecked(int slot, ItemTemplate template, ref int amount, bool isNew)
-        {
-            var item = m_Items[slot];
-            if (item == null)
-            {
-                return AddUnchecked(slot, template, amount, isNew);
-            }
+		/// <summary>
+		/// Adds an amount of Items with ItemTemplate to the Item in the given slot, without further checks.
+		/// If the given slot is empty, it AddsUnchecked.
+		/// </summary>
+		/// <param name="amount">Set to the number of Items actually added.</param>
+		/// <returns>The Item in the slot you merged to.</returns>
+		public Item MergeUnchecked(int slot, ItemTemplate template, ref int amount, bool isNew)
+		{
+			var item = m_Items[slot];
+			if (item == null)
+			{
+				return AddUnchecked(slot, template, amount, isNew);
+			}
 
-            var freeSpace = item.Template.MaxAmount - item.Amount;
-            freeSpace = Math.Min(freeSpace, amount);
+			var freeSpace = item.Template.MaxAmount - item.Amount;
+			freeSpace = Math.Min(freeSpace, amount);
 
-            amount = freeSpace;
-            item.Amount += freeSpace;
-            if (isNew)
-            {
-                OwnerInventory.OnAdd(item);
-            }
-            return item;
-        }
+			amount = freeSpace;
+			item.Amount += freeSpace;
+			if (isNew)
+			{
+				OwnerInventory.OnNewStack(item);
+			}
+			return item;
+		}
 
 		/// <summary>
 		/// Adds the Item to the given slot without any further checks.
@@ -962,8 +905,8 @@ namespace WCell.RealmServer.Items
 		{
 			this[slot] = item;
 			if (isNew)
-	        {
-				OwnerInventory.OnAdd(item);
+			{
+				OwnerInventory.OnNewStack(item);
 			}
 			else
 			{
@@ -971,7 +914,8 @@ namespace WCell.RealmServer.Items
 				var context = owner.ContextHandler;
 				if (context != null)
 				{
-					context.AddMessage(() => {
+					context.AddMessage(() =>
+					{
 						if (owner.IsInWorld)
 						{
 							owner.AddItemToUpdate(item);
@@ -983,46 +927,44 @@ namespace WCell.RealmServer.Items
 
 		internal void AddLoadedItem(Item item)
 		{
-			if (this[item.Slot] != null)
+			try
 			{
-				// no idea why items get saved in the same slot
-				LogManager.GetCurrentClassLogger().Warn("Ignoring Item {0} for {1} because slot is already occupied by: {2}", item, Owner, this[item.Slot]);
-				item.Destroy();
-				return;
-			}
-
-			var owner = Owner;
-			var record = item.Record;
-			var inv = OwnerInventory;
-			inv.OnAmountChanged(item, (int)item.Amount);
-
-			// add enchants
-			// item.ApplyEnchant(item.Record.EnchantPerm, EnchantSlot.Permanent, 0, 0);
-			// item.ApplyEnchant(item.Record.EnchantTemp, EnchantSlot.Temporary, (uint)item.Record.EnchantTempTime, 0);
-			// item.ApplyEnchant(item.Record.EnchantSock1, EnchantSlot.Socket1, 0, 0);
-			// item.ApplyEnchant(item.Record.EnchantSock2, EnchantSlot.Socket2, 0, 0);
-			// item.ApplyEnchant(item.Record.EnchantSock3, EnchantSlot.Socket3, 0, 0);
-			if (record.EnchantIds != null)
-			{
-				for (var slot = 0; slot < record.EnchantIds.Length; slot++)
+				var slot = item.Slot;
+				var cont = this;
+				if (!IsValidSlot(slot))
 				{
-					var enchant = record.EnchantIds[slot];
-					if (slot == (int)EnchantSlot.Temporary)
+					var slotId = OwnerInventory.FindFreeSlot(item, false);
+					if (slot == INVALID_SLOT)
 					{
-						item.ApplyEnchant(enchant, (EnchantSlot)slot, record.EnchantTempTime, 0, false);
+						// no space left
+						LogManager.GetCurrentClassLogger().Warn("Ignoring loaded Item {0} in {1} because it has an invalid Slot: {2}", item, this, item.Slot);
+						return;
 					}
-					else
-					{
-						item.ApplyEnchant(enchant, (EnchantSlot)slot, 0, 0, false);
-					}
+					LogManager.GetCurrentClassLogger().Warn("Loaded Item {0} in {1} has invalid Slot: {2}", item, this, item.Slot);
+					slot = slotId.Slot;
+					cont = slotId.Container;
 				}
-				//item.CheckSocketColors();
+				if (cont[slot] != null)
+				{
+					// no idea why items get saved in the same slot
+					LogManager.GetCurrentClassLogger().Warn("Ignoring Item {0} for {1} because slot is already occupied by: {2}", item,
+															Owner, cont[slot]);
+					item.Destroy();
+					return;
+				}
+
+				var owner = Owner;
+				var inv = OwnerInventory;
+
+				cont[slot] = item;
+
+				owner.AddItemToUpdate(item);
+				inv.OnAddDontNotify(item);
 			}
-
-			this[item.Slot] = item;
-
-			owner.AddItemToUpdate(item);
-			inv.OnAddDontNotify(item);
+			catch (Exception e)
+			{
+				LogUtil.ErrorException(e, "Unable to add Item \"{0}\" to {1}", item, this);
+			}
 		}
 
 		public Item Remove(InventorySlot slot, bool ownerChange)
@@ -1040,7 +982,7 @@ namespace WCell.RealmServer.Items
 			{
 				LogUtil.ErrorException(
 					new Exception(
-						string.Format("Tried to remove Item from invalid Slot {0}/{1} in {2} (belongs to {3})", 
+						string.Format("Tried to remove Item from invalid Slot {0}/{1} in {2} (belongs to {3})",
 						slot, m_Items.Length, this, Owner)));
 				return null;
 			}
@@ -1052,28 +994,33 @@ namespace WCell.RealmServer.Items
 			}
 			return item;
 		}
-
-		public void Remove(Item item, bool ownerChange)
+		/// <summary>
+		/// Don't use this method - but use item.Remove instead.
+		/// </summary>
+		/// <param name="item"></param>
+		/// <param name="ownerChange"></param>
+		internal void Remove(Item item, bool ownerChange)
 		{
 			if (ownerChange)
 			{
+				item.m_unknown = true;
 				OwnerInventory.OnRemove(item);
 			}
 
 			var slot = item.Slot;
-            var handler = GetHandler(slot);
+			var handler = GetHandler(slot);
 			if (handler != null)
 			{
 				handler.Removed(slot, item);
 			}
 
-            // slot may have changed in the Removed() handler
-		    slot = item.Slot;
+			// slot may have changed in the Removed() handler
+			slot = item.Slot;
 			m_Items[slot] = null;
 			var cont = Container;
 			if (cont != null)
 			{
-				cont.SetEntityId(m_baseField + (slot * 2), EntityId.Zero);
+                SetContainerEntityId(EntityId.Zero, slot, this);
 			}
 			item.Container = null;
 
@@ -1095,6 +1042,10 @@ namespace WCell.RealmServer.Items
 			else if (item.IsContainer && ((Container)item).BaseInventory.Count > 0)
 			{
 				err = InventoryError.CAN_ONLY_DO_WITH_EMPTY_BAGS;
+			}
+			else if (!item.CanBeTraded)
+			{
+				err = InventoryError.CANT_DO_RIGHT_NOW;
 			}
 			else if (!Destroy(slot))
 			{
@@ -1235,7 +1186,8 @@ namespace WCell.RealmServer.Items
 				var amountLeft = amount;
 				var done = false;
 				// add stackable items to existing stacks
-				Iterate((invItem) => {
+				Iterate((invItem) =>
+				{
 					if (invItem.Template == template)
 					{
 						var diff = template.MaxAmount - invItem.Amount;
@@ -1249,8 +1201,8 @@ namespace WCell.RealmServer.Items
 								return false;
 							}
 
-						    // we can put a part of the stack here
-						    amountLeft -= invItem.ModAmount(diff);
+							// we can put a part of the stack here
+							amountLeft -= invItem.ModAmount(diff);
 						}
 					}
 					return true;
@@ -1278,7 +1230,8 @@ namespace WCell.RealmServer.Items
 			if (template.IsStackable)
 			{
 				// try to add stackable items to existing stacks
-				Iterate(invItem => {
+				Iterate(invItem =>
+				{
 					if (invItem.Template == template)
 					{
 						if (invItem.Amount < template.MaxAmount)
@@ -1303,6 +1256,12 @@ namespace WCell.RealmServer.Items
 			amount -= amountLeft;
 			return (amountLeft == 0);
 		}
+
+        public virtual void SetContainerEntityId(EntityId entityId, int slot, BaseInventory baseInventory)
+        {
+            var field = baseInventory.m_baseField + (slot * 2);
+            baseInventory.Container.SetEntityId(field, entityId);
+        }
 
 		/// <summary>
 		/// Counts and returns the amount of items in between the given slots.
@@ -1359,7 +1318,7 @@ namespace WCell.RealmServer.Items
 		/// <summary>
 		/// All items that are currently in this inventory
 		/// </summary>
-		public IEnumerator<Item> GetEnumerator()
+		public virtual IEnumerator<Item> GetEnumerator()
 		{
 			for (var i = 0; i < m_Items.Length; i++)
 			{
@@ -1374,6 +1333,12 @@ namespace WCell.RealmServer.Items
 		IEnumerator IEnumerable.GetEnumerator()
 		{
 			return GetEnumerator();
+		}
+
+
+		public override string ToString()
+		{
+			return string.Format("Inventory of {0}: {1}", Owner, this.ToString(" / "));
 		}
 	}
 }

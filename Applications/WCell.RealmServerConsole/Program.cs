@@ -14,36 +14,35 @@
  *
  *************************************************************************/
 
-using System;
-using Cell.Core;
+using System.Runtime.InteropServices;
 using NLog;
 using System.Runtime;
 using System.Threading;
-using WCell.RealmServer.Lang;
-using WCell.Util.Lang;
-using WCell.Util.NLog;
-using System.Text.RegularExpressions;
+using WCell.Core.DBC;
+using WCell.RealmServer.Content;
 
 namespace WCell.RealmServerConsole
 {
-    internal class Program
-    {
+	internal class Program
+	{
 		private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-        private static void Main(string[] args)
+		private static void Main(string[] args)
 		{
-        	if (GCSettings.IsServerGC)
-        	{
-        		GCSettings.LatencyMode = GCLatencyMode.Batch;
-        	}
-        	else
-        	{
-        		GCSettings.LatencyMode = GCLatencyMode.Interactive;
-        	}
-        	Thread.CurrentThread.IsBackground = true;
+			if (GCSettings.IsServerGC)
+			{
+				GCSettings.LatencyMode = GCLatencyMode.Batch;
+			}
+			else
+			{
+				GCSettings.LatencyMode = GCLatencyMode.Interactive;
+			}
 
-        	RealmServer.Program.Start();
-        	RealmServerConsole.Run();
-        }
-    }
+			Thread.CurrentThread.IsBackground = true;
+
+			ContentMgr.ForceDataPresence = true;
+			RealmServer.Program.Start();
+			RealmServerConsole.Run();
+		}
+	}
 }

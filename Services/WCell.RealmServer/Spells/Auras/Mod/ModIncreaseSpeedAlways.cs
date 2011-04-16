@@ -20,14 +20,14 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	{
 		float amount;
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			amount = EffectValue / 100f;
 
 			m_aura.Auras.Owner.SpeedFactor += amount;
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			m_aura.Auras.Owner.SpeedFactor -= amount;
 		}

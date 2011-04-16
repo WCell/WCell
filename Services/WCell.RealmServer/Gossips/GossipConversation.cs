@@ -11,21 +11,28 @@ namespace WCell.RealmServer.Gossips
 	public class GossipConversation
 	{
 		#region Constructors
+
 		/// <summary>
 		/// Creates gossip conversation by its fields
 		/// </summary>
 		/// <param name="menu">starting menu</param>
-		/// <param name="speaker">character which started the conversation</param>
-		/// <param name="target">respondent</param>
-		public GossipConversation(GossipMenu menu, Character speaker, WorldObject target, bool keepOpen)
+		/// <param name="chr">character which started the conversation</param>
+		/// <param name="speaker">respondent</param>
+		public GossipConversation(GossipMenu menu, Character chr, WorldObject speaker) : this(menu, chr, speaker, menu.KeepOpen)
 		{
-			if (menu.BodyTextId == 0)
-			{
-				menu.BodyTextId = GossipMgr.DefaultTextId;
-			}
+		}
+
+		/// <summary>
+		/// Creates gossip conversation by its fields
+		/// </summary>
+		/// <param name="menu">starting menu</param>
+		/// <param name="chr">character which started the conversation</param>
+		/// <param name="speaker">respondent</param>
+		public GossipConversation(GossipMenu menu, Character chr, WorldObject speaker, bool keepOpen)
+		{
 			CurrentMenu = menu;
-			Character = speaker;
-			Speaker = target;
+			Character = chr;
+			Speaker = speaker;
 			StayOpen = keepOpen;
 		}
 		#endregion
@@ -85,7 +92,7 @@ namespace WCell.RealmServer.Gossips
 			if (item == null)
 				return;
 
-			if (item.Action != null && item.Action.CanUse(Character))
+			if (item.Action != null && item.Action.CanUse(this))
 			{
 				var menu = CurrentMenu;
 				item.Action.OnSelect(this);
@@ -112,24 +119,22 @@ namespace WCell.RealmServer.Gossips
 
 		/// <summary>
 		/// Shows menu to player
-		/// 
-		/// TODO: Why is this only sending Quest-information? And: Why is this sending Quest information at all?
-		/// TODO: Quest handling should be part of a subclass of GossipMenu or similar
 		/// </summary>
 		/// <param name="menu">menu to show</param>
 		public void DisplayMenu(GossipMenu menu)
 		{
 			CurrentMenu = menu;
+			menu.OnDisplay(this);
 
 			if (Speaker is IQuestHolder && ((IQuestHolder)Speaker).QuestHolderInfo != null)
 			{
 				var questMenuItems = ((IQuestHolder)Speaker).QuestHolderInfo.GetQuestMenuItems(Character);
 
-				GossipHandler.SendPageToCharacter(this, menu.BodyTextId, menu.GossipItems, questMenuItems);
+				GossipHandler.SendPageToCharacter(this, questMenuItems);
 			}
 			else
 			{
-				GossipHandler.SendPageToCharacter(this, menu.BodyTextId, menu.GossipItems, null);
+				GossipHandler.SendPageToCharacter(this, null);
 			}
 		}
 

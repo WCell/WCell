@@ -15,8 +15,13 @@
  *************************************************************************/
 
 using System;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using WCell.Constants;
+using WCell.Util;
+using WCell.Util.Data;
 
 namespace WCell.Core.DBC
 {
@@ -29,7 +34,7 @@ namespace WCell.Core.DBC
 		}
 	}
 
-    public class DBCRecordConverter : IDisposable
+    public abstract class DBCRecordConverter : IDisposable
     {
         private byte[] m_stringTable;
 
@@ -40,6 +45,54 @@ namespace WCell.Core.DBC
 
 		public virtual void Convert(byte[] rawData)
 		{
+		}
+
+		protected static int CopyTo(byte[] bytes, object obj, int index)
+		{
+// ReSharper disable RedundantEnumerableCastCall
+			var fieldsAndProps = obj.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).Cast<MemberInfo>();
+			fieldsAndProps = fieldsAndProps.Concat(obj.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public));
+// ReSharper restore RedundantEnumerableCastCall
+			foreach (var prop in fieldsAndProps)
+			{
+				if (prop.IsReadonly() ||
+					prop.GetCustomAttributes(typeof(NotPersistentAttribute), true).Length > 0)
+					continue; // Skip this property
+
+				var val = GetInt32(bytes, index++);
+				var objVal = Utility.ChangeType(val, prop.GetVariableType());
+				prop.SetUnindexedValue(obj, objVal);
+			}
+			return index;
+		}
+
+    	/// <summary>
+		/// Copies the next count fields into obj, starting from offset.
+		/// Keep in mind, that one field has a length of 4 bytes.
+		/// </summary>
+		protected static void CopyTo(byte[] bytes, int fromOffset, int length, object target, int toOffset)
+		{
+			if (length % 4 != 0)
+			{
+				throw new Exception("Cannot copy to object " + target + " because it's size is not a multiple of 4.");
+			}
+
+			try
+			{
+				var handle = GCHandle.Alloc(target, GCHandleType.Pinned);
+				try
+				{
+					Marshal.Copy(bytes, fromOffset * 4, new IntPtr(handle.AddrOfPinnedObject().ToInt64() + toOffset), length);
+				}
+				finally
+				{
+					handle.Free();
+				}
+			}
+			catch (Exception e)
+			{
+				throw new Exception(string.Format("Unable to copy bytes to object {0} of type {1}", target, target.GetType()), e);
+			}
 		}
 
         protected static uint GetUInt32(byte[] data, int field)
@@ -80,7 +133,7 @@ namespace WCell.Core.DBC
 
         public string GetString(byte[] data, int stringOffset)
         {
-        	return GetString(data, WCellDef.DefaultLocale, stringOffset);
+        	return GetString(data, WCellConstants.DefaultLocale, stringOffset);
 		}
 
 		public string[] GetStrings(byte[] data, int stringOffset)
@@ -109,7 +162,7 @@ namespace WCell.Core.DBC
 			{
 			}
 
-			return WCellDef.DefaultEncoding.GetString(m_stringTable, startOffset, len-1);
+			return WCellConstants.DefaultEncoding.GetString(m_stringTable, startOffset, len-1) ?? "";
 		}
 
         public void Dispose()

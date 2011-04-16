@@ -69,9 +69,9 @@ namespace WCell.RealmServer.Commands
 		#endregion
 
 		#region Add
-		public class AddItemCommand : SubCommand
+		public class ItemAddCommand : SubCommand
 		{
-			protected AddItemCommand() { }
+			protected ItemAddCommand() { }
 
 			protected override void Initialize()
 			{
@@ -86,14 +86,21 @@ namespace WCell.RealmServer.Commands
 			{
 				var mods = trigger.Text.NextModifiers();
 				var entry = trigger.Text.NextEnum(ItemId.None);
-				var templ = ItemMgr.GetTemplate(entry);
+			    var templ = ItemMgr.GetTemplate(entry);
+
 				if (templ == null)
 				{
 					trigger.Reply("Invalid ItemId.");
 					return;
 				}
 
-				var amount = trigger.Text.NextInt(1);
+                if (templ.IsCharter)
+                {
+                    trigger.Reply("Charters cannot be added by command.");
+                    return;
+                }
+
+			    var amount = trigger.Text.NextInt(1);
 				var stacks = trigger.Text.NextUInt(1);
 				var ensure = mods.Contains("e");
 				var autoEquip = mods.Contains("a");
@@ -108,8 +115,7 @@ namespace WCell.RealmServer.Commands
 				//trigger.Reply("{0}/{1} stacks of {2} created{3}", x, stacks, templ, err == InventoryError.OK ? "." : ": " + err);
 			}
 
-			public static bool AddItem(Character chr, ItemTemplate templ, int amount,
-				bool autoEquip, bool ensureOnly)
+			public static bool AddItem(Character chr, ItemTemplate templ, int amount, bool autoEquip, bool ensureOnly)
 			{
 				var actualAmount = amount;
 				var inv = chr.Inventory;
@@ -443,7 +449,7 @@ namespace WCell.RealmServer.Commands
 			}
 
             public override object Eval(CmdTrigger<RealmServerCmdArgs> trigger)
-            {
+			{
                 var slot = trigger.Text.NextEnum(InventorySlot.Invalid);
                 if (slot != InventorySlot.Invalid)
                 {

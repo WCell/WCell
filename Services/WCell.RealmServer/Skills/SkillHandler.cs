@@ -71,7 +71,7 @@ namespace WCell.RealmServer.Skills
 		/// All lists of all Race/Class-specific skillinfos: Use RaceClassInfos[race][class]
 		/// </summary>
 		public static readonly Dictionary<SkillId, SkillRaceClassInfo>[][] RaceClassInfos =
-			new Dictionary<SkillId, SkillRaceClassInfo>[WCellDef.RaceTypeLength][];
+			new Dictionary<SkillId, SkillRaceClassInfo>[WCellConstants.RaceTypeLength][];
 
 		/// <summary>
 		/// All SkillAbility-lists, indexed by their SkillId
@@ -85,15 +85,15 @@ namespace WCell.RealmServer.Skills
 
 
 		#region Init
-		static MappedDBCReader<SkillTier, SkillTierConverter> TierReader;
+		static MappedDBCReader<SkillTiers, SkillTierConverter> TierReader;
 		static MappedDBCReader<SkillRaceClassInfo, SkillRaceClassInfoConverter> RaceClassReader;
 
 		internal static void Initialize()
 		{
-			TierReader = new MappedDBCReader<SkillTier, SkillTierConverter>(RealmServerConfiguration.GetDBCFile("SkillTiers.dbc"));
+            TierReader = new MappedDBCReader<SkillTiers, SkillTierConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SKILLTIERS));
 
 			var lineReader =
-				new MappedDBCReader<SkillLine, SkillLineConverter>(RealmServerConfiguration.GetDBCFile("SkillLine.dbc"));
+				new MappedDBCReader<SkillLine, SkillLineConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SKILLLINE));
 
 			// make sure that all these skill types have correct tiers
 			foreach (var line in lineReader.Entries.Values)
@@ -120,12 +120,12 @@ namespace WCell.RealmServer.Skills
 			}
 
 			RaceClassReader = new MappedDBCReader<SkillRaceClassInfo, SkillRaceClassInfoConverter>(
-				RealmServerConfiguration.GetDBCFile("SkillRaceClassInfo.dbc"));
+                RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SKILLRACECLASSINFO));
 
 
 		    var abilityReader =
 		        new MappedDBCReader<SkillAbility, SkillAbilityConverter>(
-		            RealmServerConfiguration.GetDBCFile("SkillLineAbility.dbc"));
+		            RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SKILLLINEABILITY));
 
 			var abilityLists = new List<SkillAbility>[MaxSkillId];
 			foreach (var ability in abilityReader.Entries.Values)
@@ -138,7 +138,6 @@ namespace WCell.RealmServer.Skills
 					//AbilitiesBySpellId.Add((SpellId)ability.Spell.Id, ability.SkillLine);
 					//}
 					ability.Spell.Ability = ability;
-					ability.Spell.Skill = ability.Skill;
 				}
 				else
 				{
@@ -200,7 +199,7 @@ namespace WCell.RealmServer.Skills
 					if (ability.Skill.Category == SkillCategory.Profession ||
 						ability.Skill.Category == SkillCategory.SecondarySkill)
 					{
-						if (ability.Spell.GetEffect(SpellEffectType.Skill) != null)
+						if (ability.Spell.HasEffect(SpellEffectType.Skill))
 						{
 							ability.Skill.TeachingSpells.Add(ability.Spell);
 						}
@@ -224,7 +223,7 @@ namespace WCell.RealmServer.Skills
 							ability.Spell.BaseLevel == 0 &&
 							ability.Spell.Rank == 0)
 						{
-							var spell = ability.Skill.ApprenticeSpell;
+							var spell = ability.Skill.GetSpellForTier(SkillTierId.Apprentice);
 							if (spell != null)
 							{
 								spell.AdditionallyTaughtSpells.Add(ability.Spell);

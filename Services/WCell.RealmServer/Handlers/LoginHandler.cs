@@ -8,7 +8,7 @@ using WCell.RealmServer.Chat;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
-using WCell.RealmServer.Localization;
+using WCell.RealmServer.Res;
 using WCell.Util.Graphics;
 using WCell.Util.NLog;
 using WCell.Util.Threading;
@@ -60,6 +60,9 @@ namespace WCell.RealmServer.Handlers
 
 				client.ClientSeed = packet.ReadUInt32();
 
+				var unk1 = packet.ReadUInt32(); // 3.3.5a
+				var unk2 = packet.ReadUInt32(); // 3.3.5a
+				var unk3 = packet.ReadUInt32(); // 3.3.5a
 				var unk4 = packet.ReadUInt64();
 
 				client.ClientDigest = packet.ReadBigInteger(20);
@@ -76,7 +79,7 @@ namespace WCell.RealmServer.Handlers
 				Compression.DecompressZLib(compressedData, client.Addons);
 
 				var acctLoadTask = Message.Obtain(() => RealmAccount.InitializeAccount(client, accName));
-				client.Server.AddMessage(acctLoadTask);
+				RealmServer.IOQueue.AddMessage(acctLoadTask);
 			}
 		}
 
@@ -96,10 +99,10 @@ namespace WCell.RealmServer.Handlers
 				packet.WriteUInt(0x6E8547B9);
 				packet.WriteUInt(0x9A6AA2F8);
 				packet.WriteUInt(0xA4F170F4);
-			    packet.WriteUInt(0xF3539DA3);
-			    packet.WriteUInt(0x6E8547B9);
-			    packet.WriteUInt(0x9A6AA2F8);
-			    packet.WriteUInt(0xA4F170F4);
+				packet.WriteUInt(0xF3539DA3);
+				packet.WriteUInt(0x6E8547B9);
+				packet.WriteUInt(0x9A6AA2F8);
+				packet.WriteUInt(0xA4F170F4);
 
 				client.Send(packet);
 			}
@@ -217,13 +220,13 @@ namespace WCell.RealmServer.Handlers
 					}
 					else
 					{
-						chr.Region.AddMessage(new Message(() =>
+						chr.Map.AddMessage(new Message(() =>
 						{
-							if (!chr.IsLoggingOut)
+							if (!chr.IsInContext)
 							{
 								// Character was removed in the meantime -> Login again
 								// enqueue task in IO-Queue to sync with Character.Save()
-								RealmServer.Instance.AddMessage(
+								RealmServer.IOQueue.AddMessage(
 									new Message(() => LoginCharacter(client, charLowId)));
 							}
 							else
@@ -273,8 +276,9 @@ namespace WCell.RealmServer.Handlers
 				// TODO: Check in Char Enum?
 				SendCharacterLoginFail(client, LoginErrorCode.AUTH_BILLING_EXPIRED);
 			}
-			else
+			else if (client.ActiveCharacter == null)
 			{
+				Character chr = null;
 				try
 				{
 					var evt = BeforeLogin;
@@ -286,7 +290,7 @@ namespace WCell.RealmServer.Handlers
 							throw new ArgumentNullException("OnBeforeLogin returned null");
 						}
 					}
-					var chr = record.CreateCharacter();
+					chr = record.CreateCharacter();
 					chr.Create(acc, record, client);
 					chr.LoadAndLogin();
 
@@ -303,6 +307,12 @@ namespace WCell.RealmServer.Handlers
 				catch (Exception ex)
 				{
 					LogUtil.ErrorException(ex, "Failed to load Character from Record: " + record);
+					if (chr != null)
+					{
+						// Force client to relog
+						chr.Dispose();
+						client.Disconnect();
+					}
 				}
 			}
 		}

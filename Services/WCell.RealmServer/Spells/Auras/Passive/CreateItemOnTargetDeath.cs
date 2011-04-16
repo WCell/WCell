@@ -27,14 +27,14 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	{
 		private static Logger log = LogManager.GetCurrentClassLogger();
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			// does nada
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
-			var procFlags = SpellEffect.Spell.ProcTriggerFlags;
+			var procFlags = m_aura.Spell.ProcTriggerFlags;
 			var owner = m_aura.Auras.Owner;
 			if (!owner.IsAlive && 
 				(!procFlags.HasFlag(ProcTriggerFlags.GainExperience) || owner.YieldsXpOrHonor))
@@ -42,16 +42,16 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 				var item = ItemMgr.GetTemplate(SpellEffect.ItemId);
 				if (item == null)
 				{
-					log.Warn("Spell {0} referred to invalid Item: {1} ({2})", SpellEffect.Spell,
+					log.Warn("Spell {0} referred to invalid Item: {1} ({2})", m_aura.Spell,
 						(ItemId)SpellEffect.ItemId, SpellEffect.ItemId);
 				}
 				else
 				{
-					var caster = m_aura.Caster;
+					var caster = m_aura.CasterUnit;
 					if (caster != null && (caster = caster.Master as Character) != null)
 					{
 						var amount = Math.Max(1, EffectValue);
-						((Character)caster).Inventory.TryAdd(item, ref amount, true);
+						((Character)caster).Inventory.TryAdd(item, ref amount);
 					}
 				}
 			}

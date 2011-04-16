@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using WCell.Constants.Misc;
 using WCell.RealmServer.Content;
 using WCell.Core.Paths;
+using WCell.RealmServer.NPCs.Spawns;
 using WCell.Util.Data;
 using WCell.RealmServer.Gossips;
 using WCell.RealmServer.Entities;
@@ -59,7 +60,7 @@ namespace WCell.RealmServer.NPCs
 		public uint ArriveDisplayId, LeaveDisplayId;
 
 		[NotPersistent]
-		public SpawnEntry SpawnEntry;
+		public NPCSpawnEntry SpawnEntry;
 
 		[NotPersistent]
 		public LinkedListNode<WaypointEntry> Node;
@@ -69,7 +70,7 @@ namespace WCell.RealmServer.NPCs
 			SpawnEntry = NPCMgr.GetSpawnEntry(SpawnId);
 			if (SpawnEntry == null)
 			{
-				ContentHandler.OnInvalidDBData("{0} had an invalid SpawnId.", this);
+				ContentMgr.OnInvalidDBData("{0} had an invalid SpawnId.", this);
 			}
 			else
 			{
@@ -85,7 +86,7 @@ namespace WCell.RealmServer.NPCs
 					}
 					else if (cur.Value.Id == Id)
 					{
-						ContentHandler.OnInvalidDBData("Found multiple Waypoints with the same Id {0} for SpawnEntry {1}", Id, SpawnEntry);
+						ContentMgr.OnInvalidDBData("Found multiple Waypoints with the same Id {0} for SpawnEntry {1}", Id, SpawnEntry);
 						return;
 					}
 					cur = cur.Next;

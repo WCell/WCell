@@ -42,9 +42,10 @@ namespace WCell.RealmServer.Talents
 
                 uint spellicon = GetUInt32(rawData, currentIndex++);
                 var classMask = (ClassMask)GetUInt32(rawData, currentIndex++);
-				tree.Class = WCellDef.ClassTypesByMask[classMask];
+				tree.Class = WCellConstants.ClassTypesByMask[classMask];
 
-                tree.TabIndex2 = GetUInt32(rawData, currentIndex++);
+
+                tree.PetTabIndex = GetUInt32(rawData, currentIndex++);
                 tree.TabIndex = GetUInt32(rawData, currentIndex++);
                 //string InternalName = GetString(rawData, ref currentIndex);
 
@@ -90,7 +91,7 @@ namespace WCell.RealmServer.Talents
 					}
 					if (spell.IsTeachSpell)
 					{
-						spell = spell.GetEffectsWith(effect => effect.TriggerSpell != null)[0].TriggerSpell;
+						spell = spell.GetEffectsWhere(effect => effect.TriggerSpell != null)[0].TriggerSpell;
 					}
 
 					if (spell != null)

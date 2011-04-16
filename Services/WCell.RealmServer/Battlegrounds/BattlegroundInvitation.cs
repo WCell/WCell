@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,7 +12,7 @@ namespace WCell.RealmServer.Battlegrounds
 	{
 		public readonly BattlegroundTeam Team;
 
-		internal OneShotUpdateObjectAction CancelTimer;
+		internal OneShotObjectUpdateTimer CancelTimer;
 
 		public BattlegroundInvitation(BattlegroundTeam team, int queueIndex)
 		{

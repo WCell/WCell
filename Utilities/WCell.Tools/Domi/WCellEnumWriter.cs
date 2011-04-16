@@ -24,6 +24,7 @@ using WCell.Constants.Items;
 using WCell.Constants.NPCs;
 using WCell.Constants.Skills;
 using WCell.Constants.Spells;
+using WCell.Core;
 using WCell.Core.DBC;
 using WCell.RealmServer.AreaTriggers;
 using WCell.RealmServer.Database;
@@ -43,6 +44,7 @@ using WCell.Util.Toolshed;
 using WCell.RealmServer.Content;
 using WCell.RealmServer;
 using WCell.Util.NLog;
+
 
 namespace WCell.Tools.Domi
 {
@@ -76,8 +78,8 @@ namespace WCell.Tools.Domi
 
 		public static void WriteAllEnums()
 		{
-			RealmDBUtil.Initialize();
-			ContentHandler.Initialize();
+			RealmDBMgr.Initialize();
+			ContentMgr.Initialize();
 			World.InitializeWorld();
 			SpellHandler.LoadSpells();
 			FactionMgr.Initialize();
@@ -120,7 +122,7 @@ namespace WCell.Tools.Domi
 			World.InitializeWorld();
 			SpellHandler.LoadSpells();
 			FactionMgr.Initialize();
-			NPCMgr.ForceInitialize();
+			NPCMgr.LoadAll();
 			ItemMgr.ForceInitialize();
 
 			WriteEnum("ItemId", " : uint", "Items", ItemMgr.Templates, false,
@@ -157,7 +159,7 @@ namespace WCell.Tools.Domi
 
 		public static void WriteItemSetId()
 		{
-			RealmDBUtil.Initialize();
+			RealmDBMgr.Initialize();
 			World.InitializeWorld();
 			SpellHandler.LoadSpells();
 			ItemMgr.ForceInitialize();
@@ -193,10 +195,10 @@ namespace WCell.Tools.Domi
 
 		public static void WriteNpcId()
 		{
-			RealmDBUtil.Initialize();
+			RealmDBMgr.Initialize();
 			SpellHandler.LoadSpells();
 			FactionMgr.Initialize();
-			NPCMgr.ForceInitialize();
+			NPCMgr.LoadAll();
 
 			WriteEnum("NPCId", " : uint", "NPCs", NPCMgr.GetAllEntries(), false,
 					  (item) => { return item != null; },
@@ -304,7 +306,7 @@ namespace WCell.Tools.Domi
 
 		public static void WriteZoneEnum()
 		{
-			WriteEnum("ZoneId", " : uint", "World", World.ZoneInfos,
+			WriteEnum("ZoneId", " : uint", "World", World.ZoneTemplates,
 					  (item) => { return true; },
 					  (item) => { return item.Name.Trim().Length > 0 ? item.Name : "Unnamed"; },
 					  (item) => { return ((uint)item.Id).ToString(); });
@@ -312,10 +314,10 @@ namespace WCell.Tools.Domi
 
 		public static void WriteMapEnum()
 		{
-			WriteEnum("MapId", " : uint", "World", World.RegionInfos,
-					  (region) => { return true; },
-					  (region) => { return region.Name.Trim().Length > 0 ? region.Name : "Unnamed"; },
-					  (region) => { return ((uint)region.Id).ToString(); });
+			WriteEnum("MapId", " : uint", "World", World.MapTemplates,
+					  (map) => { return true; },
+					  (map) => { return map.Name.Trim().Length > 0 ? map.Name : "Unnamed"; },
+					  (map) => { return ((uint)map.Id).ToString(); });
 		}
 
 		public static void WriteTalentEnums()
@@ -387,7 +389,7 @@ namespace WCell.Tools.Domi
 
 				foreach (var spells in map.Values)
 				{
-					list.Add(SpellLine.GetSpellLineName(spells.First()));
+					list.Add(SpellLineWriter.GetSpellLineName(spells.First()));
 				}
 			}
 
@@ -402,8 +404,8 @@ namespace WCell.Tools.Domi
 
 		public static void WriteSpellId()
 		{
-			RealmDBUtil.Initialize();
-			ContentHandler.Initialize();
+			RealmDBMgr.Initialize();
+			ContentMgr.Initialize();
 			World.InitializeWorld();
 			SpellHandler.LoadSpells();
 			FactionMgr.Initialize();
@@ -491,7 +493,7 @@ namespace WCell.Tools.Domi
 		public static void WriteRangeEnum()
 		{
 			var ranges = new MappedDBCReader<DistanceEntry, DistanceConverter>(
-				RealmServerConfiguration.GetDBCFile("SpellRange.dbc"));
+                RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLRANGE));
 
 			WriteEnum("Range", " : uint", "Spells", ranges.Entries.Values,
 					  (entry) => { return entry.Distance == (int)entry.Distance; },
@@ -589,47 +591,7 @@ namespace WCell.Tools.Domi
 							throw new Exception(string.Format("Name for Item {0} in {1}/{2} was null.", item, group, enumName));
 						}
 
-						name = name.
-							Replace("'s", "s").
-							Replace("%", "Percent");
-
-						var parts = Regex.Split(name, @"\s+|[^\w\d_]+", RegexOptions.None);
-
-						for (int i = 0; i < parts.Length; i++)
-						{
-							string part = parts[i];
-							if (part.Length == 0)
-							{
-								continue;
-							}
-							//if (part.Length > 1) {
-							//    part = part.ToLower();
-							string firstChar = part[0] + "";
-							part = firstChar.ToUpper() + part.Substring(1);
-							//}
-							//else {
-							//    part = part.ToUpper();
-							//}
-
-							parts[i] = part;
-						}
-
-						name = string.Join("", parts);
-
-						// don't allow digits at the start
-						Match numMatch = NumRegex.Match(name);
-						if (numMatch.Success)
-						{
-							string num = GetNumString(numMatch.Value);
-							if (name.Length > num.Length)
-							{
-								name = num + name.Substring(numMatch.Value.Length, 1).ToUpper() + name.Substring(numMatch.Value.Length + 1);
-							}
-							else
-							{
-								name = num;
-							}
-						}
+						name = BeautifyName(name);
 
 						int count;
 						if (!names.TryGetValue(name, out count))
@@ -825,5 +787,50 @@ namespace WCell.Tools.Domi
 		#endregion
 
 		#endregion
+
+		public static string BeautifyName(string name)
+		{
+			name = name.Replace("'s", "s").
+						Replace("%", "Percent");
+
+			var parts = Regex.Split(name, @"\s+|[^\w\d_]+", RegexOptions.None);
+
+			for (int i = 0; i < parts.Length; i++)
+			{
+				string part = parts[i];
+				if (part.Length == 0)
+				{
+					continue;
+				}
+				//if (part.Length > 1) {
+				//    part = part.ToLower();
+				string firstChar = part[0] + "";
+				part = firstChar.ToUpper() + part.Substring(1);
+				//}
+				//else {
+				//    part = part.ToUpper();
+				//}
+
+				parts[i] = part;
+			}
+
+			name = string.Join("", parts);
+
+			// don't allow digits at the start
+			Match numMatch = NumRegex.Match(name);
+			if (numMatch.Success)
+			{
+				string num = GetNumString(numMatch.Value);
+				if (name.Length > num.Length)
+				{
+					name = num + name.Substring(numMatch.Value.Length, 1).ToUpper() + name.Substring(numMatch.Value.Length + 1);
+				}
+				else
+				{
+					name = num;
+				}
+			}
+			return name;
+		}
 	}
 }

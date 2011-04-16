@@ -141,6 +141,7 @@
       <DependentUpon>Cell.Core.resx</DependentUpon>
     </Compile>
     <Compile Include="Localization\Resources.cs" />
+    <Compile Include="NetworkUtil.cs" />
     <Compile Include="ObjectPool.cs" />
     <Compile Include="zzObjectPoolMgr.cs" />
     <Compile Include="SegmentStream.cs" />

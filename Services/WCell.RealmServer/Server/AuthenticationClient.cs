@@ -20,7 +20,8 @@ using System.Threading;
 using NLog;
 using WCell.Core.Timers;
 using WCell.Intercommunication.Client;
-using WCell.RealmServer.Localization;
+using WCell.RealmServer.Lang;
+using WCell.RealmServer.Res;
 using WCell.Util;
 using WCell.Util.NLog;
 using WCell.Util.Variables;
@@ -35,9 +36,6 @@ namespace WCell.RealmServer.Server
 	{
 		protected static Logger log = LogManager.GetCurrentClassLogger();
 
-		[Variable("IPCReconnectInterval")]
-		public static int ReconnectInterval = 5;
-
 		[Variable("IPCUpdateInterval")]
 		public static int UpdateInterval = 5;
 
@@ -48,14 +46,16 @@ namespace WCell.RealmServer.Server
 		private readonly NetTcpBinding binding;
 		private DateTime lastUpdate;
 
+		private bool m_warned;
+		private string m_warnInfo;
+
 		/// <summary>
 		/// Initializes this Authentication Client
 		/// </summary>
 		public AuthenticationClient()
 		{
 			m_IsRunning = true;
-			binding = new NetTcpBinding();
-			binding.Security.Mode = SecurityMode.None;
+			binding = new NetTcpBinding {Security = {Mode = SecurityMode.None}};
 		}
 
 		/// <summary>
@@ -96,19 +96,25 @@ namespace WCell.RealmServer.Server
             internal set;
         }
 
+		/// <summary>
+		/// Notifies the conection maintenance to be re-scheduled immediately. 
+		/// Does not wait for the reconnect attempt to start or finish.
+		/// </summary>
 		public void ForceUpdate()
 		{
 			// little trick to force an update
+			RearmDisconnectWarning();
 			lastUpdate = DateTime.Now - TimeSpan.FromSeconds(UpdateInterval);
 		}
 
 		public void StartConnect(string netAddr)
 		{
+			RearmDisconnectWarning();
 			m_netAddr = netAddr;
 			m_IsRunning = true;
 			if (lastUpdate == default(DateTime))
 			{
-				RealmServer.Instance.RegisterUpdatable(new SimpleUpdatable(MaintainConnectionCallback));
+				RealmServer.IOQueue.RegisterUpdatable(new SimpleUpdatable(MaintainConnectionCallback));
 				lastUpdate = DateTime.Now;
 			}
 		}
@@ -118,7 +124,13 @@ namespace WCell.RealmServer.Server
 		/// </summary>
 		protected bool Connect()
 		{
-			RealmServer.Instance.EnsureContext();
+			if (!m_warned)
+			{
+				AddDisconnectWarningToTitle();
+				log.Info(Resources.ConnectingToAuthServer);
+			}
+
+			RealmServer.IOQueue.EnsureContext();
 
 			Disconnect(true);
 			
@@ -140,19 +152,24 @@ namespace WCell.RealmServer.Server
 			{
 				m_ClientProxy = null;
 
-				if (!(e is EndpointNotFoundException))
+				if (e is EndpointNotFoundException)
 				{
-                    LogUtil.ErrorException(e, Resources.IPCProxyFailedException, ReconnectInterval);
+					if (!m_warned)
+					{
+						log.Error(Resources.IPCProxyFailed, UpdateInterval);
+						m_warned = true;
+					}
 				}
 				else
 				{
-					log.Error(Resources.IPCProxyFailed, ReconnectInterval);
+					LogUtil.ErrorException(e, Resources.IPCProxyFailedException, UpdateInterval);
 				}
 				conn = false;
 			}
 
 			if (conn)
 			{
+				RearmDisconnectWarning();
 				var evt = Connected;
 				if (evt != null)
 				{
@@ -161,7 +178,7 @@ namespace WCell.RealmServer.Server
 			}
 			else
 			{
-				Reconnect();
+				ScheduleReconnect();
 			}
 			return conn;
 		}
@@ -171,16 +188,16 @@ namespace WCell.RealmServer.Server
 			if (ex is CommunicationException)
 			{
 				// Connection got interrupted
-				log.Warn("Lost connection to AuthServer. Trying to reconnect in {0}...", ReconnectInterval);
+				log.Warn("Lost connection to AuthServer. Scheduling reconnection attempt...");
 			}
 			else
 			{
 				LogUtil.ErrorException(ex, Resources.CommunicationException);
 			}
-			Reconnect();
+			ScheduleReconnect();
 		}
 
-		protected void Reconnect()
+		protected void ScheduleReconnect()
 		{
 			Disconnect(false);
 		}
@@ -205,10 +222,9 @@ namespace WCell.RealmServer.Server
 				{
 					if (!RealmServer.Instance.IsRunning)
 					{
+						RearmDisconnectWarning();
 						return;
 					}
-
-					log.Info(Resources.ResetIPCConnection);
 
 					if (Connect())
 					{
@@ -231,12 +247,13 @@ namespace WCell.RealmServer.Server
 
 		protected void Disconnect(bool notify)
 		{
-			RealmServer.Instance.EnsureContext();
+			RealmServer.IOQueue.EnsureContext();
 
 			if (m_ClientProxy != null &&
 				m_ClientProxy.State != CommunicationState.Closed &&
 			    m_ClientProxy.State != CommunicationState.Closing)
 			{
+				AddDisconnectWarningToTitle();
 				try
 				{
 					if (notify && m_ClientProxy.State == CommunicationState.Opened)
@@ -261,6 +278,22 @@ namespace WCell.RealmServer.Server
 				{
 					evt(this, null);
 				}
+			}
+		}
+
+		void AddDisconnectWarningToTitle()
+		{
+			m_warnInfo = " - ######### " + RealmLocalizer.Instance.Translate(RealmLangKey.NotConnectedToAuthServer).ToUpper() + " #########";
+			Console.Title += m_warnInfo;
+		}
+
+		void RearmDisconnectWarning()
+		{
+			m_warned = false;
+			if (m_warnInfo != null)
+			{
+				Console.Title = Console.Title.Replace(m_warnInfo, "");
+				m_warnInfo = null;	
 			}
 		}
 	}

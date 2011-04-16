@@ -73,7 +73,7 @@ namespace WCell.RealmServer
 
 		public static bool IsValid(this IWorldLocation location)
 		{
-			return location.Position.X != 0 && location.Region != null;
+			return location.Position.X != 0 && location.Map != null && location.Phase != 0;
 		}
 
 		public static void AddChecked(this XElement element, string name, int value)
@@ -247,12 +247,12 @@ namespace WCell.RealmServer
 
 		public static float GetDistSq(this IHasPosition pos, IHasPosition pos2)
 		{
-			return pos.Position.GetDistanceSquared(pos2.Position);
+			return pos.Position.DistanceSquared(pos2.Position);
 		}
 
 		public static float GetDistSq(this IHasPosition pos, Vector3 pos2)
 		{
-			return pos.Position.GetDistanceSquared(pos2);
+			return pos.Position.DistanceSquared(pos2);
 		}
     }
 }

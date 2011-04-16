@@ -1,3 +1,4 @@
+using WCell.Constants.Items;
 using WCell.Constants.Skills;
 
 namespace WCell.RealmServer.Items
@@ -13,6 +14,12 @@ namespace WCell.RealmServer.Items
 		DamageInfo[] Damages
 		{
 			get;
+		}
+
+		int BonusDamage
+		{
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -59,6 +66,14 @@ namespace WCell.RealmServer.Items
 		/// The time in millis between 2 attacks
 		/// </summary>
 		int AttackTime
+		{
+			get;
+		}
+
+		/// <summary>
+		/// The type of weapon
+		/// </summary>
+		InventorySlotTypeMask InventorySlotMask
 		{
 			get;
 		}

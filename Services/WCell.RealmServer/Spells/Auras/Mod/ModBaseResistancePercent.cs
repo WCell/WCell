@@ -19,7 +19,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 {
 	public class ModBaseResistancePercentHandler : AuraEffectHandler
 	{
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			for (var i = 0; i < m_spellEffect.MiscBitSet.Length; i++)
 			{
@@ -28,12 +28,12 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			}
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			for (var i = 0; i < m_spellEffect.MiscBitSet.Length; i++)
 			{
 				var school = (DamageSchool)m_spellEffect.MiscBitSet[i];
-				m_aura.Auras.Owner.RemoveResistanceBuff(school, -EffectValue);
+				m_aura.Auras.Owner.RemoveResistanceBuff(school, EffectValue);
 			}
 		}
 	}

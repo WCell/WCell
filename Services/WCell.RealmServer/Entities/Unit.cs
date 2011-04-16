@@ -1,4 +1,4 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: Unit.cs
  *   copyright		: (C) The WCell Team
@@ -45,6 +45,7 @@ using WCell.Util.Graphics;
 using WCell.Util.NLog;
 using WCell.Constants.Chat;
 
+
 namespace WCell.RealmServer.Entities
 {
 	/// <summary>
@@ -61,27 +62,6 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public static uint MinStandStillDelay = 400;
 
-		/// <summary>
-		/// The default delay between 2 Regeneration ticks (for Health and the default Power) in seconds
-		/// </summary>
-		public static float RegenTickSeconds = 5.0f;
-
-		/// <summary>
-		/// The amount of milliseconds for the time of "Interrupted" power regen
-		/// See: http://www.wowwiki.com/Formulas:Mana_Regen#Five_Second_Rule
-		/// </summary>
-		public static uint PowerRegenInterruptedCooldown = 5000;
-
-
-		public static int PowerRegenInterruptedPct = 25;
-
-		/// <summary>
-		/// The delay between the last hostile activity and until
-		/// the Unit officially leaves Combat-mode in millis.
-		/// Mostly effects Characters.
-		/// </summary>
-		public static int CombatDeactivationDelay = 5000;
-
 		public static readonly UpdateFieldCollection UpdateFieldInfos = UpdateFieldMgr.Get(ObjectTypeId.Unit);
 
 		protected override UpdateFieldCollection _UpdateFieldInfos
@@ -93,20 +73,15 @@ namespace WCell.RealmServer.Entities
 		protected IBrain m_brain;
 		protected Faction m_faction;
 		protected SpellCollection m_spells;
+		protected AuraCollection m_auras;
 		protected int m_comboPoints;
 		protected Unit m_comboTarget;
-		protected AuraCollection m_auras;
 		protected ulong m_auraUpdateMask;
 
 		/// <summary>
 		/// Indicates whether regeneration of Health and Power is currently activated
 		/// </summary>
 		protected bool m_regenerates;
-		/// <summary>
-		/// The delay in seconds between 2 Regeneration-ticks
-		/// </summary>
-		protected float m_RegenerationDelay;
-		protected TimerEntry m_regenTimer;
 
 		/// <summary>
 		/// Flat, school-specific PowerCostMods
@@ -119,6 +94,8 @@ namespace WCell.RealmServer.Entities
 		protected internal int m_lastMoveTime;
 
 		protected Unit m_FirstAttacker;
+
+		private Unit m_LastKiller;
 
 		protected bool m_IsPinnedDown;
 
@@ -135,12 +112,9 @@ namespace WCell.RealmServer.Entities
 		{
 			Type |= ObjectTypes.Unit;
 
-			// auras
-			m_auras = new AuraCollection(this);
-
 			// combat
 			m_isInCombat = false;
-			m_attackTimer = new TimerEntry(0.0f, 0.0f, CombatTick);
+			m_attackTimer = new TimerEntry(CombatTick);
 
 			CastSpeedFactor = 1f;
 
@@ -168,6 +142,22 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
+		/// The Unit that last killed this guy or null, if none or gone (is not reliable over time).
+		/// </summary>
+		public Unit LastKiller
+		{
+			get
+			{
+				if (!m_LastKiller.IsInWorld)
+				{
+					m_LastKiller = null;
+				}
+				return m_LastKiller;
+			}
+			internal set { m_LastKiller = value; }
+		}
+
+		/// <summary>
 		/// Whether this Unit is currently participating in PvP.
 		/// That is if both participants are players and/or belong to players.
 		/// </summary>
@@ -177,8 +167,8 @@ namespace WCell.RealmServer.Entities
 			{
 				return
 					m_FirstAttacker != null &&
-					IsPlayerControlled &&
-					m_FirstAttacker.IsPlayerControlled;
+					IsPlayerOwned &&
+					m_FirstAttacker.IsPlayerOwned;
 			}
 		}
 
@@ -202,7 +192,7 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// A collection of all Auras (buffs/debuffs) of this Unit
+		/// A collection of all Auras (talents/buffs/debuffs) of this Unit
 		/// </summary>
 		public AuraCollection Auras
 		{
@@ -307,31 +297,70 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
+		/// <summary>
+		/// Returns one of the arbitrary modifier values
+		/// </summary>
+		public int GetIntMod(StatModifierInt stat)
+		{
+			if (IntMods != null)
+			{
+				return IntMods[(int)stat];
+			}
+			return 0;
+		}
+
 		#region Death
 		public virtual bool IsAlive
 		{
 			get
 			{
-				return Health > 0;
-			}
-			set
-			{
-				MarkUpdate(UnitFields.DYNAMIC_FLAGS);
+				return IsInWorld && Health > 0;
 			}
 		}
 
+		/// <summary>
+		/// Whether this is a ghost
+		/// </summary>
 		public bool IsGhost
 		{
 			get { return m_auras.GhostAura != null; }
 		}
 
+		private uint m_DeathPrevention;
+
 		/// <summary>
-		/// Lets this Unit die - called when Health is smaller than 1.
-		/// Different from <see cref="Kill"/> which actively kills the Unit.
+		/// This is used to prevent this Unit from dying during a
+		/// critical process, such as damage application.
+		/// If health is at 0 this Unit won't "<see cref="Die"/>" until
+		/// DeathPrevention is set to 0 again. This prevents certain problems from happening.
 		/// </summary>
-		protected void Die()
+		protected internal uint DeathPrevention
 		{
-			if (!IsAlive)
+			get { return m_DeathPrevention; }
+			set
+			{
+				if (m_DeathPrevention != value)
+				{
+					m_DeathPrevention = value;
+					if (value == 0)
+					{
+						// disable death prevention
+						if (Health == 0)
+						{
+							Die(true);
+						}
+					}
+				}
+			}
+		}
+
+		/// <summary>
+        /// Different from <see cref="WCell.RealmServer.Entities.Unit.Kill()"/> which actively kills the Unit.
+		/// Is called when this Unit dies, i.e. Health gets smaller than 1.
+		/// </summary>
+		protected void Die(bool force)
+		{
+			if (force || !IsAlive)
 			{
 				return;
 			}
@@ -342,9 +371,15 @@ namespace WCell.RealmServer.Entities
 				return;
 			}
 
+			// set health to 0
 			SetUInt32(UnitFields.HEALTH, 0);
 
-			IsAlive = false;
+			// send quick update
+			MiscHandler.SendHealthUpdate(this, Health);
+
+			// mark this Unit to resend DynamicFlags
+			MarkUpdate(UnitFields.DYNAMIC_FLAGS);
+
 			Dismount();
 
 			var cast = m_spellCast;
@@ -356,9 +391,6 @@ namespace WCell.RealmServer.Entities
 					m_spellCast.Cancel(SpellFailedReason.Ok);
 				}
 			}
-
-			// exit combat mode etc
-			Target = null;
 
 			m_auras.RemoveWhere(aura => !aura.Spell.PersistsThroughDeath);
 
@@ -376,6 +408,9 @@ namespace WCell.RealmServer.Entities
 			}
 
 			OnDeath();
+
+			// exit combat mode etc
+			Target = null;
 		}
 
 		protected abstract bool OnBeforeDeath();
@@ -413,7 +448,9 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		internal protected virtual void OnResurrect()
 		{
-			IsAlive = true;
+			MiscHandler.SendHealthUpdate(this, Health);
+
+			MarkUpdate(UnitFields.DYNAMIC_FLAGS);
 		}
 
 		/// <summary>
@@ -423,7 +460,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		//public virtual Corpse SpawnCorpse(bool bones, bool lootable)
 		//{
-		//    return new Corpse(CasterInfo, m_region, m_position, m_orientation, DisplayId, 0, 0, 0, 0, 0, 0, Gender, Race,
+		//    return new Corpse(CasterInfo, m_map, m_position, m_orientation, DisplayId, 0, 0, 0, 0, 0, 0, Gender, Race,
 		//        bones ? CorpseFlags.Bones : CorpseFlags.None,
 		//        lootable ? CorpseDynamicFlags.PlayerLootable : CorpseDynamicFlags.None);
 		//}
@@ -450,7 +487,16 @@ namespace WCell.RealmServer.Entities
 				log.Warn("Invalid Mount Entry-Id {0} ({1})", mountEntry, (int)mountEntry);
 				return;
 			}
-			Mount(mount.DisplayIds[0]);
+			Mount(mount.DisplayIds.GetRandom());
+		}
+
+		public void Mount(NPCId mountId)
+		{
+			var mount = NPCMgr.GetEntry(mountId);
+			if (mount != null)
+			{
+				Mount(mount.DisplayIds.GetRandom());
+			}
 		}
 
 		/// <summary>
@@ -511,24 +557,19 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public bool Regenerates
 		{
-			get
-			{
-				return m_regenerates;
-			}
+			get{return m_regenerates;}
 			set
 			{
 				if (value != m_regenerates)
 				{
-					if (m_regenerates == value)
+					if (m_regenerates = value)
 					{
-						if (IsRegenerating)
-						{
-							m_regenTimer.Start();
-						}
+						this.UpdatePowerRegen();
+						UnitFlags2 |= UnitFlags2.RegeneratePower;
 					}
 					else
 					{
-						m_regenTimer.Stop();
+						UnitFlags2 ^= UnitFlags2.RegeneratePower;
 					}
 				}
 			}
@@ -540,30 +581,15 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// The delay between 2 Regeneration ticks in seconds.
-		/// </summary>
-		public float RegenerationDelay
-		{
-			get { return m_RegenerationDelay; }
-			set
-			{
-				if (m_RegenerationDelay != value && m_regenTimer != null)
-				{
-					m_RegenerationDelay = value;
-					m_regenTimer.Start();
-				}
-			}
-		}
-
-		/// <summary>
-		/// Mana regen is in the "interrupted" state for Spell-Casters 5 seconds after a SpellCast and during SpellChanneling
+		/// Mana regen is in the "interrupted" state for Spell-Casters 5 seconds after a SpellCast and during SpellChanneling.
+		/// See http://www.wowwiki.com/Mana_regeneration#Five-Second_Rule
 		/// </summary>
 		public bool IsManaRegenInterrupted
 		{
 			get
 			{
 				return PowerType == PowerType.Mana && m_spellCast != null &&
-					((Environment.TickCount - m_spellCast.StartTime) < PowerRegenInterruptedCooldown || m_spellCast.IsChanneling);
+					((Environment.TickCount - m_spellCast.StartTime) < RegenerationFormulas.PowerRegenInterruptedCooldown || m_spellCast.IsChanneling);
 			}
 		}
 
@@ -571,34 +597,39 @@ namespace WCell.RealmServer.Entities
 
 		/// <summary>
 		/// The amount of Power to add per regen-tick (while not being "interrupted").
-		/// Value is automatically set, depending on Spirit etc.
+		/// Value is automatically set, depending on Spirit
 		/// </summary>
 		public int PowerRegenPerTick
 		{
 			get { return m_PowerRegenPerTick; }
-			set
+			internal set
 			{
 				if (m_PowerRegenPerTick != value)
 				{
-					Power += 0;	// update Power before updating the regeneration
 					m_PowerRegenPerTick = value;
 					SetFloat(UnitFields.POWER_REGEN_FLAT_MODIFIER + (int)PowerType, value);
 				}
 			}
 		}
 
-		public float PowerRegenPerSecond
+		public float PowerRegenPerMillis
 		{
-			get { return m_PowerRegenPerTick / m_RegenerationDelay; }
+			get { return m_PowerRegenPerTick / (float)RegenerationFormulas.RegenTickDelayMillis; }
 		}
+
+		private int m_ManaRegenPerTickInterruptedPct;
 
 		/// <summary>
 		/// The precentage of power to be generated during combat per regen tick (while being "interrupted")
 		/// </summary>
 		public int ManaRegenPerTickInterruptedPct
 		{
-			get;
-			internal set;
+			get { return m_ManaRegenPerTickInterruptedPct; }
+			internal set
+			{
+				m_ManaRegenPerTickInterruptedPct = value;
+				this.UpdatePowerRegen();
+			}
 		}
 
 		/// <summary>
@@ -620,22 +651,9 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Initializes the regeneration-timers.
-		/// Gets called automatically for default NPCs.
-		/// </summary>
-		public void InitializeRegeneration()
-		{
-			this.UpdatePowerRegen();
-			m_RegenerationDelay = RegenTickSeconds;
-			m_regenTimer = new TimerEntry(0.0f, m_RegenerationDelay, Regen);
-			m_regenTimer.Start();
-			m_regenerates = true;
-		}
-
-		/// <summary>
 		/// Is called on Regeneration ticks
 		/// </summary>
-		protected void Regen(float timeElapsed)
+		protected void Regenerate(int dt)
 		{
 			if (!IsRegenerating)
 			{
@@ -668,20 +686,18 @@ namespace WCell.RealmServer.Entities
 			//    power = MathUtil.Divide(power * ManaRegenPerTickInterruptedPct, 100);
 			//}
 
-			// Power is interpolated automagically
 			// TODO: Find out when client is in interrupted mode
-			Power += 0;
 
-			//if (Health == MaxHealth)
-			//{
-			//    // done regenerating?
-			//    var negativeRegen = PowerRegenPerTick < 0;
-			//    if ((!negativeRegen && Power == MaxPower) ||
-			//        negativeRegen && Power == 0)
-			//        m_regenTimer.Stop();
-			//}
+
+			// Power is interpolated automagically
+		    this.UpdatePowerRegen();
+			UpdatePower(dt);
 		}
 
+		public virtual int GetBasePowerRegen()
+		{
+			return 0;
+		}
 		#endregion
 
 		#region Powers and Power costs
@@ -777,12 +793,9 @@ namespace WCell.RealmServer.Entities
 		#endregion
 
 		#region Healing & Leeching & Burning
-		/// <summary>
-		/// Heals and sends the corresponding animation
-		/// </summary>
-		public void Heal(int value)
+		public int GetHealthPercent(int value)
 		{
-			Heal(null, value, null);
+			return (value * MaxHealth + 50) / 100;
 		}
 
 		/// <summary>
@@ -791,22 +804,38 @@ namespace WCell.RealmServer.Entities
 		/// <param name="effect">The effect of the spell that triggered the healing (or null)</param>
 		/// <param name="healer">The object that heals this Unit (or null)</param>
 		/// <param name="value">The amount to be healed</param>
-		public void Heal(WorldObject healer, int value, SpellEffect effect)
+		public void HealPercent(int value, Unit healer = null, SpellEffect effect = null)
 		{
-			var critChance = 0f;
-			var crit = false;
+			Heal((value * MaxHealth + 50) / 100, healer, effect);
+		}
 
-			if (healer == null)
-			{
-				healer = this;
-			}
+		/// <summary>
+		/// Heals this unit and sends the corresponding animation (healer might be null)
+		/// </summary>
+		/// <param name="value">The amount to be healed</param>
+		/// <param name="healer">The object that heals this Unit (or null)</param>
+		/// <param name="effect">The effect of the spell that triggered the healing (or null)</param>
+		public void Heal(int value, Unit healer = null, SpellEffect effect = null)
+		{
+			var crit = false;
+			int overheal = 0;
 
 			if (effect != null)
 			{
 				var oldVal = value;
-				if (healer is Character)
+
+				if (healer != null)
 				{
-					value = ((Character)healer).AddHealingMods(value, effect, effect.Spell.Schools[0]);
+					if (effect.IsPeriodic)
+					{
+						// add periodic boni
+						value = healer.Auras.GetModifiedInt(SpellModifierType.PeriodicEffectValue, effect.Spell, value);
+					}
+					else
+					{
+						// add healing mods (spell power for healing)
+						value = healer.AddHealingModsToAction(value, effect, effect.Spell.Schools[0]);
+					}
 				}
 
 				if (this is Character)
@@ -814,16 +843,16 @@ namespace WCell.RealmServer.Entities
 					value += (int)((oldVal * ((Character)this).HealingTakenModPct) / 100);
 				}
 
-				critChance = GetSpellCritChance((DamageSchool)effect.Spell.SchoolMask) * 100;
+				var critChance = GetCritChance(effect.Spell.Schools[0]) * 100;
 
 				// do a critcheck
 				if (!effect.Spell.AttributesExB.HasFlag(SpellAttributesExB.CannotCrit) && critChance != 0)
 				{
-					var roll = Utility.Random(1f, 101);
+					var roll = Utility.Random(1f, 10001);
 
 					if (roll <= critChance)
 					{
-						value = (int)(value * SpellHandler.SpellCritBaseFactor);
+						value = (int)(value * (SpellHandler.SpellCritBaseFactor + GetIntMod(StatModifierInt.CriticalHealValuePct)));
 						crit = true;
 					}
 				}
@@ -831,19 +860,31 @@ namespace WCell.RealmServer.Entities
 
 			if (value > 0)
 			{
+				value = (int)(value * Utility.Random(0.95f, 1.05f));
 				if (Health + value > MaxHealth)
 				{
+					overheal = (Health + value) - MaxHealth;
 					value = (MaxHealth - Health);
 				}
-
-				CombatLogHandler.SendHealLog(healer, this, effect != null ? effect.Spell.Id : 0, value, crit);
-
 				Health += value;
+				value += overheal;
+				CombatLogHandler.SendHealLog(healer ?? this, this, effect != null ? effect.Spell.Id : 0, value, crit, overheal);
 			}
 
-			if (healer is Unit)
+			if (healer != null)
 			{
-				OnHeal((Unit)healer, effect, value);
+				var action = new HealAction
+				{
+					Attacker = healer,
+					Victim = this,
+					Spell = effect != null ? effect.Spell : null,
+					IsCritical = crit,
+					Value = value
+				};
+				healer.Proc(ProcTriggerFlags.HealOther, this, action, true);
+				Proc(ProcTriggerFlags.Heal, healer, action, false);
+
+				OnHeal(healer, effect, value);
 			}
 		}
 
@@ -854,8 +895,8 @@ namespace WCell.RealmServer.Entities
 		/// <param name="value">The amount of points healed</param>
 		protected virtual void OnHeal(Unit healer, SpellEffect effect, int value)
 		{
-			// TODO: Remove method and instead trigger region-wide event (a lot more efficient than this)
-			IterateEnvironment(40.0f, obj =>
+			// TODO: Remove method and instead trigger map-wide event (a lot more efficient than this)
+			this.IterateEnvironment(40.0f, obj =>
 			{
 				if (obj is Unit && ((Unit)obj).m_brain != null)
 				{
@@ -869,70 +910,67 @@ namespace WCell.RealmServer.Entities
 		/// Leeches the given amount of health from this Unit and adds it to the receiver (if receiver != null and is Unit).
 		/// </summary>
 		/// <param name="factor">The factor applied to the amount that was leeched before adding it to the receiver</param>
-		public void LeechHealth(WorldObject receiver, int amount, float factor, SpellEffect effect)
+		public void LeechHealth(Unit receiver, int amount, float factor, SpellEffect effect)
 		{
 			var initialHealth = Health;
 
-			DoSpellDamage(receiver != null ? receiver.Master : this, effect, amount);
+			DealSpellDamage(receiver != null ? receiver.Master : this, effect, amount);
 
 			// only apply as much as was leeched
 			amount = initialHealth - Health;
 
-			if (receiver is Unit)
+			if (factor > 0)
 			{
-				if (factor > 0)
-				{
-					amount = (int)(amount * factor);
-				}
+				amount = (int)(amount * factor);
+			}
 
-				((Unit)receiver).Heal(this, amount, effect);
+			if (receiver != null)
+			{
+				receiver.Heal(amount, this, effect);
 			}
 		}
-
 
 		/// <summary>
 		/// Restores Power and sends the corresponding Packet
 		/// </summary>
-		/// <param name="energizer"></param>
-		/// <param name="value"></param>
-		/// <param name="effect"></param>
-		public void Energize(WorldObject energizer, int value, SpellEffect effect)
+		public void EnergizePercent(int value, Unit energizer = null, SpellEffect effect = null)
 		{
-			if (value > 0)
-			{
-				if (Power + value > MaxPower)
-				{
-					value = MaxPower - Power;
-					Power = MaxPower;
-				}
+			Energize((value * MaxPower + 50) / 100, energizer, effect);
+		}
 
-				else
-				{
-					Power += value;
-				}
+		/// <summary>
+		/// Restores Power and sends the corresponding Packet
+		/// </summary>
+		public void Energize(int value, Unit energizer = null, SpellEffect effect = null)
+		{
+			if (value != 0)
+			{
+				var power = Power;
+
+				value = MathUtil.ClampMinMax(value, -power, MaxPower - value);
 
 				CombatLogHandler.SendEnergizeLog(energizer, this, effect != null ? effect.Spell.Id : 0, PowerType, value);
+				Power = power + value;
 			}
 		}
 
 		/// <summary>
 		/// Leeches the given amount of power from this Unit and adds it to the receiver (if receiver != null and is Unit).
 		/// </summary>
-		public void LeechPower(WorldObject receiver, int amount, float factor, SpellEffect effect)
+		public void LeechPower(int amount, float factor = 1, Unit receiver = null, SpellEffect effect = null)
 		{
 			var currentPower = Power;
 
 			// Resilience reduces mana drain by 2.2%, amount is rounded.
-			amount -= (amount * GetResiliencePct() * 2.2f).RoundInt();
+			amount -= MathUtil.RoundInt(amount * GetResiliencePct() * 2.2f);
 			if (amount > currentPower)
 			{
 				amount = currentPower;
 			}
 			Power = currentPower - amount;
-
-			if (receiver is Unit)
+			if (receiver != null)
 			{
-				((Unit)receiver).Energize(this, amount, effect);
+				receiver.Energize(amount, this, effect);
 			}
 		}
 
@@ -940,27 +978,27 @@ namespace WCell.RealmServer.Entities
 		/// Drains the given amount of power and applies damage for it
 		/// </summary>
 		/// <param name="dmgTyp">The type of the damage applied</param>
-		public void BurnPower(WorldObject attacker, SpellEffect effect, DamageSchool dmgTyp, int amount, float factor)
+		/// <param name="dmgFactor">The factor to be applied to amount for the damage to be received by this unit</param>
+		public void BurnPower(int amount, float dmgFactor = 1, Unit attacker = null, SpellEffect effect = null)
 		{
 			int currentPower = Power;
 
 			// Resilience reduces mana drain by 2.2%, amount is rounded.
-			amount -= (amount * GetResiliencePct() * 2.2f).RoundInt();
+			amount -= MathUtil.RoundInt(amount * GetResiliencePct() * 2.2f);
 			if (amount > currentPower)
 			{
 				amount = currentPower;
 			}
 			Power = currentPower - amount;
 
-			DoSpellDamage(attacker.Master, effect, (int)(amount * factor));
+			DealSpellDamage(attacker, effect, (int)(amount * dmgFactor));
 		}
 		#endregion
 
 		#region Movement Handling
-		internal protected override void OnEnterRegion()
+		internal protected override void OnEnterMap()
 		{
 			m_lastMoveTime = Environment.TickCount;
-			m_lastPowerUpdate = m_lastHealthUpdate = Region.CurrentTime;
 
 			if (Flying > 0)
 			{
@@ -1021,7 +1059,7 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Makes this Unit move their face towards the given location
+		/// Makes this Unit look at the given location
 		/// </summary>
 		public void Face(Vector3 pos)
 		{
@@ -1046,34 +1084,58 @@ namespace WCell.RealmServer.Entities
 		/// Checks whether this Unit can currently see the given obj
 		/// 
 		/// TODO: Higher staff ranks can always see lower staff ranks (too bad there are no ranks)
-		/// TODO: Stealth detection
+		/// TODO: Line of Sight
 		/// </summary>
 		public override bool CanSee(WorldObject obj)
 		{
-			if (!base.CanSee(obj))
+			if (!base.CanSee(obj) || !obj.IsInWorld)
 			{
 				return false;
 			}
 
-			if (!obj.IsInWorld)
+			if (this == obj)			// one can always see oneself
+			{
+				return true;
+			}
+
+			// check for visibility overrides
+			var visibility = obj.DetermineVisibilityFor(this);
+			if (visibility == VisibilityStatus.Invisible)
 			{
 				return false;
 			}
+			if (visibility == VisibilityStatus.Visible)
+			{
+				return true;
+			}
 
-			if (this == obj ||												// one can always see oneself		
-				(this is Character && ((Character)this).Role.IsStaff &&
-				(!(obj is Character) || ((Character)obj).Role < ((Character)this).Role)))
-			{	// GMs see everything (just don't display the Spirit Healer to the living - because it is too confusing)
+			if (this is Character && ((Character)this).Role.IsStaff && (!(obj is Character) || ((Character)obj).Role < ((Character)this).Role))
+			{	
+				// GMs see everything (just don't display the Spirit Healer to the living - because it is too confusing)
 				return !(obj is Unit) || !((Unit)obj).IsSpiritHealer || !IsAlive;
 			}
 
 			if (!(obj is Unit))
 			{
 				// Object
-				return base.CanSee(obj);
+				return true;
 			}
 
-			var unit = obj as Unit;
+			// Unit
+			var unit = (Unit)obj;
+			if (IsGhost)
+			{
+				// dead can only see the dead and those near their corpse!
+				if (this is Character)
+				{
+					var corpse = ((Character)this).Corpse;
+					if (corpse != null)
+					{
+						return unit.IsInRadiusSq(corpse, Corpse.GhostVisibilityRadiusSq);
+					}
+				}
+				return false;
+			}
 
 			if (obj is Character)
 			{
@@ -1098,37 +1160,63 @@ namespace WCell.RealmServer.Entities
 				return IsGhost;
 			}
 
-			if (IsGhost)
-			{
-				// dead can only see the dead and those occupying their corpse!
-				if (unit.IsGhost)
-				{
-					return true;
-				}
-				if (this is Character)
-				{
-					var corpse = ((Character)this).Corpse;
-					if (corpse != null)
-					{
-						return unit.IsInRadiusSq(corpse, Corpse.GhostVisibilityRadiusSq);
-					}
-				}
-				return false;
-			}
+			return HandleStealthDetection(unit);	
 
+		}
+		public bool HandleStealthDetection(Unit unit)
+		{
 			var val = unit.Stealthed;
 			if (val > 0)
 			{
 				// stealthed Unit
 				// TODO: Calc detection, based on Stealth value, boni, detection, detection boni, distance and viewing angle
+
+				//if we are stunned we don't see anything
+				if ((this.UnitFlags & UnitFlags.Stunned) != 0)
+					return false;
+
+				//he's so close we can allready touch him
+				if (GetDistance(unit.Position) <= 0.24f)
+					return true;
+
+				//he's behind us, we can't see him
+				if (!unit.IsInFrontOf(this))
+					return false;
+
+				bool HasStealthDetection = false;
+				
+				//check if we have a stealth detection aura
+				if (Auras.GetTotalAuraModifier(AuraType.Aura_228) > 0)
+					HasStealthDetection = true;
+
+				float visibleDistance;
+				//we have no stealth detection so check how stealthy he is
+				if (!HasStealthDetection)
+				{
+					visibleDistance = 10.5f - (((float)unit.Stealthed) / 100.0f);
+					// -1.0f per level diff
+					visibleDistance += Level - unit.Level;
+
+					//ModStealthLevel -> auras that increase his stealth
+					var stealthMod = Auras.GetTotalAuraModifier(AuraType.ModStealthLevel);
+					if (stealthMod < 0)
+						stealthMod = 0;
+					//ModDetect -> auras that we have that decrease his stealth
+					//every 5 mod he can get closer by 1.0f 
+					var DetectMod = Auras.GetTotalAuraModifier(AuraType.ModDetect, 0);
+					visibleDistance -= ((DetectMod - stealthMod) / 5.0f);
+					visibleDistance = visibleDistance > 45.0f ? 45.0f : visibleDistance;
+
+					//we see you!
+					if (GetDistance(unit.Position) <= visibleDistance)
+						return true;
+				}
+				else
+					return true;
+
 				return false;
 			}
-
 			return true;
-		}
-
-		public void OnStealth()
-		{
 		}
 		#endregion
 
@@ -1201,7 +1289,7 @@ namespace WCell.RealmServer.Entities
 					LogUtil.ErrorException(new InvalidOperationException("Character was already disposed when pinning down: " + this), true);
 					return;
 				}
-				m_region.EnsureContext();
+				m_Map.EnsureContext();
 
 				if (m_IsPinnedDown != value)
 				{
@@ -1243,7 +1331,7 @@ namespace WCell.RealmServer.Entities
 
 			//taxi interpolation timer
 			taxiTime = 0;
-			m_TaxiMovementTimer = new TimerEntry(0, TaxiMgr.InterpolationDelay, TaxiTimerCallback);
+			m_TaxiMovementTimer = new TimerEntry(0, TaxiMgr.InterpolationDelayMillis, TaxiTimerCallback);
 			m_TaxiMovementTimer.Start();
 			IsEvading = true;
 		}
@@ -1268,7 +1356,7 @@ namespace WCell.RealmServer.Entities
 			get { return taxiTime; }
 		}
 
-		protected virtual void TaxiTimerCallback(float elapsedTime)
+		protected virtual void TaxiTimerCallback(int elapsedTime)
 		{
 			// if (!IsOnTaxi) return;
 			// if (TaxiPaths.Count < 1) return;
@@ -1367,36 +1455,27 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// All spells known to this unit.
 		/// Could be null for NPCs that are not spell-casters (check with <see cref="HasSpells"/>).
-		/// Use <see cref="NPC.NPCSpells"/> or <see cref="EnsureSpells"/> to enforce a SpellCollection.
+		/// Use <see cref="NPC.NPCSpells"/> to enforce a SpellCollection.
 		/// </summary>
 		public virtual SpellCollection Spells
 		{
 			get { return m_spells; }
 		}
 
-		public SpellCollection EnsureSpells()
-		{
-			if (!HasSpells && this is NPC)
-			{
-				m_spells = new NPCSpellCollection((NPC)this);
-			}
-			return m_spells;
-		}
-
 		public bool HasEnoughPowerToCast(Spell spell, WorldObject selected)
 		{
-			if (!spell.CostsMana)
+			if (!spell.CostsPower)
 			{
 				return true;
 			}
 			if (selected is Unit)
 			{
-				return Power >= spell.CalcPowerCost(this, ((Unit)selected).GetLeastResistant(spell), spell, spell.PowerType);
+				return Power >= spell.CalcPowerCost(this, ((Unit)selected).GetLeastResistantSchool(spell));
 			}
-			return Power >= spell.CalcPowerCost(this, spell.Schools[0], spell, spell.PowerType);
+			return Power >= spell.CalcPowerCost(this, spell.Schools[0]);
 		}
 
-		public DamageSchool GetLeastResistant(Spell spell)
+		public DamageSchool GetLeastResistantSchool(Spell spell)
 		{
 			if (spell.Schools.Length == 1)
 			{
@@ -1459,7 +1538,7 @@ namespace WCell.RealmServer.Entities
 			var minion = entry.Create();
 			minion.Phase = Phase;
 			minion.Zone = Zone;
-			minion.RemainingDecayDelay = durationMillis;
+			minion.RemainingDecayDelayMillis = durationMillis;
 			minion.Brain.IsRunning = true;
 
 			if (Health > 0)
@@ -1481,7 +1560,7 @@ namespace WCell.RealmServer.Entities
 			//return SpawnMinion(entry, summonSpell, ref position, durationMillis != 0 ? DateTime.Now.AddMilliseconds(durationMillis) : (DateTime?)null);
 			var minion = CreateMinion(entry, durationMillis);
 			minion.Position = position;
-			m_region.AddObjectLater(minion);
+			m_Map.AddObjectLater(minion);
 			return minion;
 		}
 
@@ -1498,13 +1577,13 @@ namespace WCell.RealmServer.Entities
 			minion.Master = this;
 
 			var type = minion.Entry.Type;
-			if (type != NPCType.None && type != NPCType.NotSpecified)
+			if (type != CreatureType.None && type != CreatureType.NotSpecified)
 			{
-				if (type == NPCType.NonCombatPet)
+				if (type == CreatureType.NonCombatPet)
 				{
 					minion.Brain.DefaultState = BrainState.Follow;
 				}
-				else if (type == NPCType.Totem)
+				else if (type == CreatureType.Totem)
 				{
 					// can't move
 					minion.Brain.DefaultState = BrainState.Roam;
@@ -1520,7 +1599,7 @@ namespace WCell.RealmServer.Entities
 			if (durationMillis != 0)
 			{
 				// ReSharper disable PossibleLossOfFraction
-				minion.RemainingDecayDelay = durationMillis / 1000;
+				minion.RemainingDecayDelayMillis = durationMillis;
 				// ReSharper restore PossibleLossOfFraction
 			}
 		}
@@ -1529,11 +1608,11 @@ namespace WCell.RealmServer.Entities
 		{
 		}
 
-		internal protected virtual void OnMinionEnteredRegion(NPC minion)
+		internal protected virtual void OnMinionEnteredMap(NPC minion)
 		{
 		}
 
-		internal protected virtual void OnMinionLeftRegion(NPC minion)
+		internal protected virtual void OnMinionLeftMap(NPC minion)
 		{
 		}
 		#endregion
@@ -1547,6 +1626,44 @@ namespace WCell.RealmServer.Entities
 		public List<IProcHandler> ProcHandlers
 		{
 			get { return m_procHandlers; }
+		}
+
+		public IProcHandler GetProcHandler(Func<IProcHandler, bool> predicate)
+		{
+			if (m_procHandlers != null)
+			{
+				foreach (var handler in m_procHandlers)
+				{
+					if (predicate(handler))
+					{
+						return handler;
+					}
+				}
+			}
+			return null;
+		}
+
+		/// <summary>
+		/// Returns the first proc handler of the given type
+		/// </summary>
+		public T GetProcHandler<T>() where T : IProcHandler
+		{
+			if (m_procHandlers != null)
+			{
+				foreach (var handler in m_procHandlers)
+				{
+					if (handler is T)
+					{
+						return (T)handler;
+					}
+				}
+			}
+			return default(T);
+		}
+
+		public void AddProcHandler(ProcHandlerTemplate templ)
+		{
+			AddProcHandler(new ProcHandler(this, this, templ));
 		}
 
 		public void AddProcHandler(IProcHandler handler)
@@ -1566,6 +1683,9 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
+		/// <summary>
+		/// Remnoves the first proc that triggers the given spell
+		/// </summary>
 		public void RemoveProcHandler(SpellId procId)
 		{
 			if (m_procHandlers != null)
@@ -1583,11 +1703,32 @@ namespace WCell.RealmServer.Entities
 
 		public void RemoveProcHandler(Func<IProcHandler, bool> predicate)
 		{
+			var handler = GetProcHandler(predicate);
+			if (handler != null)
+			{
+				m_procHandlers.Remove(handler);
+			}
+		}
+
+		public void RemoveProcHandler<T>() where T : IProcHandler
+		{
+			var handler = GetProcHandler<T>();
+			if (handler != null)
+			{
+				m_procHandlers.Remove(handler);
+			}
+		}
+
+		/// <summary>
+		/// Removes the first custom ProcHandler that uses the given template.
+		/// </summary>
+		public void RemoveProcHandler(ProcHandlerTemplate template)
+		{
 			if (m_procHandlers != null)
 			{
 				foreach (var handler in m_procHandlers)
 				{
-					if (predicate(handler))
+					if (handler is ProcHandler && ((ProcHandler)handler).Template == template)
 					{
 						m_procHandlers.Remove(handler);
 						break;
@@ -1613,7 +1754,7 @@ namespace WCell.RealmServer.Entities
 				return;
 			}
 
-			if (flags == ProcTriggerFlags.None)
+			if (flags == ProcTriggerFlags.None) // || !action.CanProc)
 			{
 				return;
 			}
@@ -1627,20 +1768,35 @@ namespace WCell.RealmServer.Entities
 			var now = DateTime.Now;
 			for (var i = m_procHandlers.Count - 1; i >= 0; i--)	// need to reverse iteration because procs can be removed in the process
 			{
+				if (i >= m_procHandlers.Count)
+				{
+					// In case that the list was changed during iteration
+					continue;
+				}
 				var proc = m_procHandlers[i];
 				if (proc.NextProcTime <= now &&
 					proc.ProcTriggerFlags.HasAnyFlag(flags) &&
 					proc.CanBeTriggeredBy(triggerer, action, active))
 				{
-					if (proc.ProcChance <= 0 || Utility.Random(0, 101) <= proc.ProcChance)
+					var chance = (int)proc.ProcChance;
+					if (chance > 0 && action.Spell != null)
+					{
+						chance = Auras.GetModifiedInt(SpellModifierType.ProcChance, action.Spell, chance);
+					}
+
+					if (proc.ProcChance <= 0 || Utility.Random(0, 101) <= chance)
 					{
 						var charges = proc.StackCount;
 						proc.TriggerProc(triggerer, action);
-						proc.NextProcTime = now.AddMilliseconds(proc.MinProcDelay);
+						if (proc.MinProcDelay > 0)
+						{
+							proc.NextProcTime = now.AddMilliseconds(proc.MinProcDelay);
+						}
 
 						if (charges > 0 && proc.StackCount == 0)
 						{
 							proc.Dispose();
+							//proc.NextProcTime = DateTime.MaxValue;	// won't be proc'ed again
 						}
 					}
 				}
@@ -1670,8 +1826,22 @@ namespace WCell.RealmServer.Entities
 				}
 				else
 				{
-					NPCFlags ^= NPCFlags.Gossip;
+					NPCFlags &= ~NPCFlags.Gossip;
 				}
+			}
+		}
+		#endregion
+
+		#region Affinity
+		/// <summary>
+		/// Is called when Master / Faction has changed and this Unit now has a different circle of friends
+		/// </summary>
+		protected virtual void OnAffinityChanged()
+		{
+			if (IsPlayerOwned)
+			{
+				// whenever we change affinity: Remove Auras of everyone but ourselves
+				m_auras.RemoveOthersAuras();
 			}
 		}
 		#endregion
@@ -1694,40 +1864,36 @@ namespace WCell.RealmServer.Entities
 			base.Dispose(disposing);
 
 			m_attackTimer = null;
-
-			if (m_target != null)
-			{
-				OnTargetNull();
-				m_target = null;
-			}
-
-			m_regenTimer.Dispose();
+			m_target = null;
 
 			if (m_brain != null)
 			{
 				m_brain.Dispose();
 				m_brain = null;
 			}
-
-			if (m_spells != null)
-			{
-				m_spells.Owner = null;
-				m_spells = null;
-			}
+			
+			m_spells.Recycle();
+			m_spells = null;
 
 			m_auras.Owner = null;
 			m_auras = null;
 
-			if (m_areaAura != null)
-			{
-				m_areaAura.Holder = null;
-				m_areaAura = null;
-			}
-
 			m_charm = null;
 			m_channeled = null;
 		}
+
 		#endregion
+
+		protected internal override void DeleteNow()
+		{
+			IsFighting = false;
+			if (m_brain != null)
+			{
+				m_brain.IsRunning = false;
+			}
+			Target = null;
+			base.DeleteNow();
+		}
 
 		protected virtual HighId HighId
 		{

@@ -90,34 +90,12 @@ namespace WCell.RealmServer.Looting
 				MultiLooters = new List<LooterEntry>();
 			}
 
-			var quests = Template.CollectQuests;
-
 			foreach (var looter in looters)
 			{
-				if (quests != null)
+				if (Template.CheckLootConstraints(looter.Owner))
 				{
-					var chr = looter.Owner;
-					if (chr == null)
-					{
-						continue;
-					}
-
-					var add = false;
-					for (var i = 0; i < quests.Length; i++)
-					{
-						var quest = quests[i];
-						if (chr.QuestLog.HasActiveQuest(quest.Id))
-						{
-							add = true;
-							break;
-						}
-					}
-					if (!add)
-					{
-						continue;
-					}
+					MultiLooters.Add(looter);
 				}
-				MultiLooters.Add(looter);
 			}
 		}
 
