@@ -805,7 +805,7 @@ namespace WCell.RealmServer.Handlers
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_SET_PLAYER_DECLINED_NAMES_RESULT, 9))
 			{
-				packet.Write(failed?1:0);
+				packet.Write(failed ? 1 : 0);
 				packet.Write(chr);
 				client.Send(packet);
 			}

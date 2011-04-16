@@ -192,6 +192,20 @@ namespace WCell.RealmServer.Entities
 				}
 			}
 		}
+
+        public bool IsAllowedLowLevelRaid
+        {
+            get { return PlayerFlags.HasFlag(PlayerFlags.AllowLowLevelRaid); }
+            set 
+            { 
+                if (value)
+                {
+                    PlayerFlags |= PlayerFlags.AllowLowLevelRaid;
+                    return;
+                }
+                PlayerFlags &= ~PlayerFlags.AllowLowLevelRaid;
+            }
+        }
 		#endregion
 
 		public uint GetInstanceDifficulty(bool isRaid)

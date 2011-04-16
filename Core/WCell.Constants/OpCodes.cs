@@ -1963,12 +1963,12 @@ namespace WCell.Constants
         /// pguid unitGuid
         /// int vehicleId (Vehicle.dbc)
         /// </summary>
-        SMSG_VEHICLE_1191 = 1191,
+        SMSG_PLAYER_VEHICLE_DATA = 1191,
         /// <summary>
         /// Activates a service? called from the same method that sends out other NPCFlag related "hello" opcodes
         /// guid
         /// </summary>
-        CMSG_1192 = 1192,
+        CMSG_PLAYER_VEHICLE_ENTER = 1192,
         /// <summary>
         /// guid passengerId
         /// </summary>
@@ -2009,7 +2009,7 @@ namespace WCell.Constants
         /// int
         /// int
         /// </summary>
-        SMSG_REFUND_UNKNOWN_1202 = 1202,
+        SMSG_ITEM_REFUND_INFO_RESPONSE = 1202,
         /// <summary>
         /// refund request?
         /// int64 guid
@@ -2019,7 +2019,7 @@ namespace WCell.Constants
         /// lua_ContainerRefundItemPurchase
         /// int64 itemGuid
         /// </summary>
-        CMSG_UNKNOWN_1204 = 1204, // prolly info request, somesort
+        CMSG_ITEM_REFUND = 1204, // prolly info request, somesort
         /// <summary>
         /// int64 itemGuid
         /// int response
@@ -2037,7 +2037,7 @@ namespace WCell.Constants
         ///     int tokenCount
         /// }
         /// </summary>
-        SMSG_REFUND_UNKNOWN_1205 = 1205,
+        SMSG_ITEM_REFUND_RESULT = 1205,
         /// <summary>
         /// int - same as new last int sent in MSG_CORPSE_QUERY (corpse low guid)
         /// </summary>
@@ -2063,8 +2063,8 @@ namespace WCell.Constants
         /// lua_CalendarContextEventSignUp
         /// int64
         /// </summary>
-        CMSG_CALENDAR_UNKNOWN_1210 = 1210,
-        SMSG_CALENDAR_UNKNOWN_1211 = 1211,
+        CMSG_CALENDAR_CONTEXT_EVENT_SIGNUP = 1210,
+        SMSG_CALENDAR_ACTION_PENDING = 1211,
         /// <summary>
         /// For equipment manager.
         /// int setCount
@@ -2109,7 +2109,7 @@ namespace WCell.Constants
         /// float
         /// float
         /// </summary>
-        SMSG_UNKNOWN_1215 = 1215,
+        SMSG_SET_PROJECTILE_POSITION = 1215,
         /// <summary>
         /// byte type - branches to 2 diff structs depending on this
         /// if (type == 1) // pet
@@ -2176,11 +2176,11 @@ namespace WCell.Constants
         /// battleground pet related
         /// only useful if the player is currently in an arena
         /// </summary>
-        SMSG_1223 = 1223,
+        SMSG_ARENA_OPPONENT_UPDATE = 1223,
         /// <summary>
         /// if != 0, broadcasts ERR_ARENA_TEAM_CHANGE_FAILED_QUEUED
         /// </summary>
-        SMSG_1224 = 1224, // int, used as a bool. 
+        SMSG_ARENA_TEAM_CHANGE_FAILED_QUEUED, // int, used as a bool. 
 
         UMSG_1225 = 1225, // not found in client 9733
         UMSG_1226 = 1226, // not found in client 9733
@@ -2215,8 +2215,8 @@ namespace WCell.Constants
         // manu unks...
         UMSG_UNKNOWN_1239 = 1239,
         SMSG_UNKNOWN_1240 = 1240,
-        CMSG_UNKNOWN_1241 = 1241,
-        SMSG_UNKNOWN_1242 = 1242,
+        CMSG_CHAR_FACTION_CHANGE = 1241,
+        SMSG_CHAR_FACTION_CHANGE = 1242,
         UMSG_UNKNOWN_1243 = 1243,
         UMSG_UNKNOWN_1244 = 1244,
         UMSG_UNKNOWN_1245 = 1245,
@@ -2236,17 +2236,17 @@ namespace WCell.Constants
         MSG_SET_RAID_DIFFICULTY = 1259,
         UMSG_UNKNOWN_1260 = 1260,
         SMSG_TOGGLE_XP_GAIN = 1261, // bg xp gain
-        SMSG_UNKNOWN_1262 = 1262,
-        SMSG_UNKNOWN_1263 = 1263,
-        CMSG_UNKNOWN_1264 = 1264,
-        SMSG_UNKNOWN_1265 = 1265,
+        SMSG_GMRESPONSE_DB_ERROR = 1262,
+        SMSG_GMRESPONSE_RECEIVED = 1263,
+        CMSG_GMRESPONSE_RESOLVE = 1264,
+        SMSG_GMRESPONSE_STATUS_UPDATE = 1265,
         UMSG_UNKNOWN_1266 = 1266,
         UMSG_UNKNOWN_1267 = 1267,
         UMSG_UNKNOWN_1268 = 1268,
         UMSG_UNKNOWN_1269 = 1269,
         CMSG_WORLD_STATE_UI_TIMER_UPDATE = 1270, // empty, just reply
         SMSG_WORLD_STATE_UI_TIMER_UPDATE = 1271, // ack ^
-        CMSG_UNKNOWN_1272 = 1272,
+        CMSG_CHAR_RACE_CHANGE = 1272,
 		CMSG_READY_FOR_ACCOUNT_DATA_TIMES = 1279,
 		SMSG_QUERY_QUESTS_COMPLETED = 1280,
 		SMSG_QUERY_QUESTS_COMPLETED_RESPONSE = 1281,
@@ -2254,10 +2254,10 @@ namespace WCell.Constants
         UMSG_UNKNOWN_1283 = 1283, // not found
         UMSG_UNKNOWN_1284 = 1284, // not found
         UMSG_UNKNOWN_1285 = 1285, // not found
-        SMSG_UNKNOWN_1286 = 1286, // ERR_CORPSE_IS_NOT_IN_INSTANCE = 0x1A8,
+        SMSG_CORPSE_IS_NOT_IN_INSTANCE = 1286, // ERR_CORPSE_IS_NOT_IN_INSTANCE = 0x1A8,
         UMSG_UNKNOWN_1287 = 1287, // not found
-        CMSG_UNKNOWN_1288 = 1288, // lua: SetAllowLowLevelRaid
-        CMSG_UNKNOWN_1289 = 1289, // lua: SetAllowLowLevelRaid
+        CMSG_SET_ALLOW_LOW_LEVEL_RAID1 = 1288, // lua: SetAllowLowLevelRaid
+        CMSG_SET_ALLOW_LOW_LEVEL_RAID2 = 1289, // lua: SetAllowLowLevelRaid
         SMSG_CAMERA_SHAKE = 1290, // uint32 SpellEffectCameraShakes.dbc index, uint32
         SMSG_UNKNOWN_1291 = 1291, // some item update packet?
         UMSG_UNKNOWN_1292 = 1292, // not found

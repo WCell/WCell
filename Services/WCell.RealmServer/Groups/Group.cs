@@ -59,6 +59,11 @@ namespace WCell.RealmServer.Groups
 		/// </summary>
 		public static float MaxKillRewardDistance = 100f;
 
+        /// <summary>
+        /// Minimun level to be invited in a raid
+        /// </summary>
+        public static int MinLevelToBeInvitedInRaid = 10;
+
 		protected const byte MinGroupMemberCount = 2;
 		protected const byte TargetIconCount = 8;
 
@@ -154,11 +159,11 @@ namespace WCell.RealmServer.Groups
 						{
 							if (Flags.HasFlag(GroupFlags.Raid))
 							{
-								InstanceHandler.SendDungeonDifficulty(member);
+								InstanceHandler.SendRaidDifficulty(member);
 							}
 							else
 							{
-								InstanceHandler.SendRaidDifficulty(member);
+								InstanceHandler.SendDungeonDifficulty(member);
 							}
 						}
 					}
@@ -808,6 +813,7 @@ namespace WCell.RealmServer.Groups
 			GroupResult err;
 			var inviterMember = inviter.GroupMember;
 			var group = inviterMember != null ? inviterMember.Group : null;
+            Character targetChar = World.GetCharacter(targetName, true);
 
 			if (group != null && group.IsFull)
 			{
@@ -821,8 +827,13 @@ namespace WCell.RealmServer.Groups
 				target = null;
 				err = GroupResult.DontHavePermission;
 			}
-			else
-			{
+            else if (group != null && group.Flags.HasFlag(GroupFlags.Raid) && targetChar != null && targetChar.IsAllowedLowLevelRaid && targetChar.Level < MinLevelToBeInvitedInRaid)
+            {
+                target = null;
+                err = GroupResult.RaidDisallowedByLevel;
+            }
+			else 
+            {
 				target = World.GetCharacter(targetName, false);
 				if (target == null || inviter == target ||
 					(target.Role.IsStaff && !inviter.Role.IsStaff))	// cannot invite staff members without authorization
@@ -952,10 +963,10 @@ namespace WCell.RealmServer.Groups
 							if (Flags.HasFlag(GroupFlags.LFD))		// since 3.3
 							{
 								packet.Write((byte)0);
-								packet.Write(0);
+								packet.Write(0u);
 							}
 							packet.Write(0x50000000FFFFFFFEul);
-							packet.Write(0);                        // since 3.3: Some kind of sequence id
+							packet.Write(0u);                        // since 3.3: Some kind of sequence id
 							packet.Write(CharacterCount - 1);
 
 							foreach (var memberSubGroup in m_subGroups)
@@ -996,8 +1007,7 @@ namespace WCell.RealmServer.Groups
 							}
 
 							packet.Write((byte)LootThreshold);
-							//packet.Write((byte)DungeonDifficulty); // normal
-							packet.Write((byte)0);    // replace with ^
+							packet.Write((byte)DungeonDifficulty); // normal
 							packet.Write((byte)0);    // since 3.3: Raid difficulty
 							packet.Write((byte)0);    // 3.3, dynamic difficulty?
 
