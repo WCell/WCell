@@ -258,7 +258,7 @@ namespace WCell.RealmServer.Handlers
 +    data.put<uint32>(0, count);
 +    SendPacket(&data);
 +}*/
-		[ClientPacketHandler(RealmServerOpCode.SMSG_QUERY_QUESTS_COMPLETED)]
+		[ClientPacketHandler(RealmServerOpCode.SMSG_QUERY_QUESTS_COMPLETED_RESPONSE)]
 		public static void HandleQuestCompletedQuery(IRealmClient client, RealmPacketIn packet)
 		{
 			SendQuestCompletedQueryResponse(client.ActiveCharacter);

@@ -666,7 +666,7 @@ namespace WCell.RealmServer.Handlers
 
 		public static void SendUseEquipmentSetResult(IPacketReceiver client, UseEquipmentSetError error)
 		{
-			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_USE_EQUIPMENT_SET_RESULT))
+            using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_EQUIPMENT_SET_USE_RESULT))
 			{
 				packet.Write((byte)error);
 
@@ -674,7 +674,7 @@ namespace WCell.RealmServer.Handlers
 			}
 		}
 
-		[ClientPacketHandler(RealmServerOpCode.CMSG_SET_EQUIPMENT_SET)]
+        [ClientPacketHandler(RealmServerOpCode.CMSG_EQUIPMENT_SET_SAVE)]
 		public static void HandleSetEquipmentSet(IRealmClient client, RealmPacketIn packet)
 		{
 			var setEntityId = packet.ReadPackedEntityId();
@@ -693,7 +693,7 @@ namespace WCell.RealmServer.Handlers
 			chr.Inventory.SetEquipmentSet(setEntityId, setId, name, icon, itemList);
 		}
 
-		[ClientPacketHandler(RealmServerOpCode.CMSG_DELETE_EQUIPMENT_SET)]
+        [ClientPacketHandler(RealmServerOpCode.CMSG_EQUIPMENT_SET_DELETE)]
 		public static void HandleDeleteEquipmentSet(IRealmClient client, RealmPacketIn packet)
 		{
 			var setGuid = packet.ReadPackedEntityId();
@@ -703,7 +703,7 @@ namespace WCell.RealmServer.Handlers
 			chr.Inventory.DeleteEquipmentSet(setGuid);
 		}
 
-		[ClientPacketHandler(RealmServerOpCode.CMSG_USE_EQUIPMENT_SET)]
+		[ClientPacketHandler(RealmServerOpCode.CMSG_EQUIPMENT_SET_USE)]
 		public static void HandleUseEquipmentSet(IRealmClient client, RealmPacketIn packet)
 		{
 			var equipmentSwap = new EquipmentSwapHolder[19];

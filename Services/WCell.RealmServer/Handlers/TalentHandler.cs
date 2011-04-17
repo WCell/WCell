@@ -49,7 +49,7 @@ namespace WCell.RealmServer.Handlers
 			client.ActiveCharacter.Talents.ResetTalents();
 		}
 
-		[ClientPacketHandler(RealmServerOpCode.CMSG_LEARN_PREVIEWED_TALENTS)]
+        [ClientPacketHandler(RealmServerOpCode.CMSG_LEARN_PREVIEW_TALENTS)]
 		public static void HandleSaveTalentGroup(IRealmClient client, RealmPacketIn packet)
 		{
 			var count = packet.ReadInt32();
