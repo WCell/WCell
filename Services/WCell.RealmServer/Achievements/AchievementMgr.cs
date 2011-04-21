@@ -171,6 +171,8 @@ namespace WCell.RealmServer.Achievements
             SetRequirementCreator(AchievementCriteriaRequirementType.BgLossTeamScore, () => new AchievementCriteriaRequirementBgLossTeamScore());
             SetRequirementCreator(AchievementCriteriaRequirementType.InstanceScript, () => new AchievementCriteriaRequirementInstanceScript());
             SetRequirementCreator(AchievementCriteriaRequirementType.EquippedItemLevel, () => new AchievementCriteriaRequirementEquippedItemLevel());
+            SetRequirementCreator(AchievementCriteriaRequirementType.NthBirthday, () => new AchievementCriteriaRequirementNthBirthday());
+            SetRequirementCreator(AchievementCriteriaRequirementType.KnownTitle, () => new AchievementCriteriaRequirementKnownTitle());
         }
         #endregion
 

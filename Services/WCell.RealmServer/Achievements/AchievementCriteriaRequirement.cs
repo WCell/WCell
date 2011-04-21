@@ -3,9 +3,13 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using WCell.Constants;
 using WCell.Constants.Achievements;
+using WCell.Constants.Factions;
+using WCell.Constants.Misc;
 using WCell.RealmServer.Achievements;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Global;
+using WCell.RealmServer.Titles;
 using WCell.Util.Data;
 
 namespace WCell.RealmServer.Achievements
@@ -31,6 +35,8 @@ namespace WCell.RealmServer.Achievements
     [DependingProducer(AchievementCriteriaRequirementType.BgLossTeamScore, typeof(AchievementCriteriaRequirementBgLossTeamScore))]
     [DependingProducer(AchievementCriteriaRequirementType.InstanceScript, typeof(AchievementCriteriaRequirementInstanceScript))]
     [DependingProducer(AchievementCriteriaRequirementType.EquippedItemLevel, typeof(AchievementCriteriaRequirementEquippedItemLevel))]
+    [DependingProducer(AchievementCriteriaRequirementType.NthBirthday, typeof(AchievementCriteriaRequirementNthBirthday))]
+    [DependingProducer(AchievementCriteriaRequirementType.KnownTitle, typeof(AchievementCriteriaRequirementKnownTitle))]
     public class AchievementCriteriaRequirement : IDataHolder
     {
         public uint CriteriaId;
@@ -48,7 +54,7 @@ namespace WCell.RealmServer.Achievements
 			criteriaEntry.RequirementSet.Add(this);
         }
 
-        public virtual bool Meets(Character chr, Unit target = null, uint miscValue = 0u)
+        public virtual bool Meets(Character chr, Unit target, uint miscValue)
         {
             return true;
         }
@@ -61,7 +67,7 @@ namespace WCell.RealmServer.Achievements
         {
             if (target == null)
                 return false;
-            else return (Value1 == target.EntryId);
+            else return Value1 == target.EntryId;
         }
     }
     public class AchievementCriteriaRequirementPlayerClassRace : AchievementCriteriaRequirement
@@ -125,18 +131,31 @@ namespace WCell.RealmServer.Achievements
     
     public class AchievementCriteriaRequirementLevel : AchievementCriteriaRequirement
     {
-        //public uint minLevel;
+        // 9
+        public override bool Meets(Character chr, Unit target, uint miscValue)
+        {
+            if (target == null)
+                return false;
+            return target.Level >= Value1;
+        }
     }
 
     
     public class AchievementCriteriaRequirementGender : AchievementCriteriaRequirement
     {
-        //public GenderType gender;
+        // 10
+        public override bool Meets(Character chr, Unit target, uint miscValue)
+        {
+            if (target == null)
+                return false;
+            return target.Gender == (GenderType)Value1;
+        }
     }
 
     
     public class AchievementCriteriaRequirementDisabled : AchievementCriteriaRequirement
     {
+        // 11
         public override bool Meets(Character chr, Unit target, uint miscValue)
         {
             return false;
@@ -146,36 +165,62 @@ namespace WCell.RealmServer.Achievements
     
     public class AchievementCriteriaRequirementMapDifficulty : AchievementCriteriaRequirement
     {
+        // 12
         //public uint difficulty;
+        public override bool Meets(Character chr, Unit target, uint miscValue)
+        {
+            return chr.Map.DifficultyIndex == Value1;
+        }
     }
 
     
     public class AchievementCriteriaRequirementMapPlayerCount : AchievementCriteriaRequirement
     {
+        // 13
         //public uint MaxCount;
+        public override bool Meets(Character chr, Unit target, uint miscValue)
+        {
+            return chr.Map.PlayerCount <= Value1;
+        } 
     }
 
     
     public class AchievementCriteriaRequirementTeam : AchievementCriteriaRequirement
     {
+        // 14
         //public FactionGroup Faction;
+        public override bool Meets(Character chr, Unit target, uint miscValue)
+        {
+            if (target == null || !(target is Character))
+                return false;
+            return target.FactionId == (FactionId)Value1;
+        }
     }
 
     
     public class AchievementCriteriaRequirementDrunk : AchievementCriteriaRequirement
     {
-        //public uint State;
+        // 15
+        public override bool Meets(Character chr, Unit target, uint miscValue)
+        {
+            return chr.DrunkState >= Value1;
+        }
     }
 
     
     public class AchievementCriteriaRequirementHoliday : AchievementCriteriaRequirement
     {
-        //public uint holidayId;
+        // 16
+        public override bool Meets(Character chr, Unit target, uint miscValue)
+        {
+            return WorldEventMgr.IsHolidayActive(Value1);
+        }
     }
 
     
     public class AchievementCriteriaRequirementBgLossTeamScore : AchievementCriteriaRequirement
     {
+        // 17
         //public uint minScore;
         //public uint maxScore;
     }
@@ -183,13 +228,34 @@ namespace WCell.RealmServer.Achievements
     
     public class AchievementCriteriaRequirementInstanceScript : AchievementCriteriaRequirement
     {
+        // 18
     }
 
     
     public class AchievementCriteriaRequirementEquippedItemLevel : AchievementCriteriaRequirement
     {
+        // 19
         //public uint itemLevel;
         //public ItemQuality itemQuality;
+    }
+
+    public class AchievementCriteriaRequirementNthBirthday : AchievementCriteriaRequirement
+    {
+        // 20
+        // public uint N;
+    }
+
+    public class AchievementCriteriaRequirementKnownTitle : AchievementCriteriaRequirement
+    {
+        // 21
+        //public uint knownTitleId;
+        public override bool Meets(Character chr, Unit target, uint miscValue)
+        {
+            CharacterTitleEntry title = TitleMgr.GetTitleEntry((TitleId)Value1);
+            if (title == null)
+                return false;
+            return chr != null && chr.HasTitle(title.TitleId);
+        }
     }
     #endregion
 
@@ -211,12 +277,12 @@ namespace WCell.RealmServer.Achievements
             Requirements.Add(creator);
         }
 
-        public bool Meets(Character chr, Unit involved = null, uint miscValue1 = 0u)
+        public bool Meets(Character chr, Unit involved, uint miscValue)
         {
             foreach(AchievementCriteriaRequirementCreator requirementCreator in Requirements)
             {
                 var requirement = requirementCreator();
-                if (!(requirement.Meets(chr, involved, miscValue1)))
+                if (!(requirement.Meets(chr, involved, miscValue)))
                     return false;
                 else
                     return true;

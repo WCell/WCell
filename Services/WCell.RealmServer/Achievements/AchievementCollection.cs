@@ -367,7 +367,7 @@ namespace WCell.RealmServer.Achievements
 				{
 					if (IsAchieveable(entry))
 					{
-                        if(entry.RequirementSet == null || entry.RequirementSet.Meets(Owner, involved))
+                        if(entry.RequirementSet == null || entry.RequirementSet.Meets(Owner, involved, value1))
 						    entry.OnUpdate(this, value1, value2, involved);
 					}
 				}
