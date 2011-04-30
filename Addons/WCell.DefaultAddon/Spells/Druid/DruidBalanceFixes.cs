@@ -158,7 +158,6 @@ namespace WCell.Addons.Default.Spells.Druid
 			var caster = m_aura.CasterUnit;
 			if (caster != null)
 			{
-				var kurwa = m_spellEffect.CalcEffectValue(caster);
 				BaseEffectValue = ((caster.BasePower * (m_spellEffect.CalcEffectValue(caster)/2)) / 100) / 10;
 			}
 			base.Apply();
