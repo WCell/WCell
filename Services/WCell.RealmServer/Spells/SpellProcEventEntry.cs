@@ -103,18 +103,18 @@ namespace WCell.RealmServer.Spells
 
 			if (spellprocentry.SpellClassSet != 0)
 			{
-				spell.SpellClassSet = spellprocentry.SpellClassSet;
+				spell.SpellClassOptions.SpellClassSet = spellprocentry.SpellClassSet;
 			}
 
 			if (spellprocentry.ProcTriggerFlags != 0)
 			{
-				spell.ProcTriggerFlags = spellprocentry.ProcTriggerFlags;
+                spell.SpellAuraOptions.ProcTriggerFlags = spellprocentry.ProcTriggerFlags;
 			}
 
 			if (spellprocentry.CustomChance != 0)
 			{
 				// like the DBC, CustomChance only contains natural percentages
-				spell.ProcChance = (uint)spellprocentry.CustomChance;
+                spell.SpellAuraOptions.ProcChance = (uint)spellprocentry.CustomChance;
 			}
 
 			var line = spell.Line;

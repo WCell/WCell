@@ -36,6 +36,37 @@ namespace WCell.RealmServer.Spells
 	/// </summary>
 	public partial class Spell
 	{
+        [NotPersistent]
+        public static MappedDBCReader<SpellScaling, DBCSpellScalingConverter> mappeddbcSpellScalingReader;
+        [NotPersistent]
+        public static MappedDBCReader<SpellShapeshift, DBCSpellShapeshiftConverter> mappeddbcShapeShiftReader;
+        [NotPersistent]
+        public static MappedDBCReader<SpellAuraOptions, DBCAuraOptionsConverter> mappeddbcAuraOptionsReader;
+        [NotPersistent]
+        public static MappedDBCReader<SpellAuraRestrictions, DBCAuraRestrictionsConverter> mappeddbcAuraRestrictionsReader;
+        [NotPersistent]
+        public static MappedDBCReader<SpellCastingRequirements, DBCCastingRequirementsConverter> mappeddbcCastingRequirementsReader;
+        [NotPersistent]
+        public static MappedDBCReader<SpellCategories, DBCCategoriesConverter> mappeddbcCategoriesReader;
+        [NotPersistent]
+        public static MappedDBCReader<SpellClassOptions, DBCClassOptionsConverter> mappeddbcClassOptionsReader;
+        [NotPersistent]
+        public static MappedDBCReader<SpellCooldowns, DBCCooldownsConverter> mappeddbcCooldownsReader;
+        [NotPersistent]
+        public static MappedDBCReader<SpellEquippedItems, DBCEquippedItemsConverter> mappeddbcEquippedItemsReader;
+        [NotPersistent]
+        public static MappedDBCReader<SpellInterrupts, DBCSpellInterruptsConverter> mappeddbcInterruptsReader;
+        [NotPersistent]
+        public static MappedDBCReader<SpellLevels, DBCSpellLevelsConverter> mappeddbcLevelsReader;
+        [NotPersistent]
+        public static MappedDBCReader<SpellPower, DBCSpellPowerConverter> mappeddbcPowerReader;
+        [NotPersistent]
+        public static MappedDBCReader<SpellReagents, DBCSpellReagentsConverter> mappeddbcReagentsReader;
+        [NotPersistent]
+        public static MappedDBCReader<SpellTargetRestrictions, DBCTargetRestrictionsConverter> mappeddbcTargetRestrictionsReader;
+        [NotPersistent]
+        public static MappedDBCReader<SpellTotems, DBCSpellTotemsConverter> mappeddbcTotemsReader;
+
 		[NotPersistent]
 		public static MappedDBCReader<DurationEntry, DBCDurationConverter> mappeddbcDurationReader;
 		[NotPersistent]
@@ -49,8 +80,27 @@ namespace WCell.RealmServer.Spells
 		[NotPersistent]
 		public static MappedDBCReader<RuneCostEntry, DBCSpellRuneCostConverter> mappeddbcRuneCostReader;
 
+        [NotPersistent]
+        public static MappedDBCReader<SpellEffect, DBCSpellEffectConverter> mappeddbcEffectReader;
+
 		internal static void InitDbcs()
 		{
+            mappeddbcSpellScalingReader = new MappedDBCReader<SpellScaling, DBCSpellScalingConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLSCALING));
+            mappeddbcShapeShiftReader = new MappedDBCReader<SpellShapeshift, DBCSpellShapeshiftConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLSHAPESHIFT));
+            mappeddbcAuraOptionsReader = new MappedDBCReader<SpellAuraOptions, DBCAuraOptionsConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLAURAOPTIONS));
+            mappeddbcAuraRestrictionsReader = new MappedDBCReader<SpellAuraRestrictions, DBCAuraRestrictionsConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLAURARESTRICTIONS));
+            mappeddbcCastingRequirementsReader = new MappedDBCReader<SpellCastingRequirements, DBCCastingRequirementsConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLCASTINGREQUIREMENTS));
+            mappeddbcCategoriesReader = new MappedDBCReader<SpellCategories, DBCCategoriesConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLCATEGORIES));
+            mappeddbcClassOptionsReader = new MappedDBCReader<SpellClassOptions, DBCClassOptionsConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLCLASSOPTIONS));
+            mappeddbcCooldownsReader = new MappedDBCReader<SpellCooldowns, DBCCooldownsConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLCOOLDOWNS));
+            mappeddbcEquippedItemsReader = new MappedDBCReader<SpellEquippedItems, DBCEquippedItemsConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLEQUIPPEDITEMS));
+            mappeddbcInterruptsReader = new MappedDBCReader<SpellInterrupts, DBCSpellInterruptsConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLINTERRUPTS));
+            mappeddbcLevelsReader = new MappedDBCReader<SpellLevels, DBCSpellLevelsConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLLEVELS));
+            mappeddbcPowerReader = new MappedDBCReader<SpellPower, DBCSpellPowerConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLPOWER));
+            mappeddbcReagentsReader = new MappedDBCReader<SpellReagents, DBCSpellReagentsConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLREAGENTS));
+            mappeddbcTargetRestrictionsReader = new MappedDBCReader<SpellTargetRestrictions, DBCTargetRestrictionsConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLTARGETRESTRICTIONS));
+            mappeddbcTotemsReader = new MappedDBCReader<SpellTotems, DBCSpellTotemsConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLTOTEMS));
+            
 			mappeddbcDurationReader = new MappedDBCReader<DurationEntry, DBCDurationConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLDURATION));
 			mappeddbcRadiusReader = new MappedDBCReader<float, DBCRadiusConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLRADIUS));
 			mappeddbcCastTimeReader = new MappedDBCReader<uint, DBCCastTimeConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLCASTTIMES));
@@ -58,6 +108,8 @@ namespace WCell.RealmServer.Spells
 			//DBCMechanicReader = new DBCReader<SpellMechanic, DBCMechanicConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELLMECHANIC));
 			mappeddbcMechanicReader = new MappedDBCReader<string, DBCMechanicConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLMECHANIC));
 			mappeddbcRuneCostReader = new MappedDBCReader<RuneCostEntry, DBCSpellRuneCostConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLRUNECOST));
+
+            mappeddbcEffectReader = new MappedDBCReader<SpellEffect, DBCSpellEffectConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLEFFECT));
 		}
 
 		#region SpellDuration.dbc
@@ -189,8 +241,397 @@ namespace WCell.RealmServer.Spells
 		}
 		#endregion
 
-		#region Spell.DBC
-		public class SpellDBCConverter : DBCRecordConverter
+        #region SpellEffect.dbc
+        public class DBCSpellEffectConverter : AdvancedDBCRecordConverter<SpellEffect>
+        {
+            public override SpellEffect ConvertTo(byte[] rawData, ref int id)
+			{
+                var currentIndex = 0;
+
+                id = (int)GetUInt32(rawData, currentIndex++);
+				var effect = new SpellEffect();
+                
+                effect.EffectType = (SpellEffectType)GetUInt32(rawData, currentIndex++);  // 71
+
+                effect.Amplitude = GetInt32(rawData, currentIndex++);
+
+                effect.AuraType = (AuraType)GetUInt32(rawData, currentIndex++);           // 95
+
+                effect.AuraPeriod = GetInt32(rawData, currentIndex++);
+
+                effect.BasePoints = GetInt32(rawData, currentIndex++);                    // 80
+
+                effect.SpellPowerCoEfficient = GetFloat(rawData, currentIndex++);
+
+                effect.ChainAmplitude = GetFloat(rawData, currentIndex++);     // 101
+
+                effect.ChainTargets = GetInt32(rawData, currentIndex++);  // 104
+
+                effect.DiceSides = GetInt32(rawData, currentIndex++);                    // 80
+
+                effect.ItemId = GetUInt32(rawData, currentIndex++);       // 107
+
+                effect.Mechanic = (SpellMechanic)GetUInt32(rawData, currentIndex++);      // 83
+
+                effect.MiscValue = GetInt32(rawData, currentIndex++);     // 110
+
+                effect.MiscValueB = GetInt32(rawData, currentIndex++);    // 113
+
+                effect.PointsPerComboPoint = GetFloat(rawData, currentIndex++);       // 119
+
+                int radiusIndex = GetInt32(rawData, currentIndex++);                                  // 92
+                if (radiusIndex > 0)
+                {
+                    mappeddbcRadiusReader.Entries.TryGetValue(radiusIndex, out effect.Radius);
+                }
+
+                int radiusMaxIndex = GetInt32(rawData, currentIndex++);                                  // 92
+                if (radiusMaxIndex > 0)
+                {
+                    mappeddbcRadiusReader.Entries.TryGetValue(radiusMaxIndex, out effect.RadiusMax);
+                }
+
+                effect.RealPointsPerLevel = GetFloat(rawData, currentIndex++);            // 77
+
+                effect.AffectMask[0] = GetUInt32(rawData, currentIndex++);
+                effect.AffectMask[1] = GetUInt32(rawData, currentIndex++);
+                effect.AffectMask[2] = GetUInt32(rawData, currentIndex++);
+
+                effect.TriggerSpellId = (SpellId)GetUInt32(rawData, currentIndex++);      // 116
+
+                effect.ImplicitTargetA = (ImplicitSpellTargetType)GetUInt32(rawData, currentIndex++);      // 86
+
+                effect.ImplicitTargetB = (ImplicitSpellTargetType)GetUInt32(rawData, currentIndex++);      // 89
+
+				// Fix: This is a default AoE effect, thus doesn't have a fact at destination
+				if (effect.ImplicitTargetA == ImplicitSpellTargetType.AllEnemiesAroundCaster &&
+					effect.ImplicitTargetB == ImplicitSpellTargetType.AllEnemiesInArea)
+				{
+					effect.ImplicitTargetB = ImplicitSpellTargetType.None;
+				}
+
+                effect.SpellId = (SpellId)GetUInt32(rawData, currentIndex++);
+
+                effect.EffectIndex = GetInt32(rawData, currentIndex);
+
+                SpellEffectsCollection.Add(effect);
+
+				return effect;
+			}
+        }
+        #endregion
+
+        #region SpellAuraOptions.dbc
+        public class DBCAuraOptionsConverter : AdvancedDBCRecordConverter<SpellAuraOptions>
+        {
+            public override SpellAuraOptions ConvertTo(byte[] rawData, ref int id)
+            {
+                var auraOptions = new SpellAuraOptions();
+
+                id = (int)GetUInt32(rawData, 0);
+                auraOptions.MaxStackCount = GetInt32(rawData, 1);
+                auraOptions.ProcChance = GetUInt32(rawData, 2);
+                auraOptions.ProcCharges = GetInt32(rawData, 3);
+                auraOptions.ProcTriggerFlags = (ProcTriggerFlags)GetInt32(rawData, 4);
+
+                return auraOptions;
+            }
+        }
+        #endregion
+
+        #region SpellAuraRestrictions.dbc
+        public class DBCAuraRestrictionsConverter : AdvancedDBCRecordConverter<SpellAuraRestrictions>
+        {
+            public override SpellAuraRestrictions ConvertTo(byte[] rawData, ref int id)
+            {
+                var auraRestrictions = new SpellAuraRestrictions();
+
+                id = (int)GetUInt32(rawData, 0);
+                auraRestrictions.RequiredCasterAuraState = (AuraState)GetUInt32(rawData, 1);
+                auraRestrictions.RequiredTargetAuraState = (AuraState)GetUInt32(rawData, 2);
+                auraRestrictions.ExcludeCasterAuraState = (AuraState)GetUInt32(rawData, 3);
+                auraRestrictions.ExcludeTargetAuraState = (AuraState)GetUInt32(rawData, 4);
+                auraRestrictions.RequiredCasterAuraId = (SpellId)GetUInt32(rawData, 5);
+                auraRestrictions.RequiredTargetAuraId = (SpellId)GetUInt32(rawData, 6);
+                auraRestrictions.ExcludeCasterAuraId = (SpellId)GetUInt32(rawData, 7);
+                auraRestrictions.ExcludeTargetAuraId = (SpellId)GetUInt32(rawData, 8);
+
+                return auraRestrictions;
+            }
+        }
+        #endregion
+
+        #region SpellCastingRequirements.dbc
+        public class DBCCastingRequirementsConverter : AdvancedDBCRecordConverter<SpellCastingRequirements>
+        {
+            public override SpellCastingRequirements ConvertTo(byte[] rawData, ref int id)
+            {
+                var castingRequirements = new SpellCastingRequirements();
+
+                id = (int)GetUInt32(rawData, 0);
+                castingRequirements.FacingFlags = (SpellFacingFlags)GetUInt32(rawData, 1);
+                castingRequirements.MinFactionId = GetUInt32(rawData, 2);
+                castingRequirements.MinReputation = GetUInt32(rawData, 3);
+                castingRequirements.AreaGroupId = GetUInt32(rawData, 4);
+                castingRequirements.RequiredAuraVision = GetUInt32(rawData, 5);
+                castingRequirements.RequiredSpellFocus = (SpellFocus)GetUInt32(rawData, 6);
+
+                return castingRequirements;
+            }
+        }
+        #endregion
+
+        #region SpellCategories.dbc
+        public class DBCCategoriesConverter : AdvancedDBCRecordConverter<SpellCategories>
+        {
+            public override SpellCategories ConvertTo(byte[] rawData, ref int id)
+            {
+                var spellCategories = new SpellCategories();
+
+                id = (int)GetUInt32(rawData, 0);
+                spellCategories.Category = GetUInt32(rawData, 1);
+                spellCategories.DefenseType = (SpellDefenseType)GetUInt32(rawData, 2);
+                spellCategories.DispelType = (DispelType)GetUInt32(rawData, 3);
+                spellCategories.Mechanic = (SpellMechanic)GetUInt32(rawData, 4);
+                spellCategories.PreventionType = (SpellPreventionType)GetUInt32(rawData, 5);
+                spellCategories.StartRecoveryCategory = GetInt32(rawData, 6);
+
+                return spellCategories;
+            }
+        }
+        #endregion
+
+        #region SpellClassOptions.dbc
+        public class DBCClassOptionsConverter : AdvancedDBCRecordConverter<SpellClassOptions>
+        {
+            public override SpellClassOptions ConvertTo(byte[] rawData, ref int id)
+            {
+                var spellClassOptions = new SpellClassOptions();
+
+                var currentIndex = 0;
+                id = (int)GetUInt32(rawData, currentIndex++);
+
+                spellClassOptions.ModalNextSpell = GetUInt32(rawData, currentIndex++);
+                for (var i = 0; i < SpellConstants.SpellClassMaskSize; i++)
+                    spellClassOptions.SpellClassMask[i] = GetUInt32(rawData, currentIndex++);
+
+                spellClassOptions.SpellClassSet = (SpellClassSet)GetUInt32(rawData, currentIndex);
+
+                return spellClassOptions;
+            }
+        }
+        #endregion
+
+        #region SpellCooldowns.dbc
+        public class DBCCooldownsConverter : AdvancedDBCRecordConverter<SpellCooldowns>
+        {
+            public override SpellCooldowns ConvertTo(byte[] rawData, ref int id)
+            {
+                var spellCooldowns = new SpellCooldowns();
+
+                id = (int)GetUInt32(rawData, 0);
+                spellCooldowns.CategoryCooldownTime = GetInt32(rawData, 1);
+                spellCooldowns.CooldownTime = GetInt32(rawData, 2);
+                spellCooldowns.StartRecoveryTime = GetInt32(rawData, 3);
+
+                return spellCooldowns;
+            }
+        }
+        #endregion
+
+        #region SpellEquippedItems.dbc
+        public class DBCEquippedItemsConverter : AdvancedDBCRecordConverter<SpellEquippedItems>
+        {
+            public override SpellEquippedItems ConvertTo(byte[] rawData, ref int id)
+            {
+                var spellEquippedItems = new SpellEquippedItems();
+
+                id = (int)GetUInt32(rawData, 0);
+                spellEquippedItems.RequiredItemClass = (ItemClass)GetInt32(rawData, 1);
+                spellEquippedItems.RequiredItemInventorySlotMask = (InventorySlotTypeMask)GetInt32(rawData, 2);
+                spellEquippedItems.RequiredItemSubClassMask = (ItemSubClassMask)GetInt32(rawData, 3);
+
+                return spellEquippedItems;
+            }
+        }
+        #endregion
+
+        #region SpellInterrupts.dbc
+        public class DBCSpellInterruptsConverter : AdvancedDBCRecordConverter<SpellInterrupts>
+        {
+            public override SpellInterrupts ConvertTo(byte[] rawData, ref int id)
+            {
+                var spellInterrupts = new SpellInterrupts();
+
+                id = (int)GetUInt32(rawData, 0);
+                spellInterrupts.AuraInterruptFlags = (AuraInterruptFlags)GetUInt64(rawData, 1);
+                spellInterrupts.ChannelInterruptFlags = (ChannelInterruptFlags)GetUInt64(rawData, 3);
+                spellInterrupts.InterruptFlags = (InterruptFlags)GetInt32(rawData, 5);
+
+                return spellInterrupts;
+            }
+        }
+        #endregion
+
+        #region SpellLevels.dbc
+        public class DBCSpellLevelsConverter : AdvancedDBCRecordConverter<SpellLevels>
+        {
+            public override SpellLevels ConvertTo(byte[] rawData, ref int id)
+            {
+                var spellLevels = new SpellLevels();
+
+                id = (int)GetUInt32(rawData, 0);
+                spellLevels.MaxLevel = GetInt32(rawData, 1);
+                spellLevels.BaseLevel = GetInt32(rawData, 2);
+                spellLevels.Level = GetInt32(rawData, 3);
+
+                return spellLevels;
+            }
+        }
+        #endregion
+
+        #region SpellPower.dbc
+        public class DBCSpellPowerConverter : AdvancedDBCRecordConverter<SpellPower>
+        {
+            public override SpellPower ConvertTo(byte[] rawData, ref int id)
+            {
+                var spellPower = new SpellPower();
+
+                id = (int)GetUInt32(rawData, 0);
+                spellPower.PowerCost = GetInt32(rawData, 1);
+                spellPower.PowerCostPerlevel = GetInt32(rawData, 2);
+                spellPower.PowerCostPercentage = GetInt32(rawData, 3);
+                spellPower.PowerPerSecond = GetInt32(rawData, 4);
+                spellPower.PowerDisplayId = GetInt32(rawData, 5);
+                spellPower.unk400 = GetInt32(rawData, 6);
+
+                return spellPower;
+            }
+        }
+        #endregion
+
+        #region SpellReagents.dbc
+        public class DBCSpellReagentsConverter : AdvancedDBCRecordConverter<SpellReagents>
+        {
+            public override SpellReagents ConvertTo(byte[] rawData, ref int id)
+            {
+                var spellReagents = new SpellReagents();
+                var reagents = new List<ItemStackDescription>();
+                var currentIndex = 0;
+                id = (int)GetUInt32(rawData, currentIndex++);
+
+                for (var i = 0; i < 8; i++)
+                {
+                    spellReagents.ReagentIds[i] = (ItemId)GetUInt32(rawData, currentIndex++);
+                }
+
+                for (var i = 0; i < 8; i++)
+                {
+                    var count = GetInt32(rawData, currentIndex++);
+                    spellReagents.ReagentCounts[i] = count;
+                    if (count > 0 && spellReagents.ReagentIds[i] > 0)
+                    {
+                        reagents.Add(new ItemStackDescription(spellReagents.ReagentIds[i], count));
+                    }
+                }
+
+                spellReagents.Reagents = reagents.ToArray();
+
+                return spellReagents;
+            }
+        }
+        #endregion
+
+        #region SpellScaling.dbc
+        public class DBCSpellScalingConverter : AdvancedDBCRecordConverter<SpellScaling>
+        {
+            public override SpellScaling ConvertTo(byte[] rawData, ref int id)
+            {
+                var spellScaling = new SpellScaling();
+
+                var currentIndex = 0;
+                id = (int)GetUInt32(rawData, currentIndex++);
+                spellScaling.CastTimeMin = GetInt32(rawData, currentIndex++);
+                spellScaling.CastTimeMax = GetInt32(rawData, currentIndex++);
+                spellScaling.CastTimeDiv = GetInt32(rawData, currentIndex++);
+                spellScaling.Class = GetInt32(rawData, currentIndex++);
+
+                for (var i = 0; i < spellScaling.SpellScalingEffects.Length; i++)
+                {
+                    spellScaling.SpellScalingEffects[i] = new SpellScaling.SpellScalingEffectData { Coefficient = GetFloat(rawData, currentIndex++) };
+                }
+                for (var i = 0; i < spellScaling.SpellScalingEffects.Length; i++)
+                {
+                    spellScaling.SpellScalingEffects[i].Delta = GetFloat(rawData, currentIndex++);
+                }
+                for (var i = 0; i < spellScaling.SpellScalingEffects.Length; i++)
+                {
+                    spellScaling.SpellScalingEffects[i].ComboPointsCoefficient = GetFloat(rawData, currentIndex++);
+                }
+
+                spellScaling.Scaling = GetFloat(rawData, currentIndex++);
+                spellScaling.ScalingLevelThreshold = GetFloat(rawData, currentIndex);
+
+                return spellScaling;
+            }
+        }
+        #endregion
+
+        #region SpellShapeshift.dbc
+        public class DBCSpellShapeshiftConverter : AdvancedDBCRecordConverter<SpellShapeshift>
+        {
+            public override SpellShapeshift ConvertTo(byte[] rawData, ref int id)
+            {
+                var spellShapeshift = new SpellShapeshift();
+
+                id = (int)GetUInt32(rawData, 0);
+                spellShapeshift.RequiredShapeshiftMask = (ShapeshiftMask)GetUInt64(rawData, 1);
+                spellShapeshift.ExcludeShapeshiftMask = (ShapeshiftMask)GetUInt64(rawData, 3);
+                spellShapeshift.StanceBarOrder = GetUInt32(rawData, 5);
+
+                return spellShapeshift;
+            }
+        }
+        #endregion
+
+        #region SpellTargetRestrictions.dbc
+        public class DBCTargetRestrictionsConverter : AdvancedDBCRecordConverter<SpellTargetRestrictions>
+        {
+            public override SpellTargetRestrictions ConvertTo(byte[] rawData, ref int id)
+            {
+                var spellTargetRestrictions = new SpellTargetRestrictions();
+
+                id = (int)GetUInt32(rawData, 0);
+                spellTargetRestrictions.MaxTargets = GetInt32(rawData, 1);
+                spellTargetRestrictions.MaxTargetLevel = GetInt32(rawData, 2);
+                spellTargetRestrictions.CreatureMask = (CreatureMask)GetUInt32(rawData, 3);
+                spellTargetRestrictions.TargetFlags = (SpellTargetFlags)GetUInt32(rawData, 4);
+
+                return spellTargetRestrictions;
+            }
+        }
+        #endregion
+
+        #region SpellTotems.dbc
+        public class DBCSpellTotemsConverter : AdvancedDBCRecordConverter<SpellTotems>
+        {
+            public override SpellTotems ConvertTo(byte[] rawData, ref int id)
+            {
+                var spellCooldowns = new SpellTotems();
+
+                id = (int)GetUInt32(rawData, 0);
+                spellCooldowns.RequiredToolCategories[0] = (ToolCategory)GetUInt32(rawData, 1);
+                spellCooldowns.RequiredToolCategories[1] = (ToolCategory)GetUInt32(rawData, 2);
+                spellCooldowns.RequiredToolIds[0] = GetUInt32(rawData, 3);
+                spellCooldowns.RequiredToolIds[1] = GetUInt32(rawData, 4);
+
+                return spellCooldowns;
+            }
+        }
+        #endregion
+
+        #region Spell.DBC
+        public class SpellDBCConverter : DBCRecordConverter
 		{
 			public override void Convert(byte[] rawData)
 			{
@@ -205,9 +646,6 @@ namespace WCell.RealmServer.Spells
 
 				try
 				{
-					spell.Category = GetUInt32(rawData, currentIndex++);                                   // 1
-					spell.DispelType = (DispelType)GetUInt32(rawData, currentIndex++);                     // 2
-					spell.Mechanic = (SpellMechanic)GetUInt32(rawData, currentIndex++);                    // 3
 					spell.Attributes = (SpellAttributes)GetUInt32(rawData, currentIndex++);                // 4
 					spell.AttributesEx = (SpellAttributesEx)GetUInt32(rawData, currentIndex++);            // 5
 					spell.AttributesExB = (SpellAttributesExB)GetUInt32(rawData, currentIndex++);          // 6
@@ -215,24 +653,9 @@ namespace WCell.RealmServer.Spells
                     spell.AttributesExD = (SpellAttributesExD)GetUInt32(rawData, currentIndex++);          // 8
                     spell.AttributesExE = (SpellAttributesExE)GetUInt32(rawData, currentIndex++);          // 9
                     spell.AttributesExF = (SpellAttributesExF)GetUInt32(rawData, currentIndex++);          // 10
-                    spell.Unk_322_1 = GetUInt32(rawData, currentIndex++);                                  // 12
+                    spell.AttributesExG = (SpellAttributesExG)GetUInt32(rawData, currentIndex++);          // 10
+                    spell.AttributesExH = (SpellAttributesExH)GetUInt32(rawData, currentIndex++);          // 10
                     spell.Unk_400_1 = GetUInt32(rawData, currentIndex++);                                  // 12
-                    spell.RequiredShapeshiftMask = (ShapeshiftMask)GetUInt32(rawData, currentIndex++);             // 11
-                    spell.Unk_322_2 = GetUInt32(rawData, currentIndex++);                                  // 14
-                    spell.ExcludeShapeshiftMask = (ShapeshiftMask)GetUInt32(rawData, currentIndex++);      // 13
-                    spell.Unk_322_3 = GetUInt32(rawData, currentIndex++);                                  // 16
-                    spell.TargetFlags = (SpellTargetFlags)GetUInt32(rawData, currentIndex++);              // 15
-                    spell.CreatureMask = (CreatureMask)GetUInt32(rawData, currentIndex++);    // 17
-					spell.RequiredSpellFocus = (SpellFocus)GetUInt32(rawData, currentIndex++);              // 18
-					spell.FacingFlags = (SpellFacingFlags)GetUInt32(rawData, currentIndex++);               // 19
-					spell.RequiredCasterAuraState = (AuraState)GetUInt32(rawData, currentIndex++);          // 20
-					spell.RequiredTargetAuraState = (AuraState)GetUInt32(rawData, currentIndex++);          // 21
-					spell.ExcludeCasterAuraState = (AuraState)GetUInt32(rawData, currentIndex++);           // 22
-					spell.ExcludeTargetAuraState = (AuraState)GetUInt32(rawData, currentIndex++);           // 23
-					spell.RequiredCasterAuraId = (SpellId)GetUInt32(rawData, currentIndex++);                        // 24
-					spell.RequiredTargetAuraId = (SpellId)GetUInt32(rawData, currentIndex++);                        // 25
-					spell.ExcludeCasterAuraId = (SpellId)GetUInt32(rawData, currentIndex++);                         // 26
-					spell.ExcludeTargetAuraId = (SpellId)GetUInt32(rawData, currentIndex++);                         // 27
 
 					int castTimeIndex = GetInt32(rawData, currentIndex++);                                  // 28
 					if (castTimeIndex > 0)
@@ -242,20 +665,6 @@ namespace WCell.RealmServer.Spells
 							ContentMgr.OnInvalidClientData("DBC Spell \"{0}\" referred to invalid CastTime-Entry: {1}", spell.Name, castTimeIndex);
 						}
 					}
-
-					spell.CooldownTime = Math.Max(0, GetInt32(rawData, currentIndex++) - (int)spell.CastDelay);     // 29
-					spell.categoryCooldownTime = GetInt32(rawData, currentIndex++);                                 // 30
-					spell.InterruptFlags = (InterruptFlags)GetUInt32(rawData, currentIndex++);                      // 31
-					spell.AuraInterruptFlags = (AuraInterruptFlags)GetUInt32(rawData, currentIndex++);              // 32
-                    spell.Unk_400_2 = GetUInt32(rawData, currentIndex++);
-					spell.ChannelInterruptFlags = (ChannelInterruptFlags)GetUInt32(rawData, currentIndex++);        // 33
-                    spell.Unk_400_3 = GetUInt32(rawData, currentIndex++);
-					spell.ProcTriggerFlags = (ProcTriggerFlags)GetUInt32(rawData, currentIndex++);                  // 34
-					spell.ProcChance = GetUInt32(rawData, currentIndex++);                                          // 35
-					spell.ProcCharges = GetInt32(rawData, currentIndex++);                                          // 36
-					spell.MaxLevel = GetInt32(rawData, currentIndex++);                                             // 37
-					spell.BaseLevel = GetInt32(rawData, currentIndex++);                                            // 38
-					spell.Level = GetInt32(rawData, currentIndex++);                                                // 30
 
 					var durationIndex = GetInt32(rawData, currentIndex++);                                          // 40
 					if (durationIndex > 0)
@@ -267,10 +676,6 @@ namespace WCell.RealmServer.Spells
 					}
 
 					spell.PowerType = (PowerType)GetUInt32(rawData, currentIndex++);        // 41
-					spell.PowerCost = GetInt32(rawData, currentIndex++);                    // 42
-					spell.PowerCostPerlevel = GetInt32(rawData, currentIndex++);            // 43
-					spell.PowerPerSecond = GetInt32(rawData, currentIndex++);               // 44
-					//spell.PowerPerSecondPerLevel = GetInt32(rawData, currentIndex++);       // 45
 
 					var rangeIndex = GetInt32(rawData, currentIndex++);                     // 46
 					if (rangeIndex > 0)
@@ -282,109 +687,19 @@ namespace WCell.RealmServer.Spells
 					}
 
 					spell.ProjectileSpeed = GetFloat(rawData, currentIndex++);              // 47
-					spell.ModalNextSpell = (SpellId)GetUInt32(rawData, currentIndex++);     // 48
-
-					spell.MaxStackCount = GetInt32(rawData, currentIndex++);                // 49
-
-					spell.RequiredToolIds = new uint[2];                                    // 50-51
-					for (var i = 0; i < spell.RequiredToolIds.Length; i++)
-					{
-						spell.RequiredToolIds[i] = GetUInt32(rawData, currentIndex++);
-					}
-
-					List<ItemStackDescription> reagents = null;
-					int reagentStart = currentIndex;
-					for (int i = 0; i < 8; i++)                                             //52-59
-					{
-						ReadReagent(rawData, reagentStart, i, out currentIndex, ref reagents);
-					}
-					if (reagents != null)
-					{
-						spell.Reagents = reagents.ToArray();
-					}
-					else
-					{
-						spell.Reagents = ItemStackDescription.EmptyArray;
-					}
-					spell.RequiredItemClass = (ItemClass)GetUInt32(rawData, currentIndex++);   //68
-					if (spell.RequiredItemClass < 0)
-					{
-						spell.RequiredItemClass = ItemClass.None;
-					}
-
-					spell.RequiredItemSubClassMask = (ItemSubClassMask)GetUInt32(rawData, currentIndex++); // 69
-					if (spell.RequiredItemSubClassMask < 0)
-					{
-						spell.RequiredItemSubClassMask = ItemSubClassMask.None;
-					}
-
-					spell.RequiredItemInventorySlotMask = (InventorySlotTypeMask)GetUInt32(rawData, currentIndex++); // 70
-					if (spell.RequiredItemInventorySlotMask < 0)
-					{
-						spell.RequiredItemInventorySlotMask = InventorySlotTypeMask.None;
-					}
-
-					var effects = new List<SpellEffect>(3);     // 71 - 127
-					int effectStart = currentIndex;
-
-					for (int i = 0; i < 3; i++)
-					{
-						var effect = ReadEffect(spell, rawData, effectStart, i, out currentIndex);
-						if (effect != null &&
-							(effect.EffectType != SpellEffectType.None ||
-								effect.BasePoints > 0 ||
-								effect.AuraType != 0 ||
-								effect.TriggerSpellId != 0))
-						{
-
-							effects.Add(effect);
-						}
-					}
-					spell.Effects = effects.ToArray();
 
 					spell.Visual = GetUInt32(rawData, currentIndex++);              // 128
 					spell.Visual2 = GetUInt32(rawData, currentIndex++);             // 129
 					spell.SpellbookIconId = GetUInt32(rawData, currentIndex++);     // 130
 					spell.BuffIconId = GetUInt32(rawData, currentIndex++);          // 131
-					//spell.Priority = GetUInt32(rawData, currentIndex++);            // 132
 
 					spell.Name = GetString(rawData, ref currentIndex);              // 133
-					spell.RankDesc = GetString(rawData, ref currentIndex);          // 124
+
+
+                    spell.RankDesc = GetString(rawData, ref currentIndex);          // 124
 					spell.Description = GetString(rawData, ref currentIndex);       // 125
 					spell.BuffDescription = GetString(rawData, ref currentIndex);   // 126
 
-					spell.PowerCostPercentage = GetInt32(rawData, currentIndex++);  // 127
-					spell.StartRecoveryTime = GetInt32(rawData, currentIndex++);    // 128
-                    spell.StartRecoveryCategory = GetInt32(rawData, currentIndex++);    // 129
-					
-					spell.MaxTargetLevel = GetUInt32(rawData, currentIndex++);          // 130
-					spell.SpellClassSet = (SpellClassSet)GetUInt32(rawData, currentIndex++);    // 131
-
-					spell.SpellClassMask[0] = GetUInt32(rawData, currentIndex++);   // 132
-					spell.SpellClassMask[1] = GetUInt32(rawData, currentIndex++);   // 133
-					spell.SpellClassMask[2] = GetUInt32(rawData, currentIndex++);   // 134
-
-					spell.MaxTargets = GetUInt32(rawData, currentIndex++);          // 135
-					spell.DefenseType = (SpellDefenseType)GetUInt32(rawData, currentIndex++);   // 136
-					spell.PreventionType = (SpellPreventionType)GetUInt32(rawData, currentIndex++); // 137
-					spell.StanceBarOrder = GetInt32(rawData, currentIndex++);  // 138
-
-					for (int i = 0; i < spell.DamageMultipliers.Length; i++) // 139-141
-					{
-						spell.DamageMultipliers[i] = GetFloat(rawData, currentIndex++);
-					}
-
-					spell.MinFactionId = GetUInt32(rawData, currentIndex++);        // 142
-					spell.MinReputation = GetUInt32(rawData, currentIndex++);       // 143
-					spell.RequiredAuraVision = GetUInt32(rawData, currentIndex++);  // 144
-
-					spell.RequiredToolCategories = new ToolCategory[2];       // 145-146
-					for (int i = 0; i < spell.RequiredToolCategories.Length; i++)
-					{
-						spell.RequiredToolCategories[i] = (ToolCategory)GetUInt32(rawData, currentIndex++);
-					}
-
-					spell.AreaGroupId = GetUInt32(rawData, currentIndex++);
 					spell.SchoolMask = (DamageSchoolMask)GetUInt32(rawData, currentIndex++);  
 
 					var runeCostId = GetInt32(rawData, currentIndex++);
@@ -394,25 +709,139 @@ namespace WCell.RealmServer.Spells
 					}
 					spell.MissileId = GetUInt32(rawData, currentIndex++);       
 
-					// New 3.1.0. Id from PowerDisplay.dbc
-					spell.PowerDisplayId = GetInt32(rawData, currentIndex++);   
-
-                    // 3.2.2 unk float (array?)
-                    spell.Unk_322_4_1 = GetFloat(rawData, currentIndex++);         // 152
-                    spell.Unk_322_4_2 = GetFloat(rawData, currentIndex++);         // 153
-                    spell.Unk_322_4_3 = GetFloat(rawData, currentIndex++);         // 154
-
-					// 3.2.2
 					spell.spellDescriptionVariablesID = GetUInt32(rawData, currentIndex++);
 
-                    spell.SpellDifficultyId = GetUInt32(rawData, currentIndex++);
-                    spell.SpellScalingId = GetUInt32(rawData, currentIndex++);
-                    
-                    // 4.0.0 unk uint (array?)
-                    spell.Unk_400_4_1 = GetUInt32(rawData, currentIndex++);         // 152
-                    spell.Unk_400_4_2 = GetUInt32(rawData, currentIndex++);         // 153
-                    spell.Unk_400_4_3 = GetUInt32(rawData, currentIndex++);         // 154
+                    spell.SpellDifficultyId = GetInt32(rawData, currentIndex++);
 
+                    spell.ExtraCoeffiecient = GetFloat(rawData, currentIndex++);
+
+                    spell.SpellScalingId = GetInt32(rawData, currentIndex++); // SpellScaling.dbc
+                    if (spell.SpellScalingId != 0)
+                    {
+                        mappeddbcSpellScalingReader.Entries.TryGetValue(spell.SpellScalingId, out spell.SpellScaling);
+                    }
+
+                    spell.SpellAuraOptionsId = GetInt32(rawData, currentIndex++); // SpellAuraOptions.dbc
+                    if (spell.SpellAuraOptionsId != 0)
+                    {
+                        mappeddbcAuraOptionsReader.Entries.TryGetValue(spell.SpellAuraOptionsId, out spell.SpellAuraOptions);
+                    }
+                    if(spell.SpellAuraOptions == null)
+                    {
+                        spell.SpellAuraOptions = new SpellAuraOptions();
+                    }
+
+                    spell.SpellAuraRestrictionsId = GetInt32(rawData, currentIndex++); // SpellAuraRestrictions.dbc
+                    if (spell.SpellAuraRestrictionsId != 0)
+                    {
+                        mappeddbcAuraRestrictionsReader.Entries.TryGetValue(spell.SpellAuraRestrictionsId, out spell.SpellAuraRestrictions);
+                    }
+
+                    spell.SpellCastingRequirementsId = GetInt32(rawData, currentIndex++); // SpellCastingRequirements.dbc
+                    if (spell.SpellCastingRequirementsId != 0)
+                    {
+                        mappeddbcCastingRequirementsReader.Entries.TryGetValue(spell.SpellCastingRequirementsId, out spell.SpellCastingRequirements);
+                    }
+
+                    spell.SpellCategoriesId = GetInt32(rawData, currentIndex++); // SpellCategories.dbc
+                    if (spell.SpellCategoriesId != 0)
+                    {
+                        mappeddbcCategoriesReader.Entries.TryGetValue(spell.SpellCategoriesId, out spell.SpellCategories);
+                    }
+                    if(spell.SpellCategories == null)
+                    {
+                        spell.SpellCategories = new SpellCategories();
+                    }
+
+                    spell.SpellClassOptionsId = GetInt32(rawData, currentIndex++); // SpellClassOptions.dbc
+                    if (spell.SpellClassOptionsId != 0)
+                    {
+                        mappeddbcClassOptionsReader.Entries.TryGetValue(spell.SpellClassOptionsId, out spell.SpellClassOptions);
+                    }
+                    if(spell.SpellClassOptions == null)
+                    {
+                        spell.SpellClassOptions = new SpellClassOptions();
+                    }
+
+                    spell.SpellCooldownsId = GetInt32(rawData, currentIndex++); // SpellCooldowns.dbc
+                    if (spell.SpellCooldownsId != 0)
+                    {
+                        mappeddbcCooldownsReader.Entries.TryGetValue(spell.SpellCooldownsId, out spell.SpellCooldowns);
+                    }
+
+                    spell.UnknownIndex = GetInt32(rawData, currentIndex++);
+
+                    spell.SpellEquippedItemsId = GetInt32(rawData, currentIndex++); // SpellEquippedItems.dbc
+                    if (spell.SpellEquippedItemsId != 0)
+                    {
+                        mappeddbcEquippedItemsReader.Entries.TryGetValue(spell.SpellEquippedItemsId, out spell.SpellEquippedItems);
+                    }
+
+                    spell.SpellInterruptsId = GetInt32(rawData, currentIndex++); // SpellInterrupts.dbc
+                    if (spell.SpellInterruptsId != 0)
+                    {
+                        mappeddbcInterruptsReader.Entries.TryGetValue(spell.SpellInterruptsId, out spell.SpellInterrupts);
+                    }
+
+                    spell.SpellLevelsId = GetInt32(rawData, currentIndex++); // SpellLevels.dbc
+                    if (spell.SpellLevelsId != 0)
+                    {
+                        mappeddbcLevelsReader.Entries.TryGetValue(spell.SpellLevelsId, out spell.SpellLevels);
+                    }
+
+                    spell.SpellPowerId = GetInt32(rawData, currentIndex++); // SpellPower.dbc
+                    if (spell.SpellPowerId != 0)
+                    {
+                        mappeddbcPowerReader.Entries.TryGetValue(spell.SpellPowerId, out spell.SpellPower);
+                    }
+
+                    spell.SpellReagentsId = GetInt32(rawData, currentIndex++); // SpellReagents.dbc
+                    if (spell.SpellReagentsId != 0)
+                    {
+                        mappeddbcReagentsReader.Entries.TryGetValue(spell.SpellReagentsId, out spell.SpellReagents);
+                    }
+
+                    spell.ShapeShiftId = GetInt32(rawData, currentIndex++); // SpellShapeshift.dbc
+                    if (spell.ShapeShiftId != 0)
+                    {
+                        mappeddbcShapeShiftReader.Entries.TryGetValue(spell.ShapeShiftId, out spell.SpellShapeshift);
+                    }
+
+                    spell.SpellTargetRestrictionsId = GetInt32(rawData, currentIndex++); // SpellTargetRestrictions.dbc
+                    if (spell.SpellTargetRestrictionsId != 0)
+                    {
+                        mappeddbcTargetRestrictionsReader.Entries.TryGetValue(spell.SpellTargetRestrictionsId, out spell.SpellTargetRestrictions);
+                    }
+
+                    spell.SpellTotemsId = GetInt32(rawData, currentIndex++); // SpellTotems.dbc
+                    if (spell.SpellTotemsId != 0)
+                    {
+                        mappeddbcTotemsReader.Entries.TryGetValue(spell.SpellTotemsId, out spell.SpellTotems);
+                    }
+                    spell.UnknownIndex2 = GetInt32(rawData, currentIndex++);
+
+                    
+                    
+
+                    var effects = new List<SpellEffect>(3);
+
+					for (int i = 0; i < 3; i++)
+					{
+					    var effect = SpellEffectsCollection.Get(spell.SpellId, (uint)i);
+					    
+						if (effect != null)
+						{
+						    effect.Spell = spell;
+						    if (effect.EffectType != SpellEffectType.None ||
+						        effect.BasePoints > 0 || effect.AuraType != 0 ||
+						        effect.TriggerSpellId != 0)
+						    {
+
+						        effects.Add(effect);
+						    }
+						}
+					}
+					spell.Effects = effects.ToArray();
 
 				}
 				catch (Exception e)
@@ -441,94 +870,6 @@ namespace WCell.RealmServer.Spells
 					var reagent = new ItemStackDescription { ItemId = id, Amount = count };
 					list.Add(reagent);
 				}
-			}
-
-			private SpellEffect ReadEffect(Spell spell, byte[] rawData, int effectStartIndex, int effectNum, out int currentIndex)
-			{
-				var effect = new SpellEffect(spell, effectNum);
-
-				currentIndex = effectStartIndex + effectNum;
-
-				effect.EffectType = (SpellEffectType)GetUInt32(rawData, currentIndex);  // 71
-				currentIndex += 3;
-
-				effect.DiceSides = GetInt32(rawData, currentIndex);                    // 80
-				currentIndex += 3;
-
-				effect.RealPointsPerLevel = GetFloat(rawData, currentIndex);            // 77
-				currentIndex += 3;
-
-				effect.BasePoints = GetInt32(rawData, currentIndex);                    // 80
-				currentIndex += 3;
-
-				effect.Mechanic = (SpellMechanic)GetUInt32(rawData, currentIndex);      // 83
-				currentIndex += 3;
-
-				effect.ImplicitTargetA = (ImplicitSpellTargetType)GetUInt32(rawData, currentIndex);      // 86
-				currentIndex += 3;
-
-				effect.ImplicitTargetB = (ImplicitSpellTargetType)GetUInt32(rawData, currentIndex);      // 89
-				currentIndex += 3;
-
-				// Fix: This is a default AoE effect, thus doesn't have a fact at destination
-				if (effect.ImplicitTargetA == ImplicitSpellTargetType.AllEnemiesAroundCaster &&
-					effect.ImplicitTargetB == ImplicitSpellTargetType.AllEnemiesInArea)
-				{
-					effect.ImplicitTargetB = ImplicitSpellTargetType.None;
-				}
-
-				int radiusIndex = GetInt32(rawData, currentIndex);                                  // 92
-				if (radiusIndex > 0)
-				{
-					mappeddbcRadiusReader.Entries.TryGetValue(radiusIndex, out effect.Radius);
-				}
-                currentIndex += 3;
-
-                int radiusMaxIndex = GetInt32(rawData, currentIndex);
-				//if (effect.Radius < 1) {
-				//    effect.Radius = 5;
-				//}
-				currentIndex += 3;
-
-				effect.AuraType = (AuraType)GetUInt32(rawData, currentIndex);           // 95
-				currentIndex += 3;
-
-				effect.Amplitude = GetInt32(rawData, currentIndex);     // 98
-				currentIndex += 3;
-
-				effect.ProcValue = GetFloat(rawData, currentIndex);     // 101
-				currentIndex += 3;
-
-				effect.ChainTargets = GetInt32(rawData, currentIndex);  // 104
-				currentIndex += 3;
-
-				effect.ItemId = GetUInt32(rawData, currentIndex);       // 107
-				currentIndex += 3;
-
-				effect.MiscValue = GetInt32(rawData, currentIndex);     // 110
-				currentIndex += 3;
-
-				effect.MiscValueB = GetInt32(rawData, currentIndex);    // 113
-				currentIndex += 3;
-
-				effect.TriggerSpellId = (SpellId)GetUInt32(rawData, currentIndex);      // 116
-				currentIndex += 3;
-
-				effect.PointsPerComboPoint = GetFloat(rawData, currentIndex);       // 119
-				currentIndex += 3 - effectNum;
-
-
-				// since the masks are stored congruently instead of indexed
-				currentIndex += effectNum * 3;
-
-				effect.AffectMask[0] = GetUInt32(rawData, currentIndex++);
-				effect.AffectMask[1] = GetUInt32(rawData, currentIndex++);
-				effect.AffectMask[2] = GetUInt32(rawData, currentIndex++);
-
-				// skip ahead 6 for index 0, 3 for index 1, and 0 for index 2
-				currentIndex += (2 - effectNum) * 3;
-
-				return effect;
 			}
 		}
 

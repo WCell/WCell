@@ -1207,7 +1207,7 @@ namespace WCell.RealmServer.Entities
 						// Pushback SpellCast
 						if (IsUsingSpell)
 						{
-							if (SpellCast.Spell.InterruptFlags.HasFlag(InterruptFlags.OnTakeDamage))
+                            if (SpellCast.Spell.SpellInterrupts.InterruptFlags.HasFlag(InterruptFlags.OnTakeDamage))
 							{
 								SpellCast.Cancel();
 							}
@@ -1397,7 +1397,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public SpellFailedReason CanCastSpellOn(Unit target, Spell spell)
 		{
-			//return spell.IsHarmful == IsHostileWith(target) && !target.IsImmune(spell.Mechanic)
+			//return spell.IsHarmful == IsHostileWith(target) && !target.IsImmune(spell.SpellCategories.Mechanic)
 			//    && !target.IsImmune(spell.School);
 			var canHarm = CanHarm(target);
 			if ((canHarm && !spell.HasHarmfulEffects) || (!canHarm && !spell.HasBeneficialEffects))

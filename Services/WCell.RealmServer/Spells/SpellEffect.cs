@@ -36,7 +36,7 @@ using WCell.Util.NLog;
 
 namespace WCell.RealmServer.Spells
 {
-	public partial class SpellEffect
+    public partial class SpellEffect
 	{
 		private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
@@ -80,9 +80,9 @@ namespace WCell.RealmServer.Spells
 		{
 			get
 			{
-				if (Spell.ClassId != 0)
+                if (Spell.SpellClassOptions.ClassId != 0)
 				{
-					return SpellHandler.GetAffectedSpellLines(Spell.ClassId, AffectMask);
+                    return SpellHandler.GetAffectedSpellLines(Spell.SpellClassOptions.ClassId, AffectMask);
 				}
 				return new SpellLine[0];
 			}
@@ -159,7 +159,7 @@ namespace WCell.RealmServer.Spells
 						ImplicitSpellTargetType.AllPartyInArea,
 						ImplicitSpellTargetType.PartyAroundCaster,
 						ImplicitSpellTargetType.AllPartyInAreaChanneled) ||
-					  Spell.Mechanic.IsNegative()))
+					  Spell.SpellCategories.Mechanic.IsNegative()))
 			{
 				HarmType = HarmType.Harmful;
 			}
@@ -504,12 +504,12 @@ namespace WCell.RealmServer.Spells
 
 		public int GetMultipliedValue(Unit caster, int val, int currentTargetNo)
 		{
-			if (EffectIndex >= Spell.DamageMultipliers.Length || EffectIndex < 0 || currentTargetNo == 0)
+			if (EffectIndex >= Spell.Effects.Length || EffectIndex < 0 || currentTargetNo == 0)
 			{
 				return val;
 			}
 
-			var dmgMod = Spell.DamageMultipliers[EffectIndex];
+			var dmgMod = Spell.Effects[EffectIndex].ChainAmplitude;
 			if (caster != null)
 			{
 				dmgMod = caster.Auras.GetModifiedFloat(SpellModifierType.ChainValueFactor, Spell, dmgMod);
@@ -604,17 +604,17 @@ namespace WCell.RealmServer.Spells
 					var spell = SpellLines.GetLine(ability).FirstRank;
 					for (int i = 0; i < SpellConstants.SpellClassMaskSize; i++)
 					{
-						newMask[i] |= spell.SpellClassMask[i];
+                        newMask[i] |= spell.SpellClassOptions.SpellClassMask[i];
 					}
 				}
 			}
 			else
 			{
-				SpellLines.GetLine(abilities[0]).FirstRank.SpellClassMask.CopyTo(newMask, 0);
+                SpellLines.GetLine(abilities[0]).FirstRank.SpellClassOptions.SpellClassMask.CopyTo(newMask, 0);
 			}
 
 			// verification
-			var affectedLines = SpellHandler.GetAffectedSpellLines(Spell.ClassId, newMask);
+            var affectedLines = SpellHandler.GetAffectedSpellLines(Spell.SpellClassOptions.ClassId, newMask);
 			if (affectedLines.Count() != abilities.Length)
 			{
 				LogManager.GetCurrentClassLogger().Warn("[SPELL Inconsistency for {0}] " +
@@ -647,13 +647,13 @@ namespace WCell.RealmServer.Spells
 
 		public bool MatchesSpell(Spell spell)
 		{
-			return (spell.SpellClassSet == Spell.SpellClassSet && spell.MatchesMask(AffectMask)) ||
+			return (spell.SpellClassOptions.SpellClassSet == Spell.SpellClassOptions.SpellClassSet && spell.MatchesMask(AffectMask)) ||
 				(AffectSpellSet != null && AffectSpellSet.Contains(spell));
 		}
 
 		public void MakeProc(AuraEffectHandlerCreator creator, params SpellLineId[] exclusiveTriggers)
 		{
-			Spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+            Spell.SpellAuraOptions.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
 
 			IsProc = true;
 			ClearAffectMask();
@@ -667,7 +667,7 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public void MakeProcWithMask(AuraEffectHandlerCreator creator, params SpellLineId[] exclusiveTriggers)
 		{
-			Spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+            Spell.SpellAuraOptions.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
 
 			IsProc = true;
 			SetAffectMask(exclusiveTriggers);
@@ -746,9 +746,9 @@ namespace WCell.RealmServer.Spells
 			{
 				writer.WriteLine(indent + "PointsPerComboPoint: {0}", PointsPerComboPoint);
 			}
-			if (ProcValue != 0f)
+			if (ChainAmplitude != 0f)
 			{
-				writer.WriteLine(indent + "ProcValue: {0}", ProcValue);
+				writer.WriteLine(indent + "ChainAmplitude: {0}", ChainAmplitude);
 			}
 			if (Radius != 0)
 			{

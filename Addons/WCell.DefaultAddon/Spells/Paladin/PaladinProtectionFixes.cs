@@ -96,7 +96,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 
 				// create spell, give it 3 targets
 				var triggerSpell = SpellHandler.AddCustomSpell((uint)triggerEffect.TriggerSpellId, "Righteous Defense Trigger");
-				triggerSpell.MaxTargets = 3;
+                triggerSpell.SpellTargetRestrictions.MaxTargets = 3;
 
 				// add taunt effect
 				var tauntEff = triggerSpell.AddAuraEffect(AuraType.ModTaunt);

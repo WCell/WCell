@@ -20,12 +20,12 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public static bool CheckImmune(Unit target, Spell spell, bool hostile)
 		{
-			if (spell.Mechanic != SpellMechanic.None &&
-						hostile == spell.Mechanic.IsNegative() &&
-						((spell.Mechanic == SpellMechanic.Invulnerable_2 || spell.Mechanic == SpellMechanic.Invulnerable) &&
+			if (spell.SpellCategories.Mechanic != SpellMechanic.None &&
+                        hostile == spell.SpellCategories.Mechanic.IsNegative() &&
+                        ((spell.SpellCategories.Mechanic == SpellMechanic.Invulnerable_2 || spell.SpellCategories.Mechanic == SpellMechanic.Invulnerable) &&
 						!spell.Attributes.HasFlag(SpellAttributes.UnaffectedByInvulnerability) &&
 						(target.IsImmune(SpellMechanic.Invulnerable_2) || target.IsImmune(SpellMechanic.Invulnerable))) ||
-						(target.IsImmune(spell.Mechanic) || target.IsImmune(spell.DispelType)))
+                        (target.IsImmune(spell.SpellCategories.Mechanic) || target.IsImmune(spell.SpellCategories.DispelType)))
 			{
 				return false;
 			}
@@ -209,7 +209,7 @@ namespace WCell.RealmServer.Spells
 			if (isPlayerCast)
 			{
 				// Make sure that there is an Item for Spells that require an Item target
-				if (m_spell.TargetFlags.HasAnyFlag(SpellTargetFlags.Item))
+				if (m_spell.SpellTargetRestrictions.TargetFlags.HasAnyFlag(SpellTargetFlags.Item))
 				{
 					// Spell targets an item
 					if (TargetItem == null || !TargetItem.IsInWorld || TargetItem.Owner != CasterObject)
@@ -333,7 +333,7 @@ namespace WCell.RealmServer.Spells
 				// cancel stealth
 				if (!m_spell.AttributesEx.HasFlag(SpellAttributesEx.RemainStealthed))
 				{
-					CasterUnit.Auras.RemoveWhere(aura => aura.Spell.DispelType == DispelType.Stealth);
+					CasterUnit.Auras.RemoveWhere(aura => aura.Spell.SpellCategories.DispelType == DispelType.Stealth);
 				}
 			}
 
@@ -737,7 +737,7 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// update AuraState
-			if (m_spell.RequiredCasterAuraState == AuraState.DodgeOrBlockOrParry)
+            if (m_spell.SpellAuraRestrictions.RequiredCasterAuraState == AuraState.DodgeOrBlockOrParry)
 			{
 				caster.AuraState &= ~AuraStateMask.DodgeOrBlockOrParry;
 			}

@@ -144,7 +144,7 @@ namespace WCell.RealmServer.NPCs.Trainers
 				{
 					if (RequiredLevel == 0)
 					{
-						RequiredLevel = Spell.Level;
+						RequiredLevel = Spell.SpellLevels.Level;
 					}
 
 					if (trainer.TrainerEntry == null)

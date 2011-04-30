@@ -372,7 +372,7 @@ namespace WCell.RealmServer.Entities
 						MovementHandler.SendRooted((Character)this, 1);
 					}
 					//UnitFlags |= UnitFlags.Influenced;
-					if (IsUsingSpell && SpellCast.Spell.InterruptFlags.HasFlag(InterruptFlags.OnStunned))
+					if (IsUsingSpell && SpellCast.Spell.SpellInterrupts.InterruptFlags.HasFlag(InterruptFlags.OnStunned))
 					{
 						SpellCast.Cancel();
 					}
@@ -396,7 +396,7 @@ namespace WCell.RealmServer.Entities
 				{
 					// check if we can still cast spells
 					m_canCastSpells = false;
-					if (IsUsingSpell && SpellCast.Spell.InterruptFlags.HasFlag(InterruptFlags.OnSilence))
+					if (IsUsingSpell && SpellCast.Spell.SpellInterrupts.InterruptFlags.HasFlag(InterruptFlags.OnSilence))
 					{
 						SpellCast.Cancel();
 					}
@@ -704,7 +704,7 @@ namespace WCell.RealmServer.Entities
 			if (val == 0)
 			{
 				// new immunity: Gets rid of all Auras that use this Mechanic
-				Auras.RemoveWhere(aura => aura.Spell.Mechanic == mechanic &&
+				Auras.RemoveWhere(aura => aura.Spell.SpellCategories.Mechanic == mechanic &&
 					aura.Spell != exclude &&
 					(aura.Spell.TargetTriggerSpells == null || !aura.Spell.TargetTriggerSpells.Contains(exclude)) &&
 					(aura.Spell.CasterTriggerSpells == null || !aura.Spell.CasterTriggerSpells.Contains(exclude)) &&
@@ -850,7 +850,7 @@ namespace WCell.RealmServer.Entities
 			if (value == 0)
 			{
 				// new immunity: Gets rid of all Auras that use this DispelType
-				Auras.RemoveWhere(aura => aura.Spell.DispelType == school);
+				Auras.RemoveWhere(aura => aura.Spell.SpellCategories.DispelType == school);
 			}
 			m_dispelImmunities[(uint)school] = value + 1;
 		}

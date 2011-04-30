@@ -119,7 +119,7 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public bool IsMount
 		{
-			get { return Mechanic == SpellMechanic.Mounted; }
+			get { return SpellCategories != null && SpellCategories.Mechanic == SpellMechanic.Mounted; }
 		}
 
 		/// <summary>
@@ -152,7 +152,7 @@ namespace WCell.RealmServer.Spells
 		private void InitAura()
 		{
 			// procs
-			if (ProcTriggerFlags != ProcTriggerFlags.None || CasterProcSpells != null)
+            if ((SpellAuraOptions != null && SpellAuraOptions.ProcTriggerFlags != ProcTriggerFlags.None) || CasterProcSpells != null)
 			{
 				ProcTriggerEffects = Effects.Where(effect => effect.IsProc).ToArray();
 				if (ProcTriggerEffects.Length == 0)
@@ -165,14 +165,14 @@ namespace WCell.RealmServer.Spells
 				//    log.Warn("Spell {0} had more than one ProcTriggerEffect", this);
 				//}
 
-				if (ProcTriggerFlags == (ProcTriggerFlags.MeleeHitOther | ProcTriggerFlags.SpellCast))
+                if (SpellAuraOptions != null && SpellAuraOptions.ProcTriggerFlags == (ProcTriggerFlags.MeleeHitOther | ProcTriggerFlags.SpellCast))
 				{
 					// we don't want any SpellCast to trigger on that
-					ProcTriggerFlags = ProcTriggerFlags.MeleeHitOther;
+                    SpellAuraOptions.ProcTriggerFlags = ProcTriggerFlags.MeleeHitOther;
 				}
 
 				IsProc = ProcTriggerEffects != null || ProcHandlers != null || CasterProcSpells != null ||
-					ProcCharges > 0;
+                    SpellAuraOptions.ProcCharges > 0;
 			}
 
 			IsAura = IsProc || HasEffectWith(effect =>
@@ -221,11 +221,11 @@ namespace WCell.RealmServer.Spells
 			});
 
 			// charges and stacks:
-			CanStack = MaxStackCount > 0;
-			if (ProcCharges > 0)
+            CanStack = SpellAuraOptions != null && SpellAuraOptions.MaxStackCount > 0;
+            if (SpellAuraOptions != null && SpellAuraOptions.ProcCharges > 0)
 			{
 				// applications will be used up by procs
-				InitialStackCount = ProcCharges;
+                InitialStackCount = SpellAuraOptions.ProcCharges;
 			}
 			else
 			{
@@ -245,7 +245,7 @@ namespace WCell.RealmServer.Spells
 									Ability == null && Talent == null;
 
 			HasShapeshiftDependentEffects = HasEffectWith(effect => effect.RequiredShapeshiftMask != 0);
-			IsModalShapeshiftDependentAura = IsPassive && (RequiredShapeshiftMask != 0 || HasShapeshiftDependentEffects);
+			IsModalShapeshiftDependentAura = IsPassive && ((SpellShapeshift != null && SpellShapeshift.RequiredShapeshiftMask != 0) || HasShapeshiftDependentEffects);
 
 			if (AuraUID == 0)
 			{
@@ -336,7 +336,7 @@ namespace WCell.RealmServer.Spells
 				spell.GeneratesProcEventOnCast = true;
 			}
 			CasterProcSpells.AddRange(spells);
-			ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+            SpellAuraOptions.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
 		}
 		#endregion
 
@@ -391,7 +391,7 @@ namespace WCell.RealmServer.Spells
 				spell.GeneratesProcEventOnCast = true;
 			}
 			TargetProcSpells.AddRange(spells);
-			ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+            SpellAuraOptions.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
 		}
 		#endregion
 

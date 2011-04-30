@@ -153,7 +153,6 @@ namespace WCell.RealmServer.Spells
 				SpellId = (SpellId)id,
 				Name = "[" + RealmLocalizer.Instance.Translate(RealmLangKey.Custom).ToUpper() + "] " + name,
 				Effects = new SpellEffect[0],
-				RequiredToolIds = new uint[0]
 			};
 			AddSpell(spell);
 			return spell;
@@ -406,7 +405,7 @@ namespace WCell.RealmServer.Spells
 		{
 			foreach (var spell in SpellsRequiringTools)
 			{
-				foreach (var id in spell.RequiredToolIds)
+				foreach (var id in spell.SpellTotems.RequiredToolIds)
 				{
 					if (id > 0)
 					{
@@ -415,7 +414,7 @@ namespace WCell.RealmServer.Spells
 						{
 							if (spell.RequiredTools == null)
 							{
-								spell.RequiredTools = new ItemTemplate[spell.RequiredToolIds.Length];
+                                spell.RequiredTools = new ItemTemplate[spell.SpellTotems.RequiredToolIds.Length];
 							}
 							ArrayUtil.Add(ref spell.RequiredTools, templ);
 						}

@@ -1,4 +1,4 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: PowerBurn.cs
  *   copyright		: (C) The WCell Team
@@ -30,7 +30,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			if (holder.PowerType == (PowerType)m_spellEffect.MiscValue &&
 				m_aura.CasterUnit != null)
 			{
-				holder.BurnPower(EffectValue, m_spellEffect.ProcValue, m_aura.CasterUnit, m_spellEffect);
+				holder.BurnPower(EffectValue, m_spellEffect.ChainAmplitude, m_aura.CasterUnit, m_spellEffect);
 			}
 		}
 

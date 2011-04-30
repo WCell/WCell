@@ -132,7 +132,7 @@ namespace WCell.RealmServer.Talents
 						//    log.Warn("Spell {0} has Talents: {1} + {2}", spell, spell.Talent, talent);
 						//}
 						spell.Talent = talent;
-						spell.ClassId = talent.Tree.Class;
+                        spell.SpellClassOptions.ClassId = talent.Tree.Class;
 						spell.Rank = i + 1;
 					}
 				}

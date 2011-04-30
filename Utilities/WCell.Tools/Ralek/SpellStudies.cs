@@ -72,7 +72,7 @@ namespace WCell.Tools.Ralek
 		{
 			var query = from spell in SpellHandler.ById
 			            where spell != null
-			            where spell.SpellClassSet == set
+			            where spell.SpellClassOptions.SpellClassSet == set
 			            select spell;
 
 			foreach (var spell in query)
@@ -94,7 +94,7 @@ namespace WCell.Tools.Ralek
 
 			foreach (var spell in query)
 			{
-				Console.WriteLine("{0}: {1} - {2}", spell.Id, spell.Name, spell.FacingFlags);
+                Console.WriteLine("{0}: {1} - {2}", spell.Id, spell.Name, spell.SpellCastingRequirements.FacingFlags);
 				Console.WriteLine();
 			}
 
@@ -138,8 +138,8 @@ namespace WCell.Tools.Ralek
 			int i = 0;
 			foreach (var spell in query)
 			{
-				Console.WriteLine("{0}: {1} \t {2}{3}{4}", spell.Id, spell.Name, spell.SpellClassMask[0].ToString("X8"),
-				                  spell.SpellClassMask[1].ToString("X8"), spell.SpellClassMask[2].ToString("X8"));
+                Console.WriteLine("{0}: {1} \t {2}{3}{4}", spell.Id, spell.Name, spell.SpellClassOptions.SpellClassMask[0].ToString("X8"),
+                                  spell.SpellClassOptions.SpellClassMask[1].ToString("X8"), spell.SpellClassOptions.SpellClassMask[2].ToString("X8"));
 				foreach (var effect in spell.Effects)
 				{
 					Console.WriteLine("{0} - {1}{2}{3}", effect.EffectType, effect.AffectMask[0].ToString("X8"),
@@ -155,13 +155,13 @@ namespace WCell.Tools.Ralek
 		{
 			var query = from spell in SpellHandler.ById
 			            where spell != null
-			            where spell.SpellClassMask[0] == u1 && spell.SpellClassMask[1] == u2 && spell.SpellClassMask[2] == u3
+                        where spell.SpellClassOptions.SpellClassMask[0] == u1 && spell.SpellClassOptions.SpellClassMask[1] == u2 && spell.SpellClassOptions.SpellClassMask[2] == u3
 			            select spell;
 
 			foreach (var spell in query)
 			{
-				Console.WriteLine("{0}: {1} \t {2}{3}{4}", spell.Id, spell.Name, spell.SpellClassMask[0].ToString("X8"),
-				                  spell.SpellClassMask[1].ToString("X8"), spell.SpellClassMask[2].ToString("X8"));
+                Console.WriteLine("{0}: {1} \t {2}{3}{4}", spell.Id, spell.Name, spell.SpellClassOptions.SpellClassMask[0].ToString("X8"),
+                                  spell.SpellClassOptions.SpellClassMask[1].ToString("X8"), spell.SpellClassOptions.SpellClassMask[2].ToString("X8"));
 				foreach (var effect in spell.Effects)
 				{
 					Console.WriteLine("{0} - {1}{2}{3}", effect.EffectType, effect.AffectMask[0].ToString("X8"),
@@ -175,7 +175,7 @@ namespace WCell.Tools.Ralek
             var spell = SpellHandler.ById[53270];
             var spellMask0 = spell.Effects[0].AffectMask;
             var spellMask1 = spell.Effects[1].AffectMask;
-            var spellSet = spell.SpellClassSet;
+            var spellSet = spell.SpellClassOptions.SpellClassSet;
 
             FindSpellWithSpellClassMaskAndSpellClassSet(spellMask0[0], spellMask0[1], spellMask0[2], spellSet);
             FindSpellWithSpellClassMaskAndSpellClassSet(spellMask1[0], spellMask1[1], spellMask1[2], spellSet);
@@ -185,13 +185,13 @@ namespace WCell.Tools.Ralek
         {
             var query = from spell in SpellHandler.ById
 			            where spell != null
-			            where ((spell.SpellClassMask[0] & u1) != 0) || ((spell.SpellClassMask[1] & u2) != 0) || ((spell.SpellClassMask[2] & u3) != 0)
-                        where spell.SpellClassSet == set
+                        where ((spell.SpellClassOptions.SpellClassMask[0] & u1) != 0) || ((spell.SpellClassOptions.SpellClassMask[1] & u2) != 0) || ((spell.SpellClassOptions.SpellClassMask[2] & u3) != 0)
+                        where spell.SpellClassOptions.SpellClassSet == set
 			            select spell;
             foreach (var spell in query)
 			{
-				Console.WriteLine("{0}: {1} \t {2}{3}{4}", spell.Id, spell.Name, spell.SpellClassMask[0].ToString("X8"),
-				                  spell.SpellClassMask[1].ToString("X8"), spell.SpellClassMask[2].ToString("X8"));
+                Console.WriteLine("{0}: {1} \t {2}{3}{4}", spell.Id, spell.Name, spell.SpellClassOptions.SpellClassMask[0].ToString("X8"),
+                                  spell.SpellClassOptions.SpellClassMask[1].ToString("X8"), spell.SpellClassOptions.SpellClassMask[2].ToString("X8"));
 				foreach (var effect in spell.Effects)
 				{
 					Console.WriteLine("\t{0} - {1}{2}{3}", effect.EffectType, effect.AffectMask[0].ToString("X8"),
@@ -593,11 +593,11 @@ namespace WCell.Tools.Ralek
 				Console.WriteLine("AExD: {0}", spell.AttributesExD);
 				Console.WriteLine("AExE: {0}", spell.AttributesExE);
 				Console.WriteLine("AExF: {0}", spell.AttributesExF);
-				Console.WriteLine("FacingFlags: {0}", spell.FacingFlags);
+				Console.WriteLine("FacingFlags: {0}", spell.SpellCastingRequirements.FacingFlags);
 
-				Console.WriteLine("TargetType: {0}", spell.TargetFlags);
-				Console.WriteLine("SpellClassMask: {0:X8}{1:X8}{2:X8}", spell.SpellClassMask[0], spell.SpellClassMask[1],
-				                  spell.SpellClassMask[2]);
+                Console.WriteLine("TargetType: {0}", spell.SpellTargetRestrictions.TargetFlags);
+                Console.WriteLine("SpellClassMask: {0:X8}{1:X8}{2:X8}", spell.SpellClassOptions.SpellClassMask[0], spell.SpellClassOptions.SpellClassMask[1],
+                                  spell.SpellClassOptions.SpellClassMask[2]);
 				Console.WriteLine("Effects");
 				foreach (var effect in spell.Effects)
 				{
@@ -606,9 +606,9 @@ namespace WCell.Tools.Ralek
 				Console.WriteLine("Effects End");
 
 
-				Console.WriteLine("PreventionType: {0}", spell.PreventionType);
+				Console.WriteLine("PreventionType: {0}", spell.SpellCategories.PreventionType);
 
-				Console.WriteLine("DefenseType: {0}", spell.DefenseType);
+                Console.WriteLine("DefenseType: {0}", spell.SpellCategories.DefenseType);
 
 
 				Console.WriteLine();
@@ -648,7 +648,7 @@ namespace WCell.Tools.Ralek
 			if (spell == null)
 				return false;
 
-			return (spell.FacingFlags & toCheck) == toCheck;
+			return (spell.SpellCastingRequirements.FacingFlags & toCheck) == toCheck;
 		}
 	}
 }

@@ -31,7 +31,7 @@ namespace WCell.RealmServer.Spells.Effects
 						var spell = SpellHandler.Get(totem.CreationSpellId);
 						if (spell != null)
 						{ 
-							spellCost += ((chr.BasePower * spell.PowerCostPercentage)/100) / 4;
+							spellCost += ((chr.BasePower * spell.SpellPower.PowerCostPercentage)/100) / 4;
 							totem.Delete();
 						}
 					}

@@ -284,7 +284,7 @@ namespace WCell.RealmServer.Spells
 
 			first.IterateEnvironment(handler.GetRadius(), target =>
 			{
-				if ((spell.FacingFlags & SpellFacingFlags.RequiresInFront) != 0 &&
+                if ((spell.SpellCastingRequirements.FacingFlags & SpellFacingFlags.RequiresInFront) != 0 &&
 					caster != null &&
 					!target.IsInFrontOf(caster))
 				{

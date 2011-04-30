@@ -84,7 +84,7 @@ namespace WCell.RealmServer.Spells.Auras
 				{
 					ShapeshiftRestrictedAuras.Add(aura);
 				}
-				if (aura.Spell.RequiredCasterAuraState != 0)
+				if (aura.Spell.SpellAuraRestrictions.RequiredCasterAuraState != 0)
 				{
 					AuraStateRestrictedAuras.Add(aura);
 				}
@@ -110,7 +110,7 @@ namespace WCell.RealmServer.Spells.Auras
 				{
 					ShapeshiftRestrictedAuras.Remove(aura);
 				}
-				if (aura.Spell.RequiredCasterAuraState != 0)
+                if (aura.Spell.SpellAuraRestrictions.RequiredCasterAuraState != 0)
 				{
 					AuraStateRestrictedAuras.Remove(aura);
 				}
@@ -378,7 +378,7 @@ namespace WCell.RealmServer.Spells.Auras
 			{
 				foreach (var aura in shapeshiftRestrictedAuras)
 				{
-					if (aura.Spell.RequiredShapeshiftMask != 0)
+					if (aura.Spell.SpellShapeshift.RequiredShapeshiftMask != 0)
 					{
 						// toggle Aura
 						aura.IsActivated = MayActivate(aura);
@@ -463,11 +463,11 @@ namespace WCell.RealmServer.Spells.Auras
 			}
 
 			// ShapeShiftMask & Items & AuraState
-			if (aura.Spell.RequiredShapeshiftMask != 0 && !aura.Spell.RequiredShapeshiftMask.HasAnyFlag(m_owner.ShapeshiftMask))
+            if (aura.Spell.SpellShapeshift.RequiredShapeshiftMask != 0 && !aura.Spell.SpellShapeshift.RequiredShapeshiftMask.HasAnyFlag(m_owner.ShapeshiftMask))
 			{
 				return false;
 			}
-			if (aura.Spell.RequiredCasterAuraState != 0 && !m_owner.AuraState.HasAnyFlag(aura.Spell.RequiredCasterAuraState))
+            if (aura.Spell.SpellAuraRestrictions.RequiredCasterAuraState != 0 && !m_owner.AuraState.HasAnyFlag(aura.Spell.SpellAuraRestrictions.RequiredCasterAuraState))
 			{
 				return false;
 			}

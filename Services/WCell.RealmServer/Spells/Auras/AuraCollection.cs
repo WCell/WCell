@@ -717,7 +717,7 @@ namespace WCell.RealmServer.Spells.Auras
 			//Aura[] auras = m_nonPassiveAuras.ToArray();
 			foreach (var aura in m_visibleAuras)
 			{
-				if (aura != null && (aura.Spell.AuraInterruptFlags & interruptFlags) != 0)
+				if (aura != null && (aura.Spell.SpellInterrupts.AuraInterruptFlags & interruptFlags) != 0)
 				{
 					aura.Remove(false);
 				}
@@ -1050,7 +1050,7 @@ namespace WCell.RealmServer.Spells.Auras
 		{
 			foreach (var aura in m_AuraArray)
 			{
-				if (aura.Spell.SpellClassSet != spell.SpellClassSet)
+				if (aura.Spell.SpellClassOptions.SpellClassSet != spell.SpellClassOptions.SpellClassSet)
 				{
 					// must be same class
 					continue;
@@ -1098,7 +1098,7 @@ namespace WCell.RealmServer.Spells.Auras
 			var count = 0;
 			foreach (var aura in m_visibleAuras)
 			{
-				if (aura != null && aura.CasterReference == caster && aura.Spell.DispelType == type)
+				if (aura != null && aura.CasterReference == caster && aura.Spell.SpellCategories.DispelType == type)
 				{
 					count++;
 				}

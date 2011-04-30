@@ -232,7 +232,7 @@ namespace WCell.RealmServer.Global
 				Flags = (ZoneFlags)GetUInt32(rawData, 4),
 				AreaLevel = GetInt32(rawData, 10),
 				Name = GetString(rawData, 11),
-				Ownership = (FactionGroupMask)GetUInt32(rawData, 28)
+				Ownership = (FactionGroupMask)GetUInt32(rawData, 12)
 			};
             return area;
 		}

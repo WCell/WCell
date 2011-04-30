@@ -1,7 +1,7 @@
 
 ///
 /// This file was automatically created, using WCell's CodeFileWriter
-/// Date: 01/06/2010
+/// Date: 25/04/2011
 ///
 
 namespace WCell.Constants.World
@@ -12,7 +12,6 @@ namespace WCell.Constants.World
 		Kalimdor = 1,
 		Testing = 13,
 		ScottTest = 25,
-		CashTest = 29,
 		AlteracValley = 30,
 		ShadowfangKeep = 33,
 		StormwindStockade = 34,
@@ -138,7 +137,7 @@ namespace WCell.Constants.World
 		ThroneOfTheTides = 643,
 		HallsOfOrigination = 644,
 		BlackrockCaverns = 645,
-		Deephome = 646,
+		Deepholm = 646,
 		TransportOrgrimmarToThunderBluff = 647,
 		LostIsles = 648,
 		TrialOfTheCrusader = 649,
@@ -147,7 +146,7 @@ namespace WCell.Constants.World
 		Gilneas2 = 654,
 		GilneasPhase1 = 655,
 		GilneasPhase2 = 656,
-		SkywallDungeon = 657,
+		TheVortexPinnacle = 657,
 		PitOfSaron = 658,
 		LostIslesVolcanoEruption = 659,
 		DeephomeCeiling = 660,
@@ -156,7 +155,7 @@ namespace WCell.Constants.World
 		HallsOfReflection = 668,
 		BlackwingDescent = 669,
 		GrimBatol = 670,
-		GrimBatolRaid = 671,
+		TheBastionOfTwilight = 671,
 		TransportTheSkybreakerIcecrownCitadelRaid = 672,
 		TransportOrgrimsHammerIcecrownCitadelRaid = 673,
 		TransportShipToVashjIr = 674,
@@ -168,10 +167,10 @@ namespace WCell.Constants.World
 		FirelandsTerrain2 = 721,
 		Stormwind = 723,
 		TheRubySanctum = 724,
-		DeepholmeDungeon = 725,
+		TheStonecore = 725,
 		TwinPeaks = 726,
 		STVDiamondMineBG = 727,
-		TheBattleForGilneas = 728,
+		TheBattleForGilneasOldCityMap = 728,
 		MaelstromZone = 730,
 		StonetalonBomb = 731,
 		TolBarad = 732,
@@ -183,6 +182,26 @@ namespace WCell.Constants.World
 		TwilightHighlandsHordeTransport = 741,
 		VashjIrSubHordeCirclingAbyssalMaw = 742,
 		VashjIrSubAllianceCirclingAbyssalMaw = 743,
+		UldumPhaseOasis = 746,
+		TransportDeepholmGunship = 747,
+		TransportOnyxiaNefarianElevator = 748,
+		TransportGilneasMovingGunship = 749,
+		TransportGilneasStaticGunship = 750,
+		RedridgeOrcBomb = 751,
+		RedridgeBridgePhaseOne = 752,
+		RedridgeBridgePhaseTwo = 753,
+		ThroneOfTheFourWinds = 754,
+		LostCityOfTheTolVir = 755,
+		BaradinHold = 757,
+		UldumPhasedEntrance = 759,
+		TwilightHighlandsPhasedEntrance = 760,
+		TheBattleForGilneas = 761,
+		TwilightHighlandsZeppelin1 = 762,
+		TwilightHighlandsZeppelin2 = 763,
+		UldumPhaseWreckedCamp = 764,
+		KrazzworksAttackZeppelin = 765,
+		TransportGilneasMovingGunship02 = 766,
+		TransportGilneasMovingGunship03 = 767,
 		End
 	}
 

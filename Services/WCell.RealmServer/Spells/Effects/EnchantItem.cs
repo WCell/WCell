@@ -40,7 +40,7 @@ namespace WCell.RealmServer.Spells.Effects
 				return;
 			}
 
-			if (m_cast.TargetItem.Template.Level < Effect.Spell.BaseLevel)
+			if (m_cast.TargetItem.Template.Level < Effect.Spell.SpellLevels.BaseLevel)
 			{
 				failReason = SpellFailedReason.Lowlevel;
 				return;

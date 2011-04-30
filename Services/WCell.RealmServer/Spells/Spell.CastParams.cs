@@ -48,7 +48,7 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// Not while silenced			
-			if (InterruptFlags.HasFlag(InterruptFlags.OnSilence) && caster.IsUnderInfluenceOf(SpellMechanic.Silenced))
+            if (SpellInterrupts.InterruptFlags.HasFlag(InterruptFlags.OnSilence) && caster.IsUnderInfluenceOf(SpellMechanic.Silenced))
 			{
 				return SpellFailedReason.Silenced;
 			}
@@ -73,7 +73,7 @@ namespace WCell.RealmServer.Spells
 			// Not while silenced		
 			else if (!caster.CanCastSpells &&
 					(!IsPhysicalAbility ||
-					(InterruptFlags.HasFlag(InterruptFlags.OnSilence) &&
+                    (SpellInterrupts.InterruptFlags.HasFlag(InterruptFlags.OnSilence) &&
 					 caster.IsUnderInfluenceOf(SpellMechanic.Silenced))))
 			{
 				return SpellFailedReason.Silenced;
@@ -95,20 +95,20 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// AuraStates
-			if (RequiredCasterAuraState != 0 || ExcludeCasterAuraState != 0)
+            if (SpellAuraRestrictions.RequiredCasterAuraState != 0 || SpellAuraRestrictions.ExcludeCasterAuraState != 0)
 			{
 				// check AuraStates
 				var state = caster.AuraState;
-				if ((RequiredCasterAuraState != 0 && !state.HasAnyFlag(RequiredCasterAuraState)) ||
-					(ExcludeCasterAuraState != 0 && state.HasAnyFlag(ExcludeCasterAuraState)))
+                if ((SpellAuraRestrictions.RequiredCasterAuraState != 0 && !state.HasAnyFlag(SpellAuraRestrictions.RequiredCasterAuraState)) ||
+                    (SpellAuraRestrictions.ExcludeCasterAuraState != 0 && state.HasAnyFlag(SpellAuraRestrictions.ExcludeCasterAuraState)))
 				{
 					return SpellFailedReason.CasterAurastate;
 				}
 			}
 
 			// Required Auras
-			if ((ExcludeCasterAuraId != 0 && caster.Auras.Contains(ExcludeCasterAuraId)) ||
-				(RequiredCasterAuraId != 0 && !caster.Auras.Contains(RequiredCasterAuraId)))
+            if ((SpellAuraRestrictions.ExcludeCasterAuraId != 0 && caster.Auras.Contains(SpellAuraRestrictions.ExcludeCasterAuraId)) ||
+                (SpellAuraRestrictions.RequiredCasterAuraId != 0 && !caster.Auras.Contains(SpellAuraRestrictions.RequiredCasterAuraId)))
 			{
 				return SpellFailedReason.CasterAurastate;
 			}
@@ -116,14 +116,14 @@ namespace WCell.RealmServer.Spells
 			// Shapeshift
 			var shapeshiftMask = caster.ShapeshiftMask;
 			bool ignoreShapeshiftRequirement = false;	// use this to allow for lazy requirement lookup
-			if (ExcludeShapeshiftMask.HasAnyFlag(shapeshiftMask))
+			if (SpellShapeshift.ExcludeShapeshiftMask.HasAnyFlag(shapeshiftMask))
 			{
 				if (!(ignoreShapeshiftRequirement = caster.Auras.IsShapeshiftRequirementIgnored(this)))
 				{
 					return SpellFailedReason.NotShapeshift;
 				}
 			}
-			else if (!RequiredShapeshiftMask.HasAnyFlag(shapeshiftMask))
+            else if (!SpellShapeshift.RequiredShapeshiftMask.HasAnyFlag(shapeshiftMask))
 			{
 				// our mask did not pass -> do the default checks
 				var shapeshiftEntry = caster.ShapeshiftEntry;
@@ -131,7 +131,7 @@ namespace WCell.RealmServer.Spells
 
 				if (shapeshifted)
 				{
-					if (RequiredShapeshiftMask != 0)
+                    if (SpellShapeshift.RequiredShapeshiftMask != 0)
 					{
 						// When shapeshifted, can only use spells that allow this form
 						if (!(ignoreShapeshiftRequirement = caster.Auras.IsShapeshiftRequirementIgnored(this)))
@@ -180,8 +180,8 @@ namespace WCell.RealmServer.Spells
 		private bool CheckSpellFocus(Unit caster)
 		{
 			var range = caster.GetSpellMaxRange(this);
-			return RequiredSpellFocus == SpellFocus.None ||
-				   caster.Map.GetGOWithSpellFocus(caster.Position, RequiredSpellFocus, range > 0 ? (range) : 5f, caster.Phase) != null;
+            return SpellCastingRequirements.RequiredSpellFocus == SpellFocus.None ||
+                   caster.Map.GetGOWithSpellFocus(caster.Position, SpellCastingRequirements.RequiredSpellFocus, range > 0 ? (range) : 5f, caster.Phase) != null;
 		}
 
 		/// <summary>
@@ -191,17 +191,17 @@ namespace WCell.RealmServer.Spells
 		{
 			get
 			{
-				return (RequiredItemClass != 0 && RequiredItemClass != ItemClass.None) ||
-				  RequiredItemInventorySlotMask != InventorySlotTypeMask.None ||
+                return (SpellEquippedItems.RequiredItemClass != 0 && SpellEquippedItems.RequiredItemClass != ItemClass.None) ||
+                  SpellEquippedItems.RequiredItemInventorySlotMask != InventorySlotTypeMask.None ||
 				  RequiredTools != null ||
-				  RequiredToolCategories.Length > 0 ||
+                  SpellTotems.RequiredToolCategories.Length > 0 ||
 				  EquipmentSlot != EquipmentSlot.End;
 			}
 		}
 
 		public SpellFailedReason CheckItemRestrictions(Item usedItem, PlayerInventory inv)
 		{
-			if (RequiredItemClass != ItemClass.None)
+            if (SpellEquippedItems.RequiredItemClass != ItemClass.None)
 			{
 				if (EquipmentSlot != EquipmentSlot.End)
 				{
@@ -213,23 +213,23 @@ namespace WCell.RealmServer.Spells
 					return SpellFailedReason.EquippedItem;
 
 				}
-				if (RequiredItemClass > 0)
+                if (SpellEquippedItems.RequiredItemClass > 0)
 				{
-					if (usedItem.Template.Class != RequiredItemClass)
+                    if (usedItem.Template.Class != SpellEquippedItems.RequiredItemClass)
 					{
 						return SpellFailedReason.EquippedItemClass;
 					}
 
-					if (RequiredItemSubClassMask > 0 &&
-						!usedItem.Template.SubClassMask.HasAnyFlag(RequiredItemSubClassMask))
+                    if (SpellEquippedItems.RequiredItemSubClassMask > 0 &&
+                        !usedItem.Template.SubClassMask.HasAnyFlag(SpellEquippedItems.RequiredItemSubClassMask))
 					{
 						return SpellFailedReason.EquippedItemClass;
 					}
 				}
 			}
-			if (RequiredItemInventorySlotMask != InventorySlotTypeMask.None)
+            if (SpellEquippedItems.RequiredItemInventorySlotMask != InventorySlotTypeMask.None)
 			{
-				if (usedItem != null && (usedItem.Template.InventorySlotMask & RequiredItemInventorySlotMask) == 0)
+                if (usedItem != null && (usedItem.Template.InventorySlotMask & SpellEquippedItems.RequiredItemInventorySlotMask) == 0)
 				// don't use Enum.HasFlag!
 				{
 					return SpellFailedReason.EquippedItemClass;
@@ -252,7 +252,7 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public SpellFailedReason CheckItemRestrictionsWithout(PlayerInventory inv, Item exclude)
 		{
-			if (RequiredItemClass == ItemClass.Armor || RequiredItemClass == ItemClass.Weapon)
+            if (SpellEquippedItems.RequiredItemClass == ItemClass.Armor || SpellEquippedItems.RequiredItemClass == ItemClass.Weapon)
 			{
 				Item item;
 				if (EquipmentSlot != EquipmentSlot.End)
@@ -271,16 +271,16 @@ namespace WCell.RealmServer.Spells
 				}
 				else
 				{
-					if (inv.Iterate(ItemMgr.EquippableInvSlotsByClass[(int)RequiredItemClass], i => i == exclude || !CheckItemRestriction(i)))
+                    if (inv.Iterate(ItemMgr.EquippableInvSlotsByClass[(int)SpellEquippedItems.RequiredItemClass], i => i == exclude || !CheckItemRestriction(i)))
 					{
 						return SpellFailedReason.EquippedItemClass;
 					}
 				}
 			}
 
-			if (RequiredItemInventorySlotMask != InventorySlotTypeMask.None)
+            if (SpellEquippedItems.RequiredItemInventorySlotMask != InventorySlotTypeMask.None)
 			{
-				if (inv.Iterate(RequiredItemInventorySlotMask, item => item == exclude || (item.Template.InventorySlotMask & RequiredItemInventorySlotMask) == 0
+                if (inv.Iterate(SpellEquippedItems.RequiredItemInventorySlotMask, item => item == exclude || (item.Template.InventorySlotMask & SpellEquippedItems.RequiredItemInventorySlotMask) == 0
 				))
 				{
 					// iterated over all matching items and did not find the right one
@@ -293,12 +293,12 @@ namespace WCell.RealmServer.Spells
 
 		bool CheckItemRestriction(Item item)
 		{
-			if (item.Template.Class != RequiredItemClass)
+            if (item.Template.Class != SpellEquippedItems.RequiredItemClass)
 			{
 				return false;
 			}
 
-			if (RequiredItemSubClassMask > 0 && !item.Template.SubClassMask.HasAnyFlag(RequiredItemSubClassMask))
+            if (SpellEquippedItems.RequiredItemSubClassMask > 0 && !item.Template.SubClassMask.HasAnyFlag(SpellEquippedItems.RequiredItemSubClassMask))
 			{
 				return false;
 			}
@@ -319,10 +319,10 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
-			if (RequiredToolCategories.Length > 0)
+			if (SpellTotems.RequiredToolCategories.Length > 0)
 			{
 				// Required totem category refers to tools that are required during the spell
-				if (!inv.CheckTotemCategories(RequiredToolCategories))
+				if (!inv.CheckTotemCategories(SpellTotems.RequiredToolCategories))
 				{
 					return SpellFailedReason.TotemCategory;
 				}
@@ -366,34 +366,34 @@ namespace WCell.RealmServer.Spells
 			if (target is Unit)
 			{
 				// AuraState
-				if (RequiredTargetAuraState != 0 || ExcludeTargetAuraState != 0)
+                if (SpellAuraRestrictions.RequiredTargetAuraState != 0 || SpellAuraRestrictions.ExcludeTargetAuraState != 0)
 				{
 					var state = ((Unit)target).AuraState;
-					if ((RequiredTargetAuraState != 0 && !state.HasAnyFlag(RequiredTargetAuraState)) ||
-						(ExcludeTargetAuraState != 0 && state.HasAnyFlag(ExcludeTargetAuraState)))
+                    if ((SpellAuraRestrictions.RequiredTargetAuraState != 0 && !state.HasAnyFlag(SpellAuraRestrictions.RequiredTargetAuraState)) ||
+                        (SpellAuraRestrictions.ExcludeTargetAuraState != 0 && state.HasAnyFlag(SpellAuraRestrictions.ExcludeTargetAuraState)))
 					{
 						return SpellFailedReason.TargetAurastate;
 					}
 				}
 
 				// Required Auras
-				if ((ExcludeTargetAuraId != 0 && ((Unit)target).Auras.Contains(ExcludeTargetAuraId)) ||
-					(RequiredTargetAuraId != 0 && !((Unit)target).Auras.Contains(RequiredTargetAuraId)))
+                if ((SpellAuraRestrictions.ExcludeTargetAuraId != 0 && ((Unit)target).Auras.Contains(SpellAuraRestrictions.ExcludeTargetAuraId)) ||
+                    (SpellAuraRestrictions.RequiredTargetAuraId != 0 && !((Unit)target).Auras.Contains(SpellAuraRestrictions.RequiredTargetAuraId)))
 				{
 					return SpellFailedReason.TargetAurastate;
 				}
 			}
 
 			// Make sure that we have a GameObject if the Spell requires one
-			if (TargetFlags.HasAnyFlag(SpellTargetFlags.UnkUnit_0x100) &&
+			if (SpellTargetRestrictions.TargetFlags.HasAnyFlag(SpellTargetFlags.UnkUnit_0x100) &&
 				(!(target is GameObject) || !target.IsInWorld))
 			{
 				return SpellFailedReason.BadTargets;
 			}
 
 			// CreatureTypes
-			if (CreatureMask != CreatureMask.None &&
-				(!(target is NPC) || !((NPC)target).CheckCreatureType(CreatureMask)))
+            if (SpellTargetRestrictions.CreatureMask != CreatureMask.None &&
+                (!(target is NPC) || !((NPC)target).CheckCreatureType(SpellTargetRestrictions.CreatureMask)))
 			{
 				return SpellFailedReason.BadImplicitTargets;
 			}
@@ -406,10 +406,10 @@ namespace WCell.RealmServer.Spells
 			// Corpse target
 			if (RequiresDeadTarget)
 			{
-				if (TargetFlags.HasAnyFlag(SpellTargetFlags.PvPCorpse | SpellTargetFlags.Corpse))
+                if (SpellTargetRestrictions.TargetFlags.HasAnyFlag(SpellTargetFlags.PvPCorpse | SpellTargetFlags.Corpse))
 				{
 					if (!(target is Corpse) ||
-						(TargetFlags.HasAnyFlag(SpellTargetFlags.PvPCorpse) && caster != null && !caster.IsHostileWith(target)))
+                        (SpellTargetRestrictions.TargetFlags.HasAnyFlag(SpellTargetFlags.PvPCorpse) && caster != null && !caster.IsHostileWith(target)))
 					{
 						return SpellFailedReason.BadImplicitTargets;
 					}
@@ -496,7 +496,7 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
-			if (RequiredItemClass != ItemClass.None)
+            if (SpellEquippedItems.RequiredItemClass != ItemClass.None)
 			{
 				// check for weapon
 				if (!(action is DamageAction))
@@ -512,8 +512,8 @@ namespace WCell.RealmServer.Spells
 
 				var weapon = ((Item)aAction.Weapon).Template;
 
-				return weapon.Class == RequiredItemClass &&
-					   (RequiredItemSubClassMask == 0 || weapon.SubClassMask.HasAnyFlag(RequiredItemSubClassMask));
+                return weapon.Class == SpellEquippedItems.RequiredItemClass &&
+                       (SpellEquippedItems.RequiredItemSubClassMask == 0 || weapon.SubClassMask.HasAnyFlag(SpellEquippedItems.RequiredItemSubClassMask));
 			}
 			return true;
 		}
@@ -529,7 +529,7 @@ namespace WCell.RealmServer.Spells
 			}
 			else
 			{
-				cd = CooldownTime;
+				cd = SpellCooldowns.CooldownTime;
 			}
 
 			if (cd == 0)

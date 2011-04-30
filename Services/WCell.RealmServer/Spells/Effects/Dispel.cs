@@ -27,7 +27,7 @@ namespace WCell.RealmServer.Spells.Effects
 
 			foreach (var aura in ((Unit)target).Auras)
 			{
-				if (aura.Spell.DispelType == dispelType)
+				if (aura.Spell.SpellCategories.DispelType == dispelType)
 				{
 					// Check dispel resistance
 					var auraCaster = aura.CasterUnit;

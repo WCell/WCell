@@ -123,7 +123,7 @@ namespace WCell.Addons.Default.Spells
 			{
 				var character = (Unit)target;
 
-				character.Auras.RemoveWhere(aura => SpellConstants.MoveMechanics[(int)aura.Spell.Mechanic] ||
+				character.Auras.RemoveWhere(aura => SpellConstants.MoveMechanics[(int)aura.Spell.SpellCategories.Mechanic] ||
 					aura.Handlers.Any(handler => SpellConstants.MoveMechanics[(int)handler.SpellEffect.Mechanic]));
 			}
 		};

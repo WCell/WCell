@@ -491,11 +491,11 @@ namespace WCell.RealmServer.Spells
 
 				if (result == SpellFailedReason.RequiresSpellFocus)
 				{
-					packet.Write((uint)spell.RequiredSpellFocus);
+                    packet.Write((uint)spell.SpellCastingRequirements.RequiredSpellFocus);
 				}
 				else if (result == SpellFailedReason.RequiresArea)
 				{
-					packet.Write(spell.AreaGroupId);
+                    packet.Write(spell.SpellCastingRequirements.AreaGroupId);
 				}
 
 				client.Send(packet);

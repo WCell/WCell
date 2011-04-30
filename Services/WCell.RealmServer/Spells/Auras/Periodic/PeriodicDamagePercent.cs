@@ -30,7 +30,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			if (holder.IsAlive)
 			{
 				var value = (Owner.MaxHealth * EffectValue + 50) / 100;
-				if (m_aura.Spell.Mechanic == SpellMechanic.Bleeding)
+                if (m_aura.Spell.SpellCategories.Mechanic == SpellMechanic.Bleeding)
 				{
 					var bonus = m_aura.Auras.GetBleedBonusPercent();
 					value += ((value * bonus) + 50) / 100;

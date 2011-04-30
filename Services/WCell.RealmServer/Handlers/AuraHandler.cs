@@ -133,7 +133,7 @@ namespace WCell.RealmServer.Spells.Auras
 				{
 					var enhancerEffect = enhancers[i];
 					if ((SpellModifierType)enhancerEffect.SpellEffect.MiscValue == type &&
-						enhancerEffect.SpellEffect.Spell.SpellClassSet == effect.Spell.SpellClassSet &&
+						enhancerEffect.SpellEffect.Spell.SpellClassOptions.SpellClassSet == effect.Spell.SpellClassOptions.SpellClassSet &&
 						(enhancerEffect.SpellEffect.AffectMask[groupNum] & (1 << (int)groupBit)) != 0)
 					{
 						amount += enhancerEffect.SpellEffect.ValueMin;

@@ -28,7 +28,7 @@ namespace WCell.RealmServer.Spells.Effects
 
 		protected override void Apply(WorldObject target)
 		{
-			((Unit)target).LeechHealth(m_cast.CasterUnit, CalcDamageValue(), Effect.ProcValue, Effect);
+			((Unit)target).LeechHealth(m_cast.CasterUnit, CalcDamageValue(), Effect.ChainAmplitude, Effect);
 		}
 
 		public override ObjectTypes TargetType

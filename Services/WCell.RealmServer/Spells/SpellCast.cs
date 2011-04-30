@@ -1077,7 +1077,7 @@ namespace WCell.RealmServer.Spells
 		protected SpellFailedReason CheckPlayerCast(WorldObject selected)
 		{
 			var caster = (Character)CasterUnit;
-			if (m_spell.TargetFlags != 0 && !IsAoE && selected == caster)
+            if (m_spell.SpellTargetRestrictions.TargetFlags != 0 && !IsAoE && selected == caster)
 			{
 				// Caster is selected by default
 				return SpellFailedReason.NoValidTargets;
@@ -1295,7 +1295,7 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public bool ConsumeReagents()
 		{
-			var reagents = m_spell.Reagents;
+			var reagents = m_spell.SpellReagents.Reagents;
 			if (reagents != null && CasterUnit is Character)
 			{
 				if (!((Character)CasterUnit).Inventory.Consume(reagents, false))
@@ -1345,7 +1345,7 @@ namespace WCell.RealmServer.Spells
 
 
 				// resist
-				if (target.CheckResist(CasterUnit, school, spell.Mechanic) && !spell.AttributesExB.HasFlag(SpellAttributesExB.CannotBeResisted))
+				if (target.CheckResist(CasterUnit, school, spell.SpellCategories.Mechanic) && !spell.AttributesExB.HasFlag(SpellAttributesExB.CannotBeResisted))
 				{
 					return CastMissReason.Resist;
 				}
@@ -1398,7 +1398,7 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// check for interruption
-			if (m_spell.InterruptFlags.HasFlag(InterruptFlags.OnTakeDamage))
+            if (m_spell.SpellInterrupts.InterruptFlags.HasFlag(InterruptFlags.OnTakeDamage))
 			{
 				Cancel();
 			}

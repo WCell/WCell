@@ -1,4 +1,4 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: PeriodicLeech.cs
  *   copyright		: (C) The WCell Team
@@ -21,7 +21,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 
 		protected override void Apply()
 		{
-			m_aura.Auras.Owner.LeechHealth(m_aura.CasterUnit, EffectValue, m_spellEffect.ProcValue, m_spellEffect);
+			m_aura.Auras.Owner.LeechHealth(m_aura.CasterUnit, EffectValue, m_spellEffect.ChainAmplitude, m_spellEffect);
 		}
 
 	}

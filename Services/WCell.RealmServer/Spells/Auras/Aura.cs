@@ -362,7 +362,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// </summary>
 		public int MaxApplications
 		{
-			get { return m_spell.MaxStackCount; }
+            get { return m_spell.SpellAuraOptions.MaxStackCount; }
 		}
 
 		/// <summary>
@@ -818,7 +818,7 @@ namespace WCell.RealmServer.Spells.Auras
 				{
 					m_stackCount = (byte)m_spell.InitialStackCount;
 				}
-				else if (m_stackCount < m_spell.MaxStackCount)
+                else if (m_stackCount < m_spell.SpellAuraOptions.MaxStackCount)
 				{
 					m_stackCount++;
 				}
@@ -1137,7 +1137,7 @@ namespace WCell.RealmServer.Spells.Auras
 		#region Procs
 		public ProcTriggerFlags ProcTriggerFlags
 		{
-			get { return m_spell.ProcTriggerFlags; }
+            get { return m_spell.SpellAuraOptions.ProcTriggerFlags; }
 		}
 
 		/// <summary>
@@ -1153,7 +1153,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// </summary>
 		public uint ProcChance
 		{
-			get { return m_spell.ProcChance > 0 ? m_spell.ProcChance : 100; }
+            get { return m_spell.SpellAuraOptions.ProcChance > 0 ? m_spell.SpellAuraOptions.ProcChance : 100; }
 		}
 
 		public int MinProcDelay
@@ -1226,7 +1226,7 @@ namespace WCell.RealmServer.Spells.Auras
 				proced = true;
 			}
 
-			if (proced && m_spell.ProcCharges > 0)
+            if (proced && m_spell.SpellAuraOptions.ProcCharges > 0)
 			{
 				// consume a charge
 				m_stackCount--;

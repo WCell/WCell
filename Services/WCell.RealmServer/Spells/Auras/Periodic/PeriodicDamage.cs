@@ -31,7 +31,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			if (holder.IsAlive)
 			{
 				var value = EffectValue;
-				if (m_aura.Spell.Mechanic == SpellMechanic.Bleeding)
+				if (m_aura.Spell.SpellCategories.Mechanic == SpellMechanic.Bleeding)
 				{
 					var bonus = m_aura.Auras.GetBleedBonusPercent();
 					value += ((value * bonus) + 50) / 100;
@@ -43,7 +43,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 		}
 		protected override void Remove(bool cancelled)
 		{
-			if (m_aura.Spell.Mechanic == SpellMechanic.Bleeding)
+			if (m_aura.Spell.SpellCategories.Mechanic == SpellMechanic.Bleeding)
 				m_aura.Owner.DecMechanicCount(SpellMechanic.Bleeding);
 		}
 	}

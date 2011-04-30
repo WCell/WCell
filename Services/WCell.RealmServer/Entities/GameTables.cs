@@ -30,7 +30,7 @@ namespace WCell.RealmServer.Entities
         private static float[] s_octManaRegen;
         private static float[] s_octHealthRegen;
         private static float[] s_octManaRegenPerSpirit;
-        private static float[] s_octHealthRegenPerSpirit;
+        private static float[] s_octHealthPerStamina;
 
         private static readonly Logger s_log = LogManager.GetCurrentClassLogger();
         private static Dictionary<CombatRating, float[]> s_combatRatings;
@@ -97,14 +97,6 @@ namespace WCell.RealmServer.Entities
         }
 
         /// <summary>
-        /// Health regeneration per class per level (in combat?)
-        /// </summary>
-        public static float[] OCTRegenHP
-        {
-            get { return s_octHealthRegen; }
-        }
-
-        /// <summary>
         /// Mana regeneration per class per level (how much spirit it takes for MP5)
         /// </summary>
         public static float[] RegenMPPerSpirit
@@ -113,11 +105,11 @@ namespace WCell.RealmServer.Entities
         }
 
         /// <summary>
-        /// Health regeneration per class per level (how much spirit it takes for what?)
+        /// Health regeneration per class per level (how much stamina it takes for what?)
         /// </summary>
-        public static float[] RegenHPPerSpirit
+        public static float[] OCTHpPerStamina
         {
-            get { return s_octHealthRegenPerSpirit; }
+            get { return s_octHealthPerStamina; }
         }
 
         /// <summary>
@@ -251,17 +243,12 @@ namespace WCell.RealmServer.Entities
 
         private static bool LoadGtClassHealthRegenPerSpiritDBC()
         {
-            return LoadRatingChanceDBC(WCellConstants.DBC_REGENHPPERSPIRIT, out s_octHealthRegenPerSpirit);
+            return LoadRatingChanceDBC(WCellConstants.DBC_OCTREGENHPPERSTAMINA, out s_octHealthPerStamina);
         }
 
         private static bool LoadGtClassManaRegenPerSpiritDBC()
         {
             return LoadRatingChanceDBC(WCellConstants.DBC_REGENMPPERSPIRIT, out s_octManaRegenPerSpirit);
-        }
-
-        private static bool LoadGtClassOCTHealthRegenDBC()
-        {
-            return LoadRatingChanceDBC(WCellConstants.DBC_OCTREGENHP, out s_octHealthRegen);
         }
 
         private static bool LoadGtClassOCTManaRegenDBC()
@@ -361,7 +348,7 @@ namespace WCell.RealmServer.Entities
 
             if(!LoadGtClassHealthRegenPerSpiritDBC())
             {
-                s_log.Info(string.Format(Resources.DBCLoadFailed, WCellConstants.DBC_REGENHPPERSPIRIT));
+                s_log.Info(string.Format(Resources.DBCLoadFailed, WCellConstants.DBC_OCTREGENHPPERSTAMINA));
 
                 return false;
             }
@@ -369,13 +356,6 @@ namespace WCell.RealmServer.Entities
             if (!LoadGtClassManaRegenPerSpiritDBC())
             {
                 s_log.Info(string.Format(Resources.DBCLoadFailed, WCellConstants.DBC_REGENMPPERSPIRIT));
-
-                return false;
-            }
-
-            if(!LoadGtClassOCTHealthRegenDBC())
-            {
-                s_log.Info(string.Format(Resources.DBCLoadFailed, WCellConstants.DBC_OCTREGENHP));
 
                 return false;
             }

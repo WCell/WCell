@@ -40,9 +40,9 @@ namespace WCell.Tools.Mokrago
                 WriteTableByClass(GameTables.BaseSpellCritChance, writer, "BaseSpellCritChance");
                 WriteTableByClassLevel(GameTables.GetUnModifiedClassMeleeCritChanceValue, writer, "ClassMeleeCritChance");
                 WriteTableByClassLevel(GameTables.GetUnmodifiedClassSpellCritChanceValue, writer, "ClassSpellCritChance");
-                WriteTableByClassLevel(GameTables.OCTRegenHP, writer, "OCTRegenHealth");
+                //WriteTableByClassLevel(GameTables.OCTRegenHP, writer, "OCTRegenHealth");
                 WriteTableByClassLevel(GameTables.OCTRegenMP, writer, "OCTRegenMana");
-                WriteTableByClassLevel(GameTables.RegenHPPerSpirit, writer, "RegenHealthPerSpirit");
+                WriteTableByClassLevel(GameTables.OCTHpPerStamina, writer, "OCTRegenHealthPerStamina");
                 WriteTableByClassLevel(GameTables.RegenMPPerSpirit, writer, "RegenManaPerSpirit");
             }
 

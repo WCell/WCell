@@ -139,7 +139,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			// Wandering Plague has a proc and an AoE damage component
 			SpellLineId.DeathKnightUnholyWanderingPlague.Apply(spell =>
 			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+                spell.SpellAuraOptions.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
 
 				var effect = spell.GetEffect(AuraType.Dummy);
 				effect.IsProc = true;
@@ -188,7 +188,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			protected override void Apply(WorldObject target)
 			{
 				var unit = (Unit)target;
-				if (unit.Auras.Contains(aura => aura.Spell.InterruptFlags.HasFlag(AuraInterruptFlags.OnDamage)))
+				if (unit.Auras.Contains(aura => aura.Spell.SpellInterrupts.InterruptFlags.HasFlag(AuraInterruptFlags.OnDamage)))
 				{
 					// "Ignores any target under the effect of a spell that is cancelled by taking damage."
 					return;
@@ -235,7 +235,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			SpellLineId.DeathKnightUnholyCryptFever.Apply(spell =>
 			{
 				// proc when a new Aura is applied to a target
-				spell.ProcTriggerFlags = ProcTriggerFlags.AuraStarted;
+                spell.SpellAuraOptions.ProcTriggerFlags = ProcTriggerFlags.AuraStarted;
 
 				var effect = spell.GetEffect(AuraType.OverrideClassScripts);
 				effect.IsProc = true;
@@ -281,7 +281,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			public override void OnDefend(DamageAction action)
 			{
 				var spell = action.Spell;
-				if (spell != null && spell.DispelType == DispelType.Disease)
+				if (spell != null && spell.SpellCategories.DispelType == DispelType.Disease)
 				{
 					action.ModDamagePercent(EffectValue);
 				}
@@ -295,7 +295,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			// Unholy Blight needs to proc an Aura when Death Coil is casted
 			SpellLineId.DeathKnightUnholyUnholyBlight.Apply(spell =>
 			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+                spell.SpellAuraOptions.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
 
 				var effect = spell.GetEffect(AuraType.Dummy);
 				effect.AuraType = AuraType.ProcTriggerSpell;

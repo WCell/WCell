@@ -1,7 +1,7 @@
 
 ///
 /// This file was automatically created, using WCell's CodeFileWriter
-/// Date: 01/06/2010
+/// Date: 25/04/2011
 ///
 
 namespace WCell.Constants.Spells
@@ -40,6 +40,7 @@ namespace WCell.Constants.Spells
 		Invulnerable_2 = 29,
 		Sapped = 30,
 		Enraged = 31,
+		Wounded = 32,
 		End
 	}
 

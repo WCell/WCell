@@ -593,13 +593,13 @@ namespace WCell.Tools.Domi.Output
 					if (spell == null)
 						continue;
 
-					if (spell.RequiredSpellFocus != SpellFocus.None)
+                    if (spell.SpellCastingRequirements.RequiredSpellFocus != SpellFocus.None)
 					{
 						Dictionary<string, Spell> focusSpells;
-						if (!spells.TryGetValue(spell.RequiredSpellFocus, out focusSpells))
+                        if (!spells.TryGetValue(spell.SpellCastingRequirements.RequiredSpellFocus, out focusSpells))
 						{
 							focusSpells = new Dictionary<string, Spell>();
-							spells.Add(spell.RequiredSpellFocus, focusSpells);
+                            spells.Add(spell.SpellCastingRequirements.RequiredSpellFocus, focusSpells);
 						}
 						focusSpells[spell.Name] = spell;
 					}
@@ -825,8 +825,8 @@ namespace WCell.Tools.Domi.Output
 
 		private static bool IsAbility(Spell spell)
 		{
-			return spell.SpellClassSet != SpellClassSet.Generic && spell.Ability != null &&
-			       (spell.SpellClassMask.Contains(val => val != 0) ||
+			return spell.SpellClassOptions.SpellClassSet != SpellClassSet.Generic && spell.Ability != null &&
+			       (spell.SpellClassOptions.SpellClassMask.Contains(val => val != 0) ||
 			        !spell.HasEffectWith(effect =>
 			                             effect.AuraType == AuraType.AddModifierFlat ||
 			                             effect.AuraType == AuraType.AddModifierPercent ||
@@ -837,8 +837,8 @@ namespace WCell.Tools.Domi.Output
 
 		private static bool IsEnhancer(Spell spell)
 		{
-			return spell.SpellClassSet != SpellClassSet.Generic && spell.Ability != null &&
-			       !spell.SpellClassMask.Contains(val => val != 0);
+			return spell.SpellClassOptions.SpellClassSet != SpellClassSet.Generic && spell.Ability != null &&
+			       !spell.SpellClassOptions.SpellClassMask.Contains(val => val != 0);
 		}
 
 		public static void WriteSpellFamilies()
@@ -857,9 +857,9 @@ namespace WCell.Tools.Domi.Output
 				if (IsAbility(spell))
 				{
 					Dictionary<Spell, List<Spell>> map;
-					if (!spells.TryGetValue(spell.SpellClassSet, out map))
+					if (!spells.TryGetValue(spell.SpellClassOptions.SpellClassSet, out map))
 					{
-						spells[spell.SpellClassSet] = map = new Dictionary<Spell, List<Spell>>();
+						spells[spell.SpellClassOptions.SpellClassSet] = map = new Dictionary<Spell, List<Spell>>();
 					}
 
 					if (!map.Keys.Contains(sp => sp.Name == spell.Name))
@@ -875,11 +875,11 @@ namespace WCell.Tools.Domi.Output
 				if (spell == null)
 					continue;
 
-				if (spell.SpellClassSet != SpellClassSet.Generic && spell.Ability != null &&
+				if (spell.SpellClassOptions.SpellClassSet != SpellClassSet.Generic && spell.Ability != null &&
 				    IsEnhancer(spell) && !IsAbility(spell))
 				{
 					Dictionary<Spell, List<Spell>> map;
-					var fam = spell.SpellClassSet;
+					var fam = spell.SpellClassOptions.SpellClassSet;
 					if (fam == SpellClassSet.HunterPets)
 					{
 						fam = SpellClassSet.Hunter;
@@ -907,7 +907,7 @@ namespace WCell.Tools.Domi.Output
 
 			foreach (var map in spells.Values)
 			{
-				var fam = map.First().Key.SpellClassSet;
+				var fam = map.First().Key.SpellClassOptions.SpellClassSet;
 				using (var writer = new StreamWriter(ToolConfig.OutputDir + name + fam + ".txt", false))
 				{
 					writer.WriteLine("{0} ({1}):", fam, map.Count);

@@ -36,7 +36,7 @@ namespace WCell.Addons.Default.Spells.Rogue
             var chr = target as Character;
             if(chr != null)
             {
-                chr.Auras.RemoveWhere(aura => SpellConstants.MoveMechanics[(int)aura.Spell.Mechanic] || aura.Handlers.Any(handler => SpellConstants.MoveMechanics[(int)handler.SpellEffect.Mechanic]) && !aura.IsBeneficial);
+                chr.Auras.RemoveWhere(aura => SpellConstants.MoveMechanics[(int)aura.Spell.SpellCategories.Mechanic] || aura.Handlers.Any(handler => SpellConstants.MoveMechanics[(int)handler.SpellEffect.Mechanic]) && !aura.IsBeneficial);
             }
             base.Apply(target);
         }

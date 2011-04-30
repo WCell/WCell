@@ -62,11 +62,9 @@ namespace WCell.Core
 
 		public const string DBC_BARBERSHOPCOST = "gtBarberShopCostBase.dbc";
 
-        public const string DBC_OCTREGENHP = "GtOCTRegenHP.dbc";
-
         public const string DBC_OCTREGENMP = "GtOCTRegenMP.dbc";
 
-	    public const string DBC_REGENHPPERSPIRIT = "GtRegenHPPerSpt.dbc";
+        public const string DBC_OCTREGENHPPERSTAMINA = "gtOCTHpPerStamina.dbc";
 
         public const string DBC_REGENMPPERSPIRIT = "GtRegenMPPerSpt.dbc";
 
@@ -167,6 +165,38 @@ namespace WCell.Core
         public const string DBC_EMOTESTEXT = "EmotesText.dbc";
 
         public const string DBC_SPELL = "Spell.dbc";
+
+	    public const string DBC_SPELLSCALING = "SpellScaling.dbc";
+
+        public const string DBC_SPELLSHAPESHIFT = "SpellShapeshift.dbc";
+
+        public const string DBC_SPELLAURAOPTIONS = "SpellAuraOptions.dbc";
+
+        public const string DBC_SPELLAURARESTRICTIONS = "SpellAuraRestrictions.dbc";
+
+        public const string DBC_SPELLCASTINGREQUIREMENTS = "SpellCastingRequirements.dbc";
+
+        public const string DBC_SPELLCATEGORIES = "SpellCategories.dbc";
+
+        public const string DBC_SPELLCLASSOPTIONS = "SpellClassOptions.dbc";
+
+        public const string DBC_SPELLCOOLDOWNS = "SpellCooldowns.dbc";
+
+        public const string DBC_SPELLEQUIPPEDITEMS = "SpellEquippedItems.dbc";
+
+        public const string DBC_SPELLINTERRUPTS = "SpellInterrupts.dbc";
+
+        public const string DBC_SPELLLEVELS = "SpellLevels.dbc";
+
+        public const string DBC_SPELLPOWER = "SpellPower.dbc";
+
+        public const string DBC_SPELLREAGENTS = "SpellReagents.dbc";
+
+        public const string DBC_SPELLTARGETRESTRICTIONS = "SpellTargetRestrictions.dbc";
+
+        public const string DBC_SPELLTOTEMS = "SpellTotems.dbc";
+
+        public const string DBC_SPELLEFFECT = "SpellEffect.dbc";
 
         public const string DBC_SPELLDURATION = "SpellDuration.dbc";
 

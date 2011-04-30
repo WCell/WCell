@@ -241,6 +241,7 @@
     <Compile Include="Spells\Auras\PeriodicallyUpdatedAuraEffectHandler.cs" />
     <Compile Include="Spells\Effects\ApplyGlyph.cs" />
     <Compile Include="Spells\Effects\Inebriate.cs" />
+    <Compile Include="Spells\SpellEffectsCollection.cs" />
     <Compile Include="Spells\Targeting\AISpellTargetCollection.cs" />
     <Compile Include="ArenaTeams\ArenaTeam.cs" />
     <Compile Include="ArenaTeams\ArenaTeamMember.cs" />

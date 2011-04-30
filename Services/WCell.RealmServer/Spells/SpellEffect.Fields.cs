@@ -29,7 +29,7 @@ namespace WCell.RealmServer.Spells
 		/* Summary of $ values
 		 * $sX = MinValue to MaxValue
 		 * $oX = Amplitude
-		 * $eX = ProcValue
+		 * $eX = ChainAmplitude
 		 * $bX = PointsPerComboPoint
 		 * */
 		#region DBC Fields
@@ -39,40 +39,113 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public SpellEffectType EffectType;
 
+        /// <summary>
+        /// Interval-delay in milliseconds
+        /// </summary>
+        public int Amplitude;
+
+        /// <summary>
+        /// SpellAuraNames.dbc - no longer included in mpqs
+        /// </summary>
+        public AuraType AuraType;
+
+	    public int AuraPeriod;
+
+        /// <summary>
+        /// Base value
+        /// Value = BasePoints + rand(BaseDice, DiceSides)
+        /// </summary>
+        public int BasePoints;
+
+	    public float SpellPowerCoEfficient;
+
+        /// <summary>
+        /// $e1/2/3 in Description
+        /// </summary>
+        public float ChainAmplitude;   //dmg multiplier/chain amplitude
+
+        public int ChainTargets;
+
 		/// <summary>
 		/// Random value max (BaseDice to DiceSides)
 		/// </summary>
 		public int DiceSides;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public uint ItemId;
+
+        public SpellMechanic Mechanic;
+
+        public int MiscValue;
+
+        public int MiscValueB;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public float PointsPerComboPoint;
+
+        /// <summary>
+        /// SpellRadius.dbc
+        /// Is always at least 5y. 
+        /// If area-related spells dont have a radius we just look for very close targets
+        /// </summary>
+        public float Radius;
+
+        /// <summary>
+        /// SpellRadius.dbc
+        /// 
+        /// </summary>
+        public float RadiusMax;
+
 		public float RealPointsPerLevel;
 
-		/// <summary>
-		/// Base value
-		/// Value = BasePoints + rand(BaseDice, DiceSides)
-		/// </summary>
-		public int BasePoints;
+        /// <summary>
+        /// Multi purpose.
+        /// 1. If it is a proc effect, determines set of spells that can proc this proc (use <see cref="AddToAffectMask"/>)
+        /// 2. If it is a modifier effect, determines set of spells to be affected by this effect
+        /// 3. Ignored in some cases
+        /// 4. Special applications in some cases
+        /// </summary>
+        [Persistent(3)]
+        public uint[] AffectMask = new uint[3];
 
-		public SpellMechanic Mechanic;
+        public SpellId TriggerSpellId;
 
 		public ImplicitSpellTargetType ImplicitTargetA;
 		public ImplicitSpellTargetType ImplicitTargetB;
 
-		/// <summary>
-		/// SpellRadius.dbc
-		/// Is always at least 5y. 
-		/// If area-related spells dont have a radius we just look for very close targets
-		/// </summary>
-		public float Radius;
 
-		/// <summary>
-		/// SpellAuraNames.dbc - no longer included in mpqs
-		/// </summary>
-		public AuraType AuraType;
+        public SpellId SpellId;
 
-		/// <summary>
-		/// Interval-delay in milliseconds
-		/// </summary>
-		public int Amplitude;
+	    //public int Index;
+
+        ////////////////
+        // Custom fields
+        ////////////////
+
+        /// <summary>
+        /// Not set during InitializationPass 2, so 
+        /// for fixing things, use GetTriggerSpell() instead.
+        /// </summary>
+        [NotPersistent]
+        public Spell TriggerSpell;
+
+        ////////////////
+        //Helpers
+        ////////////////
+
+        public Spell GetTriggerSpell()
+        {
+            var spell = SpellHandler.Get(TriggerSpellId);
+            if (spell == null && ContentMgr.ForceDataPresence)
+            {
+                throw new ContentException("Spell {0} does not have a valid TriggerSpellId: {1}", this, TriggerSpellId);
+            }
+            return spell;
+        }
 
 		/// <summary>
 		/// Returns the max amount of ticks of this Effect
@@ -82,55 +155,6 @@ namespace WCell.RealmServer.Spells
 			if (Amplitude == 0) return 0;
 			return Spell.Durations.Max/Amplitude;
 		}
-
-		/// <summary>
-		/// $e1/2/3 in Description
-		/// </summary>
-		public float ProcValue;
-
-		public int ChainTargets;
-
-		/// <summary>
-		/// 
-		/// </summary>
-		public uint ItemId;
-
-		public int MiscValue;
-
-		public int MiscValueB;
-
-		/// <summary>
-		/// Not set during InitializationPass 2, so 
-		/// for fixing things, use GetTriggerSpell() instead.
-		/// </summary>
-		[NotPersistent]
-		public Spell TriggerSpell;
-		public SpellId TriggerSpellId;
-
-		public Spell GetTriggerSpell()
-		{
-			var spell = SpellHandler.Get(TriggerSpellId);
-			if (spell == null && ContentMgr.ForceDataPresence)
-			{
-				throw new ContentException("Spell {0} does not have a valid TriggerSpellId: {1}", this, TriggerSpellId);
-			}
-			return spell;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		public float PointsPerComboPoint;
-
-		/// <summary>
-		/// Multi purpose.
-		/// 1. If it is a proc effect, determines set of spells that can proc this proc (use <see cref="AddToAffectMask"/>)
-		/// 2. If it is a modifier effect, determines set of spells to be affected by this effect
-		/// 3. Ignored in some cases
-		/// 4. Special applications in some cases
-		/// </summary>
-		[Persistent(3)]
-		public uint[] AffectMask = new uint[3];
 		#endregion
 
 		#region Variables

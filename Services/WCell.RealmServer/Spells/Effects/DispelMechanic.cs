@@ -36,7 +36,7 @@ namespace WCell.RealmServer.Spells.Effects
 				throw new Exception("Invalid Mechanic \"None\" in Spell: " + Effect.Spell);
 			}
 
-			((Unit)target).Auras.RemoveWhere(aura => aura.Spell.Mechanic == mechanic);
+			((Unit)target).Auras.RemoveWhere(aura => aura.Spell.SpellCategories.Mechanic == mechanic);
 		}
 
 		public override ObjectTypes TargetType

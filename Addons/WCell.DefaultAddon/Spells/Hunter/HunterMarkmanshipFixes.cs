@@ -25,7 +25,7 @@ namespace WCell.Addons.Default.Spells.Hunter
             SpellLineId.HunterArcaneShot.Apply(spell =>
                 {
                     spell.Effects[0].APValueFactor = 0.15f;
-                    spell.CooldownTime = 6000;
+                    spell.SpellCooldowns.CooldownTime = 6000;
                 });
 
             // Multi-Shot affects three targets
@@ -58,7 +58,7 @@ namespace WCell.Addons.Default.Spells.Hunter
                 var charSpells = ((Character)target).PlayerSpells;
                 foreach (Spell spell in charSpells)
                 {
-                    if (spell.Line.LineId != SpellLineId.HunterBeastMasteryBestialWrath && spell.SpellClassSet == SpellClassSet.Hunter)
+                    if (spell.Line.LineId != SpellLineId.HunterBeastMasteryBestialWrath && spell.SpellClassOptions.SpellClassSet == SpellClassSet.Hunter)
                     {
                         charSpells.ClearCooldown(spell, false);
                     }

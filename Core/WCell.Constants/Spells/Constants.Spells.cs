@@ -584,6 +584,66 @@ namespace WCell.Constants.Spells
 
 		AttrExF_31_0x80000000 = 0x80000000,//31
 	}
+
+    [Flags]
+    public enum SpellAttributesExG : uint
+    {
+        None = 0,
+
+        AttrExG_0_0x1 = 0x1,//0
+
+        AttrExG_1_0x2 = 0x2,//1
+
+        AttrExG_2_0x4 = 0x4,//2
+
+        AttrExG_3_0x8 = 0x8,//3
+
+        AttrExG_4_0x10 = 0x10,//4
+
+        AttrExG_5_0x20 = 0x20,//5
+
+        AttrExG_6_0x40 = 0x40,//6
+
+        AttrExG_7_0x80 = 0x80,//7
+
+        AttrExG_8_0x100 = 0x100,//8
+
+        AttrExG_9_0x200 = 0x200,//9
+
+        AttrExG_10_0x400 = 0x400,//10
+
+        AttrExG_11_0x800 = 0x800,//11
+    }
+
+    [Flags]
+    public enum SpellAttributesExH : uint
+    {
+        None = 0,
+
+        AttrExH_0_0x1 = 0x1,//0
+
+        AttrExH_1_0x2 = 0x2,//1
+
+        AttrExH_2_0x4 = 0x4,//2
+
+        AttrExH_3_0x8 = 0x8,//3
+
+        AttrExH_4_0x10 = 0x10,//4
+
+        AttrExH_5_0x20 = 0x20,//5
+
+        AttrExH_6_0x40 = 0x40,//6
+
+        AttrExH_7_0x80 = 0x80,//7
+
+        AttrExH_8_0x100 = 0x100,//8
+
+        AttrExH_9_0x200 = 0x200,//9
+
+        AttrExH_10_0x400 = 0x400,//10
+
+        AttrExH_11_0x800 = 0x800,//11
+    }
 	#endregion
 
 	#region Interrupt
@@ -605,7 +665,7 @@ namespace WCell.Constants.Spells
 	/// Events that can interrupt Auras
 	/// </summary>
 	[Flags]
-	public enum AuraInterruptFlags : uint
+	public enum AuraInterruptFlags : ulong
 	{
 		None = 0x0,
 		OnHostileSpellInflicted = 0x1,
@@ -658,7 +718,7 @@ namespace WCell.Constants.Spells
 	}
 
 	[Flags]
-	public enum ChannelInterruptFlags
+	public enum ChannelInterruptFlags : ulong
 	{
 		None = 0x0,
 		ChannelInterruptOn1 = 0x1,

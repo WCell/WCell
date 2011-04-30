@@ -34,7 +34,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 
 		protected override void Remove(bool cancelled)
 		{
-			var procFlags = m_aura.Spell.ProcTriggerFlags;
+            var procFlags = m_aura.Spell.SpellAuraOptions.ProcTriggerFlags;
 			var owner = m_aura.Auras.Owner;
 			if (!owner.IsAlive && 
 				(!procFlags.HasFlag(ProcTriggerFlags.GainExperience) || owner.YieldsXpOrHonor))

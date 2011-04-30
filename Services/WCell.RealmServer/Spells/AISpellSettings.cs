@@ -181,7 +181,9 @@ namespace WCell.RealmServer.Spells
 
 				if (!effect.IsAreaEffect)
 				{
-					effect.Spell.MaxTargets = 1;
+                    if(effect.Spell.SpellTargetRestrictions == null)
+                        effect.Spell.SpellTargetRestrictions = new SpellTargetRestrictions();
+					effect.Spell.SpellTargetRestrictions.MaxTargets = 1;
 					effect.SetAITargetDefinition(DefaultTargetAdders.AddAreaSource,					// Adder
 												 DefaultTargetFilters.IsFriendly);					// Filters
 				}

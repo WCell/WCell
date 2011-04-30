@@ -116,7 +116,7 @@ namespace WCell.Tools.Spells
 				name = spell.Ability.Skill.Name + name;
 			}
 
-			var clss = spell.ClassId;
+			var clss = spell.SpellClassOptions.ClassId;
 			if (clss == 0)
 			{
 				var ids = spell.Ability.ClassMask.GetIds();
@@ -131,7 +131,7 @@ namespace WCell.Tools.Spells
 			}
 			else
 			{
-				name = spell.ClassId + name;
+                name = spell.SpellClassOptions.ClassId + name;
 			}
 
 			return WCellEnumWriter.BeautifyName(name);
@@ -234,14 +234,14 @@ namespace WCell.Tools.Spells
 			foreach (var spell in SpellHandler.ById)
 			{
 				if (spell == null ||
-					((spell.Talent == null || spell.ClassId == 0) && (spell.Ability == null || spell.Rank == 0 || spell.Ability.Skill.Category != SkillCategory.Profession)) ||
+                    ((spell.Talent == null || spell.SpellClassOptions.ClassId == 0) && (spell.Ability == null || spell.Rank == 0 || spell.Ability.Skill.Category != SkillCategory.Profession)) ||
 					spell.IsTriggeredSpell ||
 					spell.HasEffectWith(effect => effect.EffectType == SpellEffectType.LearnPetSpell || effect.EffectType == SpellEffectType.LearnSpell))
 				{
 					continue;
 				}
 
-				var clss = spell.ClassId;
+                var clss = spell.SpellClassOptions.ClassId;
 				if (spell.Ability == null || spell.Ability.ClassMask == 0 || spell.Ability.ClassMask.HasAnyFlag(clss))
 				{
 					//if (spell.SpellId.ToString().Contains("_"))
@@ -263,7 +263,7 @@ namespace WCell.Tools.Spells
 		{
 			if (!force)
 			{
-				if (spell.Ability.Skill == null ||
+                if (spell.Ability == null || spell.Ability.Skill == null ||
 					(spell.Ability.Skill.Category != SkillCategory.ClassSkill && spell.Ability.Skill.Category != SkillCategory.Invalid))
 				{
 					return;
@@ -272,7 +272,7 @@ namespace WCell.Tools.Spells
 				LineSkills.Add(spell.Ability.Skill.Id);
 			}
 
-			var clss = spell.ClassId;
+            var clss = spell.SpellClassOptions.ClassId;
 			if (clss == 0)
 			{
 				var ids = spell.Ability.ClassMask.GetIds();
@@ -338,12 +338,12 @@ namespace WCell.Tools.Spells
 
 				 // don't add weird copies or unknown anonymous triggered effects
 				if (line.Any(spll => spell.Rank == spll.Rank &&
-					(spll.Description.Contains(spell.Id.ToString()) || spll.CategoryCooldownTime > 0)))
+					(spll.Description.Contains(spell.Id.ToString()) || spll.SpellCooldowns == null || spll.SpellCooldowns.CategoryCooldownTime > 0)))
 				{
 					return;
 				}
-				line.RemoveWhere(spll => spell.Rank == spll.Rank && 
-					(spell.Description.Contains(spll.Id.ToString()) || spll.CategoryCooldownTime == 0));
+				line.RemoveWhere(spll => spell.Rank == spll.Rank &&
+                    (spell.Description.Contains(spll.Id.ToString()) || spll.SpellCooldowns == null || spll.SpellCooldowns.CategoryCooldownTime == 0));
 			}
 
 			line.Add(spell);

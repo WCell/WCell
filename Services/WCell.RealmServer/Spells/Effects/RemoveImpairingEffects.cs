@@ -18,7 +18,7 @@ namespace WCell.RealmServer.Spells.Effects
             var chr = target as Character;
             if (chr != null)
             {
-                chr.Auras.RemoveWhere(aura => SpellConstants.MoveMechanics[(int)aura.Spell.Mechanic] || aura.Handlers.Any(handler => SpellConstants.MoveMechanics[(int)handler.SpellEffect.Mechanic]));
+                chr.Auras.RemoveWhere(aura => SpellConstants.MoveMechanics[(int)aura.Spell.SpellCategories.Mechanic] || aura.Handlers.Any(handler => SpellConstants.MoveMechanics[(int)handler.SpellEffect.Mechanic]));
             }
         }
 	}

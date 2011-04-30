@@ -354,7 +354,7 @@ namespace WCell.RealmServer.Spells
 		{
 			var chr = OwnerChar;
 			// add reagents
-			foreach (var reagent in spell.Reagents)
+			foreach (var reagent in spell.SpellReagents.Reagents)
 			{
 				var templ = reagent.Template;
 				if (templ != null)
@@ -372,9 +372,9 @@ namespace WCell.RealmServer.Spells
 					chr.Inventory.Ensure(tool.Template, 1);
 				}
 			}
-			if (spell.RequiredToolCategories != null)
+			if (spell.SpellTotems.RequiredToolCategories != null)
 			{
-				foreach (var cat in spell.RequiredToolCategories)
+                foreach (var cat in spell.SpellTotems.RequiredToolCategories)
 				{
 					var tool = ItemMgr.GetFirstItemOfToolCategory(cat);
 					if (tool != null)
@@ -392,10 +392,10 @@ namespace WCell.RealmServer.Spells
 
 
 			// add spellfocus object (if not present)
-			if (spell.RequiredSpellFocus != 0)
+            if (spell.SpellCastingRequirements.RequiredSpellFocus != 0)
 			{
 				var range = Owner.GetSpellMaxRange(spell);
-				var go = chr.Map.GetGOWithSpellFocus(chr.Position, spell.RequiredSpellFocus,
+                var go = chr.Map.GetGOWithSpellFocus(chr.Position, spell.SpellCastingRequirements.RequiredSpellFocus,
 					range > 0 ? (range) : 5f, chr.Phase);
 
 				if (go == null)
@@ -403,7 +403,7 @@ namespace WCell.RealmServer.Spells
 					foreach (var entry in GOMgr.Entries.Values)
 					{
 						if (entry is GOSpellFocusEntry &&
-							((GOSpellFocusEntry)entry).SpellFocus == spell.RequiredSpellFocus)
+                            ((GOSpellFocusEntry)entry).SpellFocus == spell.SpellCastingRequirements.RequiredSpellFocus)
 						{
 							entry.Spawn(chr, chr);
 							break;
@@ -423,7 +423,7 @@ namespace WCell.RealmServer.Spells
 		{
 			// check for individual cooldown
 			ISpellIdCooldown idCooldown = null;
-			if (spell.CooldownTime > 0)
+			if (spell.SpellCooldowns.CooldownTime > 0)
 			{
 				for (var i = 0; i < m_idCooldowns.Count; i++)
 				{
@@ -442,12 +442,12 @@ namespace WCell.RealmServer.Spells
 
 			// check for category cooldown
 			ISpellCategoryCooldown catCooldown = null;
-			if (spell.CategoryCooldownTime > 0)
+            if (spell.SpellCooldowns.CategoryCooldownTime > 0)
 			{
 				for (var i = 0; i < m_categoryCooldowns.Count; i++)
 				{
 					catCooldown = m_categoryCooldowns[i];
-					if (catCooldown.CategoryId == spell.Category)
+					if (catCooldown.CategoryId == spell.SpellCategories.Category)
 					{
 						if (catCooldown.Until > DateTime.Now)
 						{
@@ -500,7 +500,7 @@ namespace WCell.RealmServer.Spells
 			}
 			else
 			{
-				catCd = spell.GetModifiedCooldown(Owner, spell.CategoryCooldownTime);
+				catCd = spell.GetModifiedCooldown(Owner, spell.SpellCooldowns.CategoryCooldownTime);
 			}
 
 			if (cd > 0)
@@ -518,7 +518,7 @@ namespace WCell.RealmServer.Spells
 				m_idCooldowns.Add(idCooldown);
 			}
 
-			if (spell.CategoryCooldownTime > 0)
+            if (spell.SpellCooldowns.CategoryCooldownTime > 0)
 			{
 				var catCooldown = new SpellCategoryCooldown
 				{
@@ -533,7 +533,7 @@ namespace WCell.RealmServer.Spells
 				}
 				else
 				{
-					catCooldown.CategoryId = spell.Category;
+					catCooldown.CategoryId = spell.SpellCategories.Category;
 				}
 				m_categoryCooldowns.Add(catCooldown);
 			}
@@ -555,7 +555,7 @@ namespace WCell.RealmServer.Spells
 			{
 				foreach (var cd in m_categoryCooldowns)
 				{
-					if (spell.Category == cd.CategoryId)
+					if (spell.SpellCategories.Category == cd.CategoryId)
 					{
 						SpellHandler.SendClearCoolDown(OwnerChar, spell.SpellId);
 						break;
@@ -603,11 +603,11 @@ namespace WCell.RealmServer.Spells
 
 			// send cooldown update to client
 			SpellHandler.SendClearCoolDown(ownerChar, cooldownSpell.SpellId);
-			if (alsoCategory && cooldownSpell.Category != 0)
+			if (alsoCategory && cooldownSpell.SpellCategories.Category != 0)
 			{
 				foreach (var spell in m_byId.Values)
 				{
-					if (spell.Category == cooldownSpell.Category)
+                    if (spell.SpellCategories.Category == cooldownSpell.SpellCategories.Category)
 					{
 						SpellHandler.SendClearCoolDown(ownerChar, spell.SpellId);
 					}
@@ -616,7 +616,7 @@ namespace WCell.RealmServer.Spells
 
 			// remove and delete
 			ISpellIdCooldown idCooldown = m_idCooldowns.RemoveFirst(cd => cd.SpellId == cooldownSpell.Id);
-			ISpellCategoryCooldown catCooldown = m_categoryCooldowns.RemoveFirst(cd => cd.CategoryId == cooldownSpell.Category);
+            ISpellCategoryCooldown catCooldown = m_categoryCooldowns.RemoveFirst(cd => cd.CategoryId == cooldownSpell.SpellCategories.Category);
 
 			// enqueue task
 			if (idCooldown is ActiveRecordBase || catCooldown is ActiveRecordBase)

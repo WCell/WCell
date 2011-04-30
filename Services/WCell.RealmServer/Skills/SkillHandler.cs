@@ -142,6 +142,7 @@ namespace WCell.RealmServer.Skills
 				else
 				{
 					// Don't know whats wrong here?
+                    log.Warn("Skill {0} with ability {1} has null Spell", ability.Skill.Name, ability.AbilityId);
 				}
 
 				// create a doubly linked list
@@ -196,6 +197,8 @@ namespace WCell.RealmServer.Skills
 				}
 				foreach (var ability in list)
 				{
+                    if(ability.Spell == null) continue;
+
 					if (ability.Skill.Category == SkillCategory.Profession ||
 						ability.Skill.Category == SkillCategory.SecondarySkill)
 					{
@@ -220,7 +223,7 @@ namespace WCell.RealmServer.Skills
 						ability.Skill.Category == SkillCategory.SecondarySkill)
 					{
 						if (ability.AcquireMethod == SkillAcquireMethod.OnLearningSkill &&
-							ability.Spell.BaseLevel == 0 &&
+							ability.Spell.SpellLevels.BaseLevel == 0 &&
 							ability.Spell.Rank == 0)
 						{
 							var spell = ability.Skill.GetSpellForTier(SkillTierId.Apprentice);

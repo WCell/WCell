@@ -29,7 +29,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 
 		protected override void Apply()
 		{
-			factor = (SpellEffect.ProcValue != 0 ? SpellEffect.ProcValue : 1);
+			factor = (SpellEffect.ChainAmplitude != 0 ? SpellEffect.ChainAmplitude : 1);
 			factorInverse = 1 / factor;
 			remaining = EffectValue;
 

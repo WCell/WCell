@@ -31,13 +31,13 @@ namespace WCell.RealmServer.Spells.Effects
 				chr.Skills.Add(Effect.Spell.Ability.Skill, false);
 			}
 
-			if (Effect.Spell.RequiredItemClass == ItemClass.Weapon)
+			if (Effect.Spell.SpellEquippedItems.RequiredItemClass == ItemClass.Weapon)
 			{
-				chr.Skills.WeaponProficiency |= Effect.Spell.RequiredItemSubClassMask;
+                chr.Skills.WeaponProficiency |= Effect.Spell.SpellEquippedItems.RequiredItemSubClassMask;
 			}
-			else if (Effect.Spell.RequiredItemClass == ItemClass.Armor)
+            else if (Effect.Spell.SpellEquippedItems.RequiredItemClass == ItemClass.Armor)
 			{
-				chr.Skills.ArmorProficiency |= Effect.Spell.RequiredItemSubClassMask;
+                chr.Skills.ArmorProficiency |= Effect.Spell.SpellEquippedItems.RequiredItemSubClassMask;
 			}
 		}
 

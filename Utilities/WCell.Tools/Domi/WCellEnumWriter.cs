@@ -83,6 +83,7 @@ namespace WCell.Tools.Domi
 			World.InitializeWorld();
 			SpellHandler.LoadSpells();
 			FactionMgr.Initialize();
+            WriteSpellMechanicEnum();
 			SpellHandler.Initialize2();
 			AreaTriggerMgr.Initialize();
 
@@ -93,7 +94,7 @@ namespace WCell.Tools.Domi
 			WriteFactionEnums();
 			WriteSpellFocusEnum();
 			WriteSpellId();
-			WriteSpellMechanicEnum();
+			//WriteSpellMechanicEnum();
 			WriteTalentEnums();
 			WriteItemId();
 			WriteItemSetId();
@@ -442,9 +443,9 @@ namespace WCell.Tools.Domi
 						  {
 							  descs.Add("Teachspell");
 						  }
-						  if (spell.Level > 0)
+						  if (spell.SpellLevels.Level > 0)
 						  {
-							  descs.Add("Level: " + spell.Level);
+                              descs.Add("Level: " + spell.SpellLevels.Level);
 						  }
 
 						  string desc = string.Join(", ", descs.ToArray());

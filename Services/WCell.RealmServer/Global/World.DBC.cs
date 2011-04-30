@@ -59,7 +59,8 @@ namespace WCell.RealmServer.Global
 
             i++; //rgn.InternalName = GetString(rawData, 1);
 			rgn.Type = (MapType)GetUInt32(rawData, i++);
-			i++; //mapFlags
+			i++; //mapFlags 3.3.0
+		    i++; //4.0.1
 
 			rgn.HasTwoSides = GetUInt32(rawData, i++) != 0; //isPVP
 

@@ -169,7 +169,7 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public override void AddCooldown(Spell spell, Item item)
 		{
-			var millis = Math.Max(spell.GetCooldown(Owner), spell.CategoryCooldownTime);
+			var millis = Math.Max(spell.GetCooldown(Owner), spell.SpellCooldowns.CategoryCooldownTime);
 			if (millis <= 0)
 			{
 				if (spell.CastDelay == 0 && spell.Durations.Max == 0)

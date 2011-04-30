@@ -20,6 +20,7 @@ using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
+using WCell.Core.DBC;
 using WCell.RealmServer.Items;
 using WCell.Util.Data;
 using WCell.RealmServer.Misc;
@@ -33,20 +34,6 @@ namespace WCell.RealmServer.Spells
 		public uint Id;//1
 		public SpellId SpellId;//1
 
-		/// <summary>
-		/// SpellCategory.dbc
-		/// </summary>
-		public uint Category;//3
-
-		/// <summary>
-		/// SpellDispelType.dbc
-		/// </summary>
-		public DispelType DispelType;//5
-		/// <summary>
-		/// SpellMechanic.dbc
-		/// </summary>
-		public SpellMechanic Mechanic;//6
-
 		public SpellAttributes Attributes;//7
 		public SpellAttributesEx AttributesEx;//8
 		public SpellAttributesExB AttributesExB;//9
@@ -54,24 +41,15 @@ namespace WCell.RealmServer.Spells
 		public SpellAttributesExD AttributesExD;//11
 		public SpellAttributesExE AttributesExE;//12
 		public SpellAttributesExF AttributesExF;//13
-
-        // 3.2.2 unk
-        public uint Unk_322_1;
-        public uint Unk_322_2;
-        public uint Unk_322_3;
-        public float Unk_322_4_1;
-        public float Unk_322_4_2;
-        public float Unk_322_4_3;
+        public SpellAttributesExG AttributesExG;//13
+        public SpellAttributesExH AttributesExH;//13
 
         //4.0.0 unk
         public uint Unk_400_1;
-        public uint Unk_400_2;
-        public uint Unk_400_3;
-        public uint Unk_400_4_1;
-        public uint Unk_400_4_2;
-        public uint Unk_400_4_3;
-        public uint SpellDifficultyId;
-        public uint SpellScalingId;
+
+        public int SpellDifficultyId;
+        public int SpellScalingId;
+        public SpellScaling SpellScaling;
 
         /// <summary>
         /// 3.2.2 related to description?
@@ -79,74 +57,10 @@ namespace WCell.RealmServer.Spells
         public uint spellDescriptionVariablesID;
 
 		/// <summary>
-		/// SpellShapeshiftForm.dbc
-		/// </summary>
-		public ShapeshiftMask RequiredShapeshiftMask;//13
-		/// <summary>
-		/// SpellShapeshiftForm.dbc
-		/// </summary>
-		public ShapeshiftMask ExcludeShapeshiftMask;//14
-
-		public SpellTargetFlags TargetFlags;
-		/// <summary>
-		/// CreatureType.dbc
-		/// </summary>
-		public CreatureMask CreatureMask;
-		/// <summary>
-		/// SpellFocusObject.dbc
-		/// </summary>
-		public SpellFocus RequiredSpellFocus;//17
-
-		public SpellFacingFlags FacingFlags;
-
-		public AuraState RequiredCasterAuraState;//18
-		public AuraState RequiredTargetAuraState;//19
-		public AuraState ExcludeCasterAuraState;
-		public AuraState ExcludeTargetAuraState;
-
-		/// <summary>
-		/// Can only cast if caster has this Aura
-		/// Used for some new BG features (Homing missiles etc)
-		/// </summary>
-		public SpellId RequiredCasterAuraId;
-		/// <summary>
-		/// Can only cast if target has this Aura
-		/// </summary>
-		public SpellId RequiredTargetAuraId;
-		/// <summary>
-		/// Cannot be cast if caster has this
-		/// </summary>
-		public SpellId ExcludeCasterAuraId;
-		/// <summary>
-		/// Cannot be cast on target if he has this
-		/// </summary>
-		public SpellId ExcludeTargetAuraId;
-
-		/// <summary>
 		/// Cast delay in milliseconds
 		/// </summary>
 		public uint CastDelay;//22
 
-		public int CooldownTime;//23
-		public int categoryCooldownTime;//24
-
-		public int CategoryCooldownTime
-		{
-			get { return categoryCooldownTime; }
-		}
-
-		public InterruptFlags InterruptFlags;//25
-		public AuraInterruptFlags AuraInterruptFlags;//26
-		public ChannelInterruptFlags ChannelInterruptFlags;//27
-		/// <summary>
-		/// Indicates the events that let this Spell proc (if it is a proc spell)
-		/// </summary>
-		public ProcTriggerFlags ProcTriggerFlags;//28
-		public uint ProcChance;//29
-		public int ProcCharges;//30
-		public int MaxLevel;//31
-		public int BaseLevel;//32
-		public int Level;//33
 		/// <summary>
 		/// SpellDuration.dbc
 		/// </summary>
@@ -154,13 +68,6 @@ namespace WCell.RealmServer.Spells
 		[NotPersistent]
 		public DurationEntry Durations;//34
 		public PowerType PowerType;//35
-		public int PowerCost;//36
-		public int PowerCostPerlevel;//37
-		public int PowerPerSecond;//38
-		/// <summary>
-		/// Unused so far
-		/// </summary>
-		public int PowerPerSecondPerLevel;//39
 
 		/// <summary>
 		/// SpellRange.dbc
@@ -175,36 +82,6 @@ namespace WCell.RealmServer.Spells
 		/// The speed of the projectile in yards per second
 		/// </summary>
 		public float ProjectileSpeed;//41
-		/// <summary>
-		/// Hunter ranged spells have this. It seems always to be 75
-		/// </summary>
-		public SpellId ModalNextSpell;//42
-
-		public int MaxStackCount;//43
-
-		[Persistent(2)]
-		public uint[] RequiredToolIds;//44 - 45
-		[Persistent(8)]
-		public uint[] ReagentIds;
-		[Persistent(8)]
-		public uint[] ReagentCounts;
-		[NotPersistent]
-		public ItemStackDescription[] Reagents; // 46 - 61
-
-		/// <summary>
-		/// ItemClass.dbc
-		/// </summary>
-		public ItemClass RequiredItemClass;//62
-
-		/// <summary>
-		/// Mask of ItemSubClasses, used for Enchants and Combat Abilities
-		/// </summary>
-		public ItemSubClassMask RequiredItemSubClassMask;//63
-
-		/// <summary>
-		/// Mask of InventorySlots, used for Enchants only
-		/// </summary>
-		public InventorySlotTypeMask RequiredItemInventorySlotMask;//64
 
 		/// <summary>
 		/// Does not count void effect handlers
@@ -233,17 +110,15 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public uint BuffIconId;//122
 
-		public uint Priority;//123
-
 		public string Name;// 124 - 140
-		private string m_RankDesc;
+		private string _rankDesc;
 
 		public string RankDesc// 141 - 157
 		{
-			get { return m_RankDesc; }
+			get { return _rankDesc; }
 			set
 			{
-				m_RankDesc = value;
+				_rankDesc = value;
 
 				if (value.Length > 0)
 				{
@@ -260,57 +135,6 @@ namespace WCell.RealmServer.Spells
 		public string Description; // 158 - 174
 		public string BuffDescription; // 175 - 191
 
-		public int PowerCostPercentage;              //192
-		/// <summary>
-		/// Always 0?
-		/// </summary>
-		public int StartRecoveryTime;               //194
-		public int StartRecoveryCategory;           //195
-		public uint MaxTargetLevel;
-		private SpellClassSet spellClassSet;		 //196
-		public SpellClassSet SpellClassSet
-		{
-			get { return spellClassSet; }
-			set
-			{
-				spellClassSet = value;
-				ClassId = value.ToClassId();
-			}
-		}
-		public ClassId ClassId;
-
-		[Persistent(3)]
-		public uint[] SpellClassMask = new uint[SpellConstants.SpellClassMaskSize];
-		public uint MaxTargets;                      //199 
-		public SpellDefenseType DefenseType;
-		public SpellPreventionType PreventionType;
-		public int StanceBarOrder;
-		/// <summary>
-		/// Used for effect-value damping when using chain targets, eg:
-		///		DamageMultipliers: 0.6, 1, 1
-		///		"Each jump reduces the effectiveness of the heal by 40%.  Heals $x1 total targets."
-		/// </summary>
-		[Persistent(3)]
-		public float[] DamageMultipliers = new float[3];
-		/// <summary>
-		/// only one spellid:6994 has this value = 369
-		/// </summary>
-		public uint MinFactionId;
-		/// <summary>
-		/// only one spellid:6994 has this value = 4
-		/// </summary>
-		public uint MinReputation;
-		/// <summary>
-		/// only one spellid:26869  has this flag = 1 
-		/// </summary>
-		public uint RequiredAuraVision;
-
-		[NotPersistent]
-		public ToolCategory[] RequiredToolCategories = new ToolCategory[2];// 209 - 210
-		/// <summary>
-		/// AreaGroup.dbc
-		/// </summary>
-		public uint AreaGroupId;// 211
 		public DamageSchoolMask SchoolMask;
 
 		/// <summary>
@@ -332,6 +156,302 @@ namespace WCell.RealmServer.Spells
 		[NotPersistent]
 		public DamageSchool[] Schools;
 
+	    public int ShapeShiftId;
+        public SpellShapeshift SpellShapeshift;
+	    public float ExtraCoeffiecient;
+
+        public int SpellAuraOptionsId;
+        public SpellAuraOptions SpellAuraOptions;
+        public int SpellAuraRestrictionsId;
+        public SpellAuraRestrictions SpellAuraRestrictions;
+        public int SpellCastingRequirementsId;
+        public SpellCastingRequirements SpellCastingRequirements;
+        public int SpellCategoriesId;
+        public SpellCategories SpellCategories;
+        public int SpellClassOptionsId;
+        public SpellClassOptions SpellClassOptions;
+        public int SpellCooldownsId;
+        public SpellCooldowns SpellCooldowns;
+        public int UnknownIndex;
+        public int SpellEquippedItemsId;
+        public SpellEquippedItems SpellEquippedItems;
+        public int SpellInterruptsId;
+        public SpellInterrupts SpellInterrupts;
+        public int SpellLevelsId;
+        public SpellLevels SpellLevels;
+        public int SpellPowerId;
+	    public SpellPower SpellPower;
+        public int SpellReagentsId;
+	    public SpellReagents SpellReagents;
+        public int SpellTargetRestrictionsId;
+        public SpellTargetRestrictions SpellTargetRestrictions;
+        public int SpellTotemsId;
+        public SpellTotems SpellTotems;
+	    public int UnknownIndex2;
+
 	}
 
+    public sealed class SpellAuraOptions
+    {
+        public int MaxStackCount;
+        public uint ProcChance; //29
+        public int ProcCharges; //30
+        public ProcTriggerFlags ProcTriggerFlags;
+    }
+
+    public sealed class SpellAuraRestrictions
+    {
+        public AuraState RequiredCasterAuraState;//18
+		public AuraState RequiredTargetAuraState;//19
+		public AuraState ExcludeCasterAuraState;
+		public AuraState ExcludeTargetAuraState;
+
+        /// <summary>
+		/// Can only cast if caster has this Aura
+		/// Used for some new BG features (Homing missiles etc)
+		/// </summary>
+		public SpellId RequiredCasterAuraId;
+		/// <summary>
+		/// Can only cast if target has this Aura
+		/// </summary>
+		public SpellId RequiredTargetAuraId;
+		/// <summary>
+		/// Cannot be cast if caster has this
+		/// </summary>
+		public SpellId ExcludeCasterAuraId;
+		/// <summary>
+		/// Cannot be cast on target if he has this
+		/// </summary>
+		public SpellId ExcludeTargetAuraId;
+    }
+
+    public sealed class SpellCastingRequirements
+    {
+        public SpellFacingFlags FacingFlags;
+
+        public uint MinFactionId;                               // 2        m_minFactionID not used
+        public uint MinReputation;                              // 3        m_minReputation not used
+
+        /// <summary>
+        /// AreaGroup.dbc
+        /// </summary>
+        public uint AreaGroupId; // 211
+
+        public uint RequiredAuraVision;                         // 5        m_requiredAuraVision not used
+
+        /// <summary>
+        /// SpellFocusObject.dbc
+        /// </summary>
+        public SpellFocus RequiredSpellFocus; //17
+    }
+
+    public sealed class SpellCategories
+    {
+        /// <summary>
+		/// SpellCategory.dbc
+		/// </summary>
+		public uint Category;
+        public SpellDefenseType DefenseType;
+        /// <summary>
+		/// SpellDispelType.dbc
+		/// </summary>
+		public DispelType DispelType;
+        /// <summary>
+		/// SpellMechanic.dbc
+		/// </summary>
+		public SpellMechanic Mechanic;
+        public SpellPreventionType PreventionType;
+        public int StartRecoveryCategory;
+    }
+
+    public sealed class SpellClassOptions
+    {
+        public uint ModalNextSpell;
+        [Persistent(3)]
+		public uint[] SpellClassMask = new uint[SpellConstants.SpellClassMaskSize];
+
+        private SpellClassSet spellClassSet;
+
+        ////////////
+        //// Custom
+        ////////////
+        
+        public SpellClassSet SpellClassSet
+        {
+            get { return spellClassSet; }
+            set
+            {
+                spellClassSet = value;
+                ClassId = value.ToClassId();
+            }
+        }
+
+        public ClassId ClassId;
+    }
+
+    public sealed class SpellCooldowns
+    {
+        public int CategoryCooldownTime;
+        public int CooldownTime;
+        public int StartRecoveryTime;
+    }
+
+    public sealed class SpellEquippedItems
+    {
+        /// <summary>
+		/// ItemClass.dbc
+		/// </summary>
+		public ItemClass RequiredItemClass;//62
+
+		/// <summary>
+		/// Mask of InventorySlots, used for Enchants only
+		/// </summary>
+		public InventorySlotTypeMask RequiredItemInventorySlotMask;//64
+
+        		/// <summary>
+		/// Mask of ItemSubClasses, used for Enchants and Combat Abilities
+		/// </summary>
+		public ItemSubClassMask RequiredItemSubClassMask;//63
+    }
+
+    public sealed class SpellInterrupts
+    {
+		public AuraInterruptFlags AuraInterruptFlags;
+		public ChannelInterruptFlags ChannelInterruptFlags;
+        public InterruptFlags InterruptFlags;
+    }
+
+    public sealed class SpellLevels
+    {
+		public int MaxLevel;
+		public int BaseLevel;
+		public int Level;
+    }
+
+    public sealed class SpellPower
+    {
+        public int PowerCost;
+        public int PowerCostPerlevel;
+        public int PowerCostPercentage;
+        public int PowerPerSecond;
+        /// <summary>
+        /// PowerDisplay.dbc
+        /// </summary>
+        public int PowerDisplayId;
+        public int unk400;
+
+    }
+
+    public sealed class SpellReagents
+    {
+        public ItemId[] ReagentIds = new ItemId[8]; //[8];
+        public int[] ReagentCounts = new int[8]; //[8];
+
+        //Custom fields
+        public ItemStackDescription[] Reagents;
+    }
+
+    public sealed class SpellScaling
+    {
+        public int Id;
+
+        /// <summary>
+        /// Cast time minimum in ms
+        /// </summary>
+        public int CastTimeMin;
+
+        /// <summary>
+        /// Cast time maximum in ms
+        /// </summary>
+        public int CastTimeMax;
+
+        /// <summary>
+        /// Divisor used in the equation for cast time scaling
+        /// First level with maximum cast time
+        /// </summary>
+        public int CastTimeDiv;
+
+        /// <summary>
+        /// Index in GtSpellScaling.dbc
+        /// </summary>
+        public int Class;
+
+        public SpellScalingEffectData[] SpellScalingEffects = new SpellScalingEffectData[3];
+
+        public float Scaling;
+
+        /// <summary>
+        /// Maximum level for scaling equation
+        /// </summary>
+        public float ScalingLevelThreshold;
+
+        ///////////////
+        //// Custom
+        ///////////////
+
+        public class SpellScalingEffectData
+        {
+            /// <summary>
+            /// Average coefficient
+            /// </summary>
+            public float Coefficient;
+
+            /// <summary>
+            /// Variance
+            /// </summary>
+            public float Delta;
+
+            /// <summary>
+            /// Combo points coefficient
+            /// </summary>
+            public float ComboPointsCoefficient;
+        }
+
+        
+
+        /// <summary>
+        /// Gets the real cast time for this data at the given level.
+        /// </summary>
+        /// <param name="level">The level of the player casting a spell with this scaling data.</param>
+        /// <returns>The appropriate cast time in milliseconds for the given level.</returns>
+        public int GetCastTimeForLevel(int level)
+        {
+            var castTime = (CastTimeMin + ((CastTimeMax - CastTimeMin) / (CastTimeDiv - 1)) * (level - 1));
+            if (castTime > CastTimeMax)
+                castTime = CastTimeMax;
+
+            return castTime;
+        }
+    }
+
+    public sealed class SpellShapeshift
+    {
+        /// <summary>
+		/// SpellShapeshiftForm.dbc
+		/// </summary>
+		public ShapeshiftMask RequiredShapeshiftMask;
+		/// <summary>
+		/// SpellShapeshiftForm.dbc
+		/// </summary>
+		public ShapeshiftMask ExcludeShapeshiftMask;
+
+        public uint StanceBarOrder;
+    }
+
+    public sealed class SpellTargetRestrictions
+    {
+        public int MaxTargets;                      //199 
+        public int MaxTargetLevel;
+        /// <summary>
+		/// CreatureType.dbc
+		/// </summary>
+		public CreatureMask CreatureMask;
+        public SpellTargetFlags TargetFlags;
+    }
+
+    public sealed class SpellTotems
+    {
+        public ToolCategory[] RequiredToolCategories = new ToolCategory[2];
+        public uint[] RequiredToolIds = new uint[2];
+    }
 }

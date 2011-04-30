@@ -210,7 +210,7 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public bool IsFood
 		{
-			get { return Category == 11; }
+			get { return SpellCategories.Category == 11; }
 		}
 
 		/// <summary>
@@ -218,7 +218,7 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public bool IsDrink
 		{
-			get { return Category == 59; }
+            get { return SpellCategories.Category == 59; }
 		}
 
 		/// <summary>
@@ -280,12 +280,12 @@ namespace WCell.RealmServer.Spells
 			internal set
 			{
 				m_Ability = value;
-				if (value != null && ClassId == 0)
+				if (value != null && SpellClassOptions.ClassId == 0)
 				{
 					var clss = Ability.ClassMask.GetIds();
 					if (clss.Length == 1)
 					{
-						ClassId = clss[0];
+                        SpellClassOptions.ClassId = clss[0];
 					}
 				}
 			}

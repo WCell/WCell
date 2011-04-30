@@ -196,7 +196,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 				}
 
 				// consume diseases
-				action.Victim.Auras.RemoveWhere(aura => aura.Spell.DispelType == DispelType.Disease);
+				action.Victim.Auras.RemoveWhere(aura => aura.Spell.SpellCategories.DispelType == DispelType.Disease);
 			}
 		}
 		#endregion
@@ -265,7 +265,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			public override void OnDefend(DamageAction action)
 			{
 				// "Enemies are considered Frozen, but any damage other than diseases will break the ice"
-				if (action.SpellEffect == null || action.Spell.DispelType != DispelType.Disease)
+				if (action.SpellEffect == null || action.Spell.SpellCategories.DispelType != DispelType.Disease)
 				{
 					// break aura
 					m_aura.Cancel();

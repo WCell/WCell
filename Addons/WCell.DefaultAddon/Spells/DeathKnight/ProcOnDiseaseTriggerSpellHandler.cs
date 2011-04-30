@@ -15,7 +15,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 	{
 		public override bool CanProcBeTriggeredBy(IUnitAction action)
 		{
-			return action.Spell != null && action.Spell.DispelType == DispelType.Disease &&
+			return action.Spell != null && action.Spell.SpellCategories.DispelType == DispelType.Disease &&
 				action.Spell != m_spellEffect.TriggerSpell;	// prevent infinite loop
 		}
 	}

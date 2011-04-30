@@ -258,7 +258,7 @@ namespace WCell.RealmServer.Spells
 
 			IsChanneled = !IsPassive && AttributesEx.HasAnyFlag(SpellAttributesEx.Channeled_1 | SpellAttributesEx.Channeled_2) ||
 			              // don't use Enum.HasFlag!
-			              ChannelInterruptFlags > 0;
+			              (SpellInterrupts != null && SpellInterrupts.ChannelInterruptFlags > 0);
 
 			foreach (var effect in Effects)
 			{
@@ -320,8 +320,9 @@ namespace WCell.RealmServer.Spells
 
 			if (!IsEnchantment && EquipmentSlot == EquipmentSlot.End)
 			{
+
 				// Required Item slot for weapon abilities
-				if (RequiredItemClass == ItemClass.Armor && RequiredItemSubClassMask == ItemSubClassMask.Shield)
+                if (SpellEquippedItems != null && SpellEquippedItems.RequiredItemClass == ItemClass.Armor && SpellEquippedItems.RequiredItemSubClassMask == ItemSubClassMask.Shield)
 				{
 					EquipmentSlot = EquipmentSlot.OffHand;
 				}
@@ -337,13 +338,13 @@ namespace WCell.RealmServer.Spells
 				{
 					EquipmentSlot = EquipmentSlot.MainHand;
 				}
-				else if (RequiredItemClass == ItemClass.Weapon)
+                else if (SpellEquippedItems != null && SpellEquippedItems.RequiredItemClass == ItemClass.Weapon)
 				{
-					if (RequiredItemSubClassMask == ItemSubClassMask.AnyMeleeWeapon)
+                    if (SpellEquippedItems.RequiredItemSubClassMask == ItemSubClassMask.AnyMeleeWeapon)
 					{
 						EquipmentSlot = EquipmentSlot.MainHand;
 					}
-					else if (RequiredItemSubClassMask.HasAnyFlag(ItemSubClassMask.AnyRangedAndThrownWeapon))
+					else if (SpellEquippedItems.RequiredItemSubClassMask.HasAnyFlag(ItemSubClassMask.AnyRangedAndThrownWeapon))
 					{
 						EquipmentSlot = EquipmentSlot.ExtraWeapon;
 					}
@@ -355,10 +356,10 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
-			HasIndividualCooldown = CooldownTime > 0 ||
+            HasIndividualCooldown = (SpellCooldowns != null && SpellCooldowns.CooldownTime > 0) ||
 			                        (IsPhysicalAbility && !IsOnNextStrike && EquipmentSlot != EquipmentSlot.End);
 
-			HasCooldown = HasIndividualCooldown || CategoryCooldownTime > 0;
+			HasCooldown = HasIndividualCooldown || (SpellCooldowns != null && SpellCooldowns.CategoryCooldownTime > 0);
 
 			//IsAoe = HasEffectWith((effect) => {
 			//    if (effect.ImplicitTargetA == ImplicitTargetType.)
@@ -380,7 +381,7 @@ namespace WCell.RealmServer.Spells
 			IsSkinning = HasEffectWith(effect => effect.EffectType == SpellEffectType.Skinning);
 			IsTameEffect = HasEffectWith(effect => effect.EffectType == SpellEffectType.TameCreature);
 
-			if (AttributesEx.HasAnyFlag(SpellAttributesEx.Negative) || IsPreventionDebuff || Mechanic.IsNegative())
+            if (AttributesEx.HasAnyFlag(SpellAttributesEx.Negative) || IsPreventionDebuff || (SpellCategories != null && SpellCategories.Mechanic.IsNegative()))
 			{
 				HasHarmfulEffects = true;
 				HasBeneficialEffects = false;
@@ -403,7 +404,7 @@ namespace WCell.RealmServer.Spells
 			RequiresDeadTarget = HasEffect(SpellEffectType.Resurrect) || HasEffect(SpellEffectType.ResurrectFlat) || HasEffect(SpellEffectType.SelfResurrect);
 				// unreliable: TargetFlags.HasAnyFlag(SpellTargetFlags.Corpse | SpellTargetFlags.PvPCorpse | SpellTargetFlags.UnitCorpse);
 
-			CostsPower = PowerCost > 0 || PowerCostPercentage > 0;
+            CostsPower = SpellPower != null && (SpellPower.PowerCost > 0 || SpellPower.PowerCostPercentage > 0);
 
 			CostsRunes = RuneCostEntry != null && RuneCostEntry.CostsRunes;
 
@@ -426,12 +427,15 @@ namespace WCell.RealmServer.Spells
 			                                                                            SpellEffectType.SchoolDamage ||
 			                                                                            effect.IsStrikeEffect);
 
-			if (DamageMultipliers[0] <= 0)
-			{
-				DamageMultipliers[0] = 1;
-			}
+		    ForeachEffect(effect =>
+		                      {
+		                          if (effect.ChainAmplitude <= 0)
+		                          {
+		                              effect.ChainAmplitude = 1;
+		                          }
+		                      });
 
-			IsHearthStoneSpell = HasEffectWith(effect => effect.HasTarget(ImplicitSpellTargetType.HeartstoneLocation));
+            IsHearthStoneSpell = HasEffectWith(effect => effect.HasTarget(ImplicitSpellTargetType.HeartstoneLocation));
 
 			// ResurrectFlat usually has no target type set
 			ForeachEffect(effect =>
@@ -449,15 +453,18 @@ namespace WCell.RealmServer.Spells
 				Schools = new[] {DamageSchool.Physical};
 			}
 
-			RequiresCasterOutOfCombat = !HasHarmfulEffects && CastDelay > 0 &&
-			                            (Attributes.HasFlag(SpellAttributes.CannotBeCastInCombat) ||
-			                             AttributesEx.HasFlag(SpellAttributesEx.RemainOutOfCombat) ||
-			                             AuraInterruptFlags.HasFlag(AuraInterruptFlags.OnStartAttack));
+		    RequiresCasterOutOfCombat = !HasHarmfulEffects && CastDelay > 0 &&
+		                                (Attributes.HasFlag(SpellAttributes.CannotBeCastInCombat) ||
+		                                 AttributesEx.HasFlag(SpellAttributesEx.RemainOutOfCombat) ||
+                                         (SpellInterrupts != null &&
+                                         SpellInterrupts.AuraInterruptFlags.HasFlag(AuraInterruptFlags.OnStartAttack)));
 
 			if (RequiresCasterOutOfCombat)
 			{
 				// We fail if being attacked (among others)
-				InterruptFlags |= InterruptFlags.OnTakeDamage;
+                if (SpellInterrupts == null)
+                    SpellInterrupts = new SpellInterrupts();
+				SpellInterrupts.InterruptFlags |= InterruptFlags.OnTakeDamage;
 			}
 
 			IsThrow = AttributesExC.HasFlag(SpellAttributesExC.ShootRangedWeapon) &&
@@ -486,17 +493,21 @@ namespace WCell.RealmServer.Spells
 				Range.MaxDist = 5;
 			}
 
-			if (RequiredToolIds == null)
+            if(SpellTotems == null)
+            {
+                SpellTotems = new SpellTotems();
+            }
+            else if (SpellTotems.RequiredToolIds == null)
 			{
-				RequiredToolIds = new uint[0];
+                SpellTotems.RequiredToolIds = new uint[0];
 			}
 			else
 			{
-				if (RequiredToolIds.Length > 0 && (RequiredToolIds[0] > 0 || RequiredToolIds[1] > 0))
+                if (SpellTotems.RequiredToolIds.Length > 0 && (SpellTotems.RequiredToolIds[0] > 0 || SpellTotems.RequiredToolIds[1] > 0))
 				{
 					SpellHandler.SpellsRequiringTools.Add(this);
 				}
-				ArrayUtil.PruneVals(ref RequiredToolIds);
+                ArrayUtil.PruneVals(ref SpellTotems.RequiredToolIds);
 			}
 
 			var skillEffect = GetFirstEffectWith(effect =>
@@ -511,7 +522,7 @@ namespace WCell.RealmServer.Spells
 				SkillTier = SkillTierId.End;
 			}
 
-			ArrayUtil.PruneVals(ref RequiredToolCategories);
+			ArrayUtil.PruneVals(ref SpellTotems.RequiredToolCategories);
 
 			ForeachEffect(effect =>
 			              	{
@@ -901,9 +912,9 @@ namespace WCell.RealmServer.Spells
 
 		public bool MatchesMask(uint[] masks)
 		{
-			for (var i = 0; i < SpellClassMask.Length; i++)
+			for (var i = 0; i < SpellClassOptions.SpellClassMask.Length; i++)
 			{
-				if ((masks[i] & SpellClassMask[i]) != 0)
+                if ((masks[i] & SpellClassOptions.SpellClassMask[i]) != 0)
 				{
 					return true;
 				}
@@ -913,19 +924,19 @@ namespace WCell.RealmServer.Spells
 
 		public int GetMaxLevelDiff(int casterLevel)
 		{
-			if (MaxLevel >= BaseLevel && MaxLevel < casterLevel)
+            if (SpellLevels.MaxLevel >= SpellLevels.BaseLevel && SpellLevels.MaxLevel < casterLevel)
 			{
-				return MaxLevel - BaseLevel;
+                return SpellLevels.MaxLevel - SpellLevels.BaseLevel;
 			}
-			return Math.Abs(casterLevel - BaseLevel);
+            return Math.Abs(casterLevel - SpellLevels.BaseLevel);
 		}
 
 		public int CalcBasePowerCost(Unit caster)
 		{
-			var cost = PowerCost + (PowerCostPerlevel * GetMaxLevelDiff(caster.Level));
-			if (PowerCostPercentage > 0)
+            var cost = SpellPower.PowerCost + (SpellPower.PowerCostPerlevel * GetMaxLevelDiff(caster.Level));
+            if (SpellPower.PowerCostPercentage > 0)
 			{
-				cost += (PowerCostPercentage *
+                cost += (SpellPower.PowerCostPercentage *
 					((PowerType == PowerType.Health ? caster.BaseHealth : caster.BasePower))) / 100;
 			}
 			return cost;
@@ -980,9 +991,9 @@ namespace WCell.RealmServer.Spells
 				millis += caster.UnitMaster.ComboPoints * ((Durations.Max - Durations.Min) / 5);
 			}
 
-			if (target != null && Mechanic != SpellMechanic.None)
+			if (target != null && SpellCategories.Mechanic != SpellMechanic.None)
 			{
-				var mod = target.GetMechanicDurationMod(Mechanic);
+                var mod = target.GetMechanicDurationMod(SpellCategories.Mechanic);
 				if (mod != 0)
 				{
 					millis = UnitUpdates.GetMultiMod(mod / 100f, millis);
@@ -1084,9 +1095,9 @@ namespace WCell.RealmServer.Spells
 		{
 			writer.WriteLine("Spell: " + this + " [" + SpellId + "]");
 
-			if (Category != 0)
+			if (SpellCategories.Category != 0)
 			{
-				writer.WriteLine(indent + "Category: " + Category);
+                writer.WriteLine(indent + "Category: " + SpellCategories.Category);
 			}
 			if (Line != null)
 			{
@@ -1100,13 +1111,13 @@ namespace WCell.RealmServer.Spells
 			{
 				writer.WriteLine(indent + "Next Rank: " + NextRank);
 			}
-			if (DispelType != 0)
+            if (SpellCategories.DispelType != 0)
 			{
-				writer.WriteLine(indent + "DispelType: " + DispelType);
+                writer.WriteLine(indent + "DispelType: " + SpellCategories.DispelType);
 			}
-			if (Mechanic != SpellMechanic.None)
+            if (SpellCategories.Mechanic != SpellMechanic.None)
 			{
-				writer.WriteLine(indent + "Mechanic: " + Mechanic);
+                writer.WriteLine(indent + "Mechanic: " + SpellCategories.Mechanic);
 			}
 			if (Attributes != SpellAttributes.None)
 			{
@@ -1128,62 +1139,78 @@ namespace WCell.RealmServer.Spells
 			{
 				writer.WriteLine(indent + "AttributesExD: " + AttributesExD);
 			}
-			if ((int)RequiredShapeshiftMask != 0)
+            if (AttributesExE != SpellAttributesExE.None)
+            {
+                writer.WriteLine(indent + "AttributesExE: " + AttributesExE);
+            }
+            if (AttributesExF != SpellAttributesExF.None)
+            {
+                writer.WriteLine(indent + "AttributesExF: " + AttributesExF);
+            }
+            if (AttributesExG != SpellAttributesExG.None)
+            {
+                writer.WriteLine(indent + "AttributesExG: " + AttributesExG);
+            }
+            if (AttributesExH != SpellAttributesExH.None)
+            {
+                writer.WriteLine(indent + "AttributesExH: " + AttributesExH);
+            }
+			if ((int)SpellShapeshift.RequiredShapeshiftMask != 0)
 			{
-				writer.WriteLine(indent + "ShapeshiftMask: " + RequiredShapeshiftMask);
+                writer.WriteLine(indent + "ShapeshiftMask: " + SpellShapeshift.RequiredShapeshiftMask);
 			}
-			if ((int)ExcludeShapeshiftMask != 0)
+            if ((int)SpellShapeshift.ExcludeShapeshiftMask != 0)
 			{
-				writer.WriteLine(indent + "ExcludeShapeshiftMask: " + ExcludeShapeshiftMask);
+                writer.WriteLine(indent + "ExcludeShapeshiftMask: " + SpellShapeshift.ExcludeShapeshiftMask);
 			}
-			if ((int)TargetFlags != 0)
+			if ((int)SpellTargetRestrictions.TargetFlags != 0)
 			{
-				writer.WriteLine(indent + "TargetType: " + TargetFlags);
+                writer.WriteLine(indent + "TargetType: " + SpellTargetRestrictions.TargetFlags);
 			}
-			if ((int)CreatureMask != 0)
+            if ((int)SpellTargetRestrictions.CreatureMask != 0)
 			{
-				writer.WriteLine(indent + "TargetUnitTypes: " + CreatureMask);
+                writer.WriteLine(indent + "TargetUnitTypes: " + SpellTargetRestrictions.CreatureMask);
 			}
-			if ((int)RequiredSpellFocus != 0)
+            if ((int)SpellCastingRequirements.RequiredSpellFocus != 0)
 			{
-				writer.WriteLine(indent + "RequiredSpellFocus: " + RequiredSpellFocus);
+                writer.WriteLine(indent + "RequiredSpellFocus: " + SpellCastingRequirements.RequiredSpellFocus);
 			}
-			if (FacingFlags != 0)
+            if (SpellCastingRequirements.FacingFlags != 0)
 			{
-				writer.WriteLine(indent + "FacingFlags: " + FacingFlags);
+                writer.WriteLine(indent + "FacingFlags: " + SpellCastingRequirements.FacingFlags);
 			}
-			if ((int)RequiredCasterAuraState != 0)
+            if ((int)SpellAuraRestrictions.RequiredCasterAuraState != 0)
 			{
-				writer.WriteLine(indent + "RequiredCasterAuraState: " + RequiredCasterAuraState);
+                writer.WriteLine(indent + "RequiredCasterAuraState: " + SpellAuraRestrictions.RequiredCasterAuraState);
 			}
-			if ((int)RequiredTargetAuraState != 0)
+            if ((int)SpellAuraRestrictions.RequiredTargetAuraState != 0)
 			{
-				writer.WriteLine(indent + "RequiredTargetAuraState: " + RequiredTargetAuraState);
+                writer.WriteLine(indent + "RequiredTargetAuraState: " + SpellAuraRestrictions.RequiredTargetAuraState);
 			}
-			if ((int)ExcludeCasterAuraState != 0)
+            if ((int)SpellAuraRestrictions.ExcludeCasterAuraState != 0)
 			{
-				writer.WriteLine(indent + "ExcludeCasterAuraState: " + ExcludeCasterAuraState);
+                writer.WriteLine(indent + "ExcludeCasterAuraState: " + SpellAuraRestrictions.ExcludeCasterAuraState);
 			}
-			if ((int)ExcludeTargetAuraState != 0)
+            if ((int)SpellAuraRestrictions.ExcludeTargetAuraState != 0)
 			{
-				writer.WriteLine(indent + "ExcludeTargetAuraState: " + ExcludeTargetAuraState);
+                writer.WriteLine(indent + "ExcludeTargetAuraState: " + SpellAuraRestrictions.ExcludeTargetAuraState);
 			}
 
-			if (RequiredCasterAuraId != 0)
+            if (SpellAuraRestrictions.RequiredCasterAuraId != 0)
 			{
-				writer.WriteLine(indent + "RequiredCasterAuraId: " + RequiredCasterAuraId);
+                writer.WriteLine(indent + "RequiredCasterAuraId: " + SpellAuraRestrictions.RequiredCasterAuraId);
 			}
-			if (RequiredTargetAuraId != 0)
+            if (SpellAuraRestrictions.RequiredTargetAuraId != 0)
 			{
-				writer.WriteLine(indent + "RequiredTargetAuraId: " + RequiredTargetAuraId);
+                writer.WriteLine(indent + "RequiredTargetAuraId: " + SpellAuraRestrictions.RequiredTargetAuraId);
 			}
-			if (ExcludeCasterAuraId != 0)
+            if (SpellAuraRestrictions.ExcludeCasterAuraId != 0)
 			{
-				writer.WriteLine(indent + "ExcludeCasterAuraSpellId: " + ExcludeCasterAuraId);
+                writer.WriteLine(indent + "ExcludeCasterAuraSpellId: " + SpellAuraRestrictions.ExcludeCasterAuraId);
 			}
-			if (ExcludeTargetAuraId != 0)
+            if (SpellAuraRestrictions.ExcludeTargetAuraId != 0)
 			{
-				writer.WriteLine(indent + "ExcludeTargetAuraSpellId: " + ExcludeTargetAuraId);
+                writer.WriteLine(indent + "ExcludeTargetAuraSpellId: " + SpellAuraRestrictions.ExcludeTargetAuraId);
 			}
 
 
@@ -1191,52 +1218,52 @@ namespace WCell.RealmServer.Spells
 			{
 				writer.WriteLine(indent + "StartTime: " + CastDelay);
 			}
-			if (CooldownTime > 0)
+			if (SpellCooldowns.CooldownTime > 0)
 			{
-				writer.WriteLine(indent + "CooldownTime: " + CooldownTime);
+                writer.WriteLine(indent + "CooldownTime: " + SpellCooldowns.CooldownTime);
 			}
-			if (categoryCooldownTime > 0)
+            if (SpellCooldowns.CategoryCooldownTime > 0)
 			{
-				writer.WriteLine(indent + "CategoryCooldownTime: " + categoryCooldownTime);
-			}
-
-			if ((int)InterruptFlags != 0)
-			{
-				writer.WriteLine(indent + "InterruptFlags: " + InterruptFlags);
-			}
-			if ((int)AuraInterruptFlags != 0)
-			{
-				writer.WriteLine(indent + "AuraInterruptFlags: " + AuraInterruptFlags);
-			}
-			if ((int)ChannelInterruptFlags != 0)
-			{
-				writer.WriteLine(indent + "ChannelInterruptFlags: " + ChannelInterruptFlags);
-			}
-			if ((int)ProcTriggerFlags != 0)
-			{
-				writer.WriteLine(indent + "ProcTriggerFlags: " + ProcTriggerFlags);
-			}
-			if ((int)ProcChance != 0)
-			{
-				writer.WriteLine(indent + "ProcChance: " + ProcChance);
+                writer.WriteLine(indent + "CategoryCooldownTime: " + SpellCooldowns.CategoryCooldownTime);
 			}
 
+            if ((int)SpellInterrupts.InterruptFlags != 0)
+			{
+                writer.WriteLine(indent + "InterruptFlags: " + SpellInterrupts.InterruptFlags);
+			}
+            if ((int)SpellInterrupts.AuraInterruptFlags != 0)
+			{
+                writer.WriteLine(indent + "AuraInterruptFlags: " + SpellInterrupts.AuraInterruptFlags);
+			}
+            if ((int)SpellInterrupts.ChannelInterruptFlags != 0)
+			{
+                writer.WriteLine(indent + "ChannelInterruptFlags: " + SpellInterrupts.ChannelInterruptFlags);
+			}
+			if ((int)SpellAuraOptions.ProcTriggerFlags != 0)
+			{
+                writer.WriteLine(indent + "ProcTriggerFlags: " + SpellAuraOptions.ProcTriggerFlags);
+			}
+            if ((int)SpellAuraOptions.ProcChance != 0)
+			{
+                writer.WriteLine(indent + "ProcChance: " + SpellAuraOptions.ProcChance);
+			}
 
-			if (ProcCharges != 0)
+
+            if (SpellAuraOptions.ProcCharges != 0)
 			{
-				writer.WriteLine(indent + "ProcCharges: " + ProcCharges);
+                writer.WriteLine(indent + "ProcCharges: " + SpellAuraOptions.ProcCharges);
 			}
-			if (MaxLevel != 0)
+			if (SpellLevels.MaxLevel != 0)
 			{
-				writer.WriteLine(indent + "MaxLevel: " + MaxLevel);
+                writer.WriteLine(indent + "MaxLevel: " + SpellLevels.MaxLevel);
 			}
-			if (BaseLevel != 0)
+            if (SpellLevels.BaseLevel != 0)
 			{
-				writer.WriteLine(indent + "BaseLevel: " + BaseLevel);
+                writer.WriteLine(indent + "BaseLevel: " + SpellLevels.BaseLevel);
 			}
-			if (Level != 0)
+            if (SpellLevels.Level != 0)
 			{
-				writer.WriteLine(indent + "Level: " + Level);
+                writer.WriteLine(indent + "Level: " + SpellLevels.Level);
 			}
 			if (Durations.Max > 0)
 			{
@@ -1251,25 +1278,21 @@ namespace WCell.RealmServer.Spells
 			{
 				writer.WriteLine(indent + "PowerType: " + PowerType);
 			}
-			if (PowerCost != 0)
+			if (SpellPower.PowerCost != 0)
 			{
-				writer.WriteLine(indent + "PowerCost: " + PowerCost);
+                writer.WriteLine(indent + "PowerCost: " + SpellPower.PowerCost);
 			}
-			if (PowerCostPerlevel != 0)
+            if (SpellPower.PowerCostPerlevel != 0)
 			{
-				writer.WriteLine(indent + "PowerCostPerlevel: " + PowerCostPerlevel);
+                writer.WriteLine(indent + "PowerCostPerlevel: " + SpellPower.PowerCostPerlevel);
 			}
-			if (PowerPerSecond != 0)
+            if (SpellPower.PowerPerSecond != 0)
 			{
-				writer.WriteLine(indent + "PowerPerSecond: " + PowerPerSecond);
+                writer.WriteLine(indent + "PowerPerSecond: " + SpellPower.PowerPerSecond);
 			}
-			if (PowerPerSecondPerLevel != 0)
+            if (SpellPower.PowerCostPercentage != 0)
 			{
-				writer.WriteLine(indent + "PowerPerSecondPerLevel: " + PowerPerSecondPerLevel);
-			}
-			if (PowerCostPercentage != 0)
-			{
-				writer.WriteLine(indent + "PowerCostPercentage: " + PowerCostPercentage);
+                writer.WriteLine(indent + "PowerCostPercentage: " + SpellPower.PowerCostPercentage);
 			}
 
 			if (Range.MinDist != 0 || Range.MaxDist != DefaultSpellRange)
@@ -1280,13 +1303,13 @@ namespace WCell.RealmServer.Spells
 			{
 				writer.WriteLine(indent + "ProjectileSpeed: " + ProjectileSpeed);
 			}
-			if ((int)ModalNextSpell != 0)
+			if ((int)SpellClassOptions.ModalNextSpell != 0)
 			{
-				writer.WriteLine(indent + "ModalNextSpell: " + ModalNextSpell);
+                writer.WriteLine(indent + "ModalNextSpell: " + SpellClassOptions.ModalNextSpell);
 			}
-			if (MaxStackCount != 0)
+			if (SpellAuraOptions.MaxStackCount != 0)
 			{
-				writer.WriteLine(indent + "MaxStackCount: " + MaxStackCount);
+                writer.WriteLine(indent + "MaxStackCount: " + SpellAuraOptions.MaxStackCount);
 			}
 
 			if (RequiredTools != null)
@@ -1297,17 +1320,17 @@ namespace WCell.RealmServer.Spells
 					writer.WriteLine(indent + "\t" + tool);
 				}
 			}
-			if (RequiredItemClass != ItemClass.None)
+			if (SpellEquippedItems.RequiredItemClass != ItemClass.None)
 			{
-				writer.WriteLine(indent + "RequiredItemClass: " + RequiredItemClass);
+                writer.WriteLine(indent + "RequiredItemClass: " + SpellEquippedItems.RequiredItemClass);
 			}
-			if ((int)RequiredItemInventorySlotMask != 0)
+            if ((int)SpellEquippedItems.RequiredItemInventorySlotMask != 0)
 			{
-				writer.WriteLine(indent + "RequiredItemInventorySlotMask: " + RequiredItemInventorySlotMask);
+                writer.WriteLine(indent + "RequiredItemInventorySlotMask: " + SpellEquippedItems.RequiredItemInventorySlotMask);
 			}
-			if ((int)RequiredItemSubClassMask != -1 && (int)RequiredItemSubClassMask != 0)
+            if ((int)SpellEquippedItems.RequiredItemSubClassMask != -1 && (int)SpellEquippedItems.RequiredItemSubClassMask != 0)
 			{
-				writer.WriteLine(indent + "RequiredItemSubClassMask: " + RequiredItemSubClassMask);
+                writer.WriteLine(indent + "RequiredItemSubClassMask: " + SpellEquippedItems.RequiredItemSubClassMask);
 			}
 
 
@@ -1315,71 +1338,70 @@ namespace WCell.RealmServer.Spells
 			{
 				writer.WriteLine(indent + "Visual2: " + Visual2);
 			}
-			if (Priority != 0)
+
+			if (SpellCategories.StartRecoveryCategory != 0)
 			{
-				writer.WriteLine(indent + "Priority: " + Priority);
+                writer.WriteLine(indent + "StartRecoveryCategory: " + SpellCategories.StartRecoveryCategory);
+			}
+			if (SpellCooldowns.StartRecoveryTime != 0)
+			{
+                writer.WriteLine(indent + "StartRecoveryTime: " + SpellCooldowns.StartRecoveryTime);
+			}
+            if (SpellTargetRestrictions.MaxTargetLevel != 0)
+			{
+                writer.WriteLine(indent + "MaxTargetLevel: " + SpellTargetRestrictions.MaxTargetLevel);
+			}
+			if ((int)SpellClassOptions.SpellClassSet != 0)
+			{
+                writer.WriteLine(indent + "SpellClassSet: " + SpellClassOptions.SpellClassSet);
 			}
 
-			if (StartRecoveryCategory != 0)
+            if (SpellClassOptions.SpellClassMask[0] != 0 || SpellClassOptions.SpellClassMask[1] != 0 || SpellClassOptions.SpellClassMask[2] != 0)
 			{
-				writer.WriteLine(indent + "StartRecoveryCategory: " + StartRecoveryCategory);
-			}
-			if (StartRecoveryTime != 0)
-			{
-				writer.WriteLine(indent + "StartRecoveryTime: " + StartRecoveryTime);
-			}
-			if (MaxTargetLevel != 0)
-			{
-				writer.WriteLine(indent + "MaxTargetLevel: " + MaxTargetLevel);
-			}
-			if ((int)SpellClassSet != 0)
-			{
-				writer.WriteLine(indent + "SpellClassSet: " + SpellClassSet);
-			}
-
-			if (SpellClassMask[0] != 0 || SpellClassMask[1] != 0 || SpellClassMask[2] != 0)
-			{
-				writer.WriteLine(indent + "SpellClassMask: {0}{1}{2}", SpellClassMask[0].ToString("X8"), SpellClassMask[1].ToString("X8"), SpellClassMask[2].ToString("X8"));
+                writer.WriteLine(indent + "SpellClassMask: {0}{1}{2}", SpellClassOptions.SpellClassMask[0].ToString("X8"), SpellClassOptions.SpellClassMask[1].ToString("X8"), SpellClassOptions.SpellClassMask[2].ToString("X8"));
 			}
 
 			/*if ((int)FamilyFlags != 0)
 			{
 				writer.WriteLine(indent + "FamilyFlags: " + FamilyFlags);
 			}*/
-			if ((int)MaxTargets != 0)
+            if ((int)SpellTargetRestrictions.MaxTargets != 0)
 			{
-				writer.WriteLine(indent + "MaxTargets: " + MaxTargets);
+                writer.WriteLine(indent + "MaxTargets: " + SpellTargetRestrictions.MaxTargets);
 			}
 
-			if (StanceBarOrder != 0)
+			if (SpellShapeshift.StanceBarOrder != 0)
 			{
-				writer.WriteLine(indent + "StanceBarOrder: " + StanceBarOrder);
+                writer.WriteLine(indent + "StanceBarOrder: " + SpellShapeshift.StanceBarOrder);
 			}
 
-			if ((int)DefenseType != 0)
+			if ((int)SpellCategories.DefenseType != 0)
 			{
-				writer.WriteLine(indent + "DefenseType: " + DefenseType);
+                writer.WriteLine(indent + "DefenseType: " + SpellCategories.DefenseType);
 			}
 
-			if ((int)PreventionType != 0)
+            if ((int)SpellCategories.PreventionType != 0)
 			{
-				writer.WriteLine(indent + "PreventionType: " + PreventionType);
+                writer.WriteLine(indent + "PreventionType: " + SpellCategories.PreventionType);
 			}
 
+            //TODO: Change to Spell.Effects.ChainAmplitude
+            /*
 			if (DamageMultipliers.Any(mult => mult != 1))
 			{
 				writer.WriteLine(indent + "DamageMultipliers: " + DamageMultipliers.ToString(", "));
 			}
+             */
 
-			for (int i = 0; i < RequiredToolCategories.Length; i++)
+			for (int i = 0; i < SpellTotems.RequiredToolCategories.Length; i++)
 			{
-				if (RequiredToolCategories[i] != 0)
-					writer.WriteLine(indent + "RequiredTotemCategoryId[" + i + "]: " + RequiredToolCategories[i]);
+                if (SpellTotems.RequiredToolCategories[i] != 0)
+                    writer.WriteLine(indent + "RequiredTotemCategoryId[" + i + "]: " + SpellTotems.RequiredToolCategories[i]);
 			}
 
-			if ((int)AreaGroupId != 0)
+			if ((int)SpellCastingRequirements.AreaGroupId != 0)
 			{
-				writer.WriteLine(indent + "AreaGroupId: " + AreaGroupId);
+                writer.WriteLine(indent + "AreaGroupId: " + SpellCastingRequirements.AreaGroupId);
 			}
 
 			if ((int)SchoolMask != 0)
@@ -1412,9 +1434,9 @@ namespace WCell.RealmServer.Spells
 				writer.WriteLine(indent + "Desc: " + Description);
 			}
 
-			if (Reagents.Length > 0)
+			if (SpellReagents.Reagents.Length > 0)
 			{
-				writer.WriteLine(indent + "Reagents: " + Reagents.ToString(", "));
+                writer.WriteLine(indent + "Reagents: " + SpellReagents.Reagents.ToString(", "));
 			}
 
 			if (Ability != null)

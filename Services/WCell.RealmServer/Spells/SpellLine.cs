@@ -47,7 +47,7 @@ namespace WCell.RealmServer.Spells
 
 		public ClassId ClassId
 		{
-			get { return m_firstSpell.ClassId; }
+			get { return m_firstSpell.SpellClassOptions.ClassId; }
 		}
 
 		public int SpellCount
