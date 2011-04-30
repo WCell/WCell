@@ -63,7 +63,7 @@ namespace WCell.RealmServer.Chat
 			ByLang[(int)ChatLanguage.Orcish] = new LanguageDescription(ChatLanguage.Orcish, SpellId.LanguageOrcish, SkillId.LanguageOrcish);
 			ByLang[(int)ChatLanguage.Darnassian] = new LanguageDescription(ChatLanguage.Darnassian, SpellId.LanguageDarnassian, SkillId.LanguageDarnassian);
 			ByLang[(int)ChatLanguage.Taurahe] = new LanguageDescription(ChatLanguage.Taurahe, SpellId.LanguageTaurahe, SkillId.LanguageTaurahe);
-			ByLang[(int)ChatLanguage.Dwarven] = new LanguageDescription(ChatLanguage.Dwarven, SpellId.LanguageDwarven, SkillId.LanguageDwarven);
+			ByLang[(int)ChatLanguage.Dwarvish] = new LanguageDescription(ChatLanguage.Dwarvish, SpellId.LanguageDwarven, SkillId.LanguageDwarven);
 			ByLang[(int)ChatLanguage.Common] = new LanguageDescription(ChatLanguage.Common, SpellId.LanguageCommon, SkillId.LanguageCommon);
 			ByLang[(int)ChatLanguage.DemonTongue] = new LanguageDescription(ChatLanguage.DemonTongue, SpellId.LanguageDemonTongue, SkillId.LanguageDemonTongue);
 			ByLang[(int)ChatLanguage.Titan] = new LanguageDescription(ChatLanguage.Titan, SpellId.LanguageTitan, SkillId.LanguageTitan);
@@ -72,24 +72,35 @@ namespace WCell.RealmServer.Chat
 			ByLang[(int)ChatLanguage.OldTongue] = new LanguageDescription(ChatLanguage.OldTongue, SpellId.LanguageOldTongueNYI, SkillId.LanguageOldTongue);
 			ByLang[(int)ChatLanguage.Gnomish] = new LanguageDescription(ChatLanguage.Gnomish, SpellId.LanguageGnomish, SkillId.LanguageGnomish);
 			ByLang[(int)ChatLanguage.Troll] = new LanguageDescription(ChatLanguage.Troll, SpellId.LanguageTroll, SkillId.LanguageTroll);
-			ByLang[(int)ChatLanguage.Gutterspeak] = new LanguageDescription(ChatLanguage.Gutterspeak, SpellId.LanguageGutterspeak, SkillId.LanguageGutterspeak);
+			ByLang[(int)ChatLanguage.Forsaken] = new LanguageDescription(ChatLanguage.Forsaken, SpellId.LanguageGutterspeak, SkillId.LanguageForsaken);
 			ByLang[(int)ChatLanguage.Draenei] = new LanguageDescription(ChatLanguage.Draenei, SpellId.LanguageDraenei, SkillId.LanguageDraenei);
+            ByLang[(int)ChatLanguage.Zombie] = new LanguageDescription(ChatLanguage.Zombie, SpellId.LanguageDraenei, SkillId.LanguageDraenei);
+            ByLang[(int)ChatLanguage.Gilnean] = new LanguageDescription(ChatLanguage.Gilnean, SpellId.LanguageGilnean, SkillId.LanguageGilnean);
+            ByLang[(int)ChatLanguage.Goblin] = new LanguageDescription(ChatLanguage.Goblin, SpellId.LanguageGoblin, SkillId.LanguageGoblin);
 
 			ByRace[(int)RaceId.Orc] = ByLang[(int)ChatLanguage.Orcish];
 			ByRace[(int)RaceId.Human] = ByLang[(int)ChatLanguage.Common];
 			ByRace[(int)RaceId.Dwarf] = ByLang[(int)ChatLanguage.Common];
 			ByRace[(int)RaceId.NightElf] = ByLang[(int)ChatLanguage.Darnassian];
-			ByRace[(int)RaceId.Undead] = ByLang[(int)ChatLanguage.Gutterspeak];
+			ByRace[(int)RaceId.Undead] = ByLang[(int)ChatLanguage.Forsaken];
 			ByRace[(int)RaceId.Tauren] = ByLang[(int)ChatLanguage.Taurahe];
 			ByRace[(int)RaceId.Gnome] = ByLang[(int)ChatLanguage.Gnomish];
 			ByRace[(int)RaceId.Troll] = ByLang[(int)ChatLanguage.Troll];
-			ByRace[(int)RaceId.Goblin] = ByLang[(int)ChatLanguage.Orcish];
+			ByRace[(int)RaceId.Goblin] = ByLang[(int)ChatLanguage.Goblin];
 			ByRace[(int)RaceId.BloodElf] = ByLang[(int)ChatLanguage.Thalassian];
 			ByRace[(int)RaceId.Draenei] = ByLang[(int)ChatLanguage.Draenei];
 			ByRace[(int)RaceId.FelOrc] = ByLang[(int)ChatLanguage.Orcish];
 			ByRace[(int)RaceId.Naga] = ByLang[(int)ChatLanguage.Orcish];
 			ByRace[(int)RaceId.Broken] = ByLang[(int)ChatLanguage.DemonTongue];
-			ByRace[(int)RaceId.Skeleton] = ByLang[(int)ChatLanguage.Gutterspeak];
+			ByRace[(int)RaceId.Skeleton] = ByLang[(int)ChatLanguage.Forsaken];
+            ByRace[(int)RaceId.Worgen] = ByLang[(int)ChatLanguage.Gilnean];
+            ByRace[(int)RaceId.Gilnean] = ByLang[(int)ChatLanguage.Gilnean];
+            ByRace[(int)RaceId.Vrykul] = ByLang[(int)ChatLanguage.Orcish];
+            ByRace[(int)RaceId.Tuskarr] = ByLang[(int)ChatLanguage.Orcish];
+            ByRace[(int)RaceId.ForestTroll] = ByLang[(int)ChatLanguage.Orcish];
+            ByRace[(int)RaceId.Taunka] = ByLang[(int)ChatLanguage.Orcish];
+            ByRace[(int)RaceId.NorthrendSkeleton] = ByLang[(int)ChatLanguage.Orcish];
+            ByRace[(int)RaceId.IceTroll] = ByLang[(int)ChatLanguage.Orcish];
 		}
 
 		#region Get language description Methods

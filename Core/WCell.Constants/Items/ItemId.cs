@@ -1,7 +1,7 @@
 
 ///
 /// This file was automatically created, using WCell's CodeFileWriter
-/// Date: 01/06/2010
+/// Date: 30/04/2011
 ///
 
 namespace WCell.Constants.Items
@@ -251,6 +251,12 @@ namespace WCell.Constants.Items
 		/// Class: Quest
 		/// </summary>
 		GarricksHead = 182,
+		/// <summary>
+		/// WeaponMainHand
+		/// Level: 75
+		/// Class: Weapon
+		/// </summary>
+		MartinsBrokenStaff = 192,
 		/// <summary>
 		/// Chest
 		/// Level: 5
@@ -1565,6 +1571,12 @@ namespace WCell.Constants.Items
 		/// Class: Consumable
 		/// </summary>
 		SpikedCollar = 1187,
+		/// <summary>
+		/// Finger
+		/// Level: 20
+		/// Class: Armor
+		/// </summary>
+		OverseersRing = 1189,
 		/// <summary>
 		/// Cloak
 		/// Level: 20
@@ -6040,25 +6052,25 @@ namespace WCell.Constants.Items
 		/// </summary>
 		AdeptShortStaff = 2503,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 2
 		/// Class: Weapon
 		/// </summary>
 		WornShortbow = 2504,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 4
 		/// Class: Weapon
 		/// </summary>
 		PolishedShortbow = 2505,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 8
 		/// Class: Weapon
 		/// </summary>
 		HornwoodRecurveBow = 2506,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 16
 		/// Class: Weapon
 		/// </summary>
@@ -7099,7 +7111,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		IronOre = 2772,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 8
 		/// Class: Weapon
 		/// </summary>
@@ -7121,7 +7133,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		GoldOre = 2776,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 13
 		/// Class: Weapon
 		/// </summary>
@@ -7138,7 +7150,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		TearOfTilloa = 2779,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 19
 		/// Class: Weapon
 		/// </summary>
@@ -7150,7 +7162,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		DirtyBlunderbuss = 2781,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 24
 		/// Class: Weapon
 		/// </summary>
@@ -7167,7 +7179,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		MusquashRoot = 2784,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 28
 		/// Class: Weapon
 		/// </summary>
@@ -7310,13 +7322,13 @@ namespace WCell.Constants.Items
 		/// </summary>
 		MoGroshCanOpener = 2823,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 53
 		/// Class: Weapon
 		/// </summary>
 		Hurricane = 2824,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 42
 		/// Class: Weapon
 		/// </summary>
@@ -7673,7 +7685,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		CloakOfTheFaith = 2902,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 15
 		/// Class: Weapon
 		/// </summary>
@@ -8230,7 +8242,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		EnduringCap = 3020,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 25
 		/// Class: Weapon
 		/// </summary>
@@ -8260,13 +8272,13 @@ namespace WCell.Constants.Items
 		/// </summary>
 		BKP42Ultra = 3025,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 21
 		/// Class: Weapon
 		/// </summary>
 		ReinforcedBow = 3026,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 25
 		/// Class: Weapon
 		/// </summary>
@@ -8295,19 +8307,19 @@ namespace WCell.Constants.Items
 		/// </summary>
 		LacedPumpkin = 3035,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 15
 		/// Class: Weapon
 		/// </summary>
 		HeavyShortbow = 3036,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 34
 		/// Class: Weapon
 		/// </summary>
 		WhipwoodRecurveBow = 3037,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 23
 		/// Class: Weapon
 		/// </summary>
@@ -8457,7 +8469,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		SmolderingBoots = 3076,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 26
 		/// Class: Weapon
 		/// </summary>
@@ -10248,7 +10260,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		MightyIronHammer = 3492,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 30
 		/// Class: Weapon
 		/// </summary>
@@ -11282,7 +11294,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		StompingBoots = 3741,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 28
 		/// Class: Weapon
 		/// </summary>
@@ -11446,7 +11458,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		LethargyRoot = 3777,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 31
 		/// Class: Weapon
 		/// </summary>
@@ -12580,7 +12592,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		HeavyWarStaff = 4024,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 45
 		/// Class: Weapon
 		/// </summary>
@@ -12915,7 +12927,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		FlashRifle = 4086,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 41
 		/// Class: Weapon
 		/// </summary>
@@ -13033,7 +13045,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		ExcelsiorBoots = 4109,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 45
 		/// Class: Weapon
 		/// </summary>
@@ -14403,7 +14415,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		EldritchShackles = 4473,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 32
 		/// Class: Weapon
 		/// </summary>
@@ -14905,7 +14917,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		MedicineStaff = 4575,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 21
 		/// Class: Weapon
 		/// </summary>
@@ -16558,7 +16570,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		HandmadeLeatherBag = 4930,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 11
 		/// Class: Weapon
 		/// </summary>
@@ -18236,7 +18248,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		StonewoodHammer = 5345,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 14
 		/// Class: Weapon
 		/// </summary>
@@ -19264,7 +19276,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		ThicketHammer = 5595,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 11
 		/// Class: Weapon
 		/// </summary>
@@ -20044,7 +20056,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		LightOfElune = 5816,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 30
 		/// Class: Weapon
 		/// </summary>
@@ -20172,6 +20184,11 @@ namespace WCell.Constants.Items
 		/// Class: Quest
 		/// </summary>
 		FragmentsOfRokAlim = 5844,
+		/// <summary>
+		/// Level: 25
+		/// Class: Consumable
+		/// </summary>
+		FlankOfMeat = 5845,
 		/// <summary>
 		/// Level: 1
 		/// Class: Quest
@@ -22554,7 +22571,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		DeviateScaleBelt = 6468,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 24
 		/// Class: Weapon
 		/// </summary>
@@ -23669,7 +23686,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		StygianBoneAmulet = 6695,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 32
 		/// Class: Weapon
 		/// </summary>
@@ -23823,7 +23840,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		BleedingCrescent = 6738,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 29
 		/// Class: Weapon
 		/// </summary>
@@ -28437,13 +28454,13 @@ namespace WCell.Constants.Items
 		/// </summary>
 		TrainingSword = 8178,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 6
 		/// Class: Weapon
 		/// </summary>
 		CadetsBow = 8179,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 11
 		/// Class: Weapon
 		/// </summary>
@@ -28461,7 +28478,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		PelletRifle = 8182,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 27
 		/// Class: Weapon
 		/// </summary>
@@ -30835,7 +30852,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		PrecisionArrow = 9399,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 41
 		/// Class: Weapon
 		/// </summary>
@@ -30990,7 +31007,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		PendulumOfDoom = 9425,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 41
 		/// Class: Weapon
 		/// </summary>
@@ -36248,7 +36265,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		RubbingRuneOfSaelHai = 10566,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 38
 		/// Class: Weapon
 		/// </summary>
@@ -36479,7 +36496,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		WintersBite = 10623,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 47
 		/// Class: Weapon
 		/// </summary>
@@ -38315,37 +38332,37 @@ namespace WCell.Constants.Items
 		/// </summary>
 		UthersStrength = 11302,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 16
 		/// Class: Weapon
 		/// </summary>
 		FineShortbow = 11303,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 19
 		/// Class: Weapon
 		/// </summary>
 		FineLongbow = 11304,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 35
 		/// Class: Weapon
 		/// </summary>
 		DenseShortbow = 11305,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 32
 		/// Class: Weapon
 		/// </summary>
 		SturdyRecurve = 11306,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 47
 		/// Class: Weapon
 		/// </summary>
 		MassiveLongbow = 11307,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 49
 		/// Class: Weapon
 		/// </summary>
@@ -38978,7 +38995,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		FleetfootGreaves = 11627,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 53
 		/// Class: Weapon
 		/// </summary>
@@ -41669,7 +41686,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		AnvilmarMusket = 12446,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 5
 		/// Class: Weapon
 		/// </summary>
@@ -41681,7 +41698,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		LightHuntingRifle = 12448,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 5
 		/// Class: Weapon
 		/// </summary>
@@ -42288,7 +42305,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		BijousReconnaissanceReport = 12652,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 59
 		/// Class: Weapon
 		/// </summary>
@@ -43539,31 +43556,31 @@ namespace WCell.Constants.Items
 		/// </summary>
 		ExecutionersCleaver = 13018,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 32
 		/// Class: Weapon
 		/// </summary>
 		HarpyclawShortBow = 13019,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 39
 		/// Class: Weapon
 		/// </summary>
 		SkystrikerBow = 13020,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 47
 		/// Class: Weapon
 		/// </summary>
 		NeedleThreader = 13021,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 55
 		/// Class: Weapon
 		/// </summary>
 		GryphonwingLongBow = 13022,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 63
 		/// Class: Weapon
 		/// </summary>
@@ -44381,7 +44398,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		PlaguedFleshSample = 13174,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 60
 		/// Class: Weapon
 		/// </summary>
@@ -46006,7 +46023,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		StoutWarStaff = 13823,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 55
 		/// Class: Weapon
 		/// </summary>
@@ -52760,37 +52777,37 @@ namespace WCell.Constants.Items
 		/// </summary>
 		LunarWand = 15283,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 29
 		/// Class: Weapon
 		/// </summary>
 		LongBattleBow = 15284,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 32
 		/// Class: Weapon
 		/// </summary>
 		ArchersLongbow = 15285,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 35
 		/// Class: Weapon
 		/// </summary>
 		LongRedwoodBow = 15286,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 45
 		/// Class: Weapon
 		/// </summary>
 		CrusaderBow = 15287,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 61
 		/// Class: Weapon
 		/// </summary>
 		BlasthornBow = 15288,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 65
 		/// Class: Weapon
 		/// </summary>
@@ -52801,7 +52818,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		BrownKodo = 15290,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 51
 		/// Class: Weapon
 		/// </summary>
@@ -52817,19 +52834,19 @@ namespace WCell.Constants.Items
 		/// </summary>
 		TealKodo = 15293,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 53
 		/// Class: Weapon
 		/// </summary>
 		SiegeBow = 15294,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 55
 		/// Class: Weapon
 		/// </summary>
 		QuillfireBow = 15295,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 63
 		/// Class: Weapon
 		/// </summary>
@@ -57418,6 +57435,20 @@ namespace WCell.Constants.Items
 		/// </summary>
 		KnightLieutenantsChainGauntlets = 16403,
 		/// <summary>
+		/// Feet
+		/// Level: 63
+		/// Set: Lieutenant Commander's Battlegear (Id: 282)
+		/// Class: Armor
+		/// </summary>
+		KnightLieutenantsPlateBoots = 16405,
+		/// <summary>
+		/// Hand
+		/// Level: 63
+		/// Set: Lieutenant Commander's Battlegear (Id: 282)
+		/// Class: Armor
+		/// </summary>
+		KnightLieutenantsPlateGauntlets = 16406,
+		/// <summary>
 		/// Level: 23
 		/// Class: Quest
 		/// </summary>
@@ -57548,6 +57579,34 @@ namespace WCell.Constants.Items
 		/// Class: Armor
 		/// </summary>
 		LieutenantCommandersChainHelmet = 16428,
+		/// <summary>
+		/// Head
+		/// Level: 63
+		/// Set: Lieutenant Commander's Battlegear (Id: 282)
+		/// Class: Armor
+		/// </summary>
+		LieutenantCommandersPlateHelm = 16429,
+		/// <summary>
+		/// Chest
+		/// Level: 63
+		/// Set: Lieutenant Commander's Battlegear (Id: 282)
+		/// Class: Armor
+		/// </summary>
+		KnightCaptainsPlateChestguard = 16430,
+		/// <summary>
+		/// Legs
+		/// Level: 63
+		/// Set: Lieutenant Commander's Battlegear (Id: 282)
+		/// Class: Armor
+		/// </summary>
+		KnightCaptainsPlateLeggings = 16431,
+		/// <summary>
+		/// Shoulder
+		/// Level: 63
+		/// Set: Lieutenant Commander's Battlegear (Id: 282)
+		/// Class: Armor
+		/// </summary>
+		LieutenantCommandersPlatePauldrons = 16432,
 		/// <summary>
 		/// Chest
 		/// Level: 63
@@ -58009,6 +58068,90 @@ namespace WCell.Constants.Items
 		/// </summary>
 		ChampionsPlatePauldrons = 16516,
 		/// <summary>
+		/// Feet
+		/// Level: 63
+		/// Set: Champion's Earthshaker (Id: 301)
+		/// Class: Armor
+		/// </summary>
+		BloodGuardsMailWalkers = 16518,
+		/// <summary>
+		/// Hand
+		/// Level: 63
+		/// Set: Champion's Earthshaker (Id: 301)
+		/// Class: Armor
+		/// </summary>
+		BloodGuardsMailGrips = 16519,
+		/// <summary>
+		/// Head
+		/// Level: 63
+		/// Set: Champion's Earthshaker (Id: 301)
+		/// Class: Armor
+		/// </summary>
+		ChampionsMailHelm = 16521,
+		/// <summary>
+		/// Chest
+		/// Level: 63
+		/// Set: Champion's Earthshaker (Id: 301)
+		/// Class: Armor
+		/// </summary>
+		LegionnairesMailChestpiece = 16522,
+		/// <summary>
+		/// Legs
+		/// Level: 63
+		/// Set: Champion's Earthshaker (Id: 301)
+		/// Class: Armor
+		/// </summary>
+		LegionnairesMailLeggings = 16523,
+		/// <summary>
+		/// Shoulder
+		/// Level: 63
+		/// Set: Champion's Earthshaker (Id: 301)
+		/// Class: Armor
+		/// </summary>
+		ChampionsMailShoulders = 16524,
+		/// <summary>
+		/// Chest
+		/// Level: 63
+		/// Set: Champion's Pursuit (Id: 361)
+		/// Class: Armor
+		/// </summary>
+		LegionnairesChainBreastplate = 16525,
+		/// <summary>
+		/// Head
+		/// Level: 63
+		/// Set: Champion's Pursuit (Id: 361)
+		/// Class: Armor
+		/// </summary>
+		ChampionsChainHeadguard = 16526,
+		/// <summary>
+		/// Legs
+		/// Level: 63
+		/// Set: Champion's Pursuit (Id: 361)
+		/// Class: Armor
+		/// </summary>
+		LegionnairesChainLeggings = 16527,
+		/// <summary>
+		/// Shoulder
+		/// Level: 63
+		/// Set: Champion's Pursuit (Id: 361)
+		/// Class: Armor
+		/// </summary>
+		ChampionsChainPauldrons = 16528,
+		/// <summary>
+		/// Hand
+		/// Level: 63
+		/// Set: Champion's Pursuit (Id: 361)
+		/// Class: Armor
+		/// </summary>
+		BloodGuardsChainGauntlets = 16530,
+		/// <summary>
+		/// Feet
+		/// Level: 63
+		/// Set: Champion's Pursuit (Id: 361)
+		/// Class: Armor
+		/// </summary>
+		BloodGuardsChainBoots = 16531,
+		/// <summary>
 		/// Wrist
 		/// Level: 63
 		/// Class: Armor
@@ -58317,7 +58460,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		AquariusBelt = 16608,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 57
 		/// Class: Weapon
 		/// </summary>
@@ -60395,7 +60538,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		DuskwingMantle = 16995,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 62
 		/// Class: Weapon
 		/// </summary>
@@ -60778,7 +60921,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		Deathbringer = 17068,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 69
 		/// Class: Weapon
 		/// </summary>
@@ -61560,12 +61703,47 @@ namespace WCell.Constants.Items
 		/// </summary>
 		GeneralsDreadweavePants = 17593,
 		/// <summary>
+		/// Feet
+		/// Level: 63
+		/// Set: Lieutenant Commander's Raiment (Id: 344)
+		/// Class: Armor
+		/// </summary>
+		KnightLieutenantsSatinBoots = 17594,
+		/// <summary>
 		/// Hand
 		/// Level: 63
 		/// Set: Lieutenant Commander's Raiment (Id: 344)
 		/// Class: Armor
 		/// </summary>
 		KnightLieutenantsSatinGloves = 17596,
+		/// <summary>
+		/// Head
+		/// Level: 63
+		/// Set: Lieutenant Commander's Raiment (Id: 344)
+		/// Class: Armor
+		/// </summary>
+		LieutenantCommandersDiadem = 17598,
+		/// <summary>
+		/// Legs
+		/// Level: 63
+		/// Set: Lieutenant Commander's Raiment (Id: 344)
+		/// Class: Armor
+		/// </summary>
+		KnightCaptainsSatinLeggings = 17599,
+		/// <summary>
+		/// Robe
+		/// Level: 63
+		/// Set: Lieutenant Commander's Raiment (Id: 344)
+		/// Class: Armor
+		/// </summary>
+		KnightCaptainsSatinRobes = 17600,
+		/// <summary>
+		/// Shoulder
+		/// Level: 63
+		/// Set: Lieutenant Commander's Raiment (Id: 344)
+		/// Class: Armor
+		/// </summary>
+		LieutenantCommandersSatinAmice = 17601,
 		/// <summary>
 		/// Head
 		/// Level: 74
@@ -61733,7 +61911,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		SmokywoodPasturesSampler = 17685,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 43
 		/// Class: Weapon
 		/// </summary>
@@ -62075,7 +62253,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		SatyrsLash = 17752,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 53
 		/// Class: Weapon
 		/// </summary>
@@ -63034,7 +63212,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		WaterspoutBoots = 18322,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 58
 		/// Class: Weapon
 		/// </summary>
@@ -63899,7 +64077,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		SkullcrackingMace = 18481,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 60
 		/// Class: Weapon
 		/// </summary>
@@ -64715,7 +64893,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		FrigidRing = 18679,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 61
 		/// Class: Weapon
 		/// </summary>
@@ -64900,7 +65078,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		ArenaVambraces = 18712,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 75
 		/// Class: Weapon
 		/// </summary>
@@ -64994,7 +65172,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		AnastariHeirloom = 18728,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 60
 		/// Class: Weapon
 		/// </summary>
@@ -65504,7 +65682,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		BrutalityBlade = 18832,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 78
 		/// Class: Weapon
 		/// </summary>
@@ -65516,7 +65694,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		InsigniaOfTheHorde = 18834,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 78
 		/// Class: Weapon
 		/// </summary>
@@ -66456,7 +66634,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		YetiHideBracers = 19113,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 51
 		/// Class: Weapon
 		/// </summary>
@@ -67528,7 +67706,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		ElementiumReinforcedBulwark = 19349,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 75
 		/// Class: Weapon
 		/// </summary>
@@ -68364,49 +68542,49 @@ namespace WCell.Constants.Items
 		/// </summary>
 		ProtectorsSword_4 = 19557,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 63
 		/// Class: Weapon
 		/// </summary>
 		OutridersBow = 19558,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 53
 		/// Class: Weapon
 		/// </summary>
 		OutridersBow_2 = 19559,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 43
 		/// Class: Weapon
 		/// </summary>
 		OutridersBow_3 = 19560,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 33
 		/// Class: Weapon
 		/// </summary>
 		OutridersBow_4 = 19561,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 63
 		/// Class: Weapon
 		/// </summary>
 		OutrunnersBow = 19562,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 53
 		/// Class: Weapon
 		/// </summary>
 		OutrunnersBow_2 = 19563,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 43
 		/// Class: Weapon
 		/// </summary>
 		OutrunnersBow_3 = 19564,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 33
 		/// Class: Weapon
 		/// </summary>
@@ -70153,7 +70331,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		DevilsaurTooth = 19992,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 68
 		/// Class: Weapon
 		/// </summary>
@@ -70365,7 +70543,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		ArcaneCrystalPendant = 20037,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 66
 		/// Class: Weapon
 		/// </summary>
@@ -71886,13 +72064,13 @@ namespace WCell.Constants.Items
 		/// </summary>
 		SignetOfBeckoningWater = 20436,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 23
 		/// Class: Weapon
 		/// </summary>
 		OutridersBow_5 = 20437,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 23
 		/// Class: Weapon
 		/// </summary>
@@ -72112,7 +72290,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		LokDelarStaveOfTheAncientKeepersDEP = 20487,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 75
 		/// Class: Weapon
 		/// </summary>
@@ -72851,7 +73029,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		NaturesWhisper = 20645,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 59
 		/// Class: Weapon
 		/// </summary>
@@ -72947,7 +73125,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		AbyssalPlateGreaves = 20662,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 60
 		/// Class: Weapon
 		/// </summary>
@@ -73686,7 +73864,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		SunstriderAxe = 20837,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 5
 		/// Class: Weapon
 		/// </summary>
@@ -74029,7 +74207,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		BarbaricIronCollar = 20909,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 4
 		/// Class: Weapon
 		/// </summary>
@@ -74347,7 +74525,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		ApprenticesStaff = 20978,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 2
 		/// Class: Weapon
 		/// </summary>
@@ -76463,7 +76641,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		RingOfFury = 21477,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 68
 		/// Class: Weapon
 		/// </summary>
@@ -77119,7 +77297,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		DonRigobertosLostHat = 21615,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 78
 		/// Class: Weapon
 		/// </summary>
@@ -80385,7 +80563,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		LeftysBrassKnuckle = 22317,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 61
 		/// Class: Weapon
 		/// </summary>
@@ -82876,7 +83054,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		ToxinInjector = 22810,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 83
 		/// Class: Weapon
 		/// </summary>
@@ -83725,7 +83903,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		GlacialMantle = 22968,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 11
 		/// Class: Weapon
 		/// </summary>
@@ -83796,7 +83974,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		GluthsMissingCollar = 22981,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 21
 		/// Class: Weapon
 		/// </summary>
@@ -84180,7 +84358,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		CloakOfTheNecropolis = 23050,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 86
 		/// Class: Weapon
 		/// </summary>
@@ -85285,7 +85463,7 @@ namespace WCell.Constants.Items
 		/// Set: Lieutenant Commander's Battlearmor (Id: 545)
 		/// Class: Armor
 		/// </summary>
-		KnightLieutenantsPlateGauntlets = 23286,
+		KnightLieutenantsPlateGauntlets_2 = 23286,
 		/// <summary>
 		/// Feet
 		/// Level: 66
@@ -85390,7 +85568,7 @@ namespace WCell.Constants.Items
 		/// Set: Lieutenant Commander's Battlearmor (Id: 545)
 		/// Class: Armor
 		/// </summary>
-		KnightCaptainsPlateLeggings = 23301,
+		KnightCaptainsPlateLeggings_2 = 23301,
 		/// <summary>
 		/// Legs
 		/// Level: 68
@@ -85832,7 +86010,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		SatinLinedGloves = 23397,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 9
 		/// Class: Weapon
 		/// </summary>
@@ -85898,7 +86076,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		FarstridersBracers = 23408,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 20
 		/// Class: Weapon
 		/// </summary>
@@ -89001,7 +89179,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		WeatheredClothArmor = 24135,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 12
 		/// Class: Weapon
 		/// </summary>
@@ -94942,85 +95120,85 @@ namespace WCell.Constants.Items
 		/// </summary>
 		LegendsGlaive = 25239,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 81
 		/// Class: Weapon
 		/// </summary>
 		AzerothianLongbow = 25240,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 84
 		/// Class: Weapon
 		/// </summary>
 		AshenvaleLongbow = 25241,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 87
 		/// Class: Weapon
 		/// </summary>
 		TelaariLongbow = 25242,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 90
 		/// Class: Weapon
 		/// </summary>
 		WindtalkerBow = 25243,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 93
 		/// Class: Weapon
 		/// </summary>
 		ViperBow = 25244,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 96
 		/// Class: Weapon
 		/// </summary>
 		RazorsongBow = 25245,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 99
 		/// Class: Weapon
 		/// </summary>
 		ThalassianCompoundBow = 25246,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 102
 		/// Class: Weapon
 		/// </summary>
 		ExpertsBow = 25247,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 105
 		/// Class: Weapon
 		/// </summary>
 		TalbukHuntingBow = 25248,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 108
 		/// Class: Weapon
 		/// </summary>
 		RangersRecurvedBow = 25249,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 111
 		/// Class: Weapon
 		/// </summary>
 		RocslayerLongbow = 25250,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 114
 		/// Class: Weapon
 		/// </summary>
 		OrcFlatbow = 25251,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 117
 		/// Class: Weapon
 		/// </summary>
 		DreamCatcherBow = 25252,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 120
 		/// Class: Weapon
 		/// </summary>
@@ -95932,7 +96110,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		RustedMusket = 25405,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 69
 		/// Class: Weapon
 		/// </summary>
@@ -96387,7 +96565,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		WolfridersDagger = 25495,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 93
 		/// Class: Weapon
 		/// </summary>
@@ -98720,7 +98898,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		ScimitarOfTheNexusStalkers = 25952,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 97
 		/// Class: Weapon
 		/// </summary>
@@ -98828,7 +99006,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		ShalassiOraclesSandals = 25970,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 80
 		/// Class: Weapon
 		/// </summary>
@@ -100105,7 +100283,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		JeweledBootsOfSanctification = 27525,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 112
 		/// Class: Weapon
 		/// </summary>
@@ -101316,7 +101494,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		MindragePauldrons = 27816,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 115
 		/// Class: Weapon
 		/// </summary>
@@ -101932,13 +102110,13 @@ namespace WCell.Constants.Items
 		/// </summary>
 		TerminalEdge_2 = 27929,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 91
 		/// Class: Weapon
 		/// </summary>
 		Splintermark = 27930,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 91
 		/// Class: Weapon
 		/// </summary>
@@ -102116,7 +102294,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		CrowWingReaper = 27986,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 112
 		/// Class: Weapon
 		/// </summary>
@@ -102703,7 +102881,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		ArcanistsWand = 28151,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 11
 		/// Class: Weapon
 		/// </summary>
@@ -106192,7 +106370,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		LightsJustice = 28771,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 125
 		/// Class: Weapon
 		/// </summary>
@@ -108361,7 +108539,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		VeteransMusket = 29151,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 100
 		/// Class: Weapon
 		/// </summary>
@@ -109446,7 +109624,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		TheBlackStalk = 29350,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 105
 		/// Class: Weapon
 		/// </summary>
@@ -112459,7 +112637,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		CobraLashBoots = 30104,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 141
 		/// Class: Weapon
 		/// </summary>
@@ -113144,7 +113322,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		JuniorTechnician3rdGradeBracers = 30225,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 108
 		/// Class: Weapon
 		/// </summary>
@@ -113634,7 +113812,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		CosmicInfuser = 30317,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 175
 		/// Class: Weapon
 		/// </summary>
@@ -115623,7 +115801,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		AldorGuardianRifle = 30758,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 69
 		/// Class: Weapon
 		/// </summary>
@@ -116390,7 +116568,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		MidnightChestguard = 30905,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 151
 		/// Class: Weapon
 		/// </summary>
@@ -117423,7 +117601,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		GromTorsCharge = 31071,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 109
 		/// Class: Weapon
 		/// </summary>
@@ -118632,7 +118810,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		IronrootSeeds = 31300,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 115
 		/// Class: Weapon
 		/// </summary>
@@ -119227,7 +119405,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		IronOakShield = 31415,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 108
 		/// Class: Weapon
 		/// </summary>
@@ -121078,7 +121256,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		TalonbranchWand = 31761,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 96
 		/// Class: Weapon
 		/// </summary>
@@ -123587,7 +123765,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		UnstoppableAggressorsRing = 32335,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 151
 		/// Class: Weapon
 		/// </summary>
@@ -127434,7 +127612,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		BitingAxe = 33272,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 39
 		/// Class: Weapon
 		/// </summary>
@@ -128198,7 +128376,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		BattlewornTuskguard = 33421,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 125
 		/// Class: Weapon
 		/// </summary>
@@ -128478,7 +128656,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		ChestguardOfTheWarlord = 33473,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 132
 		/// Class: Weapon
 		/// </summary>
@@ -129075,6 +129253,11 @@ namespace WCell.Constants.Items
 		/// Class: Armor
 		/// </summary>
 		SlikksCloakOfPlacation = 33593,
+		/// <summary>
+		/// Level: 1
+		/// Class: Quest
+		/// </summary>
+		DragonflayerBloodSample = 33599,
 		/// <summary>
 		/// Level: 1
 		/// Class: Quest
@@ -131439,6 +131622,11 @@ namespace WCell.Constants.Items
 		JackAdamsDebt = 34116,
 		/// <summary>
 		/// Level: 1
+		/// Class: Key
+		/// </summary>
+		RustyIronKey = 34117,
+		/// <summary>
+		/// Level: 1
 		/// Class: Quest
 		/// </summary>
 		BlackConradsTreasure = 34118,
@@ -131754,7 +131942,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		ShoulderpadsOfVehemence = 34195,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 154
 		/// Class: Weapon
 		/// </summary>
@@ -132127,7 +132315,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		CoifOfAlleria = 34333,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 164
 		/// Class: Weapon
 		/// </summary>
@@ -133007,7 +133195,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		CordOfAbsolution = 34528,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 146
 		/// Class: Weapon
 		/// </summary>
@@ -135354,7 +135542,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		BrutalGladiatorsLinkedSpaulders = 35046,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 154
 		/// Class: Weapon
 		/// </summary>
@@ -137895,7 +138083,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		ArcaneFocalSignet = 35589,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 179
 		/// Class: Weapon
 		/// </summary>
@@ -138962,7 +139150,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		TotemicBeacon = 35828,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 138
 		/// Class: Weapon
 		/// </summary>
@@ -143393,6 +143581,12 @@ namespace WCell.Constants.Items
 		BurningBattleaxe = 36588,
 		/// <summary>
 		/// TwoHandWeapon
+		/// Level: 146
+		/// Class: Weapon
+		/// </summary>
+		SegmentingBroadaxe = 36589,
+		/// <summary>
+		/// TwoHandWeapon
 		/// Level: 150
 		/// Class: Weapon
 		/// </summary>
@@ -143524,79 +143718,79 @@ namespace WCell.Constants.Items
 		/// </summary>
 		ScourgeWarSpear = 36612,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 130
 		/// Class: Weapon
 		/// </summary>
 		HonorableLongbow = 36613,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 134
 		/// Class: Weapon
 		/// </summary>
 		YewBow = 36614,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 138
 		/// Class: Weapon
 		/// </summary>
 		ExpertsLongbow = 36615,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 142
 		/// Class: Weapon
 		/// </summary>
 		DutifulLongbow = 36616,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 150
 		/// Class: Weapon
 		/// </summary>
 		TwistedLongbow = 36618,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 154
 		/// Class: Weapon
 		/// </summary>
 		AstralLightBow = 36619,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 158
 		/// Class: Weapon
 		/// </summary>
 		TrackingBow = 36620,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 162
 		/// Class: Weapon
 		/// </summary>
 		AdvancedFlatbow = 36621,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 166
 		/// Class: Weapon
 		/// </summary>
 		AcuteShortbow = 36622,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 170
 		/// Class: Weapon
 		/// </summary>
 		HarnessedLongbow = 36623,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 174
 		/// Class: Weapon
 		/// </summary>
 		ShriekingBow = 36624,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 178
 		/// Class: Weapon
 		/// </summary>
 		MassiveRecurvedBow = 36625,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 182
 		/// Class: Weapon
 		/// </summary>
@@ -144425,6 +144619,11 @@ namespace WCell.Constants.Items
 		SarathstrasFrozenHeart = 36793,
 		/// <summary>
 		/// Level: 1
+		/// Class: Miscellaneous
+		/// </summary>
+		ScouredFishbones = 36794,
+		/// <summary>
+		/// Level: 1
 		/// Class: Quest
 		/// </summary>
 		GavrocksRunebreaker = 36796,
@@ -144580,6 +144779,11 @@ namespace WCell.Constants.Items
 		/// Class: Quest
 		/// </summary>
 		FilledBloodGem = 36828,
+		/// <summary>
+		/// Level: 1
+		/// Class: Miscellaneous
+		/// </summary>
+		SupremelySlimyIchor = 36829,
 		/// <summary>
 		/// Level: 1
 		/// Class: Quest
@@ -144771,7 +144975,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		MedicsMorningStar = 36881,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 138
 		/// Class: Weapon
 		/// </summary>
@@ -145593,7 +145797,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		LostMarksmansRifle = 37049,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 187
 		/// Class: Weapon
 		/// </summary>
@@ -145960,7 +146164,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		EctoplasmicResidue = 37121,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 138
 		/// Class: Weapon
 		/// </summary>
@@ -147195,6 +147399,12 @@ namespace WCell.Constants.Items
 		/// </summary>
 		FloodplainShoulderpads = 37399,
 		/// <summary>
+		/// Wrist
+		/// Level: 138
+		/// Class: Armor
+		/// </summary>
+		WhalehunterCuffs = 37400,
+		/// <summary>
 		/// Weapon
 		/// Level: 200
 		/// Class: Weapon
@@ -147586,12 +147796,37 @@ namespace WCell.Constants.Items
 		/// Level: 5
 		/// Class: Consumable
 		/// </summary>
+		WildWinterPilsner = 37488,
+		/// <summary>
+		/// Level: 5
+		/// Class: Consumable
+		/// </summary>
+		IzzardsEverFlavor = 37489,
+		/// <summary>
+		/// Level: 5
+		/// Class: Consumable
+		/// </summary>
+		AromaticHoneyBrew = 37490,
+		/// <summary>
+		/// Level: 5
+		/// Class: Consumable
+		/// </summary>
+		MetoksBubbleBock = 37491,
+		/// <summary>
+		/// Level: 5
+		/// Class: Consumable
+		/// </summary>
 		SpringtimeStout = 37492,
 		/// <summary>
 		/// Level: 5
 		/// Class: Consumable
 		/// </summary>
 		BlackrockLager = 37493,
+		/// <summary>
+		/// Level: 5
+		/// Class: Consumable
+		/// </summary>
+		StranglethornBrew = 37494,
 		/// <summary>
 		/// Level: 5
 		/// Class: Consumable
@@ -148111,7 +148346,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		GauntletsOfThePlunderingGeist = 37614,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 200
 		/// Class: Weapon
 		/// </summary>
@@ -148631,6 +148866,10 @@ namespace WCell.Constants.Items
 		/// </summary>
 		CrashinThrashinRacerController = 37710,
 		/// <summary>
+		/// Class: Money
+		/// </summary>
+		CurrencyTokenTestToken1 = 37711,
+		/// <summary>
 		/// Feet
 		/// Level: 200
 		/// Class: Armor
@@ -148778,6 +149017,10 @@ namespace WCell.Constants.Items
 		/// Class: Quest
 		/// </summary>
 		LetterOfAmnesty = 37741,
+		/// <summary>
+		/// Class: Money
+		/// </summary>
+		CurrencyTokenTestToken2 = 37742,
 		/// <summary>
 		/// Legs
 		/// Level: 130
@@ -149175,7 +149418,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		DragonjawMauler = 37808,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 162
 		/// Class: Weapon
 		/// </summary>
@@ -149640,12 +149883,42 @@ namespace WCell.Constants.Items
 		/// Level: 5
 		/// Class: Consumable
 		/// </summary>
-		WildWinterPilsner = 37898,
+		WildWinterPilsner_2 = 37898,
 		/// <summary>
 		/// Level: 5
 		/// Class: Consumable
 		/// </summary>
-		IzzardsEverFlavor = 37899,
+		IzzardsEverFlavor_2 = 37899,
+		/// <summary>
+		/// Level: 5
+		/// Class: Consumable
+		/// </summary>
+		AromaticHoneyBrew_2 = 37900,
+		/// <summary>
+		/// Level: 5
+		/// Class: Consumable
+		/// </summary>
+		MetoksBubbleBock_2 = 37901,
+		/// <summary>
+		/// Level: 5
+		/// Class: Consumable
+		/// </summary>
+		SpringtimeStout_2 = 37902,
+		/// <summary>
+		/// Level: 5
+		/// Class: Consumable
+		/// </summary>
+		BlackrockLager_2 = 37903,
+		/// <summary>
+		/// Level: 5
+		/// Class: Consumable
+		/// </summary>
+		StranglethornBrew_2 = 37904,
+		/// <summary>
+		/// Level: 5
+		/// Class: Consumable
+		/// </summary>
+		DraenicPaleAle_2 = 37905,
 		/// <summary>
 		/// Level: 5
 		/// Class: Consumable
@@ -150751,7 +151024,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		BatteredMagnataurDualblade = 38156,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 146
 		/// Class: Weapon
 		/// </summary>
@@ -150930,7 +151203,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		WandOfPurifyingFire = 38207,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 138
 		/// Class: Weapon
 		/// </summary>
@@ -151973,7 +152246,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		HammerOfTheAllianceVanguard = 38455,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 166
 		/// Class: Weapon
 		/// </summary>
@@ -152441,6 +152714,11 @@ namespace WCell.Constants.Items
 		MistwhisperTreasure = 38601,
 		/// <summary>
 		/// Level: 1
+		/// Class: Miscellaneous
+		/// </summary>
+		McCartysNotes = 38605,
+		/// <summary>
+		/// Level: 1
 		/// Class: Quest
 		/// </summary>
 		BattleWornSword = 38607,
@@ -152536,6 +152814,11 @@ namespace WCell.Constants.Items
 		NetherRayFry = 38628,
 		/// <summary>
 		/// Level: 1
+		/// Class: Consumable
+		/// </summary>
+		OrdersFromTheLichKing = 38629,
+		/// <summary>
+		/// Level: 1
 		/// Class: Quest
 		/// </summary>
 		RunebladedSword = 38631,
@@ -152571,6 +152854,10 @@ namespace WCell.Constants.Items
 		/// Class: Quest
 		/// </summary>
 		GoldenEngagementRing = 38642,
+		/// <summary>
+		/// Class: Money
+		/// </summary>
+		CurrencyTokenTestToken3 = 38644,
 		/// <summary>
 		/// Chest
 		/// Level: 50
@@ -154934,13 +155221,13 @@ namespace WCell.Constants.Items
 		/// </summary>
 		NecrolordsSacrificialDagger = 39133,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 174
 		/// Class: Weapon
 		/// </summary>
 		BowOfRegression = 39134,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 174
 		/// Class: Weapon
 		/// </summary>
@@ -155763,7 +156050,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		CowlOfSheetLightning = 39295,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 200
 		/// Class: Weapon
 		/// </summary>
@@ -156757,7 +157044,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		HemetsTrophyGun = 39486,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 162
 		/// Class: Weapon
 		/// </summary>
@@ -156966,7 +157253,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		HeroesCircletOfFaith = 39521,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 70
 		/// Class: Weapon
 		/// </summary>
@@ -158557,7 +158844,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		VileTomeOfTenets = 39827,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 158
 		/// Class: Weapon
 		/// </summary>
@@ -160676,7 +160963,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		SplitGreathammer = 40264,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 213
 		/// Class: Weapon
 		/// </summary>
@@ -168131,7 +168418,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		TitaniumRod = 41745,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 85
 		/// Class: Weapon
 		/// </summary>
@@ -170226,6 +170513,16 @@ namespace WCell.Constants.Items
 		/// </summary>
 		HodirsHorn = 42164,
 		/// <summary>
+		/// Level: 70
+		/// Class: TradeGoods
+		/// </summary>
+		SilverBrooch = 42170,
+		/// <summary>
+		/// Level: 80
+		/// Class: TradeGoods
+		/// </summary>
+		EmeraldBrooch = 42171,
+		/// <summary>
 		/// Level: 72
 		/// Class: Recipe
 		/// </summary>
@@ -170748,6 +171045,11 @@ namespace WCell.Constants.Items
 		/// </summary>
 		FigurineRubyHare = 42341,
 		/// <summary>
+		/// Level: 5
+		/// Class: Consumable
+		/// </summary>
+		BagOfPopcorn = 42342,
+		/// <summary>
 		/// WeaponMainHand
 		/// Level: 213
 		/// Class: Weapon
@@ -170765,6 +171067,11 @@ namespace WCell.Constants.Items
 		/// Class: Weapon
 		/// </summary>
 		RelentlessGladiatorsSpellblade = 42348,
+		/// <summary>
+		/// Level: 5
+		/// Class: Consumable
+		/// </summary>
+		BagOfPeanuts = 42350,
 		/// <summary>
 		/// WeaponMainHand
 		/// Level: 213
@@ -171349,19 +171656,19 @@ namespace WCell.Constants.Items
 		/// </summary>
 		RelentlessGladiatorsRifle = 42487,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 213
 		/// Class: Weapon
 		/// </summary>
 		DeadlyGladiatorsLongbow = 42490,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 232
 		/// Class: Weapon
 		/// </summary>
 		FuriousGladiatorsLongbow = 42491,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 245
 		/// Class: Weapon
 		/// </summary>
@@ -172947,7 +173254,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		VenerableDalRendsSacredCharge = 42945,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 1
 		/// Class: Weapon
 		/// </summary>
@@ -176994,7 +177301,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		WroughtIronStaff = 43927,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 174
 		/// Class: Weapon
 		/// </summary>
@@ -177107,6 +177414,11 @@ namespace WCell.Constants.Items
 		/// Class: Armor
 		/// </summary>
 		BloodEncrustedBoots = 43948,
+		/// <summary>
+		/// Level: 80
+		/// Class: Money
+		/// </summary>
+		ZzzOLDDailyQuestFactionToken = 43949,
 		/// <summary>
 		/// Level: 1
 		/// Class: Quest
@@ -178199,6 +178511,11 @@ namespace WCell.Constants.Items
 		/// Class: TradeGoods
 		/// </summary>
 		ShadowyTarot = 44163,
+		/// <summary>
+		/// Level: 70
+		/// Class: Miscellaneous
+		/// </summary>
+		ReinsOfTheBlackProtoDrake = 44164,
 		/// <summary>
 		/// Level: 35
 		/// Class: Quest
@@ -180194,6 +180511,16 @@ namespace WCell.Constants.Items
 		/// </summary>
 		PatternFurLiningNatureResist = 44562,
 		/// <summary>
+		/// Level: 80
+		/// Class: Recipe
+		/// </summary>
+		PatternFurLiningArcaneResist = 44563,
+		/// <summary>
+		/// Level: 75
+		/// Class: Recipe
+		/// </summary>
+		RecipeMightyArcaneProtectionPotion = 44564,
+		/// <summary>
 		/// Level: 75
 		/// Class: Recipe
 		/// </summary>
@@ -180434,6 +180761,11 @@ namespace WCell.Constants.Items
 		/// Level: 70
 		/// Class: Consumable
 		/// </summary>
+		GlassOfPeakedDalaranRed = 44619,
+		/// <summary>
+		/// Level: 70
+		/// Class: Consumable
+		/// </summary>
 		BottleOfDalaranWhite = 44621,
 		/// <summary>
 		/// Level: 70
@@ -180455,6 +180787,16 @@ namespace WCell.Constants.Items
 		/// Class: Consumable
 		/// </summary>
 		CaskOfAgedDalaranRed = 44626,
+		/// <summary>
+		/// Level: 70
+		/// Class: Consumable
+		/// </summary>
+		BottleOfPeakedDalaranRed = 44627,
+		/// <summary>
+		/// Level: 70
+		/// Class: Consumable
+		/// </summary>
+		CaskOfPeakedDalaranRed = 44629,
 		/// <summary>
 		/// Level: 1
 		/// Class: Quest
@@ -180514,7 +180856,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		DalaranAxe = 44642,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 80
 		/// Class: Weapon
 		/// </summary>
@@ -181668,6 +182010,11 @@ namespace WCell.Constants.Items
 		/// Level: 80
 		/// Class: Consumable
 		/// </summary>
+		ScrollOfEnchantWeaponTitanguard = 44946,
+		/// <summary>
+		/// Level: 80
+		/// Class: Consumable
+		/// </summary>
 		ScrollOfEnchantBracerMajorStamina = 44947,
 		/// <summary>
 		/// Head
@@ -182582,7 +182929,22 @@ namespace WCell.Constants.Items
 		/// Level: 1
 		/// Class: Miscellaneous
 		/// </summary>
+		WitheredKelp = 45188,
+		/// <summary>
+		/// Level: 1
+		/// Class: Miscellaneous
+		/// </summary>
+		TornSail = 45189,
+		/// <summary>
+		/// Level: 1
+		/// Class: Miscellaneous
+		/// </summary>
 		Driftwood = 45190,
+		/// <summary>
+		/// Level: 1
+		/// Class: Miscellaneous
+		/// </summary>
+		EmptyClam = 45191,
 		/// <summary>
 		/// Level: 1
 		/// Class: Quest
@@ -183333,7 +183695,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		PlatinumBandOfTheAesir = 45326,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 232
 		/// Class: Weapon
 		/// </summary>
@@ -186240,7 +186602,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		SealOfUlduar = 45871,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 219
 		/// Class: Weapon
 		/// </summary>
@@ -186455,7 +186817,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		FuriousGladiatorsShotgun = 45937,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 239
 		/// Class: Weapon
 		/// </summary>
@@ -188108,7 +188470,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		DrapeOfTheSpellweaver = 46341,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 219
 		/// Class: Weapon
 		/// </summary>
@@ -188201,6 +188563,11 @@ namespace WCell.Constants.Items
 		/// Class: Miscellaneous
 		/// </summary>
 		ShreddedParchment = 46368,
+		/// <summary>
+		/// Level: 1
+		/// Class: Miscellaneous
+		/// </summary>
+		RottedSentimentalPaintings = 46369,
 		/// <summary>
 		/// Level: 20
 		/// Class: Glyph
@@ -188297,6 +188664,11 @@ namespace WCell.Constants.Items
 		/// Level: 1
 		/// Class: Miscellaneous
 		/// </summary>
+		CuriousWolvarPup = 46544,
+		/// <summary>
+		/// Level: 1
+		/// Class: Miscellaneous
+		/// </summary>
 		CuriousOracleHatchling = 46545,
 		/// <summary>
 		/// Level: 5
@@ -188318,6 +188690,11 @@ namespace WCell.Constants.Items
 		/// Class: Miscellaneous
 		/// </summary>
 		PintSizedPinkElekk = 46707,
+		/// <summary>
+		/// Level: 70
+		/// Class: Miscellaneous
+		/// </summary>
+		DeadlyGladiatorsFrostWyrm = 46708,
 		/// <summary>
 		/// Level: 5
 		/// Class: Recipe
@@ -188424,12 +188801,27 @@ namespace WCell.Constants.Items
 		/// Level: 40
 		/// Class: Miscellaneous
 		/// </summary>
+		SwiftGraySteed_2 = 46758,
+		/// <summary>
+		/// Level: 40
+		/// Class: Miscellaneous
+		/// </summary>
 		SwiftMoonsaber_2 = 46759,
 		/// <summary>
 		/// Level: 40
 		/// Class: Miscellaneous
 		/// </summary>
 		SwiftPurpleRaptor_2 = 46760,
+		/// <summary>
+		/// Level: 40
+		/// Class: Miscellaneous
+		/// </summary>
+		SwiftRedHawkstrider_2 = 46761,
+		/// <summary>
+		/// Level: 40
+		/// Class: Miscellaneous
+		/// </summary>
+		SwiftVioletRam_2 = 46762,
 		/// <summary>
 		/// Level: 40
 		/// Class: Miscellaneous
@@ -188445,6 +188837,10 @@ namespace WCell.Constants.Items
 		/// </summary>
 		BlueWarFuel = 46765,
 		/// <summary>
+		/// Class: Consumable
+		/// </summary>
+		RedWarFuel = 46766,
+		/// <summary>
 		/// Level: 20
 		/// Class: Miscellaneous
 		/// </summary>
@@ -188458,7 +188854,17 @@ namespace WCell.Constants.Items
 		/// Level: 1
 		/// Class: Consumable
 		/// </summary>
+		PathOfCenarius = 46779,
+		/// <summary>
+		/// Level: 1
+		/// Class: Consumable
+		/// </summary>
 		OgrePinata = 46780,
+		/// <summary>
+		/// Level: 1
+		/// Class: Consumable
+		/// </summary>
+		PinkGumball = 46783,
 		/// <summary>
 		/// Level: 5
 		/// Class: Consumable
@@ -188494,7 +188900,42 @@ namespace WCell.Constants.Items
 		/// Level: 1
 		/// Class: Recipe
 		/// </summary>
+		RecipeSpiceBreadStuffing_2 = 46803,
+		/// <summary>
+		/// Level: 20
+		/// Class: Recipe
+		/// </summary>
+		RecipePumpkinPie_2 = 46804,
+		/// <summary>
+		/// Level: 32
+		/// Class: Recipe
+		/// </summary>
+		RecipeCranberryChutney_2 = 46805,
+		/// <summary>
+		/// Level: 44
+		/// Class: Recipe
+		/// </summary>
+		RecipeCandiedSweetPotato_2 = 46806,
+		/// <summary>
+		/// Level: 56
+		/// Class: Recipe
+		/// </summary>
+		RecipeSlowRoastedTurkey_2 = 46807,
+		/// <summary>
+		/// Level: 1
+		/// Class: Recipe
+		/// </summary>
 		BountifulCookbook = 46809,
+		/// <summary>
+		/// Level: 1
+		/// Class: Recipe
+		/// </summary>
+		BountifulCookbook_2 = 46810,
+		/// <summary>
+		/// Level: 80
+		/// Class: Miscellaneous
+		/// </summary>
+		NorthrendMysteryGemPouch = 46812,
 		/// <summary>
 		/// Level: 70
 		/// Class: Miscellaneous
@@ -188651,6 +189092,11 @@ namespace WCell.Constants.Items
 		/// Class: Quest
 		/// </summary>
 		WeightedNet = 46885,
+		/// <summary>
+		/// Level: 60
+		/// Class: Consumable
+		/// </summary>
+		BountifulFeast = 46887,
 		/// <summary>
 		/// Level: 1
 		/// Class: TradeGoods
@@ -193216,6 +193662,11 @@ namespace WCell.Constants.Items
 		/// </summary>
 		VestmentsOfTheSleepless = 47838,
 		/// <summary>
+		/// Level: 70
+		/// Class: Miscellaneous
+		/// </summary>
+		RelentlessGladiatorsFrostWyrm = 47840,
+		/// <summary>
 		/// Neck
 		/// Level: 232
 		/// Class: Armor
@@ -196765,7 +197216,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		FragmentOfTheBlackKnightsSoul = 48418,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 258
 		/// Class: Weapon
 		/// </summary>
@@ -198269,7 +198720,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		MorKoshTheBloodreaver = 48695,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 245
 		/// Class: Weapon
 		/// </summary>
@@ -198317,7 +198768,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		ParagonsBreadth = 48710,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 245
 		/// Class: Weapon
 		/// </summary>
@@ -198599,6 +199050,16 @@ namespace WCell.Constants.Items
 		/// </summary>
 		RelentlessGladiatorsTabard = 49086,
 		/// <summary>
+		/// Level: 40
+		/// Class: Miscellaneous
+		/// </summary>
+		CrusadersWhiteWarhorse = 49096,
+		/// <summary>
+		/// Level: 40
+		/// Class: Miscellaneous
+		/// </summary>
+		CrusadersBlackWarhorse = 49098,
+		/// <summary>
 		/// Level: 80
 		/// Class: Jewelry
 		/// </summary>
@@ -198799,10 +199260,30 @@ namespace WCell.Constants.Items
 		/// </summary>
 		ReinsOfTheSwiftSpectralTiger_2 = 49284,
 		/// <summary>
+		/// Level: 60
+		/// Class: Miscellaneous
+		/// </summary>
+		X51NetherRocket_2 = 49285,
+		/// <summary>
 		/// Level: 70
 		/// Class: Miscellaneous
 		/// </summary>
 		X51NetherRocketXTREME_2 = 49286,
+		/// <summary>
+		/// Level: 1
+		/// Class: Miscellaneous
+		/// </summary>
+		TuskarrKite = 49287,
+		/// <summary>
+		/// Level: 1
+		/// Class: Consumable
+		/// </summary>
+		LittleIvoryRaptorWhistle = 49288,
+		/// <summary>
+		/// Level: 1
+		/// Class: Consumable
+		/// </summary>
+		LittleWhiteStallionBridle = 49289,
 		/// <summary>
 		/// Level: 40
 		/// Class: Miscellaneous
@@ -199353,6 +199834,11 @@ namespace WCell.Constants.Items
 		/// </summary>
 		HeadOfOnyxia_4 = 49644,
 		/// <summary>
+		/// Level: 20
+		/// Class: Miscellaneous
+		/// </summary>
+		CoreHoundPup = 49646,
+		/// <summary>
 		/// Level: 1
 		/// Class: Quest
 		/// </summary>
@@ -199367,6 +199853,21 @@ namespace WCell.Constants.Items
 		/// Class: Quest
 		/// </summary>
 		LovelyCharmCollectorsKit = 49661,
+		/// <summary>
+		/// Level: 20
+		/// Class: Miscellaneous
+		/// </summary>
+		GryphonHatchling = 49662,
+		/// <summary>
+		/// Level: 20
+		/// Class: Miscellaneous
+		/// </summary>
+		WindRiderCub = 49663,
+		/// <summary>
+		/// Level: 20
+		/// Class: Miscellaneous
+		/// </summary>
+		PandarenMonk = 49665,
 		/// <summary>
 		/// Level: 80
 		/// Class: Quest
@@ -199403,6 +199904,11 @@ namespace WCell.Constants.Items
 		/// Class: Weapon
 		/// </summary>
 		BlackKnightsRondel = 49682,
+		/// <summary>
+		/// Level: 20
+		/// Class: Miscellaneous
+		/// </summary>
+		LilPhylactery = 49693,
 		/// <summary>
 		/// Level: 1
 		/// Class: Quest
@@ -199820,7 +200326,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		CrystallineCitadelGauntlets = 49843,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 219
 		/// Class: Weapon
 		/// </summary>
@@ -200585,7 +201091,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		CorpseImpalingSpike = 50033,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 264
 		/// Class: Weapon
 		/// </summary>
@@ -201939,12 +202445,22 @@ namespace WCell.Constants.Items
 		/// Level: 80
 		/// Class: Quest
 		/// </summary>
+		ArcanumOfTheStalwartProtector_2 = 50369,
+		/// <summary>
+		/// Level: 80
+		/// Class: Quest
+		/// </summary>
 		ArcanumOfBlissfulMending_2 = 50370,
 		/// <summary>
 		/// Level: 80
 		/// Class: Quest
 		/// </summary>
-		ArcanumOfTheSavageGladiator_3 = 50373,
+		ArcanumOfTheSavageGladiator_3 = 50372,
+		/// <summary>
+		/// Level: 80
+		/// Class: Quest
+		/// </summary>
+		ArcanumOfTheSavageGladiator_4 = 50373,
 		/// <summary>
 		/// Finger
 		/// Level: 251
@@ -202086,6 +202602,11 @@ namespace WCell.Constants.Items
 		/// Class: Armor
 		/// </summary>
 		AshenBandOfEndlessCourage = 50404,
+		/// <summary>
+		/// Level: 80
+		/// Class: Recipe
+		/// </summary>
+		FormulaEnchantGlovesAngler = 50406,
 		/// <summary>
 		/// Weapon
 		/// Level: 264
@@ -202546,7 +203067,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		MemoryOfMalygos_2 = 50636,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 277
 		/// Class: Weapon
 		/// </summary>
@@ -203086,6 +203607,48 @@ namespace WCell.Constants.Items
 		/// </summary>
 		ArchusGreatstaffOfAntonidas_2 = 50731,
 		/// <summary>
+		/// WeaponMainHand
+		/// Level: 255
+		/// Class: Weapon
+		/// </summary>
+		BloodsurgeKelThuzadsBladeOfAgony_2 = 50732,
+		/// <summary>
+		/// RangedRight
+		/// Level: 255
+		/// Class: Weapon
+		/// </summary>
+		FalInrushDefenderOfQuelThalas_2 = 50733,
+		/// <summary>
+		/// WeaponMainHand
+		/// Level: 255
+		/// Class: Weapon
+		/// </summary>
+		RoyalScepterOfTerenasII_2 = 50734,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 284
+		/// Class: Weapon
+		/// </summary>
+		OathbinderChargeOfTheRangerGeneral_2 = 50735,
+		/// <summary>
+		/// Weapon
+		/// Level: 284
+		/// Class: Weapon
+		/// </summary>
+		HeavensFallKryssOfAThousandLies_2 = 50736,
+		/// <summary>
+		/// Weapon
+		/// Level: 255
+		/// Class: Weapon
+		/// </summary>
+		HavocsCallBladeOfLordaeronKings_2 = 50737,
+		/// <summary>
+		/// Weapon
+		/// Level: 284
+		/// Class: Weapon
+		/// </summary>
+		MithriosBronzebeardsLegacy_2 = 50738,
+		/// <summary>
 		/// Head
 		/// Level: 200
 		/// Class: Armor
@@ -203193,7 +203756,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		CorruptedSilverplateLeggings = 50775,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 251
 		/// Class: Weapon
 		/// </summary>
@@ -203414,6 +203977,11 @@ namespace WCell.Constants.Items
 		/// Class: Armor
 		/// </summary>
 		TaldronsLongNeglectedBoots = 50812,
+		/// <summary>
+		/// Level: 70
+		/// Class: Consumable
+		/// </summary>
+		ScrollOfEnchantGlovesAngler = 50816,
 		/// <summary>
 		/// Level: 20
 		/// Class: Miscellaneous
@@ -204939,6 +205507,69 @@ namespace WCell.Constants.Items
 		/// </summary>
 		SanctifiedFrostWitchsHauberk_2 = 51239,
 		/// <summary>
+		/// Shoulder
+		/// Level: 277
+		/// Set: Frost Witch's Battlegear (Id: 894)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedFrostWitchsShoulderguards_2 = 51240,
+		/// <summary>
+		/// Legs
+		/// Level: 277
+		/// Set: Frost Witch's Battlegear (Id: 894)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedFrostWitchsWarKilt_2 = 51241,
+		/// <summary>
+		/// Head
+		/// Level: 255
+		/// Set: Frost Witch's Battlegear (Id: 894)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedFrostWitchsFaceguard_2 = 51242,
+		/// <summary>
+		/// Hand
+		/// Level: 255
+		/// Set: Frost Witch's Battlegear (Id: 894)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedFrostWitchsGrips_2 = 51243,
+		/// <summary>
+		/// Chest
+		/// Level: 277
+		/// Set: Frost Witch's Battlegear (Id: 894)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedFrostWitchsChestguard_2 = 51244,
+		/// <summary>
+		/// Shoulder
+		/// Level: 277
+		/// Set: Frost Witch's Garb (Id: 892)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedFrostWitchsSpaulders_2 = 51245,
+		/// <summary>
+		/// Legs
+		/// Level: 277
+		/// Set: Frost Witch's Garb (Id: 892)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedFrostWitchsLegguards_2 = 51246,
+		/// <summary>
+		/// Head
+		/// Level: 277
+		/// Set: Frost Witch's Garb (Id: 892)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedFrostWitchsHeadpiece_2 = 51247,
+		/// <summary>
+		/// Hand
+		/// Level: 255
+		/// Set: Frost Witch's Garb (Id: 892)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedFrostWitchsHandguards_2 = 51248,
+		/// <summary>
 		/// Chest
 		/// Level: 277
 		/// Set: Frost Witch's Garb (Id: 892)
@@ -204980,6 +205611,34 @@ namespace WCell.Constants.Items
 		/// Class: Armor
 		/// </summary>
 		SanctifiedShadowbladePauldrons_2 = 51254,
+		/// <summary>
+		/// Head
+		/// Level: 255
+		/// Set: Crimson Acolyte's Regalia (Id: 886)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedCrimsonAcolyteCowl_2 = 51255,
+		/// <summary>
+		/// Hand
+		/// Level: 255
+		/// Set: Crimson Acolyte's Regalia (Id: 886)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedCrimsonAcolyteHandwraps_2 = 51256,
+		/// <summary>
+		/// Shoulder
+		/// Level: 255
+		/// Set: Crimson Acolyte's Regalia (Id: 886)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedCrimsonAcolyteMantle_2 = 51257,
+		/// <summary>
+		/// Legs
+		/// Level: 255
+		/// Set: Crimson Acolyte's Regalia (Id: 886)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedCrimsonAcolytePants_2 = 51258,
 		/// <summary>
 		/// Robe
 		/// Level: 277
@@ -205163,6 +205822,83 @@ namespace WCell.Constants.Items
 		/// </summary>
 		SanctifiedBloodmageShoulderpads_2 = 51284,
 		/// <summary>
+		/// Hand
+		/// Level: 255
+		/// Set: Ahn'Kahar Blood Hunter's Battlegear (Id: 891)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedAhnKaharBloodHuntersHandguards_2 = 51285,
+		/// <summary>
+		/// Head
+		/// Level: 277
+		/// Set: Ahn'Kahar Blood Hunter's Battlegear (Id: 891)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedAhnKaharBloodHuntersHeadpiece_2 = 51286,
+		/// <summary>
+		/// Legs
+		/// Level: 255
+		/// Set: Ahn'Kahar Blood Hunter's Battlegear (Id: 891)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedAhnKaharBloodHuntersLegguards_2 = 51287,
+		/// <summary>
+		/// Shoulder
+		/// Level: 255
+		/// Set: Ahn'Kahar Blood Hunter's Battlegear (Id: 891)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedAhnKaharBloodHuntersSpaulders_2 = 51288,
+		/// <summary>
+		/// Chest
+		/// Level: 277
+		/// Set: Ahn'Kahar Blood Hunter's Battlegear (Id: 891)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedAhnKaharBloodHuntersTunic_2 = 51289,
+		/// <summary>
+		/// Head
+		/// Level: 255
+		/// Set: Lasherweave Regalia (Id: 888)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedLasherweaveCover_2 = 51290,
+		/// <summary>
+		/// Hand
+		/// Level: 255
+		/// Set: Lasherweave Regalia (Id: 888)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedLasherweaveGloves_2 = 51291,
+		/// <summary>
+		/// Shoulder
+		/// Level: 255
+		/// Set: Lasherweave Regalia (Id: 888)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedLasherweaveMantle_2 = 51292,
+		/// <summary>
+		/// Legs
+		/// Level: 255
+		/// Set: Lasherweave Regalia (Id: 888)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedLasherweaveTrousers_2 = 51293,
+		/// <summary>
+		/// Robe
+		/// Level: 255
+		/// Set: Lasherweave Regalia (Id: 888)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedLasherweaveVestment_2 = 51294,
+		/// <summary>
+		/// Hand
+		/// Level: 255
+		/// Set: Lasherweave Battlegear (Id: 889)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedLasherweaveHandgrips_2 = 51295,
+		/// <summary>
 		/// Head
 		/// Level: 277
 		/// Set: Lasherweave Battlegear (Id: 889)
@@ -205177,12 +205913,54 @@ namespace WCell.Constants.Items
 		/// </summary>
 		SanctifiedLasherweaveLegguards_2 = 51297,
 		/// <summary>
+		/// Robe
+		/// Level: 255
+		/// Set: Lasherweave Battlegear (Id: 889)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedLasherweaveRaiment_2 = 51298,
+		/// <summary>
+		/// Shoulder
+		/// Level: 255
+		/// Set: Lasherweave Battlegear (Id: 889)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedLasherweaveShoulderpads_2 = 51299,
+		/// <summary>
+		/// Robe
+		/// Level: 255
+		/// Set: Lasherweave Garb (Id: 887)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedLasherweaveRobes_2 = 51300,
+		/// <summary>
+		/// Hand
+		/// Level: 255
+		/// Set: Lasherweave Garb (Id: 887)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedLasherweaveGauntlets_2 = 51301,
+		/// <summary>
+		/// Head
+		/// Level: 277
+		/// Set: Lasherweave Garb (Id: 887)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedLasherweaveHelmet_2 = 51302,
+		/// <summary>
 		/// Legs
 		/// Level: 277
 		/// Set: Lasherweave Garb (Id: 887)
 		/// Class: Armor
 		/// </summary>
 		SanctifiedLasherweaveLegplates_2 = 51303,
+		/// <summary>
+		/// Shoulder
+		/// Level: 255
+		/// Set: Lasherweave Garb (Id: 887)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedLasherweavePauldrons_2 = 51304,
 		/// <summary>
 		/// Chest
 		/// Level: 277
@@ -205253,6 +206031,41 @@ namespace WCell.Constants.Items
 		/// Class: Armor
 		/// </summary>
 		SanctifiedScourgelordShoulderplates_2 = 51314,
+		/// <summary>
+		/// Level: 1
+		/// Class: Quest
+		/// </summary>
+		SealedChest = 51315,
+		/// <summary>
+		/// Level: 1
+		/// Class: Miscellaneous
+		/// </summary>
+		UnsealedChest = 51316,
+		/// <summary>
+		/// Level: 1
+		/// Class: Miscellaneous
+		/// </summary>
+		AlexandrosSoulShard = 51317,
+		/// <summary>
+		/// Level: 1
+		/// Class: Miscellaneous
+		/// </summary>
+		JainasLocket = 51318,
+		/// <summary>
+		/// Level: 1
+		/// Class: Miscellaneous
+		/// </summary>
+		ArthasTrainingSword = 51319,
+		/// <summary>
+		/// Level: 1
+		/// Class: Miscellaneous
+		/// </summary>
+		BadgeOfTheSilverHand = 51320,
+		/// <summary>
+		/// Level: 1
+		/// Class: Miscellaneous
+		/// </summary>
+		BloodOfSylvanas = 51321,
 		/// <summary>
 		/// Waist
 		/// Level: 251
@@ -205668,13 +206481,13 @@ namespace WCell.Constants.Items
 		/// </summary>
 		WrathfulGladiatorsClaymore = 51393,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 264
 		/// Class: Weapon
 		/// </summary>
 		WrathfulGladiatorsLongbow = 51394,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 277
 		/// Class: Weapon
 		/// </summary>
@@ -205878,6 +206691,13 @@ namespace WCell.Constants.Items
 		/// </summary>
 		WrathfulGladiatorsDragonhideGloves = 51426,
 		/// <summary>
+		/// Head
+		/// Level: 270
+		/// Set: Gladiator's Sanctuary (Id: 775)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsDragonhideHelm = 51427,
+		/// <summary>
 		/// Legs
 		/// Level: 270
 		/// Set: Gladiator's Sanctuary (Id: 775)
@@ -205891,6 +206711,13 @@ namespace WCell.Constants.Items
 		/// </summary>
 		WrathfulGladiatorsIdolOfResolve = 51429,
 		/// <summary>
+		/// Shoulder
+		/// Level: 270
+		/// Set: Gladiator's Sanctuary (Id: 775)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsDragonhideSpaulders = 51430,
+		/// <summary>
 		/// TwoHandWeapon
 		/// Level: 264
 		/// Class: Weapon
@@ -205903,12 +206730,26 @@ namespace WCell.Constants.Items
 		/// </summary>
 		WrathfulGladiatorsGreatstaff = 51432,
 		/// <summary>
+		/// Robe
+		/// Level: 270
+		/// Set: Gladiator's Wildhide (Id: 774)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsWyrmhideRobes = 51433,
+		/// <summary>
 		/// Hand
 		/// Level: 270
 		/// Set: Gladiator's Wildhide (Id: 774)
 		/// Class: Armor
 		/// </summary>
 		WrathfulGladiatorsWyrmhideGloves = 51434,
+		/// <summary>
+		/// Head
+		/// Level: 270
+		/// Set: Gladiator's Wildhide (Id: 774)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsWyrmhideHelm = 51435,
 		/// <summary>
 		/// Legs
 		/// Level: 270
@@ -205922,6 +206763,13 @@ namespace WCell.Constants.Items
 		/// Class: Armor
 		/// </summary>
 		WrathfulGladiatorsIdolOfSteadfastness = 51437,
+		/// <summary>
+		/// Shoulder
+		/// Level: 270
+		/// Set: Gladiator's Wildhide (Id: 774)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsWyrmhideSpaulders = 51438,
 		/// <summary>
 		/// WeaponOffHand
 		/// Level: 264
@@ -206085,6 +206933,13 @@ namespace WCell.Constants.Items
 		/// Class: Armor
 		/// </summary>
 		WrathfulGladiatorsSilkHandguards = 51464,
+		/// <summary>
+		/// Head
+		/// Level: 270
+		/// Set: Gladiator's Regalia (Id: 779)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsSilkCowl = 51465,
 		/// <summary>
 		/// Legs
 		/// Level: 270
@@ -206299,12 +207154,26 @@ namespace WCell.Constants.Items
 		/// </summary>
 		WrathfulGladiatorsLeatherSpaulders = 51496,
 		/// <summary>
+		/// Robe
+		/// Level: 270
+		/// Set: Gladiator's Wartide (Id: 771)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsRingmailArmor = 51497,
+		/// <summary>
 		/// Hand
 		/// Level: 270
 		/// Set: Gladiator's Wartide (Id: 771)
 		/// Class: Armor
 		/// </summary>
 		WrathfulGladiatorsRingmailGauntlets = 51498,
+		/// <summary>
+		/// Head
+		/// Level: 270
+		/// Set: Gladiator's Wartide (Id: 771)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsRingmailHelm = 51499,
 		/// <summary>
 		/// Legs
 		/// Level: 270
@@ -206339,6 +207208,13 @@ namespace WCell.Constants.Items
 		/// Class: Armor
 		/// </summary>
 		WrathfulGladiatorsLinkedGauntlets = 51504,
+		/// <summary>
+		/// Head
+		/// Level: 255
+		/// Set: Gladiator's Earthshaker (Id: 770)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsLinkedHelm = 51505,
 		/// <summary>
 		/// Legs
 		/// Level: 270
@@ -207690,7 +208566,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		HandgripsOfFrostAndSleet_2 = 51926,
 		/// <summary>
-		/// Ranged
+		/// WeaponRanged
 		/// Level: 264
 		/// Class: Weapon
 		/// </summary>
@@ -207763,10 +208639,28 @@ namespace WCell.Constants.Items
 		BoneWardensSplitter_2 = 51938,
 		/// <summary>
 		/// WeaponMainHand
+		/// Level: 255
+		/// Class: Weapon
+		/// </summary>
+		TelThasDaggerOfTheBloodKing_2 = 51939,
+		/// <summary>
+		/// RangedRight
+		/// Level: 255
+		/// Class: Weapon
+		/// </summary>
+		WindrunnersHeartseeker_2 = 51940,
+		/// <summary>
+		/// WeaponMainHand
 		/// Level: 271
 		/// Class: Weapon
 		/// </summary>
 		PugiusFistOfDefiance_2 = 51941,
+		/// <summary>
+		/// Weapon
+		/// Level: 255
+		/// Class: Weapon
+		/// </summary>
+		StormfuryBlackBladeOfTheBetrayer_2 = 51942,
 		/// <summary>
 		/// TwoHandWeapon
 		/// Level: 271
@@ -207781,15 +208675,32 @@ namespace WCell.Constants.Items
 		ValiusGavelOfTheLightbringer_2 = 51944,
 		/// <summary>
 		/// TwoHandWeapon
+		/// Level: 255
+		/// Class: Weapon
+		/// </summary>
+		TaintedTwigOfNordrassil_2 = 51945,
+		/// <summary>
+		/// TwoHandWeapon
 		/// Level: 271
 		/// Class: Weapon
 		/// </summary>
 		WarmaceOfMenethil_2 = 51946,
 		/// <summary>
+		/// Weapon
+		/// Level: 255
+		/// Class: Weapon
+		/// </summary>
+		TroggbaneAxeOfTheFrostborneKing_2 = 51947,
+		/// <summary>
 		/// Level: 70
 		/// Class: Miscellaneous
 		/// </summary>
 		ReinsOfTheBloodbathedFrostbroodVanquisher = 51954,
+		/// <summary>
+		/// Level: 70
+		/// Class: Miscellaneous
+		/// </summary>
+		ReinsOfTheIceboundFrostbroodVanquisher = 51955,
 		/// <summary>
 		/// Chest
 		/// Level: 167
@@ -208111,6 +209022,42 @@ namespace WCell.Constants.Items
 		/// </summary>
 		ConquerorsMarkOfSanctification_2 = 52030,
 		/// <summary>
+		/// Level: 20
+		/// Class: Miscellaneous
+		/// </summary>
+		ReinsOfTheCrimsonDeathcharger = 52200,
+		/// <summary>
+		/// Level: 80
+		/// Class: Miscellaneous
+		/// </summary>
+		MuradinsFavor = 52201,
+		/// <summary>
+		/// Level: 80
+		/// Class: Miscellaneous
+		/// </summary>
+		JainasLocket_2 = 52251,
+		/// <summary>
+		/// Tabard
+		/// Level: 80
+		/// Class: Armor
+		/// </summary>
+		TabardOfTheLightbringer = 52252,
+		/// <summary>
+		/// Level: 80
+		/// Class: Miscellaneous
+		/// </summary>
+		SylvanasMusicBox = 52253,
+		/// <summary>
+		/// Level: 1
+		/// Class: Quest
+		/// </summary>
+		Radiageigatron = 52541,
+		/// <summary>
+		/// Level: 1
+		/// Class: Quest
+		/// </summary>
+		MotivateATron = 52566,
+		/// <summary>
 		/// Finger
 		/// Level: 251
 		/// Class: Armor
@@ -208143,12 +209090,527 @@ namespace WCell.Constants.Items
 		/// Level: 1
 		/// Class: Quest
 		/// </summary>
+		GnomishPlaybackDevice = 52709,
+		/// <summary>
+		/// Level: 1
+		/// Class: Quest
+		/// </summary>
+		MekkatorquesSpeech = 52731,
+		/// <summary>
+		/// Cloak
+		/// Level: 80
+		/// Class: Armor
+		/// </summary>
+		GnomereganDrape = 53097,
+		/// <summary>
+		/// Neck
+		/// Level: 258
+		/// Class: Armor
+		/// </summary>
+		BaltharusGift = 53103,
+		/// <summary>
+		/// Finger
+		/// Level: 258
+		/// Class: Armor
+		/// </summary>
+		ZarithriansOffering = 53110,
+		/// <summary>
+		/// Feet
+		/// Level: 258
+		/// Class: Armor
+		/// </summary>
+		ScionsTreads = 53111,
+		/// <summary>
+		/// Wrist
+		/// Level: 258
+		/// Class: Armor
+		/// </summary>
+		BracersOfTheHeir = 53112,
+		/// <summary>
+		/// Shoulder
+		/// Level: 258
+		/// Class: Armor
+		/// </summary>
+		TwilightScaleShoulders = 53113,
+		/// <summary>
+		/// Chest
+		/// Level: 258
+		/// Class: Armor
+		/// </summary>
+		GloamingSark = 53114,
+		/// <summary>
+		/// Cloak
+		/// Level: 258
+		/// Class: Armor
+		/// </summary>
+		AbductionsCover = 53115,
+		/// <summary>
+		/// Finger
+		/// Level: 258
+		/// Class: Armor
+		/// </summary>
+		SavianasTribute = 53116,
+		/// <summary>
+		/// Hand
+		/// Level: 258
+		/// Class: Armor
+		/// </summary>
+		ChangelingGloves = 53117,
+		/// <summary>
+		/// Waist
+		/// Level: 258
+		/// Class: Armor
+		/// </summary>
+		MisbegottenBelt = 53118,
+		/// <summary>
+		/// Feet
+		/// Level: 258
+		/// Class: Armor
+		/// </summary>
+		BootsOfDividedBeing = 53119,
+		/// <summary>
+		/// Waist
+		/// Level: 258
+		/// Class: Armor
+		/// </summary>
+		SurrogateBelt = 53121,
+		/// <summary>
+		/// Feet
+		/// Level: 271
+		/// Class: Armor
+		/// </summary>
+		ApocalypsesAdvance = 53125,
+		/// <summary>
+		/// Wrist
+		/// Level: 271
+		/// Class: Armor
+		/// </summary>
+		UmbrageArmbands = 53126,
+		/// <summary>
+		/// Feet
+		/// Level: 271
+		/// Class: Armor
+		/// </summary>
+		ReturningFootfalls = 53127,
+		/// <summary>
+		/// Feet
+		/// Level: 271
+		/// Class: Armor
+		/// </summary>
+		TreadsOfImpendingResurrection = 53129,
+		/// <summary>
+		/// Neck
+		/// Level: 271
+		/// Class: Armor
+		/// </summary>
+		PenumbraPendant = 53132,
+		/// <summary>
+		/// Finger
+		/// Level: 271
+		/// Class: Armor
+		/// </summary>
+		SignetOfTwilight = 53133,
+		/// <summary>
+		/// Wrist
+		/// Level: 271
+		/// Class: Armor
+		/// </summary>
+		PhaseshiftersBracers = 53134,
+		/// <summary>
+		/// Wrist
+		/// Level: 271
+		/// Class: Armor
+		/// </summary>
+		BracersOfFieryNight = 53486,
+		/// <summary>
+		/// Feet
+		/// Level: 271
+		/// Class: Armor
+		/// </summary>
+		ForeshadowSteps = 53487,
+		/// <summary>
+		/// Waist
+		/// Level: 271
+		/// Class: Armor
+		/// </summary>
+		SplitShapeBelt = 53488,
+		/// <summary>
+		/// Cloak
+		/// Level: 271
+		/// Class: Armor
+		/// </summary>
+		CloakOfBurningDusk = 53489,
+		/// <summary>
+		/// Finger
+		/// Level: 271
+		/// Class: Armor
+		/// </summary>
+		RingOfPhasedRegeneration = 53490,
+		/// <summary>
+		/// Level: 1
+		/// Class: Quest
+		/// </summary>
+		CapturedFrog = 53510,
+		/// <summary>
+		/// Level: 1
+		/// Class: Quest
+		/// </summary>
+		SackOFrogs = 53637,
+		/// <summary>
+		/// Level: 20
+		/// Class: Miscellaneous
+		/// </summary>
+		IceChip = 53641,
+		/// <summary>
+		/// Level: 60
+		/// Class: Miscellaneous
+		/// </summary>
+		BlazingHippogryph = 54069,
+		/// <summary>
+		/// Level: 1
+		/// Class: Consumable
+		/// </summary>
+		InstantStatuePedestal = 54212,
+		/// <summary>
+		/// Level: 1
+		/// Class: Quest
+		/// </summary>
+		VolJinsWarDrums = 54215,
+		/// <summary>
+		/// Level: 1
+		/// Class: Miscellaneous
+		/// </summary>
+		LandrosGiftBox = 54218,
+		/// <summary>
+		/// Level: 1
+		/// Class: Miscellaneous
+		/// </summary>
+		ASteamyRomanceNovelBlueMoon = 54291,
+		/// <summary>
+		/// Level: 60
+		/// Class: TradeGoods
+		/// </summary>
+		BlueCrashinThrashinRacerController = 54343,
+		/// <summary>
+		/// Level: 1
+		/// Class: Miscellaneous
+		/// </summary>
+		BlueClockworkRocketBot = 54436,
+		/// <summary>
+		/// Level: 1
+		/// Class: Consumable
+		/// </summary>
+		TinyGreenRagdoll_2 = 54437,
+		/// <summary>
+		/// Level: 1
+		/// Class: Consumable
+		/// </summary>
+		TinyBlueRagdoll = 54438,
+		/// <summary>
+		/// Level: 1
+		/// Class: Miscellaneous
+		/// </summary>
+		BlankSlate = 54469,
+		/// <summary>
+		/// Level: 1
+		/// Class: Miscellaneous
+		/// </summary>
+		FantasyPortrait = 54470,
+		/// <summary>
+		/// Level: 80
+		/// Class: Miscellaneous
+		/// </summary>
+		KegShapedTreasureChest = 54535,
+		/// <summary>
+		/// Level: 80
+		/// Class: Miscellaneous
+		/// </summary>
+		SatchelOfChilledGoods = 54536,
+		/// <summary>
+		/// Cloak
+		/// Level: 271
+		/// Class: Armor
+		/// </summary>
+		AbductionsCover_2 = 54556,
+		/// <summary>
+		/// Neck
+		/// Level: 271
+		/// Class: Armor
+		/// </summary>
+		BaltharusGift_2 = 54557,
+		/// <summary>
+		/// Feet
+		/// Level: 271
+		/// Class: Armor
+		/// </summary>
+		BootsOfDividedBeing_2 = 54558,
+		/// <summary>
+		/// Wrist
+		/// Level: 271
+		/// Class: Armor
+		/// </summary>
+		BracersOfTheHeir_2 = 54559,
+		/// <summary>
+		/// Hand
+		/// Level: 271
+		/// Class: Armor
+		/// </summary>
+		ChangelingGloves_2 = 54560,
+		/// <summary>
+		/// Chest
+		/// Level: 271
+		/// Class: Armor
+		/// </summary>
+		GloamingSark_2 = 54561,
+		/// <summary>
+		/// Waist
+		/// Level: 271
+		/// Class: Armor
+		/// </summary>
+		MisbegottenBelt_2 = 54562,
+		/// <summary>
+		/// Finger
+		/// Level: 271
+		/// Class: Armor
+		/// </summary>
+		SavianasTribute_2 = 54563,
+		/// <summary>
+		/// Feet
+		/// Level: 271
+		/// Class: Armor
+		/// </summary>
+		ScionsTreads_2 = 54564,
+		/// <summary>
+		/// Waist
+		/// Level: 271
+		/// Class: Armor
+		/// </summary>
+		SurrogateBelt_2 = 54565,
+		/// <summary>
+		/// Shoulder
+		/// Level: 271
+		/// Class: Armor
+		/// </summary>
+		TwilightScaleShoulders_2 = 54566,
+		/// <summary>
+		/// Finger
+		/// Level: 271
+		/// Class: Armor
+		/// </summary>
+		ZarithriansOffering_2 = 54567,
+		/// <summary>
+		/// Trinket
+		/// Level: 271
+		/// Class: Armor
+		/// </summary>
+		SharpenedTwilightScale = 54569,
+		/// <summary>
+		/// Trinket
+		/// Level: 271
+		/// Class: Armor
+		/// </summary>
+		PetrifiedTwilightScale = 54571,
+		/// <summary>
+		/// Trinket
+		/// Level: 271
+		/// Class: Armor
+		/// </summary>
+		CharredTwilightScale = 54572,
+		/// <summary>
+		/// Trinket
+		/// Level: 271
+		/// Class: Armor
+		/// </summary>
+		GlowingTwilightScale = 54573,
+		/// <summary>
+		/// Finger
+		/// Level: 284
+		/// Class: Armor
+		/// </summary>
+		SignetOfTwilight_2 = 54576,
+		/// <summary>
+		/// Feet
+		/// Level: 284
+		/// Class: Armor
+		/// </summary>
+		ReturningFootfalls_2 = 54577,
+		/// <summary>
+		/// Feet
+		/// Level: 284
+		/// Class: Armor
+		/// </summary>
+		ApocalypsesAdvance_2 = 54578,
+		/// <summary>
+		/// Feet
+		/// Level: 284
+		/// Class: Armor
+		/// </summary>
+		TreadsOfImpendingResurrection_2 = 54579,
+		/// <summary>
+		/// Wrist
+		/// Level: 284
+		/// Class: Armor
+		/// </summary>
+		UmbrageArmbands_2 = 54580,
+		/// <summary>
+		/// Neck
+		/// Level: 284
+		/// Class: Armor
+		/// </summary>
+		PenumbraPendant_2 = 54581,
+		/// <summary>
+		/// Wrist
+		/// Level: 284
+		/// Class: Armor
+		/// </summary>
+		BracersOfFieryNight_2 = 54582,
+		/// <summary>
+		/// Cloak
+		/// Level: 284
+		/// Class: Armor
+		/// </summary>
+		CloakOfBurningDusk_2 = 54583,
+		/// <summary>
+		/// Wrist
+		/// Level: 284
+		/// Class: Armor
+		/// </summary>
+		PhaseshiftersBracers_2 = 54584,
+		/// <summary>
+		/// Finger
+		/// Level: 284
+		/// Class: Armor
+		/// </summary>
+		RingOfPhasedRegeneration_2 = 54585,
+		/// <summary>
+		/// Feet
+		/// Level: 284
+		/// Class: Armor
+		/// </summary>
+		ForeshadowSteps_2 = 54586,
+		/// <summary>
+		/// Waist
+		/// Level: 284
+		/// Class: Armor
+		/// </summary>
+		SplitShapeBelt_2 = 54587,
+		/// <summary>
+		/// Trinket
+		/// Level: 284
+		/// Class: Armor
+		/// </summary>
+		CharredTwilightScale_2 = 54588,
+		/// <summary>
+		/// Trinket
+		/// Level: 284
+		/// Class: Armor
+		/// </summary>
+		GlowingTwilightScale_2 = 54589,
+		/// <summary>
+		/// Trinket
+		/// Level: 284
+		/// Class: Armor
+		/// </summary>
+		SharpenedTwilightScale_2 = 54590,
+		/// <summary>
+		/// Trinket
+		/// Level: 284
+		/// Class: Armor
+		/// </summary>
+		PetrifiedTwilightScale_2 = 54591,
+		/// <summary>
+		/// Cloak
+		/// Level: 80
+		/// Class: Armor
+		/// </summary>
+		DarkspearShroud = 54617,
+		/// <summary>
+		/// Level: 1
+		/// Class: Quest
+		/// </summary>
 		CommendationOfService = 54637,
+		/// <summary>
+		/// Level: 20
+		/// Class: Consumable
+		/// </summary>
+		GnomereganPride = 54651,
+		/// <summary>
+		/// Level: 20
+		/// Class: Consumable
+		/// </summary>
+		DarkspearPride = 54653,
 		/// <summary>
 		/// Level: 70
 		/// Class: Miscellaneous
 		/// </summary>
 		FrostyFlyingCarpet = 54797,
+		/// <summary>
+		/// Level: 70
+		/// Class: Recipe
+		/// </summary>
+		PatternFrostyFlyingCarpet = 54798,
+		/// <summary>
+		/// Cloak
+		/// Level: 232
+		/// Class: Armor
+		/// </summary>
+		IceboundCloak_2 = 54801,
+		/// <summary>
+		/// Cloak
+		/// Level: 232
+		/// Class: Armor
+		/// </summary>
+		TheFrostLordsWarCloak_2 = 54802,
+		/// <summary>
+		/// Cloak
+		/// Level: 232
+		/// Class: Armor
+		/// </summary>
+		TheFrostLordsBattleShroud = 54803,
+		/// <summary>
+		/// Cloak
+		/// Level: 232
+		/// Class: Armor
+		/// </summary>
+		ShroudOfWintersChill_2 = 54804,
+		/// <summary>
+		/// Cloak
+		/// Level: 232
+		/// Class: Armor
+		/// </summary>
+		CloakOfTheFrigidWinds_2 = 54805,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 232
+		/// Class: Weapon
+		/// </summary>
+		FrostscytheOfLordAhune_2 = 54806,
+		/// <summary>
+		/// Level: 20
+		/// Class: Miscellaneous
+		/// </summary>
+		CelestialSteed = 54811,
+		/// <summary>
+		/// Level: 20
+		/// Class: Miscellaneous
+		/// </summary>
+		LilXT = 54847,
+		/// <summary>
+		/// Level: 60
+		/// Class: Miscellaneous
+		/// </summary>
+		X53TouringRocket = 54860,
+		/// <summary>
+		/// Level: 20
+		/// Class: Miscellaneous
+		/// </summary>
+		MiniThor = 56806,
+		/// <summary>
+		/// WeaponRanged
+		/// Level: 12
+		/// Class: Weapon
+		/// </summary>
+		SampleBow = 2121232,
 		End
 	}
 

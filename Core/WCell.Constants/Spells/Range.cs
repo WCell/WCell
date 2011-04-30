@@ -1,7 +1,7 @@
 
 ///
 /// This file was automatically created, using WCell's CodeFileWriter
-/// Date: 01/06/2010
+/// Date: 30/04/2011
 ///
 
 namespace WCell.Constants.Spells
@@ -23,7 +23,7 @@ namespace WCell.Constants.Spells
 		Anywhere = 50000,
 		ExtraLongRange = 60,
 		TwentyFiveYards = 25,
-		MediumLongRange = 35,
+		MediumLong = 35,
 		LongerRange = 45,
 		ExtendedRange = 50,
 		MinRange1025 = 25,
@@ -50,7 +50,7 @@ namespace WCell.Constants.Spells
 		Ninety = 90,
 		SuperLong15Min = 150,
 		TESTLongRange = 40,
-		MediumLongRange_2 = 30,
+		MediumLongRange = 30,
 		ShortLongRange = 20,
 		MediumShortRange = 20,
 		DeathGrip = 30,
@@ -76,6 +76,18 @@ namespace WCell.Constants.Spells
 		NineYards = 9,
 		ThreeHundredYards = 300,
 		MinRange560 = 60,
+		MinRange2040 = 40,
+		FiftySevenYards = 57,
+		TwentyTo100 = 100,
+		Tower805 = 80,
+		AnywhereTinyMinRange = 50000,
+		LongRange1 = 41,
+		TenTo100 = 100,
+		LongRangeHunter = 40,
+		TwentyYards_2 = 20,
+		ThreeHundredMin100 = 300,
+		Seventy = 90,
+		ThirtyTo50 = 50,
 		End
 	}
 

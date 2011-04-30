@@ -140,7 +140,6 @@ namespace WCell.RealmServer.Entities
 			byte hairStyle,
 			byte hairColor,
 			byte facialHair,
-			uint guildId,
 			GenderType gender,
 			RaceId race,
 			CorpseFlags flags,
@@ -160,7 +159,6 @@ namespace WCell.RealmServer.Entities
 			HairStyle = hairStyle;
 			HairColor = hairColor;
 			FacialHair = facialHair;
-			GuildId = guildId;
 			Gender = gender;
 			Race = race;
 			Flags = flags;

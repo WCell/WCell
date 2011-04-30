@@ -1,7 +1,7 @@
 
 ///
 /// This file was automatically created, using WCell's CodeFileWriter
-/// Date: 01/06/2010
+/// Date: 30/04/2011
 ///
 
 namespace WCell.Constants.Items
@@ -18,7 +18,7 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Armor 20 (Id: 41863)
-		/// 3 Items: Increased Defense (Id: 41864)
+		/// 3 Items: Increased Dodge (Id: 41864)
 		/// 4 Items: Attack Power 10 (Id: 41861)
 		/// 5 Items: Increased Critical 14 (Id: 41862)
 		/// </summary>
@@ -61,7 +61,7 @@ namespace WCell.Constants.Items
 		/// Cadaverous Walkers (Id: 14641 (Feet))
 		///  
 		/// Boni:
-		/// 2 Items: Increased Defense (Id: 41681)
+		/// 2 Items: Increased Dodge (Id: 41681)
 		/// 3 Items: Attack Power 10 (Id: 41645)
 		/// 4 Items: Increased All Resist 15 (Id: 41680)
 		/// 5 Items: Increased Hit Rating 20 (Id: 41679)
@@ -75,7 +75,7 @@ namespace WCell.Constants.Items
 		/// Necropile Mantle (Id: 14633 (Shoulder))
 		///  
 		/// Boni:
-		/// 2 Items: Increased Defense (Id: 41642)
+		/// 2 Items: Increased Dodge (Id: 41642)
 		/// 3 Items: Increased Intellect 05 (Id: 41827)
 		/// 4 Items: Increased All Resist 15 (Id: 41826)
 		/// 5 Items: Increase Spell Dam 23 (Id: 41825)
@@ -89,7 +89,7 @@ namespace WCell.Constants.Items
 		/// Bloodmail Boots (Id: 14616 (Feet))
 		///  
 		/// Boni:
-		/// 2 Items: Increased Defense (Id: 41671)
+		/// 2 Items: Increased Dodge (Id: 41671)
 		/// 3 Items: Attack Power 10 (Id: 41672)
 		/// 4 Items: Increased All Resist 15 (Id: 41673)
 		/// 5 Items: Increased Parry 20 (Id: 41674)
@@ -103,7 +103,7 @@ namespace WCell.Constants.Items
 		/// Deathbone Chestplate (Id: 14624 (Chest))
 		///  
 		/// Boni:
-		/// 2 Items: Increased Defense (Id: 41726)
+		/// 2 Items: Increased Dodge (Id: 41726)
 		/// 3 Items: Increased Armor 50 (Id: 41725)
 		/// 4 Items: Increased All Resist 15 (Id: 41724)
 		/// 5 Items: Increased Parry 20 (Id: 41723)
@@ -184,7 +184,7 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Armor 10 (Id: 41686)
-		/// 3 Items: Increased Defense (Id: 41641)
+		/// 3 Items: Increased Dodge (Id: 41641)
 		/// 4 Items: Increased Shadow Resist 05 (Id: 41685)
 		/// 5 Items: Undead Slayer 15 (Id: 41684)
 		/// 6 Items: Increased Hit Rating 10 (Id: 41683)
@@ -663,19 +663,31 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Parry 20 (Id: 41690)
-		/// 4 Items: Intercept Cooldown Reduction Rank 1 (Id: 22738)
+		/// 4 Items: Disarm Duration Reduction Rank 1 (Id: 22738)
 		/// 6 Items: Increased Stamina 15 (Id: 41653)
 		/// </summary>
 		ChampionsBattlegear = 281,
 		/// <summary>
+		/// Knight-Lieutenant's Plate Boots (Id: 16405 (Feet))
+		/// Knight-Lieutenant's Plate Gauntlets (Id: 16406 (Hand))
+		/// Lieutenant Commander's Plate Helm (Id: 16429 (Head))
+		/// Knight-Captain's Plate Chestguard (Id: 16430 (Chest))
+		/// Knight-Captain's Plate Leggings (Id: 16431 (Legs))
+		/// Lieutenant Commander's Plate Pauldrons (Id: 16432 (Shoulder))
 		///  
 		/// Boni:
 		/// 2 Items: Increased Parry 20 (Id: 41793)
-		/// 4 Items: Intercept Cooldown Reduction Rank 1 (Id: 22738)
+		/// 4 Items: Disarm Duration Reduction Rank 1 (Id: 22738)
 		/// 6 Items: Increased Stamina 15 (Id: 41792)
 		/// </summary>
 		LieutenantCommandersBattlegear = 282,
 		/// <summary>
+		/// Blood Guard's Mail Walkers (Id: 16518 (Feet))
+		/// Blood Guard's Mail Grips (Id: 16519 (Hand))
+		/// Champion's Mail Helm (Id: 16521 (Head))
+		/// Legionnaire's Mail Chestpiece (Id: 16522 (Chest))
+		/// Legionnaire's Mail Leggings (Id: 16523 (Legs))
+		/// Champion's Mail Shoulders (Id: 16524 (Shoulder))
 		///  
 		/// Boni:
 		/// 2 Items: Attack Power 40 (Id: 41693)
@@ -741,7 +753,12 @@ namespace WCell.Constants.Items
 		/// </summary>
 		LieutenantCommandersRegalia = 343,
 		/// <summary>
+		/// Knight-Lieutenant's Satin Boots (Id: 17594 (Feet))
 		/// Knight-Lieutenant's Satin Gloves (Id: 17596 (Hand))
+		/// Lieutenant Commander's Diadem (Id: 17598 (Head))
+		/// Knight-Captain's Satin Leggings (Id: 17599 (Legs))
+		/// Knight-Captain's Satin Robes (Id: 17600 (Robe))
+		/// Lieutenant Commander's Satin Amice (Id: 17601 (Shoulder))
 		///  
 		/// Boni:
 		/// 2 Items: Increase Spell Dam 23 (Id: 41805)
@@ -759,7 +776,7 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increase Spell Dam 23 (Id: 41715)
-		/// 4 Items: Fear Cast Time Reduction (Id: 23047)
+		/// 4 Items: Death Coil Cooldown Reduction (Id: 23047)
 		/// 6 Items: Increased Stamina 15 (Id: 41714)
 		/// </summary>
 		ChampionsThreads = 345,
@@ -773,7 +790,7 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increase Spell Dam 23 (Id: 41815)
-		/// 4 Items: Fear Cast Time Reduction (Id: 23047)
+		/// 4 Items: Death Coil Cooldown Reduction (Id: 23047)
 		/// 6 Items: Increased Stamina 15 (Id: 41814)
 		/// </summary>
 		LieutenantCommandersThreads = 346,
@@ -806,6 +823,12 @@ namespace WCell.Constants.Items
 		/// </summary>
 		LieutenantCommandersVestments = 348,
 		/// <summary>
+		/// Legionnaire's Chain Breastplate (Id: 16525 (Chest))
+		/// Champion's Chain Headguard (Id: 16526 (Head))
+		/// Legionnaire's Chain Leggings (Id: 16527 (Legs))
+		/// Champion's Chain Pauldrons (Id: 16528 (Shoulder))
+		/// Blood Guard's Chain Gauntlets (Id: 16530 (Hand))
+		/// Blood Guard's Chain Boots (Id: 16531 (Feet))
 		///  
 		/// Boni:
 		/// 2 Items: Increased Parry 20 (Id: 41701)
@@ -865,7 +888,7 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Stamina 20 (Id: 41887)
-		/// 3 Items: Intercept Cooldown Reduction Rank 1 (Id: 22738)
+		/// 3 Items: Disarm Duration Reduction Rank 1 (Id: 22738)
 		/// 6 Items: Attack Power 40 (Id: 41888)
 		/// </summary>
 		WarlordsBattlegear = 383,
@@ -879,7 +902,7 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Stamina 20 (Id: 41756)
-		/// 3 Items: Intercept Cooldown Reduction Rank 1 (Id: 22738)
+		/// 3 Items: Disarm Duration Reduction Rank 1 (Id: 22738)
 		/// 6 Items: Attack Power 40 (Id: 41755)
 		/// </summary>
 		FieldMarshalsBattlegear = 384,
@@ -963,7 +986,7 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Stamina 20 (Id: 41906)
-		/// 3 Items: Fear Cast Time Reduction (Id: 23047)
+		/// 3 Items: Death Coil Cooldown Reduction (Id: 23047)
 		/// 6 Items: Increase Spell Dam 23 (Id: 41905)
 		/// </summary>
 		WarlordsThreads = 391,
@@ -977,7 +1000,7 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Stamina 20 (Id: 41765)
-		/// 3 Items: Fear Cast Time Reduction (Id: 23047)
+		/// 3 Items: Death Coil Cooldown Reduction (Id: 23047)
 		/// 6 Items: Increase Spell Dam 23 (Id: 41766)
 		/// </summary>
 		FieldMarshalsThreads = 392,
@@ -1134,7 +1157,7 @@ namespace WCell.Constants.Items
 		/// Darksoul Shoulders (Id: 19695 (Shoulder))
 		///  
 		/// Boni:
-		/// 3 Items: Increased Defense (Id: 41847)
+		/// 3 Items: Increased Dodge (Id: 41847)
 		/// </summary>
 		TheDarksoul = 444,
 		/// <summary>
@@ -1481,7 +1504,7 @@ namespace WCell.Constants.Items
 		/// Genesis Vest (Id: 21357 (Chest))
 		///  
 		/// Boni:
-		/// 3 Items: Increased Defense (Id: 41774), Increased Armor 150 (Id: 41773)
+		/// 3 Items: Increased Dodge (Id: 41774), Increased Armor 150 (Id: 41773)
 		/// 5 Items: Genesis Rebirth Bonus (Id: 26106)
 		/// </summary>
 		GenesisRaiment = 493,
@@ -1857,7 +1880,7 @@ namespace WCell.Constants.Items
 		/// Champion's Leather Shoulders (Id: 23258 (Shoulder))
 		///  
 		/// Boni:
-		/// 2 Items: Attack Power 40 (Id: 41695)
+		/// 2 Items: Agility 20 (Id: 41695)
 		/// 4 Items: Gouge Cooldown Reduction (Id: 23048)
 		/// 6 Items: Increased Stamina 20 (Id: 41694)
 		/// </summary>
@@ -2052,7 +2075,7 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Attack Power 40 (Id: 41689)
-		/// 4 Items: Intercept Cooldown Reduction Rank 1 (Id: 22738)
+		/// 4 Items: Disarm Duration Reduction Rank 1 (Id: 22738)
 		/// 6 Items: Increased Stamina 20 (Id: 41688)
 		/// </summary>
 		ChampionsBattlearmor = 537,
@@ -2108,7 +2131,7 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increase Spell Dam 23 (Id: 41654)
-		/// 4 Items: Fear Cast Time Reduction (Id: 23047)
+		/// 4 Items: Death Coil Cooldown Reduction (Id: 23047)
 		/// 6 Items: Increased Stamina 20 (Id: 41691)
 		/// </summary>
 		ChampionsDreadgear = 541,
@@ -2163,8 +2186,8 @@ namespace WCell.Constants.Items
 		/// Lieutenant Commander's Plate Shoulders (Id: 23315 (Shoulder))
 		///  
 		/// Boni:
-		/// 2 Items: Attack Power 40 (Id: 41790)
-		/// 4 Items: Intercept Cooldown Reduction Rank 1 (Id: 22738)
+		/// 2 Items: Strength 20 (Id: 41790)
+		/// 4 Items: Disarm Duration Reduction Rank 1 (Id: 22738)
 		/// 6 Items: Increased Stamina 20 (Id: 41791)
 		/// </summary>
 		LieutenantCommandersBattlearmor = 545,
@@ -2192,7 +2215,7 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increase Spell Dam 23 (Id: 41795)
-		/// 4 Items: Fear Cast Time Reduction (Id: 23047)
+		/// 4 Items: Death Coil Cooldown Reduction (Id: 23047)
 		/// 6 Items: Increased Stamina 20 (Id: 41794)
 		/// </summary>
 		LieutenantCommandersDreadgear = 547,
@@ -2424,7 +2447,7 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 35 (Id: 32145)
-		/// 4 Items: Intercept Cooldown Reduction Rank 1 (Id: 22738)
+		/// 4 Items: Disarm Duration Reduction Rank 1 (Id: 22738)
 		/// </summary>
 		GladiatorsBattlegear = 567,
 		/// <summary>
@@ -2451,7 +2474,7 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 35 (Id: 40042)
-		/// 4 Items: Fear Cast Time Reduction (Id: 23047)
+		/// 4 Items: Death Coil Cooldown Reduction (Id: 23047)
 		/// </summary>
 		GladiatorsDreadgear = 568,
 		/// <summary>
@@ -2574,7 +2597,7 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 35 (Id: 32145)
-		/// 4 Items: Shaman Stormstrike Cooldown Reduction Rank 1 (Id: 33018)
+		/// 4 Items: Increased Maelstrom Weapon Chance (Id: 33018)
 		/// </summary>
 		GladiatorsEarthshaker = 578,
 		/// <summary>
@@ -2601,7 +2624,7 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 35 (Id: 40042)
-		/// 4 Items: Improved Polymorph (Id: 44302)
+		/// 4 Items: Reduced Spam Nuke Cast Time (Id: 44302)
 		/// </summary>
 		GladiatorsRegalia = 579,
 		/// <summary>
@@ -2655,7 +2678,7 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 35 (Id: 40042)
-		/// 4 Items: Weakened Soul Reduction (Id: 33333)
+		/// 4 Items: Holy Walk (Id: 33333)
 		/// </summary>
 		GladiatorsRaiment = 581,
 		/// <summary>
@@ -2763,7 +2786,7 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 35 (Id: 40042)
-		/// 4 Items: Moonkin Starfire Bonus (Id: 46832)
+		/// 4 Items: Sudden Eclipse (Id: 46832)
 		/// </summary>
 		GladiatorsWildhide = 585,
 		/// <summary>
@@ -2814,7 +2837,7 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 35 (Id: 40050)
-		/// 4 Items: Intercept Cooldown Reduction Rank 1 (Id: 22738)
+		/// 4 Items: Disarm Duration Reduction Rank 1 (Id: 22738)
 		/// </summary>
 		HighWarlordsBattlegear = 588,
 		/// <summary>
@@ -2838,7 +2861,7 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 35 (Id: 40046)
-		/// 4 Items: Intercept Cooldown Reduction Rank 1 (Id: 22738)
+		/// 4 Items: Disarm Duration Reduction Rank 1 (Id: 22738)
 		/// </summary>
 		GrandMarshalsBattlegear = 590,
 		/// <summary>
@@ -2850,7 +2873,7 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 35 (Id: 40047)
-		/// 4 Items: Fear Cast Time Reduction (Id: 23047)
+		/// 4 Items: Death Coil Cooldown Reduction (Id: 23047)
 		/// </summary>
 		GrandMarshalsDreadgear = 591,
 		/// <summary>
@@ -2862,7 +2885,7 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 35 (Id: 40051)
-		/// 4 Items: Fear Cast Time Reduction (Id: 23047)
+		/// 4 Items: Death Coil Cooldown Reduction (Id: 23047)
 		/// </summary>
 		HighWarlordsDreadgear = 592,
 		/// <summary>
@@ -2874,7 +2897,7 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 35 (Id: 40046)
-		/// 4 Items: Shaman Stormstrike Cooldown Reduction Rank 1 (Id: 33018)
+		/// 4 Items: Increased Maelstrom Weapon Chance (Id: 33018)
 		/// </summary>
 		GrandMarshalsEarthshaker = 593,
 		/// <summary>
@@ -2886,7 +2909,7 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 35 (Id: 40050)
-		/// 4 Items: Shaman Stormstrike Cooldown Reduction Rank 1 (Id: 33018)
+		/// 4 Items: Increased Maelstrom Weapon Chance (Id: 33018)
 		/// </summary>
 		HighWarlordsEarthshaker = 594,
 		/// <summary>
@@ -2922,7 +2945,7 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 35 (Id: 40047)
-		/// 4 Items: Weakened Soul Reduction (Id: 33333)
+		/// 4 Items: Holy Walk (Id: 33333)
 		/// </summary>
 		GrandMarshalsRaiment = 597,
 		/// <summary>
@@ -2934,7 +2957,7 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 35 (Id: 40051)
-		/// 4 Items: Weakened Soul Reduction (Id: 33333)
+		/// 4 Items: Holy Walk (Id: 33333)
 		/// </summary>
 		HighWarlordsRaiment = 598,
 		/// <summary>
@@ -3149,7 +3172,7 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 35 (Id: 40053)
-		/// 4 Items: Fear Cast Time Reduction (Id: 23047)
+		/// 4 Items: Death Coil Cooldown Reduction (Id: 23047)
 		/// </summary>
 		GladiatorsFelshroud = 615,
 		/// <summary>
@@ -3364,7 +3387,7 @@ namespace WCell.Constants.Items
 		/// Cataclysm Shoulderguards (Id: 30168 (Shoulder))
 		///  
 		/// Boni:
-		/// 2 Items: Improved Lesser Healing Wave (Id: 37225)
+		/// 2 Items: Improved Healing Surge (Id: 37225)
 		/// 4 Items: Improved Healing Wave (Id: 37227)
 		/// </summary>
 		CataclysmRaiment = 634,
@@ -3376,7 +3399,7 @@ namespace WCell.Constants.Items
 		/// Cataclysm Shoulderpads (Id: 30173 (Shoulder))
 		///  
 		/// Boni:
-		/// 2 Items: Lesser Healing Wave Discount (Id: 37228)
+		/// 2 Items: Healing Surge Discount (Id: 37228)
 		/// 4 Items: Lightning Bolt Discount (Id: 37237)
 		/// </summary>
 		CataclysmRegalia = 635,
@@ -3388,7 +3411,7 @@ namespace WCell.Constants.Items
 		/// Cataclysm Shoulderplates (Id: 30194 (Shoulder))
 		///  
 		/// Boni:
-		/// 2 Items: Fast Lesser Healing Wave (Id: 37239)
+		/// 2 Items: Fast Healing Surge (Id: 37239)
 		/// 4 Items: Improved Flurry (Id: 37241)
 		/// </summary>
 		CataclysmHarness = 636,
@@ -4093,7 +4116,7 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 35 (Id: 40043)
-		/// 4 Items: Weakened Soul Reduction (Id: 33333)
+		/// 4 Items: Holy Walk (Id: 33333)
 		/// </summary>
 		GladiatorsInvestiture = 687,
 		/// <summary>
@@ -4156,7 +4179,7 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 35 (Id: 40045)
-		/// 4 Items: Weakened Soul Reduction (Id: 33333)
+		/// 4 Items: Holy Walk (Id: 33333)
 		/// </summary>
 		GrandMarshalsInvestiture = 691,
 		/// <summary>
@@ -4168,7 +4191,7 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 35 (Id: 40049)
-		/// 4 Items: Weakened Soul Reduction (Id: 33333)
+		/// 4 Items: Holy Walk (Id: 33333)
 		/// </summary>
 		HighWarlordsInvestiture = 692,
 		/// <summary>
@@ -4229,7 +4252,7 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increase Spell Dam 23 - Magister (Id: 41705)
-		/// 3 Items: Hammer of Justice Cooldown Reduction (Id: 23302)
+		/// 4 Items: Hammer of Justice Cooldown Reduction (Id: 23302)
 		/// 6 Items: Increased Stamina 20 (Id: 41704)
 		/// </summary>
 		ChampionsRedoubt = 697,
@@ -4266,35 +4289,35 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 35 (Id: 41464)
-		/// 4 Items: Intercept Cooldown Reduction Rank 1 (Id: 22738)
+		/// 4 Items: Disarm Duration Reduction Rank 1 (Id: 22738)
 		/// </summary>
 		MercilessGladiatorsBattlegear = 701,
 		/// <summary>
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 35 (Id: 41474)
-		/// 4 Items: Fear Cast Time Reduction (Id: 23047)
+		/// 4 Items: Death Coil Cooldown Reduction (Id: 23047)
 		/// </summary>
 		MercilessGladiatorsDreadgear = 702,
 		/// <summary>
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 35 (Id: 41464)
-		/// 4 Items: Shaman Stormstrike Cooldown Reduction Rank 1 (Id: 33018)
+		/// 4 Items: Increased Maelstrom Weapon Chance (Id: 33018)
 		/// </summary>
 		MercilessGladiatorsEarthshaker = 703,
 		/// <summary>
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 35 (Id: 41462)
-		/// 4 Items: Fear Cast Time Reduction (Id: 23047)
+		/// 4 Items: Death Coil Cooldown Reduction (Id: 23047)
 		/// </summary>
 		MercilessGladiatorsFelshroud = 704,
 		/// <summary>
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 35 (Id: 41463)
-		/// 4 Items: Weakened Soul Reduction (Id: 33333)
+		/// 4 Items: Holy Walk (Id: 33333)
 		/// </summary>
 		MercilessGladiatorsInvestiture = 705,
 		/// <summary>
@@ -4308,7 +4331,7 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 35 (Id: 41462)
-		/// 4 Items: Weakened Soul Reduction (Id: 33333)
+		/// 4 Items: Holy Walk (Id: 33333)
 		/// </summary>
 		MercilessGladiatorsRaiment = 707,
 		/// <summary>
@@ -4329,7 +4352,7 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 35 (Id: 41462)
-		/// 4 Items: Improved Polymorph (Id: 44302)
+		/// 4 Items: Reduced Spam Nuke Cast Time (Id: 44302)
 		/// </summary>
 		MercilessGladiatorsRegalia = 710,
 		/// <summary>
@@ -4442,7 +4465,7 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 35 (Id: 43480)
-		/// 4 Items: Improved Polymorph (Id: 44302)
+		/// 4 Items: Reduced Spam Nuke Cast Time (Id: 44302)
 		/// </summary>
 		VengefulGladiatorsRegalia = 724,
 		/// <summary>
@@ -4470,14 +4493,14 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 35 (Id: 43478)
-		/// 4 Items: Weakened Soul Reduction (Id: 33333)
+		/// 4 Items: Holy Walk (Id: 33333)
 		/// </summary>
 		VengefulGladiatorsInvestiture = 728,
 		/// <summary>
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 35 (Id: 43480)
-		/// 4 Items: Weakened Soul Reduction (Id: 33333)
+		/// 4 Items: Holy Walk (Id: 33333)
 		/// </summary>
 		VengefulGladiatorsRaiment = 729,
 		/// <summary>
@@ -4498,7 +4521,7 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 35 (Id: 43479)
-		/// 4 Items: Shaman Stormstrike Cooldown Reduction Rank 1 (Id: 33018)
+		/// 4 Items: Increased Maelstrom Weapon Chance (Id: 33018)
 		/// </summary>
 		VengefulGladiatorsEarthshaker = 732,
 		/// <summary>
@@ -4512,21 +4535,21 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 35 (Id: 43481)
-		/// 4 Items: Fear Cast Time Reduction (Id: 23047)
+		/// 4 Items: Death Coil Cooldown Reduction (Id: 23047)
 		/// </summary>
 		VengefulGladiatorsDreadgear = 734,
 		/// <summary>
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 35 (Id: 43480)
-		/// 4 Items: Fear Cast Time Reduction (Id: 23047)
+		/// 4 Items: Death Coil Cooldown Reduction (Id: 23047)
 		/// </summary>
 		VengefulGladiatorsFelshroud = 735,
 		/// <summary>
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 35 (Id: 43479)
-		/// 4 Items: Intercept Cooldown Reduction Rank 1 (Id: 22738)
+		/// 4 Items: Disarm Duration Reduction Rank 1 (Id: 22738)
 		/// </summary>
 		VengefulGladiatorsBattlegear = 736,
 		/// <summary>
@@ -4547,7 +4570,7 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 35 (Id: 46412)
-		/// 4 Items: Fear Cast Time Reduction (Id: 23047)
+		/// 4 Items: Death Coil Cooldown Reduction (Id: 23047)
 		/// </summary>
 		DreadweaveBattlegear = 738,
 		/// <summary>
@@ -4560,7 +4583,7 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 35 (Id: 46413)
-		/// 4 Items: Weakened Soul Reduction (Id: 33333)
+		/// 4 Items: Holy Walk (Id: 33333)
 		/// </summary>
 		MoonclothBattlegear = 739,
 		/// <summary>
@@ -4573,7 +4596,7 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 35 (Id: 46414)
-		/// 4 Items: Weakened Soul Reduction (Id: 33333)
+		/// 4 Items: Holy Walk (Id: 33333)
 		/// </summary>
 		SatinBattlegear = 740,
 		/// <summary>
@@ -4612,7 +4635,7 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 35 (Id: 46436)
-		/// 4 Items: Moonkin Starfire Bonus (Id: 46832)
+		/// 4 Items: Sudden Eclipse (Id: 46832)
 		/// </summary>
 		WyrmhideBattlegear = 743,
 		/// <summary>
@@ -4677,7 +4700,7 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 35 (Id: 46456)
-		/// 4 Items: Shaman Stormstrike Cooldown Reduction Rank 1 (Id: 33018)
+		/// 4 Items: Increased Maelstrom Weapon Chance (Id: 33018)
 		/// </summary>
 		SeersLinkedBattlegear = 748,
 		/// <summary>
@@ -4703,7 +4726,7 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 35 (Id: 46528)
-		/// 4 Items: Intercept Cooldown Reduction Rank 1 (Id: 22738)
+		/// 4 Items: Disarm Duration Reduction Rank 1 (Id: 22738)
 		/// </summary>
 		SavagePlateBattlegear = 750,
 		/// <summary>
@@ -4746,7 +4769,7 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Crit 15 (Id: 51273)
-		/// 4 Items: Increased Attack Power 15 (Id: 51274)
+		/// 4 Items: Increased Agility 15 (Id: 51274)
 		/// </summary>
 		BoreanEmbrace = 754,
 		/// <summary>
@@ -4908,7 +4931,7 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 100 (Id: 56449), Attack Power 50 (Id: 71850)
-		/// 4 Items: Intercept Cooldown Reduction Rank 1 (Id: 22738), Attack Power 150 (Id: 71858)
+		/// 4 Items: Disarm Duration Reduction Rank 1 (Id: 22738), Attack Power 150 (Id: 71858)
 		/// </summary>
 		GladiatorsBattlegear_2 = 765,
 		/// <summary>
@@ -5087,12 +5110,13 @@ namespace WCell.Constants.Items
 		/// Relentless Gladiator's Linked Spaulders (Id: 41212 (Shoulder))
 		/// Wrathful Gladiator's Linked Armor (Id: 51503 (Robe))
 		/// Wrathful Gladiator's Linked Gauntlets (Id: 51504 (Hand))
+		/// Wrathful Gladiator's Linked Helm (Id: 51505 (Head))
 		/// Wrathful Gladiator's Linked Leggings (Id: 51506 (Legs))
 		/// Wrathful Gladiator's Linked Spaulders (Id: 51508 (Shoulder))
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 100 (Id: 56449), Attack Power 50 (Id: 71850)
-		/// 4 Items: Shaman Stormstrike Cooldown Reduction Rank 1 (Id: 33018), Attack Power 150 (Id: 71858)
+		/// 4 Items: Increased Maelstrom Weapon Chance (Id: 33018), Attack Power 150 (Id: 71858)
 		/// </summary>
 		GladiatorsEarthshaker_2 = 770,
 		/// <summary>
@@ -5121,7 +5145,9 @@ namespace WCell.Constants.Items
 		/// Deadly Gladiator's Ringmail Spaulders (Id: 41037 (Shoulder))
 		/// Furious Gladiator's Ringmail Spaulders (Id: 41038 (Shoulder))
 		/// Relentless Gladiator's Ringmail Spaulders (Id: 41039 (Shoulder))
+		/// Wrathful Gladiator's Ringmail Armor (Id: 51497 (Robe))
 		/// Wrathful Gladiator's Ringmail Gauntlets (Id: 51498 (Hand))
+		/// Wrathful Gladiator's Ringmail Helm (Id: 51499 (Head))
 		/// Wrathful Gladiator's Ringmail Leggings (Id: 51500 (Legs))
 		/// Wrathful Gladiator's Ringmail Spaulders (Id: 51502 (Shoulder))
 		///  
@@ -5164,7 +5190,7 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 100 (Id: 56449), Attack Power 50 (Id: 71850)
-		/// 4 Items: Trap Cooldown Reduction Rank 5 (Id: 61256), Attack Power 150 (Id: 71858)
+		/// 4 Items: Increased Focus Regeneration (Id: 61256), Attack Power 150 (Id: 71858)
 		/// </summary>
 		GladiatorsPursuit_2 = 772,
 		/// <summary>
@@ -5230,12 +5256,15 @@ namespace WCell.Constants.Items
 		/// Deadly Gladiator's Wyrmhide Helm (Id: 41326 (Head))
 		/// Furious Gladiator's Wyrmhide Helm (Id: 41327 (Head))
 		/// Relentless Gladiator's Wyrmhide Helm (Id: 41328 (Head))
+		/// Wrathful Gladiator's Wyrmhide Robes (Id: 51433 (Robe))
 		/// Wrathful Gladiator's Wyrmhide Gloves (Id: 51434 (Hand))
+		/// Wrathful Gladiator's Wyrmhide Helm (Id: 51435 (Head))
 		/// Wrathful Gladiator's Wyrmhide Legguards (Id: 51436 (Legs))
+		/// Wrathful Gladiator's Wyrmhide Spaulders (Id: 51438 (Shoulder))
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 100 (Id: 56509), Increase Spell Power (Id: 71852)
-		/// 4 Items: Moonkin Starfire Bonus (Id: 46832), Increase Spell Power (Id: 71860)
+		/// 4 Items: Sudden Eclipse (Id: 46832), Increase Spell Power (Id: 71860)
 		/// </summary>
 		GladiatorsWildhide_2 = 774,
 		/// <summary>
@@ -5266,7 +5295,9 @@ namespace WCell.Constants.Items
 		/// Relentless Gladiator's Dragonhide Gloves (Id: 41774 (Hand))
 		/// Wrathful Gladiator's Dragonhide Robes (Id: 51425 (Robe))
 		/// Wrathful Gladiator's Dragonhide Gloves (Id: 51426 (Hand))
+		/// Wrathful Gladiator's Dragonhide Helm (Id: 51427 (Head))
 		/// Wrathful Gladiator's Dragonhide Legguards (Id: 51428 (Legs))
+		/// Wrathful Gladiator's Dragonhide Spaulders (Id: 51430 (Shoulder))
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 100 (Id: 56449), Attack Power 50 (Id: 71850)
@@ -5344,7 +5375,7 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 100 (Id: 56450), Increase Spell Power (Id: 71851)
-		/// 4 Items: Weakened Soul Reduction (Id: 33333), Increase Spell Power (Id: 71853)
+		/// 4 Items: Holy Walk (Id: 33333), Increase Spell Power (Id: 71853)
 		/// </summary>
 		GladiatorsInvestiture_2 = 777,
 		/// <summary>
@@ -5381,7 +5412,7 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 100 (Id: 56509), Increase Spell Power (Id: 71852)
-		/// 4 Items: Weakened Soul Reduction (Id: 33333), Increase Spell Power (Id: 71860)
+		/// 4 Items: Mind Blast and Mind Spike Cast Time Reduction (Id: 92711), Increase Spell Power (Id: 71860)
 		/// </summary>
 		GladiatorsRaiment_2 = 778,
 		/// <summary>
@@ -5412,12 +5443,13 @@ namespace WCell.Constants.Items
 		/// Relentless Gladiator's Silk Handguards (Id: 41972 (Hand))
 		/// Wrathful Gladiator's Silk Raiment (Id: 51463 (Robe))
 		/// Wrathful Gladiator's Silk Handguards (Id: 51464 (Hand))
+		/// Wrathful Gladiator's Silk Cowl (Id: 51465 (Head))
 		/// Wrathful Gladiator's Silk Trousers (Id: 51466 (Legs))
 		/// Wrathful Gladiator's Silk Amice (Id: 51467 (Shoulder))
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 100 (Id: 56509), Increase Spell Power (Id: 71852)
-		/// 4 Items: Improved Polymorph (Id: 44302), Increase Spell Power (Id: 71860)
+		/// 4 Items: Reduced Spam Nuke Cast Time (Id: 44302), Increase Spell Power (Id: 71860)
 		/// </summary>
 		GladiatorsRegalia_2 = 779,
 		/// <summary>
@@ -5454,7 +5486,7 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 100 (Id: 56509), Increase Spell Power (Id: 71852)
-		/// 4 Items: Fear Cast Time Reduction (Id: 23047), Increase Spell Power (Id: 71860)
+		/// 4 Items: Death Coil Cooldown Reduction (Id: 23047), Increase Spell Power (Id: 71860)
 		/// </summary>
 		GladiatorsFelshroud_2 = 780,
 		/// <summary>
@@ -7209,6 +7241,10 @@ namespace WCell.Constants.Items
 		/// Sanctified Crimson Acolyte Mantle (Id: 51182 (Shoulder))
 		/// Sanctified Crimson Acolyte Handwraps (Id: 51183 (Hand))
 		/// Sanctified Crimson Acolyte Cowl (Id: 51184 (Head))
+		/// Sanctified Crimson Acolyte Cowl (Id: 51255 (Head))
+		/// Sanctified Crimson Acolyte Handwraps (Id: 51256 (Hand))
+		/// Sanctified Crimson Acolyte Mantle (Id: 51257 (Shoulder))
+		/// Sanctified Crimson Acolyte Pants (Id: 51258 (Legs))
 		/// Sanctified Crimson Acolyte Raiments (Id: 51259 (Robe))
 		///  
 		/// Boni:
@@ -7227,7 +7263,11 @@ namespace WCell.Constants.Items
 		/// Sanctified Lasherweave Helmet (Id: 51137 (Head))
 		/// Sanctified Lasherweave Gauntlets (Id: 51138 (Hand))
 		/// Sanctified Lasherweave Robes (Id: 51139 (Robe))
+		/// Sanctified Lasherweave Robes (Id: 51300 (Robe))
+		/// Sanctified Lasherweave Gauntlets (Id: 51301 (Hand))
+		/// Sanctified Lasherweave Helmet (Id: 51302 (Head))
 		/// Sanctified Lasherweave Legplates (Id: 51303 (Legs))
+		/// Sanctified Lasherweave Pauldrons (Id: 51304 (Shoulder))
 		///  
 		/// Boni:
 		/// 2 Items: Item - Druid T10 Restoration 2P Bonus (Id: 70658)
@@ -7245,6 +7285,11 @@ namespace WCell.Constants.Items
 		/// Sanctified Lasherweave Mantle (Id: 51147 (Shoulder))
 		/// Sanctified Lasherweave Gloves (Id: 51148 (Hand))
 		/// Sanctified Lasherweave Cover (Id: 51149 (Head))
+		/// Sanctified Lasherweave Cover (Id: 51290 (Head))
+		/// Sanctified Lasherweave Gloves (Id: 51291 (Hand))
+		/// Sanctified Lasherweave Mantle (Id: 51292 (Shoulder))
+		/// Sanctified Lasherweave Trousers (Id: 51293 (Legs))
+		/// Sanctified Lasherweave Vestment (Id: 51294 (Robe))
 		///  
 		/// Boni:
 		/// 2 Items: Item - Druid T10 Balance 2P Bonus (Id: 70718)
@@ -7262,8 +7307,11 @@ namespace WCell.Constants.Items
 		/// Sanctified Lasherweave Legguards (Id: 51142 (Legs))
 		/// Sanctified Lasherweave Headguard (Id: 51143 (Head))
 		/// Sanctified Lasherweave Handgrips (Id: 51144 (Hand))
+		/// Sanctified Lasherweave Handgrips (Id: 51295 (Hand))
 		/// Sanctified Lasherweave Headguard (Id: 51296 (Head))
 		/// Sanctified Lasherweave Legguards (Id: 51297 (Legs))
+		/// Sanctified Lasherweave Raiment (Id: 51298 (Robe))
+		/// Sanctified Lasherweave Shoulderpads (Id: 51299 (Shoulder))
 		///  
 		/// Boni:
 		/// 2 Items: Item - Druid T10 Feral 2P Bonus (Id: 70724)
@@ -7303,6 +7351,11 @@ namespace WCell.Constants.Items
 		/// Sanctified Ahn'Kahar Blood Hunter's Legguards (Id: 51152 (Legs))
 		/// Sanctified Ahn'Kahar Blood Hunter's Headpiece (Id: 51153 (Head))
 		/// Sanctified Ahn'Kahar Blood Hunter's Handguards (Id: 51154 (Hand))
+		/// Sanctified Ahn'Kahar Blood Hunter's Handguards (Id: 51285 (Hand))
+		/// Sanctified Ahn'Kahar Blood Hunter's Headpiece (Id: 51286 (Head))
+		/// Sanctified Ahn'Kahar Blood Hunter's Legguards (Id: 51287 (Legs))
+		/// Sanctified Ahn'Kahar Blood Hunter's Spaulders (Id: 51288 (Shoulder))
+		/// Sanctified Ahn'Kahar Blood Hunter's Tunic (Id: 51289 (Chest))
 		///  
 		/// Boni:
 		/// 2 Items: Item - Hunter T10 2P Bonus (Id: 70727)
@@ -7320,6 +7373,10 @@ namespace WCell.Constants.Items
 		/// Sanctified Frost Witch's Headpiece (Id: 51192 (Head))
 		/// Sanctified Frost Witch's Legguards (Id: 51193 (Legs))
 		/// Sanctified Frost Witch's Spaulders (Id: 51194 (Shoulder))
+		/// Sanctified Frost Witch's Spaulders (Id: 51245 (Shoulder))
+		/// Sanctified Frost Witch's Legguards (Id: 51246 (Legs))
+		/// Sanctified Frost Witch's Headpiece (Id: 51247 (Head))
+		/// Sanctified Frost Witch's Handguards (Id: 51248 (Hand))
 		/// Sanctified Frost Witch's Tunic (Id: 51249 (Chest))
 		///  
 		/// Boni:
@@ -7361,6 +7418,11 @@ namespace WCell.Constants.Items
 		/// Sanctified Frost Witch's Faceguard (Id: 51197 (Head))
 		/// Sanctified Frost Witch's War-Kilt (Id: 51198 (Legs))
 		/// Sanctified Frost Witch's Shoulderguards (Id: 51199 (Shoulder))
+		/// Sanctified Frost Witch's Shoulderguards (Id: 51240 (Shoulder))
+		/// Sanctified Frost Witch's War-Kilt (Id: 51241 (Legs))
+		/// Sanctified Frost Witch's Faceguard (Id: 51242 (Head))
+		/// Sanctified Frost Witch's Grips (Id: 51243 (Hand))
+		/// Sanctified Frost Witch's Chestguard (Id: 51244 (Chest))
 		///  
 		/// Boni:
 		/// 2 Items: Item - Shaman T10 Enhancement 2P Bonus Rank 3 (Id: 70830)
@@ -7521,6 +7583,288 @@ namespace WCell.Constants.Items
 		/// 4 Items: Item - Paladin T10 Protection 4P Bonus (Id: 70761)
 		/// </summary>
 		LightswornPlate = 901,
+		/// <summary>
+		///  
+		/// Boni:
+		/// 2 Items: Increased Stamina 05 (Id: 41853)
+		/// 3 Items: Increased Critical 14 (Id: 39486)
+		/// </summary>
+		TheDefilersResolve = 908,
+		/// <summary>
+		///  
+		/// Boni:
+		/// 2 Items: Increased Resilience 400 (Id: 92254), Strength 70 (Id: 92253)
+		/// 4 Items: Disarm Duration Reduction Rank 1 (Id: 22738), Strength 90 (Id: 92252)
+		/// </summary>
+		GladiatorsBattlegear_3 = 909,
+		/// <summary>
+		///  
+		/// Boni:
+		/// 2 Items: Increased Resilience 400 (Id: 92262), Intellect 70 (Id: 92261)
+		/// 4 Items: Death Coil Cooldown Reduction (Id: 23047), Intellect 90 (Id: 92260)
+		/// </summary>
+		GladiatorsFelshroud_3 = 910,
+		/// <summary>
+		///  
+		/// Boni:
+		/// 2 Items: Increased Resilience 400 (Id: 92262), Intellect 70 (Id: 92261)
+		/// 4 Items: Improved Grounding Totem (Id: 44299), Intellect 90 (Id: 92260)
+		/// </summary>
+		GladiatorsThunderfist_3 = 911,
+		/// <summary>
+		///  
+		/// Boni:
+		/// 2 Items: Increased Resilience 400 (Id: 92254), Agiilty 70 (Id: 92258)
+		/// 4 Items: Increased Maelstrom Weapon Chance (Id: 33018), Agility 90 (Id: 92257)
+		/// </summary>
+		GladiatorsEarthshaker_3 = 912,
+		/// <summary>
+		///  
+		/// Boni:
+		/// 2 Items: Increased Resilience 400 (Id: 92264), Intellect 70 (Id: 92256)
+		/// 4 Items: Improved Grounding Totem (Id: 44299), Intellect 90 (Id: 92255)
+		/// </summary>
+		GladiatorsWartide_3 = 913,
+		/// <summary>
+		///  
+		/// Boni:
+		/// 2 Items: Increased Resilience 400 (Id: 92254), Agiilty 70 (Id: 92258)
+		/// 4 Items: Vigor (Id: 21975), Agility 90 (Id: 92257)
+		/// </summary>
+		GladiatorsVestments_3 = 914,
+		/// <summary>
+		///  
+		/// Boni:
+		/// 2 Items: Increased Resilience 400 (Id: 92262), Intellect 70 (Id: 92261)
+		/// 4 Items: Mind Blast and Mind Spike Cast Time Reduction (Id: 92711), Intellect 90 (Id: 92260)
+		/// </summary>
+		GladiatorsRaiment_3 = 915,
+		/// <summary>
+		///  
+		/// Boni:
+		/// 2 Items: Increased Resilience 400 (Id: 92264), Intellect 70 (Id: 92256)
+		/// 4 Items: Holy Walk (Id: 33333), Intellect 90 (Id: 92255)
+		/// </summary>
+		GladiatorsInvestiture_3 = 916,
+		/// <summary>
+		///  
+		/// Boni:
+		/// 2 Items: Increased Resilience 400 (Id: 92254), Strength 70 (Id: 92253)
+		/// 4 Items: Judgement Cooldown Reduction (Id: 61776), Strength 90 (Id: 92252)
+		/// </summary>
+		GladiatorsVindication_3 = 917,
+		/// <summary>
+		///  
+		/// Boni:
+		/// 2 Items: Increased Resilience 400 (Id: 92264), Intellect 70 (Id: 92256)
+		/// 4 Items: Holy Shock Bonus (Id: 58000), Intellect 90 (Id: 92255)
+		/// </summary>
+		GladiatorsRedemption_3 = 918,
+		/// <summary>
+		///  
+		/// Boni:
+		/// 2 Items: Increased Resilience 400 (Id: 92262), Intellect 70 (Id: 92261)
+		/// 4 Items: Reduced Spam Nuke Cast Time (Id: 44302), Intellect 90 (Id: 92260)
+		/// </summary>
+		GladiatorsRegalia_3 = 919,
+		/// <summary>
+		///  
+		/// Boni:
+		/// 2 Items: Increased Resilience 400 (Id: 92254), Agiilty 70 (Id: 92258)
+		/// 4 Items: Increased Focus Regeneration (Id: 61256), Agility 90 (Id: 92257)
+		/// </summary>
+		GladiatorsPursuit_3 = 920,
+		/// <summary>
+		///  
+		/// Boni:
+		/// 2 Items: Increased Resilience 400 (Id: 92262), Intellect 70 (Id: 92261)
+		/// 4 Items: Sudden Eclipse (Id: 46832), Intellect 90 (Id: 92260)
+		/// </summary>
+		GladiatorsWildhide_3 = 921,
+		/// <summary>
+		///  
+		/// Boni:
+		/// 2 Items: Increased Resilience 400 (Id: 92254), Agiilty 70 (Id: 92258)
+		/// 4 Items: Feral Move Speed Increase (Id: 23218), Agility 90 (Id: 92257)
+		/// </summary>
+		GladiatorsSanctuary_3 = 922,
+		/// <summary>
+		///  
+		/// Boni:
+		/// 2 Items: Increased Resilience 400 (Id: 92264), Intellect 70 (Id: 92256)
+		/// 4 Items: Reduced Swiftmend Cooldown (Id: 38417), Intellect 90 (Id: 92255)
+		/// </summary>
+		GladiatorsRefuge_3 = 923,
+		/// <summary>
+		///  
+		/// Boni:
+		/// 2 Items: Increased Resilience 400 (Id: 92254), Strength 70 (Id: 92253)
+		/// 4 Items: Runic Power Back on Snare/Root Rank 5 (Id: 61257), Strength 90 (Id: 92252)
+		/// </summary>
+		GladiatorsDesecration_2 = 924,
+		/// <summary>
+		///  
+		/// Boni:
+		/// 2 Items: Item - Death Knight T11 DPS 2P Bonus (Id: 90457)
+		/// 4 Items: Item - Death Knight T11 DPS 4P Bonus (Id: 90459)
+		/// </summary>
+		MagmaPlatedBattlegear = 925,
+		/// <summary>
+		///  
+		/// Boni:
+		/// 2 Items: Item - Death Knight T11 Blood 2P Bonus (Id: 90454)
+		/// 4 Items: Item - Death Knight T11 Blood 4P Bonus (Id: 90456)
+		/// </summary>
+		MagmaPlatedBattlearmor = 926,
+		/// <summary>
+		///  
+		/// Boni:
+		/// 2 Items: Item - Druid T11 Feral 2P Bonus (Id: 90162)
+		/// 4 Items: Item - Druid T11 Feral 4P Bonus (Id: 90165)
+		/// </summary>
+		StormridersBattlegarb = 927,
+		/// <summary>
+		///  
+		/// Boni:
+		/// 2 Items: Item - Druid T11 Restoration 2P Bonus (Id: 90157)
+		/// 4 Items: Item - Druid T11 Restoration 4P Bonus (Id: 90158)
+		/// </summary>
+		StormridersVestments = 928,
+		/// <summary>
+		///  
+		/// Boni:
+		/// 2 Items: Item - Druid T11 Balance 2P Bonus (Id: 90160)
+		/// 4 Items: Item - Druid T11 Balance 4P Bonus (Id: 90163)
+		/// </summary>
+		StormridersRegalia = 929,
+		/// <summary>
+		///  
+		/// Boni:
+		/// 2 Items: Item - Hunter T11 2P Bonus (Id: 89923)
+		/// 4 Items: Item - Hunter T11 4P Bonus (Id: 96411)
+		/// </summary>
+		LightningChargedBattlegear = 930,
+		/// <summary>
+		///  
+		/// Boni:
+		/// 2 Items: Item - Mage T11 2P Bonus (Id: 90290)
+		/// 4 Items: Item - Mage T11 4P Bonus (Id: 90291)
+		/// </summary>
+		FirelordsVestments = 931,
+		/// <summary>
+		///  
+		/// Boni:
+		/// 2 Items: Item - Paladin T11 Retribution 2P Bonus (Id: 90298)
+		/// 4 Items: Item - Paladin T11 Retribution 4P Bonus (Id: 90299)
+		/// </summary>
+		ReinforcedSapphiriumBattleplate = 932,
+		/// <summary>
+		///  
+		/// Boni:
+		/// 2 Items: Item - Paladin T11 Holy 2P Bonus (Id: 90310)
+		/// 4 Items: Item - Paladin T11 Holy 4P Bonus (Id: 90313)
+		/// </summary>
+		ReinforcedSapphiriumRegalia = 933,
+		/// <summary>
+		///  
+		/// Boni:
+		/// 2 Items: Item - Paladin T11 Protection 2P Bonus (Id: 90301)
+		/// 4 Items: Item - Paladin T11 Protection 4P Bonus (Id: 90306)
+		/// </summary>
+		ReinforcedSapphiriumBattlearmor = 934,
+		/// <summary>
+		///  
+		/// Boni:
+		/// 2 Items: Item - Priest T11 Healer 2P Bonus (Id: 89910)
+		/// 4 Items: Item - Priest T11 Healer 4P Bonus (Id: 89911)
+		/// </summary>
+		MercurialVestments = 935,
+		/// <summary>
+		///  
+		/// Boni:
+		/// 2 Items: Item - Priest T11 Shadow 2P Bonus (Id: 89915)
+		/// 4 Items: Item - Priest T11 Shadow 4P Bonus (Id: 89922)
+		/// </summary>
+		MercurialRegalia = 936,
+		/// <summary>
+		///  
+		/// Boni:
+		/// 2 Items: Item - Rogue T11 2P Bonus (Id: 90460)
+		/// 4 Items: Item - Rogue T11 4P Bonus (Id: 90473)
+		/// </summary>
+		WindDancersRegalia = 937,
+		/// <summary>
+		///  
+		/// Boni:
+		/// 2 Items: Item - Shaman T11 Restoration 2P Bonus (Id: 90494)
+		/// 4 Items: Item - Shaman T11 Restoration 4P Bonus (Id: 90499)
+		/// </summary>
+		VestmentsOfTheRagingElements = 938,
+		/// <summary>
+		///  
+		/// Boni:
+		/// 2 Items: Item - Shaman T11 Enhancement 2P Bonus (Id: 90501)
+		/// 4 Items: Item - Shaman T11 Enhancment 4P Bonus (Id: 90502)
+		/// </summary>
+		BattlegearOfTheRagingElements = 939,
+		/// <summary>
+		///  
+		/// Boni:
+		/// 2 Items: Item - Shaman T11 Elemental 2P Bonus (Id: 90503)
+		/// 4 Items: Item - Shaman T11 Elemental 4P Bonus (Id: 90505)
+		/// </summary>
+		RegaliaOfTheRagingElements = 940,
+		/// <summary>
+		///  
+		/// Boni:
+		/// 2 Items: Item - Warlock T11 2P Bonus (Id: 89934)
+		/// 4 Items: Item - Warlock T11 4P Bonus (Id: 89935)
+		/// </summary>
+		ShadowflameRegalia = 941,
+		/// <summary>
+		///  
+		/// Boni:
+		/// 2 Items: Item - Warrior T11 DPS 2P Bonus (Id: 90293)
+		/// 4 Items: Item - Warrior T11 DPS 4P Bonus (Id: 90295)
+		/// </summary>
+		EarthenWarplate = 942,
+		/// <summary>
+		///  
+		/// Boni:
+		/// 2 Items: Item - Warrior T11 Protection 2P Bonus (Id: 90296)
+		/// 4 Items: Item - Warrior T11 Protection 4P Bonus (Id: 90297)
+		/// </summary>
+		EarthenBattleplate = 943,
+		/// <summary>
+		///  
+		/// Boni:
+		/// 2 Items: Spiritmend (Id: 94744)
+		/// </summary>
+		Spiritmender = 944,
+		/// <summary>
+		///  
+		/// Boni:
+		/// 2 Items: Deathsilk (Id: 94745)
+		/// </summary>
+		Deathspeaker = 945,
+		/// <summary>
+		///  
+		/// Boni:
+		/// 2 Items: The Dark Brand (Id: 95671)
+		/// </summary>
+		TheDarkBrand = 949,
+		/// <summary>
+		///  
+		/// Boni:
+		/// 2 Items: The Big Wave (Id: 95672)
+		/// </summary>
+		TheBigWave = 950,
+		/// <summary>
+		///  
+		/// Boni:
+		/// 2 Items: Item - Proc Haste Rating (Id: 95763)
+		/// </summary>
+		AgonyAndTorment = 951,
 		End
 	}
 

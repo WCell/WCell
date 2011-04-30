@@ -80,7 +80,7 @@ namespace WCell.RealmServer.Talents
 
 		public override void UpdateFreeTalentPointsSilently(int delta)
 		{
-			OwnerCharacter.SetInt32(PlayerFields.CHARACTER_POINTS1, OwnerCharacter.FreeTalentPoints + delta);
+			OwnerCharacter.SetInt32(PlayerFields.CHARACTER_POINTS, OwnerCharacter.FreeTalentPoints + delta);
 		}
 
 		#region Dual Speccing

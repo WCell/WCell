@@ -128,12 +128,6 @@ namespace WCell.RealmServer.Entities
 
 		#endregion
 
-		public uint GuildId
-		{
-			get { return GetUInt32(CorpseFields.GUILD); }
-			set { SetUInt32(CorpseFields.GUILD, value); }
-		}
-
 		public CorpseFlags Flags
 		{
 			get { return (CorpseFlags)GetUInt32(CorpseFields.FLAGS); }

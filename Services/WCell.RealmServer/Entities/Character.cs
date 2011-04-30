@@ -509,7 +509,7 @@ namespace WCell.RealmServer.Entities
 		public Corpse SpawnCorpse(bool bones, bool lootable, Map map, Vector3 pos, float o)
 		{
 			var corpse = new Corpse(this, pos, o, DisplayId, Facial, Skin,
-				HairStyle, HairColor, FacialHair, GuildId, Gender, Race,
+				HairStyle, HairColor, FacialHair, Gender, Race,
 				bones ? CorpseFlags.Bones : CorpseFlags.None, lootable ? CorpseDynamicFlags.PlayerLootable : CorpseDynamicFlags.None);
 
 			for (var i = EquipmentSlot.Head; i <= EquipmentSlot.Tabard; i++)

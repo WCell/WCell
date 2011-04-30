@@ -210,14 +210,14 @@ namespace WCell.RealmServer.Skills
 		}
 
 		#region Props
-		/// <summary>
-		/// How many professions this character can learn
-		/// </summary>
-		public uint FreeProfessions
-		{
-			get { return m_owner.GetUInt32(PlayerFields.CHARACTER_POINTS2); }
-			set { m_owner.SetUInt32(PlayerFields.CHARACTER_POINTS2, value); }
-		}
+
+	    /// <summary>
+	    /// How many professions this character can learn
+	    /// </summary>
+	    public uint FreeProfessions
+	    {
+	        get; set;
+        }
 
 		public Character Owner
 		{

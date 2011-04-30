@@ -443,7 +443,7 @@ namespace WCell.Tools.Domi
 						  {
 							  descs.Add("Teachspell");
 						  }
-						  if (spell.SpellLevels.Level > 0)
+						  if (spell.SpellLevels != null && spell.SpellLevels.Level > 0)
 						  {
                               descs.Add("Level: " + spell.SpellLevels.Level);
 						  }

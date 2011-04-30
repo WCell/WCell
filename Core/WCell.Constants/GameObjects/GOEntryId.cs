@@ -1,7 +1,7 @@
 
 ///
 /// This file was automatically created, using WCell's CodeFileWriter
-/// Date: 01/06/2010
+/// Date: 30/04/2011
 ///
 
 namespace WCell.Constants.GameObjects
@@ -12,7 +12,7 @@ namespace WCell.Constants.GameObjects
 		/// <summary>
 		/// Type: SpellFocus
 		/// </summary>
-		TEMPRuinsOfStardustFountain = 300148,
+		TEMPWrathscaleFountain = 300148,
 		/// <summary>
 		/// Type: SpellFocus
 		/// </summary>
@@ -27,7 +27,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		OldLionStatue = 31,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		SunkenChest = 32,
@@ -60,7 +60,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		CaptainSandersChest = 38,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		AmbassadorsLocker = 41,
@@ -69,12 +69,12 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		WantedLieutenantFangore = 47,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		FallOfGurubashi = 52,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		TheEmperorsTomb = 54,
@@ -89,12 +89,12 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		RolfsCorpse = 56,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		MoonOverTheVale = 57,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		GriLekTheWanderer = 58,
@@ -277,7 +277,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		StonewatchKeep_2 = 118,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		AbercrombiesCrate = 119,
@@ -328,12 +328,12 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		DamagedCrate = 261,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		KurzenSupplies = 263,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		KurzenSupplies_2 = 264,
@@ -351,7 +351,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		MinersLeagueCrates = 271,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		MacGrannsMeatLocker = 272,
@@ -369,7 +369,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		BookieHerodsStrongbox = 288,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		FurlbrowsWardrobe = 290,
@@ -446,7 +446,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		LochModan_2 = 318,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Opening Methods: Herbalism
 		/// </summary>
 		TearOfTilloa = 321,
@@ -538,12 +538,12 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		MenethilHarbor = 1162,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		GunthersBooks = 1165,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		AlexstonsChest = 1166,
@@ -564,7 +564,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		CandleOfBeckoning = 1558,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		StorageChest = 1560,
@@ -573,7 +573,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		SealedCrate = 1561,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		MarshalHaggardsChest = 1562,
@@ -606,7 +606,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Kharanos_4 = 1570,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		DustySpellbooks = 1571,
@@ -636,7 +636,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		CorpseLadenBoat = 1593,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		BerardsBookshelf = 1594,
@@ -901,12 +901,12 @@ namespace WCell.Constants.GameObjects
 		StanleysDish = 1720,
 		/// <summary>
 		/// Type: Goober
-		/// Lock: Opening Methods: PickLock (Requires: 100 Lockpicking); Keys: DullIronKey
+		/// Lock: Keys: DullIronKey
 		/// </summary>
 		LockedBallAndChain = 1721,
 		/// <summary>
 		/// Type: Goober
-		/// Lock: Opening Methods: PickLock (Requires: 100 Lockpicking); Keys: BurnishedGoldKey
+		/// Lock: Keys: BurnishedGoldKey
 		/// </summary>
 		LockedBallAndChain_2 = 1722,
 		/// <summary>
@@ -961,7 +961,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		IronDeposit = 1735,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		ShipmentOfIron = 1736,
@@ -1007,7 +1007,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		HillsbradTownRegistry = 1759,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		WeatheredBookcase = 1760,
@@ -1807,7 +1807,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		BloodsailCorrespondence = 2083,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Opening Methods: Herbalism
 		/// </summary>
 		MusquashRoot = 2084,
@@ -2320,17 +2320,17 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Keystone = 2688,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		StoneOfWestBinding = 2689,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		StoneOfOuterBinding = 2690,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		StoneOfEastBinding = 2691,
@@ -2357,22 +2357,22 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		CacheOfExplosives = 2704,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		MaidensFollyCharts = 2707,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		SpiritOfSilverpineCharts = 2708,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		MaidensFollyLog = 2709,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		SpiritOfSilverpineLog = 2710,
@@ -2400,17 +2400,17 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		RunedPedestal = 2715,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		TrelanesChest = 2716,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		TrelanesFootlocker = 2717,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		TrelanesLockbox = 2718,
@@ -2454,22 +2454,22 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		WaterloggedChest = 2734,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		ChestOfTheBlackFeather = 2739,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		ChestOfTheRavenClaw = 2740,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		ChestOfTheSky = 2741,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		ChestOfNesting = 2742,
@@ -2585,17 +2585,17 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		RipePumpkin = 2883,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		BaliaMahTrophySkulls = 2891,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		ZiataJaiTrophySkulls = 2892,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		ZulMamweTrophySkulls = 2893,
@@ -2857,7 +2857,7 @@ namespace WCell.Constants.GameObjects
 		ChensEmptyKeg = 3238,
 		/// <summary>
 		/// Type: Chest
-		/// Lock: Opening Methods: PickLock (Requires: 100 Lockpicking); Keys: BenedictsKey
+		/// Lock: Keys: BenedictsKey
 		/// </summary>
 		BenedictsChest = 3239,
 		/// <summary>
@@ -2981,7 +2981,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		BaelModanFlyingMachine = 3644,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		GeneralTwinbraidsStrongbox = 3646,
@@ -3096,7 +3096,7 @@ namespace WCell.Constants.GameObjects
 		FoodCrate_8 = 3710,
 		/// <summary>
 		/// Type: Chest (Consumable)
-		/// Lock: Opening Methods: PickLock (Requires: 1 Lockpicking)
+		/// Lock: Unlocked
 		/// </summary>
 		AllianceStrongbox = 3714,
 		/// <summary>
@@ -3179,12 +3179,12 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		TinVein_2 = 3764,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		DrizzliksEmporium = 3767,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		FragileDoNotDrop = 3768,
@@ -3554,7 +3554,7 @@ namespace WCell.Constants.GameObjects
 		Forge_12 = 4090,
 		/// <summary>
 		/// Type: Chest (Consumable)
-		/// Lock: Opening Methods: PickLock (Requires: 25 Lockpicking)
+		/// Lock: Unlocked
 		/// </summary>
 		AllianceStrongbox_2 = 4095,
 		/// <summary>
@@ -4124,7 +4124,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Serpentbloom = 13891,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		PittedIronChest = 13949,
@@ -4182,7 +4182,7 @@ namespace WCell.Constants.GameObjects
 		Moonbrook_3 = 16396,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 1 Lockpicking), Blasting (Requires: 50 Engineering)
+		/// Lock: Opening Methods: Blasting (Requires: 50 Engineering)
 		/// </summary>
 		IronCladDoor = 16397,
 		/// <summary>
@@ -4621,7 +4621,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Hut2 = 19014,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		ElunesTear = 19015,
@@ -4656,7 +4656,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		RustyChest = 19021,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Keys: WoodenKey
 		/// </summary>
 		WornChest = 19022,
@@ -5703,12 +5703,12 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		BlackrockMageTower = 19282,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		CompendiumOfTheFallen = 19283,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		MythologyOfTheTitans = 19284,
@@ -6909,22 +6909,22 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		VentureCoCopterPad = 19594,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		GatekeepersHold = 19595,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Keys: GatekeepersKey
 		/// </summary>
 		SleepersCache = 19596,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Keys: GatekeepersKey
 		/// </summary>
 		DruidsCache = 19597,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Keys: GatekeepersKey
 		/// </summary>
 		BarrowCache = 19598,
@@ -6942,12 +6942,12 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		NG5ExplosivesBlue = 19601,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		VentureCoEngineeringPlans = 19602,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		VentureCoDocuments = 19603,
@@ -7335,7 +7335,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		FlameOfUzel_2 = 19876,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Keys: VelindesKey
 		/// </summary>
 		VelindesLocker = 19877,
@@ -7450,8 +7450,8 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Anvil_17 = 20689,
 		/// <summary>
-		/// Type: Chest
-		/// Lock: Opening Methods: PickLock (Requires: 160 Lockpicking); Keys: CozzlesKey
+		/// Type: Chest (Consumable)
+		/// Lock: Keys: CozzlesKey
 		/// </summary>
 		CozzlesFootlocker = 20691,
 		/// <summary>
@@ -7474,7 +7474,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		BeginningsOfTheUndeadThreat = 20726,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		GizmoriumShippingCrate = 20727,
@@ -7492,7 +7492,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		AshenvaleMoonwell = 20806,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Keys: FilledEtchedPhial
 		/// </summary>
 		AncientBrazier = 20807,
@@ -7612,7 +7612,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		StoneOfRemembrance = 20923,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		CaptainsFootlocker_2 = 20925,
@@ -8774,7 +8774,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Forge_17 = 23305,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		GizmoriumShippingCrate_2 = 23505,
@@ -10335,7 +10335,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		DwarvenBrazier_11 = 26499,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		CaravanChest = 28024,
@@ -11544,7 +11544,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		SummoningCircle = 37097,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		PerrinesChest = 37098,
@@ -12645,7 +12645,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		MalemChest = 50961,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		TheCharredOak = 50982,
@@ -12793,7 +12793,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Lamppost_2 = 57748,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		StolenIronChest = 58369,
@@ -12808,7 +12808,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Brazier_3 = 58389,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		BurningBladeStash = 58595,
@@ -13516,7 +13516,7 @@ namespace WCell.Constants.GameObjects
 		SmokedMeatRack_2 = 74446,
 		/// <summary>
 		/// Type: Chest (Consumable)
-		/// Lock: Opening Methods: PickLock (Requires: 25 Lockpicking)
+		/// Lock: Unlocked
 		/// </summary>
 		LargeIronBoundChest = 74447,
 		/// <summary>
@@ -13556,17 +13556,17 @@ namespace WCell.Constants.GameObjects
 		LargeBatteredChest = 75293,
 		/// <summary>
 		/// Type: Chest (Consumable)
-		/// Lock: Opening Methods: PickLock (Requires: 1 Lockpicking)
+		/// Lock: Unlocked
 		/// </summary>
 		LargeIronBoundChest_2 = 75295,
 		/// <summary>
 		/// Type: Chest (Consumable)
-		/// Lock: Opening Methods: PickLock (Requires: 70 Lockpicking)
+		/// Lock: Unlocked
 		/// </summary>
 		LargeIronBoundChest_3 = 75296,
 		/// <summary>
 		/// Type: Chest (Consumable)
-		/// Lock: Opening Methods: PickLock (Requires: 125 Lockpicking)
+		/// Lock: Unlocked
 		/// </summary>
 		LargeIronBoundChest_4 = 75297,
 		/// <summary>
@@ -13622,7 +13622,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Lamppost_8 = 82140,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		StolenBooks = 83763,
@@ -13631,12 +13631,12 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Vator2 = 85556,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		IronbandsStrongbox = 85562,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Keys: DeadToothsKey
 		/// </summary>
 		DeadToothsStrongbox = 85563,
@@ -13662,7 +13662,7 @@ namespace WCell.Constants.GameObjects
 		BathRahsCauldron = 89931,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 150 Lockpicking), Blasting (Requires: 150 Engineering); Keys: WorkshopKey
+		/// Lock: Opening Methods: Blasting (Requires: 150 Engineering); Keys: WorkshopKey
 		/// </summary>
 		WorkshopDoor = 90566,
 		/// <summary>
@@ -13671,11 +13671,11 @@ namespace WCell.Constants.GameObjects
 		Lever_2 = 90567,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 150 Lockpicking), Blasting (Requires: 150 Engineering); Keys: WorkshopKey
+		/// Lock: Opening Methods: Blasting (Requires: 150 Engineering); Keys: WorkshopKey
 		/// </summary>
 		WorkshopDoor_2 = 90858,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		JordansHammer = 91138,
@@ -13706,7 +13706,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		GrimandsAnvil = 92011,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		TomeOfTheCabal = 92013,
@@ -13752,12 +13752,12 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Anvil_75 = 92419,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		BailorsOre = 92420,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		DamagedChest = 92423,
@@ -13929,7 +13929,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Bench = 92703,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		Heartswood = 93192,
@@ -14037,12 +14037,12 @@ namespace WCell.Constants.GameObjects
 		DoorLever_6 = 101834,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 175 Lockpicking), Blasting (Requires: 175 Engineering); Keys: TheScarletKey; Closable
+		/// Lock: Opening Methods: Blasting (Requires: 175 Engineering); Keys: TheScarletKey; Closable
 		/// </summary>
 		CathedralDoor = 101850,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 175 Lockpicking), Blasting (Requires: 175 Engineering); Keys: TheScarletKey; Closable
+		/// Lock: Opening Methods: Blasting (Requires: 175 Engineering); Keys: TheScarletKey; Closable
 		/// </summary>
 		ArmoryDoor = 101851,
 		/// <summary>
@@ -14055,7 +14055,7 @@ namespace WCell.Constants.GameObjects
 		Lever_4 = 101853,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 175 Lockpicking), Blasting (Requires: 175 Engineering); Keys: TheScarletKey; Closable
+		/// Lock: Opening Methods: Blasting (Requires: 175 Engineering); Keys: TheScarletKey; Closable
 		/// </summary>
 		HerodsDoor = 101854,
 		/// <summary>
@@ -14063,7 +14063,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		VerigansFist = 102413,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		BinksToolbox = 102984,
@@ -14194,7 +14194,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		FilledContainmentCoffer = 103574,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		AndronsBookshelf = 103600,
@@ -14323,8 +14323,8 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		MausoleumSeal = 103813,
 		/// <summary>
-		/// Type: Chest
-		/// Lock: Opening Methods: PickLock (Requires: 1 Lockpicking)
+		/// Type: Chest (Consumable)
+		/// Lock: Unlocked
 		/// </summary>
 		AmbermillStrongbox = 103815,
 		/// <summary>
@@ -14363,7 +14363,7 @@ namespace WCell.Constants.GameObjects
 		BinglessBlastencapper = 104575,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 175 Lockpicking), Blasting (Requires: 175 Engineering); Keys: TheScarletKey; Closable
+		/// Lock: Opening Methods: Blasting (Requires: 175 Engineering); Keys: TheScarletKey; Closable
 		/// </summary>
 		ChapelDoor = 104591,
 		/// <summary>
@@ -14415,8 +14415,8 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		CantationOfManifestation = 105175,
 		/// <summary>
-		/// Type: Chest
-		/// Lock: Opening Methods: PickLock (Requires: 1 Lockpicking)
+		/// Type: Chest (Consumable)
+		/// Lock: Unlocked
 		/// </summary>
 		VentureCoStrongbox = 105176,
 		/// <summary>
@@ -14429,7 +14429,7 @@ namespace WCell.Constants.GameObjects
 		PeasentWoodpile = 105568,
 		/// <summary>
 		/// Type: Chest (Consumable)
-		/// Lock: Opening Methods: PickLock (Requires: 70 Lockpicking)
+		/// Lock: Unlocked
 		/// </summary>
 		AllianceStrongbox_3 = 105570,
 		/// <summary>
@@ -15055,7 +15055,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		RoguesQuarter_7 = 113756,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		ShadowforgeCache = 113757,
@@ -15080,8 +15080,8 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Campfire_165 = 120584,
 		/// <summary>
-		/// Type: Chest
-		/// Lock: Opening Methods: PickLock (Requires: 25 Lockpicking)
+		/// Type: Chest (Consumable)
+		/// Lock: Unlocked
 		/// </summary>
 		LuciussLockbox = 121264,
 		/// <summary>
@@ -15119,7 +15119,7 @@ namespace WCell.Constants.GameObjects
 		/// <summary>
 		/// Type: Chest (Consumable)
 		/// Trap: Duskwood Chest (ID: 124072, 124072)
-		/// Lock: Opening Methods: PickLock (Requires: 70 Lockpicking)
+		/// Lock: Unlocked
 		/// </summary>
 		DuskwoodChest = 123214,
 		/// <summary>
@@ -15160,24 +15160,24 @@ namespace WCell.Constants.GameObjects
 		BaelogsChest = 123329,
 		/// <summary>
 		/// Type: Chest (Consumable)
-		/// Lock: Opening Methods: PickLock (Requires: 1 Lockpicking)
+		/// Lock: Unlocked
 		/// </summary>
 		BuccaneersStrongbox = 123330,
 		/// <summary>
 		/// Type: Chest (Consumable)
-		/// Lock: Opening Methods: PickLock (Requires: 1 Lockpicking)
+		/// Lock: Unlocked
 		/// </summary>
 		BuccaneersStrongbox_2 = 123331,
 		/// <summary>
 		/// Type: Chest (Consumable)
 		/// Trap: Rat Bomb Trap (ID: 123355, 123355)
-		/// Lock: Opening Methods: PickLock (Requires: 1 Lockpicking)
+		/// Lock: Unlocked
 		/// </summary>
 		BuccaneersStrongbox_3 = 123332,
 		/// <summary>
 		/// Type: Chest (Consumable)
 		/// Trap: The Punisher (DND) (ID: 123334, 123334)
-		/// Lock: Opening Methods: PickLock (Requires: 1 Lockpicking)
+		/// Lock: Unlocked
 		/// </summary>
 		BuccaneersStrongbox_4 = 123333,
 		/// <summary>
@@ -15190,7 +15190,7 @@ namespace WCell.Constants.GameObjects
 		RatBombTrap = 123355,
 		/// <summary>
 		/// Type: Goober
-		/// Lock: Opening Methods: PickLock (Requires: 25 Lockpicking)
+		/// Lock: Unlocked
 		/// </summary>
 		TheJewelOfTheSouthsea = 123462,
 		/// <summary>
@@ -15240,12 +15240,12 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		HoratioMontgomeryMD = 124374,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		GarrettFamilyChest = 124388,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		KromStoutarmsChest = 124389,
@@ -15255,7 +15255,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Bonfire_44 = 125475,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		ConspicuousUrn = 125477,
@@ -15286,12 +15286,12 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Bench_5 = 126053,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		TallonkaisDresser = 126158,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		AncientChest = 126260,
@@ -15361,7 +15361,7 @@ namespace WCell.Constants.GameObjects
 		/// <summary>
 		/// Type: Chest (Consumable)
 		/// Trap: Gallywix's Lockbox (ID: 130126, 130126)
-		/// Lock: Opening Methods: PickLock (Requires: 70 Lockpicking)
+		/// Lock: Unlocked
 		/// </summary>
 		GallywixsLockbox = 129127,
 		/// <summary>
@@ -15403,7 +15403,7 @@ namespace WCell.Constants.GameObjects
 		TheDiscsOfNorgannon = 131474,
 		/// <summary>
 		/// Type: Chest (Consumable)
-		/// Lock: Opening Methods: PickLock (Requires: 175 Lockpicking)
+		/// Lock: Unlocked
 		/// </summary>
 		LargeMithrilBoundChest = 131978,
 		/// <summary>
@@ -15847,7 +15847,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		ClarasFreshApples = 142076,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		TabletOfWill = 142088,
@@ -15969,22 +15969,22 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		CaptainsChest = 142184,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		FlameOfByltan = 142185,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		FlameOfLahassa = 142186,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		FlameOfImbel = 142187,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		FlameOfSamha = 142188,
@@ -16071,7 +16071,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		MatrixPunchograph3005C = 142476,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Keys: ThermapluggsSafeCombination
 		/// </summary>
 		ThermapluggsSafe = 142477,
@@ -16542,12 +16542,12 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		GordunniTrap = 144050,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		ScrimshanksSurveyingGear = 144053,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		ShaysChest = 144054,
@@ -16830,7 +16830,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		FreshZhevraCarcass = 147537,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		StolenSilver = 147557,
@@ -17077,7 +17077,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		AConspicuousGravestone = 148504,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		TwilightArtifact = 148506,
@@ -17691,7 +17691,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		SentryBrazier_4 = 149032,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		MarvonsChest = 149036,
@@ -17775,22 +17775,22 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		DOOR2 = 149433,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Keys: DrawingKit
 		/// </summary>
 		RuneOfJinYael = 149480,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Keys: DrawingKit
 		/// </summary>
 		RuneOfBethAmara = 149481,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Keys: DrawingKit
 		/// </summary>
 		RuneOfMarkri = 149482,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Keys: DrawingKit
 		/// </summary>
 		RuneOfSaelHai = 149483,
@@ -17823,12 +17823,12 @@ namespace WCell.Constants.GameObjects
 		BurbiksSupplies = 150087,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 225 Lockpicking); Keys: KeyToSearingGorge
+		/// Lock: Keys: KeyToSearingGorge
 		/// </summary>
 		Door = 150137,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 225 Lockpicking); Keys: KeyToSearingGorge
+		/// Lock: Keys: KeyToSearingGorge
 		/// </summary>
 		Door_2 = 150138,
 		/// <summary>
@@ -18273,12 +18273,12 @@ namespace WCell.Constants.GameObjects
 		LargeSolidChest_6 = 153463,
 		/// <summary>
 		/// Type: Chest (Consumable)
-		/// Lock: Opening Methods: PickLock (Requires: 250 Lockpicking)
+		/// Lock: Unlocked
 		/// </summary>
 		LargeMithrilBoundChest_2 = 153468,
 		/// <summary>
 		/// Type: Chest (Consumable)
-		/// Lock: Opening Methods: PickLock (Requires: 275 Lockpicking)
+		/// Lock: Unlocked
 		/// </summary>
 		LargeMithrilBoundChest_3 = 153469,
 		/// <summary>
@@ -18552,7 +18552,7 @@ namespace WCell.Constants.GameObjects
 		DarkKeeperPortrait = 161456,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 250 Lockpicking), Blasting (Requires: 250 Engineering); Keys: ShadowforgeKey; Closable
+		/// Lock: Opening Methods: Blasting (Requires: 250 Engineering); Keys: ShadowforgeKey; Closable
 		/// </summary>
 		TheShadowforgeLock = 161460,
 		/// <summary>
@@ -18619,7 +18619,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		BigDoorDummyCollision02 = 161516,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		ResearchEquipment_2 = 161521,
@@ -18628,7 +18628,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		ArenaGate01 = 161525,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		CrateOfFoodstuffs_2 = 161526,
@@ -18718,7 +18718,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		MonumentOfFranclornForgewright = 164689,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		KromZarsBanner = 164690,
@@ -18924,7 +18924,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		WreckedRowBoat = 164909,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		OrnateChest = 164910,
@@ -19084,7 +19084,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		CrudeBrazier_42 = 165751,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		FreshThreshadonCarcass = 166863,
@@ -19392,12 +19392,12 @@ namespace WCell.Constants.GameObjects
 		Doodad_BlackRockDoorSingle01 = 170557,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 250 Lockpicking), Blasting (Requires: 250 Engineering); Keys: ShadowforgeKey; Closable
+		/// Lock: Opening Methods: Blasting (Requires: 250 Engineering); Keys: ShadowforgeKey; Closable
 		/// </summary>
 		TheLyceum = 170558,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 250 Lockpicking), Blasting (Requires: 250 Engineering); Keys: ShadowforgeKey; Closable
+		/// Lock: Opening Methods: Blasting (Requires: 250 Engineering); Keys: ShadowforgeKey; Closable
 		/// </summary>
 		ShadowforgeGate = 170559,
 		/// <summary>
@@ -19406,17 +19406,17 @@ namespace WCell.Constants.GameObjects
 		SupplyRoomDoor = 170561,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 250 Lockpicking), Blasting (Requires: 250 Engineering); Keys: PrisonCellKey; Closable
+		/// Lock: Opening Methods: Blasting (Requires: 250 Engineering); Keys: PrisonCellKey; Closable
 		/// </summary>
 		CellDoor_2 = 170562,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 250 Lockpicking), Blasting (Requires: 250 Engineering); Keys: PrisonCellKey; Closable
+		/// Lock: Opening Methods: Blasting (Requires: 250 Engineering); Keys: PrisonCellKey; Closable
 		/// </summary>
 		CellDoor_3 = 170563,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 250 Lockpicking), Blasting (Requires: 250 Engineering); Keys: ShadowforgeKey; Closable
+		/// Lock: Opening Methods: Blasting (Requires: 250 Engineering); Keys: ShadowforgeKey; Closable
 		/// </summary>
 		EastGarrisonDoor = 170570,
 		/// <summary>
@@ -22022,7 +22022,7 @@ namespace WCell.Constants.GameObjects
 		CleansedWhipperRoot_5 = 174625,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 280 Lockpicking), Blasting (Requires: 300 Engineering); Keys: SkeletonKey; Closable
+		/// Lock: Opening Methods: Blasting (Requires: 300 Engineering); Keys: SkeletonKey; Closable
 		/// </summary>
 		ScholomanceDoor = 174626,
 		/// <summary>
@@ -22098,7 +22098,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		CleansedSongflower_10 = 174715,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		DamagedCrate_2 = 174728,
@@ -22491,12 +22491,12 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		EmberseerOut = 175153,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		SilverDawningsLockbox = 175165,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		MistVeilsLockbox = 175166,
@@ -22556,7 +22556,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Room4Rune = 175200,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Opening Methods: Herbalism
 		/// </summary>
 		BeachedSeaCreature = 175207,
@@ -22723,22 +22723,22 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		FrostmaulShards = 175324,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		BlackwoodNutStores = 175329,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		BlackwoodFruitStores = 175330,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		BlackwoodGrainStores = 175331,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		BijousBelongings = 175334,
@@ -22761,7 +22761,7 @@ namespace WCell.Constants.GameObjects
 		Doodad_SmallPortcullis03 = 175351,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 300 Lockpicking), Blasting (Requires: 300 Engineering); Keys: KeyToTheCity; Closable
+		/// Lock: Opening Methods: Blasting (Requires: 300 Engineering); Keys: KeyToTheCity; Closable
 		/// </summary>
 		KingsSquareGate = 175352,
 		/// <summary>
@@ -22774,7 +22774,7 @@ namespace WCell.Constants.GameObjects
 		Doodad_SmallPortcullis08 = 175355,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 300 Lockpicking), Blasting (Requires: 300 Engineering); Keys: KeyToTheCity; Closable
+		/// Lock: Opening Methods: Blasting (Requires: 300 Engineering); Keys: KeyToTheCity; Closable
 		/// </summary>
 		GauntletGate = 175356,
 		/// <summary>
@@ -22787,12 +22787,12 @@ namespace WCell.Constants.GameObjects
 		Doodad_SmallPortcullis11 = 175359,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 300 Lockpicking), Blasting (Requires: 300 Engineering); Keys: KeyToTheCity; Closable
+		/// Lock: Opening Methods: Blasting (Requires: 300 Engineering); Keys: KeyToTheCity; Closable
 		/// </summary>
 		ServiceEntranceGate = 175368,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 300 Lockpicking), Blasting (Requires: 300 Engineering); Keys: KeyToTheCity; Closable
+		/// Lock: Opening Methods: Blasting (Requires: 300 Engineering); Keys: KeyToTheCity; Closable
 		/// </summary>
 		EldersSquareServiceEntrance = 175369,
 		/// <summary>
@@ -23227,12 +23227,12 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		UroksTributePile = 175621,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		JaronsSupplies = 175628,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		JaronsSupplies_2 = 175629,
@@ -23616,7 +23616,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		LumberPile = 175784,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		InconspicuousDocuments = 175785,
@@ -23752,8 +23752,8 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		FinkleTrap = 175887,
 		/// <summary>
-		/// Type: Chest
-		/// Lock: Keys: JaronsPick
+		/// Type: Chest (Consumable)
+		/// Lock: Keys: 64376
 		/// </summary>
 		HighborneRelicFragment = 175888,
 		/// <summary>
@@ -23766,18 +23766,18 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		AncientEggAura = 175890,
 		/// <summary>
-		/// Type: Chest
-		/// Lock: Keys: JaronsPick
+		/// Type: Chest (Consumable)
+		/// Lock: Keys: 64376
 		/// </summary>
 		HighborneRelicFragment_2 = 175891,
 		/// <summary>
-		/// Type: Chest
-		/// Lock: Keys: JaronsPick
+		/// Type: Chest (Consumable)
+		/// Lock: Keys: 64376
 		/// </summary>
 		HighborneRelicFragment_3 = 175892,
 		/// <summary>
-		/// Type: Chest
-		/// Lock: Keys: JaronsPick
+		/// Type: Chest (Consumable)
+		/// Lock: Keys: 64376
 		/// </summary>
 		HighborneRelicFragment_4 = 175893,
 		/// <summary>
@@ -24218,7 +24218,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		DeadwoodCauldron = 176091,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		BoxOfIncendiaries = 176092,
@@ -24302,7 +24302,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		PamelasDollsRightSide = 176143,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		JosephRedpathsMonument = 176145,
@@ -24385,7 +24385,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		RitualCandle = 176188,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Opening Methods: Herbalism
 		/// </summary>
 		SkeletalSeaTurtle = 176189,
@@ -24603,7 +24603,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		PremiumSiabiTobacco = 176248,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		ScourgeData = 176249,
@@ -24742,7 +24742,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		BlacksmithingPlans_4 = 176327,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		DocumentChest1 = 176344,
@@ -24781,7 +24781,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		FrasSiabisPostbox = 176353,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		SacredHighborneWritings = 176356,
@@ -25093,22 +25093,22 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Campfire_246 = 176464,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		TheDeedToBrill = 176484,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		TheDeedToCaerDarrow = 176485,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		TheDeedToSouthshore = 176486,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		TheDeedToTarrenMill = 176487,
@@ -25454,7 +25454,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Door_9 = 176633,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		KerloniansChest = 176634,
@@ -25581,7 +25581,7 @@ namespace WCell.Constants.GameObjects
 		Chair_92 = 176693,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 350 Lockpicking), Blasting (Requires: 350 Engineering); Keys: TheMastersKey
+		/// Lock: Opening Methods: Blasting (Requires: 350 Engineering); Keys: TheMastersKey
 		/// </summary>
 		KarazhanSideEntrance = 176694,
 		/// <summary>
@@ -25634,7 +25634,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Bonfire_104 = 176784,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		AmmoCrate = 176785,
@@ -26343,7 +26343,7 @@ namespace WCell.Constants.GameObjects
 		TharnarunsCure = 177187,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 300 Lockpicking), Blasting (Requires: 300 Engineering); Keys: CrescentKey; Closable
+		/// Lock: Opening Methods: Blasting (Requires: 300 Engineering); Keys: CrescentKey; Closable
 		/// </summary>
 		Door_10 = 177188,
 		/// <summary>
@@ -26357,7 +26357,7 @@ namespace WCell.Constants.GameObjects
 		Campfire_251 = 177194,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 300 Lockpicking), Blasting (Requires: 300 Engineering); Keys: CrescentKey; Closable
+		/// Lock: Opening Methods: Blasting (Requires: 300 Engineering); Keys: CrescentKey; Closable
 		/// </summary>
 		Door_11 = 177198,
 		/// <summary>
@@ -26418,7 +26418,7 @@ namespace WCell.Constants.GameObjects
 		Door_15 = 177215,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 200 Lockpicking), Blasting (Requires: 200 Engineering); Keys: GordokInnerDoorKey; Closable
+		/// Lock: Opening Methods: Blasting (Requires: 200 Engineering); Keys: GordokInnerDoorKey; Closable
 		/// </summary>
 		GordokInnerDoor = 177217,
 		/// <summary>
@@ -26432,7 +26432,7 @@ namespace WCell.Constants.GameObjects
 		CrumbleWall = 177220,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 300 Lockpicking), Blasting (Requires: 300 Engineering); Keys: CrescentKey; Closable
+		/// Lock: Opening Methods: Blasting (Requires: 300 Engineering); Keys: CrescentKey; Closable
 		/// </summary>
 		Door_16 = 177221,
 		/// <summary>
@@ -26473,7 +26473,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		LooseDirtMound = 177240,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		ArajsPhylactery = 177241,
@@ -26545,7 +26545,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Brazier_33 = 177261,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		SymbolOfLostHonor = 177264,
@@ -26617,7 +26617,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Cauldron_32 = 177286,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		UnfinishedPainting = 177287,
@@ -26935,7 +26935,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		FatherFlameAura = 177606,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		XabraxxisDemonBag = 177624,
@@ -27076,7 +27076,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		AugustusReceiptBook = 177789,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		StrangeLockbox = 177790,
@@ -27085,7 +27085,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Anchor = 177791,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Trap: Strange Lockbox Agility Trap (ID: 177793, 177793)
 		/// Lock: Unlocked
 		/// </summary>
@@ -27095,23 +27095,23 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		StrangeLockboxAgilityTrap = 177793,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Trap: Strange Lockbox Agility Trap (ID: 177793, 177793)
 		/// Lock: Unlocked
 		/// </summary>
 		StrangeLockbox_3 = 177794,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		MangledHumanRemains = 177804,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		MangledHumanRemains_2 = 177805,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		MangledHumanRemains_3 = 177806,
@@ -27159,7 +27159,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		GaeaDirtMound = 177929,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		FathomStone = 177964,
@@ -27549,7 +27549,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		WarsongOil = 178195,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		WarsongAxeShipment = 178204,
@@ -27570,7 +27570,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		HospitalBed = 178226,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Trap: Murgut's Totem Basket Aura (ID: 178228, 178228)
 		/// Lock: Unlocked
 		/// </summary>
@@ -27589,18 +27589,18 @@ namespace WCell.Constants.GameObjects
 		AurorasAura = 178230,
 		/// <summary>
 		/// Type: Chest (Consumable)
-		/// Lock: Opening Methods: PickLock (Requires: 1 Lockpicking)
+		/// Lock: Unlocked
 		/// </summary>
 		PracticeLockbox = 178244,
 		/// <summary>
 		/// Type: Chest (Consumable)
-		/// Lock: Opening Methods: PickLock (Requires: 1 Lockpicking)
+		/// Lock: Unlocked
 		/// </summary>
 		PracticeLockbox_2 = 178245,
 		/// <summary>
 		/// Type: Chest (Consumable)
 		/// Trap: The Punisher (DND) (ID: 123334, 123334)
-		/// Lock: Opening Methods: PickLock (Requires: 1 Lockpicking)
+		/// Lock: Unlocked
 		/// </summary>
 		PracticeLockbox_3 = 178246,
 		/// <summary>
@@ -28100,37 +28100,37 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		BaubleAura = 178984,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		DrekTharsScrolls = 179004,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		DrekTharsScrolls_2 = 179005,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		VanndarsDocuments = 179006,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		VanndarsDocuments_2 = 179007,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		VanndarsDocuments_3 = 179008,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		StormpikeBanner = 179024,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		FrostwolfBanner = 179025,
@@ -28267,7 +28267,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		PHHordeGraveyardMidPreBannerBIG = 179425,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		GriLekTheWanderer_2 = 179426,
@@ -28374,62 +28374,62 @@ namespace WCell.Constants.GameObjects
 		BrokenTrap = 179485,
 		/// <summary>
 		/// Type: Chest (Consumable)
-		/// Lock: Opening Methods: PickLock (Requires: 70 Lockpicking)
+		/// Lock: Unlocked
 		/// </summary>
 		BatteredFootlocker = 179486,
 		/// <summary>
 		/// Type: Chest (Consumable)
-		/// Lock: Opening Methods: PickLock (Requires: 70 Lockpicking)
+		/// Lock: Unlocked
 		/// </summary>
 		WaterloggedFootlocker = 179487,
 		/// <summary>
 		/// Type: Chest (Consumable)
-		/// Lock: Opening Methods: PickLock (Requires: 110 Lockpicking)
+		/// Lock: Unlocked
 		/// </summary>
 		BatteredFootlocker_2 = 179488,
 		/// <summary>
 		/// Type: Chest (Consumable)
-		/// Lock: Opening Methods: PickLock (Requires: 110 Lockpicking)
+		/// Lock: Unlocked
 		/// </summary>
 		WaterloggedFootlocker_2 = 179489,
 		/// <summary>
 		/// Type: Chest (Consumable)
-		/// Lock: Opening Methods: PickLock (Requires: 150 Lockpicking)
+		/// Lock: Unlocked
 		/// </summary>
 		BatteredFootlocker_3 = 179490,
 		/// <summary>
 		/// Type: Chest (Consumable)
-		/// Lock: Opening Methods: PickLock (Requires: 150 Lockpicking)
+		/// Lock: Unlocked
 		/// </summary>
 		WaterloggedFootlocker_3 = 179491,
 		/// <summary>
 		/// Type: Chest (Consumable)
-		/// Lock: Opening Methods: PickLock (Requires: 175 Lockpicking)
+		/// Lock: Unlocked
 		/// </summary>
 		DentedFootlocker = 179492,
 		/// <summary>
 		/// Type: Chest (Consumable)
-		/// Lock: Opening Methods: PickLock (Requires: 175 Lockpicking)
+		/// Lock: Unlocked
 		/// </summary>
 		MossyFootlocker = 179493,
 		/// <summary>
 		/// Type: Chest (Consumable)
-		/// Lock: Opening Methods: PickLock (Requires: 200 Lockpicking)
+		/// Lock: Unlocked
 		/// </summary>
 		DentedFootlocker_2 = 179494,
 		/// <summary>
 		/// Type: Chest (Consumable)
-		/// Lock: Opening Methods: PickLock (Requires: 225 Lockpicking)
+		/// Lock: Unlocked
 		/// </summary>
 		DentedFootlocker_3 = 179496,
 		/// <summary>
 		/// Type: Chest (Consumable)
-		/// Lock: Opening Methods: PickLock (Requires: 225 Lockpicking)
+		/// Lock: Unlocked
 		/// </summary>
 		MossyFootlocker_2 = 179497,
 		/// <summary>
 		/// Type: Chest (Consumable)
-		/// Lock: Opening Methods: PickLock (Requires: 250 Lockpicking)
+		/// Lock: Unlocked
 		/// </summary>
 		ScarletFootlocker = 179498,
 		/// <summary>
@@ -28494,7 +28494,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		SkeletalRemainsOfKarielWinthalus = 179544,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		ThePrincesChest = 179545,
@@ -28510,7 +28510,7 @@ namespace WCell.Constants.GameObjects
 		ADustyTome_2 = 179548,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 300 Lockpicking), Blasting (Requires: 300 Engineering); Keys: CrescentKey; Closable
+		/// Lock: Opening Methods: Blasting (Requires: 300 Engineering); Keys: CrescentKey; Closable
 		/// </summary>
 		Door_18 = 179549,
 		/// <summary>
@@ -28523,7 +28523,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		SchematicFieldRepairBot74A = 179552,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		CoreFragment = 179553,
@@ -28570,7 +28570,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		GordokTribute = 179564,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		DustyReliquary = 179565,
@@ -28840,7 +28840,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		DrakonidBones = 179804,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		SecretPlansFieryFlux = 179826,
@@ -28959,12 +28959,12 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		CallToArms = 179913,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		PileOfBones_2 = 179914,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		PileOfSkulls = 179915,
@@ -29738,17 +29738,17 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		SandyCookbook = 180503,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		SolaniansScryingOrb = 180510,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		ScrollOfScourgeMagic = 180511,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		SolaniansJournal = 180512,
@@ -30543,7 +30543,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		WeaponContainer = 181107,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		SoakedTome = 181110,
@@ -30587,7 +30587,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Anvil_123 = 181131,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		RathisTombersSupplies = 181133,
@@ -30606,7 +30606,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		NightElfPlansAnOwyn = 181139,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		NightElfPlansScryingOnTheSinDorei = 181140,
@@ -30851,12 +30851,12 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Mailbox_52 = 181236,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		DentedChest = 181238,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		WornChest_2 = 181239,
@@ -31553,7 +31553,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		JarOfAshes = 181573,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		GlowingCrystal = 181574,
@@ -31681,7 +31681,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		ToWoWFlagCapCounterHorde = 181619,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		UnopenedCrate = 181620,
@@ -31786,7 +31786,7 @@ namespace WCell.Constants.GameObjects
 		ArakkoaCage = 181664,
 		/// <summary>
 		/// Type: Chest (Consumable)
-		/// Lock: Opening Methods: PickLock (Requires: 1 Lockpicking)
+		/// Lock: Unlocked
 		/// </summary>
 		BurialChest = 181665,
 		/// <summary>
@@ -31799,12 +31799,12 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		WickermanEffigy = 181672,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		NauticalMap = 181674,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		NauticalCompass = 181675,
@@ -31865,7 +31865,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		NagaFlag = 181694,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		HollowedOutTree = 181696,
@@ -32925,7 +32925,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Glowcap = 182053,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		TheUnderspore = 182054,
@@ -33103,7 +33103,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		DeadMireSoil = 182119,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		IkeyensBelongings = 182122,
@@ -33336,7 +33336,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		WarmaulSkull = 182183,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		DaggerfenPoisonManual = 182184,
@@ -33385,7 +33385,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		ArcaneContainer_3 = 182198,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		KeannasLog = 182199,
@@ -34433,7 +34433,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		ZangarmarshBanner_5 = 182529,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		NazzivusMonumentGlyphs = 182532,
@@ -35208,7 +35208,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		BleedingHollowSupplies = 182800,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Trap: Mysteris of the Light Aura (ID: 184659, 184659)
 		/// Lock: Unlocked
 		/// </summary>
@@ -35924,7 +35924,7 @@ namespace WCell.Constants.GameObjects
 		Cookpot_8 = 183048,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 5000 Lockpicking)
+		/// Lock: Unlocked
 		/// </summary>
 		MainChambersDoor = 183049,
 		/// <summary>
@@ -36581,7 +36581,7 @@ namespace WCell.Constants.GameObjects
 		Team1Inside = 183293,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 350 Lockpicking), Blasting (Requires: 350 Engineering); Keys: ShadowLabyrinthKey; Closable
+		/// Lock: Opening Methods: Blasting (Requires: 350 Engineering); Keys: ShadowLabyrinthKey; Closable
 		/// </summary>
 		TheShadowLabyrinth = 183294,
 		/// <summary>
@@ -36663,12 +36663,12 @@ namespace WCell.Constants.GameObjects
 		ShattrathPortalToUndercity = 183327,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Keys: 49699
+		/// Lock: Keys: None
 		/// </summary>
 		FelOrcCage = 183331,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Keys: 49699
+		/// Lock: Keys: None
 		/// </summary>
 		FelOrcCage_2 = 183332,
 		/// <summary>
@@ -37023,7 +37023,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Campfire_347 = 183439,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		SoulMirror = 183441,
@@ -37038,7 +37038,7 @@ namespace WCell.Constants.GameObjects
 		Bonfire_206 = 183444,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 365 Lockpicking), Blasting (Requires: 365 Engineering); Keys: TheVioletHoldKey; Closable
+		/// Lock: Opening Methods: Blasting (Requires: 365 Engineering); Keys: TheVioletHoldKey; Closable
 		/// </summary>
 		Zero_15 = 183445,
 		/// <summary>
@@ -39300,7 +39300,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Unknown_54 = 184114,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		ArelionsKnapsack = 184115,
@@ -39468,7 +39468,7 @@ namespace WCell.Constants.GameObjects
 		Arklon = 184160,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 350 Lockpicking), Blasting (Requires: 350 Engineering); Keys: TheMastersKey
+		/// Lock: Opening Methods: Blasting (Requires: 350 Engineering); Keys: TheMastersKey
 		/// </summary>
 		KarazhanGatehousePortcullis = 184164,
 		/// <summary>
@@ -39931,7 +39931,7 @@ namespace WCell.Constants.GameObjects
 		BlazingFire_44 = 184303,
 		/// <summary>
 		/// Type: Chest (Consumable)
-		/// Lock: Opening Methods: PickLock (Requires: 5000 Lockpicking)
+		/// Lock: Unlocked
 		/// </summary>
 		LockedChest_2 = 184304,
 		/// <summary>
@@ -39951,7 +39951,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		MograinesStronbox = 184308,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		SuspiciousOuthouse = 184310,
@@ -40806,7 +40806,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Anvil_162 = 184559,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		EthereumDataCell = 184560,
@@ -41242,19 +41242,19 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		ManaBomb = 184725,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Trap: Restless Bones (ID: 182585, 182585)
 		/// Lock: Unlocked
 		/// </summary>
 		ThunderlordClanDrum = 184726,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Trap: Restless Bones (ID: 182585, 182585)
 		/// Lock: Unlocked
 		/// </summary>
 		ThunderlordClanArrow = 184727,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Trap: Thunderlord Clan Tablet (ID: 184736, 184736)
 		/// Lock: Unlocked
 		/// </summary>
@@ -41303,12 +41303,12 @@ namespace WCell.Constants.GameObjects
 		AltarOfShadows = 184738,
 		/// <summary>
 		/// Type: Chest (Consumable)
-		/// Lock: Opening Methods: PickLock (Requires: 300 Lockpicking)
+		/// Lock: Unlocked
 		/// </summary>
 		WickerChest = 184740,
 		/// <summary>
 		/// Type: Chest (Consumable)
-		/// Lock: Opening Methods: PickLock (Requires: 325 Lockpicking)
+		/// Lock: Unlocked
 		/// </summary>
 		DentedFootlocker_4 = 184741,
 		/// <summary>
@@ -41320,7 +41320,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		ConsumingFlames = 184743,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		TChalisHookah = 184744,
@@ -41343,7 +41343,7 @@ namespace WCell.Constants.GameObjects
 		BrightsongWine = 184753,
 		/// <summary>
 		/// Type: Chest (Consumable)
-		/// Lock: Opening Methods: PickLock (Requires: 20 Lockpicking)
+		/// Lock: Unlocked
 		/// </summary>
 		PrimitiveChest = 184793,
 		/// <summary>
@@ -41511,13 +41511,13 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Cookpot_21 = 184853,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Trap: Fel Reaver Parts Aura (ID: 184872, 184872)
 		/// Lock: Unlocked
 		/// </summary>
 		FelReaverPowerCore = 184859,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Trap: Fel Reaver Parts Aura (ID: 184871, 184871)
 		/// Lock: Unlocked
 		/// </summary>
@@ -41570,7 +41570,7 @@ namespace WCell.Constants.GameObjects
 		DavesGlowyGemThing = 184909,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 350 Lockpicking), Blasting (Requires: 350 Engineering); Keys: ShatteredHallsKey; Closable
+		/// Lock: Opening Methods: Blasting (Requires: 350 Engineering); Keys: ShatteredHallsKey; Closable
 		/// </summary>
 		TheShatteredHalls = 184912,
 		/// <summary>
@@ -41596,12 +41596,12 @@ namespace WCell.Constants.GameObjects
 		SolidFelIronChest = 184930,
 		/// <summary>
 		/// Type: Chest (Consumable)
-		/// Lock: Opening Methods: PickLock (Requires: 300 Lockpicking)
+		/// Lock: Unlocked
 		/// </summary>
 		BoundFelIronChest = 184931,
 		/// <summary>
 		/// Type: Chest (Consumable)
-		/// Lock: Opening Methods: PickLock (Requires: 300 Lockpicking)
+		/// Lock: Unlocked
 		/// </summary>
 		BoundFelIronChest_2 = 184932,
 		/// <summary>
@@ -41611,7 +41611,7 @@ namespace WCell.Constants.GameObjects
 		SolidFelIronChest_2 = 184933,
 		/// <summary>
 		/// Type: Chest (Consumable)
-		/// Lock: Opening Methods: PickLock (Requires: 300 Lockpicking)
+		/// Lock: Unlocked
 		/// </summary>
 		BoundFelIronChest_3 = 184934,
 		/// <summary>
@@ -41621,7 +41621,7 @@ namespace WCell.Constants.GameObjects
 		SolidFelIronChest_3 = 184935,
 		/// <summary>
 		/// Type: Chest (Consumable)
-		/// Lock: Opening Methods: PickLock (Requires: 325 Lockpicking)
+		/// Lock: Unlocked
 		/// </summary>
 		BoundAdamantiteChest = 184936,
 		/// <summary>
@@ -41631,7 +41631,7 @@ namespace WCell.Constants.GameObjects
 		SolidAdamantiteChest = 184937,
 		/// <summary>
 		/// Type: Chest (Consumable)
-		/// Lock: Opening Methods: PickLock (Requires: 325 Lockpicking)
+		/// Lock: Unlocked
 		/// </summary>
 		BoundAdamantiteChest_2 = 184938,
 		/// <summary>
@@ -41641,7 +41641,7 @@ namespace WCell.Constants.GameObjects
 		SolidAdamantiteChest_2 = 184939,
 		/// <summary>
 		/// Type: Chest (Consumable)
-		/// Lock: Opening Methods: PickLock (Requires: 350 Lockpicking)
+		/// Lock: Unlocked
 		/// </summary>
 		BoundAdamantiteChest_3 = 184940,
 		/// <summary>
@@ -41662,7 +41662,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		WantedPoster_16 = 184946,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Keys: TheDoctorsKey
 		/// </summary>
 		TheDoctorsStrongbox = 184947,
@@ -41881,7 +41881,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		ArcanoControlUnit_3 = 185010,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Trap: Charged Manacell (ID: 185018, 185018)
 		/// Lock: Unlocked
 		/// </summary>
@@ -41944,7 +41944,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		ForgedIllidariBaneBlade = 185032,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		CollectionOfSouls = 185033,
@@ -42292,7 +42292,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		SummoningCircle_6 = 185127,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Keys: LianthesKey
 		/// </summary>
 		LianthesStrongbox = 185128,
@@ -42357,7 +42357,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		FertileVolcanicSoil_3 = 185148,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		GrullocsSack = 185152,
@@ -42538,12 +42538,12 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		LegionObelisk_5 = 185198,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		EyeOfVeilReskk = 185200,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		EyeOfVeilShienor_2 = 185201,
@@ -42616,22 +42616,22 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		BloodstoneSignalFire = 185219,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Keys: DerelictCaravanChestKey
 		/// </summary>
 		MassiveTreasureChest = 185220,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		CabalChest = 185224,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		CabalChest_2 = 185225,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Keys: TheDoctorsKey
 		/// </summary>
 		TheDoctorsStrongbox_2 = 185233,
@@ -42937,7 +42937,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		DNDCageBase = 185301,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		FeiFeisCache = 185302,
@@ -44090,17 +44090,17 @@ namespace WCell.Constants.GameObjects
 		CommunicationCrystal_3 = 210329,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 300 Lockpicking), Blasting (Requires: 300 Engineering); Keys: KeyToTheCity; Closable
+		/// Lock: Opening Methods: Blasting (Requires: 300 Engineering); Keys: KeyToTheCity; Closable
 		/// </summary>
 		CommunicationCrystal_4 = 210330,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 300 Lockpicking), Blasting (Requires: 300 Engineering); Keys: KeyToTheCity; Closable
+		/// Lock: Opening Methods: Blasting (Requires: 300 Engineering); Keys: KeyToTheCity; Closable
 		/// </summary>
 		CommunicationCrystal_5 = 210331,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 300 Lockpicking), Blasting (Requires: 300 Engineering); Keys: KeyToTheCity; Closable
+		/// Lock: Opening Methods: Blasting (Requires: 300 Engineering); Keys: KeyToTheCity; Closable
 		/// </summary>
 		CommunicationCrystal_6 = 210332,
 		/// <summary>
@@ -44301,7 +44301,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		FlameCircle = 185555,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Trap: Aura Trap Purple Tall (ID: 185564, 185564)
 		/// Lock: Unlocked
 		/// </summary>
@@ -44311,13 +44311,13 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		AuraTrapPurpleTall = 185564,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Trap: Aura Trap Blue Tall (scale 3.00) (ID: 185578, 185578)
 		/// Lock: Unlocked
 		/// </summary>
 		GrullocsDragonSkull = 185567,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Trap: Aura Trap Yellow Tall (scale 2.00) (ID: 185579, 185579)
 		/// Lock: Unlocked
 		/// </summary>
@@ -44338,13 +44338,13 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Unknown_81 = 185573,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Trap: Aura Trap Purple Tall (ID: 185564, 185564)
 		/// Lock: Unlocked
 		/// </summary>
 		SlaagsStandard = 185574,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		SkullocsSoul = 185577,
@@ -46599,7 +46599,7 @@ namespace WCell.Constants.GameObjects
 		Doodad_InstancePortal_PurpleDifficulty01_7 = 184223,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 350 Lockpicking), Blasting (Requires: 350 Engineering); Keys: KeyToTheArcatraz; Closable
+		/// Lock: Opening Methods: Blasting (Requires: 350 Engineering); Keys: KeyToTheArcatraz; Closable
 		/// </summary>
 		TheArcatraz = 184320,
 		/// <summary>
@@ -48411,12 +48411,12 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		HallOfExplorers_15 = 32793,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		WeaponRack_3 = 181627,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		EmptyBarrel = 181628,
@@ -51279,37 +51279,37 @@ namespace WCell.Constants.GameObjects
 		Chair_622 = 170554,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 250 Lockpicking), Blasting (Requires: 250 Engineering); Keys: ShadowforgeKey; Closable
+		/// Lock: Opening Methods: Blasting (Requires: 250 Engineering); Keys: ShadowforgeKey; Closable
 		/// </summary>
 		ShadowforgeGate_2 = 170560,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 250 Lockpicking), Blasting (Requires: 250 Engineering); Keys: PrisonCellKey; Closable
+		/// Lock: Opening Methods: Blasting (Requires: 250 Engineering); Keys: PrisonCellKey; Closable
 		/// </summary>
 		CellDoor_6 = 170564,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 250 Lockpicking), Blasting (Requires: 250 Engineering); Keys: PrisonCellKey; Closable
+		/// Lock: Opening Methods: Blasting (Requires: 250 Engineering); Keys: PrisonCellKey; Closable
 		/// </summary>
 		CellDoor_7 = 170565,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 250 Lockpicking), Blasting (Requires: 250 Engineering); Keys: PrisonCellKey; Closable
+		/// Lock: Opening Methods: Blasting (Requires: 250 Engineering); Keys: PrisonCellKey; Closable
 		/// </summary>
 		CellDoor_8 = 170566,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 250 Lockpicking), Blasting (Requires: 250 Engineering); Keys: PrisonCellKey; Closable
+		/// Lock: Opening Methods: Blasting (Requires: 250 Engineering); Keys: PrisonCellKey; Closable
 		/// </summary>
 		CellDoor_9 = 170567,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 250 Lockpicking), Blasting (Requires: 250 Engineering); Keys: PrisonCellKey; Closable
+		/// Lock: Opening Methods: Blasting (Requires: 250 Engineering); Keys: PrisonCellKey; Closable
 		/// </summary>
 		CellDoor_10 = 170568,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 250 Lockpicking), Blasting (Requires: 250 Engineering); Keys: PrisonCellKey; Closable
+		/// Lock: Opening Methods: Blasting (Requires: 250 Engineering); Keys: PrisonCellKey; Closable
 		/// </summary>
 		CellDoor_11 = 170569,
 		/// <summary>
@@ -52380,12 +52380,12 @@ namespace WCell.Constants.GameObjects
 		Doodad_OrcSign_IronwoodStavesandWands = 175311,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 300 Lockpicking), Blasting (Requires: 300 Engineering); Keys: KeyToTheCity; Closable
+		/// Lock: Opening Methods: Blasting (Requires: 300 Engineering); Keys: KeyToTheCity; Closable
 		/// </summary>
 		KingsSquareGate_2 = 175353,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 300 Lockpicking), Blasting (Requires: 300 Engineering); Keys: KeyToTheCity; Closable
+		/// Lock: Opening Methods: Blasting (Requires: 300 Engineering); Keys: KeyToTheCity; Closable
 		/// </summary>
 		GauntletGate_2 = 175357,
 		/// <summary>
@@ -53145,12 +53145,12 @@ namespace WCell.Constants.GameObjects
 		Portcullis_10 = 177165,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 300 Lockpicking), Blasting (Requires: 300 Engineering); Keys: CrescentKey; Closable
+		/// Lock: Opening Methods: Blasting (Requires: 300 Engineering); Keys: CrescentKey; Closable
 		/// </summary>
 		Door_20 = 177189,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 300 Lockpicking), Blasting (Requires: 300 Engineering); Keys: CrescentKey; Closable
+		/// Lock: Opening Methods: Blasting (Requires: 300 Engineering); Keys: CrescentKey; Closable
 		/// </summary>
 		Door_21 = 177192,
 		/// <summary>
@@ -53310,7 +53310,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Campfire_704 = 177425,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		StrangeLockbox_4 = 177844,
@@ -53626,7 +53626,7 @@ namespace WCell.Constants.GameObjects
 		Torch_8 = 179513,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 300 Lockpicking), Blasting (Requires: 300 Engineering); Keys: CrescentKey; Closable
+		/// Lock: Opening Methods: Blasting (Requires: 300 Engineering); Keys: CrescentKey; Closable
 		/// </summary>
 		Door_22 = 179550,
 		/// <summary>
@@ -54929,7 +54929,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Rune_2 = 181599,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		HolyCoffer = 181629,
@@ -54973,7 +54973,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		FeatherbeardsJournal = 181649,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		FelHordeBanner = 181671,
@@ -55048,7 +55048,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		NightElfVillagePortal = 182061,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		BasinOfHolyWater = 182063,
@@ -55098,7 +55098,7 @@ namespace WCell.Constants.GameObjects
 		TerokkarChokeberryBush = 182526,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 350 Lockpicking), Blasting (Requires: 350 Engineering); Closable
+		/// Lock: Opening Methods: Blasting (Requires: 350 Engineering); Closable
 		/// </summary>
 		GrandWarlockChamberDoor = 182539,
 		/// <summary>
@@ -55127,7 +55127,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Chair_850 = 182710,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Trap: The Saga of Terokk (ID: 183997, 183997)
 		/// Lock: Unlocked
 		/// </summary>
@@ -55430,7 +55430,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		ChallengeFromTheHorde = 185222,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		CabalChest_3 = 185226,
@@ -55488,7 +55488,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		StasisChamberAlpha = 185512,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		RavenStoneFragment = 185541,
@@ -56814,10 +56814,6 @@ namespace WCell.Constants.GameObjects
 		/// <summary>
 		/// Type: SpellFocus
 		/// </summary>
-		TEMPAndorhalTower = 300030,
-		/// <summary>
-		/// Type: SpellFocus
-		/// </summary>
 		TEMPScholomanceViewingRoom = 300031,
 		/// <summary>
 		/// Type: SpellFocus
@@ -57328,7 +57324,7 @@ namespace WCell.Constants.GameObjects
 		SittingSkeleton04 = 185438,
 		/// <summary>
 		/// Type: Chest (Consumable)
-		/// Lock: Opening Methods: PickLock (Requires: 5000 Lockpicking)
+		/// Lock: Unlocked
 		/// </summary>
 		TanzarsTrunk = 186648,
 		/// <summary>
@@ -57337,7 +57333,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		TanzarsCage = 187377,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		TheMapOfZulAman = 186733,
@@ -57419,7 +57415,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		SethekkHallsMoonstone = 185590,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		TheTalonKingsCoffer = 187372,
@@ -57514,7 +57510,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		MordantsGift = 186418,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		DeserterPropaganda = 186266,
@@ -57623,7 +57619,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Wyrmtail = 186463,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Trap: Stonemaul Banner (ID: 186330, 186330)
 		/// Lock: Unlocked
 		/// </summary>
@@ -59156,12 +59152,12 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		AirmanSkyhoppersFlyingMachine = 187889,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		FirstAidSupplies = 187980,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		WineCrate = 188131,
@@ -59660,7 +59656,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		HangingStreamerXmas = 187567,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		WarsongBanner = 187577,
@@ -59715,7 +59711,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		TuskarrRitualObject_2 = 187671,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		FarseerGrimwalkersRemains = 187673,
@@ -59895,12 +59891,12 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		EvanorsPrison = 187884,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Keys: GurglebogglesKey
 		/// </summary>
 		GurglebogglesBauble = 187885,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Keys: BurblegobblesKey
 		/// </summary>
 		BurblegobblesBauble = 187886,
@@ -60079,7 +60075,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		FarshireGrain = 188112,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		FieldsFactoriesAndWorkshops = 188120,
@@ -60367,7 +60363,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		TelestraEnergyCircle = 188476,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Trap: Aura Trap Red Short (ID: 185563, 185563)
 		/// Lock: Opening Methods: Herbalism
 		/// </summary>
@@ -60638,12 +60634,12 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		NewHearthglenBallista = 188673,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		ScarletOnslaughtDailyOrdersBarracks = 188675,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		ScarletOnslaughtDailyOrdersAbbey = 188676,
@@ -60680,7 +60676,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Table_2 = 189289,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		TheDiaryOfHighGeneralAbbendis = 189293,
@@ -60847,7 +60843,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		BoreanTundra_2 = 190180,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		OnslaughtMap = 190189,
@@ -61547,7 +61543,7 @@ namespace WCell.Constants.GameObjects
 		DahliasTears = 192773,
 		/// <summary>
 		/// Type: Door
-		/// Lock: Opening Methods: PickLock (Requires: 365 Lockpicking), Blasting (Requires: 365 Engineering); Keys: TheVioletHoldKey; Closable
+		/// Lock: Opening Methods: Blasting (Requires: 365 Engineering); Keys: TheVioletHoldKey; Closable
 		/// </summary>
 		TheVioletHold = 193019,
 		/// <summary>
@@ -62059,7 +62055,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		SprungTrap_2 = 186617,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		DragonflayerBattlePlans = 186618,
@@ -62153,7 +62149,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		WaterPlant_3 = 186661,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Opening Methods: Herbalism
 		/// </summary>
 		ReagentPouch = 186662,
@@ -62166,7 +62162,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		BindersBrazier = 186678,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		ApothecarysPackage = 186679,
@@ -62282,7 +62278,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		PileOfBurningBooks = 186827,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		HarpoonOperationManual = 186828,
@@ -62297,7 +62293,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		SagaOfTheTwins = 186831,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		SagaOfTheWinterCurse = 186832,
@@ -62425,7 +62421,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		SchoolOfTastyReefFish = 186949,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		BuildingTools = 186950,
@@ -62434,7 +62430,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		GolemTransportLevel1 = 186953,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		LargeBarrel = 186954,
@@ -63521,7 +63517,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Bonfire_481 = 190199,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		DullCarvingKnife = 190208,
@@ -63562,7 +63558,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		VrykulHawkRoost = 190222,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		ScourgedTrollMummy = 190223,
@@ -63603,7 +63599,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		BurningWreckage_3 = 190401,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		FlyingMachineEngine = 190447,
@@ -63681,7 +63677,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Sandfern = 190533,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		CrashedPlagueSprayer = 190537,
@@ -63949,12 +63945,12 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Bonfire_505 = 191202,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		SparktouchedCrystalDefenses = 191209,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		ZepiksTrapStash = 191210,
@@ -64104,7 +64100,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Danger_8 = 191517,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		SparksocketsTools = 191519,
@@ -64180,7 +64176,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		TeleportationPad = 191574,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		TransporterPowerCell = 191576,
@@ -64641,12 +64637,12 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		NorgannonsBinding = 192134,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		ColossusAttackSpecs = 192171,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		ColossusDefenseSpecs = 192172,
@@ -65215,7 +65211,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		DirectionalRune4 = 188507,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		CedarChest = 189298,
@@ -65441,7 +65437,7 @@ namespace WCell.Constants.GameObjects
 		Bonfire_541 = 191509,
 		/// <summary>
 		/// Type: Chest (Consumable)
-		/// Lock: Opening Methods: PickLock (Requires: 385 Lockpicking); Keys: ScarletOnslaughtTrunkKey
+		/// Lock: Keys: ScarletOnslaughtTrunkKey
 		/// </summary>
 		ScarletOnslaughtTrunk = 191543,
 		/// <summary>
@@ -66184,7 +66180,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		GrimkorsOrb = 193622,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		ShardOfHorror = 193767,
@@ -66202,7 +66198,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		ShardOfDespair = 193792,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		ShardOfSuffering = 193793,
@@ -66411,7 +66407,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		SummoningStone = 193939,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		AlumethsSkull = 193943,
@@ -66713,7 +66709,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		ForsakenBanner_2 = 186600,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		SacredArtifact = 186607,
@@ -66822,12 +66818,12 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		TalonshrikesEgg = 186814,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		AmaniVase = 186885,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		EagleFigurine = 186886,
@@ -66901,7 +66897,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		GolemTransportTopLevel_3 = 186964,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		TheStaffOfStormsFury = 187033,
@@ -67036,7 +67032,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		BorGorokOutpost_2 = 187353,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		TheAncientArmorOfTheKvaldir = 187381,
@@ -67387,7 +67383,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		HordeMarker = 187695,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		CraftysTools = 187697,
@@ -67605,7 +67601,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		ScourgeCage_20 = 187861,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		SalrandsLockbox = 187875,
@@ -67743,7 +67739,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		MammothTrap_22 = 188037,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		KawsWarHalberd = 188066,
@@ -67949,7 +67945,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		GrizzlyHillsBountyHunterCage_2 = 188599,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		ScarletOnslaughtDailyOrdersBeach = 188677,
@@ -67990,12 +67986,12 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		SmallFire_5 = 188716,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		WintergardeMineBomb = 189288,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		ScryingOrb_2 = 189291,
@@ -68343,7 +68339,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Bonfire_587 = 190126,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		ThelZansPhylactery = 190127,
@@ -68481,7 +68477,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		RockShield = 190342,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		ScytheOfAntiok = 190354,
@@ -69535,12 +69531,12 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		PlagueCauldron = 190936,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		EmptyCauldron = 190937,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		IronChain = 190938,
@@ -69565,7 +69561,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		BlightCrystalBox = 190946,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		NewAvalonRegistry = 190947,
@@ -69698,7 +69694,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Campfire_792 = 191082,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		NewAvalonPatrolSchedule = 191084,
@@ -69715,7 +69711,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		WotLKLightTableSmall = 191091,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		HighInquisitorValrothsRemains = 191092,
@@ -70270,7 +70266,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		LavaBomb_2 = 191457,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		DrakurusSkull = 191458,
@@ -70723,7 +70719,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		AHerosWelcome = 191688,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		DisturbedSnow = 191708,
@@ -71536,32 +71532,32 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Doodad_FrostGiantIceShard01 = 192186,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		EverfrostShard = 192187,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		EverfrostShard_2 = 192188,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		EverfrostShard_3 = 192189,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		EverfrostShard_4 = 192190,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		EverfrostShard_5 = 192191,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		EverfrostShard_6 = 192192,
@@ -72517,7 +72513,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		DalaranAppleBowl = 192783,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		BerinandsResearch = 192788,
@@ -73495,12 +73491,12 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Stove_27 = 193190,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		FordragonsShield = 193196,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		SaurfangsBattleArmor = 193197,
@@ -74217,7 +74213,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Unknown_689 = 193399,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		WeepingQuarrySchedule = 193406,
@@ -74338,12 +74334,12 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Doodad_org_arena_lightning_pillar_collision03 = 193465,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		ProspectorSorensMaps = 193560,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		ProspectorKhronasNotes = 193561,
@@ -74914,17 +74910,17 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		ArchmageAntonidas = 193942,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		AlumethsHeart = 193944,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		AlumethsScepter = 193945,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		AlumethsRobes = 193946,
@@ -75803,7 +75799,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		AltarOfTheEbonDepths = 193991,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		ThunderbrewsJunglePunch = 190643,
@@ -75965,17 +75961,17 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		PulsingCrystal = 193195,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		TreasureOfKutubesa = 190614,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		TreasureOfGawanil = 190613,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		TreasureOfChuloTheMad = 190612,
@@ -76600,7 +76596,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		EscapePortal = 193941,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		WeepingQuarryDocument = 193403,
@@ -76610,7 +76606,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		WeepingQuarryLedger = 193404,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		WeepingQuarryMap = 193405,
@@ -76795,7 +76791,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		ExitPortal = 193908,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		HeartOfMagic = 194159,
@@ -77993,7 +77989,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		CacheOfInnovation = 194956,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		DustyJournal_2 = 194341,
@@ -78070,7 +78066,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Brazier_534 = 195035,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		HeartOfMagic_2 = 194158,
@@ -79124,7 +79120,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Mailbox_182 = 195607,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		DustyJournal_3 = 194340,
@@ -79235,7 +79231,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		MistcallersBrazier = 195318,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Trap: Omen of the Mists Cloud (ID: 201368, 201368)
 		/// Lock: Unlocked
 		/// </summary>
@@ -80456,7 +80452,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		Doodad_IceCrown_RoostPortcullis_04 = 201383,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		CleanLaundry = 201384,
@@ -81017,7 +81013,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		LargeCrate = 201752,
 		/// <summary>
-		/// Type: Chest
+		/// Type: Chest (Consumable)
 		/// Lock: Unlocked
 		/// </summary>
 		CrownChemicalCoSupplies = 201778,
@@ -81136,6 +81132,596 @@ namespace WCell.Constants.GameObjects
 		/// Type: Trap
 		/// </summary>
 		EasterEggTrap = 194047,
+		/// <summary>
+		/// Type: Door
+		/// </summary>
+		FireField = 203005,
+		/// <summary>
+		/// Type: Door
+		/// </summary>
+		FlameWalls = 203006,
+		/// <summary>
+		/// Type: Door
+		/// </summary>
+		RubySanctumHalionFlameRing = 203007,
+		/// <summary>
+		/// Type: Button
+		/// </summary>
+		BurningTree = 203034,
+		/// <summary>
+		/// Type: Button
+		/// </summary>
+		BurningTree_2 = 203035,
+		/// <summary>
+		/// Type: Button
+		/// </summary>
+		BurningTree_3 = 203036,
+		/// <summary>
+		/// Type: Button
+		/// </summary>
+		BurningTree_4 = 203037,
+		/// <summary>
+		/// Type: DungeonDifficulty
+		/// </summary>
+		Doodad_InstancePortal_Green_10Man01_7 = 204051,
+		/// <summary>
+		/// Type: DungeonDifficulty
+		/// </summary>
+		Doodad_InstancePortal_Green_25Man_Heroic01_5 = 204054,
+		/// <summary>
+		/// Type: DungeonDifficulty
+		/// </summary>
+		Doodad_InstancePortal_Green_25Man01_7 = 204053,
+		/// <summary>
+		/// Type: DungeonDifficulty
+		/// </summary>
+		Doodad_InstancePortal_Green_10Man_Heroic01_5 = 204052,
+		/// <summary>
+		/// Type: SpellFocus
+		/// </summary>
+		UDB_First_Andorhal_Tower = 176094,
+		/// <summary>
+		/// Type: SpellFocus
+		/// </summary>
+		UDB_Second_Andorhal_Tower = 176095,
+		/// <summary>
+		/// Type: SpellFocus
+		/// </summary>
+		UDB_Third_Andorhal_Tower = 176096,
+		/// <summary>
+		/// Type: SpellFocus
+		/// </summary>
+		UDB_Fourth_Andorhal_Tower = 176097,
+		/// <summary>
+		/// Type: Door
+		/// </summary>
+		IceBlock_3 = 201722,
+		/// <summary>
+		/// Type: Chest (Consumable)
+		/// Lock: Unlocked
+		/// </summary>
+		GunshipArmory_5 = 201872,
+		/// <summary>
+		/// Type: DestructibleBuilding
+		/// </summary>
+		ArthasPrecipice = 202078,
+		/// <summary>
+		/// Type: Door
+		/// </summary>
+		Doodad_IceShard_standing02 = 202141,
+		/// <summary>
+		/// Type: Door
+		/// </summary>
+		Doodad_IceShard_standing01 = 202142,
+		/// <summary>
+		/// Type: Door
+		/// </summary>
+		Doodad_IceShard_standing03 = 202143,
+		/// <summary>
+		/// Type: Door
+		/// </summary>
+		Doodad_IceShard_standing04 = 202144,
+		/// <summary>
+		/// Type: DestructibleBuilding
+		/// </summary>
+		ArthasPlatform = 202161,
+		/// <summary>
+		/// Type: Door
+		/// </summary>
+		Doodad_Icecrown_ThroneFrostyWind01 = 202188,
+		/// <summary>
+		/// Type: Door
+		/// </summary>
+		Doodad_Icecrown_ThroneFrostyEdge01 = 202189,
+		/// <summary>
+		/// Type: Door
+		/// </summary>
+		Doodad_Icecrown_SnowEdgeWarning01 = 202190,
+		/// <summary>
+		/// Type: Chest (Consumable)
+		/// Lock: Unlocked
+		/// </summary>
+		DeathbringersCache_3 = 202238,
+		/// <summary>
+		/// Type: Chest (Consumable)
+		/// Lock: Unlocked
+		/// </summary>
+		CacheOfTheDreamwalker = 202338,
+		/// <summary>
+		/// Type: Door
+		/// </summary>
+		IceWall_3 = 202396,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		FrozenLavaman = 202436,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		LavamanPillarsChained = 202437,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		LavamanPillarsUnchained = 202438,
+		/// <summary>
+		/// Type: QuestGiver
+		/// Lock: Unlocked
+		/// </summary>
+		AllianceBonfire_28 = 187922,
+		/// <summary>
+		/// Type: QuestGiver
+		/// Lock: Unlocked
+		/// </summary>
+		AllianceBonfire_29 = 187933,
+		/// <summary>
+		/// Type: QuestGiver
+		/// Lock: Unlocked
+		/// </summary>
+		AllianceBonfire_30 = 187939,
+		/// <summary>
+		/// Type: QuestGiver
+		/// Lock: Unlocked
+		/// </summary>
+		HordeBonfire_31 = 187974,
+		/// <summary>
+		/// Type: Goober
+		/// Lock: Unlocked
+		/// </summary>
+		FlameOfSilvermoon = 188129,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		SnowPile = 188187,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		AhunesBottle = 188188,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		EventFog = 188470,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		VoodooPileSkulls = 190214,
+		/// <summary>
+		/// Type: QuestGiver
+		/// Lock: Unlocked
+		/// </summary>
+		AllianceBonfire_31 = 194038,
+		/// <summary>
+		/// Type: QuestGiver
+		/// Lock: Unlocked
+		/// </summary>
+		HordeBonfire_32 = 194039,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		SignalFire_2 = 194152,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		GnomereganBanner_4 = 194498,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		SenJinBanner_3 = 194501,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		DNDIceBlockXTRABig = 195000,
+		/// <summary>
+		/// Type: Goober
+		/// Trap: Neutral Banner Aura (ID: 180102, 180102)
+		/// Lock: Unlocked
+		/// </summary>
+		DocksBanner = 195157,
+		/// <summary>
+		/// Type: Button
+		/// Trap: Neutral Banner Aura (ID: 180102, 180102)
+		/// Lock: Unlocked
+		/// </summary>
+		HordeBanner_104 = 195394,
+		/// <summary>
+		/// Type: Chest (Consumable)
+		/// Lock: Unlocked
+		/// </summary>
+		GunshipArmory_6 = 201875,
+		/// <summary>
+		/// Type: Chest (Consumable)
+		/// Lock: Unlocked
+		/// </summary>
+		CacheOfTheDreamwalker_2 = 201959,
+		/// <summary>
+		/// Type: Chest (Consumable)
+		/// Lock: Unlocked
+		/// </summary>
+		GunshipArmory_7 = 202177,
+		/// <summary>
+		/// Type: Chest (Consumable)
+		/// Lock: Unlocked
+		/// </summary>
+		GunshipArmory_8 = 202179,
+		/// <summary>
+		/// Type: Chest (Consumable)
+		/// Lock: Unlocked
+		/// </summary>
+		DeathbringersCache_4 = 202241,
+		/// <summary>
+		/// Type: Chest (Consumable)
+		/// Lock: Unlocked
+		/// </summary>
+		CacheOfTheDreamwalker_3 = 202340,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		GnomeTable = 202564,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		HazardLightRed02 = 202713,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		TeleporterPad = 202733,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		LargeTeleporterPad = 202760,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		DefensiveRadiationPumpControl = 202767,
+		/// <summary>
+		/// Type: Goober
+		/// </summary>
+		TwilightPortal_2 = 202794,
+		/// <summary>
+		/// Type: Goober
+		/// </summary>
+		TwilightPortal_3 = 202795,
+		/// <summary>
+		/// Type: Goober
+		/// </summary>
+		TwilightPortal_4 = 202796,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		SenJinBatTotem = 202833,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		SenJinBatRoostStraw = 202834,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		SenJinBatRoostFence = 202835,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		SenJinBatRoostFencePost = 202839,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		VoodooPileSkulls_2 = 202845,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		TinyBlueRagdoll = 202862,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		RocketPlatform = 202872,
+		/// <summary>
+		/// Type: Goober
+		/// </summary>
+		RitualDrum = 202879,
+		/// <summary>
+		/// Type: Goober
+		/// </summary>
+		RitualGong = 202880,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		RitualBrazier = 202881,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		SmallRitualDrum = 202882,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		SmallRitualDrum2 = 202883,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		SenJinBanner_4 = 202885,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		SenJinTent = 202886,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		SenJinTable = 202888,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		TrollBook1 = 202889,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		TrollBook2 = 202890,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		ClosedWeaponCrate = 202891,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		OpenWeaponCrate = 202892,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		SenJinPennant = 202893,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		Scroll_2 = 202898,
+		/// <summary>
+		/// Type: Goober
+		/// </summary>
+		Irradiator3000 = 202922,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		CelebrationTorch = 202924,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		CelebrationLights = 202925,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		CelebrationBonfire = 202926,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		TotemOffering = 202932,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		SacredFireOffering = 202933,
+		/// <summary>
+		/// Type: Goober
+		/// </summary>
+		RedDragonEgg = 203003,
+		/// <summary>
+		/// Type: Goober
+		/// </summary>
+		BrokenRedDragonEgg = 203004,
+		/// <summary>
+		/// Type: Goober
+		/// </summary>
+		RedDragonEggLarge = 203079,
+		/// <summary>
+		/// Type: Goober
+		/// </summary>
+		BrokenRedDragonEggLarge = 203080,
+		/// <summary>
+		/// Type: Door
+		/// </summary>
+		HalionTwilightRing = 203624,
+		/// <summary>
+		/// Type: DungeonDifficulty
+		/// </summary>
+		Doodad_InstancePortal_Green_10Man01_8 = 203959,
+		/// <summary>
+		/// Type: DungeonDifficulty
+		/// </summary>
+		Doodad_InstancePortal_Green_10Man_Heroic01_6 = 203960,
+		/// <summary>
+		/// Type: DungeonDifficulty
+		/// </summary>
+		Doodad_InstancePortal_Green_25Man01_8 = 203961,
+		/// <summary>
+		/// Type: DungeonDifficulty
+		/// </summary>
+		Doodad_InstancePortal_Green_25Man_Heroic01_6 = 203962,
+		/// <summary>
+		/// Type: Chest (Consumable)
+		/// Lock: Unlocked
+		/// </summary>
+		CacheOfTheDreamwalker_4 = 202339,
+		/// <summary>
+		/// Type: Chest (Consumable)
+		/// Lock: Unlocked
+		/// </summary>
+		FreyasGift_3 = 194327,
+		/// <summary>
+		/// Type: Chest (Consumable)
+		/// Lock: Unlocked
+		/// </summary>
+		CacheOfInnovation_3 = 194957,
+		/// <summary>
+		/// Type: Chest (Consumable)
+		/// Lock: Unlocked
+		/// </summary>
+		CacheOfStorms_4 = 194314,
+		/// <summary>
+		/// Type: Chest (Consumable)
+		/// Lock: Unlocked
+		/// </summary>
+		FreyasGift_4 = 194331,
+		/// <summary>
+		/// Type: Chest (Consumable)
+		/// Lock: Unlocked
+		/// </summary>
+		CacheOfInnovation_4 = 194958,
+		/// <summary>
+		/// Type: Goober
+		/// Lock: Keys: HeroicCelestialPlanetariumKey
+		/// </summary>
+		CelestialPlanetariumAccess_2 = 194752,
+		/// <summary>
+		/// Type: Chest (Consumable)
+		/// Lock: Unlocked
+		/// </summary>
+		GiftOfTheObserver_2 = 194822,
+		/// <summary>
+		/// Type: SpellFocus
+		/// </summary>
+		WrathscaleFountain = 202275,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		SalvageCrate = 188076,
+		/// <summary>
+		/// Type: SpellFocus
+		/// Trap: Bonfire Damage (ID: 2066, 2066)
+		/// </summary>
+		Bonfire_651 = 187076,
+		/// <summary>
+		/// Type: Goober
+		/// Trap: Aura Trap Yellow Tall (scale 2.00) (ID: 185579, 185579)
+		/// </summary>
+		ThalorienDawnseekersRemains = 201718,
+		/// <summary>
+		/// Type: SpellCaster
+		/// </summary>
+		PortalToDalaran_5 = 201797,
+		/// <summary>
+		/// Type: Chest
+		/// Lock: Unlocked
+		/// </summary>
+		QuelDelar = 201794,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		SerpentOffering = 202931,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		PirateDayMusicDoodad = 190363,
+		/// <summary>
+		/// Type: QuestGiver
+		/// Lock: Unlocked
+		/// </summary>
+		AllianceBonfire_32 = 194036,
+		/// <summary>
+		/// Type: QuestGiver
+		/// Lock: Unlocked
+		/// </summary>
+		AllianceBonfire_33 = 194040,
+		/// <summary>
+		/// Type: QuestGiver
+		/// Lock: Unlocked
+		/// </summary>
+		HordeBonfire_33 = 194048,
+		/// <summary>
+		/// Type: QuestGiver
+		/// Lock: Unlocked
+		/// </summary>
+		AllianceBonfire_34 = 194049,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		DarkIronMoleMachine_4 = 186763,
+		/// <summary>
+		/// Type: QuestGiver
+		/// </summary>
+		CandyBucket_93 = 190056,
+		/// <summary>
+		/// Type: QuestGiver
+		/// </summary>
+		CandyBucket_94 = 190058,
+		/// <summary>
+		/// Type: QuestGiver
+		/// </summary>
+		CandyBucket_95 = 190060,
+		/// <summary>
+		/// Type: QuestGiver
+		/// </summary>
+		CandyBucket_96 = 190050,
+		/// <summary>
+		/// Type: QuestGiver
+		/// </summary>
+		CandyBucket_97 = 190051,
+		/// <summary>
+		/// Type: QuestGiver
+		/// </summary>
+		CandyBucket_98 = 190053,
+		/// <summary>
+		/// Type: QuestGiver
+		/// </summary>
+		CandyBucket_99 = 190054,
+		/// <summary>
+		/// Type: QuestGiver
+		/// </summary>
+		CandyBucket_100 = 191882,
+		/// <summary>
+		/// Type: Goober (Consumable)
+		/// Lock: Unlocked
+		/// </summary>
+		LightsVengeance = 201844,
+		/// <summary>
+		/// Type: Goober (Consumable)
+		/// Lock: Unlocked
+		/// </summary>
+		LightsVengeance_2 = 201922,
+		/// <summary>
+		/// Type: Chest
+		/// Lock: Unlocked
+		/// </summary>
+		LightsVengeance_3 = 201937,
+		/// <summary>
+		/// Type: SpellFocus
+		/// </summary>
+		Stove_30 = 186852,
+		/// <summary>
+		/// Type: Chair
+		/// </summary>
+		HighBackChair_52 = 186851,
+		/// <summary>
+		/// Type: Chair
+		/// </summary>
+		HighBackChair_53 = 186850,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		UthersGnomeTribute = 180211,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		UthersNightElfTribute = 180213,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		UthersDraeneiTribute = 201294,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		AllianceBanner_100 = 192409,
 		End
 	}
 

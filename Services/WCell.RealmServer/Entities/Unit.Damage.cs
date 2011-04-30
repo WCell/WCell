@@ -478,20 +478,20 @@ namespace WCell.RealmServer.Entities
 
 		public int MeleeAttackPowerModsPos
 		{
-			get { return GetUInt16Low(UnitFields.ATTACK_POWER_MODS); }
+			get { return GetInt32(UnitFields.ATTACK_POWER_MOD_POS); }
 			set
 			{
-				SetUInt16Low(UnitFields.ATTACK_POWER_MODS, (ushort)value);
+				SetUInt32(UnitFields.ATTACK_POWER_MOD_POS, (uint)value);
 				this.UpdateMeleeAttackPower();
 			}
 		}
 
 		public int MeleeAttackPowerModsNeg
 		{
-			get { return GetUInt16High(UnitFields.ATTACK_POWER_MODS); }
+            get { return GetInt32(UnitFields.ATTACK_POWER_MOD_NEG); }
 			set
 			{
-				SetUInt16High(UnitFields.ATTACK_POWER_MODS, (ushort)value);
+                SetInt32(UnitFields.ATTACK_POWER_MOD_NEG, value);
 				this.UpdateMeleeAttackPower();
 			}
 		}
@@ -533,20 +533,20 @@ namespace WCell.RealmServer.Entities
 
 		public int RangedAttackPowerModsPos
 		{
-			get { return GetInt16Low(UnitFields.RANGED_ATTACK_POWER_MODS); }
+			get { return GetInt32(UnitFields.RANGED_ATTACK_POWER_MOD_POS); }
 			set
 			{
-				SetInt16Low(UnitFields.RANGED_ATTACK_POWER_MODS, (short)value);
+                SetInt32(UnitFields.RANGED_ATTACK_POWER_MOD_POS, value);
 				this.UpdateRangedAttackPower();
 			}
 		}
 
 		public int RangedAttackPowerModsNeg
 		{
-			get { return GetInt16High(UnitFields.RANGED_ATTACK_POWER_MODS); }
+            get { return GetInt32(UnitFields.RANGED_ATTACK_POWER_MOD_NEG); }
 			set
 			{
-				SetInt16High(UnitFields.RANGED_ATTACK_POWER_MODS, (short)value);
+                SetInt32(UnitFields.RANGED_ATTACK_POWER_MOD_NEG, value);
 				this.UpdateRangedAttackPower();
 			}
 		}

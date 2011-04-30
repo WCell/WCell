@@ -47,7 +47,7 @@ namespace WCell.Constants
 		/// </summary>
 		SecondarySkill = 9,
 		/// <summary>
-		/// Common, Orcish, Darnassian, Gutterspeak, etc.
+		/// Common, Orcish, Darnassian, Forsaken, etc.
 		/// </summary>
 		Language = 10,
 		/// <summary>

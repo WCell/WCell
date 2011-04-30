@@ -1,7 +1,7 @@
 
 ///
 /// This file was automatically created, using WCell's CodeFileWriter
-/// Date: 01/06/2010
+/// Date: 30/04/2011
 ///
 
 namespace WCell.Constants.NPCs
@@ -17,7 +17,7 @@ namespace WCell.Constants.NPCs
 		Crocolisk = 6,
 		CarrionBird = 7,
 		Crab = 8,
-		Primate = 9,
+		Gorilla = 9,
 		Raptor = 11,
 		Tallstrider = 12,
 		Felhunter = 15,
@@ -49,6 +49,15 @@ namespace WCell.Constants.NPCs
 		Wasp = 44,
 		CoreHound = 45,
 		SpiritBeast = 46,
+		WaterElemental = 49,
+		Fox = 50,
+		Monkey = 51,
+		Dog = 52,
+		Beetle = 53,
+		ShaleSpider = 55,
+		Zombie = 56,
+		BeetleZzOLD = 57,
+		Silithid_2 = 59,
 		End
 	}
 

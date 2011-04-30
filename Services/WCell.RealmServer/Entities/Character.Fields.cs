@@ -614,17 +614,15 @@ namespace WCell.RealmServer.Entities
 			set { SetUInt16High(PlayerFields.KILLS, value); }
 		}
 
-		public uint HonorToday
-		{
-			get { return GetUInt32(PlayerFields.TODAY_CONTRIBUTION); }
-			set { SetUInt32(PlayerFields.TODAY_CONTRIBUTION, value); }
-		}
+	    public uint HonorToday
+	    {
+	        get; set;
+        }
 
-		public uint HonorYesterday
-		{
-			get { return GetUInt32(PlayerFields.YESTERDAY_CONTRIBUTION); }
-			set { SetUInt32(PlayerFields.YESTERDAY_CONTRIBUTION, value); }
-		}
+	    public uint HonorYesterday
+	    {
+	        get; set;
+        }
 
 		public uint LifetimeHonorableKills
 		{
@@ -632,23 +630,20 @@ namespace WCell.RealmServer.Entities
 			set { SetUInt32(PlayerFields.LIFETIME_HONORBALE_KILLS, value); }
 		}
 
-		public uint HonorPoints
-		{
-			get { return GetUInt32(PlayerFields.HONOR_CURRENCY); }
-			set { SetUInt32(PlayerFields.HONOR_CURRENCY, value); }
-		}
+	    public uint HonorPoints
+	    {
+	        get; set;
+        }
 
-		public uint ArenaPoints
-		{
-			get { return GetUInt32(PlayerFields.ARENA_CURRENCY); }
-			set { SetUInt32(PlayerFields.ARENA_CURRENCY, value); }
-		}
+	    public uint ArenaPoints
+	    {
+	        get; set;
+        }
 
-		public uint GuildId
-		{
-			get { return GetUInt32(PlayerFields.GUILDID); }
-			internal set { SetUInt32(PlayerFields.GUILDID, value); }
-		}
+	    public uint GuildId
+	    {
+	        get; internal set;
+        }
 
 		public uint GuildRank
 		{
@@ -2035,14 +2030,14 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public int FreeTalentPoints
 		{
-			get { return (int)GetUInt32(PlayerFields.CHARACTER_POINTS1); }
+			get { return (int)GetUInt32(PlayerFields.CHARACTER_POINTS); }
 			set
 			{
 				if (value < 0)
 					value = 0;
 
 				//m_record.FreeTalentPoints = value;
-				SetUInt32(PlayerFields.CHARACTER_POINTS1, (uint)value);
+				SetUInt32(PlayerFields.CHARACTER_POINTS, (uint)value);
 				TalentHandler.SendTalentGroupList(m_talents);
 			}
 		}
@@ -2052,7 +2047,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public void UpdateFreeTalentPointsSilently(int delta)
 		{
-			SetUInt32(PlayerFields.CHARACTER_POINTS1, (uint)(FreeTalentPoints + delta));
+			SetUInt32(PlayerFields.CHARACTER_POINTS, (uint)(FreeTalentPoints + delta));
 		}
 
 		/// <summary>

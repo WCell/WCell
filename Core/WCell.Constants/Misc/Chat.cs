@@ -84,7 +84,7 @@ namespace WCell.Constants.Misc
 		Orcish = 1,
 		Darnassian = 2,
 		Taurahe = 3,
-		Dwarven = 6,
+		Dwarvish = 6,
 		Common = 7,
 		DemonTongue = 8,
 		Titan = 9,
@@ -93,8 +93,13 @@ namespace WCell.Constants.Misc
 		OldTongue = 12,
 		Gnomish = 13,
 		Troll = 14,
-		Gutterspeak = 33,
+		Forsaken = 33,
 		Draenei = 35,
+        Zombie = 36,
+        GnomishBinary = 37,
+        GoblinBinary = 38,
+        Gilnean = 39,
+        Goblin = 40,
 		End
 	}
 

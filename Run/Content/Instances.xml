@@ -1,9 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Instances xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Setting>
-    <Name>Unkkk</Name>
-    <Type> </Type>
-  </Setting>
+<Instances>
   <Setting>
     <Name>ShadowfangKeep</Name>
     <Type>WCell.Addons.Default.Instances.ShadowfangKeep</Type>
@@ -74,7 +70,7 @@
   </Setting>
   <Setting>
     <Name>OpeningOfTheDarkPortal</Name>
-    <Type> </Type>
+    <Type />
   </Setting>
   <Setting>
     <Name>Scholomance</Name>
@@ -194,7 +190,7 @@
   </Setting>
   <Setting>
     <Name>TheEscapeFromDurnholde</Name>
-    <Type> </Type>
+    <Type />
   </Setting>
   <Setting>
     <Name>BlackTemple</Name>
@@ -230,7 +226,7 @@
   </Setting>
   <Setting>
     <Name>MagistersTerrace</Name>
-    <Type> </Type>
+    <Type />
   </Setting>
   <Setting>
     <Name>TheCullingOfStratholme</Name>
@@ -238,7 +234,7 @@
   </Setting>
   <Setting>
     <Name>SunwellFixUnused</Name>
-    <Type> </Type>
+    <Type />
   </Setting>
   <Setting>
     <Name>HallsOfStone</Name>
@@ -286,7 +282,7 @@
   </Setting>
   <Setting>
     <Name>Unused</Name>
-    <Type> </Type>
+    <Type />
   </Setting>
   <Setting>
     <Name>IcecrownCitadel</Name>
@@ -298,19 +294,19 @@
   </Setting>
   <Setting>
     <Name>AbyssalMawExterior</Name>
-    <Type> </Type>
+    <Type />
   </Setting>
   <Setting>
     <Name>ThroneOfTheTides</Name>
-    <Type> </Type>
+    <Type />
   </Setting>
   <Setting>
     <Name>HallsOfOrigination</Name>
-    <Type> </Type>
+    <Type />
   </Setting>
   <Setting>
     <Name>BlackrockCaverns</Name>
-    <Type> </Type>
+    <Type />
   </Setting>
   <Setting>
     <Name>TrialOfTheCrusader</Name>
@@ -319,10 +315,6 @@
   <Setting>
     <Name>TrialOfTheChampion</Name>
     <Type>WCell.Addons.Default.Instances.TrialOfTheChampion</Type>
-  </Setting>
-  <Setting>
-    <Name>SkywallDungeon</Name>
-    <Type> </Type>
   </Setting>
   <Setting>
     <Name>PitOfSaron</Name>
@@ -334,42 +326,58 @@
   </Setting>
   <Setting>
     <Name>BlackwingDescent</Name>
-    <Type> </Type>
+    <Type />
   </Setting>
   <Setting>
     <Name>GrimBatol</Name>
-    <Type> </Type>
-  </Setting>
-  <Setting>
-    <Name>GrimBatolRaid</Name>
-    <Type> </Type>
+    <Type />
   </Setting>
   <Setting>
     <Name>Firelands</Name>
-    <Type> </Type>
+    <Type />
   </Setting>
   <Setting>
     <Name>FirelandsTerrain2</Name>
-    <Type> </Type>
+    <Type />
   </Setting>
   <Setting>
     <Name>TheRubySanctum</Name>
-    <Type> </Type>
-  </Setting>
-  <Setting>
-    <Name>DeepholmeDungeon</Name>
-    <Type> </Type>
+    <Type />
   </Setting>
   <Setting>
     <Name>STVDiamondMineBG</Name>
-    <Type> </Type>
-  </Setting>
-  <Setting>
-    <Name>TolBarad</Name>
-    <Type> </Type>
+    <Type />
   </Setting>
   <Setting>
     <Name>AhnQirajTerrace</Name>
-    <Type> </Type>
+    <Type />
+  </Setting>
+  <Setting>
+    <Name>TheVortexPinnacle</Name>
+    <Type />
+  </Setting>
+  <Setting>
+    <Name>TheBastionOfTwilight</Name>
+    <Type />
+  </Setting>
+  <Setting>
+    <Name>TheStonecore</Name>
+    <Type />
+  </Setting>
+  <Setting>
+    <Name>TheBattleForGilneasOldCityMap</Name>
+    <Type />
+  </Setting>
+  <Setting>
+    <Name>ThroneOfTheFourWinds</Name>
+    <Type />
+  </Setting>
+  <Setting>
+    <Name>LostCityOfTheTolVir</Name>
+    <Type />
+  </Setting>
+  <Setting>
+    <Name>BaradinHold</Name>
+    <Type />
   </Setting>
 </Instances>

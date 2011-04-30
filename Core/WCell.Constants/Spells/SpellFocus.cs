@@ -1,7 +1,7 @@
 
 ///
 /// This file was automatically created, using WCell's CodeFileWriter
-/// Date: 01/06/2010
+/// Date: 30/04/2011
 ///
 
 namespace WCell.Constants.Spells
@@ -131,7 +131,7 @@ namespace WCell.Constants.Spells
 		ForsakenStinkBomb = 1347,
 		DropOffPoint = 1348,
 		SwirlingMaelstrom = 1349,
-		HighChiefWinterfallsCave = 1350,
+		GrolnarsCave = 1350,
 		FireworkLauncher = 1351,
 		ClusterLauncher = 1352,
 		GreaterMoonlight = 1353,
@@ -414,14 +414,14 @@ namespace WCell.Constants.Spells
 		YouToBeCloserToKrennanAranas = 1630,
 		FertileMound = 1631,
 		TheFatherstone = 1632,
-		LordScalderousSummongStone = 1633,
+		ScaldingWaterLordSummoningStone = 1633,
 		HaggrumsSmokepit = 1634,
 		BeachSideRealEstate = 1635,
 		ForgemastersAnvil = 1636,
 		BristlebackChallengeRing = 1637,
 		ZarlmansBonfire = 1638,
 		CrownSupplyCamp = 1639,
-		YouToBeAtopFargazeMesa = 1640,
+		YouToBeNextToDyamiWindsoar = 1640,
 		Sunwell = 1641,
 		SilithidMound = 1642,
 		AdericsTomb = 1643,
@@ -453,6 +453,43 @@ namespace WCell.Constants.Spells
 		ThalDarahHippogryphStation = 1669,
 		HordeBannerAtTheUnearthedGrounds = 1670,
 		LooseSnow = 1671,
+		YouToBeAtTheEndOfTheJangolodeMine = 1672,
+		YouToBeInsideTheEntranceOfTheDeadminesDungeon = 1673,
+		ZulGurubTiki = 1674,
+		LorthunasGateCampCenter = 1675,
+		BlackrockTowerOrBlackrockMunitionsHut = 1676,
+		ManorMistmantle = 1677,
+		PaleResonatingCrystal = 1678,
+		FelstoneFarmPlagueDrumTarget = 1679,
+		StonescaleMatriarchsFeedingGrounds = 1680,
+		CenterOfAbyssionsLair = 1681,
+		BloodTrailLavaPool = 1682,
+		ArikarasCircle = 1683,
+		FungalValeNecropolis = 1684,
+		LightsHopeChapelCrypt = 1685,
+		ZulMasharZigguratBonfire = 1686,
+		TwilightAbductorPortal = 1687,
+		CitadelGatesTowerTop = 1688,
+		HethJatariBanner = 1689,
+		AncientMechanism = 1690,
+		ChainedLirastrasza = 1691,
+		GatesOfStormwind = 1692,
+		CultistAltar = 1693,
+		FirePortal = 1694,
+		CultistRitualCircle = 1695,
+		CorpseOfForgemasterFinlay = 1696,
+		OrgrimmarGates = 1697,
+		DeadwoodHoneyHive = 1698,
+		TheMarkOfTichondrius = 1699,
+		RefrigerationPipe = 1700,
+		ObsidianTreeHollow = 1701,
+		WhisperwindMoonwell = 1702,
+		ElementalGate = 1703,
+		YouToBeAtACampsiteInSoferasNazeCorrahnsDaggerTheHeadlandOrGavinsNaze = 1704,
+		SkyshredderBelly = 1705,
+		HighbankBombTarget = 1706,
+		YouToBeCloserToTheAncientTolVirWeapons = 1714,
+		IrontreeWoodsHill = 1716,
 		End
 	}
 

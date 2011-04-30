@@ -1,7 +1,7 @@
 
 ///
 /// This file was automatically created, using WCell's CodeFileWriter
-/// Date: 01/06/2010
+/// Date: 30/04/2011
 ///
 
 namespace WCell.Constants.Factions
@@ -54,7 +54,7 @@ namespace WCell.Constants.Factions
 		HumanNightWatch = 49,
 		DragonflightRed = 50,
 		GnollMosshide = 51,
-		OrcDragonmaw = 52,
+		OrcFelDragonmaw = 52,
 		GnomeLeper = 53,
 		Gnomeregan = 54,
 		Leopard = 55,
@@ -211,7 +211,7 @@ namespace WCell.Constants.Factions
 		HyjalDefenders = 976,
 		HyjalInvaders = 977,
 		Kurenai = 978,
-		EarthenRing = 979,
+		EarthenRingOldWorld = 979,
 		Arakkoa = 981,
 		ZangarmarshBannerAlliance = 982,
 		ZangarmarshBannerHorde = 983,
@@ -345,7 +345,7 @@ namespace WCell.Constants.Factions
 		MoonstalkerDarkshore = 1132,
 		BilgewaterCartel = 1133,
 		Gilneas = 1134,
-		EarthenRingCataclysm = 1135,
+		TheEarthenRing = 1135,
 		MagramRemnant = 1142,
 		SonsOfGelkis = 1143,
 		REUSE_2 = 1144,
@@ -358,6 +358,14 @@ namespace WCell.Constants.Factions
 		CTFFlagAlliance2 = 1159,
 		CTFFlagHorde2 = 1160,
 		Grimtotem = 1161,
+		Therazane = 1171,
+		DragonmawClan = 1172,
+		Ramkahen = 1173,
+		WildhammerClan = 1174,
+		BaradinsWardens = 1177,
+		HellscreamsReach = 1178,
+		Slime = 1179,
+		FriendlyNew = 1181,
 		End
 	}
 

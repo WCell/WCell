@@ -1,7 +1,7 @@
 
 ///
 /// This file was automatically created, using WCell's CodeFileWriter
-/// Date: 01/06/2010
+/// Date: 30/04/2011
 ///
 
 namespace WCell.Constants.Realm
@@ -46,6 +46,17 @@ namespace WCell.Constants.Realm
 		CN269 = 35,
 		CN37 = 36,
 		CN58 = 37,
+		RussianTournament = 38,
+		CN11 = 39,
+		CN12 = 40,
+		CN13 = 41,
+		CN14_2 = 42,
+		CN15 = 43,
+		CN16 = 44,
+		CN17 = 45,
+		CN18 = 46,
+		CN19 = 47,
+		CN20 = 48,
 		End
 	}
 

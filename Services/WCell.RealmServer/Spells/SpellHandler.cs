@@ -67,7 +67,7 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// All spells by id.
 		/// </summary>
-		public static Spell[] ById = new Spell[70000];
+		public static Spell[] ById = new Spell[97000];
 
 		public static uint HighestId
 		{

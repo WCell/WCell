@@ -223,7 +223,7 @@ namespace WCell.RealmServer.Skills
 						ability.Skill.Category == SkillCategory.SecondarySkill)
 					{
 						if (ability.AcquireMethod == SkillAcquireMethod.OnLearningSkill &&
-							ability.Spell.SpellLevels.BaseLevel == 0 &&
+							(ability.Spell.SpellLevels == null || ability.Spell.SpellLevels.BaseLevel == 0) &&
 							ability.Spell.Rank == 0)
 						{
 							var spell = ability.Skill.GetSpellForTier(SkillTierId.Apprentice);

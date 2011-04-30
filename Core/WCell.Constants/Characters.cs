@@ -130,6 +130,14 @@ namespace WCell.Constants
 		Naga = 13,
 		Broken = 14,
 		Skeleton = 15,
+        Vrykul = 16,
+        Tuskarr = 17,
+        ForestTroll = 18,
+        Taunka = 19,
+        NorthrendSkeleton = 20,
+        IceTroll = 21,
+        Worgen = 22,
+        Gilnean = 23,
 		End
 	}
 

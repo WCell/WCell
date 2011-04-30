@@ -1,7 +1,7 @@
 
 ///
 /// This file was automatically created, using WCell's CodeFileWriter
-/// Date: 01/06/2010
+/// Date: 30/04/2011
 ///
 
 namespace WCell.Constants.Skills
@@ -79,7 +79,7 @@ namespace WCell.Constants.Skills
 		PetCrocolisk = 212,
 		PetCarrionBird = 213,
 		PetCrab = 214,
-		PetPrimate = 215,
+		PetGorilla = 215,
 		PetRaptor = 217,
 		PetTallstrider = 218,
 		RacialUndead = 220,
@@ -118,12 +118,11 @@ namespace WCell.Constants.Skills
 		Destruction = 593,
 		Holy_2 = 594,
 		Discipline = 613,
-		Lockpicking = 633,
 		PetBat = 653,
 		PetHyena = 654,
 		PetBirdOfPrey = 655,
 		PetWindSerpent = 656,
-		LanguageGutterspeak = 673,
+		LanguageForsaken = 673,
 		KodoRiding = 713,
 		RacialTroll = 733,
 		RacialGnome = 753,
@@ -161,7 +160,7 @@ namespace WCell.Constants.Skills
 		PetExoticSpiritBeast = 788,
 		RacialWorgen = 789,
 		RacialGoblin = 790,
-		LanguageWorgen = 791,
+		LanguageGilnean = 791,
 		LanguageGoblin = 792,
 		Archaeology = 794,
 		HunterGeneral = 795,
@@ -174,6 +173,14 @@ namespace WCell.Constants.Skills
 		WarlockGeneral = 802,
 		WarriorGeneral = 803,
 		PriestGeneral = 804,
+		PetWaterElemental = 805,
+		PetFox = 808,
+		AllGlyphs = 810,
+		PetDog = 811,
+		Monkey = 815,
+		ShaleSpider = 817,
+		Beetle = 818,
+		AllGuildPerks = 821,
 		End
 	}
 

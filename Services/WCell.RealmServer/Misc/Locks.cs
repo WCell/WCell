@@ -129,7 +129,7 @@ namespace WCell.RealmServer.Misc
 			InteractionSkills[(int)LockInteractionType.Fishing] = SkillId.Fishing;
 			InteractionSkills[(int)LockInteractionType.Herbalism] = SkillId.Herbalism;
 			InteractionSkills[(int)LockInteractionType.Mining] = SkillId.Mining;
-			InteractionSkills[(int)LockInteractionType.PickLock] = SkillId.Lockpicking;
+			//InteractionSkills[(int)LockInteractionType.PickLock] = SkillId.Lockpicking;
 			InteractionSkills[(int)LockInteractionType.Inscription] = SkillId.Inscription;
 
 

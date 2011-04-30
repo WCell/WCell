@@ -1,7 +1,7 @@
 
 ///
 /// This file was automatically created, using WCell's CodeFileWriter
-/// Date: 01/06/2010
+/// Date: 30/04/2011
 ///
 
 namespace WCell.Constants.Factions
@@ -89,8 +89,15 @@ namespace WCell.Constants.Factions
 		BilgewaterCartel = 105,
 		Gilneas = 106,
 		TestFaction4 = 108,
-		EarthenRingCataclysm = 110,
+		TheEarthenRing = 110,
 		GuardiansOfHyjal = 113,
+		Therazane = 116,
+		DragonmawClan = 117,
+		Ramkahen = 118,
+		WildhammerClan = 119,
+		BaradinsWardens = 122,
+		HellscreamsReach = 123,
+		FriendlyNew = 124,
 		End
 	}
 
