@@ -358,6 +358,7 @@ namespace WCell.RealmServer.Entities
 		{
 			m_updatePacket.Position = m_updatePacket.HeaderSize;
 
+            m_updatePacket.Write((ushort)MapId);
 			m_updatePacket.Write(UpdateCount);
 			SendUpdatePacket(this, m_updatePacket);
 
@@ -399,7 +400,7 @@ namespace WCell.RealmServer.Entities
 				return;
 			}
 
-			using (var packet = GetFieldUpdatePacket(field, value))
+			using (var packet = GetFieldUpdatePacket(field, value, (ushort)MapId))
 			{
 				SendUpdatePacket(this, packet);
 			}
@@ -415,7 +416,7 @@ namespace WCell.RealmServer.Entities
 				return;
 			}
 
-			using (var packet = GetFieldUpdatePacket(field, value))
+			using (var packet = GetFieldUpdatePacket(field, value, (ushort)MapId))
 			{
 				SendUpdatePacket(this, packet);
 			}

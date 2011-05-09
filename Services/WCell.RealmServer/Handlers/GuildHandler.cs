@@ -297,7 +297,7 @@ namespace WCell.RealmServer.Handlers
 		/// </summary>
 		/// <param name="client">the Session the incoming packet belongs to</param>
 		/// <param name="packet">the full packet</param>
-		[PacketHandler(RealmServerOpCode.CMSG_GUILD_SET_PUBLIC_NOTE)]
+		[PacketHandler(RealmServerOpCode.CMSG_GUILD_SET_NOTE)]
 		public static void ChangePublicNote(IRealmClient client, RealmPacketIn packet)
 		{
 			string targetName = packet.ReadCString();
@@ -322,26 +322,26 @@ namespace WCell.RealmServer.Handlers
 		/// </summary>
 		/// <param name="client">the Session the incoming packet belongs to</param>
 		/// <param name="packet">the full packet</param>
-		[PacketHandler(RealmServerOpCode.CMSG_GUILD_SET_OFFICER_NOTE)]
-		public static void ChangeOfficerNote(IRealmClient client, RealmPacketIn packet)
-		{
-			string targetName = packet.ReadCString();
-			string newNote = packet.ReadCString();
+        //[PacketHandler(RealmServerOpCode.CMSG_GUILD_SET_OFFICER_NOTE)]
+        //public static void ChangeOfficerNote(IRealmClient client, RealmPacketIn packet)
+        //{
+        //    string targetName = packet.ReadCString();
+        //    string newNote = packet.ReadCString();
 
-			Character reqChar = client.ActiveCharacter;
-			Character targetChar = World.GetCharacter(targetName, false);
+        //    Character reqChar = client.ActiveCharacter;
+        //    Character targetChar = World.GetCharacter(targetName, false);
 
-			if (Guild.CheckAction(reqChar, targetChar,
-					  targetName, GuildCommandId.MEMBER, GuildPrivileges.EOFFNOTE, true) == GuildResult.SUCCESS)
-			{
-				var member = targetChar.GuildMember;
+        //    if (Guild.CheckAction(reqChar, targetChar,
+        //              targetName, GuildCommandId.MEMBER, GuildPrivileges.EOFFNOTE, true) == GuildResult.SUCCESS)
+        //    {
+        //        var member = targetChar.GuildMember;
 
-				member.OfficerNote = newNote;
+        //        member.OfficerNote = newNote;
 
-				SendResult(client, GuildCommandId.OFFICER_NOTE_CHANGED, targetName, GuildResult.SUCCESS);
-			}
-		}
-		#endregion
+        //        SendResult(client, GuildCommandId.OFFICER_NOTE_CHANGED, targetName, GuildResult.SUCCESS);
+        //    }
+        //}
+        #endregion
 
 		#region GuildBank, Emblems, GuildBankLog
 		[PacketHandler(RealmServerOpCode.MSG_GUILD_BANK_MONEY_WITHDRAWN)]
@@ -1189,8 +1189,9 @@ namespace WCell.RealmServer.Handlers
 				case GuildEvents.MOTD:
 					if (guild.MOTD != null)
 					{
-						packet.Write((byte)1);
+						packet.Write((byte)2);
 						packet.WriteCString(guild.MOTD);
+                        packet.Write((byte)0);
 					}
 					else
 					{

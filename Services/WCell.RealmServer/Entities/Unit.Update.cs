@@ -29,7 +29,7 @@ namespace WCell.RealmServer.Entities
 		#region Update Field Management
 		public override UpdateFlags UpdateFlags
 		{
-			get { return UpdateFlags.StationaryObject | UpdateFlags.Living | UpdateFlags.Flag_0x10; }
+			get { return UpdateFlags.StationaryObject | UpdateFlags.Living; }
 		}
 
 		public override ObjectTypeId ObjectTypeId
@@ -156,6 +156,11 @@ namespace WCell.RealmServer.Entities
 				packet.Write(TransportOrientation);
 				packet.Write(TransportTime);
 				packet.Write(TransportSeat);
+
+                if (moveFlags2.HasFlag(MovementFlags2.MoveFlag2_10_0x400))
+                {
+                    packet.Write(0);
+                }
 			}
 
 			if (moveFlags.HasAnyFlag(MovementFlags.Swimming | MovementFlags.Flying) ||
@@ -164,18 +169,23 @@ namespace WCell.RealmServer.Entities
 				packet.Write(PitchRate);
 			}
 
-			packet.Write(0); // air time
+            if (moveFlags2.HasFlag(MovementFlags2.InterpolatedTurning))
+            {
+                packet.Write(0); // air time
+                // constant, but different when jumping in water and on land?                
+                packet.Write(0f);
 
-			if (moveFlags.HasAnyFlag(MovementFlags.Falling))
-			{
-				// yet somewhat unknown values (Client sends them)
-				packet.Write(0f);
-				packet.Write(8f);
-				packet.Write(0.2f);
-				packet.Write(1f);
-			}
+                if (moveFlags.HasFlag(MovementFlags.Falling))
+                {
+                    // yet somewhat unknown values (Client sends them)
+                    packet.Write(8f);
+                    packet.Write(0.2f);
+                    packet.Write(1f);
 
-			if (moveFlags.HasAnyFlag(MovementFlags.Spline))
+                }
+            }
+
+			if (moveFlags.HasAnyFlag(MovementFlags.SplineElevation))
 			{
 				packet.Write(0.0f);
 			}

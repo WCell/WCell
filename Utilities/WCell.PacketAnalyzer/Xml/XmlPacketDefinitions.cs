@@ -114,22 +114,21 @@ namespace WCell.PacketAnalysis.Xml
 				),
 				defs
 			};
-			defs.OpCodes = new[] { RealmServerOpCode.CMSG_MESSAGECHAT };
-			defs.Structure = new[] {
-				new PacketSegmentStructure(SimpleType.UInt, "Type", typeof(ChatMsgType)),
-				new PacketSegmentStructure(SimpleType.UInt, "Language", typeof(ChatLanguage)),
-				msgTypeSwitch = new SwitchPacketSegmentStructure("TargetAndMessage", "Type",
-					new SwitchCase(ComparisonType.Equal, ChatMsgType.Say, msgSegment),
-					new SwitchCase(ComparisonType.Equal, ChatMsgType.Yell, msgSegment),
-					new SwitchCase(ComparisonType.Equal, ChatMsgType.Emote, msgSegment),
-					new SwitchCase(ComparisonType.Equal, ChatMsgType.Party, msgSegment),
-					new SwitchCase(ComparisonType.Equal, ChatMsgType.Raid, msgSegment),
-					new SwitchCase(ComparisonType.Equal, ChatMsgType.RaidLeader, msgSegment),
-					new SwitchCase(ComparisonType.Equal, ChatMsgType.RaidWarn, msgSegment),
-					new SwitchCase(ComparisonType.Equal, ChatMsgType.Whisper, targetMsgSegment),
-					new SwitchCase(ComparisonType.Equal, ChatMsgType.Channel, targetMsgSegment)
-				)
-			}.ToList();
+            //defs.OpCodes = new[] { RealmServerOpCode.CMSG_MESSAGECHAT_SAY };
+            //defs.Structure = new[] {
+            //    new PacketSegmentStructure(SimpleType.UInt, "Language", typeof(ChatLanguage)),
+            //    msgTypeSwitch = new SwitchPacketSegmentStructure("TargetAndMessage", "Type",
+            //        new SwitchCase(ComparisonType.Equal, ChatMsgType.Say, msgSegment),
+            //        new SwitchCase(ComparisonType.Equal, ChatMsgType.Yell, msgSegment),
+            //        new SwitchCase(ComparisonType.Equal, ChatMsgType.Emote, msgSegment),
+            //        new SwitchCase(ComparisonType.Equal, ChatMsgType.Party, msgSegment),
+            //        new SwitchCase(ComparisonType.Equal, ChatMsgType.Raid, msgSegment),
+            //        new SwitchCase(ComparisonType.Equal, ChatMsgType.RaidLeader, msgSegment),
+            //        new SwitchCase(ComparisonType.Equal, ChatMsgType.RaidWarn, msgSegment),
+            //        new SwitchCase(ComparisonType.Equal, ChatMsgType.Whisper, targetMsgSegment),
+            //        new SwitchCase(ComparisonType.Equal, ChatMsgType.Channel, targetMsgSegment)
+            //    )
+            //}.ToList();
 			//defs.Structure.Init();
 			Save();
 		}

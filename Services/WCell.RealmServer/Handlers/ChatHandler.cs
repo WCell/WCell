@@ -31,7 +31,21 @@ namespace WCell.RealmServer.Chat
 		/// </summary>
 		/// <param name="client">the client that sent to us</param>
 		/// <param name="packet">the full packet</param>
-		[ClientPacketHandler(RealmServerOpCode.CMSG_MESSAGECHAT, RequiresLogin = false)]	// one can also chat while logging out
+        [ClientPacketHandler(RealmServerOpCode.CMSG_MESSAGECHAT_SAY, RequiresLogin = false)] // one can also chat while logging out
+        [ClientPacketHandler(RealmServerOpCode.CMSG_MESSAGECHAT_YELL, RequiresLogin = false)]
+        [ClientPacketHandler(RealmServerOpCode.CMSG_MESSAGECHAT_CHANNEL, RequiresLogin = false)]
+        [ClientPacketHandler(RealmServerOpCode.CMSG_MESSAGECHAT_GUILD, RequiresLogin = false)]
+        [ClientPacketHandler(RealmServerOpCode.CMSG_MESSAGECHAT_OFFICER, RequiresLogin = false)]
+        [ClientPacketHandler(RealmServerOpCode.CMSG_MESSAGECHAT_AFK, RequiresLogin = false)]
+        [ClientPacketHandler(RealmServerOpCode.CMSG_MESSAGECHAT_DND, RequiresLogin = false)]
+        [ClientPacketHandler(RealmServerOpCode.CMSG_MESSAGECHAT_EMOTE, RequiresLogin = false)]
+        [ClientPacketHandler(RealmServerOpCode.CMSG_MESSAGECHAT_PARTY, RequiresLogin = false)]
+        [ClientPacketHandler(RealmServerOpCode.CMSG_MESSAGECHAT_PARTY_LEADER, RequiresLogin = false)]
+        [ClientPacketHandler(RealmServerOpCode.CMSG_MESSAGECHAT_RAID, RequiresLogin = false)]
+        [ClientPacketHandler(RealmServerOpCode.CMSG_MESSAGECHAT_RAID_LEADER, RequiresLogin = false)]
+        [ClientPacketHandler(RealmServerOpCode.CMSG_MESSAGECHAT_BATTLEGROUND, RequiresLogin = false)]
+        [ClientPacketHandler(RealmServerOpCode.CMSG_MESSAGECHAT_BATTLEGROUND_LEADER, RequiresLogin = false)]
+		[ClientPacketHandler(RealmServerOpCode.CMSG_MESSAGECHAT_RAID_WARNING, RequiresLogin = false)]
 		public static void HandleChatMessage(IRealmClient client, RealmPacketIn packet)
 		{
 			var chr = client.ActiveCharacter;
@@ -43,7 +57,7 @@ namespace WCell.RealmServer.Chat
 			}
 			else
 			{
-				var type = (ChatMsgType) packet.ReadUInt32();
+				var type = GetTypeFromOpcode((RealmServerOpCode)packet.PacketId.RawId);
 
 				var parseHandler = ChatParsers.Get((uint) type);
 				if (parseHandler == null)
@@ -83,5 +97,62 @@ namespace WCell.RealmServer.Chat
 
 			return packet;
 		}
+
+        public static ChatMsgType GetTypeFromOpcode(RealmServerOpCode chatOpcode)
+        {
+            var type = ChatMsgType.End;
+            switch (chatOpcode)
+            {
+                case RealmServerOpCode.CMSG_MESSAGECHAT_SAY:
+                    type = ChatMsgType.Say;
+                    break;
+                case RealmServerOpCode.CMSG_MESSAGECHAT_YELL:
+                    type = ChatMsgType.Yell;
+                    break;
+                case RealmServerOpCode.CMSG_MESSAGECHAT_CHANNEL:
+                    type = ChatMsgType.Channel;
+                    break;
+                case RealmServerOpCode.CMSG_MESSAGECHAT_WHISPER:
+                    type = ChatMsgType.Whisper;
+                    break;
+                case RealmServerOpCode.CMSG_MESSAGECHAT_GUILD:
+                    type = ChatMsgType.Guild;
+                    break;
+                case RealmServerOpCode.CMSG_MESSAGECHAT_OFFICER:
+                    type = ChatMsgType.Officer;
+                    break;
+                case RealmServerOpCode.CMSG_MESSAGECHAT_AFK:
+                    type = ChatMsgType.AFK;
+                    break;
+                case RealmServerOpCode.CMSG_MESSAGECHAT_DND:
+                    type = ChatMsgType.DND;
+                    break;
+                case RealmServerOpCode.CMSG_MESSAGECHAT_EMOTE:
+                    type = ChatMsgType.Emote;
+                    break;
+                case RealmServerOpCode.CMSG_MESSAGECHAT_PARTY:
+                    type = ChatMsgType.Party;
+                    break;
+                case RealmServerOpCode.CMSG_MESSAGECHAT_PARTY_LEADER:
+                    type = ChatMsgType.PartyLeader;
+                    break;
+                case RealmServerOpCode.CMSG_MESSAGECHAT_RAID:
+                    type = ChatMsgType.Raid;
+                    break;
+                case RealmServerOpCode.CMSG_MESSAGECHAT_RAID_LEADER:
+                    type = ChatMsgType.RaidLeader;
+                    break;
+                case RealmServerOpCode.CMSG_MESSAGECHAT_BATTLEGROUND:
+                    type = ChatMsgType.Battleground;
+                    break;
+                case RealmServerOpCode.CMSG_MESSAGECHAT_BATTLEGROUND_LEADER:
+                    type = ChatMsgType.BattlegroundLeader;
+                    break;
+                case RealmServerOpCode.CMSG_MESSAGECHAT_RAID_WARNING:
+                    type = ChatMsgType.RaidWarn;
+                    break;
+            }
+            return type;
+        }
 	}
 }

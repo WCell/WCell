@@ -36,7 +36,7 @@
     </Simple>
   </RealmPacket>
 
-  <RealmPacket OpCode="CMSG_BUY_ITEM_IN_SLOT">
+  <!--<RealmPacket OpCode="CMSG_BUY_ITEM_IN_SLOT">
     <Simple>
       <Name>Vendor EntityId</Name>
       <Type>Guid</Type>
@@ -58,7 +58,7 @@
       <Name>Number to Buy</Name>
       <Type>Byte</Type>
     </Simple>
-  </RealmPacket>
+  </RealmPacket>-->
 
   <RealmPacket OpCode="CMSG_BUY_ITEM">
     <Simple>

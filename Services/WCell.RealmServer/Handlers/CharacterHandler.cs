@@ -321,8 +321,9 @@ namespace WCell.RealmServer.Handlers
 						packet.Write(record.PositionY); // 34 + namelength
 						packet.Write(record.PositionZ); // 38 + namelength
 
-						packet.WriteUInt(record.GuildId); // guild id							// 42 + namelength
-						packet.Write((int)record.CharacterFlags); // 46 + namelength
+					    
+						packet.Write(Utility.MakeLong((int)record.GuildId, (int)HighId.Guild)); // guild id	// 42 + namelength
+						packet.Write((int)record.CharacterFlags); // 50 + namelength
 
 						packet.Write(0); // TOOD: Customization flags
 
@@ -332,7 +333,7 @@ namespace WCell.RealmServer.Handlers
 						// var restState = record.RestXp > 0 ? RestState.Resting : RestState.Normal;
 						// packet.WriteByte((byte)restState); // 47 + namelength
 
-						// pet info (51 - 63)
+						// pet info (60 - 72)
 						var petEntry = record.PetEntry;
 						if (petEntry != null)
 						{
@@ -342,9 +343,9 @@ namespace WCell.RealmServer.Handlers
 						}
 						else
 						{
-							packet.Write(0); // 51 + namelength
-							packet.Write(0); // 55 + namelength
-							packet.Write(0); // 59 + namelength
+							packet.Write(0); // 60 + namelength
+							packet.Write(0); // 64 + namelength
+							packet.Write(0); // 68 + namelength
 						}
 
 
@@ -496,7 +497,7 @@ namespace WCell.RealmServer.Handlers
 
 		public static void SendTimeSpeed(IPacketReceiver client, DateTime time, float timeSpeed)
 		{
-			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_LOGIN_SETTIMESPEED, 8))
+			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_LOGIN_SETTIMESPEED, 12))
 			{
 				packet.WriteDateTime(time);
 				packet.WriteFloat(timeSpeed);

@@ -30,7 +30,7 @@ namespace WCell.RealmServer
 		/// </summary>
 		public const int HEADER_SIZE = 4;
 
-		public const int FullUpdatePacketHeaderSize = HEADER_SIZE + 4;
+		public const int FullUpdatePacketHeaderSize = HEADER_SIZE + 6;
 
 		public const int MaxPacketSize = ushort.MaxValue;
 

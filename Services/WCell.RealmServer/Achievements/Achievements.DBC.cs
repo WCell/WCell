@@ -15,9 +15,11 @@ namespace WCell.RealmServer.Achievements
     {
         public override void Convert(byte[] rawData)
         {
-            var achievementCategoryEntry = new AchievementCategoryEntry();
-            achievementCategoryEntry.ID = (AchievementCategoryEntryId)GetUInt32(rawData, 0);
-            achievementCategoryEntry.ParentCategory = (AchievementCategoryEntryId)GetUInt32(rawData, 1);
+            var achievementCategoryEntry = new AchievementCategoryEntry
+                                               {
+                                                   ID = (AchievementCategoryEntryId) GetUInt32(rawData, 0),
+                                                   ParentCategory = (AchievementCategoryEntryId) GetUInt32(rawData, 1)
+                                               };
 
             AchievementMgr.AchievementCategoryEntries[achievementCategoryEntry.ID] = achievementCategoryEntry;
         }
@@ -31,15 +33,15 @@ namespace WCell.RealmServer.Achievements
 			achievementEntry.ID = GetUInt32(rawData, 0);
 			achievementEntry.FactionFlag = GetInt32(rawData, 1);
 			achievementEntry.MapID = (MapId)GetUInt32(rawData, 2);
-			achievementEntry.Names = GetStrings(rawData, 4);
+			achievementEntry.Name = GetString(rawData, 4);
 			
-			var category = (AchievementCategoryEntryId)GetUInt32(rawData, 38);		// set category
+			var category = (AchievementCategoryEntryId)GetUInt32(rawData, 6);		// set category
 			achievementEntry.Category = AchievementMgr.GetCategoryEntry(category);
 
-			achievementEntry.Points = GetUInt32(rawData, 39);
-			achievementEntry.Flags = (AchievementFlags)GetUInt32(rawData, 41);
-			achievementEntry.Count = GetUInt32(rawData, 60);
-			achievementEntry.RefAchievement = (uint)GetUInt32(rawData, 61);
+			achievementEntry.Points = GetUInt32(rawData, 7);
+			achievementEntry.Flags = (AchievementFlags)GetUInt32(rawData, 9);
+			achievementEntry.Count = GetUInt32(rawData, 12);
+			achievementEntry.RefAchievement = GetUInt32(rawData, 13);
 
 			AchievementMgr.AchievementEntries[achievementEntry.ID] = achievementEntry;
 		}
@@ -75,9 +77,9 @@ namespace WCell.RealmServer.Achievements
 
 			CopyTo(rawData, entry, 3);
 
-			entry.CompletionFlag = GetUInt32(rawData, 26);
-			entry.GroupFlag = (AchievementCriteriaGroupFlags) GetUInt32(rawData, 27);
-			entry.TimeLimit = GetUInt32(rawData, 29);
+			entry.CompletionFlag = GetUInt32(rawData, 10);
+			entry.GroupFlag = (AchievementCriteriaGroupFlags) GetUInt32(rawData, 11);
+			entry.TimeLimit = GetUInt32(rawData, 13);
 
 			// add to critera map
 			var list = AchievementMgr.GetCriteriaEntriesByType(criteriaType);

@@ -1295,6 +1295,8 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public bool ConsumeReagents()
 		{
+            if (m_spell.SpellReagents == null)
+                return true;
 			var reagents = m_spell.SpellReagents.Reagents;
 			if (reagents != null && CasterUnit is Character)
 			{

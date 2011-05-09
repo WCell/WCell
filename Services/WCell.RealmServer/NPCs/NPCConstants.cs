@@ -271,7 +271,7 @@ namespace WCell.RealmServer.NPCs
         /// <summary>
         /// "Not enough skill points for trainer service %d"
         /// </summary>
-        NotEnoughSkillPoints = 2,
+        Ok = 2,
     }
 
 	public enum TrainerType : byte

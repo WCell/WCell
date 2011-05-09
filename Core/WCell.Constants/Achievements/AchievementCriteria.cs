@@ -117,6 +117,6 @@
 		// 122  
 		// 123  
 		// 0..123 => 124 criteria types total  
-		End = 124,
+		End = 137,
 	}
 }

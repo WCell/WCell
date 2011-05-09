@@ -720,6 +720,7 @@ namespace WCell.RealmServer.Spells
 		{
 			byte castCount = packet.ReadByte();
 			uint spellId = packet.ReadUInt32();
+		    uint unk = packet.ReadUInt32();
 			byte unkFlags = packet.ReadByte();
 
 			Spell spell = client.ActiveCharacter.Spells[spellId];

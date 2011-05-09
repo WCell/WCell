@@ -9,7 +9,7 @@ namespace WCell.RealmServer.Entities
 		{
 			get
 			{
-				return UpdateFlags.Flag_0x10 | UpdateFlags.Transport | UpdateFlags.StationaryObject | UpdateFlags.HasRotation;
+				return UpdateFlags.Transport | UpdateFlags.StationaryObject | UpdateFlags.HasRotation;
 			}
 		}
 

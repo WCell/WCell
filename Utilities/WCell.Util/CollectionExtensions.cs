@@ -343,7 +343,18 @@ namespace WCell.Util
             }
         }
 
-        public static unsafe int GetInt32(this byte[] data, uint field)
+        public static unsafe uint GetUInt32AtByte(this byte[] data, uint startIndex)
+        {
+            if (startIndex + 1 >= data.Length)
+                return uint.MaxValue;
+
+            fixed (byte* pData = &data[startIndex])
+            {
+                return *(uint*) pData;
+            }
+        }
+
+	    public static unsafe int GetInt32(this byte[] data, uint field)
         {
             uint startIndex = field * 4;
             if (startIndex + 4 > data.Length)

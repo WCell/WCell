@@ -121,11 +121,11 @@ namespace WCell.RealmServer.Entities
             }
             if (updateFlags.HasFlag(UpdateFlags.Flag_0x8))
             {
-                WriteUpdateFlag_0x8(packet, relation);
+                //WriteUpdateFlag_0x8(packet, relation);
             }
             if (updateFlags.HasFlag(UpdateFlags.Flag_0x10))
             {
-                WriteUpdateFlag_0x10(packet, relation);
+                //WriteUpdateFlag_0x10(packet, relation);
             }
 
 		    WriteTypeSpecificMovementUpdate(packet, relation, updateFlags);
@@ -275,6 +275,7 @@ namespace WCell.RealmServer.Entities
 			using (var packet = new UpdatePacket(1024))
 			{
 				packet.Position = 4;						// jump over header
+                packet.Write((ushort)receiver.MapId);
 				packet.Write(1);							// Update Count
 				packet.Write((byte)UpdateType.Values);
 				EntityId.WritePacked(packet);
@@ -341,14 +342,14 @@ namespace WCell.RealmServer.Entities
 
 		#region Spontaneous UpdateBlock Creation
 
-		protected UpdatePacket GetFieldUpdatePacket(UpdateFieldId field, uint value)
+        protected UpdatePacket GetFieldUpdatePacket(UpdateFieldId field, uint value, ushort mapId)
 		{
 			var blocks = (field.RawId >> 5) + 1;
 			var emptyBlockSize = (blocks - 1) * 4;
 
 			//UpdatePacket packet = new UpdatePacket(BufferManager.Small.CheckOut());
 			var packet = new UpdatePacket { Position = 4 };
-
+            packet.Write(mapId); //mapId
 			packet.Write(1); // Update Count
 			packet.Write((byte)UpdateType.Values);
 
@@ -365,7 +366,7 @@ namespace WCell.RealmServer.Entities
 			return packet;
 		}
 
-		protected UpdatePacket GetFieldUpdatePacket(UpdateFieldId field, byte[] value)
+        protected UpdatePacket GetFieldUpdatePacket(UpdateFieldId field, byte[] value, ushort mapId)
 		{
 			var blocks = (field.RawId >> 5) + 1;
 			var emptyBlockSize = (blocks - 1) * 4;
@@ -373,6 +374,7 @@ namespace WCell.RealmServer.Entities
 			//UpdatePacket packet = new UpdatePacket(BufferManager.Small.CheckOut());
 			var packet = new UpdatePacket { Position = 4 };
 
+            packet.Write(mapId); //mapId
 			packet.Write(1); // Update Count
 			packet.Write((byte)UpdateType.Values);
 
@@ -389,11 +391,12 @@ namespace WCell.RealmServer.Entities
 			return packet;
 		}
 
-		protected UpdatePacket GetFieldUpdatePacket(UpdateFieldId field, EntityId value)
+        protected UpdatePacket GetFieldUpdatePacket(UpdateFieldId field, EntityId value, ushort mapId)
 		{
 			//UpdatePacket packet = new UpdatePacket(BufferManager.Small.CheckOut());
 			var packet = new UpdatePacket(128) { Position = 4 };
 
+            packet.Write(mapId); //mapId
 			packet.Write(1); // Update Count
 			packet.Write((byte)UpdateType.Values);
 
@@ -427,7 +430,7 @@ namespace WCell.RealmServer.Entities
 
 		public void PushFieldUpdateToPlayer(Character character, UpdateFieldId field, int value)
 		{
-			using (var packet = GetFieldUpdatePacket(field, (uint)value))
+			using (var packet = GetFieldUpdatePacket(field, (uint)value, (ushort)character.MapId))
 			{
 				SendUpdatePacket(character, packet);
 			}
@@ -435,7 +438,7 @@ namespace WCell.RealmServer.Entities
 
 		public void PushFieldUpdateToPlayer(Character character, UpdateFieldId field, uint value)
 		{
-			using (var packet = GetFieldUpdatePacket(field, value))
+			using (var packet = GetFieldUpdatePacket(field, value, (ushort)character.MapId))
 			{
 				SendUpdatePacket(character, packet);
 			}
@@ -443,7 +446,7 @@ namespace WCell.RealmServer.Entities
 
 		public void PushFieldUpdateToPlayer(Character character, UpdateFieldId field, byte[] value)
 		{
-			using (var packet = GetFieldUpdatePacket(field, value))
+			using (var packet = GetFieldUpdatePacket(field, value, (ushort)character.MapId))
 			{
 				SendUpdatePacket(character, packet);
 			}

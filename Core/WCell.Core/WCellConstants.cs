@@ -138,8 +138,6 @@ namespace WCell.Core
 
         public const string DBC_ITEMEXTENDEDCOST = "ItemExtendedCost.dbc";
 
-        public const string DBC_STABLESLOTPRICES = "StableSlotPrices.dbc";
-
         public const string DBC_QUESTXP = "QuestXP.dbc";
 
         public const string DBC_QUESTFACTIONREWARD = "QuestFactionReward.dbc";

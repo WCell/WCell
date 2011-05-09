@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Instances>
+<Instances xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Setting>
     <Name>ShadowfangKeep</Name>
     <Type>WCell.Addons.Default.Instances.ShadowfangKeep</Type>
@@ -317,6 +317,10 @@
     <Type>WCell.Addons.Default.Instances.TrialOfTheChampion</Type>
   </Setting>
   <Setting>
+    <Name>TheVortexPinnacle</Name>
+    <Type />
+  </Setting>
+  <Setting>
     <Name>PitOfSaron</Name>
     <Type>WCell.Addons.Default.Instances.PitOfSaron</Type>
   </Setting>
@@ -333,6 +337,10 @@
     <Type />
   </Setting>
   <Setting>
+    <Name>TheBastionOfTwilight</Name>
+    <Type />
+  </Setting>
+  <Setting>
     <Name>Firelands</Name>
     <Type />
   </Setting>
@@ -345,27 +353,19 @@
     <Type />
   </Setting>
   <Setting>
-    <Name>STVDiamondMineBG</Name>
-    <Type />
-  </Setting>
-  <Setting>
-    <Name>AhnQirajTerrace</Name>
-    <Type />
-  </Setting>
-  <Setting>
-    <Name>TheVortexPinnacle</Name>
-    <Type />
-  </Setting>
-  <Setting>
-    <Name>TheBastionOfTwilight</Name>
-    <Type />
-  </Setting>
-  <Setting>
     <Name>TheStonecore</Name>
     <Type />
   </Setting>
   <Setting>
+    <Name>STVDiamondMineBG</Name>
+    <Type />
+  </Setting>
+  <Setting>
     <Name>TheBattleForGilneasOldCityMap</Name>
+    <Type />
+  </Setting>
+  <Setting>
+    <Name>AhnQirajTerrace</Name>
     <Type />
   </Setting>
   <Setting>

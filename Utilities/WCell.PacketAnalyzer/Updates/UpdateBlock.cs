@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NLog;
 using WCell.Constants.Updates;
+using WCell.Constants.World;
 using WCell.Core;
 using WCell.Util;
 using WCell.Util.Graphics;
@@ -17,6 +18,7 @@ namespace WCell.PacketAnalysis.Updates
 		internal ParsedUpdatePacket packet;
 		//public readonly uint Offset;
 
+        public readonly MapId MapId;
 		public readonly UpdateType Type;
 		public readonly EntityId EntityId;
 
@@ -30,8 +32,9 @@ namespace WCell.PacketAnalysis.Updates
 		private MovementBlock m_movement;
 
 		private int index;
-		public UpdateBlock(ParsedUpdatePacket parser, int index)
+		public UpdateBlock(ParsedUpdatePacket parser, int index, ushort mapId)
 		{
+		    MapId = (MapId)mapId;
 			this.index = index;
 			packet = parser;
 			//Offset = parser.index;
@@ -45,8 +48,7 @@ namespace WCell.PacketAnalysis.Updates
 
 			// Console.WriteLine("Reading {0}-Block...", Type);
 
-			if (Type == UpdateType.OutOfRange ||
-				Type == UpdateType.Near)
+			if (Type == UpdateType.OutOfRange)
 			{
 				var count = ReadUInt();
 				EntityIds = new EntityId[count];
@@ -66,16 +68,12 @@ namespace WCell.PacketAnalysis.Updates
 				}
 
 				if (Type == UpdateType.Create ||
-					Type == UpdateType.CreateSelf ||
-					Type == UpdateType.Movement)
+					Type == UpdateType.CreateSelf)
 				{
 					m_movement = ReadMovementBlock();
 				}
 
-				if (Type != UpdateType.Movement)
-				{
-					Values = ReadValues();
-				}
+                Values = ReadValues();
 			}
 
 			if (Type != UpdateType.Create && Type != UpdateType.CreateSelf)
@@ -369,6 +367,7 @@ namespace WCell.PacketAnalysis.Updates
 		public void Dump(string indent, IndentTextWriter writer)
 		{
 			writer.WriteLine(indent + "UpdateBlock: " + EntityId + " (FieldCount: " + UpdateCount + ")");
+            writer.WriteLine(indent + "Map: " + MapId);
 
 			writer.IndentLevel++;
 

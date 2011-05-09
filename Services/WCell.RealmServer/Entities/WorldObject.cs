@@ -988,7 +988,7 @@ namespace WCell.RealmServer.Entities
 		{
 			if (IsAreaActive)
 			{
-				using (var packet = GetFieldUpdatePacket(field, value))
+				using (var packet = GetFieldUpdatePacket(field, value, (ushort)MapId))
 				{
 					SendPacketToArea(packet);
 				}
@@ -1004,7 +1004,7 @@ namespace WCell.RealmServer.Entities
 			if (IsAreaActive)
 			{
 				var value = GetUInt32(field.RawId);
-				using (var packet = GetFieldUpdatePacket(field, value))
+                using (var packet = GetFieldUpdatePacket(field, value, (ushort)MapId))
 				{
 					SendPacketToArea(packet);
 				}
@@ -1020,7 +1020,7 @@ namespace WCell.RealmServer.Entities
 			if (IsAreaActive)
 			{
 				var value = GetUInt32(field.RawId);
-				using (var packet = GetFieldUpdatePacket(field, value))
+                using (var packet = GetFieldUpdatePacket(field, value, (ushort)MapId))
 				{
 					rcv.Send(packet);
 				}

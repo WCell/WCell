@@ -181,7 +181,7 @@ namespace WCell.RealmServer.Entities
 
 		public override UpdateFlags UpdateFlags
 		{
-			get { return UpdateFlags.StationaryObject | UpdateFlags.Flag_0x10 | UpdateFlags.StationaryObjectOnTransport; }
+			get { return UpdateFlags.StationaryObject | UpdateFlags.StationaryObjectOnTransport; }
 		}
 
 		public override Faction Faction

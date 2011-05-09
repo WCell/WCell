@@ -47,9 +47,8 @@ namespace WCell.RealmServer.Handlers
 		[ClientPacketHandler(RealmServerOpCode.CMSG_PING, IsGamePacket = false, RequiresLogin = false)]
 		public static void PingRequest(IRealmClient client, RealmPacketIn packet)
 		{
-			SendPingReply(client, packet.ReadUInt32());
-
 			client.Latency = packet.ReadInt32();
+            SendPingReply(client, packet.ReadUInt32());
 		}
 
 		[ClientPacketHandler(RealmServerOpCode.CMSG_TOGGLE_PVP)]

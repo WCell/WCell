@@ -961,7 +961,7 @@
     </List>
   </RealmPacket>
 
-  <RealmPacket OpCode="SMSG_QUEST_FORCE_REMOVE">
+  <RealmPacket OpCode="SMSG_QUEST_FORCE_REMOVED">
     <Simple>
       <Name>Quest ID</Name>
       <Type>UInt</Type>

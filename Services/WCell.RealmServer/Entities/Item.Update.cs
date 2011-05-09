@@ -18,7 +18,7 @@ namespace WCell.RealmServer.Entities
         // 0x8 in 3.1
 		public override UpdateFlags UpdateFlags
 		{
-			get { return UpdateFlags.Flag_0x10; }
+			get { return UpdateFlags.None; }
 		}
 
 		public override void RequestUpdate()

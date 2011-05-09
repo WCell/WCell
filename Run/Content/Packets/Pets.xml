@@ -303,7 +303,7 @@
   </RealmPacket>
 
   <!-- Stabling -->
-  <RealmPacket OpCode="CMSG_UNSTABLE_PET">
+  <!--<RealmPacket OpCode="CMSG_UNSTABLE_PET">
     <Simple>
       <Name>VendorEntityId</Name>
       <Type>Guid</Type>
@@ -337,7 +337,7 @@
       <Name>PetNumber</Name>
       <Type>UInt</Type>
     </Simple>
-  </RealmPacket>
+  </RealmPacket>-->
 
   <RealmPacket OpCode="MSG_LIST_STABLED_PETS" Sender="Client">
     <Simple>

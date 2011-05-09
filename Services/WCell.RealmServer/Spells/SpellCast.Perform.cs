@@ -209,7 +209,7 @@ namespace WCell.RealmServer.Spells
 			if (isPlayerCast)
 			{
 				// Make sure that there is an Item for Spells that require an Item target
-				if (m_spell.SpellTargetRestrictions.TargetFlags.HasAnyFlag(SpellTargetFlags.Item))
+                if (m_spell.SpellTargetRestrictions != null && m_spell.SpellTargetRestrictions.TargetFlags.HasAnyFlag(SpellTargetFlags.Item))
 				{
 					// Spell targets an item
 					if (TargetItem == null || !TargetItem.IsInWorld || TargetItem.Owner != CasterObject)
@@ -737,7 +737,7 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// update AuraState
-            if (m_spell.SpellAuraRestrictions.RequiredCasterAuraState == AuraState.DodgeOrBlockOrParry)
+            if (m_spell.SpellAuraRestrictions != null && m_spell.SpellAuraRestrictions.RequiredCasterAuraState == AuraState.DodgeOrBlockOrParry)
 			{
 				caster.AuraState &= ~AuraStateMask.DodgeOrBlockOrParry;
 			}

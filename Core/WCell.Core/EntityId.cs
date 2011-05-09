@@ -28,6 +28,9 @@ namespace WCell.Core
 
 		Pet = 0xF140,
 
+        Group = 0x1F50,
+        Guild = 0x1FF6,
+
 		MoTransport = 0x1FC0,
 		Transport = 0xF120,
 		Vehicle = 0xF550,
@@ -51,7 +54,7 @@ namespace WCell.Core
 
 	public enum HighGuid8 : byte
 	{
-		Flag_MapObjectTransport = 0x1F,
+		Flag_1F = 0x1F,
 		Item = 0x40,
 		Flag_F1 = 0xF1,
 		Flag_F4 = 0xF4,
@@ -70,6 +73,7 @@ namespace WCell.Core
 		Unit = 0x30,
 		Pet = 0x40,
 		Vehicle = 0x50,
+        Guild = 0xF6,
 
 		MapObjectTransport = 0xC0,
 	}

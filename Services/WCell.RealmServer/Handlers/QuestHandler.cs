@@ -1170,27 +1170,9 @@ namespace WCell.RealmServer.Handlers
 			//is it used? 
 		}
 
-		[ClientPacketHandler(RealmServerOpCode.CMSG_FLAG_QUEST)]
-		public static void HandleFlagQuest(IRealmClient client, RealmPacketIn packet)
-		{
-			//is it used?
-		}
-
-		[ClientPacketHandler(RealmServerOpCode.CMSG_FLAG_QUEST_FINISH)]
-		public static void HandleFlagQuestFinish(IRealmClient client, RealmPacketIn packet)
-		{
-			//cheat opcode to flag quest finished in questlog
-		}
-
-		[ClientPacketHandler(RealmServerOpCode.CMSG_CLEAR_QUEST)]
-		public static void HandleClearQuest(IRealmClient client, RealmPacketIn packet)
-		{
-			//is it used?
-		}
-
 		public static void SendQuestForceRemoved(IRealmClient client, QuestTemplate quest)
 		{
-			using (var pkt = new RealmPacketOut(RealmServerOpCode.SMSG_QUEST_FORCE_REMOVE, 4))
+			using (var pkt = new RealmPacketOut(RealmServerOpCode.SMSG_QUEST_FORCE_REMOVED, 4))
 			{
 				pkt.Write((uint)quest.Id);
 				client.Send(pkt);

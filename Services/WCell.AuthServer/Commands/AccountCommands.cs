@@ -149,7 +149,7 @@ namespace WCell.AuthServer.Commands
 						}
 						else
 						{
-							clientId = ClientId.Wotlk;
+							clientId = ClientId.Cataclysm;
 						}
 
 						role = PrivilegeMgr.Instance.GetRoleOrDefault(role);

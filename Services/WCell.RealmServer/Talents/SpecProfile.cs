@@ -22,7 +22,7 @@ namespace WCell.RealmServer.Talents
 		static readonly Order[] order = { Order.Asc("SpecIndex") };
 
 		public static int MAX_TALENT_GROUPS = 2;
-		public static int MAX_GLYPHS_PER_GROUP = 6;
+		public static int MAX_GLYPHS_PER_GROUP = 9;
 
 		internal static SpecProfile[] LoadAllOfCharacter(Character chr)
 		{

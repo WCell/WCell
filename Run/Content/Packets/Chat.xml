@@ -3,7 +3,7 @@
              xmlns:xsd="http://www.w3.org/2001/XMLSchema"
              xsi:schemaLocation=". ../../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd"
              Version="4">
-  <RealmPacket OpCode="CMSG_MESSAGECHAT">
+  <!--<RealmPacket OpCode="CMSG_MESSAGECHAT">
     <Simple>
       <Name>Type</Name>
       <Type>UInt</Type>
@@ -42,7 +42,7 @@
         </Simple>
       </Case>
     </Switch>
-  </RealmPacket>
+  </RealmPacket>-->
 
   <RealmPacket OpCode="SMSG_MESSAGECHAT">
     <Simple>

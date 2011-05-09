@@ -17,7 +17,11 @@ namespace WCell.Constants
 		/// <summary>
 		/// Wrath of the Lich King
 		/// </summary>
-		Wotlk = 2
+		Wotlk = 2,
+        /// <summary>
+        /// Cataclysm
+        /// </summary>
+        Cataclysm = 3
 	}
 
 	public enum SkillCategory

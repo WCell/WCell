@@ -138,7 +138,7 @@ namespace WCell.RealmServer.Handlers
             }
         }
 
-        [ClientPacketHandler(RealmServerOpCode.MSG_BATTLEGROUND_PLAYER_POSITIONS)]
+        [ClientPacketHandler(RealmServerOpCode.CMSG_BATTLEGROUND_PLAYER_POSITIONS)]
         public static void HandlePlayerPositionQuery(IRealmClient client, RealmPacketIn packet)
         {
             // empty
@@ -225,51 +225,48 @@ namespace WCell.RealmServer.Handlers
         #endregion
 
         #region Status
+
         public static void ClearStatus(IPacketReceiver client, int queueIndex)
         {
-            using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_BATTLEFIELD_STATUS))
-            {
-                packet.Write(queueIndex);
+            // this packet makes the client clear out data for this queue
+            var packet = new RealmPacketOut(RealmServerOpCode.SMSG_BATTLEFIELD_STATUS1);
 
-                // We write an empty BGID, this makes the client clear out data for this queue
-                packet.Write(0ul);
+            packet.Write(queueIndex);
 
-                client.Send(packet);
-                return;
-            }
+            client.Send(packet);
+            packet.Close();
         }
 
         public static void SendStatusEnqueued(Character chr,
-			int index,
+            int index,
             BattlegroundRelation relation,
-			BattlegroundQueue queue)
+            BattlegroundQueue queue)
         {
             var status = BattlegroundStatus.Enqueued;
 
-            using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_BATTLEFIELD_STATUS))
-            {
-				packet.Write(index);
+            var packet = new RealmPacketOut(RealmServerOpCode.SMSG_JOINED_BATTLEGROUND_QUEUE);
 
-                var bgId = queue.Template.Id;
+            var bgId = queue.Template.Id;
 
-                // 64-bit guid start
-                packet.Write((byte)ArenaType.None);
-                packet.Write((byte)1);              // affects level range calculation?
-                packet.Write((uint)bgId);
-                packet.Write((ushort)8080);
-                // 64-bit guid stop
+            packet.Write((byte) 0); // since 3.3
+            packet.Write((byte) 0); // since 3.3
+            packet.Write(queue.AverageWaitTime); // avg wait time for queue, in ms
+            packet.Write(index);
+            packet.Write(queue.InstanceId); // instance id
+            packet.Write((byte)0); // since 3.3
 
-				packet.Write((byte)0);				// since 3.3
-				packet.Write((byte)0);				// since 3.3
-                packet.Write(queue.InstanceId);     // instance id
-                packet.Write(false);                // bool isRatedMatch
-                packet.Write((int)status);
+            // 64-bit guid start
+            packet.Write((byte)ArenaType.None);
+            packet.Write((byte)1); // affects level range calculation?
+            packet.Write((uint)bgId);
+            packet.Write((ushort)8080);
+            // 64-bit guid stop
 
-                packet.Write(queue.AverageWaitTime);					// avg wait time for queue, in ms
-                packet.Write((int)relation.QueueTime.TotalMilliseconds); // time in the queue, also in ms
+            packet.Write(false); // bool isRatedMatch
+            packet.Write((int) relation.QueueTime.TotalMilliseconds); // time in the queue, also in ms
 
-                chr.Send(packet);
-            }
+            chr.Send(packet);
+            packet.Close();
         }
 
         /// <summary>
@@ -285,12 +282,14 @@ namespace WCell.RealmServer.Handlers
             var status = BattlegroundStatus.Preparing;
             var invite = chr.Battlegrounds.Invitation;
 
-            using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_BATTLEFIELD_STATUS))
+            using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_BATTLEFIELD_STATUS3))
             {
-                packet.Write(invite.QueueIndex);
-
                 var bg = invite.Team.Battleground;
                 var bgId = bg.Template.Id;
+
+                packet.Write((byte)0);				// since 3.3
+                packet.Write((byte)0);				// since 3.3
+                packet.Write(bg.InstanceId); // instance id
 
                 // 64-bit guid start
                 packet.Write((byte)ArenaType.None);
@@ -299,14 +298,14 @@ namespace WCell.RealmServer.Handlers
                 packet.Write((ushort)8080);
                 // 64-bit guid stop
 
-				packet.Write((byte)0);				// since 3.3
-				packet.Write((byte)0);				// since 3.3
-                packet.Write(bg.InstanceId); // instance id
+                packet.Write(invite.QueueIndex);
                 packet.Write((byte)chr.FactionGroup.GetBattlegroundSide()); // bool isRatedMatch
-                packet.Write((int)status);
+                packet.Write(inviteTimeout);
 
 				packet.Write((int)bg.Id);
-                packet.Write(inviteTimeout);
+
+                packet.Write((byte)0); //Max Level
+                
 
                 chr.Send(packet);
             }
@@ -317,11 +316,15 @@ namespace WCell.RealmServer.Handlers
             var status = BattlegroundStatus.Active;
             var side = chr.FactionGroup.GetBattlegroundSide();
 
-            using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_BATTLEFIELD_STATUS))
+            using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_BATTLEFIELD_STATUS2))
             {
-				packet.Write(queueIndex);
+				var bgId = bg.Template.Id;
 
-                var bgId = bg.Template.Id;
+                packet.Write((byte)0); // bool isRatedMatch
+                // start time, in ms. clientGetTickCount - this = instance runtime
+                packet.Write(bg.RuntimeMillis);
+                packet.Write(queueIndex);
+                packet.Write((int)bg.Id);
 
                 // 64-bit guid start
                 packet.Write((byte)ArenaType.None);
@@ -330,21 +333,14 @@ namespace WCell.RealmServer.Handlers
                 packet.Write((ushort)8080);
                 // 64-bit guid stop
 
-				packet.Write((byte)0);				// since 3.3
-				packet.Write((byte)0);				// since 3.3
-                packet.Write(bg.InstanceId); // instance id
-                packet.Write((byte)0); // bool isRatedMatch
-                packet.Write((int)status);
-
-                packet.Write((int)bg.Id);
-
                 // the number of milliseconds before the Battlefield will close after a battle is finished.
                 // This is 0 before the battle is finished
                 packet.Write(bg.RemainingShutdownDelay);
-
-                // start time, in ms. clientGetTickCount - this = instance runtime
-                packet.Write(bg.RuntimeMillis);
+                packet.Write((byte)0);				// since 3.3
+                packet.Write((byte)0);				// since 3.3
+                packet.Write(bg.InstanceId); // instance id
                 packet.Write((byte)side); // arena faction - 0 or 1
+                
                 chr.Send(packet);
             }
         }
@@ -488,7 +484,7 @@ namespace WCell.RealmServer.Handlers
 
         public static void SendPlayerPositions(IPacketReceiver client, IList<Character> players, IList<Character> flagCarriers)
         {
-            using (var packet = new RealmPacketOut(RealmServerOpCode.MSG_BATTLEGROUND_PLAYER_POSITIONS))
+            using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_BATTLEGROUND_PLAYER_POSITIONS))
             {
                 if (players != null)
                 {

@@ -493,12 +493,12 @@ namespace WCell.RealmServer.Spells
 				cd = spell.GetCooldown(Owner);
 			}
 
-			int catCd;
+			int catCd = 0;
 			if (itemSpell)
 			{
 				catCd = casterItem.Template.UseSpell.CategoryCooldown;
 			}
-			else
+			else if(spell.SpellCooldowns != null)
 			{
 				catCd = spell.GetModifiedCooldown(Owner, spell.SpellCooldowns.CategoryCooldownTime);
 			}
@@ -518,7 +518,7 @@ namespace WCell.RealmServer.Spells
 				m_idCooldowns.Add(idCooldown);
 			}
 
-            if (spell.SpellCooldowns.CategoryCooldownTime > 0)
+            if (spell.SpellCooldowns != null && spell.SpellCooldowns.CategoryCooldownTime > 0)
 			{
 				var catCooldown = new SpellCategoryCooldown
 				{

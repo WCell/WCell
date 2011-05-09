@@ -82,10 +82,11 @@ namespace WCell.RealmServer.Achievements
 
         public void FinalizeDataHolder()
         {
-            var achievementEntry = AchievementMgr.AchievementEntries[AchievementEntryId];
+            AchievementEntry achievementEntry;
+            AchievementMgr.AchievementEntries.TryGetValue(AchievementEntryId, out achievementEntry);
             if(achievementEntry == null)
             {
-                ContentMgr.OnInvalidDBData("{0} had an invalid AchievementEntryId.", this);
+                ContentMgr.OnInvalidDBData("{0} had an invalid AchievementEntryId {1}.", this, AchievementEntryId);
                 return;
             }
             achievementEntry.Rewards.Add(this);

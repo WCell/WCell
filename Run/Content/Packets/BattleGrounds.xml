@@ -75,6 +75,15 @@
     </Simple>
   </RealmPacket>
 
+  
+  <!--
+  New OpCodes
+  <RealmPacket OpCode="SMSG_BATTLEFIELD_STATUS1">
+  <RealmPacket OpCode="SMSG_BATTLEFIELD_STATUS2">
+  <RealmPacket OpCode="SMSG_BATTLEFIELD_STATUS3">
+  <RealmPacket OpCode="SMSG_BATTLEFIELD_STATUS4">
+  
+  Old OpCode
   <RealmPacket OpCode="SMSG_BATTLEFIELD_STATUS">
     <Simple>
       <Name>QueueSlot</Name>
@@ -161,7 +170,8 @@
         </Switch>
       </Case>
     </Switch>
-  </RealmPacket>
+  </RealmPacket>-->
+  
 
   <RealmPacket OpCode="CMSG_BATTLEFIELD_PORT">
     <Simple>
@@ -294,7 +304,7 @@
     <!-- This is just a request, therefore empty-->
   </RealmPacket>
 
-  <RealmPacket OpCode="MSG_BATTLEGROUND_PLAYER_POSITIONS" Sender="Server">
+  <RealmPacket OpCode="SMSG_BATTLEGROUND_PLAYER_POSITIONS" Sender="Server">
     <Simple>
       <Name>Player Count</Name>
       <Type>Int</Type>
@@ -339,7 +349,7 @@
     </List>
   </RealmPacket>
 
-  <RealmPacket OpCode="MSG_BATTLEGROUND_PLAYER_POSITIONS" Sender="Client">
+  <RealmPacket OpCode="CMSG_BATTLEGROUND_PLAYER_POSITIONS" Sender="Client">
     <!-- This is just a request, therefore empty-->
   </RealmPacket>
 

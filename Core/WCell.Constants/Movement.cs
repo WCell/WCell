@@ -78,7 +78,7 @@ namespace WCell.Constants
 		/// <summary>
 		/// 0x4000000
 		/// </summary>
-		Spline = 0x4000000, // ?
+		SplineElevation = 0x4000000, // ?
 		SplinePath = 0x8000000,
 
 		Waterwalking = 0x10000000,
@@ -102,7 +102,7 @@ namespace WCell.Constants
 		/// 0x20        
 		/// </summary>        
 		AlwaysAllowPitching = 0x20,
-		InterpMask = MoveFlag2_10_0x400 | MoveFlag2_11_0x800 | MoveFlag2_12_0x1000,
+		InterpMask = MoveFlag2_10_0x400 | InterpolatedTurning | MoveFlag2_12_0x1000,
 
 		MoveFlag2_0_0x1 = 0x1,//0
 		MoveFlag2_1_0x2 = 0x2,//1
@@ -114,7 +114,7 @@ namespace WCell.Constants
 		MoveFlag2_8_0x100 = 0x100,//8
 		MoveFlag2_9_0x200 = 0x200,//9
 		MoveFlag2_10_0x400 = 0x400,//10
-		MoveFlag2_11_0x800 = 0x800,//11
+		InterpolatedTurning = 0x800,//11
 		MoveFlag2_12_0x1000 = 0x1000,//12
 		MoveFlag2_13_0x2000 = 0x2000,//13
 		MoveFlag2_14_0x4000 = 0x4000,//14

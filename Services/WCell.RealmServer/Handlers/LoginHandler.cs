@@ -3,6 +3,7 @@ using NLog;
 using WCell.Constants;
 using WCell.Constants.Login;
 using WCell.Core;
+using WCell.Core.Cryptography;
 using WCell.Core.Network;
 using WCell.RealmServer.Chat;
 using WCell.RealmServer.Database;
@@ -53,30 +54,67 @@ namespace WCell.RealmServer.Handlers
 			}
 			else if (!client.IsEncrypted)
 			{
-				var builtNumberClient = packet.ReadUInt32();
-				var new302 = packet.ReadUInt32(); // NEW 0.0.2.8970
-				var accName = packet.ReadCString();
-				var unk322 = packet.ReadUInt32();
+			    var digest = new byte[20];
 
-				client.ClientSeed = packet.ReadUInt32();
+                digest[14] = packet.ReadByte(); //10
+                digest[7] = packet.ReadByte(); //10
+                digest[16] = packet.ReadByte(); //10
+                digest[9] = packet.ReadByte(); //19
+                digest[4] = packet.ReadByte(); //10
+                digest[5] = packet.ReadByte(); //7
+                digest[15] = packet.ReadByte(); //7
 
-				var unk1 = packet.ReadUInt32(); // 3.3.5a
-				var unk2 = packet.ReadUInt32(); // 3.3.5a
-				var unk3 = packet.ReadUInt32(); // 3.3.5a
-				var unk4 = packet.ReadUInt64();
+                var unk = packet.ReadUInt32();
 
-				client.ClientDigest = packet.ReadBigInteger(20);
+                digest[18] = packet.ReadByte(); //10
 
-#if DEBUG
-				log.Debug("builtNumberClient:{0} new302:{1} accName:{2} unk322:{3} client.ClientSeed:{4} unk4:{5} ClientDigest:{6}",
-					builtNumberClient,
-					new302, accName, unk322, client.ClientSeed, unk4, client.ClientDigest);
-#endif
+                var unk1 = packet.ReadUInt64();
+                var unk2 = packet.ReadUInt32(); // 3.3.5a
 
-				var decompressedDataLength = packet.ReadInt32();
-				var compressedData = packet.ReadBytes(packet.RemainingLength);
+                digest[13] = packet.ReadByte(); //9
+
+                var unk3 = packet.ReadByte(); // 3.3.5a
+
+                digest[10] = packet.ReadByte(); //10
+                digest[6] = packet.ReadByte(); //10
+
+                client.ClientSeed = packet.ReadUInt32();
+                
+                var unk322 = packet.ReadUInt32();
+
+                digest[19] = packet.ReadByte(); //8
+                digest[11] = packet.ReadByte(); //18
+                digest[17] = packet.ReadByte(); //10
+                digest[8] = packet.ReadByte(); //17
+                digest[12] = packet.ReadByte(); //10
+                digest[0] = packet.ReadByte(); //10
+
+			    var builtNumberClient = packet.ReadUInt16();
+
+                digest[3] = packet.ReadByte(); //10
+
+                var unk4 = packet.ReadByte();
+                var new302 = packet.ReadUInt32(); // NEW 0.0.2.8970
+
+                digest[1] = packet.ReadByte(); //10
+                digest[2] = packet.ReadByte(); //10
+
+				client.ClientDigest = new BigInteger(digest);
+
+                var addonSize = packet.ReadInt32();
+                var decompressedDataLength = packet.ReadInt32();
+				var compressedData = packet.ReadBytes(addonSize - 4);
+                
 				client.Addons = new byte[decompressedDataLength];
 				Compression.DecompressZLib(compressedData, client.Addons);
+
+                var accName = packet.ReadCString();
+
+#if DEBUG
+                log.Debug("builtNumberClient:{0} new302:{1} accName:{2} unk322:{3} client.ClientSeed:{4} unk:{5} ClientDigest:{6} unk1:{7} unk2:{8} unk3:{9} unk4:{10}",
+                    builtNumberClient,
+                    new302, accName, unk322, client.ClientSeed, unk, client.ClientDigest, unk1, unk2, unk3, unk4);
+#endif
 
 				var acctLoadTask = Message.Obtain(() => RealmAccount.InitializeAccount(client, accName));
 				RealmServer.IOQueue.AddMessage(acctLoadTask);
@@ -91,18 +129,14 @@ namespace WCell.RealmServer.Handlers
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_AUTH_CHALLENGE))
 			{
-				packet.Write(1); // 1...31
+			    var authSeed1 = new BigInteger(new Random(), 128);
+                packet.Write(authSeed1.GetBytes(16));
+
+                packet.Write((byte)1); // 1...31
 				packet.Write(RealmServer.Instance.AuthSeed);
 
-				// new 3.2.2 random data
-				packet.WriteUInt(0xF3539DA3);
-				packet.WriteUInt(0x6E8547B9);
-				packet.WriteUInt(0x9A6AA2F8);
-				packet.WriteUInt(0xA4F170F4);
-				packet.WriteUInt(0xF3539DA3);
-				packet.WriteUInt(0x6E8547B9);
-				packet.WriteUInt(0x9A6AA2F8);
-				packet.WriteUInt(0xA4F170F4);
+                var authSeed2 = new BigInteger(new Random(), 128);
+                packet.Write(authSeed2.GetBytes(16));
 
 				client.Send(packet);
 			}
@@ -148,7 +182,7 @@ namespace WCell.RealmServer.Handlers
 
 		public static void SendAuthSuccessful(IRealmClient client)
 		{
-			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_AUTH_RESPONSE, 11))
+			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_AUTH_RESPONSE, 12))
 			{
 				packet.WriteByte((byte)LoginErrorCode.AUTH_OK);
 
@@ -163,7 +197,8 @@ namespace WCell.RealmServer.Handlers
 
 				// BillingTimeRested
 				packet.Write(0);
-				packet.Write((byte)client.Account.ClientId);
+				packet.Write((byte)client.Account.ClientId);  //played expansion
+                packet.Write((byte)client.Account.ClientId);  //server expansion
 
 				client.Send(packet);
 			}

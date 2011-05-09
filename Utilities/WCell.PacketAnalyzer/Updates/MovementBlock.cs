@@ -33,6 +33,9 @@ namespace WCell.PacketAnalysis.Updates
 		public uint TransporterTime;
 		public byte TransportSeatPosition;
 
+        // levitating
+	    public uint MoveFlag2_0x400_Unk;
+
 		// Swimming/Flying
 		public float Pitch;
 
@@ -43,7 +46,7 @@ namespace WCell.PacketAnalysis.Updates
 		public float FallFloat4;
 
 		// MoveFlag 0x40000000 Spline
-		public float Spline0x4000000;
+		public float SplineElevation;
 
 
 		// speeds
@@ -134,9 +137,9 @@ namespace WCell.PacketAnalysis.Updates
 				writer.WriteLine(indent + "FallFloat4: " + FallFloat4);
 			}
 
-            if (MovementFlags.HasFlag(MovementFlags.Spline))
+            if (MovementFlags.HasFlag(MovementFlags.SplineElevation))
 			{
-				writer.WriteLine(indent + "Spline0x4000000: " + Spline0x4000000);
+				writer.WriteLine(indent + "SplineElevation: " + SplineElevation);
 			}
 
 			if (Speeds.Run != 0)
@@ -149,15 +152,10 @@ namespace WCell.PacketAnalysis.Updates
 				DumpSpline(indent, writer);
 			}
 
-			if (UpdateFlags.HasFlag(UpdateFlags.Flag_0x8))
-			{
-				writer.WriteLine(indent + "Flag_0x8: " + Flag0x8);
-			}
-
-			if (UpdateFlags.HasFlag(UpdateFlags.Flag_0x10))
-			{
-				writer.WriteLine(indent + "Flag0x10: " + Flag0x10);
-			}
+            if (MovementFlags2.HasFlag(MovementFlags2.MoveFlag2_10_0x400))
+            {
+                writer.WriteLine(indent + "MoveFlag2_10_0x400: " + MoveFlag2_0x400_Unk);
+            }
 
 			if (UpdateFlags.HasFlag(UpdateFlags.AttackingTarget))
 			{
@@ -179,6 +177,18 @@ namespace WCell.PacketAnalysis.Updates
 			{
 				writer.WriteLine(indent + "Flag_0x200_Rotation: " + Flag0x200);
 			}
+
+            if (UpdateFlags.HasFlag(UpdateFlags.Flag_0x400))
+            {
+            }
+
+            if (UpdateFlags.HasFlag(UpdateFlags.Flag_0x800))
+            {
+            }
+
+            if (UpdateFlags.HasFlag(UpdateFlags.Flag_0x1000))
+            {
+            }
 		}
 
 		private void DumpSpline(string indent, TextWriter writer)
@@ -261,18 +271,6 @@ namespace WCell.PacketAnalysis.Updates
 				ParseStationaryObject(block);
 			}
 
-            if (block.UpdateFlags.HasFlag(UpdateFlags.Flag_0x8))
-			{
-				block.Flag0x8 = block.Update.ReadUInt();
-			}
-
-            if (block.UpdateFlags.HasFlag(UpdateFlags.Flag_0x10))
-			{
-				block.Flag0x10 = block.Update.ReadUInt();
-				block.Update.packet.index -= 4;
-				block.Flag0x10F = block.Update.ReadFloat();
-			}
-
             if (block.UpdateFlags.HasFlag(UpdateFlags.AttackingTarget))
 			{
 				block.AttackingTarget = block.Update.ReadPackedEntityId();
@@ -288,10 +286,24 @@ namespace WCell.PacketAnalysis.Updates
 				block.VehicleId = block.Update.ReadUInt();
 				block.VehicleAimAdjustment = block.Update.ReadFloat();
 			}
+
+            if(block.UpdateFlags.HasFlag(UpdateFlags.Flag_0x800))
+            {
+                //short
+                //short
+                //short
+            }
             if (block.UpdateFlags.HasFlag(UpdateFlags.HasRotation))
 			{
 				block.Flag0x200 = block.Update.ReadUInt64();
 			}
+            if (block.UpdateFlags.HasFlag(UpdateFlags.Flag_0x1000))
+            {
+                //byte count
+                //for count
+                //uint
+                //end for
+            }
 		}
 
 		public static void ParseLiving(this MovementBlock block)
@@ -311,6 +323,12 @@ namespace WCell.PacketAnalysis.Updates
 				block.TransporterPosition = block.Update.ReadVector4();
 				block.TransporterTime = block.Update.ReadUInt();
 				block.TransportSeatPosition = block.Update.ReadByte();
+
+                // Client checks for 0x400
+                if (block.MovementFlags2.HasFlag(MovementFlags2.MoveFlag2_10_0x400))
+                {
+                    block.MoveFlag2_0x400_Unk = block.Update.ReadUInt();
+                }
 			}
 
 			// Client checks for 0x2200000
@@ -320,22 +338,24 @@ namespace WCell.PacketAnalysis.Updates
 				block.Pitch = block.Update.ReadFloat();
 			}
 
-			block.FallTime = block.Update.ReadUInt();
+            if (block.MovementFlags2.HasFlag(MovementFlags2.InterpolatedTurning))
+            {
+                block.FallTime = block.Update.ReadUInt();
+                // constant, but different when jumping in water and on land?                
+                block.FallFloat1 = block.Update.ReadFloat();
 
-			// Client checks for 0x1000
-            if (block.MovementFlags.HasFlag(MovementFlags.Falling))
-			{
-				// no idea
-				block.FallFloat1 = block.Update.ReadFloat();
-				block.FallFloat2 = block.Update.ReadFloat();
-				block.FallFloat3 = block.Update.ReadFloat();
-				block.FallFloat4 = block.Update.ReadFloat();
-			}
+                if (block.MovementFlags.HasFlag(MovementFlags.Falling))
+                {
+                    block.FallFloat2 = block.Update.ReadFloat();
+                    block.FallFloat3 = block.Update.ReadFloat();
+                    block.FallFloat4 = block.Update.ReadFloat();
+                }
+            }
 
 			// Client checks for 0x4000000
-            if (block.MovementFlags.HasFlag(MovementFlags.Spline))
+            if (block.MovementFlags.HasFlag(MovementFlags.SplineElevation))
 			{
-				block.Spline0x4000000 = block.Update.ReadFloat();
+				block.SplineElevation = block.Update.ReadFloat();
 			}
 
 			// read speeds

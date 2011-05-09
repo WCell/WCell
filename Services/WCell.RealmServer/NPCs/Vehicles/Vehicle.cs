@@ -143,7 +143,7 @@ namespace WCell.RealmServer.NPCs.Vehicles
 		{
 			get
 			{
-				return UpdateFlags.Flag_0x10 | UpdateFlags.Living | UpdateFlags.StationaryObject | UpdateFlags.Vehicle;
+				return UpdateFlags.Living | UpdateFlags.StationaryObject | UpdateFlags.Vehicle;
 			}
 		}
 

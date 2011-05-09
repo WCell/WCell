@@ -198,13 +198,13 @@
     </Simple>    
   </RealmPacket>
 
-  <RealmPacket OpCode="CMSG_ITEM_QUERY_SINGLE">
+  <!--<RealmPacket OpCode="CMSG_ITEM_QUERY_SINGLE">
     <Simple>
       <Name>Entry</Name>
       <Type>UInt</Type>
       <SegmentType>WCell.Constants.Items.ItemId</SegmentType>
     </Simple>
-  </RealmPacket>
+  </RealmPacket>-->
   
   <RealmPacket OpCode="SMSG_ITEM_QUERY_SINGLE_RESPONSE">
     <Simple>

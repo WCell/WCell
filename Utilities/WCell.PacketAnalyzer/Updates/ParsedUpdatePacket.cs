@@ -28,6 +28,7 @@ namespace WCell.PacketAnalysis.Updates
 		UpdateBlock[] m_blocks;
 		public readonly byte[] Bytes;
 		public readonly bool SingleBlock;
+	    public ushort MapId;
 
 		public DateTime TimeStamp;
 
@@ -64,21 +65,21 @@ namespace WCell.PacketAnalysis.Updates
 			Bytes = bytes;
 			SingleBlock = singleBlock;
 
-
+		    var mapId = Bytes.GetUInt16(0);
 			if (SingleBlock)
 			{
 				m_blocks = new UpdateBlock[1];
 			}
 			else
 			{
-				var count = Bytes.GetUInt32(0);
+				var count = Bytes.GetUInt32AtByte(2);
 				m_blocks = new UpdateBlock[count];
-				index = 4;
+				index = 6;
 			}
 
 			for (int i = 0; i < m_blocks.Length; i++)
 			{
-			    m_blocks[i] = new UpdateBlock(this, i);
+			    m_blocks[i] = new UpdateBlock(this, i, mapId);
 			}
 		}
 

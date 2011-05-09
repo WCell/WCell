@@ -705,10 +705,10 @@ namespace WCell.RealmServer.Entities
 			FactionHandler.SendFactionList(this);
 			// SMSG_INIT_WORLD_STATES
 			// SMSG_EQUIPMENT_SET_LIST
-			AchievementHandler.SendAchievementData(this);
+			//AchievementHandler.SendAchievementData(this); //TODO: Check and re-enable
 			// SMSG_EXPLORATION_EXPERIENCE
 			CharacterHandler.SendTimeSpeed(this);
-			TalentHandler.SendTalentGroupList(m_talents);
+            //TalentHandler.SendTalentGroupList(m_talents); //TODO: Check and re-enable
 			AuraHandler.SendAllAuras(this);
 			// SMSG_PET_GUIDS
 		}

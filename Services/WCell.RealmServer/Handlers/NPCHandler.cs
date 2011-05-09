@@ -652,7 +652,7 @@ namespace WCell.RealmServer.Handlers
 			}
 		}
 
-		[ClientPacketHandler(RealmServerOpCode.CMSG_BUY_ITEM_IN_SLOT)]
+		//[ClientPacketHandler(RealmServerOpCode.CMSG_BUY_ITEM_IN_SLOT)]
 		public static void HandleBuyItemInSlot(IRealmClient client, RealmPacketIn packet)
 		{
 			var vendorId = packet.ReadEntityId();
@@ -838,7 +838,7 @@ namespace WCell.RealmServer.Handlers
 
         public static void SendTrainerBuyFailed(this NPC trainer, IRealmClient client, int serviceType, TrainerBuyError error)
         {
-            using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_TRAINER_BUY_FAILED))
+            using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_TRAINER_BUY_RESULT))
             {
                 packet.Write(trainer.EntityId);
                 packet.Write(serviceType);
@@ -900,10 +900,11 @@ namespace WCell.RealmServer.Handlers
 
 		public static void SendTrainerBuySucceeded(IPacketReceiver client, NPC trainer, TrainerSpellEntry spell)
 		{
-			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_TRAINER_BUY_SUCCEEDED, 8 + 4))
+			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_TRAINER_BUY_RESULT, 8 + 4 + 4))
 			{
 				packet.Write(trainer.EntityId);
 				packet.Write(spell.Spell.Id);
+                packet.Write((int)TrainerBuyError.Ok);
 
 				client.Send(packet);
 			}

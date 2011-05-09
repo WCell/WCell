@@ -147,7 +147,7 @@ namespace WCell.RealmServer.Entities
 		// 0x48 in 3.1
 		public override UpdateFlags UpdateFlags
 		{
-			get { return UpdateFlags.StationaryObject | UpdateFlags.Flag_0x10 | UpdateFlags.Flag_0x8; }
+			get { return UpdateFlags.StationaryObject; }
 		}
 
 		protected override void WriteMovementUpdate(PrimitiveWriter writer, UpdateFieldFlags relation)

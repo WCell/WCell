@@ -11,16 +11,15 @@ namespace WCell.Constants.Updates
 	public enum UpdateType : byte
 	{
 		Values = 0,
-		Movement = 1,
-		Create = 2,
-		CreateSelf = 3,
-		OutOfRange = 4,
-		Near = 5
+		Create = 1,
+		CreateSelf = 2,
+		OutOfRange = 3,
 	}
 
 	[Flags]
 	public enum UpdateFlags : uint
 	{
+        None = 0x0,
 		Self = 0x1,
 		Transport = 0x2,
 		/// <summary>
@@ -63,6 +62,12 @@ namespace WCell.Constants.Updates
 		/// It is 3 values packed together, but of unknown use.
 		/// </summary>
 		HasRotation = 0x200,
+
+        Flag_0x400 = 0x400,
+
+        Flag_0x800 = 0x800,
+
+        Flag_0x1000 = 0x1000
 	}
 
 	/// <summary>
@@ -105,6 +110,7 @@ namespace WCell.Constants.Updates
 		Corpse = 0x80,
 		AIGroup = 0x100,
 		AreaTrigger = 0x200,
+        Guild = 0x10000,
 		All = 0xFFFF,
 	}
 

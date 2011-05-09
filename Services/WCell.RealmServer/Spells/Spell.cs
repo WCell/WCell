@@ -912,6 +912,9 @@ namespace WCell.RealmServer.Spells
 
 		public bool MatchesMask(uint[] masks)
 		{
+            if (SpellClassOptions == null)
+                return false;
+
 			for (var i = 0; i < SpellClassOptions.SpellClassMask.Length; i++)
 			{
                 if ((masks[i] & SpellClassOptions.SpellClassMask[i]) != 0)
@@ -924,6 +927,9 @@ namespace WCell.RealmServer.Spells
 
 		public int GetMaxLevelDiff(int casterLevel)
 		{
+            if (SpellLevels == null)
+                return 0;
+
             if (SpellLevels.MaxLevel >= SpellLevels.BaseLevel && SpellLevels.MaxLevel < casterLevel)
 			{
                 return SpellLevels.MaxLevel - SpellLevels.BaseLevel;
@@ -933,6 +939,9 @@ namespace WCell.RealmServer.Spells
 
 		public int CalcBasePowerCost(Unit caster)
 		{
+            if (SpellPower == null)
+                return GetMaxLevelDiff(caster.Level);
+
             var cost = SpellPower.PowerCost + (SpellPower.PowerCostPerlevel * GetMaxLevelDiff(caster.Level));
             if (SpellPower.PowerCostPercentage > 0)
 			{

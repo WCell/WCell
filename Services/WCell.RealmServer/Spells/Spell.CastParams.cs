@@ -179,6 +179,8 @@ namespace WCell.RealmServer.Spells
 
 		private bool CheckSpellFocus(Unit caster)
 		{
+            if (SpellCastingRequirements == null)
+                return false;
 			var range = caster.GetSpellMaxRange(this);
             return SpellCastingRequirements.RequiredSpellFocus == SpellFocus.None ||
                    caster.Map.GetGOWithSpellFocus(caster.Position, SpellCastingRequirements.RequiredSpellFocus, range > 0 ? (range) : 5f, caster.Phase) != null;
@@ -191,17 +193,19 @@ namespace WCell.RealmServer.Spells
 		{
 			get
 			{
+                if (SpellEquippedItems == null)
+                    return false;
                 return (SpellEquippedItems.RequiredItemClass != 0 && SpellEquippedItems.RequiredItemClass != ItemClass.None) ||
                   SpellEquippedItems.RequiredItemInventorySlotMask != InventorySlotTypeMask.None ||
 				  RequiredTools != null ||
-                  SpellTotems.RequiredToolCategories.Length > 0 ||
+                  (SpellTotems != null && SpellTotems.RequiredToolCategories.Length > 0) ||
 				  EquipmentSlot != EquipmentSlot.End;
 			}
 		}
 
 		public SpellFailedReason CheckItemRestrictions(Item usedItem, PlayerInventory inv)
 		{
-            if (SpellEquippedItems.RequiredItemClass != ItemClass.None)
+            if (SpellEquippedItems != null && SpellEquippedItems.RequiredItemClass != ItemClass.None)
 			{
 				if (EquipmentSlot != EquipmentSlot.End)
 				{
@@ -227,7 +231,7 @@ namespace WCell.RealmServer.Spells
 					}
 				}
 			}
-            if (SpellEquippedItems.RequiredItemInventorySlotMask != InventorySlotTypeMask.None)
+            if (SpellEquippedItems != null &&  SpellEquippedItems.RequiredItemInventorySlotMask != InventorySlotTypeMask.None)
 			{
                 if (usedItem != null && (usedItem.Template.InventorySlotMask & SpellEquippedItems.RequiredItemInventorySlotMask) == 0)
 				// don't use Enum.HasFlag!
@@ -252,6 +256,9 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public SpellFailedReason CheckItemRestrictionsWithout(PlayerInventory inv, Item exclude)
 		{
+            if (SpellEquippedItems == null)
+                return CheckGeneralItemRestrictions(inv);
+
             if (SpellEquippedItems.RequiredItemClass == ItemClass.Armor || SpellEquippedItems.RequiredItemClass == ItemClass.Weapon)
 			{
 				Item item;
@@ -319,7 +326,7 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
-			if (SpellTotems.RequiredToolCategories.Length > 0)
+            if (SpellTotems != null && SpellTotems.RequiredToolCategories.Length > 0)
 			{
 				// Required totem category refers to tools that are required during the spell
 				if (!inv.CheckTotemCategories(SpellTotems.RequiredToolCategories))
@@ -363,7 +370,7 @@ namespace WCell.RealmServer.Spells
 			{
 				return SpellFailedReason.NoValidTargets;
 			}
-			if (target is Unit)
+            if (target is Unit && SpellAuraRestrictions != null)
 			{
 				// AuraState
                 if (SpellAuraRestrictions.RequiredTargetAuraState != 0 || SpellAuraRestrictions.ExcludeTargetAuraState != 0)
@@ -385,14 +392,14 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// Make sure that we have a GameObject if the Spell requires one
-			if (SpellTargetRestrictions.TargetFlags.HasAnyFlag(SpellTargetFlags.UnkUnit_0x100) &&
+			if (SpellTargetRestrictions != null && SpellTargetRestrictions.TargetFlags.HasAnyFlag(SpellTargetFlags.UnkUnit_0x100) &&
 				(!(target is GameObject) || !target.IsInWorld))
 			{
 				return SpellFailedReason.BadTargets;
 			}
 
 			// CreatureTypes
-            if (SpellTargetRestrictions.CreatureMask != CreatureMask.None &&
+            if (SpellTargetRestrictions != null && SpellTargetRestrictions.CreatureMask != CreatureMask.None &&
                 (!(target is NPC) || !((NPC)target).CheckCreatureType(SpellTargetRestrictions.CreatureMask)))
 			{
 				return SpellFailedReason.BadImplicitTargets;
@@ -406,7 +413,7 @@ namespace WCell.RealmServer.Spells
 			// Corpse target
 			if (RequiresDeadTarget)
 			{
-                if (SpellTargetRestrictions.TargetFlags.HasAnyFlag(SpellTargetFlags.PvPCorpse | SpellTargetFlags.Corpse))
+                if (SpellTargetRestrictions != null && SpellTargetRestrictions.TargetFlags.HasAnyFlag(SpellTargetFlags.PvPCorpse | SpellTargetFlags.Corpse))
 				{
 					if (!(target is Corpse) ||
                         (SpellTargetRestrictions.TargetFlags.HasAnyFlag(SpellTargetFlags.PvPCorpse) && caster != null && !caster.IsHostileWith(target)))
@@ -496,7 +503,7 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
-            if (SpellEquippedItems.RequiredItemClass != ItemClass.None)
+            if (SpellEquippedItems != null && SpellEquippedItems.RequiredItemClass != ItemClass.None)
 			{
 				// check for weapon
 				if (!(action is DamageAction))
@@ -529,7 +536,7 @@ namespace WCell.RealmServer.Spells
 			}
 			else
 			{
-				cd = SpellCooldowns.CooldownTime;
+				cd = SpellCooldowns != null ? SpellCooldowns.CooldownTime : 0;
 			}
 
 			if (cd == 0)

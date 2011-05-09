@@ -465,20 +465,6 @@ namespace WCell.RealmServer.Handlers
 
 		#region CMSG_ITEM_QUERY_SINGLE
 
-		[ClientPacketHandler(RealmServerOpCode.CMSG_ITEM_QUERY_SINGLE)]
-		public static void HandleItemSingleQuery(IRealmClient client, RealmPacketIn packet)
-		{
-			uint templateId = packet.ReadUInt32();
-
-			ItemTemplate template = ItemMgr.Templates.Get(templateId);
-			if (template == null)
-			{
-				return;
-			}
-
-			SendItemQueryResponse(client, template);
-		}
-
 		public static void SendItemQueryResponse(IRealmClient client, ItemTemplate item)
 		{
 			var locale = client.Info.Locale;

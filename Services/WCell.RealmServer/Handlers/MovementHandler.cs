@@ -140,6 +140,11 @@ namespace WCell.RealmServer.Handlers
 					mover.TransportOrientation = transportOrientation;
 					mover.TransportTime = transportTime;
 				}
+
+                if (moveFlags2.HasFlag(MovementFlags2.MoveFlag2_10_0x400))
+                {
+                    var MoveFlag2_0x400_Unk = packet.ReadUInt32();
+                }
 			}
 			else if (mover.Transport != null)
 			{
@@ -161,23 +166,25 @@ namespace WCell.RealmServer.Handlers
 				    chr.MovePitch(pitch);
 			}
 
-			var airTime = packet.ReadUInt32();
+            if (moveFlags2.HasFlag(MovementFlags2.InterpolatedTurning))
+            {
+                var airTime = packet.ReadUInt32();
+                // constant, but different when jumping in water and on land?                
+                var jumpFloat1 = packet.ReadFloat();
 
-			if (moveFlags.HasFlag(MovementFlags.Falling))
-			{
-				// constant, but different when jumping in water and on land?                
-				var jumpFloat1 = packet.ReadFloat();
+                if (moveFlags.HasFlag(MovementFlags.Falling))
+                {
+                    // sin + cos of angle between orientation and players orientation
+                    var jumpSinAngle = packet.ReadFloat();
+                    var jumpCosAngle = packet.ReadFloat();
+                    // speed of xy movement
+                    var jumpXYSpeed = packet.ReadFloat();
 
-				// sin + cos of angle between orientation and players orientation
-				var jumpSinAngle = packet.ReadFloat();
-				var jumpCosAngle = packet.ReadFloat();
-				// speed of xy movement
-				var jumpXYSpeed = packet.ReadFloat();
+                    //chr.OnFalling(airTime, jumpXYSpeed);
+                }
+            }
 
-				//chr.OnFalling(airTime, jumpXYSpeed);
-			}
-
-            if (packet.PacketId.RawId == (uint)RealmServerOpCode.MSG_MOVE_FALL_LAND && chr == mover)
+		    if (packet.PacketId.RawId == (uint)RealmServerOpCode.MSG_MOVE_FALL_LAND && chr == mover)
 			{
 				chr.OnFalling();
 			}
@@ -191,9 +198,9 @@ namespace WCell.RealmServer.Handlers
 				chr.OnStopSwimming();
 			}
 
-			if (moveFlags.HasFlag(MovementFlags.Spline))
+			if (moveFlags.HasFlag(MovementFlags.SplineElevation))
 			{
-				var spline = packet.ReadFloat();
+				var splineElevation = packet.ReadFloat();
 			}
 
 			// it is only orientation if it is none of the packets below, and has no flags but orientation flags

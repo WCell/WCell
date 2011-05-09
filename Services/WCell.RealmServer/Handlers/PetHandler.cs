@@ -525,7 +525,7 @@ namespace WCell.RealmServer.Handlers
 
 		#region Stabling
 
-		[PacketHandler(RealmServerOpCode.CMSG_UNSTABLE_PET)]
+		//[PacketHandler(RealmServerOpCode.CMSG_UNSTABLE_PET)]
 		public static void HandleUnstablePet(IRealmClient client, RealmPacketIn packet)
 		{
 			var npcGuid = packet.ReadEntityId();
@@ -537,7 +537,7 @@ namespace WCell.RealmServer.Handlers
 			PetMgr.DeStablePet(chr, stableMaster, petNumber);
 		}
 
-		[PacketHandler(RealmServerOpCode.CMSG_STABLE_PET)]
+        //[PacketHandler(RealmServerOpCode.CMSG_STABLE_PET)]
 		public static void HandleStablePet(IRealmClient client, RealmPacketIn packet)
 		{
 			var guid = packet.ReadEntityId();
@@ -547,21 +547,22 @@ namespace WCell.RealmServer.Handlers
 			PetMgr.StablePet(chr, stableMaster);
 		}
 
-		[PacketHandler(RealmServerOpCode.CMSG_BUY_STABLE_SLOT)]
-		public static void HandleBuyStableSlot(IRealmClient client, RealmPacketIn packet)
-		{
-			var guid = packet.ReadEntityId();
-			var chr = client.ActiveCharacter;
-			var stableMaster = chr.Map.GetObject(guid) as NPC;
+        //[PacketHandler(RealmServerOpCode.CMSG_BUY_STABLE_SLOT)]
+        public static void HandleBuyStableSlot(IRealmClient client, RealmPacketIn packet)
+        {
+            var guid = packet.ReadEntityId();
+            var chr = client.ActiveCharacter;
+            var stableMaster = chr.Map.GetObject(guid) as NPC;
 
-			PetMgr.BuyStableSlot(chr, stableMaster);
-		}
+            PetMgr.BuyStableSlot(chr, stableMaster);
+        }
 
-		[PacketHandler(RealmServerOpCode.CMSG_STABLE_SWAP_PET)]
+		[PacketHandler(RealmServerOpCode.CMSG_STABLE_CHANGE_SLOT)]
 		public static void HandleStableSwapPet(IRealmClient client, RealmPacketIn packet)
 		{
+            var petNumber = packet.ReadUInt32();
 			var guid = packet.ReadEntityId();
-			var petNumber = packet.ReadUInt32();
+		    var newSlot = packet.ReadByte();
 
 			var chr = client.ActiveCharacter;
 			var stableMaster = chr.Map.GetObject(guid) as NPC;

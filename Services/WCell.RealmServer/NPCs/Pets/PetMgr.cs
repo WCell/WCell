@@ -100,12 +100,8 @@ namespace WCell.RealmServer.NPCs.Pets
 
 		private static void InitMisc()
 		{
-			// Read in the prices for Stable Slots from the dbc
-			var stableSlotPriceReader =
-				new ListDBCReader<uint, DBCStableSlotPriceConverter>(
-					RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_STABLESLOTPRICES));
-			StableSlotPrices = stableSlotPriceReader.EntryList.ToArray();
-			MaxStableSlots = StableSlotPrices.Length;
+		    StableSlotPrices = new uint[25];
+		    MaxStableSlots = 25;
 		}
 
 		#endregion
@@ -410,16 +406,5 @@ namespace WCell.RealmServer.NPCs.Pets
 			return record;
 		}
 		#endregion
-	} // end class
-
-
-	public class DBCStableSlotPriceConverter : AdvancedDBCRecordConverter<uint>
-	{
-		public override uint ConvertTo(byte[] rawData, ref int id)
-		{
-			uint currentIndex = 0;
-			id = rawData.GetInt32(currentIndex++); // col 0 - "Id"
-			return rawData.GetUInt32(currentIndex); // col 1 - "Cost in Copper"
-		}
 	} // end class
 } // end namespace 

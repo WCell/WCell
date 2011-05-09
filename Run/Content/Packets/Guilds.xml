@@ -232,7 +232,7 @@
     </Simple>
   </RealmPacket>
 
-  <RealmPacket OpCode="CMSG_GUILD_SET_PUBLIC_NOTE">
+  <RealmPacket OpCode="CMSG_GUILD_SET_NOTE">
     <Simple>
       <Name>TargetName</Name>
       <Type>CString</Type>
@@ -243,7 +243,7 @@
     </Simple>
   </RealmPacket>
 
-  <RealmPacket OpCode="CMSG_GUILD_SET_OFFICER_NOTE">
+  <!--<RealmPacket OpCode="CMSG_GUILD_SET_OFFICER_NOTE">
     <Simple>
       <Name>TargetName</Name>
       <Type>CString</Type>
@@ -252,7 +252,7 @@
       <Name>NewNote</Name>
       <Type>CString</Type>
     </Simple>
-  </RealmPacket>
+  </RealmPacket>-->
 
   <RealmPacket OpCode="CMSG_GUILD_ADD_RANK">
     <Simple>
