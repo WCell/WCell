@@ -114,7 +114,7 @@
       </Simple>
       <Simple>
         <Name>Guild</Name>
-        <Type>UInt</Type>
+        <Type>Long</Type>
       </Simple>
       <Simple>
         <Name>CharacterFlags</Name>
