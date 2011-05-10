@@ -717,7 +717,7 @@ namespace WCell.RealmServer.Spells.Auras
 			//Aura[] auras = m_nonPassiveAuras.ToArray();
 			foreach (var aura in m_visibleAuras)
 			{
-				if (aura != null && (aura.Spell.SpellInterrupts.AuraInterruptFlags & interruptFlags) != 0)
+                if (aura != null && aura.Spell.SpellInterrupts != null && (aura.Spell.SpellInterrupts.AuraInterruptFlags & interruptFlags) != 0)
 				{
 					aura.Remove(false);
 				}

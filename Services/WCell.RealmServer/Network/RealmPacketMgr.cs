@@ -67,7 +67,6 @@ namespace WCell.RealmServer.Network
 
 			try
 			{
-                Console.WriteLine("Got " + packet.PacketId + " (" + packet.PacketId.RawId + ")");
 #if DEBUG
 				DebugUtil.DumpPacket(client.Account, packet, PacketSender.Client);
 #endif
