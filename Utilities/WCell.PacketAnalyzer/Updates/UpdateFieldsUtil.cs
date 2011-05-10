@@ -15,9 +15,9 @@ namespace WCell.PacketAnalysis.Updates
 		{
 			var uncompressedSize = bytes.GetUInt32(0);
 
-            byte[] compdata = new byte[bytes.Length - 6];
+            byte[] compdata = new byte[bytes.Length - 4];
 
-			Array.Copy(bytes, 6, compdata, 0, compdata.Length);
+			Array.Copy(bytes, 4, compdata, 0, compdata.Length);
 
 			byte[] output = new byte[uncompressedSize];
 

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using WCell.Constants;
 using WCell.Constants.World;
 using WCell.Core.Network;
@@ -126,34 +127,54 @@ namespace WCell.RealmServer.Handlers
 			}
 		}
 
+        public sealed class RaidInstanceInfo
+        {
+            public uint MapId;
+            public uint DifficultyIndex;
+            public uint InstanceId;
+            public bool Active;
+            public bool Extended;
+            public uint SecondsRemaining;
+        }
+
 		public static void SendRaidInfo(Character chr)
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_RAID_INSTANCE_INFO))
 			{
 				if (chr.HasInstanceCollection)
 				{
-					packet.Position += 4;
-					uint count = 0;
+				    var instanceInfos = new List<RaidInstanceInfo>();
 					chr.Instances.ForeachBinding(BindingType.Hard, binding =>
 					{
 						var timeLeft = binding.NextResetTime - DateTime.Now;
 						if (timeLeft.Ticks > 0)
 						{
-							count++;
-							packet.Write((uint)binding.MapId);
-                            packet.Write(binding.DifficultyIndex);
-							packet.Write(binding.InstanceId);
-                            packet.WriteByte(0x1); // expired = 0
-                            packet.WriteByte(0x0); // extended = 1
-                            packet.Write((uint)timeLeft.TotalSeconds);
-                            //packet.Write(0); // unk, extended?
+                            instanceInfos.Add(new RaidInstanceInfo
+						        {
+						            MapId = (uint) binding.MapId,
+						            InstanceId = binding.InstanceId,
+						            Active = true,
+						            Extended = false,
+						            SecondsRemaining = (uint) timeLeft.TotalSeconds
+						        });
 						}
 					});
-					packet.Position = packet.HeaderSize;
-					packet.Write(count);
+
+                    packet.Write(instanceInfos.Count);
+				    foreach (var raidInstanceInfo in instanceInfos)
+				    {
+                        packet.Write(raidInstanceInfo.MapId);
+                        packet.Write(raidInstanceInfo.DifficultyIndex);
+                        packet.Write(raidInstanceInfo.InstanceId);
+                        packet.WriteByte(raidInstanceInfo.Active); // expired = 0
+                        packet.WriteByte(raidInstanceInfo.Extended); // extended = 1
+                        packet.Write(raidInstanceInfo.SecondsRemaining);
+				    }
+                    
 				}
 				else
 				{
+                    //count
 					packet.Write(0);
 				}
 

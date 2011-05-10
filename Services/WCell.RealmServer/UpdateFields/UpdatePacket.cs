@@ -34,20 +34,17 @@ namespace WCell.RealmServer.UpdateFields
 		private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
 		public const int DefaultCapacity = 1024;
-		//public static int MaxCapacity = 10000;
 
 		public UpdatePacket()
-			//: this(BufferManager.Small.CheckOut())
 			: base(RealmServerOpCode.SMSG_UPDATE_OBJECT)
 		{
-			Position = FullUpdatePacketHeaderSize;
+			Position = FullUpdatePacketHeaderSize + 2;
 		}
 
 		public UpdatePacket(int maxContentLength)
-			//: this(BufferManager.Small.CheckOut())
 			: base(RealmServerOpCode.SMSG_UPDATE_OBJECT, maxContentLength + FullUpdatePacketHeaderSize)
 		{
-			Position = FullUpdatePacketHeaderSize;
+			Position = FullUpdatePacketHeaderSize + 2;
 		}
 
 		/// <summary>
@@ -63,9 +60,7 @@ namespace WCell.RealmServer.UpdateFields
 			else
 			{
 				var segment = ((SegmentStream)BaseStream).Segment;
-				//var input = ((MemoryStream)BaseStream).ToArray();
 				var inputOffset = HeaderSize;
-				//Compression.CompressZLib(packetBuffer, outputBuffer, RealmServer.Instance.Configuration.CompressionLevel, out deflatedLength);
 
 				var length = ContentLength;
 				if (length > 0x7FFF)
@@ -80,7 +75,6 @@ namespace WCell.RealmServer.UpdateFields
 
 				var deflater = new Deflater(RealmServerConfiguration.CompressionLevel);
 				deflater.SetInput(segment.Buffer.Array, segment.Offset + inputOffset, length);
-				//deflater.SetInput(input, 0 + inputOffset, length);
 				deflater.Finish();
 				int deflatedLength = deflater.Deflate(outSegment.Buffer.Array,
 					outSegment.Offset + FullUpdatePacketHeaderSize, length);

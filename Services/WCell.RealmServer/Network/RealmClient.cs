@@ -282,8 +282,11 @@ namespace WCell.RealmServer.Network
 
 		public void Send(RealmPacketOut packet)
 		{
-			//_server.Debug(this, Resources.SendingPacket, packet, packet.Length);
-			Send(packet.GetFinalizedPacket());
+            if (packet.PacketId.RawId < 0x10000)
+            {
+                //_server.Debug(this, Resources.SendingPacket, packet, packet.Length);
+                Send(packet.GetFinalizedPacket());
+            }
 		}
 
 		public override string ToString()

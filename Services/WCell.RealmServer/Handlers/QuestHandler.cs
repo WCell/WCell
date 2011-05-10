@@ -1189,28 +1189,28 @@ namespace WCell.RealmServer.Handlers
 			using (var pkt = new RealmPacketOut(new PacketId(RealmServerOpCode.SMSG_QUESTGIVER_STATUS_MULTIPLE)))
 			{
 				var objs = chr.KnownObjects;
-				var count = 0;
-				pkt.Position += sizeof(int);		// leave space for count
+			    var questStatuses = new Dictionary<EntityId, byte>();
 				if (objs != null)
 				{
 					foreach (var obj in objs)
 					{
-						if (obj is IQuestHolder && !(obj is Character))
-						{
-							var questgiver = (IQuestHolder)obj;
-							questgiver.OnQuestGiverStatusQuery(chr);
+					    if (!(obj is IQuestHolder) || (obj is Character)) continue;
 
-							if (questgiver.QuestHolderInfo != null)
-							{
-								pkt.Write(questgiver.EntityId);
-								pkt.Write((byte)questgiver.QuestHolderInfo.GetHighestQuestGiverStatus(chr));
-								count++;
-							}
-						}
+					    var questgiver = (IQuestHolder)obj;
+					    questgiver.OnQuestGiverStatusQuery(chr);
+
+					    if (questgiver.QuestHolderInfo == null) continue;
+
+                        questStatuses.Add(questgiver.EntityId, (byte)questgiver.QuestHolderInfo.GetHighestQuestGiverStatus(chr));
 					}
 				}
-				pkt.Position = pkt.HeaderSize;
-				pkt.Write(count);
+
+                pkt.Write(questStatuses.Count);
+			    foreach (var questStatus in questStatuses)
+			    {
+                    pkt.Write(questStatus.Key);
+                    pkt.Write(questStatus.Value);
+			    }
 				chr.Client.Send(pkt);
 			}
 		}
