@@ -879,8 +879,9 @@ namespace WCell.RealmServer.Handlers
 
 		public static void SendFlyModeStart(Unit unit)
 		{
-			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_MOVE_SET_CAN_FLY, 12))
+            using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_MULTIPLE_PACKETS, 14))
 			{
+                packet.WriteUShort((ushort)RealmServerOpCode.SMSG_MOVE_SET_CAN_FLY);
 				unit.EntityId.WritePacked(packet);
 				packet.WriteUInt(2);
 
@@ -890,8 +891,9 @@ namespace WCell.RealmServer.Handlers
 
 		public static void SendFlyModeStop(Unit unit)
 		{
-			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_MOVE_UNSET_CAN_FLY, 12))
-			{
+            using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_MULTIPLE_PACKETS, 14))
+            {
+                packet.WriteUShort((ushort)RealmServerOpCode.SMSG_MOVE_UNSET_CAN_FLY);
 				unit.EntityId.WritePacked(packet);
 				packet.WriteUInt(5);
 
