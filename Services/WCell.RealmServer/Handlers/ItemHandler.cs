@@ -60,6 +60,7 @@ namespace WCell.RealmServer.Handlers
 			{
 				outPacket.WriteInt(item.Id);
 				outPacket.WriteCString(item.DefaultName);
+                outPacket.Write((uint)item.InventorySlotType);
 
 				client.Send(outPacket);
 			}

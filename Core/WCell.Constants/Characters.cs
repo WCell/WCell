@@ -216,6 +216,9 @@ namespace WCell.Constants
 		Happiness = 4,
 		Runes = 5,
 		RunicPower = 6,
+        SoldShards = 7,
+        Eclipse = 8,
+        HolyPower = 9,
 		End
 	}
 

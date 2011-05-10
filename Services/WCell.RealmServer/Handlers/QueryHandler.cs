@@ -41,9 +41,9 @@ namespace WCell.RealmServer.Handlers
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_QUERY_TIME_RESPONSE, 4))
 			{
 				packet.Write(Utility.GetEpochTime());
-				//packet.Write(Utility.GetSystemTime());
+				packet.Write((uint)0);
 
-				client.Send(packet);
+				//client.Send(packet);
 			}
 		}
 		#endregion
