@@ -162,6 +162,14 @@ namespace WCell.Constants
 		Naga = 0x00001000,
 		Broken = 0x00002000,
 		Skeleton = 0x00004000,
+        Vrykul = 0x00008000,
+        Tuskarr = 0x00010000,
+        ForestTroll = 0x00020000,
+        Taunka = 0x00040000,
+        NorthrendSkeleton = 0x00080000,
+        IceTroll = 0x00100000,
+        Worgen = 0x00200000,
+        Gilnean = 0x00400000,
 
 		AllRaces1 = uint.MaxValue,
 		AllRaces2 = 0x7FFF
@@ -190,6 +198,14 @@ namespace WCell.Constants
 		Naga = 0x00002000,
 		Broken = 0x00004000,
 		Skeleton = 0x00008000,
+        Vrykul = 0x00010000,
+        Tuskarr = 0x00020000,
+        ForestTroll = 0x00040000,
+        Taunka = 0x00080000,
+        NorthrendSkeleton = 0x00100000,
+        IceTroll = 0x00200000,
+        Worgen = 0x00400000,
+        Gilnean = 0x00800000,
 		All = 0xFFFFFFFF
 	}
 

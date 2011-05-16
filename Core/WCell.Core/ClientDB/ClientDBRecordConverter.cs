@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- *   file		: DBCRecordConverter.cs
+ *   file		: ClientDBRecordConverter.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2009-12-23 20:07:17 +0100 (on, 23 dec 2009) $
@@ -23,9 +23,9 @@ using WCell.Constants;
 using WCell.Util;
 using WCell.Util.Data;
 
-namespace WCell.Core.DBC
+namespace WCell.Core.ClientDB
 {
-	public class AdvancedDBCRecordConverter<T> : DBCRecordConverter
+	public class AdvancedClientDBRecordConverter<T> : ClientDBRecordConverter
 	{
 		public virtual T ConvertTo(byte[] rawData, ref int id)
 		{
@@ -34,7 +34,7 @@ namespace WCell.Core.DBC
 		}
 	}
 
-    public abstract class DBCRecordConverter : IDisposable
+    public abstract class ClientDBRecordConverter : IDisposable
     {
         private byte[] m_stringTable;
 

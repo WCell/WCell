@@ -16,7 +16,7 @@
 
 using WCell.Constants;
 using WCell.Constants.Factions;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 using WCell.Util;
 
 namespace WCell.RealmServer.Factions
@@ -37,7 +37,7 @@ namespace WCell.RealmServer.Factions
 		public string Name;
 	}
 
-    public class FactionConverter : AdvancedDBCRecordConverter<FactionEntry>
+    public class FactionConverter : AdvancedClientDBRecordConverter<FactionEntry>
     {
         public override FactionEntry ConvertTo(byte[] rawData, ref int id)
         {
@@ -99,7 +99,7 @@ namespace WCell.RealmServer.Factions
 		public FactionId[] FriendlyFactions;
 	}
 
-	public class FactionTemplateConverter : AdvancedDBCRecordConverter<FactionTemplateEntry>
+	public class FactionTemplateConverter : AdvancedClientDBRecordConverter<FactionTemplateEntry>
 	{
 		public override FactionTemplateEntry ConvertTo(byte[] rawData, ref int id)
 		{

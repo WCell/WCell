@@ -22,7 +22,7 @@ using WCell.Constants.Skills;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.Core;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 using WCell.Core.Initialization;
 using WCell.Core.Network;
 using WCell.RealmServer.Chat;
@@ -90,10 +90,10 @@ namespace WCell.RealmServer.Skills
 
 		internal static void Initialize()
 		{
-            TierReader = new MappedDBCReader<SkillTiers, SkillTierConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SKILLTIERS));
+            TierReader = new MappedDBCReader<SkillTiers, SkillTierConverter>(RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_SKILLTIERS));
 
 			var lineReader =
-				new MappedDBCReader<SkillLine, SkillLineConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SKILLLINE));
+				new MappedDBCReader<SkillLine, SkillLineConverter>(RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_SKILLLINE));
 
 			// make sure that all these skill types have correct tiers
 			foreach (var line in lineReader.Entries.Values)
@@ -120,12 +120,12 @@ namespace WCell.RealmServer.Skills
 			}
 
 			RaceClassReader = new MappedDBCReader<SkillRaceClassInfo, SkillRaceClassInfoConverter>(
-                RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SKILLRACECLASSINFO));
+                RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_SKILLRACECLASSINFO));
 
 
 		    var abilityReader =
 		        new MappedDBCReader<SkillAbility, SkillAbilityConverter>(
-		            RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SKILLLINEABILITY));
+		            RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_SKILLLINEABILITY));
 
 			var abilityLists = new List<SkillAbility>[MaxSkillId];
 			foreach (var ability in abilityReader.Entries.Values)

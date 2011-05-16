@@ -19,11 +19,11 @@ using System.Collections.Generic;
 using System.IO;
 using WCell.Constants;
 
-namespace WCell.Core.DBC
+namespace WCell.Core.ClientDB
 {
 
 	public class MappedDBCReader<TEntry, TConverter> : DBCReader<TConverter>
-		where TConverter : AdvancedDBCRecordConverter<TEntry>, new()
+		where TConverter : AdvancedClientDBRecordConverter<TEntry>, new()
 	{
 		public Dictionary<int, TEntry> Entries;
 
@@ -51,7 +51,7 @@ namespace WCell.Core.DBC
 		protected override void Convert(byte[] bytes)
 		{
 			var id = currentIndex;
-			var entry = ((AdvancedDBCRecordConverter<TEntry>)converter).ConvertTo(bytes, ref id);
+			var entry = ((AdvancedClientDBRecordConverter<TEntry>)converter).ConvertTo(bytes, ref id);
 
 			Entries.Add(id, entry);
 		}
@@ -63,7 +63,7 @@ namespace WCell.Core.DBC
 	}
 
 	public class ListDBCReader<TEntry, TConverter> : DBCReader<TConverter>
-		where TConverter : AdvancedDBCRecordConverter<TEntry>, new()
+		where TConverter : AdvancedClientDBRecordConverter<TEntry>, new()
 	{
 		public List<TEntry> EntryList;
 
@@ -75,7 +75,7 @@ namespace WCell.Core.DBC
 		protected override void Convert(byte[] bytes)
 		{
 			var id = currentIndex;
-			var entry = ((AdvancedDBCRecordConverter<TEntry>)converter).ConvertTo(bytes, ref id);
+			var entry = ((AdvancedClientDBRecordConverter<TEntry>)converter).ConvertTo(bytes, ref id);
 
 			EntryList.Add(entry);
 		}
@@ -87,7 +87,7 @@ namespace WCell.Core.DBC
 	}
 
 	public class DBCReader<TConverter>
-        where TConverter : DBCRecordConverter, new()
+        where TConverter : ClientDBRecordConverter, new()
     {
 		public const int DBCHeader = 0x43424457;	// WDBC
 
@@ -100,7 +100,7 @@ namespace WCell.Core.DBC
         protected readonly int m_recordCount;
 		protected readonly int m_fieldCount;
 		protected readonly string m_fileName;
-		protected DBCRecordConverter converter;
+		protected ClientDBRecordConverter converter;
 		protected int currentIndex;
 
 		public DBCReader(string fileName)

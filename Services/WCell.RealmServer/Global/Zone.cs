@@ -19,7 +19,7 @@ using WCell.Constants;
 using WCell.Constants.Factions;
 using WCell.Constants.Login;
 using WCell.Constants.World;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 using WCell.RealmServer.Entities;
 using WCell.Util.Data;
 using WCell.RealmServer.Chat;

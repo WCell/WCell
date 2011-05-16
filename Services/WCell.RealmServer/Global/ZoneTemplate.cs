@@ -6,7 +6,7 @@ using WCell.Constants;
 using WCell.Constants.Factions;
 using WCell.Constants.Login;
 using WCell.Constants.World;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Global
@@ -219,7 +219,7 @@ namespace WCell.RealmServer.Global
 
     #region AreaTable.dbc
 
-	public class AreaTableConverter : AdvancedDBCRecordConverter<ZoneTemplate>
+	public class AreaTableConverter : AdvancedClientDBRecordConverter<ZoneTemplate>
 	{
 		public override ZoneTemplate ConvertTo(byte[] rawData, ref int id)
 		{

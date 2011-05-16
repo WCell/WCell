@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 using WCell.Util;
 
 namespace WCell.RealmServer.Quests
@@ -13,7 +13,7 @@ namespace WCell.RealmServer.Quests
         public int RewHonor;
     }
 
-    public class QuestHonorInfoConverter : DBCRecordConverter
+    public class QuestHonorInfoConverter : ClientDBRecordConverter
     {
         public override void Convert(byte[] rawData)
         {

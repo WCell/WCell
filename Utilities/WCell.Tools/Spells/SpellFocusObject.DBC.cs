@@ -5,7 +5,7 @@ using System.Text;
 using WCell.Core;
 using WCell.RealmServer;
 using WCell.RealmServer.Spells;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 
 namespace WCell.Tools.Spells
 {
@@ -14,7 +14,7 @@ namespace WCell.Tools.Spells
 		public static Dictionary<uint, string> Read()
 		{
 			var reader = new MappedDBCReader<Spell.SpellFocusEntry, Spell.DBCSpellFocusConverter>(
-                RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLFOCUSOBJECT));
+                RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_SPELLFOCUSOBJECT));
 			var dict = new Dictionary<uint, string>(300);
 
 			foreach (var entry in reader.Entries.Values)

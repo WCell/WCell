@@ -8,7 +8,7 @@ using WCell.Constants.Looting;
 using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
 using WCell.Core;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Entities;
@@ -490,7 +490,7 @@ namespace WCell.RealmServer.NPCs
 		public static void InitDefault()
 		{
 			var npcSpells = new MappedDBCReader<Spell[], DBCCreatureSpellConverter>(
-				RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_CREATURESPELLDATA)).Entries;
+				RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_CREATURESPELLDATA)).Entries;
 
 			PetSpells = new Spell[10000][];
 			foreach (var pair in npcSpells)
@@ -500,21 +500,21 @@ namespace WCell.RealmServer.NPCs
 			ArrayUtil.Prune(ref PetSpells);
 
 			CreatureFamilies = new MappedDBCReader<CreatureFamily, DBCCreatureFamilyConverter>(
-				RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_CREATUREFAMILIES)).Entries;
+				RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_CREATUREFAMILY)).Entries;
 
 			BankBagSlotPrices = new ListDBCReader<uint, DBCBankBagSlotConverter>(
-				RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_BANKBAGSLOTPRICES)).EntryList.ToArray();
+				RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_BANKBAGSLOTPRICES)).EntryList.ToArray();
 
 			DefaultFaction = FactionMgr.ById[(uint)FactionId.Creature];
 
 			VehicleSeatEntries = new MappedDBCReader<VehicleSeatEntry, DBCVehicleSeatConverter>(
-				RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_VEHICLESEATS)).Entries;
+				RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_VEHICLESEAT)).Entries;
 
 			VehicleEntries = new MappedDBCReader<VehicleEntry, DBCVehicleConverter>(
-				RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_VEHICLES)).Entries;
+				RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_VEHICLE)).Entries;
 
 			BarberShopStyles = new MappedDBCReader<BarberShopStyleEntry, BarberShopStyleConverter>(
-				RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_BARBERSHOPSTYLE)).Entries;
+				RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_BARBERSHOPSTYLE)).Entries;
 
 			InitTypeHandlers();
 		}
@@ -808,7 +808,7 @@ namespace WCell.RealmServer.NPCs
 		static void LoadItemExtendedCostEntries()
 		{
 			var reader = new MappedDBCReader<ItemExtendedCostEntry, DBCItemExtendedCostConverter>(
-				RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_ITEMEXTENDEDCOST));
+				RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_ITEMEXTENDEDCOST));
 
 			ItemExtendedCostEntries = reader.Entries;
 			ItemExtendedCostEntries.Add(0, ItemExtendedCostEntry.NullEntry);

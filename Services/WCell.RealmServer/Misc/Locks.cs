@@ -8,7 +8,7 @@ using WCell.Constants.Looting;
 using WCell.Constants.Skills;
 using WCell.Constants.World;
 using WCell.Core;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Battlegrounds;
 using WCell.RealmServer.Entities;
@@ -153,10 +153,10 @@ namespace WCell.RealmServer.Misc
 		private static void LoadLocks()
 		{
 			new MappedDBCReader<LockEntry, LockConverter>(
-                RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_LOCKS));
+                RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_LOCK));
 		}
 
-		class LockConverter : AdvancedDBCRecordConverter<LockEntry>
+		class LockConverter : AdvancedClientDBRecordConverter<LockEntry>
 		{
 			public override LockEntry ConvertTo(byte[] rawData, ref int id)
 			{

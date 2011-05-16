@@ -25,7 +25,7 @@ using WCell.Constants.NPCs;
 using WCell.Constants.Skills;
 using WCell.Constants.Spells;
 using WCell.Core;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 using WCell.RealmServer.AreaTriggers;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Factions;
@@ -494,7 +494,7 @@ namespace WCell.Tools.Domi
 		public static void WriteRangeEnum()
 		{
 			var ranges = new MappedDBCReader<DistanceEntry, DistanceConverter>(
-                RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLRANGE));
+                RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_SPELLRANGE));
 
 			WriteEnum("Range", " : uint", "Spells", ranges.Entries.Values,
 					  (entry) => { return entry.Distance == (int)entry.Distance; },
@@ -762,7 +762,7 @@ namespace WCell.Tools.Domi
 
 		#region Nested type: DistanceConverter
 
-		private class DistanceConverter : AdvancedDBCRecordConverter<DistanceEntry>
+		private class DistanceConverter : AdvancedClientDBRecordConverter<DistanceEntry>
 		{
 			public override DistanceEntry ConvertTo(byte[] rawData, ref int id)
 			{

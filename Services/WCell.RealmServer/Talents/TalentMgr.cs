@@ -17,7 +17,7 @@
 using WCell.Constants;
 using WCell.Constants.Talents;
 using WCell.Core;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 using WCell.Core.Initialization;
 using WCell.Util;
 using WCell.Util.Variables;
@@ -87,7 +87,7 @@ namespace WCell.RealmServer.Talents
 		internal static void Initialize()
 		{
 			var treeReader = new MappedDBCReader<TalentTree, TalentTreeConverter>(
-                RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_TALENTTREES));
+                RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_TALENTTAB));
 			//Init our GlyphInfoHolder
 			GlyphInfoHolder.Init();
 
@@ -106,7 +106,7 @@ namespace WCell.RealmServer.Talents
 
 
 			var talentReader = new ListDBCReader<TalentEntry, TalentConverter>(
-				RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_TALENTS));
+				RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_TALENT));
 
 			foreach (var talent in talentReader.EntryList)
 			{

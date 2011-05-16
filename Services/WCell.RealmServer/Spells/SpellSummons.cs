@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using WCell.Constants.Factions;
 using WCell.Constants.Spells;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 using WCell.RealmServer.NPCs;
 using WCell.RealmServer.Entities;
 using WCell.Util;
@@ -151,7 +151,7 @@ namespace WCell.RealmServer.Spells
 		public SpellSummonHandler Handler;
 	}
 
-	public class SummonPropertiesConverter : DBCRecordConverter
+	public class SummonPropertiesConverter : ClientDBRecordConverter
 	{
 		public override void Convert(byte[] rawData)
 		{

@@ -1,5 +1,5 @@
 using Cell.Core;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 
 namespace WCell.RealmServer.NPCs.Armorer
 {
@@ -11,7 +11,7 @@ namespace WCell.RealmServer.NPCs.Armorer
 
 	#region DBC
 
-	public class DBCDurabilityQualityConverter : AdvancedDBCRecordConverter<DurabilityQuality>
+	public class DBCDurabilityQualityConverter : AdvancedClientDBRecordConverter<DurabilityQuality>
 	{
 		public override DurabilityQuality ConvertTo( byte[] rawData, ref int id )
 		{

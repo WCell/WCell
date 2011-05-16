@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using WCell.Constants.NPCs;
 using WCell.Constants.Pets;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 using WCell.RealmServer.Skills;
 using WCell.RealmServer.Spells;
 using WCell.Constants;
@@ -12,7 +12,7 @@ using WCell.Util.Graphics;
 namespace WCell.RealmServer.NPCs
 {
 	#region CreatureFamily.dbc
-	public class DBCCreatureFamilyConverter : AdvancedDBCRecordConverter<CreatureFamily>
+	public class DBCCreatureFamilyConverter : AdvancedClientDBRecordConverter<CreatureFamily>
 	{
 		public override CreatureFamily ConvertTo(byte[] rawData, ref int id)
 		{
@@ -34,7 +34,7 @@ namespace WCell.RealmServer.NPCs
 	#endregion
 
 	#region CreatureSpellData.dbc
-	public class DBCCreatureSpellConverter : AdvancedDBCRecordConverter<Spell[]>
+	public class DBCCreatureSpellConverter : AdvancedClientDBRecordConverter<Spell[]>
 	{
 		public override Spell[] ConvertTo(byte[] rawData, ref int id)
 		{
@@ -61,7 +61,7 @@ namespace WCell.RealmServer.NPCs
 	#endregion
 
 	#region BankBagSlotPrices
-	public class DBCBankBagSlotConverter : AdvancedDBCRecordConverter<uint>
+	public class DBCBankBagSlotConverter : AdvancedClientDBRecordConverter<uint>
 	{
 		public override uint ConvertTo(byte[] rawData, ref int id)
 		{
@@ -75,7 +75,7 @@ namespace WCell.RealmServer.NPCs
 	#endregion
 
     #region Vehicle
-    public class DBCVehicleConverter : AdvancedDBCRecordConverter<VehicleEntry> 
+    public class DBCVehicleConverter : AdvancedClientDBRecordConverter<VehicleEntry> 
     {
         public override VehicleEntry ConvertTo(byte[] rawData, ref int id) {
             id = GetInt32(rawData, 0);
@@ -114,7 +114,7 @@ namespace WCell.RealmServer.NPCs
         }
     }
 
-    public class DBCVehicleSeatConverter : AdvancedDBCRecordConverter<VehicleSeatEntry> 
+    public class DBCVehicleSeatConverter : AdvancedClientDBRecordConverter<VehicleSeatEntry> 
     {
         public override VehicleSeatEntry ConvertTo(byte[] rawData, ref int id) {
             id = GetInt32(rawData, 0);
@@ -176,7 +176,7 @@ namespace WCell.RealmServer.NPCs
 		public int HairId;
 	}
 
-	public class BarberShopStyleConverter : AdvancedDBCRecordConverter<BarberShopStyleEntry>
+	public class BarberShopStyleConverter : AdvancedClientDBRecordConverter<BarberShopStyleEntry>
 	{
 		public override BarberShopStyleEntry ConvertTo(byte[] rawData, ref int id)
 		{

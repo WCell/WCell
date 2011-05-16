@@ -21,7 +21,7 @@ using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Items;
 using WCell.Util;
@@ -85,31 +85,31 @@ namespace WCell.RealmServer.Spells
 
 		internal static void InitDbcs()
 		{
-            mappeddbcSpellScalingReader = new MappedDBCReader<SpellScaling, DBCSpellScalingConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLSCALING));
-            mappeddbcShapeShiftReader = new MappedDBCReader<SpellShapeshift, DBCSpellShapeshiftConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLSHAPESHIFT));
-            mappeddbcAuraOptionsReader = new MappedDBCReader<SpellAuraOptions, DBCAuraOptionsConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLAURAOPTIONS));
-            mappeddbcAuraRestrictionsReader = new MappedDBCReader<SpellAuraRestrictions, DBCAuraRestrictionsConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLAURARESTRICTIONS));
-            mappeddbcCastingRequirementsReader = new MappedDBCReader<SpellCastingRequirements, DBCCastingRequirementsConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLCASTINGREQUIREMENTS));
-            mappeddbcCategoriesReader = new MappedDBCReader<SpellCategories, DBCCategoriesConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLCATEGORIES));
-            mappeddbcClassOptionsReader = new MappedDBCReader<SpellClassOptions, DBCClassOptionsConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLCLASSOPTIONS));
-            mappeddbcCooldownsReader = new MappedDBCReader<SpellCooldowns, DBCCooldownsConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLCOOLDOWNS));
-            mappeddbcEquippedItemsReader = new MappedDBCReader<SpellEquippedItems, DBCEquippedItemsConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLEQUIPPEDITEMS));
-            mappeddbcInterruptsReader = new MappedDBCReader<SpellInterrupts, DBCSpellInterruptsConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLINTERRUPTS));
-            mappeddbcLevelsReader = new MappedDBCReader<SpellLevels, DBCSpellLevelsConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLLEVELS));
-            mappeddbcPowerReader = new MappedDBCReader<SpellPower, DBCSpellPowerConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLPOWER));
-            mappeddbcReagentsReader = new MappedDBCReader<SpellReagents, DBCSpellReagentsConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLREAGENTS));
-            mappeddbcTargetRestrictionsReader = new MappedDBCReader<SpellTargetRestrictions, DBCTargetRestrictionsConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLTARGETRESTRICTIONS));
-            mappeddbcTotemsReader = new MappedDBCReader<SpellTotems, DBCSpellTotemsConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLTOTEMS));
+            mappeddbcSpellScalingReader = new MappedDBCReader<SpellScaling, DBCSpellScalingConverter>(RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_SPELLSCALING));
+            mappeddbcShapeShiftReader = new MappedDBCReader<SpellShapeshift, DBCSpellShapeshiftConverter>(RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_SPELLSHAPESHIFT));
+            mappeddbcAuraOptionsReader = new MappedDBCReader<SpellAuraOptions, DBCAuraOptionsConverter>(RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_SPELLAURAOPTIONS));
+            mappeddbcAuraRestrictionsReader = new MappedDBCReader<SpellAuraRestrictions, DBCAuraRestrictionsConverter>(RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_SPELLAURARESTRICTIONS));
+            mappeddbcCastingRequirementsReader = new MappedDBCReader<SpellCastingRequirements, DBCCastingRequirementsConverter>(RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_SPELLCASTINGREQUIREMENTS));
+            mappeddbcCategoriesReader = new MappedDBCReader<SpellCategories, DBCCategoriesConverter>(RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_SPELLCATEGORIES));
+            mappeddbcClassOptionsReader = new MappedDBCReader<SpellClassOptions, DBCClassOptionsConverter>(RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_SPELLCLASSOPTIONS));
+            mappeddbcCooldownsReader = new MappedDBCReader<SpellCooldowns, DBCCooldownsConverter>(RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_SPELLCOOLDOWNS));
+            mappeddbcEquippedItemsReader = new MappedDBCReader<SpellEquippedItems, DBCEquippedItemsConverter>(RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_SPELLEQUIPPEDITEMS));
+            mappeddbcInterruptsReader = new MappedDBCReader<SpellInterrupts, DBCSpellInterruptsConverter>(RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_SPELLINTERRUPTS));
+            mappeddbcLevelsReader = new MappedDBCReader<SpellLevels, DBCSpellLevelsConverter>(RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_SPELLLEVELS));
+            mappeddbcPowerReader = new MappedDBCReader<SpellPower, DBCSpellPowerConverter>(RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_SPELLPOWER));
+            mappeddbcReagentsReader = new MappedDBCReader<SpellReagents, DBCSpellReagentsConverter>(RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_SPELLREAGENTS));
+            mappeddbcTargetRestrictionsReader = new MappedDBCReader<SpellTargetRestrictions, DBCTargetRestrictionsConverter>(RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_SPELLTARGETRESTRICTIONS));
+            mappeddbcTotemsReader = new MappedDBCReader<SpellTotems, DBCSpellTotemsConverter>(RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_SPELLTOTEMS));
             
-			mappeddbcDurationReader = new MappedDBCReader<DurationEntry, DBCDurationConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLDURATION));
-			mappeddbcRadiusReader = new MappedDBCReader<float, DBCRadiusConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLRADIUS));
-			mappeddbcCastTimeReader = new MappedDBCReader<uint, DBCCastTimeConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLCASTTIMES));
-			mappeddbcRangeReader = new MappedDBCReader<SimpleRange, DBCRangeConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLRANGE));
+			mappeddbcDurationReader = new MappedDBCReader<DurationEntry, DBCDurationConverter>(RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_SPELLDURATION));
+			mappeddbcRadiusReader = new MappedDBCReader<float, DBCRadiusConverter>(RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_SPELLRADIUS));
+			mappeddbcCastTimeReader = new MappedDBCReader<uint, DBCCastTimeConverter>(RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_SPELLCASTTIMES));
+			mappeddbcRangeReader = new MappedDBCReader<SimpleRange, DBCRangeConverter>(RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_SPELLRANGE));
 			//DBCMechanicReader = new DBCReader<SpellMechanic, DBCMechanicConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELLMECHANIC));
-			mappeddbcMechanicReader = new MappedDBCReader<string, DBCMechanicConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLMECHANIC));
-			mappeddbcRuneCostReader = new MappedDBCReader<RuneCostEntry, DBCSpellRuneCostConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLRUNECOST));
+			mappeddbcMechanicReader = new MappedDBCReader<string, DBCMechanicConverter>(RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_SPELLMECHANIC));
+			mappeddbcRuneCostReader = new MappedDBCReader<RuneCostEntry, DBCSpellRuneCostConverter>(RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_SPELLRUNECOST));
 
-            mappeddbcEffectReader = new MappedDBCReader<SpellEffect, DBCSpellEffectConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLEFFECT));
+            mappeddbcEffectReader = new MappedDBCReader<SpellEffect, DBCSpellEffectConverter>(RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_SPELLEFFECT));
 		}
 
 		#region SpellDuration.dbc
@@ -128,7 +128,7 @@ namespace WCell.RealmServer.Spells
 			}
 		}
 
-		public class DBCDurationConverter : AdvancedDBCRecordConverter<DurationEntry>
+		public class DBCDurationConverter : AdvancedClientDBRecordConverter<DurationEntry>
 		{
 			public override DurationEntry ConvertTo(byte[] rawData, ref int id)
 			{
@@ -145,7 +145,7 @@ namespace WCell.RealmServer.Spells
 		#endregion
 
 		#region SpellRadius.dbc
-		public class DBCRadiusConverter : AdvancedDBCRecordConverter<float>
+		public class DBCRadiusConverter : AdvancedClientDBRecordConverter<float>
 		{
 			public override float ConvertTo(byte[] rawData, ref int id)
 			{
@@ -156,7 +156,7 @@ namespace WCell.RealmServer.Spells
 		#endregion
 
 		#region SpellCastTimes.dbc
-		public class DBCCastTimeConverter : AdvancedDBCRecordConverter<uint>
+		public class DBCCastTimeConverter : AdvancedClientDBRecordConverter<uint>
 		{
 			public override uint ConvertTo(byte[] rawData, ref int id)
 			{
@@ -167,7 +167,7 @@ namespace WCell.RealmServer.Spells
 		#endregion
 
 		#region SpellRange.dbc
-		public class DBCRangeConverter : AdvancedDBCRecordConverter<SimpleRange>
+		public class DBCRangeConverter : AdvancedClientDBRecordConverter<SimpleRange>
 		{
 			public override SimpleRange ConvertTo(byte[] rawData, ref int id)
 			{
@@ -188,7 +188,7 @@ namespace WCell.RealmServer.Spells
 		#endregion
 
 		#region SpellMechanic.dbc
-		public class DBCMechanicConverter : AdvancedDBCRecordConverter<string>
+		public class DBCMechanicConverter : AdvancedClientDBRecordConverter<string>
 		{
 			public override string ConvertTo(byte[] rawData, ref int id)
 			{
@@ -205,7 +205,7 @@ namespace WCell.RealmServer.Spells
 			public string Name;
 		}
 
-		public class DBCSpellFocusConverter : AdvancedDBCRecordConverter<SpellFocusEntry>
+		public class DBCSpellFocusConverter : AdvancedClientDBRecordConverter<SpellFocusEntry>
 		{
 			public override SpellFocusEntry ConvertTo(byte[] rawData, ref int id)
 			{
@@ -221,7 +221,7 @@ namespace WCell.RealmServer.Spells
 		#endregion
 
 		#region SpellRuneCost.dbc
-		public class DBCSpellRuneCostConverter : AdvancedDBCRecordConverter<RuneCostEntry>
+		public class DBCSpellRuneCostConverter : AdvancedClientDBRecordConverter<RuneCostEntry>
 		{
 			public override RuneCostEntry ConvertTo(byte[] rawData, ref int id)
 			{
@@ -242,7 +242,7 @@ namespace WCell.RealmServer.Spells
 		#endregion
 
         #region SpellEffect.dbc
-        public class DBCSpellEffectConverter : AdvancedDBCRecordConverter<SpellEffect>
+        public class DBCSpellEffectConverter : AdvancedClientDBRecordConverter<SpellEffect>
         {
             public override SpellEffect ConvertTo(byte[] rawData, ref int id)
 			{
@@ -322,7 +322,7 @@ namespace WCell.RealmServer.Spells
         #endregion
 
         #region SpellAuraOptions.dbc
-        public class DBCAuraOptionsConverter : AdvancedDBCRecordConverter<SpellAuraOptions>
+        public class DBCAuraOptionsConverter : AdvancedClientDBRecordConverter<SpellAuraOptions>
         {
             public override SpellAuraOptions ConvertTo(byte[] rawData, ref int id)
             {
@@ -340,7 +340,7 @@ namespace WCell.RealmServer.Spells
         #endregion
 
         #region SpellAuraRestrictions.dbc
-        public class DBCAuraRestrictionsConverter : AdvancedDBCRecordConverter<SpellAuraRestrictions>
+        public class DBCAuraRestrictionsConverter : AdvancedClientDBRecordConverter<SpellAuraRestrictions>
         {
             public override SpellAuraRestrictions ConvertTo(byte[] rawData, ref int id)
             {
@@ -362,7 +362,7 @@ namespace WCell.RealmServer.Spells
         #endregion
 
         #region SpellCastingRequirements.dbc
-        public class DBCCastingRequirementsConverter : AdvancedDBCRecordConverter<SpellCastingRequirements>
+        public class DBCCastingRequirementsConverter : AdvancedClientDBRecordConverter<SpellCastingRequirements>
         {
             public override SpellCastingRequirements ConvertTo(byte[] rawData, ref int id)
             {
@@ -382,7 +382,7 @@ namespace WCell.RealmServer.Spells
         #endregion
 
         #region SpellCategories.dbc
-        public class DBCCategoriesConverter : AdvancedDBCRecordConverter<SpellCategories>
+        public class DBCCategoriesConverter : AdvancedClientDBRecordConverter<SpellCategories>
         {
             public override SpellCategories ConvertTo(byte[] rawData, ref int id)
             {
@@ -402,7 +402,7 @@ namespace WCell.RealmServer.Spells
         #endregion
 
         #region SpellClassOptions.dbc
-        public class DBCClassOptionsConverter : AdvancedDBCRecordConverter<SpellClassOptions>
+        public class DBCClassOptionsConverter : AdvancedClientDBRecordConverter<SpellClassOptions>
         {
             public override SpellClassOptions ConvertTo(byte[] rawData, ref int id)
             {
@@ -423,7 +423,7 @@ namespace WCell.RealmServer.Spells
         #endregion
 
         #region SpellCooldowns.dbc
-        public class DBCCooldownsConverter : AdvancedDBCRecordConverter<SpellCooldowns>
+        public class DBCCooldownsConverter : AdvancedClientDBRecordConverter<SpellCooldowns>
         {
             public override SpellCooldowns ConvertTo(byte[] rawData, ref int id)
             {
@@ -440,7 +440,7 @@ namespace WCell.RealmServer.Spells
         #endregion
 
         #region SpellEquippedItems.dbc
-        public class DBCEquippedItemsConverter : AdvancedDBCRecordConverter<SpellEquippedItems>
+        public class DBCEquippedItemsConverter : AdvancedClientDBRecordConverter<SpellEquippedItems>
         {
             public override SpellEquippedItems ConvertTo(byte[] rawData, ref int id)
             {
@@ -457,7 +457,7 @@ namespace WCell.RealmServer.Spells
         #endregion
 
         #region SpellInterrupts.dbc
-        public class DBCSpellInterruptsConverter : AdvancedDBCRecordConverter<SpellInterrupts>
+        public class DBCSpellInterruptsConverter : AdvancedClientDBRecordConverter<SpellInterrupts>
         {
             public override SpellInterrupts ConvertTo(byte[] rawData, ref int id)
             {
@@ -474,7 +474,7 @@ namespace WCell.RealmServer.Spells
         #endregion
 
         #region SpellLevels.dbc
-        public class DBCSpellLevelsConverter : AdvancedDBCRecordConverter<SpellLevels>
+        public class DBCSpellLevelsConverter : AdvancedClientDBRecordConverter<SpellLevels>
         {
             public override SpellLevels ConvertTo(byte[] rawData, ref int id)
             {
@@ -491,7 +491,7 @@ namespace WCell.RealmServer.Spells
         #endregion
 
         #region SpellPower.dbc
-        public class DBCSpellPowerConverter : AdvancedDBCRecordConverter<SpellPower>
+        public class DBCSpellPowerConverter : AdvancedClientDBRecordConverter<SpellPower>
         {
             public override SpellPower ConvertTo(byte[] rawData, ref int id)
             {
@@ -511,7 +511,7 @@ namespace WCell.RealmServer.Spells
         #endregion
 
         #region SpellReagents.dbc
-        public class DBCSpellReagentsConverter : AdvancedDBCRecordConverter<SpellReagents>
+        public class DBCSpellReagentsConverter : AdvancedClientDBRecordConverter<SpellReagents>
         {
             public override SpellReagents ConvertTo(byte[] rawData, ref int id)
             {
@@ -543,7 +543,7 @@ namespace WCell.RealmServer.Spells
         #endregion
 
         #region SpellScaling.dbc
-        public class DBCSpellScalingConverter : AdvancedDBCRecordConverter<SpellScaling>
+        public class DBCSpellScalingConverter : AdvancedClientDBRecordConverter<SpellScaling>
         {
             public override SpellScaling ConvertTo(byte[] rawData, ref int id)
             {
@@ -578,7 +578,7 @@ namespace WCell.RealmServer.Spells
         #endregion
 
         #region SpellShapeshift.dbc
-        public class DBCSpellShapeshiftConverter : AdvancedDBCRecordConverter<SpellShapeshift>
+        public class DBCSpellShapeshiftConverter : AdvancedClientDBRecordConverter<SpellShapeshift>
         {
             public override SpellShapeshift ConvertTo(byte[] rawData, ref int id)
             {
@@ -595,7 +595,7 @@ namespace WCell.RealmServer.Spells
         #endregion
 
         #region SpellTargetRestrictions.dbc
-        public class DBCTargetRestrictionsConverter : AdvancedDBCRecordConverter<SpellTargetRestrictions>
+        public class DBCTargetRestrictionsConverter : AdvancedClientDBRecordConverter<SpellTargetRestrictions>
         {
             public override SpellTargetRestrictions ConvertTo(byte[] rawData, ref int id)
             {
@@ -613,7 +613,7 @@ namespace WCell.RealmServer.Spells
         #endregion
 
         #region SpellTotems.dbc
-        public class DBCSpellTotemsConverter : AdvancedDBCRecordConverter<SpellTotems>
+        public class DBCSpellTotemsConverter : AdvancedClientDBRecordConverter<SpellTotems>
         {
             public override SpellTotems ConvertTo(byte[] rawData, ref int id)
             {
@@ -631,7 +631,7 @@ namespace WCell.RealmServer.Spells
         #endregion
 
         #region Spell.DBC
-        public class SpellDBCConverter : DBCRecordConverter
+        public class SpellDBCConverter : ClientDBRecordConverter
 		{
 			public override void Convert(byte[] rawData)
 			{

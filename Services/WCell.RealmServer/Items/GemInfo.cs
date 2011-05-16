@@ -1,5 +1,5 @@
 using WCell.Constants.Items;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 using WCell.RealmServer.Items.Enchanting;
 
 namespace WCell.RealmServer.Items
@@ -22,7 +22,7 @@ namespace WCell.RealmServer.Items
 		}
 	}
 
-	public class GemPropertiesConverter : AdvancedDBCRecordConverter<GemProperties>
+	public class GemPropertiesConverter : AdvancedClientDBRecordConverter<GemProperties>
 	{
 		public override GemProperties ConvertTo(byte[] rawData, ref int id)
 		{

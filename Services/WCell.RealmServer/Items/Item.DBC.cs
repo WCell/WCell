@@ -1,12 +1,12 @@
 using WCell.Constants.Items;
 using WCell.Constants.Skills;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 using WCell.RealmServer.Items.Enchanting;
 using WCell.Util;
 
 namespace WCell.RealmServer.Items
 {
-	public class ItemRandomPropertiesConverter : AdvancedDBCRecordConverter<ItemRandomPropertyEntry>
+	public class ItemRandomPropertiesConverter : AdvancedClientDBRecordConverter<ItemRandomPropertyEntry>
 	{
 		public override ItemRandomPropertyEntry ConvertTo(byte[] rawData, ref int id)
 		{
@@ -26,7 +26,7 @@ namespace WCell.RealmServer.Items
 		}
 	}
 
-	public class ItemRandomSuffixConverter : AdvancedDBCRecordConverter<ItemRandomSuffixEntry>
+	public class ItemRandomSuffixConverter : AdvancedClientDBRecordConverter<ItemRandomSuffixEntry>
 	{
 		public override ItemRandomSuffixEntry ConvertTo(byte[] rawData, ref int id)
 		{
@@ -62,7 +62,7 @@ namespace WCell.RealmServer.Items
 		}
 	}
 
-	public class ItemRandPropPointConverter : AdvancedDBCRecordConverter<ItemLevelInfo>
+	public class ItemRandPropPointConverter : AdvancedClientDBRecordConverter<ItemLevelInfo>
 	{
 		public override ItemLevelInfo ConvertTo(byte[] rawData, ref int id)
 		{
@@ -90,7 +90,7 @@ namespace WCell.RealmServer.Items
 		}
 	}
 
-	public class ItemEnchantmentConverter : AdvancedDBCRecordConverter<ItemEnchantmentEntry>
+	public class ItemEnchantmentConverter : AdvancedClientDBRecordConverter<ItemEnchantmentEntry>
 	{
 		public override ItemEnchantmentEntry ConvertTo(byte[] rawData, ref int id)
 		{
@@ -137,7 +137,7 @@ namespace WCell.RealmServer.Items
 		}
 	}
 
-	public class ItemEnchantmentConditionConverter : AdvancedDBCRecordConverter<ItemEnchantmentCondition>
+	public class ItemEnchantmentConditionConverter : AdvancedClientDBRecordConverter<ItemEnchantmentCondition>
 	{
 		public override ItemEnchantmentCondition ConvertTo(byte[] rawData, ref int id)
 		{
@@ -149,7 +149,7 @@ namespace WCell.RealmServer.Items
 		}
 	}
 
-    public class ScalingStatDistributionConverter : AdvancedDBCRecordConverter<ScalingStatDistributionEntry>
+    public class ScalingStatDistributionConverter : AdvancedClientDBRecordConverter<ScalingStatDistributionEntry>
     {
         public override ScalingStatDistributionEntry ConvertTo(byte[] rawData, ref int id)
         {
@@ -170,7 +170,7 @@ namespace WCell.RealmServer.Items
         }
     }
 
-    public class ScalingStatValuesConverter : AdvancedDBCRecordConverter<ScalingStatValues>
+    public class ScalingStatValuesConverter : AdvancedClientDBRecordConverter<ScalingStatValues>
     {
         public override ScalingStatValues ConvertTo(byte[] rawData, ref int id)
         {

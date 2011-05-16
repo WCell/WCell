@@ -1,6 +1,6 @@
 using WCell.Constants.Misc;
 using WCell.Core;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 using WCell.Core.Initialization;
 using WCell.Util.Data;
 
@@ -14,13 +14,13 @@ namespace WCell.RealmServer.Chat
         [Initialization(InitializationPass.First, null)]
         public static void LoadEmotes()
         {
-            EmoteRelationReader = new MappedDBCReader<EmoteType, EmoteRelationConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_EMOTESTEXT));
+            EmoteRelationReader = new MappedDBCReader<EmoteType, EmoteRelationConverter>(RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_EMOTESTEXT));
         }
 
         /// <summary>
         /// Emote relation holder, searches via TextEmote
         /// </summary>
-        public class EmoteRelationConverter : AdvancedDBCRecordConverter<EmoteType>
+        public class EmoteRelationConverter : AdvancedClientDBRecordConverter<EmoteType>
         {
             public override EmoteType ConvertTo(byte[] rawData, ref int id)
             {

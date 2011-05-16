@@ -1,6 +1,6 @@
 using Cell.Core;
 using WCell.Constants.Items;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 
 namespace WCell.RealmServer.NPCs.Armorer
 {
@@ -30,7 +30,7 @@ namespace WCell.RealmServer.NPCs.Armorer
 
 	#region DBC
 
-	public class DBCDurabilityCostsConverter : AdvancedDBCRecordConverter<DurabilityCost>
+	public class DBCDurabilityCostsConverter : AdvancedClientDBRecordConverter<DurabilityCost>
 	{
 		public override DurabilityCost ConvertTo( byte[] rawData, ref int id )
 		{

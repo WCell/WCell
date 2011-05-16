@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using WCell.Constants;
 using WCell.Core;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 using NLog;
 
 namespace WCell.RealmServer.Talents
@@ -21,7 +21,7 @@ namespace WCell.RealmServer.Talents
 		public uint Unk1;                                           // GlyphIconId (SpellIcon.dbc)
 	}
 
-	public class GlyphSlotConverter : DBCRecordConverter
+	public class GlyphSlotConverter : ClientDBRecordConverter
 	{
 		public override void Convert(byte[] rawData)
 		{
@@ -33,7 +33,7 @@ namespace WCell.RealmServer.Talents
 		}
 	}
 
-	public class GlyphPropertiesConverter : DBCRecordConverter
+	public class GlyphPropertiesConverter : ClientDBRecordConverter
 	{
 		public override void Convert(byte[] rawData)
 		{
@@ -51,8 +51,8 @@ namespace WCell.RealmServer.Talents
 		public static Dictionary<uint, GlyphPropertiesEntry> GlyphProperties = new Dictionary<uint, GlyphPropertiesEntry>();
 		public static void Init()
 		{
-			new DBCReader<GlyphSlotConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_GLYPHSLOT));
-			new DBCReader<GlyphPropertiesConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_GLYPHPROPERTIES));
+			new DBCReader<GlyphSlotConverter>(RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_GLYPHSLOT));
+			new DBCReader<GlyphPropertiesConverter>(RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_GLYPHPROPERTIES));
 		}
 
 		public static GlyphPropertiesEntry GetPropertiesEntryForGlyph(uint glyphid)

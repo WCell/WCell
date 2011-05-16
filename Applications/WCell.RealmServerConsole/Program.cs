@@ -1,4 +1,4 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: Program.cs
  *   copyright		: (C) The WCell Team
@@ -14,11 +14,9 @@
  *
  *************************************************************************/
 
-using System.Runtime.InteropServices;
 using NLog;
 using System.Runtime;
 using System.Threading;
-using WCell.Core.DBC;
 using WCell.RealmServer.Content;
 
 namespace WCell.RealmServerConsole

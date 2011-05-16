@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Cell.Core;
 using WCell.Constants.Pathing;
 using WCell.Constants.World;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 using WCell.Core.Paths;
 using WCell.RealmServer.Taxi;
 using WCell.Util.Graphics;
@@ -82,7 +82,7 @@ namespace WCell.RealmServer.Paths
 		internal LinkedListNode<PathVertex> ListEntry;
 	}
 
-	public class DBCTaxiPathNodeConverter : AdvancedDBCRecordConverter<PathVertex>
+	public class DBCTaxiPathNodeConverter : AdvancedClientDBRecordConverter<PathVertex>
 	{
 		public override PathVertex ConvertTo(byte[] rawData, ref int id)
 		{

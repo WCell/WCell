@@ -1,7 +1,7 @@
 using System;
 using WCell.Constants.Spells;
 using WCell.Core;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Factions;
@@ -164,11 +164,11 @@ namespace WCell.RealmServer.NPCs.Armorer
 		public static void Initialize()
 		{
 			var durabilityCostsReader = new ListDBCReader<DurabilityCost, DBCDurabilityCostsConverter>(
-				RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_DURABILITYCOSTS));
+				RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_DURABILITYCOSTS));
 
 
 			var durabilityQualityReader = new ListDBCReader<DurabilityQuality, DBCDurabilityQualityConverter>(
-				RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_DURABILITYQUALITY));
+				RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_DURABILITYQUALITY));
 
 
 			itemClassRepairModifiers = durabilityCostsReader.EntryList.ToArray();

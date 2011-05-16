@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using WCell.Core;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 
 namespace WCell.RealmServer.Misc
 {
@@ -8,12 +8,12 @@ namespace WCell.RealmServer.Misc
 	{
 		public static Dictionary<int, string> ReadCategories()
 		{
-			var reader = new MappedDBCReader<string, DBCCtfCategoriesConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_CFGCATEGORIES));
+            var reader = new MappedDBCReader<string, DBCCtfCategoriesConverter>(RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_CFG_CATEGORIES));
 			return reader.Entries;
 		}
 	}
 
-	public class DBCCtfCategoriesConverter : AdvancedDBCRecordConverter<string>
+	public class DBCCtfCategoriesConverter : AdvancedClientDBRecordConverter<string>
 	{
 		public override string ConvertTo(byte[] rawData, ref int id)
 		{

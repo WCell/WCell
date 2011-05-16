@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using NLog;
 using WCell.Constants;
 using WCell.Core;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Items;
@@ -230,7 +230,7 @@ namespace WCell.RealmServer.RacesClasses
 		private static void InitRaces()
 		{
 			//ContentHandler.Load<BaseRace>();
-			var reader = new ListDBCReader<BaseRace, DBCRaceConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_CHRRACES));
+			var reader = new ListDBCReader<BaseRace, DBCRaceConverter>(RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_CHRRACES));
 			foreach (var race in reader.EntryList)
 			{
 				race.FinalizeAfterLoad();
@@ -249,7 +249,7 @@ namespace WCell.RealmServer.RacesClasses
 			// ContentHandler.Load<PlayerItemEntry>();
 			//var reader = 
 			new DBCReader<DBCStartOutfitConverter>(
-                RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_CHARSTARTOUTFIT));
+                RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_CHARSTARTOUTFIT));
 		}
 		#endregion
 	}

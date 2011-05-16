@@ -1,10 +1,10 @@
 using Cell.Core;
 using WCell.Constants.World;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 
 namespace WCell.RealmServer.AreaTriggers
 {
-	class ATConverter : AdvancedDBCRecordConverter<AreaTrigger>
+	class ATConverter : AdvancedClientDBRecordConverter<AreaTrigger>
 	{
 		public override AreaTrigger ConvertTo(byte[] rawData, ref int id)
 		{

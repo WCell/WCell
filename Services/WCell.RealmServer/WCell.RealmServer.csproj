@@ -233,6 +233,8 @@
     <Compile Include="Editor\Menus\SpawnPointEditorMenu.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Entities\Character.BaseInfo.DBC.cs" />
+    <Compile Include="Entities\Character.StartOutfit.DBC.cs" />
     <Compile Include="Gossips\GossipTextHelper.cs" />
     <Compile Include="Handlers\WorldStateHandler.cs" />
     <Compile Include="Spells\Auras\Misc\FearHandler.cs" />

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 using WCell.Constants;
 using WCell.Constants.Factions;
 using WCell.Constants.Items;
@@ -12,7 +12,7 @@ using NLog;
 namespace WCell.RealmServer.RacesClasses
 {
 	#region ChrRaces.dbc
-	public class DBCRaceConverter : AdvancedDBCRecordConverter<BaseRace>
+	public class DBCRaceConverter : AdvancedClientDBRecordConverter<BaseRace>
 	{
 		public override BaseRace ConvertTo(byte[] rawData, ref int id)
 		{
@@ -32,7 +32,7 @@ namespace WCell.RealmServer.RacesClasses
 	#endregion
 
 	#region ChrStartOutfit.dbc
-	public class DBCStartOutfitConverter : DBCRecordConverter
+	public class DBCStartOutfitConverter : ClientDBRecordConverter
 	{
 		public override void Convert(byte[] rawData)
 		{

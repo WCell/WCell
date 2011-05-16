@@ -21,7 +21,7 @@ using WCell.Constants;
 using WCell.Constants.Skills;
 using WCell.Constants.Spells;
 using WCell.Core;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 using WCell.RealmServer.Spells;
 using WCell.Util;
 using System;
@@ -31,7 +31,7 @@ namespace WCell.RealmServer.Skills
 	public partial class SkillHandler
 	{
 		#region SkillLine.dbc
-		public class SkillLineConverter : AdvancedDBCRecordConverter<SkillLine>
+		public class SkillLineConverter : AdvancedClientDBRecordConverter<SkillLine>
 		{
 			public override SkillLine ConvertTo(byte[] rawData, ref int id)
 			{
@@ -61,7 +61,7 @@ namespace WCell.RealmServer.Skills
 		#endregion
 
 		#region SkillLineAbility.dbc
-		public class SkillAbilityConverter : AdvancedDBCRecordConverter<SkillAbility>
+		public class SkillAbilityConverter : AdvancedClientDBRecordConverter<SkillAbility>
 		{
 			public override SkillAbility ConvertTo(byte[] rawData, ref int id)
 			{
@@ -109,7 +109,7 @@ namespace WCell.RealmServer.Skills
 
 		#region SkillTier.dbc
 
-		public class SkillTierConverter : AdvancedDBCRecordConverter<SkillTiers>
+		public class SkillTierConverter : AdvancedClientDBRecordConverter<SkillTiers>
 		{
 			public override SkillTiers ConvertTo(byte[] rawData, ref int id)
 			{
@@ -158,7 +158,7 @@ namespace WCell.RealmServer.Skills
 
 		#region SkillRaceClassInfo.dbc
 
-		public class SkillRaceClassInfoConverter : AdvancedDBCRecordConverter<SkillRaceClassInfo>
+		public class SkillRaceClassInfoConverter : AdvancedClientDBRecordConverter<SkillRaceClassInfo>
 		{
 			public override SkillRaceClassInfo ConvertTo(byte[] rawData, ref int id)
 			{
@@ -248,7 +248,7 @@ namespace WCell.RealmServer.Skills
 
 		}
 
-		public class SkillCostsDataConverter : AdvancedDBCRecordConverter<SkillCostsData>
+		public class SkillCostsDataConverter : AdvancedClientDBRecordConverter<SkillCostsData>
 		{
 			public override SkillCostsData ConvertTo(byte[] rawData, ref int id)
 			{

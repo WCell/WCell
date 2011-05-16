@@ -1,7 +1,7 @@
 using NLog;
 using WCell.Constants;
 using WCell.Core;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Entities;
@@ -154,7 +154,7 @@ namespace WCell.RealmServer.AreaTriggers
 		[Initialization(InitializationPass.Fourth, "Initialize AreaTriggers")]
 		public static void Initialize()
 		{
-            var reader = new MappedDBCReader<AreaTrigger, ATConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_AREATRIGGER));
+            var reader = new MappedDBCReader<AreaTrigger, ATConverter>(RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_AREATRIGGER));
 
 			foreach (var at in reader.Entries)
 			{

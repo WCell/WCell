@@ -24,7 +24,7 @@ using WCell.Util.Collections;
 using NLog;
 using WCell.Constants.Spells;
 using WCell.Core;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Entities;
@@ -324,7 +324,7 @@ namespace WCell.RealmServer.Spells
 				SpellEffect.InitMiscValueTypes();
 				loaded = true;
 				Spell.InitDbcs();
-				new DBCReader<Spell.SpellDBCConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELL));
+				new DBCReader<Spell.SpellDBCConverter>(RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_SPELL));
 
 				ContentMgr.Load<SpellLearnRelation>();
 				InitSummonHandlers();

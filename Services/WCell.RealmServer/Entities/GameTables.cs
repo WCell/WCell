@@ -10,7 +10,7 @@ using NLog;
 using WCell.Constants;
 using WCell.Constants.Misc;
 using WCell.Core;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 using WCell.RealmServer.Res;
 using WCell.Util.Variables;
 
@@ -197,6 +197,14 @@ namespace WCell.RealmServer.Entities
         
         #region DBCs loading
 
+        public class GameTableConverter : AdvancedClientDBRecordConverter<float>
+        {
+            public override float ConvertTo(byte[] rawData, ref int id)
+            {
+                return GetFloat(rawData, 0);
+            }
+        }
+
         private static bool LoadRatingChanceDBC(string file, out float[] vals)
         {
             vals = new float[0];
@@ -223,42 +231,42 @@ namespace WCell.RealmServer.Entities
 
         private static bool LoadGtBaseSpellCritChanceDBC()
         {
-            return LoadRatingChanceDBC(WCellConstants.DBC_SPELLCRITBASE, out s_baseSpellCritChance);
+            return LoadRatingChanceDBC(ClientDBConstants.DBC_GTCHANCETOSPELLCRITBASE, out s_baseSpellCritChance);
         }
 
         private static bool LoadGtClassSpellCritChanceDBC()
         {
-            return LoadRatingChanceDBC(WCellConstants.DBC_SPELLCRITCLASS, out s_classSpellCritChance);
+            return LoadRatingChanceDBC(ClientDBConstants.DBC_GTCHANCETOSPELLCRIT, out s_classSpellCritChance);
         }
 
         private static bool LoadGtBaseMeleeCritChanceDBC()
         {
-            return LoadRatingChanceDBC(WCellConstants.DBC_MELEECRITBASE, out s_baseMeleeCritChance);
+            return LoadRatingChanceDBC(ClientDBConstants.DBC_GTCHANCETOMELEECRITBASE, out s_baseMeleeCritChance);
         }
 
         private static bool LoadGtClassMeleeCritChanceDBC()
         {
-            return LoadRatingChanceDBC(WCellConstants.DBC_MELEECRITCLASS, out s_classMeleeCritChance);
+            return LoadRatingChanceDBC(ClientDBConstants.DBC_GTCHANCETOMELEECRIT, out s_classMeleeCritChance);
         }
 
-        private static bool LoadGtClassHealthRegenPerSpiritDBC()
+        private static bool LoadGtClassHealthRegenPerStaminaDBC()
         {
-            return LoadRatingChanceDBC(WCellConstants.DBC_OCTREGENHPPERSTAMINA, out s_octHealthPerStamina);
+            return LoadRatingChanceDBC(ClientDBConstants.DBC_GTOCTHPPERSTAMINA, out s_octHealthPerStamina);
         }
 
         private static bool LoadGtClassManaRegenPerSpiritDBC()
         {
-            return LoadRatingChanceDBC(WCellConstants.DBC_REGENMPPERSPIRIT, out s_octManaRegenPerSpirit);
+            return LoadRatingChanceDBC(ClientDBConstants.DBC_GTREGENMPPERSPT, out s_octManaRegenPerSpirit);
         }
 
         private static bool LoadGtClassOCTManaRegenDBC()
         {
-            return LoadRatingChanceDBC(WCellConstants.DBC_OCTREGENMP, out s_octManaRegen);
+            return LoadRatingChanceDBC(ClientDBConstants.DBC_GTOCTREGENMP, out s_octManaRegen);
         }
 
         private static bool LoadGtBarberShopCostDBC(out float[] vals)
         {
-            string gtDbcPath = RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_BARBERSHOPCOST);
+            string gtDbcPath = RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_GTBARBERSHOPCOSTBASE);
 
             var dbcRdr = new ListDBCReader<float, GameTableConverter>(gtDbcPath);
 
@@ -275,7 +283,7 @@ namespace WCell.RealmServer.Entities
         {
             combatRatings = new Dictionary<CombatRating, float[]>();
 
-            string gtDbcPath = RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_COMBATRATINGS);
+            string gtDbcPath = RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_GTCOMBATRATINGS);
 
             if (!File.Exists(gtDbcPath))
             {
@@ -306,63 +314,63 @@ namespace WCell.RealmServer.Entities
         {
             if (!LoadGtBaseSpellCritChanceDBC())
             {
-                s_log.Info(string.Format(Resources.DBCLoadFailed, WCellConstants.DBC_SPELLCRITBASE));
+                s_log.Info(string.Format(Resources.DBCLoadFailed, ClientDBConstants.DBC_GTCHANCETOSPELLCRITBASE));
 
                 return false;
             }
 
             if (!LoadGtClassSpellCritChanceDBC())
             {
-                s_log.Info(string.Format(Resources.DBCLoadFailed, WCellConstants.DBC_SPELLCRITCLASS));
+                s_log.Info(string.Format(Resources.DBCLoadFailed, ClientDBConstants.DBC_GTCHANCETOSPELLCRIT));
 
                 return false;
             }
 
             if (!LoadGtBaseMeleeCritChanceDBC())
             {
-                s_log.Info(string.Format(Resources.DBCLoadFailed, WCellConstants.DBC_MELEECRITBASE));
+                s_log.Info(string.Format(Resources.DBCLoadFailed, ClientDBConstants.DBC_GTCHANCETOMELEECRITBASE));
 
                 return false;
             }
 
             if (!LoadGtClassMeleeCritChanceDBC())
             {
-                s_log.Info(string.Format(Resources.DBCLoadFailed, WCellConstants.DBC_MELEECRITCLASS));
+                s_log.Info(string.Format(Resources.DBCLoadFailed, ClientDBConstants.DBC_GTCHANCETOMELEECRIT));
 
                 return false;
             }
 
             if (!LoadGtBarberShopCostDBC(out s_barberShopCosts))
             {
-                s_log.Info(string.Format(Resources.DBCLoadFailed, WCellConstants.DBC_MELEECRITCLASS));
+                s_log.Info(string.Format(Resources.DBCLoadFailed, ClientDBConstants.DBC_GTBARBERSHOPCOSTBASE));
 
                 return false;
             }
 
             if (!LoadGtCombatRatingsDBC(out s_combatRatings))
             {
-                s_log.Info(string.Format(Resources.DBCLoadFailed, WCellConstants.DBC_COMBATRATINGS));
+                s_log.Info(string.Format(Resources.DBCLoadFailed, ClientDBConstants.DBC_GTCOMBATRATINGS));
 
                 return false;
             }
 
-            if(!LoadGtClassHealthRegenPerSpiritDBC())
+            if(!LoadGtClassHealthRegenPerStaminaDBC())
             {
-                s_log.Info(string.Format(Resources.DBCLoadFailed, WCellConstants.DBC_OCTREGENHPPERSTAMINA));
+                s_log.Info(string.Format(Resources.DBCLoadFailed, ClientDBConstants.DBC_GTOCTHPPERSTAMINA));
 
                 return false;
             }
 
             if (!LoadGtClassManaRegenPerSpiritDBC())
             {
-                s_log.Info(string.Format(Resources.DBCLoadFailed, WCellConstants.DBC_REGENMPPERSPIRIT));
+                s_log.Info(string.Format(Resources.DBCLoadFailed, ClientDBConstants.DBC_GTREGENMPPERSPT));
 
                 return false;
             }
 
             if (!LoadGtClassOCTManaRegenDBC())
             {
-                s_log.Info(string.Format(Resources.DBCLoadFailed, WCellConstants.DBC_OCTREGENMP));
+                s_log.Info(string.Format(Resources.DBCLoadFailed, ClientDBConstants.DBC_GTOCTREGENMP));
 
                 return false;
             }

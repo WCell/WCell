@@ -18,7 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 
 namespace WCell.Tools.Domi
 {
@@ -37,7 +37,7 @@ namespace WCell.Tools.Domi
 	//    public float Orientation;
 	//}
 
-	//public class WorldMapOverlayConverter : DBCRecordConverter<WorldMapOverlay>
+	//public class WorldMapOverlayConverter : ClientDBRecordConverter<WorldMapOverlay>
 	//{
 
 	//}

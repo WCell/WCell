@@ -15,6 +15,7 @@
  *************************************************************************/
 
 using System;
+using System.Collections.Generic;
 using Cell.Core;
 using WCell.Constants;
 using WCell.Core.Network;
@@ -30,12 +31,14 @@ namespace WCell.Core
 	[Serializable]
 	public class ClientInformation
 	{
+	    private ClientType _mClientInstallationType;
 		private OperatingSystem m_operatingSys;
 		private ProcessorArchitecture m_architecture;
 		private ClientLocale m_Locale;
 
 		public ClientInformation()
 		{
+		    _mClientInstallationType = ClientType.Normal;
 			m_operatingSys = OperatingSystem.Win;
 			m_architecture = ProcessorArchitecture.x86;
 			Locale = ClientLocale.English;
@@ -45,10 +48,13 @@ namespace WCell.Core
 
 		private ClientInformation(PacketIn packet)
 		{
-			packet.SkipBytes(1);	// 0
-
 			try
 			{
+			    ProtocolVersion = packet.ReadByte();
+			    packet.SkipBytes(2); // size
+                var clientInstallationType = packet.ReadReversedPascalString(4);
+			    ClientTypes.Lookup(clientInstallationType, out _mClientInstallationType);
+
 				Version = new ClientVersion(packet.ReadBytes(5));
 				Architecture = packet.ReadReversedString();
 				OS = packet.ReadReversedString();
@@ -61,11 +67,47 @@ namespace WCell.Core
 
 				TimeZone = BitConverter.ToUInt32(packet.ReadBytes(4), 0);
 				IPAddress = new XmlIPAddress(packet.ReadBytes(4));
+
+                Console.WriteLine("ProtocolVersion: {0} ClientType: {1} Version: {2} Architecture: {3} OS: {4} Locale: {5} TimeZone: {6} IP: {7}", ProtocolVersion, ClientInstallationType, Version, Architecture, OS, Locale, TimeZone, IPAddress);
 			}
 			catch
 			{
 			}
 		}
+
+        public enum ClientType : byte
+        {
+            Test = 0,
+            Beta = 1,
+            Normal = 2,
+            Installing = 3,
+            Invalid = 4
+        }
+
+        public static class ClientTypes
+        {
+            public static readonly Dictionary<string, ClientType> TypeMap = 
+			new Dictionary<string, ClientType>(StringComparer.InvariantCultureIgnoreCase);
+
+            static ClientTypes()
+            {
+                TypeMap["WoWT"] = ClientType.Test;
+                TypeMap["WoWB"] = ClientType.Beta;
+                TypeMap["WoW\0"] = ClientType.Normal;
+                TypeMap["WoWI"] = ClientType.Installing;
+            }
+
+            public static bool Lookup(string clientInstallationTypeStr, out ClientType clientType)
+            {
+                if (!TypeMap.TryGetValue(clientInstallationTypeStr.Substring(0, 4), out clientType))
+                {
+                    clientType = ClientType.Invalid;
+                    return false;
+                }
+                return true;
+            }
+
+        }
 
 		/// <summary>
 		/// Possible operating systems of the client
@@ -105,6 +147,24 @@ namespace WCell.Core
 			get;
 			set;
 		}
+
+        /// <summary>
+        /// The game client version of the client.
+        /// </summary>
+        public byte ProtocolVersion
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// The type of client that is attempting to connect.
+        /// </summary>
+        public ClientType ClientInstallationType
+        {
+            get { return _mClientInstallationType; }
+            set { _mClientInstallationType = value; }
+        }
 
 		/// <summary>
 		/// The operating system of the client.

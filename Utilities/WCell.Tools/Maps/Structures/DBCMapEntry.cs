@@ -3,25 +3,25 @@ using System.Collections.Generic;
 using System.IO;
 using NLog;
 using WCell.Core;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 using WCell.RealmServer;
 
 namespace WCell.Tools.Maps.Structures
 {
 	public static class DBCMapReader
 	{
-		private static readonly Logger log = LogManager.GetCurrentClassLogger();
-		private static ListDBCReader<DBCMapEntry, DBCMapConverter> reader;
+		private static readonly Logger Log = LogManager.GetCurrentClassLogger();
+		private static ListDBCReader<DBCMapEntry, DBCMapConverter> _reader;
 
 		public static List<DBCMapEntry> GetMapEntries()
 		{
-			if (reader == null)
+			if (_reader == null)
 			{
-				reader = new ListDBCReader<DBCMapEntry, DBCMapConverter>(
-					RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_MAPS));
+				_reader = new ListDBCReader<DBCMapEntry, DBCMapConverter>(
+					RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_MAP));
 			}
 
-			return reader.EntryList;
+			return _reader.EntryList;
 		}
 	}
 
@@ -31,7 +31,7 @@ namespace WCell.Tools.Maps.Structures
 		public string MapDirName;
 	}
 
-	public class DBCMapConverter : AdvancedDBCRecordConverter<DBCMapEntry>
+	public class DBCMapConverter : AdvancedClientDBRecordConverter<DBCMapEntry>
 	{
 		public override DBCMapEntry ConvertTo(byte[] rawData, ref int id)
 		{

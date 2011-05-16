@@ -18,7 +18,7 @@ using System.Collections.Generic;
 using WCell.Constants;
 using WCell.Constants.Factions;
 using WCell.Core;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 using WCell.Core.Initialization;
 using WCell.Util;
 using WCell.Util.Variables;
@@ -66,7 +66,7 @@ namespace WCell.RealmServer.Factions
 		private static void InitFactionDBC()
 		{
 			var dbcRdr =
-				new MappedDBCReader<FactionEntry, FactionConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_FACTIONS));
+				new MappedDBCReader<FactionEntry, FactionConverter>(RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_FACTION));
 
 			foreach (var entry in dbcRdr.Entries.Values)
 			{
@@ -78,7 +78,7 @@ namespace WCell.RealmServer.Factions
 		{
 			var dbcRdr =
 				new MappedDBCReader<FactionTemplateEntry, FactionTemplateConverter>(
-					RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_FACTION_TEMPLATES));
+					RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_FACTIONTEMPLATE));
 
 			foreach (var templ in dbcRdr.Entries.Values)
 			{

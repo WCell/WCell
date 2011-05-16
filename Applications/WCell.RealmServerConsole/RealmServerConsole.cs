@@ -15,22 +15,12 @@
  *************************************************************************/
 
 using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using WCell.Core;
-using WCell.Core.DBC;
 using WCell.RealmServer.Commands;
 using WCell.Core.Database;
-using System.IO;
 using NLog;
 using System.Threading;
-using WCell.RealmServer.Entities;
 using WCell.Util.Commands;
-using WCell.Util;
-using System.Diagnostics;
 using WCell.Util.NLog;
-using System.Text.RegularExpressions;
 using WCell.Util.Strings;
 
 using RealmServ = WCell.RealmServer.RealmServer;

@@ -20,7 +20,7 @@ using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 using WCell.RealmServer.Items;
 using WCell.Util.Data;
 using WCell.RealmServer.Misc;

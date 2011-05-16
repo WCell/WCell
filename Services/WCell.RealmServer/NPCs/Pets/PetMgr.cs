@@ -6,7 +6,7 @@ using WCell.Constants.Pets;
 using WCell.Constants.Spells;
 using WCell.Constants.Talents;
 using WCell.Core;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Entities;

@@ -2,7 +2,7 @@ using System;
 using WCell.Constants;
 using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.NPCs;
 
@@ -53,7 +53,7 @@ namespace WCell.RealmServer.Spells
 		#endregion
 	}
 
-	public class ShapeshiftEntryConverter : DBCRecordConverter
+	public class ShapeshiftEntryConverter : ClientDBRecordConverter
 	{
 		public override void Convert(byte[] rawData)
 		{

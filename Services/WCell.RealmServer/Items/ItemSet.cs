@@ -3,7 +3,7 @@ using Cell.Core;
 using NLog;
 using WCell.Constants.Items;
 using WCell.Constants.Skills;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Skills;
@@ -75,7 +75,7 @@ namespace WCell.RealmServer.Items
 		public uint RequiredSkillValue;
 
 		#region DBC
-		public class ItemSetDBCConverter : AdvancedDBCRecordConverter<ItemSet>
+		public class ItemSetDBCConverter : AdvancedClientDBRecordConverter<ItemSet>
 		{
 			public override ItemSet ConvertTo(byte[] rawData, ref int id)
 			{

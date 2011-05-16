@@ -4,7 +4,7 @@ using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Constants.Spells;
 using WCell.Core;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Modifiers;
 using WCell.RealmServer.Spells;
@@ -58,13 +58,13 @@ namespace WCell.RealmServer.Items.Enchanting
 			RemoveEquippedEnchantHandlers[(uint)ItemEnchantmentType.Totem] = RemoveTotem;
 
 			EnchantmentConditionReader = new MappedDBCReader<ItemEnchantmentCondition, ItemEnchantmentConditionConverter>(
-				RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLITEMENCHANTMENTCONDITION));
+				RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_SPELLITEMENCHANTMENTCONDITION));
 
 			EnchantmentEntryReader = new MappedDBCReader<ItemEnchantmentEntry, ItemEnchantmentConverter>(
-				RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLITEMENCHANTMENT));
+				RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_SPELLITEMENCHANTMENT));
 
 			GemPropertiesReader = new MappedDBCReader<GemProperties, GemPropertiesConverter>(
-				RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_GEMPROPERTIES));
+				RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_GEMPROPERTIES));
 		}
 
 		private static void DoNothing(Item item, ItemEnchantmentEffect effect)

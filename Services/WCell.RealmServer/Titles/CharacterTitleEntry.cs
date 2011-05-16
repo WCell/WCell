@@ -1,5 +1,5 @@
 ﻿using WCell.Constants.Misc;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 
 namespace WCell.RealmServer.Titles
 {
@@ -13,7 +13,7 @@ namespace WCell.RealmServer.Titles
         public TitleBitId BitIndex;     // 5
     }
 
-    public class TitleConverter : DBCRecordConverter
+    public class TitleConverter : ClientDBRecordConverter
     {
         public override void Convert(byte[] rawData)
         {

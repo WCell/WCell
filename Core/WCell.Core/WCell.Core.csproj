@@ -188,6 +188,7 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="Addons\WCellAddonAttribute.cs" />
+    <Compile Include="ClientDB\DB2Reader.cs" />
     <Compile Include="CommandUtil.cs" />
     <Compile Include="Cryptography\ARC4.cs" />
     <Compile Include="Addons\WCellAddonBase.cs" />
@@ -196,6 +197,7 @@
     <Compile Include="Database\NHIdGenerator.cs" />
     <Compile Include="Database\SqlUtil.cs" />
     <Compile Include="Database\WCellRecord.cs" />
+    <Compile Include="ClientDB\ClientDBConstants.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Addons\IWCellAddon.cs" />
     <Compile Include="Addons\WCellAddonContext.cs" />
@@ -236,9 +238,8 @@
     <Compile Include="AppConfig.cs" />
     <Compile Include="Database\DatabaseConfiguration.cs" />
     <Compile Include="Database\DatabaseUtil.cs" />
-    <Compile Include="DBC\DBCReader.cs" />
-    <Compile Include="DBC\DBCRecordConverter.cs" />
-    <Compile Include="DBC\DBCRecords.cs" />
+    <Compile Include="ClientDB\DBCReader.cs" />
+    <Compile Include="ClientDB\ClientDBRecordConverter.cs" />
     <Compile Include="EntityId.cs" />
     <Compile Include="Initialization\InitializationAttribute.cs" />
     <Compile Include="Initialization\InitializationPass.cs" />

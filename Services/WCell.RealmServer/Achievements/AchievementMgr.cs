@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using WCell.Constants.Achievements;
 using WCell.Core;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Content;
 
@@ -132,9 +132,9 @@ namespace WCell.RealmServer.Achievements
 
 		static void LoadDBCs()
 		{
-			new DBCReader<AchievementEntryConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_ACHIEVEMENTS));
-			new DBCReader<AchievementCategoryEntryConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_ACHIEVEMENT_CATEGORIES));
-			new DBCReader<AchievementCriteriaConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_ACHIEVEMENT_CRITERIAS));
+			new DBCReader<AchievementEntryConverter>(RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_ACHIEVEMENT));
+			new DBCReader<AchievementCategoryEntryConverter>(RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_ACHIEVEMENT_CATEGORY));
+			new DBCReader<AchievementCriteriaConverter>(RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_ACHIEVEMENT_CRITERIA));
 		}
 		#endregion
 

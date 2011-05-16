@@ -19,7 +19,7 @@ using NLog;
 using WCell.Constants;
 using WCell.Constants.Talents;
 using WCell.Core;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 using WCell.RealmServer.Spells;
 using WCell.Util;
 
@@ -30,7 +30,7 @@ namespace WCell.RealmServer.Talents
 		private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
 		#region TalentTab.dbc
-		public class TalentTreeConverter : AdvancedDBCRecordConverter<TalentTree>
+		public class TalentTreeConverter : AdvancedClientDBRecordConverter<TalentTree>
 		{
 			public override TalentTree ConvertTo(byte[] rawData, ref int id)
 			{
@@ -57,7 +57,7 @@ namespace WCell.RealmServer.Talents
 
 
 		#region Talent.dbc
-		public class TalentConverter : AdvancedDBCRecordConverter<TalentEntry>
+		public class TalentConverter : AdvancedClientDBRecordConverter<TalentEntry>
 		{
 			public override TalentEntry ConvertTo(byte[] rawData, ref int id)
 			{

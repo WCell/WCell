@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using WCell.Constants;
 using WCell.Constants.World;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 using WCell.RealmServer.Global;
 
 namespace WCell.RealmServer.Battlegrounds
@@ -16,7 +16,7 @@ namespace WCell.RealmServer.Battlegrounds
 		public MapId MapId;
 	}
 
-	public class BattlemasterConverter : AdvancedDBCRecordConverter<BattlemasterList>
+	public class BattlemasterConverter : AdvancedClientDBRecordConverter<BattlemasterList>
 	{
 		public override BattlemasterList ConvertTo(byte[] rawData, ref int bgId)
 		{

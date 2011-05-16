@@ -1,14 +1,14 @@
 using System;
 using WCell.Constants;
 using WCell.Constants.World;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 using WCell.Util;
 using WCell.Util.Graphics;
 using NLog;
 
 namespace WCell.RealmServer.Global
 {
-	public class MapDifficultyConverter : DBCRecordConverter
+	public class MapDifficultyConverter : ClientDBRecordConverter
 	{
 		public override void Convert(byte[] rawData)
 		{
@@ -47,7 +47,7 @@ namespace WCell.RealmServer.Global
 		}
 	}
 
-	public class MapConverter : DBCRecordConverter
+	public class MapConverter : ClientDBRecordConverter
 	{
 		public override void Convert(byte[] rawData)
 		{
@@ -88,7 +88,7 @@ namespace WCell.RealmServer.Global
 		}
 	}
 
-    public class WorldMapOverlayConverter : DBCRecordConverter
+    public class WorldMapOverlayConverter : ClientDBRecordConverter
     {
         public override void Convert(byte[] rawData)
         {

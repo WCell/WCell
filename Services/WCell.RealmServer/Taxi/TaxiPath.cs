@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using Cell.Core;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Paths;
 
@@ -56,7 +56,7 @@ namespace WCell.RealmServer.Taxi
 		}
 	}
 
-	public class DBCTaxiPathConverter : AdvancedDBCRecordConverter<TaxiPath>
+	public class DBCTaxiPathConverter : AdvancedClientDBRecordConverter<TaxiPath>
 	{
 		public override TaxiPath ConvertTo(byte[] rawData, ref int id)
 		{

@@ -4,7 +4,7 @@ using System.Linq;
 using NLog;
 using WCell.Constants.Items;
 using WCell.Core;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Global;
@@ -625,23 +625,23 @@ namespace WCell.RealmServer.Items
 		private static void LoadDBCs()
 		{
 			RandomPropPointReader = new MappedDBCReader<ItemLevelInfo, ItemRandPropPointConverter>(
-                RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_RANDPROPPOINTS));
+                RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_RANDPROPPOINTS));
 
 			EnchantMgr.Init();
 
 			RandomPropertiesReader =
 				new MappedDBCReader<ItemRandomPropertyEntry, ItemRandomPropertiesConverter>(RealmServerConfiguration.GetDBCFile(
-																						WCellConstants.DBC_ITEMRANDOMPROPERTIES));
+																						ClientDBConstants.DBC_ITEMRANDOMPROPERTIES));
 
 			RandomSuffixReader =
 				new MappedDBCReader<ItemRandomSuffixEntry, ItemRandomSuffixConverter>(RealmServerConfiguration.GetDBCFile(
-																					WCellConstants.DBC_ITEMRANDOMSUFFIX));
+																					ClientDBConstants.DBC_ITEMRANDOMSUFFIX));
 
             ScalingStatDistributionReader = new MappedDBCReader<ScalingStatDistributionEntry, ScalingStatDistributionConverter>(RealmServerConfiguration.GetDBCFile(
-                                                                                    WCellConstants.DBC_SCALINGSTATDISTRIBUTION));
+                                                                                    ClientDBConstants.DBC_SCALINGSTATDISTRIBUTION));
 
             ScalingStatValuesReader = new MappedDBCReader<ScalingStatValues, ScalingStatValuesConverter>(RealmServerConfiguration.GetDBCFile(
-                                                                                    WCellConstants.DBC_SCALINGSTATVALUES));
+                                                                                    ClientDBConstants.DBC_SCALINGSTATVALUES));
 		}
 
 		public static bool Loaded { get; private set; }
@@ -763,7 +763,7 @@ namespace WCell.RealmServer.Items
 		public static void LoadSets()
 		{
 			var reader = new MappedDBCReader<ItemSet, ItemSet.ItemSetDBCConverter>(
-                RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_ITEMSET));
+                RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_ITEMSET));
 
 			foreach (var set in reader.Entries.Values)
 			{
@@ -840,7 +840,7 @@ namespace WCell.RealmServer.Items
 		public static Dictionary<int, TotemCategoryInfo> ReadTotemCategories()
 		{
 			var reader = new MappedDBCReader<TotemCategoryInfo, TotemCatConverter>(RealmServerConfiguration.GetDBCFile(
-                                                                                    WCellConstants.DBC_TOTEMCATEGORY));
+                                                                                    ClientDBConstants.DBC_TOTEMCATEGORY));
 			return reader.Entries;
 		}
 
@@ -850,7 +850,7 @@ namespace WCell.RealmServer.Items
 			public string Name;
 		}
 
-		public class TotemCatConverter : AdvancedDBCRecordConverter<TotemCategoryInfo>
+		public class TotemCatConverter : AdvancedClientDBRecordConverter<TotemCategoryInfo>
 		{
 			public override TotemCategoryInfo ConvertTo(byte[] rawData, ref int id)
 			{

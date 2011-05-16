@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Cell.Core;
 using WCell.Constants.Items;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 
 namespace WCell.RealmServer.Items
 {
@@ -78,7 +78,7 @@ namespace WCell.RealmServer.Items
 
     #region ItemExtendedCostEntry.dbc
 
-    public class DBCItemExtendedCostConverter : AdvancedDBCRecordConverter<ItemExtendedCostEntry>
+    public class DBCItemExtendedCostConverter : AdvancedClientDBRecordConverter<ItemExtendedCostEntry>
     {
         public override ItemExtendedCostEntry ConvertTo(byte[] rawData, ref int id)
         {

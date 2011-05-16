@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using WCell.Constants.Misc;
 using WCell.Core;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 using WCell.Core.Initialization;
 
 namespace WCell.RealmServer.Titles
@@ -17,7 +17,7 @@ namespace WCell.RealmServer.Titles
         [Initialization(InitializationPass.Fifth)]
         public static void InitTitles()
         {
-            new DBCReader<TitleConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_CHARTITLES));
+            new DBCReader<TitleConverter>(RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_CHARTITLES));
         }
 
         public static CharacterTitleEntry GetTitleEntry(TitleId titleId)

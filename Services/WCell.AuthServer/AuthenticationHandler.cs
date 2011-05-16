@@ -172,8 +172,6 @@ namespace WCell.AuthServer
 		[ClientPacketHandler(AuthServerOpCode.AUTH_LOGON_CHALLENGE)]
 		public static void AuthChallengeRequest(IAuthClient client, AuthPacketIn packet)
 		{
-			packet.SkipBytes(6); // Skip game name and packet size
-
 			client.Info = ClientInformation.ReadFromPacket(packet);
 
 			// Account-names are always sent upper-case by the client (make sure, the tradition is kept alive)

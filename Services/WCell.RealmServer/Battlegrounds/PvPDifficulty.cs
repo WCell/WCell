@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using WCell.Constants;
 using WCell.Constants.World;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 using WCell.RealmServer.Global;
 
 namespace WCell.RealmServer.Battlegrounds
@@ -19,7 +19,7 @@ namespace WCell.RealmServer.Battlegrounds
         public int difficulty;
     };
 
-    public class PvPDifficultyConverter : AdvancedDBCRecordConverter<PvPDifficultyEntry>
+    public class PvPDifficultyConverter : AdvancedClientDBRecordConverter<PvPDifficultyEntry>
     {
         public override PvPDifficultyEntry ConvertTo(byte[] rawData, ref int id)
         {

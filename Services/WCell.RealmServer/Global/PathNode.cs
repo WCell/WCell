@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Cell.Core;
 using WCell.Constants.NPCs;
 using WCell.Constants.World;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Taxi;
 using WCell.Util.Graphics;
@@ -69,7 +69,7 @@ namespace WCell.RealmServer.Global
 		}
 	}
 
-	public class DBCTaxiNodeConverter : AdvancedDBCRecordConverter<PathNode>
+	public class DBCTaxiNodeConverter : AdvancedClientDBRecordConverter<PathNode>
 	{
 		public override PathNode ConvertTo(byte[] rawData, ref int id)
 		{

@@ -5,13 +5,13 @@ using System.Runtime.InteropServices;
 using System.Text;
 using WCell.Constants.Achievements;
 using WCell.Constants.World;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 using WCell.RealmServer.Achievements;
 using WCell.Util;
 
 namespace WCell.RealmServer.Achievements
 {
-    public class AchievementCategoryEntryConverter : DBCRecordConverter
+    public class AchievementCategoryEntryConverter : ClientDBRecordConverter
     {
         public override void Convert(byte[] rawData)
         {
@@ -25,7 +25,7 @@ namespace WCell.RealmServer.Achievements
         }
     }
 
-	public class AchievementEntryConverter : DBCRecordConverter
+	public class AchievementEntryConverter : ClientDBRecordConverter
 	{
 		public override void Convert(byte[] rawData)
 		{
@@ -47,7 +47,7 @@ namespace WCell.RealmServer.Achievements
 		}
 	}
 
-	public class AchievementCriteriaConverter : DBCRecordConverter
+	public class AchievementCriteriaConverter : ClientDBRecordConverter
 	{
 		public override void Convert(byte[] rawData)
 		{

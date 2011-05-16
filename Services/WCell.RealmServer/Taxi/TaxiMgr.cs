@@ -7,7 +7,7 @@ using WCell.Constants.NPCs;
 using WCell.Constants.Pathing;
 using WCell.Constants.Updates;
 using WCell.Core;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
@@ -95,13 +95,13 @@ namespace WCell.RealmServer.Taxi
 		{
 			init = true;
 			var taxiNodeReader = new MappedDBCReader<PathNode, DBCTaxiNodeConverter>(
-                RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_TAXINODES));
+                RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_TAXINODES));
 
 			var taxiPathReader = new MappedDBCReader<TaxiPath, DBCTaxiPathConverter>(
-				RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_TAXIPATHES));
+				RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_TAXIPATH));
 
 			TaxiVertexReader = new MappedDBCReader<PathVertex, DBCTaxiPathNodeConverter>(
-				RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_TAXIPATHNODES));
+				RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_TAXIPATHNODE));
 
 			foreach (var node in taxiNodeReader.Entries.Values)
 			{

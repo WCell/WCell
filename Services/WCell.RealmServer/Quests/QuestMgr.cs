@@ -19,7 +19,7 @@ using NLog;
 using WCell.Constants;
 using WCell.Constants.Quests;
 using WCell.Core;
-using WCell.Core.DBC;
+using WCell.Core.ClientDB;
 using WCell.Core.Initialization;
 using WCell.Core.Network;
 using WCell.RealmServer.Content;
@@ -153,9 +153,9 @@ namespace WCell.RealmServer.Quests
 		{
 			if (!Loaded)
 			{
-                new DBCReader<QuestXpConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_QUESTXP));
-                new DBCReader<QuestRewRepConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_QUESTFACTIONREWARD));
-                new DBCReader<QuestHonorInfoConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_TEAMCONTRIBUTIONPOINTS));
+                new DBCReader<QuestXpConverter>(RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_QUESTXP));
+                new DBCReader<QuestRewRepConverter>(RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_QUESTFACTIONREWARD));
+                new DBCReader<QuestHonorInfoConverter>(RealmServerConfiguration.GetDBCFile(ClientDBConstants.DBC_TEAMCONTRIBUTIONPOINTS));
 				Templates = new QuestTemplate[30000];
 
 				ContentMgr.Load<QuestTemplate>();
