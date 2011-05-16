@@ -135,7 +135,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Content", "Content", "{352C7D18-D5CA-41EA-815F-65DECA33D17E}"
 	ProjectSection(SolutionItems) = preProject
 		Run\Content\Battlegrounds.xml = Run\Content\Battlegrounds.xml
-		Run\Content\Impl\UDB\Tables.xml = Run\Content\Impl\UDB\Tables.xml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Packets", "Packets", "{D18CDB4B-0134-41C0-AE6F-DEE59586F470}"
@@ -170,6 +169,67 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Packets", "Packets", "{D18C
 		Run\Content\Packets\VoiceChat.xml = Run\Content\Packets\VoiceChat.xml
 		Run\Content\Packets\WhoList.xml = Run\Content\Packets\WhoList.xml
 		Run\Content\Packets\World.xml = Run\Content\Packets\World.xml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SFDB", "SFDB", "{F30E9E55-ABD9-41DB-BFAA-0F6761C77060}"
+	ProjectSection(SolutionItems) = preProject
+		Run\Content\Impl\SFDB\Data\AchievementCriteriaRequirement.xml = Run\Content\Impl\SFDB\Data\AchievementCriteriaRequirement.xml
+		Run\Content\Impl\SFDB\Data\AchievementReward.xml = Run\Content\Impl\SFDB\Data\AchievementReward.xml
+		Run\Content\Impl\SFDB\Data\Archetype.xml = Run\Content\Impl\SFDB\Data\Archetype.xml
+		Run\Content\Impl\SFDB\Data\ATTemplate.xml = Run\Content\Impl\SFDB\Data\ATTemplate.xml
+		Run\Content\Impl\SFDB\Data\BattlegroundTemplate.xml = Run\Content\Impl\SFDB\Data\BattlegroundTemplate.xml
+		Run\Content\Impl\SFDB\Data\BattlemasterRelation.xml = Run\Content\Impl\SFDB\Data\BattlemasterRelation.xml
+		Run\Content\Impl\SFDB\Data\ClassLevelSetting.xml = Run\Content\Impl\SFDB\Data\ClassLevelSetting.xml
+		Run\Content\Impl\SFDB\Data\FishingLootItemEntry.xml = Run\Content\Impl\SFDB\Data\FishingLootItemEntry.xml
+		Run\Content\Impl\SFDB\Data\GameEvent.xml = Run\Content\Impl\SFDB\Data\GameEvent.xml
+		Run\Content\Impl\SFDB\Data\GOEntry.xml = Run\Content\Impl\SFDB\Data\GOEntry.xml
+		Run\Content\Impl\SFDB\Data\GOLootItemEntry.xml = Run\Content\Impl\SFDB\Data\GOLootItemEntry.xml
+		Run\Content\Impl\SFDB\Data\GOQuestGiverRelation.xml = Run\Content\Impl\SFDB\Data\GOQuestGiverRelation.xml
+		Run\Content\Impl\SFDB\Data\GOSpawnEntry.xml = Run\Content\Impl\SFDB\Data\GOSpawnEntry.xml
+		Run\Content\Impl\SFDB\Data\GOSpawnPoolTemplate.xml = Run\Content\Impl\SFDB\Data\GOSpawnPoolTemplate.xml
+		Run\Content\Impl\SFDB\Data\GossipEntry.xml = Run\Content\Impl\SFDB\Data\GossipEntry.xml
+		Run\Content\Impl\SFDB\Data\ItemLootItemEntry.xml = Run\Content\Impl\SFDB\Data\ItemLootItemEntry.xml
+		Run\Content\Impl\SFDB\Data\ItemRandomEnchantEntry.xml = Run\Content\Impl\SFDB\Data\ItemRandomEnchantEntry.xml
+		Run\Content\Impl\SFDB\Data\ItemTemplate.xml = Run\Content\Impl\SFDB\Data\ItemTemplate.xml
+		Run\Content\Impl\SFDB\Data\LevelStatInfo.xml = Run\Content\Impl\SFDB\Data\LevelStatInfo.xml
+		Run\Content\Impl\SFDB\Data\LevelXp.xml = Run\Content\Impl\SFDB\Data\LevelXp.xml
+		Run\Content\Impl\SFDB\Data\LootEntries.xml = Run\Content\Impl\SFDB\Data\LootEntries.xml
+		Run\Content\Impl\SFDB\Data\MapTemplate.xml = Run\Content\Impl\SFDB\Data\MapTemplate.xml
+		Run\Content\Impl\SFDB\Data\NpcAiText.xml = Run\Content\Impl\SFDB\Data\NpcAiText.xml
+		Run\Content\Impl\SFDB\Data\NPCEntry.xml = Run\Content\Impl\SFDB\Data\NPCEntry.xml
+		Run\Content\Impl\SFDB\Data\NPCEquipmentEntry.xml = Run\Content\Impl\SFDB\Data\NPCEquipmentEntry.xml
+		Run\Content\Impl\SFDB\Data\NPCLootItemEntry.xml = Run\Content\Impl\SFDB\Data\NPCLootItemEntry.xml
+		Run\Content\Impl\SFDB\Data\NPCQuestGiverRelation.xml = Run\Content\Impl\SFDB\Data\NPCQuestGiverRelation.xml
+		Run\Content\Impl\SFDB\Data\NPCSpawnEntry.xml = Run\Content\Impl\SFDB\Data\NPCSpawnEntry.xml
+		Run\Content\Impl\SFDB\Data\PageTextEntry.xml = Run\Content\Impl\SFDB\Data\PageTextEntry.xml
+		Run\Content\Impl\SFDB\Data\Pets.xml = Run\Content\Impl\SFDB\Data\Pets.xml
+		Run\Content\Impl\SFDB\Data\PlayerActionButtonEntry.xml = Run\Content\Impl\SFDB\Data\PlayerActionButtonEntry.xml
+		Run\Content\Impl\SFDB\Data\PlayerItemEntry.xml = Run\Content\Impl\SFDB\Data\PlayerItemEntry.xml
+		Run\Content\Impl\SFDB\Data\PlayerSpellEntry.xml = Run\Content\Impl\SFDB\Data\PlayerSpellEntry.xml
+		Run\Content\Impl\SFDB\Data\QuestPOI.xml = Run\Content\Impl\SFDB\Data\QuestPOI.xml
+		Run\Content\Impl\SFDB\Data\QuestTemplate.xml = Run\Content\Impl\SFDB\Data\QuestTemplate.xml
+		Run\Content\Impl\SFDB\Data\SpawnPoolTemplateEntry.xml = Run\Content\Impl\SFDB\Data\SpawnPoolTemplateEntry.xml
+		Run\Content\Impl\SFDB\Data\Spell.xml = Run\Content\Impl\SFDB\Data\Spell.xml
+		Run\Content\Impl\SFDB\Data\SpellEffect.xml = Run\Content\Impl\SFDB\Data\SpellEffect.xml
+		Run\Content\Impl\SFDB\Data\SpellLearnRelation.xml = Run\Content\Impl\SFDB\Data\SpellLearnRelation.xml
+		Run\Content\Impl\SFDB\Data\SpellProcEventEntry.xml = Run\Content\Impl\SFDB\Data\SpellProcEventEntry.xml
+		Run\Content\Impl\SFDB\Data\TrainerEntry.xml = Run\Content\Impl\SFDB\Data\TrainerEntry.xml
+		Run\Content\Impl\SFDB\Data\TrainerSpellEntry.xml = Run\Content\Impl\SFDB\Data\TrainerSpellEntry.xml
+		Run\Content\Impl\SFDB\Data\TransportEntry.xml = Run\Content\Impl\SFDB\Data\TransportEntry.xml
+		Run\Content\Impl\SFDB\Data\UnitModelInfo.xml = Run\Content\Impl\SFDB\Data\UnitModelInfo.xml
+		Run\Content\Impl\SFDB\Data\VendorItemEntry.xml = Run\Content\Impl\SFDB\Data\VendorItemEntry.xml
+		Run\Content\Impl\SFDB\Data\WaypointEntry.xml = Run\Content\Impl\SFDB\Data\WaypointEntry.xml
+		Run\Content\Impl\SFDB\Data\WorldZoneLocation.xml = Run\Content\Impl\SFDB\Data\WorldZoneLocation.xml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tables", "Tables", "{1EEDA72A-F53B-46CB-9314-B994A92276E7}"
+	ProjectSection(SolutionItems) = preProject
+		Run\Content\Impl\SFDB\Tables.xml = Run\Content\Impl\SFDB\Tables.xml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tables", "Tables", "{5A159109-E408-4C82-A88A-69369D44CFE3}"
+	ProjectSection(SolutionItems) = preProject
+		Run\Content\Impl\UDB\Tables.xml = Run\Content\Impl\UDB\Tables.xml
 	EndProjectSection
 EndProject
 Global
@@ -462,14 +522,17 @@ Global
 		{009B84F0-3E1E-4674-9318-7B6BECF748E1} = {352C7D18-D5CA-41EA-815F-65DECA33D17E}
 		{22AD2989-C47E-499D-B4EB-72A2D43EF5B7} = {352C7D18-D5CA-41EA-815F-65DECA33D17E}
 		{D18CDB4B-0134-41C0-AE6F-DEE59586F470} = {352C7D18-D5CA-41EA-815F-65DECA33D17E}
+		{F30E9E55-ABD9-41DB-BFAA-0F6761C77060} = {352C7D18-D5CA-41EA-815F-65DECA33D17E}
 		{19AE8D2C-F941-46B9-933F-3A5E5CBA134F} = {009B84F0-3E1E-4674-9318-7B6BECF748E1}
 		{2029346D-5B87-4B5B-A5BD-4CB64AB0BC79} = {009B84F0-3E1E-4674-9318-7B6BECF748E1}
 		{B6E8E045-B27D-47A8-A2F1-94B7BB351A80} = {009B84F0-3E1E-4674-9318-7B6BECF748E1}
+		{5A159109-E408-4C82-A88A-69369D44CFE3} = {22AD2989-C47E-499D-B4EB-72A2D43EF5B7}
+		{1EEDA72A-F53B-46CB-9314-B994A92276E7} = {F30E9E55-ABD9-41DB-BFAA-0F6761C77060}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		ISWCFSolution = True
-		Locked = False
 		UnLocked = True
+		Locked = False
+		ISWCFSolution = True
 	EndGlobalSection
 	GlobalSection(TextTemplating) = postSolution
 		TextTemplating = 1

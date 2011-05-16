@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <DataHolder Name="ATTemplate">
+    <DefaultTable>areatrigger_teleport</DefaultTable>
+    
+    <Flat Name="Id" Column="id" />
+    <Flat Name="Name" Column="name" />
+    <Flat Name="Name" Table="areatrigger_tavern" Column="name" />
+    <!--<Flat Name="RequiredLevel" Column="level_min" Table="access_requirement"/>
+    <Flat Name="RequiredItemId" Column="item" Table="access_requirement"/>
+    <Flat Name="RequiredItem2Id" Column="item2" Table="access_requirement"/>-->
+    <Flat Name="RequiredHeroicKeyId" Column="" />
+    <Flat Name="RequiredHeroicKey2Id" Column="" />
+    <Flat Name="RequiredQuestId" Column=""/>
+
+    <Flat Name="RequiredFailedText" Column="" />
+    <Flat Name="TargetMap" Column="target_map" />
+    <Nested Name="TargetPos">
+      <Flat Name="X" Column="target_position_x" />
+      <Flat Name="Y" Column="target_position_y" />
+      <Flat Name="Z" Column="target_position_z" />
+    </Nested>
+    <Flat Name="TargetOrientation" Column="target_orientation" />
+
+    <Flat Name="TriggerQuestId" Table="areatrigger_involvedrelation" Column="quest" />
+<!--extra in UDB
+    required_quest_done_heroic
+-->
+<!--not in UDB
+    <Flat Name="TargetScreen" Column="" />
+    <Flat Name="Type" Column="" />
+-->
+  </DataHolder>
+</DataHolders>

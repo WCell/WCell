@@ -242,7 +242,7 @@ namespace WCell.RealmServer.Spells.Targeting
 					limit = 40;
 				}
 				else
-                    limit = (int)spell.SpellTargetRestrictions.MaxTargets;
+                    limit = spell.SpellTargetRestrictions != null ? (int)spell.SpellTargetRestrictions.MaxTargets : 0;
 			}
 
 			if (limit < 1)

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <DataHolder Name="ReferenceLootItemEntry">
+    <DefaultTable>reference_loot_template</DefaultTable>
+    <Flat Name="EntryId" Column="entry" />
+    <Flat Name="ItemId" Column="item" />
+    <Flat Name="DropChance" Column="ChanceOrQuestChance" />
+    <Flat Name="GroupId" Column="groupid" />
+    <Flat Name="MinAmountOrRef" Column="MinCountOrRef" />
+    <Flat Name="MaxAmount" Column="maxcount" />
+  </DataHolder>
+
+  <DataHolder Name="MillingLootItemEntry">
+    <DefaultTable>milling_loot_template</DefaultTable>
+    <Flat Name="EntryId" Column="entry" />
+    <Flat Name="ItemId" Column="item" />
+    <Flat Name="DropChance" Column="ChanceOrQuestChance" />
+    <Flat Name="GroupId" Column="groupid" />
+    <Flat Name="MinAmountOrRef" Column="MinCountOrRef" />
+    <Flat Name="MaxAmount" Column="maxcount" />
+  </DataHolder>
+
+  <DataHolder Name="ProspectingLootItemEntry">
+    <DefaultTable>prospecting_loot_template</DefaultTable>
+    <Flat Name="EntryId" Column="entry" />
+    <Flat Name="ItemId" Column="item" />
+    <Flat Name="DropChance" Column="ChanceOrQuestChance" />
+    <Flat Name="GroupId" Column="groupid" />
+    <Flat Name="MinAmountOrRef" Column="MinCountOrRef" />
+    <Flat Name="MaxAmount" Column="maxcount" />
+  </DataHolder>
+
+  <DataHolder Name="PickPocketLootItemEntry">
+    <DefaultTable>pickpocketing_loot_template</DefaultTable>
+    <Flat Name="EntryId" Column="entry" />
+    <Flat Name="ItemId" Column="item" />
+    <Flat Name="DropChance" Column="ChanceOrQuestChance" />
+    <Flat Name="GroupId" Column="groupid" />
+    <Flat Name="MinAmountOrRef" Column="MinCountOrRef" />
+    <Flat Name="MaxAmount" Column="maxcount" />
+  </DataHolder>
+
+  <DataHolder Name="SkinningLootItemEntry">
+    <DefaultTable>skinning_loot_template</DefaultTable>
+    <Flat Name="EntryId" Column="entry" />
+    <Flat Name="ItemId" Column="item" />
+    <Flat Name="DropChance" Column="ChanceOrQuestChance" />
+    <Flat Name="GroupId" Column="groupid" />
+    <Flat Name="MinAmountOrRef" Column="MinCountOrRef" />
+    <Flat Name="MaxAmount" Column="maxcount" />
+  </DataHolder>
+
+  <DataHolder Name="DisenchantingLootItemEntry">
+    <DefaultTable>disenchant_loot_template</DefaultTable>
+    <Flat Name="EntryId" Column="entry" />
+    <Flat Name="ItemId" Column="item" />
+    <Flat Name="DropChance" Column="ChanceOrQuestChance" />
+    <Flat Name="GroupId" Column="groupid" />
+    <Flat Name="MinAmountOrRef" Column="MinCountOrRef" />
+    <Flat Name="MaxAmount" Column="maxcount" />
+  </DataHolder>
+</DataHolders>

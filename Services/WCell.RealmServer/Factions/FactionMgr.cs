@@ -125,6 +125,9 @@ namespace WCell.RealmServer.Factions
 			ByRace[(uint)RaceId.Draenei] = fac = ById[(uint)FactionId.PLAYERDraenei];
 			fac.SetAlliancePlayer();
 
+            ByRace[(uint)RaceId.Worgen] = fac = ById[(uint)FactionId.PLAYERWorgen];
+            fac.SetAlliancePlayer();
+
 
 			ByRace[(uint)RaceId.Orc] = fac = ById[(uint)FactionId.PLAYEROrc];
 			fac.SetHordePlayer();
@@ -140,6 +143,9 @@ namespace WCell.RealmServer.Factions
 
 			ByRace[(uint)RaceId.BloodElf] = fac = ById[(uint)FactionId.PLAYERBloodElf];
 			fac.SetHordePlayer();
+
+            ByRace[(uint)RaceId.Goblin] = fac = ById[(uint)FactionId.PLAYERGoblin];
+            fac.SetHordePlayer();
 
 			foreach (var faction in ById)
 			{

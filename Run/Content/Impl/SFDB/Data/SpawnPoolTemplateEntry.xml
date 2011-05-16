@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <DataHolder Name="SpawnPoolTemplateEntry">
+    <DefaultTable>pool_template</DefaultTable>
+    
+    <Flat Name="PoolId" Column="entry" />
+    <Flat Name="MaxSpawnAmount" Column="max_limit" />
+
+  </DataHolder>
+</DataHolders>

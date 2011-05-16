@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <DataHolder Name="QuestPOI">
+    <DefaultTable>quest_poi</DefaultTable>
+    <Flat Name="QuestId" Column="questId" />
+    <Flat Name="PoiId" Column="poiId" />
+    <Flat Name="ObjectiveIndex" Column="objIndex" />
+    <Flat Name="MapId" Column="mapId" />
+    <Flat Name="ZoneId" Column="mapAreaId" />
+    <Flat Name="FloorId" Column="floorId" />
+    <Flat Name="Unk3" Column="unk3" />
+    <Flat Name="Unk4" Column="unk4" />
+  </DataHolder>
+  
+  <DataHolder Name="QuestPOIPoints">
+    <DefaultTable>quest_poi_points</DefaultTable>
+    <Flat Name="QuestId" Column="questId" />
+    <Flat Name="PoiId" Column="poiId" />
+    <Flat Name="X" Column="x"/>
+    <Flat Name="Y" Column="y"/>
+  </DataHolder>
+  
+</DataHolders>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <DataHolder Name="UnitModelInfo">
+  	<DefaultTable>creature_model_info</DefaultTable>
+
+    <Flat Name="DisplayId" Column="modelid" />
+    <Flat Name="CombatReach" Column="combat_reach" />
+    <Flat Name="BoundingRadius" Column="bounding_radius" />
+  </DataHolder>
+</DataHolders>

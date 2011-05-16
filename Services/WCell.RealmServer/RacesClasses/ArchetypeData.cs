@@ -107,7 +107,7 @@ namespace WCell.RealmServer.RacesClasses
 		public ClassId Class;
 
 		public uint Index;
-		public ushort Action;
+		public int Action;
 		public byte Type;
 		public byte Info;
 
@@ -122,7 +122,7 @@ namespace WCell.RealmServer.RacesClasses
 			{
 				foreach (var archetype in archetypes)
 				{
-					ActionButton.Set(archetype.ActionButtons, Index, Action, Type, Info);
+					ActionButton.Set(archetype.ActionButtons, Index, (ushort)Action, Type, Info);
 				}
 			}
 		}
@@ -184,6 +184,11 @@ namespace WCell.RealmServer.RacesClasses
 			}
 
         	var archetype = ArchetypeMgr.GetArchetype(Race, Class);
+            if(archetype == null)
+            {
+                ContentMgr.OnInvalidDBData("Invalid Race: {0} {1} Class {2} {3} in LevelStatInfo", Race, (int)Race, Class, (int)Class);
+                return;
+            }
 			if (Level == 1)
 			{
 				archetype.FirstLevelStats = this;

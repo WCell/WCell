@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <DataHolder Name="Spell">
+    <DefaultTable>spell_script_target</DefaultTable>
+
+    <Flat Name="RequiredTargetType" Column="" />
+    <Flat Name="RequiredTargetId" Column="" />
+    <Flat Name="TargetOrientation" Column="target_orientation" Table="spell_target_position" />
+
+    <Nested Name="TargetLocation">
+      <Flat Name="MapId" Column="target_map" Table="spell_target_position" />
+      <Flat Name="X" Column="target_position_x" Table="spell_target_position" />
+      <Flat Name="Y" Column="target_position_y" Table="spell_target_position" />
+      <Flat Name="Z" Column="target_position_z" Table="spell_target_position" />
+    </Nested>
+	</DataHolder>
+</DataHolders>

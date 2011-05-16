@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <DataHolder Name="WorldEvent">
+    <DefaultTable>game_event</DefaultTable>
+    <Flat Name="Id" Column="entry" />
+    <Flat Name="From" Column="start_time" />
+    <Flat Name="Until" Column="end_time" />
+    <Flat Name="_Occurence" Column="occurence" />
+    <Flat Name="_Length" Column="length" />
+    <Flat Name="HolidayId" Column="holiday" />
+    <Flat Name="Description" Column="description" />
+  </DataHolder>
+  
+  <DataHolder Name="WorldEventQuest">
+    <DefaultTable>game_event_creature_quest</DefaultTable>
+    <Flat Name="QuestId" Column="quest" />
+    <Flat Name="EventId" Column="event" />
+  </DataHolder>
+
+  <DataHolder Name="WorldEventQuest">
+    <DefaultTable>game_event_gameobject_quest</DefaultTable>
+    <Flat Name="QuestId" Column="quest" />
+    <Flat Name="EventId" Column="event" />
+  </DataHolder>
+
+
+  <DataHolder Name="WorldEventNpcData">
+    <DefaultTable>game_event_model_equip</DefaultTable>
+    <Flat Name="Guid" Column="guid" />
+    <!--<Flat Name="EntryId" Column="entry_id" />-->
+    <Flat Name="ModelId" Column="modelid" />
+    <Flat Name="EquipmentId" Column="equipment_id" />
+    <!--<Flat Name="SpellIdToCastAtStart" Column="spell_start" />
+    <Flat Name="SpellIdToCastAtEnd" Column="spell_end" />-->
+    <Flat Name="EventId" Column="event" />
+  </DataHolder>
+</DataHolders>

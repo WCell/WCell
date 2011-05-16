@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <DataHolder Name="NPCQuestGiverRelation">
+    <DefaultTable>creature_questrelation</DefaultTable>
+    <DefaultTable>creature_involvedrelation</DefaultTable>
+    <Flat Name="QuestGiverId" Column="id" />
+    <Flat Name="QuestId" Column="quest" />
+  </DataHolder>
+</DataHolders>
