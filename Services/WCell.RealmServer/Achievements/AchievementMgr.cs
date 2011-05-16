@@ -115,6 +115,7 @@ namespace WCell.RealmServer.Achievements
 			SetEntryCreator(AchievementCriteriaType.HighestTeamRating, () => new HighestTeamRatingAchievementCriteriaEntry());                  // 38
 			SetEntryCreator(AchievementCriteriaType.ReachTeamRating, () => new ReachTeamRatingAchievementCriteriaEntry());                      // 39
             SetEntryCreator(AchievementCriteriaType.LearnSkillLevel, () => new LearnSkillLevelAchievementCriteriaEntry());                      // 40
+            SetEntryCreator(AchievementCriteriaType.LootItem, () => new LootItemAchievementCriteriaEntry());                                    // 42
             SetEntryCreator(AchievementCriteriaType.ExploreArea, () => new ExploreAreaAchievementCriteriaEntry());                              // 43
             SetEntryCreator(AchievementCriteriaType.MoneyFromVendors, () => new IncrementAtValue1AchievementCriteriaEntry());                   // 59
             SetEntryCreator(AchievementCriteriaType.GoldSpentForTalents, () => new IncrementAtValue1AchievementCriteriaEntry());                // 60

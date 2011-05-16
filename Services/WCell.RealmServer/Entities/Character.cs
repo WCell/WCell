@@ -291,10 +291,12 @@ namespace WCell.RealmServer.Entities
 		{
 			m_record.LastDeathTime = DateTime.Now;
 			MarkDead();
-
+            Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.DeathAtMap, (uint)MapId, 1);
+            Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.DeathInDungeon, (uint)MapId, 1);
 			// start release timer
 			m_corpseReleaseTimer = new TimerEntry(dt => ReleaseCorpse());
 			m_corpseReleaseTimer.Start(Corpse.AutoReleaseDelay, 0);
+
 		}
 
 		internal protected override void OnResurrect()
@@ -410,16 +412,20 @@ namespace WCell.RealmServer.Entities
 				pvp = action.Attacker.IsPvPing;
 				var chr = action.Attacker.CharacterMaster;
 
-				if (pvp && chr.IsInBattleground)
+				if (pvp)
 				{
-					// Add BG stats
-					var attackerStats = chr.Battlegrounds.Stats;
-					var victimStats = Battlegrounds.Stats;
-					attackerStats.KillingBlows++;
-					if (victimStats != null)
-					{
-						victimStats.Deaths++;
-					}
+                    if (chr.IsInBattleground)
+                    {
+                        // Add BG stats
+                        var attackerStats = chr.Battlegrounds.Stats;
+                        var victimStats = Battlegrounds.Stats;
+                        attackerStats.KillingBlows++;
+                        if (victimStats != null)
+                        {
+                            victimStats.Deaths++;
+                        }
+                    }
+                    Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.KilledByPlayer, (uint)chr.FactionGroup);
 				}
 			}
 			else
@@ -431,6 +437,7 @@ namespace WCell.RealmServer.Entities
 			{
 				// durability loss
 				m_inventory.ApplyDurabilityLoss(PlayerInventory.DeathDurabilityLossPct);
+                Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.KilledByCreature, (uint)((NPC)action.Attacker).Entry.NPCId);
 			}
 
 			m_Map.MapTemplate.NotifyPlayerDied(action);

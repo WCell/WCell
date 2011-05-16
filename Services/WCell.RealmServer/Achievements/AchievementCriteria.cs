@@ -271,7 +271,7 @@ namespace WCell.RealmServer.Achievements
 				return;
 			if (MapId != (MapId)value1)
 				return;
-			achievements.SetCriteriaProgress(this, value2, ProgressType.ProgressAccumulate);
+			achievements.SetCriteriaProgress(this, 1, ProgressType.ProgressAccumulate);
 		}
 	}
 
@@ -309,7 +309,6 @@ namespace WCell.RealmServer.Achievements
 	public class KilledByPlayerAchievementCriteriaEntry : AchievementCriteriaEntry
 	{
 		// 23
-
 		public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
 		{
 			if(value1 == 0)
@@ -503,6 +502,25 @@ namespace WCell.RealmServer.Achievements
         public override bool IsAchieved(AchievementProgressRecord achievementProgressRecord)
         {
             return achievementProgressRecord.Counter >= (uint)SkillTierId;
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public class LootItemAchievementCriteriaEntry : AchievementCriteriaEntry
+    {
+        // 42
+        public ItemId ItemId;
+        public uint ItemCount;
+
+        public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
+        {
+            if (ItemId != (ItemId)value1)
+                return;
+            achievements.SetCriteriaProgress(this, value2, ProgressType.ProgressAccumulate);
+        }
+        public override bool IsAchieved(AchievementProgressRecord achievementProgressRecord)
+        {
+            return achievementProgressRecord.Counter >= ItemCount;
         }
     }
 
