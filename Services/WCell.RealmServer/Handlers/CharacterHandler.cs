@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NLog;
 using WCell.Constants;
+using WCell.Constants.Achievements;
 using WCell.Constants.Items;
 using WCell.Constants.Login;
 using WCell.Constants.NPCs;
@@ -1321,6 +1322,8 @@ namespace WCell.RealmServer.Handlers
 
 			// Get up.
 			chr.StandState = StandState.Stand;
+
+            chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.GoldSpentAtBarber, cost);
 		}
 
 		/// <summary>

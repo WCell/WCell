@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using WCell.Constants.Achievements;
 using WCell.Constants.Items;
 using WCell.Constants.Spells;
 using WCell.Core;
@@ -123,6 +124,7 @@ namespace WCell.RealmServer.NPCs.Vendors
 				return;
 			}
 
+            chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.MoneyFromVendors, money);
 			NPCHandler.SendSellError(chr.Client, NPC.EntityId, item.EntityId, error);
 		}
 

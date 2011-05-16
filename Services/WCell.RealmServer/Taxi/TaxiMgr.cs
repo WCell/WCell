@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NLog;
 using WCell.Constants;
+using WCell.Constants.Achievements;
 using WCell.Constants.NPCs;
 using WCell.Constants.Pathing;
 using WCell.Constants.Updates;
@@ -432,7 +433,9 @@ namespace WCell.RealmServer.Taxi
 			}
 			// Charge for the flight
 			client.ActiveCharacter.Money -= totalCost;
-			return true;
+            client.ActiveCharacter.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.GoldSpentForTravelling, totalCost);
+			client.ActiveCharacter.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.FlightPathsTaken, 1);
+            return true;
 		}
 
 		/// <summary>

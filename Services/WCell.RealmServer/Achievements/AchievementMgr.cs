@@ -130,6 +130,7 @@ namespace WCell.RealmServer.Achievements
 			SetEntryCreator(AchievementCriteriaType.LoseDuel, () => new LoseDuelLevelAchievementCriteriaEntry());								// 77					
 			SetEntryCreator(AchievementCriteriaType.TotalDamageReceived, () => new IncrementAtValue1AchievementCriteriaEntry());                // 103
             SetEntryCreator(AchievementCriteriaType.TotalHealingReceived, () => new IncrementAtValue1AchievementCriteriaEntry());               // 105
+            SetEntryCreator(AchievementCriteriaType.FlightPathsTaken, () => new FlightPathsTakenAchievementCriteriaEntry());                         // 108
             //TODO: Add more types.
 		}
 
