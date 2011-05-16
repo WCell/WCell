@@ -105,7 +105,6 @@ namespace WCell.RealmServer.Achievements
 			SetEntryCreator(AchievementCriteriaType.BeSpellTarget, () => new BeSpellTargetAchievementCriteriaEntry());                          // 28
 			SetEntryCreator(AchievementCriteriaType.BeSpellTarget2, () => new BeSpellTargetAchievementCriteriaEntry());                         // 69
 			SetEntryCreator(AchievementCriteriaType.CastSpell, () => new CastSpellAchievementCriteriaEntry());                                  // 29
-			SetEntryCreator(AchievementCriteriaType.CastSpell2, () => new CastSpellAchievementCriteriaEntry());                                 // 110
 			SetEntryCreator(AchievementCriteriaType.HonorableKillAtArea, () => new HonorableKillAtAreaAchievementCriteriaEntry());              // 31
 			SetEntryCreator(AchievementCriteriaType.WinArena, () => new WinArenaAchievementCriteriaEntry());                                    // 32
 			SetEntryCreator(AchievementCriteriaType.PlayArena, () => new PlayArenaAchievementCriteriaEntry());                                  // 33
@@ -117,6 +116,9 @@ namespace WCell.RealmServer.Achievements
             SetEntryCreator(AchievementCriteriaType.LearnSkillLevel, () => new LearnSkillLevelAchievementCriteriaEntry());                      // 40
             SetEntryCreator(AchievementCriteriaType.LootItem, () => new LootItemAchievementCriteriaEntry());                                    // 42
             SetEntryCreator(AchievementCriteriaType.ExploreArea, () => new ExploreAreaAchievementCriteriaEntry());                              // 43
+            SetEntryCreator(AchievementCriteriaType.BuyBankSlot, () => new BuyBankSlotAchievementCriteriaEntry());                              // 45
+            SetEntryCreator(AchievementCriteriaType.GainReputation, () => new GainReputationAchievementCriteriaEntry());                        // 46
+            SetEntryCreator(AchievementCriteriaType.GainExaltedReputation, () => new GainExaltedReputationAchievementCriteriaEntry());          // 47
             SetEntryCreator(AchievementCriteriaType.MoneyFromVendors, () => new IncrementAtValue1AchievementCriteriaEntry());                   // 59
             SetEntryCreator(AchievementCriteriaType.GoldSpentForTalents, () => new IncrementAtValue1AchievementCriteriaEntry());                // 60
             SetEntryCreator(AchievementCriteriaType.MoneyFromQuestReward, () => new IncrementAtValue1AchievementCriteriaEntry());               // 62

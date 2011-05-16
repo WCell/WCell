@@ -303,7 +303,7 @@ namespace WCell.RealmServer.Quests
 
 				if(Template.IsDaily)
 				{
-					chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.CompleteDailyQuest, 1);;
+					chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.CompleteDailyQuest, 1);
 				}
 
 				return true;

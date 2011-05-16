@@ -405,5 +405,18 @@ namespace WCell.RealmServer.Factions
             value = value + (int)Math.Round(value * m_owner.ReputationGainModifierPercent / 100.0);
             return ModValue(factionId, value);
         }
+
+        public uint GetExaltedReputations()
+        {
+            uint countOfExaltedReputations = 0;
+            foreach (Reputation reputation in m_byIndex.Values)
+            {
+                if (reputation.Standing >= Standing.Exalted)
+                {
+                    countOfExaltedReputations++;
+                }
+            }
+            return countOfExaltedReputations;           
+        }
 	} 
 }
