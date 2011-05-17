@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using WCell.Constants;
 using WCell.Constants.Achievements;
+using WCell.RealmServer.Factions;
 using WCell.Constants.Items;
 using WCell.Constants.NPCs;
 using WCell.Constants.Skills;
@@ -623,7 +624,7 @@ namespace WCell.RealmServer.Achievements
     public class GainReputationAchievementCriteriaEntry : AchievementCriteriaEntry
     {
         // 46
-        public FactionReputationIndex FactionId;
+        public FactionId FactionId;
         public uint ReputationAmount;
 
         public override bool IsAchieved(AchievementProgressRecord achievementProgressRecord)
@@ -636,7 +637,7 @@ namespace WCell.RealmServer.Achievements
             if (value1 != (uint)FactionId)
                 return;
             
-            int reputation = achievements.Owner.Reputations.GetValue(FactionId);
+            int reputation = achievements.Owner.Reputations.GetValue(FactionMgr.GetFactionIndex(FactionId));
             achievements.SetCriteriaProgress(this, (uint)reputation, ProgressType.ProgressHighest);
         }
     }
@@ -709,6 +710,60 @@ namespace WCell.RealmServer.Achievements
 			achievements.SetCriteriaProgress(this, value1, ProgressType.ProgressAccumulate);
 		}
 	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	public class GainReveredReputationAchievementCriteriaEntry : AchievementCriteriaEntry
+	{
+		// 87
+		public uint Unused;
+		public uint Unused2;
+
+		public override bool IsAchieved(AchievementProgressRecord achievementProgressRecord)
+		{
+			return achievementProgressRecord.Counter >= 1;
+		}
+
+		public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
+		{
+			achievements.SetCriteriaProgress(this, achievements.Owner.Reputations.GetReveredReputations(), ProgressType.ProgressHighest);
+		}
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	public class GainHonoredReputationAchievementCriteriaEntry : AchievementCriteriaEntry
+	{
+		// 88
+		public uint Unused;
+		public uint Unused2;
+
+		public override bool IsAchieved(AchievementProgressRecord achievementProgressRecord)
+		{
+			return achievementProgressRecord.Counter >= 1;
+		}
+
+		public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
+		{
+			achievements.SetCriteriaProgress(this, achievements.Owner.Reputations.GetHonoredReputations(), ProgressType.ProgressHighest);
+		}
+	}
+
+    [StructLayout(LayoutKind.Sequential)]
+    public class KnownFactionsAchievementCriteriaEntry : AchievementCriteriaEntry
+    {
+        // 89
+        public uint Unused;
+        public uint Unused2;
+
+        public override bool IsAchieved(AchievementProgressRecord achievementProgressRecord)
+        {
+ 	        return achievementProgressRecord.Counter >= 1;
+        }
+
+        public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
+        {
+			achievements.SetCriteriaProgress(this, achievements.Owner.Reputations.GetVisibleReputations(), ProgressType.ProgressHighest);
+        }
+    }
 
     [StructLayout(LayoutKind.Sequential)]
     public class FlightPathsTakenAchievementCriteriaEntry : AchievementCriteriaEntry

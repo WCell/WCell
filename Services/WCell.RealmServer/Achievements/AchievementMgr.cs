@@ -128,9 +128,12 @@ namespace WCell.RealmServer.Achievements
             SetEntryCreator(AchievementCriteriaType.LootMoney, () => new IncrementAtValue1AchievementCriteriaEntry());                          // 67          
 			SetEntryCreator(AchievementCriteriaType.WinDuel, () => new WinDuelLevelAchievementCriteriaEntry());									// 76
 			SetEntryCreator(AchievementCriteriaType.LoseDuel, () => new LoseDuelLevelAchievementCriteriaEntry());								// 77					
+			SetEntryCreator(AchievementCriteriaType.GainReveredReputation, () => new GainReveredReputationAchievementCriteriaEntry());			// 87
+			SetEntryCreator(AchievementCriteriaType.GainHonoredReputation, () => new GainHonoredReputationAchievementCriteriaEntry());			// 88
+			SetEntryCreator(AchievementCriteriaType.KnownFactions, () => new KnownFactionsAchievementCriteriaEntry());							// 89
 			SetEntryCreator(AchievementCriteriaType.TotalDamageReceived, () => new IncrementAtValue1AchievementCriteriaEntry());                // 103
             SetEntryCreator(AchievementCriteriaType.TotalHealingReceived, () => new IncrementAtValue1AchievementCriteriaEntry());               // 105
-            SetEntryCreator(AchievementCriteriaType.FlightPathsTaken, () => new FlightPathsTakenAchievementCriteriaEntry());                         // 108
+            SetEntryCreator(AchievementCriteriaType.FlightPathsTaken, () => new FlightPathsTakenAchievementCriteriaEntry());                    // 108
             //TODO: Add more types.
 		}
 
