@@ -501,7 +501,7 @@ namespace WCell.RealmServer.Items
 			if (GemPropertiesId != 0)
 			{
 				GemProperties = EnchantMgr.GetGemproperties(GemPropertiesId);
-				if (GemProperties != null)
+				if (GemProperties != null && GemProperties.Enchantment != null)
 				{
 					GemProperties.Enchantment.GemTemplate = this;
 				}

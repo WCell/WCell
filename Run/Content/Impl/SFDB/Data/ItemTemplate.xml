@@ -31,7 +31,7 @@
     <Flat Name="Unk0" Column="unk0" />
     <Flat Name="Quality" Column="Quality" />    
     <Flat Name="Flags" Column="Flags" />
-    <Flat Name="Flags2" Column="Flags2" />
+    <Flat Name="Flags2" Column="FlagsExtra" />
     <!--<Flat Name="Faction" Column="Faction" />-->
     <Flat Name="BuyStackSize" Column="BuyCount" />
     <Flat Name="BuyPrice" Column="BuyPrice" />
@@ -58,12 +58,12 @@
     <Flat Name="ScalingStatDistributionId" Column="ScalingStatDistribution"/>
     <Flat Name="ScalingStatValueFlags" Column="ScalingStatValue"/>
     <!--all damages got removed in 381 apart from dmg_min1, dmg_max1, dmg_type1, dmg_min2, dmg_max2, dmg_type2-->
-    <NestedArray Name="Damages">
+    <!--<NestedArray Name="Damages">
       <Flat Name="Minimum" Pattern="dmg_min{#}" Offset="1" />
       <Flat Name="Maximum" Pattern="dmg_max{#}" Offset="1" />
       <Flat Name="School" Pattern="dmg_type{#}" Offset="1" />
-    </NestedArray>
-    <FlatArray Name="Resistances">
+    </NestedArray>-->
+    <!--<FlatArray Name="Resistances">
       <Column Name="armor"/>
       <Column Name="holy_res"/>
       <Column Name="fire_res"/>
@@ -71,9 +71,9 @@
       <Column Name="frost_res"/>
       <Column Name="shadow_res"/>
       <Column Name="arcane_res"/>
-    </FlatArray>
+    </FlatArray>-->
     <Flat Name="AttackTime" Column="delay"/>
-    <Flat Name="ProjectileType" Column="ammo_type"/>
+    <Flat Name="ProjectileType" Column="damageType"/>
     <Flat Name="RangeModifier" Column="RangedModRange"/>
     <NestedArray Name="Spells">
       <Flat Name="Id" Pattern="spellid_{#}" Offset="1" />
@@ -98,7 +98,7 @@
     <Flat Name="ZoneId" Column="area" />
     <Flat Name="MapId" Column="Map" />
     <Flat Name="BagFamily" Column="BagFamily" />
-    <Flat Name="TotemCategory" Column="ToolCategory" />
+    <Flat Name="TotemCategory" Column="TotemCategory" />
     <NestedArray Name="Sockets">
       <Flat Name="Color" Pattern="socketColor_{#}" Offset="1" />
       <Flat Name="Content" Pattern="SocketContent_{#}" Offset="1" />

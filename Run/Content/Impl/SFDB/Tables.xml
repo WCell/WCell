@@ -74,7 +74,7 @@
     <PrimaryColumn Name="modelid"/>
   </Table>
 
-  <Table Name="creature_movement">
+  <Table Name="waypoint_data">
     <PrimaryColumn Name="id"/>
     <PrimaryColumn Name="point"/>
   </Table>

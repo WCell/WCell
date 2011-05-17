@@ -10,10 +10,10 @@
       <Column Name="difficulty_entry_3"/>
     </FlatArray>
     <FlatArray Name="DisplayIds">
-      <Column Name="modelid_1"/>
-      <Column Name="modelid_2"/>
-      <Column Name="modelid_3"/>
-      <Column Name="modelid_4"/>
+      <Column Name="modelid1"/>
+      <Column Name="modelid2"/>
+      <Column Name="modelid3"/>
+      <Column Name="modelid4"/>
     </FlatArray>
     <FlatArray Name="Names">
       <Column Name="name" />
@@ -40,14 +40,14 @@
     <Flat Name="InfoString" Column="IconName" />
     <Flat Name="MinLevel" Column="minlevel" />
     <Flat Name="MaxLevel" Column="maxlevel" />
-    <Flat Name="MinHealth" Column="minhealth" />
+    <!--<Flat Name="MinHealth" Column="minhealth" />
     <Flat Name="MaxHealth" Column="maxhealth" />
     <Flat Name="MinMana" Column="minmana" />
-    <Flat Name="MaxMana" Column="maxmana" />
+    <Flat Name="MaxMana" Column="maxmana" />-->
     <Flat Name="MinDamage" Column="mindmg" />
     <Flat Name="MaxDamage" Column="maxdmg" />
     <FlatArray Name="Resistances">
-      <Column Name="armor"/>
+      <Column Name=""/>
       <Column Name="resistance1"/>
       <Column Name="resistance2"/>
       <Column Name="resistance3"/>
@@ -106,7 +106,7 @@
     <Nested Name="AddonData">
       <Flat Name="AuraIdStr" Table="creature_template_addon" Column="auras" />
       <Flat Name="Bytes" Table="creature_template_addon" Column="bytes1" />
-      <Flat Name="Bytes2" Table="creature_template_addon" Column="b2_0_sheath" />
+      <Flat Name="Bytes2" Table="creature_template_addon" Column="bytes2" />
       <Flat Name="EmoteState" Table="creature_template_addon" Column="emote" />
       <Flat Name="MountModelId" Table="creature_template_addon" Column="mount" />
     </Nested>
