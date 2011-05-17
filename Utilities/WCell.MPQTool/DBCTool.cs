@@ -94,7 +94,7 @@ namespace WCell.MPQTool
 
 		        using (var oArchive = new MpqArchive(mpqFileName))
 		        {
-		            var dbcFiles = oArchive.FindAllFiles("*.dbc");
+		            var dbcFiles = oArchive.FindAllFiles("*.db*");
 		            //var dbcsFiles = from a in oArchive.Files
 		            //                where a.Name.EndsWith(".dbc")
 		            //                select a.Name;

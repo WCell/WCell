@@ -372,11 +372,11 @@
   </Table>
   <Table Name="quest_poi" MainDataHolder="QuestPOI">
     <PrimaryColumn Name="questId" TypeName = "UInt32"/>
-    <PrimaryColumn Name="poiId" TypeName = "UInt32"/>
+    <PrimaryColumn Name="id" TypeName = "UInt32"/>
   </Table>
   <Table Name="quest_poi_points" MainDataHolder="QuestPOIPoints">
     <PrimaryColumn Name="questId" TypeName = "UInt32"/>
-    <PrimaryColumn Name="poiId" TypeName = "UInt32"/>
+    <PrimaryColumn Name="id" TypeName = "UInt32"/>
   </Table>
   <Table Name="reference_loot_template">
     <PrimaryColumn Name="entry" />

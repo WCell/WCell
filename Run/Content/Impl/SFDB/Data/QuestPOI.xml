@@ -3,11 +3,11 @@
   <DataHolder Name="QuestPOI">
     <DefaultTable>quest_poi</DefaultTable>
     <Flat Name="QuestId" Column="questId" />
-    <Flat Name="PoiId" Column="poiId" />
+    <Flat Name="PoiId" Column="id" />
     <Flat Name="ObjectiveIndex" Column="objIndex" />
     <Flat Name="MapId" Column="mapId" />
-    <Flat Name="ZoneId" Column="mapAreaId" />
-    <Flat Name="FloorId" Column="floorId" />
+    <Flat Name="ZoneId" Column="WorldMapAreaId" />
+    <Flat Name="FloorId" Column="FloorId" />
     <Flat Name="Unk3" Column="unk3" />
     <Flat Name="Unk4" Column="unk4" />
   </DataHolder>
@@ -15,7 +15,7 @@
   <DataHolder Name="QuestPOIPoints">
     <DefaultTable>quest_poi_points</DefaultTable>
     <Flat Name="QuestId" Column="questId" />
-    <Flat Name="PoiId" Column="poiId" />
+    <Flat Name="PoiId" Column="id" />
     <Flat Name="X" Column="x"/>
     <Flat Name="Y" Column="y"/>
   </DataHolder>

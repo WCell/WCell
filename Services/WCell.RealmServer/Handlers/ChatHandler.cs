@@ -64,23 +64,26 @@ namespace WCell.RealmServer.Chat
 					return;
 
 				var language = chr.SpokenLanguage;
-				if (language == ChatLanguage.Universal)
-				{
-					// language is not forced
-					language = (ChatLanguage) packet.ReadUInt32();
-					if (!chr.GodMode && (!chr.CanSpeak(language)))
-					{
-						// TODO: Cheater
-						return;
-					}
-				}
-				else
-				{
-					// spoken language is forced
-					packet.ReadUInt32();
-				}
+                if (type != ChatMsgType.AFK && type != ChatMsgType.DND)
+                {
+                    if (language == ChatLanguage.Universal)
+                    {
+                        // language is not forced
+                        language = (ChatLanguage) packet.ReadUInt32();
+                        if (!chr.GodMode && (!chr.CanSpeak(language)))
+                        {
+                            // TODO: Cheater
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        // spoken language is forced
+                        packet.ReadUInt32();
+                    }
+                }
 
-				parseHandler(chr, type, language, packet);
+			    parseHandler(chr, type, language, packet);
 			}
 		}
 
