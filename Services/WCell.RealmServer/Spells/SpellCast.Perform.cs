@@ -867,7 +867,10 @@ namespace WCell.RealmServer.Spells
 
 			// Casted event
 			m_spell.NotifyCasted(this);
-            CasterChar.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.CastSpell, Spell.Id);
+			if (caster is Character)
+			{
+				CasterChar.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.CastSpell, Spell.Id);
+			}
 			//if (CasterChar != null)
 			//{
 			//    CasterChar.SendSystemMessage("SpellCast (Casted): {0} ms", sw1.ElapsedTicks / 10000d);

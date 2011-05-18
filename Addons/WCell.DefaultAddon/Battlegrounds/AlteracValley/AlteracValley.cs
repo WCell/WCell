@@ -35,6 +35,7 @@ namespace WCell.Addons.Default.Battlegrounds.AlteracValley
 
 	    public AlteracValley()
         {
+			_template = BattlegroundMgr.GetTemplate(BattlegroundId.AlteracValley);
             Factions = new AVFaction[(int)BattlegroundSide.End];
 	        AVItems = new AVItem[(int)AVBases.End];
 

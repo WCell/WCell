@@ -435,7 +435,7 @@ namespace WCell.RealmServer.Global
 
         public static bool IsHolidayActive(uint id)
         {
-            return id != 0 && ActiveEvents.Any(evnt => evnt.HolidayId == id);
+            return id != 0 && ActiveEvents.Any(evnt => evnt != null && evnt.HolidayId == id);
         }
 
 	    public static bool IsEventActive(uint id)
