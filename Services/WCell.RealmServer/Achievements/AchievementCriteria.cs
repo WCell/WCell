@@ -1,19 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
+﻿using System.Runtime.InteropServices;
 using WCell.Constants;
 using WCell.Constants.Achievements;
-using WCell.RealmServer.Factions;
+using WCell.Constants.Chat;
+using WCell.Constants.Factions;
 using WCell.Constants.Items;
 using WCell.Constants.NPCs;
 using WCell.Constants.Skills;
 using WCell.Constants.Spells;
 using WCell.Constants.World;
-using WCell.RealmServer.Achievements;
 using WCell.RealmServer.Entities;
-using WCell.Constants.Factions;
+using WCell.RealmServer.Factions;
 using WCell.RealmServer.Global;
 using WCell.Util.Data;
 
@@ -331,7 +327,7 @@ namespace WCell.RealmServer.Achievements
 		{
 			if(value1 == 0)
 				return;
-			achievements.SetCriteriaProgress(this, value1);
+			achievements.SetCriteriaProgress(this, value1, ProgressType.ProgressHighest);
 		}
 
 		public override bool IsAchieved(AchievementProgressRecord achievementProgressRecord)
@@ -659,6 +655,45 @@ namespace WCell.RealmServer.Achievements
             achievements.SetCriteriaProgress(this, achievements.Owner.Reputations.GetExaltedReputations(), ProgressType.ProgressHighest);
         }
     }
+
+	[StructLayout(LayoutKind.Sequential)]
+	public class VisitBarberShopAchievementCriteriaEntry : AchievementCriteriaEntry
+	{
+		// 48
+		public uint Unused;
+		public uint NumberOfVisitsAtBarberShop;
+
+		public override bool IsAchieved(AchievementProgressRecord achievementProgressRecord)
+		{
+			return achievementProgressRecord.Counter >= NumberOfVisitsAtBarberShop;
+		}
+
+		public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
+		{
+			achievements.SetCriteriaProgress(this, 1, ProgressType.ProgressAccumulate);
+		}
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	public class DoEmoteAchievementCriteriaEntry : AchievementCriteriaEntry
+	{
+		// 54
+		public TextEmote emoteId;
+		public uint countOfEmotes;
+
+		public override bool IsAchieved(AchievementProgressRecord achievementProgressRecord)
+		{
+			return achievementProgressRecord.Counter >= countOfEmotes;
+		}
+
+		public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
+		{
+			if (value1 == 0 || value1 != (uint)emoteId)
+				return;
+
+			achievements.SetCriteriaProgress(this, 1, ProgressType.ProgressAccumulate);
+		}
+	}
 
     [StructLayout(LayoutKind.Sequential)]
     public class IncrementAtValue1AchievementCriteriaEntry : AchievementCriteriaEntry

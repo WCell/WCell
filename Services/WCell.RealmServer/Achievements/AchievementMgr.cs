@@ -119,7 +119,9 @@ namespace WCell.RealmServer.Achievements
             SetEntryCreator(AchievementCriteriaType.BuyBankSlot, () => new BuyBankSlotAchievementCriteriaEntry());                              // 45
             SetEntryCreator(AchievementCriteriaType.GainReputation, () => new GainReputationAchievementCriteriaEntry());                        // 46
             SetEntryCreator(AchievementCriteriaType.GainExaltedReputation, () => new GainExaltedReputationAchievementCriteriaEntry());          // 47
-            SetEntryCreator(AchievementCriteriaType.MoneyFromVendors, () => new IncrementAtValue1AchievementCriteriaEntry());                   // 59
+			SetEntryCreator(AchievementCriteriaType.VisitBarberShop, () => new VisitBarberShopAchievementCriteriaEntry());						// 48
+			SetEntryCreator(AchievementCriteriaType.DoEmote, () => new DoEmoteAchievementCriteriaEntry());										// 54
+			SetEntryCreator(AchievementCriteriaType.MoneyFromVendors, () => new IncrementAtValue1AchievementCriteriaEntry());                   // 59
             SetEntryCreator(AchievementCriteriaType.GoldSpentForTalents, () => new IncrementAtValue1AchievementCriteriaEntry());                // 60
             SetEntryCreator(AchievementCriteriaType.MoneyFromQuestReward, () => new IncrementAtValue1AchievementCriteriaEntry());               // 62
             SetEntryCreator(AchievementCriteriaType.GoldSpentForTravelling, () => new IncrementAtValue1AchievementCriteriaEntry());             // 63
@@ -202,6 +204,10 @@ namespace WCell.RealmServer.Achievements
 			return AchievementCategoryEntries[achievementCategoryEntryId];
 		}
 
+		/// <summary>
+		/// </summary>
+		/// <param name="achievementEntryId">Achievement entry</param>
+		/// <returns>Return false only if the achievement has RealmFirst flag and already achieved by someone</returns>
         public static bool IsRealmFirst(uint achievementEntryId)
         {
             return (!CompletedRealmFirstAchievements.Contains(achievementEntryId));

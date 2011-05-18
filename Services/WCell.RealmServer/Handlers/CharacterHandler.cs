@@ -1324,6 +1324,7 @@ namespace WCell.RealmServer.Handlers
 			chr.StandState = StandState.Stand;
 
             chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.GoldSpentAtBarber, cost);
+			chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.VisitBarberShop);
 		}
 
 		/// <summary>
