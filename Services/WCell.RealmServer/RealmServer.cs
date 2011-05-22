@@ -231,7 +231,7 @@ namespace WCell.RealmServer
 					World.CharacterCount,
 					RealmServerConfiguration.MaxClientCount,
 					RealmServerConfiguration.ServerType,
-					RealmFlags.None,
+					RealmServerConfiguration.Flags,
 					RealmServerConfiguration.Category,
 					RealmServerConfiguration.Status,
 					WCellInfo.RequiredVersion);
@@ -262,7 +262,7 @@ namespace WCell.RealmServer
 														  World.CharacterCount,
 														  RealmServerConfiguration.MaxClientCount,
 														  RealmServerConfiguration.ServerType,
-														  RealmFlags.None,
+														  RealmServerConfiguration.Flags,
 														  RealmServerConfiguration.Category,
 														  RealmServerConfiguration.Status))
 			{
@@ -533,9 +533,12 @@ namespace WCell.RealmServer
 		#region Shutdown
 		public override void ShutdownIn(uint delayMillis)
 		{
-			World.Broadcast("[WARNING]: " + RealmServerConfiguration.RealmName + " is going to shutdown in {0}.",
-				TimeSpan.FromMilliseconds(delayMillis).Format());
-
+			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_SERVER_MESSAGE))
+			{
+				packet.Write((uint)ServerMessagesType.ServerShutdownStart);
+				packet.Write(TimeSpan.FromMilliseconds(delayMillis).Format());
+				World.Broadcast(packet);
+			}
 			base.ShutdownIn(delayMillis);
 		}
 
@@ -543,7 +546,12 @@ namespace WCell.RealmServer
 		{
 			if (IsPreparingShutdown)
 			{
-				World.Broadcast("[INFO]: Shutdown has been cancelled.");
+				using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_SERVER_MESSAGE))
+				{
+					packet.Write((uint)ServerMessagesType.ServerShutdownCancelled);
+					packet.Write(string.Empty);
+					World.Broadcast(packet);
+				}
 			}
 			base.CancelShutdown();
 		}
