@@ -407,7 +407,7 @@ namespace WCell.RealmServer.Items
 
 		public bool HasQuestRequirements
 		{
-			get { return QuestHolderInfo == null && CollectQuests == null; }
+			get { return QuestHolderInfo != null || CollectQuests != null; }
 		}
 
 		[NotPersistent]
@@ -655,7 +655,7 @@ namespace WCell.RealmServer.Items
 
 		public bool CheckQuestConstraints(Character looter)
 		{
-			if (HasQuestRequirements)			// no quest requirements
+			if (!HasQuestRequirements)			// no quest requirements
 				return true;
 
 			if (looter == null)
@@ -684,12 +684,12 @@ namespace WCell.RealmServer.Items
 					{
 						if (looter.QuestLog.HasActiveQuest(q.Id))
 						{
-							return false;
+							return true;
 						}
 					}
 				}
 			}
-			return true;
+			return false;
 		}
 
 		/// <summary>
