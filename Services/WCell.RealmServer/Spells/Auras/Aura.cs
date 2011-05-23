@@ -55,7 +55,7 @@ namespace WCell.RealmServer.Spells.Auras
 		protected int m_stackCount;
 		protected int m_startTime;
 		protected int m_duration;
-		protected int m_amplitude;
+		protected int m_auraPeriod;
 		protected int m_ticks;
 		protected int m_maxTicks;
 		TimerEntry m_timer;
@@ -139,7 +139,7 @@ namespace WCell.RealmServer.Spells.Auras
 			if (m_controller == null)
 			{
 				// Aura controls itself
-				if ((m_amplitude > 0 || m_duration > 0))
+				if ((m_auraPeriod > 0 || m_duration > 0))
 				{
 					// aura has timer
 					m_timer = new TimerEntry
@@ -155,15 +155,15 @@ namespace WCell.RealmServer.Spells.Auras
 			DetermineFlags();
 			m_hasPeriodicallyUpdatedEffectHandler = m_handlers.Any(handler => handler is PeriodicallyUpdatedAuraEffectHandler);
 
-			if (m_amplitude != 0)
+			if (m_auraPeriod != 0)
 				return;
 
 			foreach (var handler in m_handlers)
 			{
-				// Aura has the Amplitude of the first effect with Amplitude set
-				if (handler.SpellEffect.Amplitude > 0)
+				// Aura has the AuraPeriod of the first effect with AuraPeriod set
+				if (handler.SpellEffect.AuraPeriod > 0)
 				{
-					m_amplitude = handler.SpellEffect.Amplitude;
+					m_auraPeriod = handler.SpellEffect.AuraPeriod;
 					break;
 				}
 			}
@@ -339,9 +339,9 @@ namespace WCell.RealmServer.Spells.Auras
 		/// <summary>
 		///  The amplitude between aura-ticks (only for non-passive auras which are not channeled)
 		/// </summary>
-		public int Amplitude
+		public int AuraPeriod
 		{
-			get { return m_amplitude; }
+			get { return m_auraPeriod; }
 		}
 
 		/// <summary>
@@ -405,7 +405,7 @@ namespace WCell.RealmServer.Spells.Auras
 					int time;
 
 					// normal timeout
-					if (m_amplitude > 0)
+					if (m_auraPeriod > 0)
 					{
 						// periodic
 
@@ -416,14 +416,14 @@ namespace WCell.RealmServer.Spells.Auras
 						}
 						else
 						{
-							m_maxTicks = value / m_amplitude;
+							m_maxTicks = value / m_auraPeriod;
 
 							if (m_maxTicks < 1)
 							{
 								m_maxTicks = 1;
 							}
 						}
-						time = value % (m_amplitude + 1);
+						time = value % (m_auraPeriod + 1);
 					}
 					else
 					{
@@ -482,7 +482,7 @@ namespace WCell.RealmServer.Spells.Auras
 		{
 			get
 			{
-				//return m_amplitude > 0 && !m_spell.IsPassive && m_controller == null;
+				//return m_auraPeriod > 0 && !m_spell.IsPassive && m_controller == null;
 				return m_spell.Durations.Min > 0 && m_controller == null;
 			}
 		}
@@ -722,7 +722,7 @@ namespace WCell.RealmServer.Spells.Auras
 
 				if (!expired && m_timer != null)
 				{
-					m_timer.Start(m_amplitude);
+					m_timer.Start(m_auraPeriod);
 				}
 			}
 

@@ -220,12 +220,12 @@ namespace WCell.Tools.Domi.Output
 				foreach (var spell in spells)
 				{
 					writer.WriteLine("Spell: " + spell);
-					bool hasAmpl = false;
+					bool hasPeriod = false;
 					bool hasCustomScript = false;
 					foreach (SpellEffect effect in spell.Effects)
 					{
 						effect.DumpInfo(writer, "\t");
-						hasAmpl = hasAmpl || effect.Amplitude > 0;
+                        hasPeriod = hasPeriod || effect.AuraPeriod > 0;
 						hasCustomScript = hasCustomScript || effect.IsScripted;
 					}
 					if (spell.GetDuration(caster, null) < 1)
@@ -563,7 +563,7 @@ namespace WCell.Tools.Domi.Output
 					if (spell == null)
 						continue;
 
-					if (spell.HasEffectWith(effect => effect.IsAreaAuraEffect && effect.Amplitude > 0) &&
+                    if (spell.HasEffectWith(effect => effect.IsAreaAuraEffect && effect.AuraPeriod > 0) &&
 					    !spells.ContainsKey(spell.Name))
 					{
 						writer.WriteLine("{0} (Id: {1})", spell.Name, spell.Id);

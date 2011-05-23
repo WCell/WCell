@@ -37,7 +37,7 @@ namespace WCell.RealmServer.Spells
 		public static readonly ObjectPool<SpellChannel> SpellChannelPool = ObjectPoolMgr.CreatePool(() => new SpellChannel());
 
 		protected int m_duration;
-		protected int m_amplitude;
+		protected int m_auraPeriod;
 		protected int m_until;
 		protected int m_maxTicks;
 		protected int m_ticks;
@@ -81,9 +81,9 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// The amount of milliseconds between 2 channel ticks
 		/// </summary>
-		public int Amplitude
+		public int AuraPeriod
 		{
-			get { return m_amplitude; }
+			get { return m_auraPeriod; }
 		}
 
 		public int Until
@@ -99,8 +99,8 @@ namespace WCell.RealmServer.Spells
 					timeLeft = 1;
 				}
 
-				m_ticks = MathUtil.CeilingInt(timeLeft/(float) m_amplitude);
-				m_timer.Start(0, timeLeft%m_amplitude);
+				m_ticks = MathUtil.CeilingInt(timeLeft/(float) m_auraPeriod);
+				m_timer.Start(0, timeLeft%m_auraPeriod);
 				SpellHandler.SendChannelUpdate(m_cast, (uint) timeLeft);
 			}
 		}
@@ -150,27 +150,27 @@ namespace WCell.RealmServer.Spells
 				var caster = m_cast.CasterUnit;
 
 				m_duration = spell.Durations.Max;
-				m_amplitude = spell.ChannelAmplitude;
+				m_auraPeriod = spell.ChannelAuraPeriod;
 
-				if (m_amplitude < 1)
+				if (m_auraPeriod < 1)
 				{
 					// only one tick
-					m_amplitude = m_duration;
+					m_auraPeriod = m_duration;
 				}
 
 				caster.ChannelSpell = spell.SpellId;
 
 				var now = Environment.TickCount;
 				m_ticks = 0;
-				m_maxTicks = m_duration / m_amplitude;
+				m_maxTicks = m_duration / m_auraPeriod;
 				m_channelHandlers = channelHandlers;
 
 				// get duration again, this time with modifiers
 				m_duration = spell.GetDuration(caster.SharedReference);
-				if (m_amplitude < 1)
+				if (m_auraPeriod < 1)
 				{
 					// only one tick
-					m_amplitude = m_duration;
+					m_auraPeriod = m_duration;
 				}
 
 				m_until = now + m_duration;
@@ -179,7 +179,7 @@ namespace WCell.RealmServer.Spells
 
 				if (m_channeling)
 				{
-					m_timer.Start(m_amplitude, m_amplitude);
+					m_timer.Start(m_auraPeriod, m_auraPeriod);
 				}
 				// Send Initial Tick? 
 				// Keep in mind: Aura is not initialized at this point!
@@ -210,9 +210,9 @@ namespace WCell.RealmServer.Spells
 			if (spell.SpellPower.PowerPerSecond > 0)
 			{
                 var cost = spell.SpellPower.PowerPerSecond;
-				if (m_amplitude != 1000 && m_amplitude != 0)
+				if (m_auraPeriod != 1000 && m_auraPeriod != 0)
 				{
-					cost = (int)(cost * (m_amplitude / 1000f));
+					cost = (int)(cost * (m_auraPeriod / 1000f));
 				}
 				var failReason = cast.ConsumePower(cost);
 				if (failReason != SpellFailedReason.Ok)
@@ -269,7 +269,7 @@ namespace WCell.RealmServer.Spells
 				}
 				//else
 				//{
-				//    m_timer.Start(m_amplitude);
+				//    m_timer.Start(m_auraPeriod);
 				//}
 			}
 		}

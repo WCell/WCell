@@ -28,7 +28,7 @@ namespace WCell.RealmServer.Spells
 	{
 		/* Summary of $ values
 		 * $sX = MinValue to MaxValue
-		 * $oX = Amplitude
+		 * $oX = AuraPeriod
 		 * $eX = ChainAmplitude
 		 * $bX = PointsPerComboPoint
 		 * */
@@ -39,9 +39,7 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public SpellEffectType EffectType;
 
-        /// <summary>
-        /// Interval-delay in milliseconds
-        /// </summary>
+        
         public int Amplitude;
 
         /// <summary>
@@ -49,6 +47,9 @@ namespace WCell.RealmServer.Spells
         /// </summary>
         public AuraType AuraType;
 
+        /// <summary>
+        /// Interval-delay in milliseconds
+        /// </summary>
 	    public int AuraPeriod;
 
         /// <summary>
@@ -152,8 +153,8 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public int GetMaxTicks()
 		{
-			if (Amplitude == 0) return 0;
-			return Spell.Durations.Max/Amplitude;
+            if (AuraPeriod == 0) return 0;
+            return Spell.Durations.Max / AuraPeriod;
 		}
 		#endregion
 

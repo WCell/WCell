@@ -286,7 +286,7 @@ namespace WCell.RealmServer.Spells
 				{
 					if (effect.IsPeriodic)
 					{
-						ChannelAmplitude = effect.Amplitude;
+						ChannelAuraPeriod = effect.AuraPeriod;
 						break;
 					}
 				}

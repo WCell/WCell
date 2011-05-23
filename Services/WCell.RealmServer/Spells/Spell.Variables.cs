@@ -350,7 +350,7 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public bool IsChanneled;
 
-		public int ChannelAmplitude;
+		public int ChannelAuraPeriod;
 
 		public bool RequiresCasterOutOfCombat;
 

@@ -120,7 +120,7 @@ namespace WCell.RealmServer.Spells
 				ImplicitTargetA = ImplicitSpellTargetType.None;
 			}
 
-			if (IsPeriodic = Amplitude > 0)
+			if (IsPeriodic = AuraPeriod > 0)
 			{
 				_IsPeriodicAura = (AuraType == AuraType.PeriodicDamage ||
 								   AuraType == AuraType.PeriodicDamagePercent ||
@@ -170,10 +170,10 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// do some correction for ModManaRegen
-			if (AuraType == AuraType.ModManaRegen && Amplitude == 0)
+			if (AuraType == AuraType.ModManaRegen && AuraPeriod == 0)
 			{
 				// 5000 ms if not specified otherwise
-				Amplitude = ModManaRegenHandler.DefaultAmplitude;
+                AuraPeriod = ModManaRegenHandler.DefaultAuraPeriod;
 			}
 
 			if (HasTarget(ImplicitSpellTargetType.AllFriendlyInAura))
@@ -730,6 +730,10 @@ namespace WCell.RealmServer.Spells
 			//{
 			//	writer.WriteLine(indent + "DiePerLevel: {0}", DiePerLevel);
 			//}
+            if (AuraPeriod != 0)
+            {
+                writer.WriteLine(indent + "AuraPeriod: {0}", AuraPeriod);
+            }
 			if (Amplitude != 0)
 			{
 				writer.WriteLine(indent + "Amplitude: {0}", Amplitude);

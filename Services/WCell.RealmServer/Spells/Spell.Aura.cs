@@ -35,7 +35,7 @@ namespace WCell.RealmServer.Spells
 		public AuraFlags DefaultAuraFlags;
 
 		/// <summary>
-		/// General Amplitude for Spells that represent Auras (can only have one for the time being)
+		/// General AuraPeriod for Spells that represent Auras (can only have one for the time being)
 		/// </summary>
 		public int AuraAmplitude;
 
@@ -50,7 +50,7 @@ namespace WCell.RealmServer.Spells
 		public bool IsAutoRepeating;
 
 		/// <summary>
-		/// General Amplitude for Spells that represent AreaAuras (can only have one per spell)
+		/// General AuraPeriod for Spells that represent AreaAuras (can only have one per spell)
 		/// </summary>
 		public int AreaAuraAmplitude;
 

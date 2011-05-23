@@ -37,7 +37,7 @@ namespace WCell.RealmServer.Spells
         /// <summary>
         /// The average amplitude between ticks (in ms)
         /// </summary>
-        int Amplitude
+        int AuraPeriod
         {
             get;
         }
