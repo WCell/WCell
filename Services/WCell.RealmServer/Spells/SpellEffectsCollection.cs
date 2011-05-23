@@ -1,14 +1,20 @@
 ﻿using System.Collections.Generic;
 using WCell.Constants.Spells;
 using WCell.Util;
+using WCell.Util.Variables;
 
 namespace WCell.RealmServer.Spells
 {
     public static class SpellEffectsCollection
     {
-        private static Dictionary<SpellId, SpellEffect[]> SpellEffectsById = new Dictionary<SpellId, SpellEffect[]>();
+        private static readonly Dictionary<SpellId, SpellEffect[]> SpellEffectsById = new Dictionary<SpellId, SpellEffect[]>();
+
+        [NotVariable]
+        public static List<SpellEffect> SpellEffects = new List<SpellEffect>();
+
         public static void Add(SpellEffect effect)
         {
+            SpellEffects.Add(effect);
             SpellEffect[] spellEffects;
             if(!SpellEffectsById.TryGetValue(effect.SpellId, out spellEffects))
             {

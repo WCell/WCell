@@ -558,6 +558,157 @@ namespace WCell.Tools.Ralek
 
 		#endregion
 
+        #region Effect MiscValue
+
+        public static IEnumerable<Spell> FindSpellsWithMiscValue()
+        {
+            var spells = GetSpells();
+
+            var query = from spell in spells
+                        where spell.HasEffectWith((e) => e.MiscValue != 0)
+                        select spell;
+
+            foreach (var spell in query)
+            {
+                foreach (var effect in spell.Effects)
+                {
+                    if (effect.MiscValue != 0)
+                    {
+                        Console.WriteLine("{0}: {1} - {2} - {3}", spell.Id, spell.Name, effect.EffectType, effect.MiscValue);
+                    }
+                }
+            }
+            Console.WriteLine("{0} spells matched condition", query.Count());
+
+            return query;
+        }
+
+        public static IEnumerable<Spell> FindSpellsWithMiscValueWithEffect(SpellEffectType effectType)
+        {
+            var spells = GetSpells();
+
+            var query = from spell in spells
+                        where spell.HasEffectWith((e) => e.MiscValue != 0)
+                        select spell;
+
+            foreach (var spell in query)
+            {
+                foreach (var effect in spell.Effects)
+                {
+                    if (effect.EffectType == effectType)
+                    {
+                        if (effect.MiscValue != 0)
+                        {
+                            Console.WriteLine("{0}: {1} - {2} - {3}", spell.Id, spell.Name, effect.EffectType, effect.MiscValue);
+                        }
+                    }
+                }
+            }
+            Console.WriteLine("{0} spells matched condition", query.Count());
+
+            return query;
+        }
+
+        public static IEnumerable<Spell> FindSpellsWithMiscValue(int val)
+        {
+            var spells = GetSpells();
+
+            HashSet<Spell> effects = new HashSet<Spell>();
+
+            foreach (var spell in spells)
+            {
+                foreach (var effect in spell.Effects)
+                {
+                    if (effect.MiscValue == val)
+                    {
+                        effects.Add(spell);
+                    }
+                }
+            }
+
+            foreach (var effect in effects)
+            {
+                Console.WriteLine(effect);
+            }
+
+            return spells;
+        }
+
+        /// <summary>
+        /// Summon and ApplyAura
+        /// </summary>
+        public static void FindEffectsThatUseMiscValue()
+        {
+            var spells = GetSpells();
+
+            HashSet<SpellEffectType> effects = new HashSet<SpellEffectType>();
+
+            foreach (var spell in spells)
+            {
+                foreach (var effect in spell.Effects)
+                {
+                    if (effect.MiscValue != 0)
+                    {
+                        effects.Add(effect.EffectType);
+                    }
+                }
+            }
+
+            foreach (var effect in effects)
+            {
+                Console.WriteLine(effect);
+            }
+        }
+
+        public static void MiscValueTest()
+        {
+            var spells = FindSpellsWithMiscValue();
+
+            HashSet<int> vals = new HashSet<int>();
+
+            foreach (var spell in spells)
+            {
+                foreach (var effect in spell.Effects)
+                {
+                    vals.Add(effect.MiscValue);
+                }
+            }
+            Console.WriteLine();
+            Console.WriteLine();
+
+            foreach (var val in vals)
+            {
+                Console.WriteLine(val);
+            }
+        }
+
+        #endregion
+
+        public static IEnumerable<SpellEffect> ModStatTest(int min, int max)
+        {
+            var spells = GetSpells();
+
+            var query = from effect in SpellEffectsCollection.SpellEffects
+                        where effect.AuraType == AuraType.ModTotalStatPercent || effect.AuraType == AuraType.ModStat || effect.AuraType == AuraType.ModStatPercent
+                        select effect;
+
+            var query2 = from effect in query
+                         where effect.MiscValue < min || effect.MiscValue > max
+                         select effect;
+
+            foreach (var effect in query2)
+            {
+                var spell = SpellHandler.ById[(int)effect.SpellId];
+                Console.WriteLine("Spell Id {0}: Effect Index {1} {2} - {3} - {4}", spell.Id, effect.EffectIndex, spell.Name, effect.EffectType,
+                                  effect.MiscValue);
+                Console.WriteLine("{0}", spell.Description);
+            }
+            Console.WriteLine("{0} spells matched condition 1", query.Count());
+            Console.WriteLine("{0} spells matched condition 2", query2.Count());
+
+            return query2;
+        }
+
 		private static IEnumerable<Spell> GetSpells()
 		{
 			var query = from spell in SpellHandler.ById
