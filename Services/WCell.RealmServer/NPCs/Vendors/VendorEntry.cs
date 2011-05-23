@@ -29,11 +29,15 @@ namespace WCell.RealmServer.NPCs.Vendors
 			{
 				foreach (var item in items)
 				{
+				    ItemExtendedCostEntry extendedCostEntry;
+                    if(!NPCMgr.ItemExtendedCostEntries.TryGetValue((int)item.ExtendedCostId, out extendedCostEntry))
+                        extendedCostEntry = ItemExtendedCostEntry.NullEntry;
+
 					ItemsForSale.Add(new VendorItemEntry
 					{
 						BuyStackSize = item.BuyStackSize,
 						RemainingStockAmount = item.RemainingStockAmount,
-						ExtendedCostEntry = NPCMgr.ItemExtendedCostEntries[(int)item.ExtendedCostId],
+						ExtendedCostEntry = extendedCostEntry,
 						StockAmount = item.StockAmount,
 						StockRefillDelay = item.StockRefillDelay,
 						Template = item.Template
