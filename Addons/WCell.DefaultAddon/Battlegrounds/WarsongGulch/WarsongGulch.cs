@@ -95,6 +95,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 
 		public WarsongGulch()
 		{
+			_template = BattlegroundMgr.GetTemplate(BattlegroundId.WarsongGulch);
 			Factions = new WSGFaction[(int)BattlegroundSide.End];
 		}
 

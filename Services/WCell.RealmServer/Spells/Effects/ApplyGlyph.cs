@@ -6,12 +6,12 @@ using WCell.Constants.Spells;
 namespace WCell.RealmServer.Spells.Effects
 {
 	public class ApplyGlyphEffectHandler : SpellEffectHandler
-	{
+	{ 
 		public ApplyGlyphEffectHandler(SpellCast cast, SpellEffect effect)
 			: base(cast, effect)
 		{
 		}
-		public override SpellFailedReason InitializeTarget(WorldObject target)
+		public override void Initialize(ref SpellFailedReason fail)
 		{
 			if (m_cast.m_glyphSlot != 0)
 			{
@@ -20,15 +20,14 @@ namespace WCell.RealmServer.Spells.Effects
 				var slot = GlyphInfoHolder.GetGlyphSlotEntryForGlyphSlotId(m_cast.CasterChar.GetGlyphSlot((byte)m_cast.m_glyphSlot));
 				if (properties.TypeFlags != slot.TypeFlags)
 				{
-					return SpellFailedReason.InvalidGlyph;
+					fail =  SpellFailedReason.InvalidGlyph;
 				}
-
 			}
-			return SpellFailedReason.Ok;
 		}
-		protected override void Apply(WorldObject target)
+		public override void Apply()
 		{
-			//TODO: Apply the glyph
+			var chr = m_cast.CasterChar;
+			chr.ApplyGlyph((byte)m_cast.m_glyphSlot, GlyphInfoHolder.GetPropertiesEntryForGlyph((uint)m_cast.Spell.Effects[0].MiscValue));
 		}
 	}
 }

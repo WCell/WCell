@@ -556,6 +556,14 @@ namespace WCell.RealmServer.Handlers
 			SendMeetingStoneSetQueue(client.ActiveCharacter);
 		}
 
+        [ClientPacketHandler(RealmServerOpCode.CMSG_SET_ALLOW_LOW_LEVEL_RAID1)]
+        public static void HandleSetAllowLowLevelRaid1(IRealmClient client, RealmPacketIn packet)
+        {
+            Character character = client.ActiveCharacter;
+            bool allow = packet.ReadBoolean();
+            character.IsAllowedLowLevelRaid = allow;
+        }
+
 		#region Out
 
 		public static void SendLeaderChanged(GroupMember leader)

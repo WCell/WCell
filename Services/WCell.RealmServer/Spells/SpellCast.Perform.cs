@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NLog;
 using WCell.Constants;
+using WCell.Constants.Achievements;
 using WCell.Constants.Misc;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
@@ -733,6 +734,7 @@ namespace WCell.RealmServer.Spells
 			// Used an item
 			if (TargetItem != null)
 			{
+                CasterChar.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.UseItem, Spell.Id);
 				TargetItem.OnUse();
 			}
 
@@ -865,7 +867,10 @@ namespace WCell.RealmServer.Spells
 
 			// Casted event
 			m_spell.NotifyCasted(this);
-
+			if (caster is Character)
+			{
+				CasterChar.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.CastSpell, Spell.Id);
+			}
 			//if (CasterChar != null)
 			//{
 			//    CasterChar.SendSystemMessage("SpellCast (Casted): {0} ms", sw1.ElapsedTicks / 10000d);

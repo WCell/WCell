@@ -105,7 +105,6 @@ namespace WCell.RealmServer.Achievements
 			SetEntryCreator(AchievementCriteriaType.BeSpellTarget, () => new BeSpellTargetAchievementCriteriaEntry());                          // 28
 			SetEntryCreator(AchievementCriteriaType.BeSpellTarget2, () => new BeSpellTargetAchievementCriteriaEntry());                         // 69
 			SetEntryCreator(AchievementCriteriaType.CastSpell, () => new CastSpellAchievementCriteriaEntry());                                  // 29
-			SetEntryCreator(AchievementCriteriaType.CastSpell2, () => new CastSpellAchievementCriteriaEntry());                                 // 110
 			SetEntryCreator(AchievementCriteriaType.HonorableKillAtArea, () => new HonorableKillAtAreaAchievementCriteriaEntry());              // 31
 			SetEntryCreator(AchievementCriteriaType.WinArena, () => new WinArenaAchievementCriteriaEntry());                                    // 32
 			SetEntryCreator(AchievementCriteriaType.PlayArena, () => new PlayArenaAchievementCriteriaEntry());                                  // 33
@@ -115,8 +114,14 @@ namespace WCell.RealmServer.Achievements
 			SetEntryCreator(AchievementCriteriaType.HighestTeamRating, () => new HighestTeamRatingAchievementCriteriaEntry());                  // 38
 			SetEntryCreator(AchievementCriteriaType.ReachTeamRating, () => new ReachTeamRatingAchievementCriteriaEntry());                      // 39
             SetEntryCreator(AchievementCriteriaType.LearnSkillLevel, () => new LearnSkillLevelAchievementCriteriaEntry());                      // 40
+            SetEntryCreator(AchievementCriteriaType.LootItem, () => new LootItemAchievementCriteriaEntry());                                    // 42
             SetEntryCreator(AchievementCriteriaType.ExploreArea, () => new ExploreAreaAchievementCriteriaEntry());                              // 43
-            SetEntryCreator(AchievementCriteriaType.MoneyFromVendors, () => new IncrementAtValue1AchievementCriteriaEntry());                   // 59
+            SetEntryCreator(AchievementCriteriaType.BuyBankSlot, () => new BuyBankSlotAchievementCriteriaEntry());                              // 45
+            SetEntryCreator(AchievementCriteriaType.GainReputation, () => new GainReputationAchievementCriteriaEntry());                        // 46
+            SetEntryCreator(AchievementCriteriaType.GainExaltedReputation, () => new GainExaltedReputationAchievementCriteriaEntry());          // 47
+			SetEntryCreator(AchievementCriteriaType.VisitBarberShop, () => new VisitBarberShopAchievementCriteriaEntry());						// 48
+			SetEntryCreator(AchievementCriteriaType.DoEmote, () => new DoEmoteAchievementCriteriaEntry());										// 54
+			SetEntryCreator(AchievementCriteriaType.MoneyFromVendors, () => new IncrementAtValue1AchievementCriteriaEntry());                   // 59
             SetEntryCreator(AchievementCriteriaType.GoldSpentForTalents, () => new IncrementAtValue1AchievementCriteriaEntry());                // 60
             SetEntryCreator(AchievementCriteriaType.MoneyFromQuestReward, () => new IncrementAtValue1AchievementCriteriaEntry());               // 62
             SetEntryCreator(AchievementCriteriaType.GoldSpentForTravelling, () => new IncrementAtValue1AchievementCriteriaEntry());             // 63
@@ -125,8 +130,12 @@ namespace WCell.RealmServer.Achievements
             SetEntryCreator(AchievementCriteriaType.LootMoney, () => new IncrementAtValue1AchievementCriteriaEntry());                          // 67          
 			SetEntryCreator(AchievementCriteriaType.WinDuel, () => new WinDuelLevelAchievementCriteriaEntry());									// 76
 			SetEntryCreator(AchievementCriteriaType.LoseDuel, () => new LoseDuelLevelAchievementCriteriaEntry());								// 77					
+			SetEntryCreator(AchievementCriteriaType.GainReveredReputation, () => new GainReveredReputationAchievementCriteriaEntry());			// 87
+			SetEntryCreator(AchievementCriteriaType.GainHonoredReputation, () => new GainHonoredReputationAchievementCriteriaEntry());			// 88
+			SetEntryCreator(AchievementCriteriaType.KnownFactions, () => new KnownFactionsAchievementCriteriaEntry());							// 89
 			SetEntryCreator(AchievementCriteriaType.TotalDamageReceived, () => new IncrementAtValue1AchievementCriteriaEntry());                // 103
             SetEntryCreator(AchievementCriteriaType.TotalHealingReceived, () => new IncrementAtValue1AchievementCriteriaEntry());               // 105
+            SetEntryCreator(AchievementCriteriaType.FlightPathsTaken, () => new FlightPathsTakenAchievementCriteriaEntry());                    // 108
             //TODO: Add more types.
 		}
 
@@ -171,6 +180,8 @@ namespace WCell.RealmServer.Achievements
             SetRequirementCreator(AchievementCriteriaRequirementType.BgLossTeamScore, () => new AchievementCriteriaRequirementBgLossTeamScore());
             SetRequirementCreator(AchievementCriteriaRequirementType.InstanceScript, () => new AchievementCriteriaRequirementInstanceScript());
             SetRequirementCreator(AchievementCriteriaRequirementType.EquippedItemLevel, () => new AchievementCriteriaRequirementEquippedItemLevel());
+            SetRequirementCreator(AchievementCriteriaRequirementType.NthBirthday, () => new AchievementCriteriaRequirementNthBirthday());
+            SetRequirementCreator(AchievementCriteriaRequirementType.KnownTitle, () => new AchievementCriteriaRequirementKnownTitle());
         }
         #endregion
 
@@ -193,6 +204,10 @@ namespace WCell.RealmServer.Achievements
 			return AchievementCategoryEntries[achievementCategoryEntryId];
 		}
 
+		/// <summary>
+		/// </summary>
+		/// <param name="achievementEntryId">Achievement entry</param>
+		/// <returns>Return false only if the achievement has RealmFirst flag and already achieved by someone</returns>
         public static bool IsRealmFirst(uint achievementEntryId)
         {
             return (!CompletedRealmFirstAchievements.Contains(achievementEntryId));

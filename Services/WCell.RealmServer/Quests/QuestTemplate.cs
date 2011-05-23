@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using WCell.Constants;
+using WCell.Constants.Achievements;
 using WCell.Constants.Factions;
 using WCell.Constants.Items;
 using WCell.Constants.Misc;
@@ -1051,6 +1052,7 @@ namespace WCell.RealmServer.Quests
 				if (receiver.Level >= RealmServerConfiguration.MaxCharacterLevel)
 				{
 					receiver.Money += MoneyAtMaxLevel;
+                    receiver.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.MoneyFromQuestReward, MoneyAtMaxLevel);
 				}
 				else
 				{
@@ -1061,6 +1063,7 @@ namespace WCell.RealmServer.Quests
 			if (RewMoney > 0)
 			{
 				receiver.Money += (uint)RewMoney;
+                receiver.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.MoneyFromQuestReward, (uint)RewMoney);
 			}
 
 			for (var i = 0; i < QuestConstants.MaxReputations; i++)

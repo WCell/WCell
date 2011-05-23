@@ -192,6 +192,20 @@ namespace WCell.RealmServer.Entities
 				}
 			}
 		}
+
+        public bool IsAllowedLowLevelRaid
+        {
+            get { return PlayerFlags.HasFlag(PlayerFlags.AllowLowLevelRaid); }
+            set 
+            { 
+                if (value)
+                {
+                    PlayerFlags |= PlayerFlags.AllowLowLevelRaid;
+                    return;
+                }
+                PlayerFlags &= ~PlayerFlags.AllowLowLevelRaid;
+            }
+        }
 		#endregion
 
 		public uint GetInstanceDifficulty(bool isRaid)
@@ -277,10 +291,12 @@ namespace WCell.RealmServer.Entities
 		{
 			m_record.LastDeathTime = DateTime.Now;
 			MarkDead();
-
+            Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.DeathAtMap, (uint)MapId, 1);
+            Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.DeathInDungeon, (uint)MapId, 1);
 			// start release timer
 			m_corpseReleaseTimer = new TimerEntry(dt => ReleaseCorpse());
 			m_corpseReleaseTimer.Start(Corpse.AutoReleaseDelay, 0);
+
 		}
 
 		internal protected override void OnResurrect()
@@ -396,16 +412,20 @@ namespace WCell.RealmServer.Entities
 				pvp = action.Attacker.IsPvPing;
 				var chr = action.Attacker.CharacterMaster;
 
-				if (pvp && chr.IsInBattleground)
+				if (pvp)
 				{
-					// Add BG stats
-					var attackerStats = chr.Battlegrounds.Stats;
-					var victimStats = Battlegrounds.Stats;
-					attackerStats.KillingBlows++;
-					if (victimStats != null)
-					{
-						victimStats.Deaths++;
-					}
+                    if (chr.IsInBattleground)
+                    {
+                        // Add BG stats
+                        var attackerStats = chr.Battlegrounds.Stats;
+                        var victimStats = Battlegrounds.Stats;
+                        attackerStats.KillingBlows++;
+                        if (victimStats != null)
+                        {
+                            victimStats.Deaths++;
+                        }
+                    }
+                    Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.KilledByPlayer, (uint)chr.FactionGroup);
 				}
 			}
 			else
@@ -417,6 +437,7 @@ namespace WCell.RealmServer.Entities
 			{
 				// durability loss
 				m_inventory.ApplyDurabilityLoss(PlayerInventory.DeathDurabilityLossPct);
+                Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.KilledByCreature, (uint)((NPC)action.Attacker).Entry.NPCId);
 			}
 
 			m_Map.MapTemplate.NotifyPlayerDied(action);
@@ -1387,7 +1408,7 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
-		#region Talent Specs
+		#region Talent Specs / Glyphs
 		public SpecProfile CurrentSpecProfile
 		{
 			get { return SpecProfiles[m_talents.CurrentSpecIndex]; }
@@ -1437,6 +1458,32 @@ namespace WCell.RealmServer.Entities
 				value |= 0x20;
 
 			Glyphs_Enable = value;
+		}
+
+		public void ApplyGlyph(byte slot, GlyphPropertiesEntry gp)
+		{
+			//check if there is a already a glyph in there and remove it
+			RemoveGlyph(slot);
+
+			//slap in the new one
+			SpellCast.Trigger(SpellHandler.Get(gp.SpellId), this);
+			SetGlyph(slot, gp.Id);
+			CurrentSpecProfile.GlyphIds[slot] = gp.Id;
+			TalentHandler.SendTalentGroupList(m_talents);
+
+			//Todo: save it somewhere and dualspec related things!
+		}
+		public void RemoveGlyph(byte slot)
+		{
+			var oldglyph = GetGlyph(slot);
+
+			if (oldglyph != 0)
+			{
+				var spelltoremove = GlyphInfoHolder.GetPropertiesEntryForGlyph(oldglyph).SpellId;
+				Auras.Remove(SpellHandler.Get(spelltoremove));
+				CurrentSpecProfile.GlyphIds[slot] = 0;
+				SetGlyph(slot, 0);
+			}
 		}
 		#endregion
 

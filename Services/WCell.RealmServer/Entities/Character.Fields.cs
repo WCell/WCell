@@ -2173,6 +2173,14 @@ namespace WCell.RealmServer.Entities
 		{
 			return GetUInt32(PlayerFields.GLYPH_SLOTS_1 + slot);
 		}
+		public void SetGlyph(byte slot, uint glyph)
+		{
+			SetUInt32(PlayerFields.GLYPHS_1 + slot, glyph);
+		}
+		public uint GetGlyph(byte slot)
+		{
+			return GetUInt32(PlayerFields.GLYPHS_1 + slot);
+		}
 		#endregion
 	}
 }

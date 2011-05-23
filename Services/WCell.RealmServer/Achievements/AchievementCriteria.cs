@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
+﻿using System.Runtime.InteropServices;
 using WCell.Constants;
 using WCell.Constants.Achievements;
+using WCell.Constants.Chat;
+using WCell.Constants.Factions;
 using WCell.Constants.Items;
 using WCell.Constants.NPCs;
 using WCell.Constants.Skills;
 using WCell.Constants.Spells;
 using WCell.Constants.World;
-using WCell.RealmServer.Achievements;
 using WCell.RealmServer.Entities;
-using WCell.Constants.Factions;
+using WCell.RealmServer.Factions;
 using WCell.RealmServer.Global;
 using WCell.Util.Data;
 
@@ -271,7 +268,7 @@ namespace WCell.RealmServer.Achievements
 				return;
 			if (MapId != (MapId)value1)
 				return;
-			achievements.SetCriteriaProgress(this, value2, ProgressType.ProgressAccumulate);
+			achievements.SetCriteriaProgress(this, 1, ProgressType.ProgressAccumulate);
 		}
 	}
 
@@ -309,7 +306,6 @@ namespace WCell.RealmServer.Achievements
 	public class KilledByPlayerAchievementCriteriaEntry : AchievementCriteriaEntry
 	{
 		// 23
-
 		public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
 		{
 			if(value1 == 0)
@@ -331,7 +327,7 @@ namespace WCell.RealmServer.Achievements
 		{
 			if(value1 == 0)
 				return;
-			achievements.SetCriteriaProgress(this, value1);
+			achievements.SetCriteriaProgress(this, value1, ProgressType.ProgressHighest);
 		}
 
 		public override bool IsAchieved(AchievementProgressRecord achievementProgressRecord)
@@ -372,7 +368,7 @@ namespace WCell.RealmServer.Achievements
 		{
 			if(value1 != QuestId)
 				return;
-			achievements.SetCriteriaProgress(this,1);
+			achievements.SetCriteriaProgress(this, 1);
 		}
 	}
 
@@ -389,9 +385,22 @@ namespace WCell.RealmServer.Achievements
 	public class CastSpellAchievementCriteriaEntry : AchievementCriteriaEntry
 	{
 		// 29
-		// 110
 		public SpellId SpellId;
 		public uint SpellCount;
+
+        public override bool IsAchieved(AchievementProgressRecord achievementProgressRecord)
+        {
+            return achievementProgressRecord.Counter >= SpellCount;
+        }
+
+        public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
+        {
+            if (value1 != (uint)SpellId)
+            {
+                return;
+            }
+            achievements.SetCriteriaProgress(this, 1, ProgressType.ProgressAccumulate);
+        }
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -507,6 +516,46 @@ namespace WCell.RealmServer.Achievements
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public class UseItemAchievementCriteriaEntry : AchievementCriteriaEntry
+    {
+        // 41
+        public ItemId ItemId;
+        public uint ItemCount;
+
+        public override bool IsAchieved(AchievementProgressRecord achievementProgressRecord)
+        {
+            return achievementProgressRecord.Counter >= ItemCount;
+        }
+
+        public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
+        {
+            if (value1 != (uint)ItemId)
+                return;
+
+            achievements.SetCriteriaProgress(this, 1, ProgressType.ProgressAccumulate);
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public class LootItemAchievementCriteriaEntry : AchievementCriteriaEntry
+    {
+        // 42
+        public ItemId ItemId;
+        public uint ItemCount;
+
+        public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
+        {
+            if (ItemId != (ItemId)value1)
+                return;
+            achievements.SetCriteriaProgress(this, value2, ProgressType.ProgressAccumulate);
+        }
+        public override bool IsAchieved(AchievementProgressRecord achievementProgressRecord)
+        {
+            return achievementProgressRecord.Counter >= ItemCount;
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public class ExploreAreaAchievementCriteriaEntry : AchievementCriteriaEntry
     {
         // 43
@@ -548,6 +597,104 @@ namespace WCell.RealmServer.Achievements
             return achievementProgressRecord.Counter >= 1;
         }
     }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public class BuyBankSlotAchievementCriteriaEntry : AchievementCriteriaEntry
+    {
+        // 45
+        public uint Unused;
+        public uint NumberOfBankSlots;
+
+        public override bool IsAchieved(AchievementProgressRecord achievementProgressRecord)
+        {
+            return achievementProgressRecord.Counter >= NumberOfBankSlots;
+        }
+
+        public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
+        {
+            achievements.SetCriteriaProgress(this, achievements.Owner.BankBagSlots, ProgressType.ProgressHighest);
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public class GainReputationAchievementCriteriaEntry : AchievementCriteriaEntry
+    {
+        // 46
+        public FactionId FactionId;
+        public uint ReputationAmount;
+
+        public override bool IsAchieved(AchievementProgressRecord achievementProgressRecord)
+        {
+            return achievementProgressRecord.Counter >= ReputationAmount;
+        }
+
+        public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
+        {
+            if (value1 != (uint)FactionId)
+                return;
+            
+            int reputation = achievements.Owner.Reputations.GetValue(FactionMgr.GetFactionIndex(FactionId));
+            achievements.SetCriteriaProgress(this, (uint)reputation, ProgressType.ProgressHighest);
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public class GainExaltedReputationAchievementCriteriaEntry : AchievementCriteriaEntry
+    {
+        // 47
+        public uint Unused;
+        public uint NumberOfExaltedReputations;
+
+        public override bool IsAchieved(AchievementProgressRecord achievementProgressRecord)
+        {
+            return achievementProgressRecord.Counter >= NumberOfExaltedReputations;
+        }
+
+        public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
+        {
+            achievements.SetCriteriaProgress(this, achievements.Owner.Reputations.GetExaltedReputations(), ProgressType.ProgressHighest);
+        }
+    }
+
+	[StructLayout(LayoutKind.Sequential)]
+	public class VisitBarberShopAchievementCriteriaEntry : AchievementCriteriaEntry
+	{
+		// 48
+		public uint Unused;
+		public uint NumberOfVisitsAtBarberShop;
+
+		public override bool IsAchieved(AchievementProgressRecord achievementProgressRecord)
+		{
+			return achievementProgressRecord.Counter >= NumberOfVisitsAtBarberShop;
+		}
+
+		public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
+		{
+			achievements.SetCriteriaProgress(this, 1, ProgressType.ProgressAccumulate);
+		}
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	public class DoEmoteAchievementCriteriaEntry : AchievementCriteriaEntry
+	{
+		// 54
+		public TextEmote emoteId;
+		public uint countOfEmotes;
+
+		public override bool IsAchieved(AchievementProgressRecord achievementProgressRecord)
+		{
+			return achievementProgressRecord.Counter >= countOfEmotes;
+		}
+
+		public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
+		{
+			if (value1 == 0 || value1 != (uint)emoteId)
+				return;
+
+			achievements.SetCriteriaProgress(this, 1, ProgressType.ProgressAccumulate);
+		}
+	}
+
     [StructLayout(LayoutKind.Sequential)]
     public class IncrementAtValue1AchievementCriteriaEntry : AchievementCriteriaEntry
     {
@@ -599,5 +746,72 @@ namespace WCell.RealmServer.Achievements
 		}
 	}
 
+	[StructLayout(LayoutKind.Sequential)]
+	public class GainReveredReputationAchievementCriteriaEntry : AchievementCriteriaEntry
+	{
+		// 87
+		public uint Unused;
+		public uint Unused2;
 
+		public override bool IsAchieved(AchievementProgressRecord achievementProgressRecord)
+		{
+			return achievementProgressRecord.Counter >= 1;
+		}
+
+		public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
+		{
+			achievements.SetCriteriaProgress(this, achievements.Owner.Reputations.GetReveredReputations(), ProgressType.ProgressHighest);
+		}
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	public class GainHonoredReputationAchievementCriteriaEntry : AchievementCriteriaEntry
+	{
+		// 88
+		public uint Unused;
+		public uint Unused2;
+
+		public override bool IsAchieved(AchievementProgressRecord achievementProgressRecord)
+		{
+			return achievementProgressRecord.Counter >= 1;
+		}
+
+		public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
+		{
+			achievements.SetCriteriaProgress(this, achievements.Owner.Reputations.GetHonoredReputations(), ProgressType.ProgressHighest);
+		}
+	}
+
+    [StructLayout(LayoutKind.Sequential)]
+    public class KnownFactionsAchievementCriteriaEntry : AchievementCriteriaEntry
+    {
+        // 89
+        public uint Unused;
+        public uint Unused2;
+
+        public override bool IsAchieved(AchievementProgressRecord achievementProgressRecord)
+        {
+ 	        return achievementProgressRecord.Counter >= 1;
+        }
+
+        public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
+        {
+			achievements.SetCriteriaProgress(this, achievements.Owner.Reputations.GetVisibleReputations(), ProgressType.ProgressHighest);
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public class FlightPathsTakenAchievementCriteriaEntry : AchievementCriteriaEntry
+    {
+        // 108
+        public override bool IsAchieved(AchievementProgressRecord achievementProgressRecord)
+        {
+            return achievementProgressRecord.Counter >= 1;
+        }
+
+        public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
+        {
+            achievements.SetCriteriaProgress(this, 1, ProgressType.ProgressAccumulate);
+        }
+    }
 }

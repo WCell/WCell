@@ -1,9 +1,9 @@
+using System.Collections.Generic;
+using WCell.RealmServer.AI.Actions;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
-using WCell.RealmServer.AI.Actions;
-using System.Collections.Generic;
 using WCell.Util;
 
 namespace WCell.RealmServer.AI.Brains

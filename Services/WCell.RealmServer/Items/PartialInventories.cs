@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using WCell.Constants.Achievements;
 using WCell.Constants.Items;
 using WCell.Constants.Skills;
 using WCell.Constants.Updates;
@@ -639,6 +640,7 @@ namespace WCell.RealmServer.Items
 			}
 
 			chr.BankBagSlots = (byte)(count + 1);
+            chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.BuyBankSlot);
 			return BuyBankBagResponse.Ok;
 		}
 

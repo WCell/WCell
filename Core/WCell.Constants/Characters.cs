@@ -34,7 +34,7 @@ namespace WCell.Constants
 		NoPlayTime = 0x2000, //played too long time
 		OutOfBounds = 0x4000, // Lua_IsOutOfBounds
 		Developer = 0x8000,
-		Flag_0x10000 = 0x10000,
+		AllowLowLevelRaid = 0x10000,
 		Flag_0x20000 = 0x20000, // Taxi Time Test
 		PVPTimerActive = 0x40000,
 	}

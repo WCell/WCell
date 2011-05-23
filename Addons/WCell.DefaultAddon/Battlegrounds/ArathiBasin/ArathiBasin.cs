@@ -156,6 +156,7 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
 
 	    public ArathiBasin()
         {
+			_template = BattlegroundMgr.GetTemplate(BattlegroundId.ArathiBasin);
             Bases = new ArathiBase[(int)ArathiBases.End];
             scoreTicks = new int[6]{ 0, 10, 10 ,10 ,10, 30};
             tickLengths = new int[6]{ 0, 12000, 9000, 6000, 3000, 1000};

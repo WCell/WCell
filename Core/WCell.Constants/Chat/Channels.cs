@@ -46,7 +46,7 @@ namespace WCell.Constants.Chat
 	}
 
 	/// <summary>
-	/// Same as <see cref="ChatChannelFlagsClient"/> but according to how its read  from DBC files.
+	/// Same as <see cref="ChatChannelFlagsClient"/> but according to how its read from DBC files.
 	/// The client actually expects the format defined in <see cref="ChatChannelFlagsClient"/>.
 	/// </summary>
 	[Flags]

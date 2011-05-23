@@ -38,7 +38,7 @@ namespace WCell.Constants.Login
 	[Flags]
 	public enum RealmFlags : byte
 	{
-        None = 0x0,
+        None = 0,
         RedName = 0x1,
         Offline = 0x2,
         SpecifyBuild = 0x4,

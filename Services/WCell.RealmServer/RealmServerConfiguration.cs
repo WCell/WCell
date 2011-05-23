@@ -276,6 +276,24 @@ namespace WCell.RealmServer
 			}
 		}
 
+		private static RealmFlags flags = RealmFlags.Recommended;
+
+		/// <summary>
+		/// The flags of this RealmServer
+		/// </summary>
+		public static RealmFlags Flags
+		{
+			get { return flags; }
+			set
+			{
+				flags = value;
+				if (RealmServer.Instance.IsRunning)
+				{
+					RealmServer.Instance.UpdateRealm();
+				}
+			}
+		}
+
 		[Variable("BadWords")]
 		/// <summary>
 		/// 

@@ -24,9 +24,9 @@
             </ArathiBasin>
             <WarsongGulch>
               <WarsongGulch>
-                <AllianceFlagDebuffSpellId>AllianceFlagExtraDamageDebuff</AllianceFlagDebuffSpellId>
+                <AllianceFlagDebuffSpellId>EffectExtraDamageDebuff</AllianceFlagDebuffSpellId>
                 <DebuffFlagCarrierDelay>10</DebuffFlagCarrierDelay>
-                <HordeFlagDebuffSpellId>HordeFlagExtraDamageDebuff</HordeFlagDebuffSpellId>
+                <HordeFlagDebuffSpellId>EffectExtraDamageDebuff</HordeFlagDebuffSpellId>
                 <PowerUpRespawnTimeMillis>120000</PowerUpRespawnTimeMillis>
                 <SilverwingFlagId>SilverwingFlag</SilverwingFlagId>
                 <SilverwingFlagStandId>SilverwingFlag_2</SilverwingFlagStandId>
