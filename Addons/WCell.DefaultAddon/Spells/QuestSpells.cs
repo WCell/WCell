@@ -40,7 +40,7 @@ namespace WCell.Addons.Default.Spells
 			// add a spell-trigger
 			var spell = SpellHandler.Get(id);
 			var effect = spell.AddTriggerSpellEffect(triggerId, ImplicitSpellTargetType.SingleEnemy);
-			effect.Amplitude = spell.Durations.Min;
+			effect.AuraPeriod = spell.Durations.Min;
 		}
 	}
 }

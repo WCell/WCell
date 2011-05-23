@@ -40,11 +40,14 @@ namespace WCell.Addons.Default.Spells
 			// Cannibalize' info is a different spell
 			var cannibalize = SpellHandler.Get(SpellId.SecondarySkillCannibalizeRacial);
 			var cannibalize2 = SpellHandler.Get(SpellId.Cannibalize);
-			cannibalize.TargetFlags = SpellTargetFlags.UnitCorpse;
+			cannibalize.SpellTargetRestrictions.TargetFlags = SpellTargetFlags.UnitCorpse;
 			cannibalize.Durations = cannibalize2.Durations;
 			cannibalize.AttributesEx |= cannibalize2.AttributesEx;
-			cannibalize.InterruptFlags |= InterruptFlags.OnMovement | InterruptFlags.OnTakeDamage;
-			cannibalize.ChannelInterruptFlags |= cannibalize2.ChannelInterruptFlags;
+		    cannibalize.SpellInterrupts = new SpellInterrupts()
+		                                      {
+		                                          InterruptFlags = InterruptFlags.OnMovement | InterruptFlags.OnTakeDamage,
+		                                          ChannelInterruptFlags = cannibalize2.SpellInterrupts.ChannelInterruptFlags,
+		                                      };
 			cannibalize.Visual = cannibalize2.Visual;
 			// copy effects
 			var effects = cannibalize.Effects.ToList();

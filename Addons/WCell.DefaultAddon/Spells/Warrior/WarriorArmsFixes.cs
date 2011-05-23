@@ -23,22 +23,9 @@ namespace WCell.Addons.Default.Spells.Warrior
 				spell.ForeachEffect(effect => effect.AffectMask = new uint[3]);
 			});
 
-			// Sword Spec should only proc once every 6 sec
-			SpellLineId.WarriorArmsSwordSpecialization.Apply(spell => spell.ProcDelay = 6000);
-
 			// Improved Hamstring can only be proc'ed by Hamstring
 			SpellLineId.WarriorArmsImprovedHamstring.Apply(spell =>
 				spell.AddCasterProcSpells(SpellLineId.WarriorHamstring));
-
-			// Weapon Mastery reduces Disarm effects
-			SpellLineId.WarriorArmsWeaponMastery.Apply(spell =>
-			{
-				var effect = spell.GetEffect(AuraType.ModMechanicDurationPercent);
-				if (effect != null)
-				{
-					effect.Mechanic = SpellMechanic.Disarmed;
-				}
-			});
 
 			// Your next 5 melee attacks strike an additional nearby opponent.
 			SpellLineId.WarriorArmsSweepingStrikes.Apply(spell =>
@@ -68,12 +55,6 @@ namespace WCell.Addons.Default.Spells.Warrior
 					ProcHandler.StunValidator
 				));
 			}, SpellId.WarriorArmsSecondWindRank2);
-
-			// Trauma should only proc on crit hit
-			SpellLineId.WarriorArmsTrauma.Apply(spell =>
-			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.MeleeCriticalHitOther;
-			});
 
 			// Taste for blood only triggers once every 6 seconds
 			SpellLineId.WarriorArmsTasteForBlood.Apply(spell =>

@@ -21,7 +21,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
     {
 		public Silverwing(WarsongGulch instance) :
 			base(instance,
-				SpellId.SilverwingFlag,
+                SpellId.AllianceFlag_2,
 				SpellId.AllianceFlagDrop,
 				SpellId.RecentlyDroppedFlag,
 				WarsongGulch.AllianceFlagDebuffSpellId,

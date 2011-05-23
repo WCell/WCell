@@ -34,23 +34,18 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 
 			FixCorpseExplosion();
 
-			// "Blood Strike or Pestilence" -> "the Blood Rune becomes a Death Rune"
-			DeathKnightFixes.MakeRuneConversionProc(SpellLineId.DeathKnightUnholyReaping,
-				SpellLineId.DeathKnightBloodStrike, SpellLineId.DeathKnightPestilence,
-				RuneType.Death, RuneType.Blood);
-
 			FixBloodCakedStrike();
 			FixImpurity();
 
-			// Dirge is only triggered by "Death Strike, Plague Strike and Scourge Strike"
-			SpellLineId.DeathKnightUnholyDirge.Apply(spell =>
-			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+            //// Dirge is only triggered by "Death Strike, Plague Strike and Scourge Strike"
+            //SpellLineId.DeathKnightUnholyDirge.Apply(spell =>
+            //{
+            //    spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
 
-				var effect = spell.GetEffect(AuraType.ProcTriggerSpellWithOverride);
-				effect.ClearAffectMask();
-				effect.AddAffectingSpells(SpellLineId.DeathKnightDeathStrike, SpellLineId.DeathKnightPlagueStrike, SpellLineId.DeathKnightUnholyScourgeStrike);
-			});
+            //    var effect = spell.GetEffect(AuraType.ProcTriggerSpellWithOverride);
+            //    effect.ClearAffectMask();
+            //    effect.AddAffectingSpells(SpellLineId.DeathKnightDeathStrike, SpellLineId.DeathKnightPlagueStrike, SpellLineId.DeathKnightUnholyScourgeStrike);
+            //});
 
 			SpellLineId.DeathKnightUnholyMagicSuppression.Apply(spell =>
 			{
@@ -70,39 +65,33 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 				retainEffect.AddRequiredActivationAuras(SpellLineId.DeathKnightBloodPresence, SpellLineId.DeathKnightFrostPresence);
 
 				// "your runes finish their cooldowns $s2% faster in Unholy Presence"
-				spell.GetEffect(AuraType.None).AuraEffectHandlerCreator = () => new ModAllRuneCooldownsPercentHandler();
+				//spell.GetEffect(AuraType.None).AuraEffectHandlerCreator = () => new ModAllRuneCooldownsPercentHandler();
 			});
 
 			FixAntiMagicZone();
 			FixNecrosis();
 			FixAntiMagicShell();
 
-			// Scourge Strike adds damage per disease on target
-			SpellLineId.DeathKnightUnholyScourgeStrike.Apply(spell =>
-			{
-				var effect = spell.GetEffect(SpellEffectType.Dummy);
-				effect.SpellEffectHandlerCreator = (cast, effct) => new WeaponDiseaseDamagePercentHandler(cast, effct);
-			});
-
-			// Night of the Dead "Also reduces the damage your pet takes from creature area of effect attacks by $s3%."
-			SpellLineId.DeathKnightUnholyNightOfTheDead.Apply(spell =>
-			{
-				// TODO: Pet-aura on owner
-			});
+            //// Scourge Strike adds damage per disease on target
+            //SpellLineId.DeathKnightUnholyScourgeStrike.Apply(spell =>
+            //{
+            //    var effect = spell.GetEffect(SpellEffectType.Dummy);
+            //    effect.SpellEffectHandlerCreator = (cast, effct) => new WeaponDiseaseDamagePercentHandler(cast, effct);
+            //});
 
 			// Desecration has no affect mask
 			SpellLineId.DeathKnightUnholyDesecration.Apply(spell =>
 			{
 				// "Plague Strikes and Scourge Strikes cause the Desecrated Ground effect"
 				var effect = spell.GetEffect(AuraType.ProcTriggerSpell);
-				effect.SetAffectMask(SpellLineId.DeathKnightPlagueStrike, SpellLineId.DeathKnightUnholyScourgeStrike);
+				effect.SetAffectMask(SpellLineId.DeathKnightPlagueStrike);
 			});
 
 			FixDeathStrike();
 
-			// Desolation has no AffectMask
-			SpellLineId.DeathKnightUnholyDesolation.Apply(spell =>
-				spell.GetEffect(AuraType.ProcTriggerSpell).SetAffectMask(SpellLineId.DeathKnightBloodStrike));
+            //// Desolation has no AffectMask
+            //SpellLineId.DeathKnightUnholyDesolation.Apply(spell =>
+            //    spell.GetEffect(AuraType.ProcTriggerSpell).SetAffectMask(SpellLineId.DeathKnightBloodStrike));
 
 			FixDeathCoil();
 
@@ -209,7 +198,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 					var unit = (Unit)target;
 					// see http://www.wowwiki.com/Death_Strike
 					// "heals the Death Knight for up to 5% of maximum health, plus 5% for each disease on the target for a maximum of 15% for two or more diseases."
-					var healPctPerDisease = m_cast.Spell.DamageMultipliers[0];
+					var healPctPerDisease = m_cast.Spell.Effects[0].ChainAmplitude;
 					var mult = Math.Min(3, 1 + unit.Auras.GetVisibleAuraCount(m_cast.CasterReference, DispelType.Disease));
 					var percent = MathUtil.RoundInt(mult * healPctPerDisease);
 
@@ -264,13 +253,13 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 		private static void FixNecrosis()
 		{
 			// Necrosis deals shadow damage on top of every attack that was performed
-			SpellLineId.DeathKnightUnholyNecrosis.Apply(spell =>
-			{
-				spell.SchoolMask = DamageSchoolMask.Shadow;		// "Shadow damage"
+            //SpellLineId.DeathKnightUnholyNecrosis.Apply(spell =>
+            //{
+            //    spell.SchoolMask = DamageSchoolMask.Shadow;		// "Shadow damage"
 
-				var effect = spell.GetEffect(AuraType.Dummy);
-				effect.AuraEffectHandlerCreator = () => new NecrosisDamageHandler();
-			});
+            //    var effect = spell.GetEffect(AuraType.Dummy);
+            //    effect.AuraEffectHandlerCreator = () => new NecrosisDamageHandler();
+            //});
 		}
 
 		/// <summary>
@@ -390,13 +379,13 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 		private static void FixRageOfRivendare()
 		{
 			// Tundra Stalker needs a custom Attack event aura handler & correct effect value
-			SpellLineId.DeathKnightFrostTundraStalker.Apply(spell =>
-			{
-				var effect = spell.GetEffect(AuraType.OverrideClassScripts);
-				effect.BasePoints = spell.Rank * 2;
-				effect.DiceSides = 0;
-				effect.AuraEffectHandlerCreator = () => new RageOfRivendareHandler();
-			});
+            //SpellLineId.DeathKnightFrostTundraStalker.Apply(spell =>
+            //{
+            //    var effect = spell.GetEffect(AuraType.OverrideClassScripts);
+            //    effect.BasePoints = spell.Rank * 2;
+            //    effect.DiceSides = 0;
+            //    effect.AuraEffectHandlerCreator = () => new RageOfRivendareHandler();
+            //});
 		}
 
 		public class RageOfRivendareHandler : AttackEventEffectHandler
@@ -415,25 +404,25 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 		private static void FixImpurity()
 		{
 			// TODO Impurity needs to increase AP damage bonus in %
-			SpellLineId.DeathKnightUnholyImpurity.Apply(spell =>
-			{
-				var oldEffect = spell.RemoveEffect(SpellEffectType.Dummy);
-				var effect = spell.AddAuraEffect(AuraType.ModDamageDonePercent);
-				effect.MiscValue = (int)DamageSchoolMask.MagicSchools;
-				oldEffect.CopyValuesTo(effect);				// copy values
-			});
+            //SpellLineId.DeathKnightUnholyImpurity.Apply(spell =>
+            //{
+            //    var oldEffect = spell.RemoveEffect(SpellEffectType.Dummy);
+            //    var effect = spell.AddAuraEffect(AuraType.ModDamageDonePercent);
+            //    effect.MiscValue = (int)DamageSchoolMask.MagicSchools;
+            //    oldEffect.CopyValuesTo(effect);				// copy values
+            //});
 		}
 
 
 		#region Blood-Caked Strike
 		private static void FixBloodCakedStrike()
 		{
-			SpellLineId.DeathKnightUnholyBloodCakedBlade.Apply(spell =>
-			{
-				var effect = spell.GetEffect(AuraType.Dummy);
-				effect.IsProc = true;
-				effect.AuraEffectHandlerCreator = () => new ProcTriggerSpellOnAutoAttackHandler();
-			});
+            //SpellLineId.DeathKnightUnholyBloodCakedBlade.Apply(spell =>
+            //{
+            //    var effect = spell.GetEffect(AuraType.Dummy);
+            //    effect.IsProc = true;
+            //    effect.AuraEffectHandlerCreator = () => new ProcTriggerSpellOnAutoAttackHandler();
+            //});
 
 			SpellHandler.Apply(spell =>
 			{
@@ -448,15 +437,15 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 		private static void FixCorpseExplosion()
 		{
 			// Corpse explosion transforms a corpse and applies damage to enemies in the area
-			SpellLineId.DeathKnightUnholyCorpseExplosion.Apply(spell =>
-			{
-				var effect1 = spell.Effects[0];
-				effect1.TriggerSpellId = SpellId.ClassSkillCorpseExplosion;
-				effect1.OverrideEffectValue = true;
-				effect1.SpellEffectHandlerCreator = (cast, effct) => new CorpseExplosionHandler(cast, effct);
+            //SpellLineId.DeathKnightUnholyCorpseExplosion.Apply(spell =>
+            //{
+            //    var effect1 = spell.Effects[0];
+            //    effect1.TriggerSpellId = SpellId.ClassSkillCorpseExplosion;
+            //    effect1.OverrideEffectValue = true;
+            //    effect1.SpellEffectHandlerCreator = (cast, effct) => new CorpseExplosionHandler(cast, effct);
 
-				spell.Effects[1].SpellEffectHandlerCreator = (cast, effct) => new VoidNoTargetsEffectHandler(cast, effct);
-			});
+            //    spell.Effects[1].SpellEffectHandlerCreator = (cast, effct) => new VoidNoTargetsEffectHandler(cast, effct);
+            //});
 
 			// needs to override effect value with the value of the effect that triggered it
 			// SpellHandler.Apply(spell => {}, SpellId.ClassSkillCorpseExplosion);
@@ -483,7 +472,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			static bool IsValidCorpse(NPC corpse)
 			{
 				// this check won't let us use the spell on corpses of NPCs that by default have the CorpseDisplayId
-				return corpse != null && !corpse.IsAlive && !corpse.Auras.Contains(SpellId.CorpseExploded);
+				return corpse != null && !corpse.IsAlive && !corpse.Auras.Contains(SpellId.CorpseExplode);
 			}
 
 			public override void Apply()
@@ -516,7 +505,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 					m_cast.Selected = corpse;
 					m_cast.TargetLoc = corpse.Position;
 
-					m_cast.Trigger(SpellId.CorpseExploded, corpse);	// "explode" & convert corpse
+					m_cast.Trigger(SpellId.CorpseExplode, corpse);	// "explode" & convert corpse
 
 					base.Apply();
 				}

@@ -32,14 +32,14 @@ namespace WCell.Addons.Default.Spells.Priest
 			SpellLineId.PriestShadowMagicMindFlay.Apply(spell =>
             {
                 var effect = spell.AddAuraEffect(AuraType.PeriodicDamage, ImplicitSpellTargetType.SingleEnemy);
-                effect.Amplitude = spell.Effects[2].Amplitude;
+                effect.AuraPeriod = spell.Effects[2].AuraPeriod;
             });
 
             // Dispersion also regenerates Mana
             SpellLineId.PriestShadowMagicDispersion.Apply(spell =>
             {
                 var effect = spell.AddPeriodicTriggerSpellEffect(SpellId.Dispersion_2, ImplicitSpellTargetType.Self);
-                effect.Amplitude = 1000;
+                effect.AuraPeriod = 1000;
             });
 
             // Vampiric Embrace can be proc'ed by a certain set of spells, and has a custom healing AuraEffectHandler

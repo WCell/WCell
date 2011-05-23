@@ -19,45 +19,14 @@ namespace WCell.Addons.Default.Spells.Paladin
 		[Initialization(InitializationPass.Second)]
 		public static void FixIt()
 		{
-			// Illumination lets the caster "gain mana equal to $s2% of the base cost of the spell", also works for Holy Shock heals
-			SpellLineId.PaladinHolyIllumination.Apply(spell =>
-			{
-				var invalidProcEffect = spell.GetEffect(AuraType.ProcTriggerSpell);
-				invalidProcEffect.IsProc = false;	// don't proc (refers to non-existing spell)
-
-				var effect = spell.GetEffect(AuraType.OverrideClassScripts);
-				effect.IsProc = true;
-				effect.AddToAffectMask(SpellLineId.PaladinHolyHolyShock);			// also works for Holy Shock
-				effect.AuraEffectHandlerCreator = () => new IlluminationHandler();
-			});
-
-            /*SpellLineId.PaladinRedemption.Apply(spell =>
-            {
-                var effect = spell.GetEffect(SpellEffectType.ResurrectFlat);
-                effect.ImplicitTargetA = ImplicitSpellTargetType.SingleFriend;
-            });*/
-
-			// Improved Lay On Hands needs the lay on hands spell restriction and correct proc flags
-			SpellLineId.PaladinHolyImprovedLayOnHands.Apply(spell =>
-			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.ActionOther | ProcTriggerFlags.HealOther;
-				spell.GetEffect(AuraType.ProcTriggerSpell).AddToAffectMask(SpellLineId.PaladinLayOnHands);
-			});
-
-			// Holy Shield only procs on block
-			SpellLineId.PaladinProtectionHolyShield.Apply(spell =>
-			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.Block;
-			});
-
 			// Sacred Cleansing should proc on Cleanse
-			SpellLineId.PaladinHolySacredCleansing.Apply(spell =>
-			{
-				var procEffect = spell.GetEffect(AuraType.ProcTriggerSpell);
-				procEffect.ClearAffectMask();
-				//procEffect.AddToAffectMask(SpellLineId.PaladinCleanse);
-				procEffect.AddAffectingSpells(SpellLineId.PaladinCleanse);
-			});
+            //SpellLineId.PaladinHolySacredCleansing.Apply(spell =>
+            //{
+            //    var procEffect = spell.GetEffect(AuraType.ProcTriggerSpell);
+            //    procEffect.ClearAffectMask();
+            //    //procEffect.AddToAffectMask(SpellLineId.PaladinCleanse);
+            //    procEffect.AddAffectingSpells(SpellLineId.PaladinCleanse);
+            //});
 
 			// Judgements of the Pure procs on all judgements
 			SpellLineId.PaladinHolyJudgementsOfThePure.Apply(spell =>
@@ -92,21 +61,6 @@ namespace WCell.Addons.Default.Spells.Paladin
 			{
 				spell.AddAuraEffect(() => new ApplySelfForbearanceHandler(), ImplicitSpellTargetType.Self);
 			});
-		}
-
-		public class IlluminationHandler : ProcTriggerSpellOnCritHandler
-		{
-			public override void OnProc(Unit triggerer, IUnitAction action)
-			{
-				if (!(action is HealAction))
-				{
-					LogManager.GetCurrentClassLogger().Warn("Illumination was proc'ed by non-heal action: {0}, on {1}", action, Owner);
-					return;
-				}
-				var caster = action.Attacker;
-				var cost = (((HealAction)action).Spell.CalcBasePowerCost(caster) * EffectValue + 50) / 100;
-				caster.Energize(cost, caster, SpellEffect);
-			}
 		}
 	}
 

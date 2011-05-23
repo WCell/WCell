@@ -21,59 +21,13 @@ namespace WCell.Addons.Default.Spells.Druid
 		[Initialization(InitializationPass.Second)]
 		public static void FixIt()
 		{
-			// Thick Hide needs to be restricted to "cloth and leather items"
-			SpellLineId.DruidFeralCombatThickHide.Apply(spell =>
-			{
-				spell.RequiredItemClass = ItemClass.Armor;
-				spell.RequiredItemSubClassMask = ItemSubClassMask.ArmorCloth | ItemSubClassMask.ArmorLeather;
-			});
-
-			// Sharpened Claws only works "while in Bear, Dire Bear or Cat Form"
-			SpellLineId.DruidFeralCombatSharpenedClaws.Apply(spell =>
-			{
-				spell.RequiredShapeshiftMask = ShapeshiftMask.Bear | ShapeshiftMask.DireBear | ShapeshiftMask.Cat;
-			});
-
-			// Primal Fury is triggered by critical hits and only active in "in Bear and Dire Bear Form"
-			SpellLineId.DruidFeralCombatPrimalFury.Apply(spell =>
-			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.MeleeCriticalHit | ProcTriggerFlags.RangedCriticalHit;
-				spell.RequiredShapeshiftMask = ShapeshiftMask.Bear | ShapeshiftMask.DireBear;
-			});
-
-			// Heart of the wild: "while in Bear or Dire Bear Form your Stamina is increased by $s3% and while in Cat Form your attack power is increased by $s2%."
-			SpellLineId.DruidFeralCombatHeartOfTheWild.Apply(spell =>
-			{
-				var dummy = spell.GetEffect(SpellEffectType.Dummy);
-
-				// increase 10% of something, depending on the form
-				var bearEffect = spell.AddAuraEffect(AuraType.ModTotalStatPercent);
-				bearEffect.RequiredShapeshiftMask = ShapeshiftMask.Bear | ShapeshiftMask.DireBear;
-				bearEffect.MiscValue = (int)StatType.Stamina;										// increases stamina
-				bearEffect.BasePoints = dummy.BasePoints;
-				bearEffect.DiceSides = dummy.DiceSides;
-
-				var catEffect = spell.AddAuraEffect(AuraType.ModAttackPowerPercent);
-				catEffect.RequiredShapeshiftMask = ShapeshiftMask.Cat;
-				catEffect.BasePoints = dummy.BasePoints;
-				catEffect.DiceSides = dummy.DiceSides;
-			});
-
-			// Leader of the Pack toggles an Aura "While in Cat, Bear or Dire Bear Form"
-			SpellLineId.DruidFeralCombatLeaderOfThePack.Apply(spell =>
-			{
-				spell.RequiredShapeshiftMask = ShapeshiftMask.Cat | ShapeshiftMask.Bear | ShapeshiftMask.DireBear;
-
-				// toggle the party aura, whenever the druid shifts into cat bear or dire bear form:
-				spell.GetEffect(AuraType.Dummy).AuraEffectHandlerCreator = () => new ToggleAuraHandler(SpellId.LeaderOfThePack);
-			});
 			// triggered Aura of LotP: First effect has invalid radius; 2nd effect is the proc effect for the Improved LotP buff
 			SpellHandler.Apply(spell =>
 			{
 				spell.ForeachEffect(effect => effect.Radius = 45);	// fix radius
 
 				// "heal themselves for $s1% of their total health when they critically hit with a melee or ranged attack"
-				spell.ProcTriggerFlags = ProcTriggerFlags.MeleeCriticalHitOther | ProcTriggerFlags.RangedCriticalHit;
+				spell.SpellAuraOptions.ProcTriggerFlags = ProcTriggerFlags.MeleeCriticalHitOther | ProcTriggerFlags.RangedCriticalHit;
 
 				// "The healing effect cannot occur more than once every 6 sec"
 				spell.ProcDelay = 6000;
@@ -84,21 +38,6 @@ namespace WCell.Addons.Default.Spells.Druid
 				dummy.AuraEffectHandlerCreator = () => new ImprovedLeaderOfThePackProcHandler();
 			},
 			SpellId.LeaderOfThePack);
-
-			// Primal Tenacity has the wrong effect type: "reduces all damage taken while stunned by $s2% while in Cat Form."
-			SpellLineId.DruidFeralCombatPrimalTenacity.Apply(spell =>
-			{
-				var effect = spell.GetEffect(AuraType.SchoolAbsorb);
-				effect.AuraType = AuraType.ModDamageTakenPercent;		// should reduce damage taken
-			});
-
-			// Survival of the Fittest "increases your armor contribution from cloth and leather items in Bear Form and Dire Bear Form by $s3%"
-			SpellLineId.DruidFeralCombatSurvivalOfTheFittest.Apply(spell =>
-			{
-				var effect = spell.GetEffect(SpellEffectType.Dummy);
-				effect.RequiredShapeshiftMask = ShapeshiftMask.Bear | ShapeshiftMask.DireBear;
-				effect.AuraEffectHandlerCreator = () => new SurvivalOfTheFittestHandler();
-			});
 
 			// Nurturing Instinct simply toggles an aura when in cat form: "and increases healing done to you by $47179s1% while in Cat form."
 			SpellHandler.Apply(spell =>
@@ -112,82 +51,8 @@ namespace WCell.Addons.Default.Spells.Druid
 			},
 			SpellId.DruidFeralCombatNurturingInstinctRank2);
 
-			// Infected Wounds: "Your Shred, Maul, and Mangle attacks cause an Infected Wound in the target"
-            //SpellLineId.DruidFeralCombatInfectedWounds.Apply(spell =>
-            //{
-            //    var effect = spell.GetEffect(AuraType.ProcTriggerSpell);
-
-            //    // can only be proc'ed by a certain set of spells:
-            //    effect.AddToAffectMask(SpellLineId.DruidShred, SpellLineId.DruidMaul, SpellLineId.DruidMangleBear, SpellLineId.DruidMangleCat);
-            //});
-
-			// King of the Jungle has 2 dummies for shapeshift-restricted aura effects
-			SpellLineId.DruidFeralCombatKingOfTheJungle.Apply(spell =>
-			{
-				// "While using your Enrage ability in Bear Form or Dire Bear Form, your damage is increased by $s1%"
-				var effect1 = spell.Effects[0];
-				effect1.EffectType = SpellEffectType.ApplyAura;
-				effect1.AuraType = AuraType.ModDamageDonePercent;
-				effect1.AddToAffectMask(SpellLineId.DruidEnrage);
-				effect1.RequiredShapeshiftMask = ShapeshiftMask.Bear | ShapeshiftMask.DireBear;
-
-				// "your Tiger's Fury ability also instantly restores $s2 energy"
-				var effect2 = spell.Effects[1];
-				effect2.EffectType = SpellEffectType.Energize;
-				effect2.AddToAffectMask(SpellLineId.DruidTigersFury);
-			});
-
-			// "You cannot use Tiger's Fury while Berserk is active."
-			AuraHandler.AddAuraGroup(SpellLineId.DruidTigersFury, SpellLineId.DruidFeralCombatBerserk);
-
-			// Berserk triggers another spell
-			SpellLineId.DruidFeralCombatBerserk.Apply(spell =>
-			{
-				// "causes your Mangle (Bear) ability to hit up to $58923s1 targets"
-				spell.AddTriggerSpellEffect(SpellId.Berserk_14);
-			});
-
 			FixFeralSwiftness(SpellId.DruidFeralCombatFeralSwiftness, SpellId.FeralSwiftnessPassive1a);
 			FixFeralSwiftness(SpellId.DruidFeralCombatFeralSwiftness_2, SpellId.FeralSwiftnessPassive2a);
-
-			// PotP only works in Bear or Dire Bear form
-			SpellLineId.DruidFeralCombatProtectorOfThePack.Apply(spell =>
-			{
-				spell.RequiredShapeshiftMask = ShapeshiftMask.Bear | ShapeshiftMask.DireBear;
-			});
-
-			// NR only works in Bear or Dire Bear form, procs only on dodge
-			SpellLineId.DruidFeralCombatNaturalReaction.Apply(spell =>
-			{
-				spell.RequiredShapeshiftMask = ShapeshiftMask.Bear | ShapeshiftMask.DireBear;
-
-				// only proc the trigger spell on dodge
-				var triggerSpellEffect = spell.RemoveEffect(AuraType.ProcTriggerSpell);
-				spell.AddProcHandler(new TriggerSpellProcHandlerTemplate(
-					SpellHandler.Get(triggerSpellEffect.TriggerSpellId),
-					ProcTriggerFlags.MeleeHit | ProcTriggerFlags.RangedHit,
-					ProcHandler.DodgeValidator
-					));
-
-			});
-
-			// SI only has a dummy
-			SpellLineId.DruidFeralCombatSurvivalInstincts.Apply(spell =>
-			{
-				// "grants you $s1% of your maximum health"
-				var dummy = spell.GetEffect(AuraType.Dummy);
-				dummy.AuraType = AuraType.ModIncreaseHealthPercent;
-
-				// "while in Bear Form, Cat Form, or Dire Bear Form"
-				spell.RequiredShapeshiftMask = ShapeshiftMask.Bear | ShapeshiftMask.DireBear | ShapeshiftMask.Cat;
-			});
-
-			// Rip: Also does damage based on APs and CPs
-			SpellLineId.DruidRip.Apply(spell =>
-			{
-				var effect = spell.GetEffect(AuraType.PeriodicDamage);
-				effect.APPerComboPointValueFactor = 0.01f;
-			});
 
 			// Rake has + AP damage
 			SpellLineId.DruidRake.Apply(spell =>
@@ -199,13 +64,6 @@ namespace WCell.Addons.Default.Spells.Druid
 				var dotEffect = spell.GetEffect(AuraType.PeriodicDamage);
 				dotEffect.APValueFactor = 0.18f / dotEffect.GetMaxTicks();
 			});
-
-			// Maul: "Effects which increase Bleed damage also increase Maul damage."
-            //SpellLineId.DruidMaul.Apply(spell =>
-            //{
-            //    // TODO: "Causes a high amount of threat"
-            //    spell.GetEffect(SpellEffectType.WeaponDamage).SpellEffectHandlerCreator = (cast, effct) => new AddBleedWeaponDamageHandler(cast, effct);
-            //});
 
 			// Shred: "Effects which increase Bleed damage also increase Shred damage."
 			SpellLineId.DruidShred.Apply(spell =>
@@ -220,18 +78,18 @@ namespace WCell.Addons.Default.Spells.Druid
 			});
 
 			// FR: "Converts up to 10 rage per second into health for $d.  Each point of rage is converted into ${$m2/10}.1% of max health."
-			SpellLineId.DruidFrenziedRegeneration.Apply(spell =>
-			{
-				var dummy = spell.GetEffect(SpellEffectType.Dummy);
-				dummy.Amplitude = 1000;
-				dummy.AuraEffectHandlerCreator = () => new FrenziedGenerationHandler();
-			});
+            //SpellLineId.DruidFrenziedRegeneration.Apply(spell =>
+            //{
+            //    var dummy = spell.GetEffect(SpellEffectType.Dummy);
+            //    dummy.AuraPeriod = 1000;
+            //    dummy.AuraEffectHandlerCreator = () => new FrenziedGenerationHandler();
+            //});
 
 			// Save Roar has two dummy effects
 			SpellLineId.DruidSavageRoar.Apply(spell =>
 			{
 				// "Only useable while in Cat Form"
-				spell.RequiredShapeshiftMask = ShapeshiftMask.Cat;
+                spell.SpellShapeshift = new SpellShapeshift { RequiredShapeshiftMask = ShapeshiftMask.Cat };
 
 				// set correct target type
 				spell.GetEffect(SpellEffectType.Dummy).ImplicitTargetA = ImplicitSpellTargetType.Self;
@@ -276,7 +134,7 @@ namespace WCell.Addons.Default.Spells.Druid
 			// Lacerate is only usable in Bear form
 			SpellLineId.DruidLacerate.Apply(spell =>
 			{
-				spell.RequiredShapeshiftMask = ShapeshiftMask.Bear;
+				spell.SpellShapeshift.RequiredShapeshiftMask = ShapeshiftMask.Bear;
 
 				// "Introduced attack power scaling: Every 20 Attack Power adds 1 damage, per stack, over 15 seconds. Mangle further enhances this value."
 				spell.GetEffect(AuraType.PeriodicDamage).APValueFactor = 0.05f;
@@ -377,7 +235,7 @@ namespace WCell.Addons.Default.Spells.Druid
 			{
 				// only as cat
 				// triggers the dodge effect spell
-				spell.RequiredShapeshiftMask = ShapeshiftMask.Cat;
+				spell.SpellShapeshift.RequiredShapeshiftMask = ShapeshiftMask.Cat;
 				spell.AddTriggerSpellEffect(triggerSpell);
 			},
 			origSpell);
@@ -387,7 +245,7 @@ namespace WCell.Addons.Default.Spells.Druid
 				// "increases your chance to dodge while in Cat Form, Bear Form and Dire Bear Form"
 				// must be passive
 				spell.Attributes |= SpellAttributes.Passive;
-				spell.RequiredShapeshiftMask = ShapeshiftMask.Cat | ShapeshiftMask.Bear | ShapeshiftMask.DireBear;
+				spell.SpellShapeshift.RequiredShapeshiftMask = ShapeshiftMask.Cat | ShapeshiftMask.Bear | ShapeshiftMask.DireBear;
 			},
 			triggerSpell);
 		}
@@ -414,7 +272,7 @@ namespace WCell.Addons.Default.Spells.Druid
 			unit.Power = energy - toConsume;
 
 			// "each extra point (...) into ${$f1+$AP/410}.1 additional damage"
-			var bonusDmg = toConsume * (int)(Effect.Spell.DamageMultipliers[0] + ((unit.TotalMeleeAP + 210) / 410f));
+            var bonusDmg = toConsume * (int)(Effect.ChainAmplitude + ((unit.TotalMeleeAP + 210) / 410f));
 
 			((Unit)target).DealSpellDamage(m_cast.CasterUnit, Effect, CalcDamageValue() + bonusDmg);
 		}
@@ -475,33 +333,6 @@ namespace WCell.Addons.Default.Spells.Druid
 			{
 				// "In addition, you gain $s2% of your maximum mana when you benefit from this heal."
 				action.Attacker.EnergizePercent(EffectValue * 2, m_aura.CasterUnit, m_spellEffect);
-			}
-		}
-	}
-	#endregion
-
-	#region SurvivalOfTheFittestHandler
-	public class SurvivalOfTheFittestHandler : ItemEquipmentEventAuraHandler
-	{
-		public override void OnEquip(Item item)
-		{
-			var templ = item.Template;
-			if (templ.Class == ItemClass.Armor &&	// only works on leather and cloth armor
-				(templ.SubClass == ItemSubClass.ArmorCloth || templ.SubClass == ItemSubClass.ArmorLeather))
-			{
-				var bonus = (templ.GetResistance(DamageSchool.Physical) * EffectValue + 50) / 100;
-				Owner.ModBaseResistance(DamageSchool.Physical, bonus);
-			}
-		}
-
-		public override void OnBeforeUnEquip(Item item)
-		{
-			var templ = item.Template;
-			if (templ.Class == ItemClass.Armor &&	// only works on leather and cloth armor
-				(templ.SubClass == ItemSubClass.ArmorCloth || templ.SubClass == ItemSubClass.ArmorLeather))
-			{
-				var bonus = (templ.GetResistance(DamageSchool.Physical) * EffectValue + 50) / 100;
-				Owner.ModBaseResistance(DamageSchool.Physical, -bonus);
 			}
 		}
 	}

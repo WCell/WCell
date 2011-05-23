@@ -25,14 +25,14 @@ namespace WCell.Addons.Default.Spells.Warrior
 					SpellHandler.Get(SpellId.EffectShieldSpecializationRank1),
 					ProcTriggerFlags.MeleeHit | ProcTriggerFlags.RangedHit,
 					ProcHandler.DodgeBlockOrParryValidator,
-					spell.ProcChance
+					spell.SpellAuraOptions.ProcChance
 					));
 			});
 
 			// Gag Order has a ProcTriggerSpell effect and is only trigged by bash and throw
 			SpellLineId.WarriorProtectionGagOrder.Apply(spell =>
 			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+				spell.SpellAuraOptions.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
 
 				var effect = spell.GetEffect(AuraType.Dummy);
 				effect.AuraType = AuraType.ProcTriggerSpell;
@@ -64,10 +64,10 @@ namespace WCell.Addons.Default.Spells.Warrior
 			}, SpellId.ClassSkillLastStand);
 
 			// Safe Guard should only affect Intervene
-			SpellLineId.WarriorProtectionSafeguard.Apply(spell =>
-			{
-				spell.Effects.First().AffectMask = SpellHandler.Get(SpellId.ClassSkillIntervene).SpellClassMask;
-			});
+            //SpellLineId.WarriorProtectionSafeguard.Apply(spell =>
+            //{
+            //    spell.Effects.First().AffectMask = SpellHandler.Get(SpellId.ClassSkillIntervene).SpellClassMask;
+            //});
 
 			// S&B should only affect Devastate and Revenge
 			SpellLineId.WarriorProtectionSwordAndBoard.Apply(spell =>
@@ -88,11 +88,11 @@ namespace WCell.Addons.Default.Spells.Warrior
 			});
 
 			// Damage Shield should reflect damage on block
-			SpellLineId.WarriorProtectionDamageShield.Apply(spell =>
-			{
-				var effect = spell.GetEffect(AuraType.Dummy);
-				effect.AuraEffectHandlerCreator = () => new WarriorDamageShieldHandler();
-			});
+            //SpellLineId.WarriorProtectionDamageShield.Apply(spell =>
+            //{
+            //    var effect = spell.GetEffect(AuraType.Dummy);
+            //    effect.AuraEffectHandlerCreator = () => new WarriorDamageShieldHandler();
+            //});
 		}
 
 		class WarriorDamageShieldHandler : AttackEventEffectHandler

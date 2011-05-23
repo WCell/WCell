@@ -34,18 +34,18 @@ namespace WCell.Addons.Default.Spells
 
 		private static void FixOthers()
 		{
-			SpellHandler.Apply(spell =>
-			{
-				spell.PowerCost = 100;
-				spell.CooldownTime = 2000;
-				spell.Range = new SimpleRange(0, 10);
-			}, SpellId.ConeOfFire);
+            SpellHandler.Apply(spell =>
+                                   {
+                                       spell.SpellPower = new SpellPower {PowerCost = 100};
+                                       spell.SpellCooldowns = new SpellCooldowns {CooldownTime = 2000};
+                                       spell.Range = new SimpleRange(0, 10);
+                                   }, SpellId.ConeOfFire);
 
 			SpellHandler.Apply(spell =>
 			{
-				spell.PowerCost = 150;
+                spell.SpellPower = new SpellPower { PowerCost = 150 };
 				spell.CastDelay = 3000;
-				spell.CooldownTime = 6000;
+                spell.SpellCooldowns = new SpellCooldowns { CooldownTime = 6000 };
 			}, SpellId.Chilled);
 		}
 	}

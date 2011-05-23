@@ -30,75 +30,68 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 				effect.ClearAffectMask();
 				effect.AuraEffectHandlerCreator = () => new ProcEnergizeHandler();
 			});
-
-			// Bloody Vengeance has wrong trigger flags
-			SpellLineId.DeathKnightBloodBloodyVengeance.Apply(spell =>
-			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCastCritical |
-											ProcTriggerFlags.MeleeCriticalHitOther |
-											ProcTriggerFlags.RangedCriticalHit;
-			});
-
+            
 			FixScentOfBlood();
 
-			// Mark of Blood only has Dummy and None effects
-			SpellLineId.DeathKnightBloodMarkOfBlood.Apply(spell =>
-			{
-				// "Whenever the marked enemy deals damage to a target"
-				spell.ProcTriggerFlags = ProcTriggerFlags.MeleeHitOther | ProcTriggerFlags.RangedHitOther | ProcTriggerFlags.SpellCast;
+            //// Mark of Blood only has Dummy and None effects
+            //SpellLineId.DeathKnightBloodMarkOfBlood.Apply(spell =>
+            //{
+            //    // "Whenever the marked enemy deals damage to a target"
+            //    spell.ProcTriggerFlags = ProcTriggerFlags.MeleeHitOther | ProcTriggerFlags.RangedHitOther | ProcTriggerFlags.SpellCast;
 
-				// "that target is healed for $49005s2% of its maximum health"
-				var effect2 = spell.Effects[1];
-				effect2.IsProc = true;
-				effect2.AuraEffectHandlerCreator = () => new MarkOfBloodAuraHandler();
-			});
+            //    // "that target is healed for $49005s2% of its maximum health"
+            //    var effect2 = spell.Effects[1];
+            //    effect2.IsProc = true;
+            //    effect2.AuraEffectHandlerCreator = () => new MarkOfBloodAuraHandler();
+            //});
 
 			// Vendetta has a dummy instead of a heal effect
-			SpellLineId.DeathKnightBloodVendetta.Apply(spell =>
-			{
-				// "Heals you for up to $s1% of your maximum health whenever you kill a target that yields experience or honor."
-				spell.GetEffect(AuraType.Dummy).AuraType = AuraType.RegenPercentOfTotalHealth;
-			});
+            //SpellLineId.DeathKnightBloodVendetta.Apply(spell =>
+            //{
+            //    // "Heals you for up to $s1% of your maximum health whenever you kill a target that yields experience or honor."
+            //    spell.GetEffect(AuraType.Dummy).AuraType = AuraType.RegenPercentOfTotalHealth;
+            //});
 
 			// Hysteria does not drain life
-			SpellLineId.DeathKnightBloodHysteria.Apply(spell =>
-			{
-				var effect = spell.GetEffect(AuraType.Dummy2);
-				effect.AuraType = AuraType.PeriodicDamagePercent;
-			});
+            //SpellLineId.DeathKnightBloodHysteria.Apply(spell =>
+            //{
+            //    var effect = spell.GetEffect(AuraType.Dummy2);
+            //    effect.AuraType = AuraType.PeriodicDamagePercent;
+            //});
 
 			// Sudden Doom: "Your Blood Strikes and Heart Strikes have a $h% chance to launch a free Death Coil at your target."
-			SpellLineId.DeathKnightBloodSuddenDoom.Apply(spell =>
-			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+            //SpellLineId.DeathKnightBloodSuddenDoom.Apply(spell =>
+            //{
+            //    spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
 
-				// only one dummy -> Trigger highest level of death coil that the caster has instead
-				// set correct trigger spells
-				var effect = spell.GetEffect(AuraType.Dummy);
-				effect.IsProc = true;
-				effect.AddToAffectMask(SpellLineId.DeathKnightBloodStrike, SpellLineId.DeathKnightBloodHeartStrike);
-				effect.AuraEffectHandlerCreator = () => new SuddenDoomAuraHandler();
-			});
-			SpellHandler.Apply(spell =>
-			{
-				// TODO: Scale bloodworm strength
-				// TODO: "Caster receives health when the Bloodworm deals damage"
-				// Amount of bloodworms is wrong
-				var effect = spell.GetEffect(SpellEffectType.Summon);
-				effect.BasePoints = 1;
-				effect.DiceSides = 3;
-			}, SpellId.EffectBloodworm);
+            //    // only one dummy -> Trigger highest level of death coil that the caster has instead
+            //    // set correct trigger spells
+            //    var effect = spell.GetEffect(AuraType.Dummy);
+            //    effect.IsProc = true;
+            //    effect.AddToAffectMask(SpellLineId.DeathKnightBloodStrike, SpellLineId.DeathKnightBloodHeartStrike);
+            //    effect.AuraEffectHandlerCreator = () => new SuddenDoomAuraHandler();
+            //});
+
+            //SpellHandler.Apply(spell =>
+            //{
+            //    // TODO: Scale bloodworm strength
+            //    // TODO: "Caster receives health when the Bloodworm deals damage"
+            //    // Amount of bloodworms is wrong
+            //    var effect = spell.GetEffect(SpellEffectType.Summon);
+            //    effect.BasePoints = 1;
+            //    effect.DiceSides = 3;
+            //}, SpellId.EffectBloodworm);
 
 			// Spell Deflection only has an Absorb effect, but should have a chance to reduce spell damage
-			SpellLineId.DeathKnightBloodSpellDeflection.Apply(spell =>
-			{
-				spell.GetEffect(AuraType.SchoolAbsorb).AuraEffectHandlerCreator = () => new SpellDeflectionHandler();
-			});
+            //SpellLineId.DeathKnightBloodSpellDeflection.Apply(spell =>
+            //{
+            //    spell.GetEffect(AuraType.SchoolAbsorb).AuraEffectHandlerCreator = () => new SpellDeflectionHandler();
+            //});
 
 			// "the Frost and Unholy Runes will become Death Runes when they activate"
-			DeathKnightFixes.MakeRuneConversionProc(SpellLineId.DeathKnightBloodDeathRuneMastery,
-				SpellLineId.DeathKnightDeathStrike, SpellLineId.DeathKnightObliterate,
-				RuneType.Death, RuneType.Frost, RuneType.Unholy);
+            //DeathKnightFixes.MakeRuneConversionProc(SpellLineId.DeathKnightBloodDeathRuneMastery,
+            //    SpellLineId.DeathKnightDeathStrike, SpellLineId.DeathKnightObliterate,
+            //    RuneType.Death, RuneType.Frost, RuneType.Unholy);
 
 			// Blood Presence is missing 4% life leech
 			SpellLineId.DeathKnightBloodPresence.Apply(spell =>
@@ -119,14 +112,15 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			FixDeathPact();
 
 			// Heart Strike adds damage per disease on target
-			SpellLineId.DeathKnightBloodHeartStrike.Apply(spell =>
-			{
-				var effect = spell.GetEffect(SpellEffectType.None);
-				effect.SpellEffectHandlerCreator = (cast, effct) => new WeaponDiseaseDamagePercentHandler(cast, effct);
-			});
+            //SpellLineId.DeathKnightBloodHeartStrike.Apply(spell =>
+            //{
+            //    var effect = spell.GetEffect(SpellEffectType.None);
+            //    effect.SpellEffectHandlerCreator = (cast, effct) => new WeaponDiseaseDamagePercentHandler(cast, effct);
+            //});
+
 			// The HS glyph procs on the wrong spell
-			SpellHandler.Apply(spell => spell.GetEffect(AuraType.ProcTriggerSpell).SetAffectMask(SpellLineId.DeathKnightBloodHeartStrike),
-				SpellId.GlyphOfHeartStrike);
+            //SpellHandler.Apply(spell => spell.GetEffect(AuraType.ProcTriggerSpell).SetAffectMask(SpellLineId.DeathKnightBloodHeartStrike),
+            //    SpellId.GlyphOfHeartStrike);
 
 			// Vampiric blood increases health in %
 			SpellLineId.DeathKnightBloodVampiricBlood.Apply(spell =>
@@ -136,11 +130,11 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			});
 
 			// Blood Strike: "total damage increased by ${$m3/2}.1% for each of your diseases on the target"
-			SpellLineId.DeathKnightBloodStrike.Apply(spell =>
-			{
-				spell.GetEffect(SpellEffectType.None).SpellEffectHandlerCreator =
-					(cast, effct) => new WeaponDiseaseDamageHalfPercentHandler(cast, effct);
-			});
+            //SpellLineId.DeathKnightBloodStrike.Apply(spell =>
+            //{
+            //    spell.GetEffect(SpellEffectType.None).SpellEffectHandlerCreator =
+            //        (cast, effct) => new WeaponDiseaseDamageHalfPercentHandler(cast, effct);
+            //});
 
 			// "Non-player victim spellcasting is also interrupted for $32747d."
 			SpellLineId.DeathKnightStrangulate.Apply(spell => spell.AddTargetTriggerSpells(SpellId.InterruptRank1));

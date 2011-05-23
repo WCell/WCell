@@ -389,7 +389,7 @@ namespace WCell.Addons.Default.Instances
 		[Initialization(InitializationPass.Second)]
 		static void InitInmate()
 		{
-			convictrend = SpellHandler.Get(SpellId.ClassSkillRend);
+			convictrend = SpellHandler.Get(SpellId.Rend);
 		}
 
 		public InmateAttackAction(NPC dextren)

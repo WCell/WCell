@@ -197,8 +197,8 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 		protected override void OnLeave(Character chr)
 		{
 			chr.Auras.Remove(SpellId.WarsongFlag);
-			chr.Auras.Remove(SpellId.WarsongFlag_2);
-			chr.Auras.Remove(SpellId.SilverwingFlag);
+			//chr.Auras.Remove(SpellId.WarsongFlag_2);
+			chr.Auras.Remove(SpellId.AllianceFlag_2);
 
 			Characters.SendSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.WSOnLeave), chr.Name);
 
@@ -489,7 +489,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 			Spell hordeFlagSpell = SpellHandler.Get(SpellId.WarsongFlag);
 			SpellEffect heffect = hordeFlagSpell.AddAuraEffect(() => new WarsongFlagsHandler(), ImplicitSpellTargetType.Duel);
 
-			Spell allianceFlagSpell = SpellHandler.Get(SpellId.SilverwingFlag);
+			Spell allianceFlagSpell = SpellHandler.Get(SpellId.AllianceFlag_2);
 			SpellEffect aeffect = allianceFlagSpell.AddAuraEffect(() => new WarsongFlagsHandler(), ImplicitSpellTargetType.Duel);
 
 			// Replacing the spelleffectHandler

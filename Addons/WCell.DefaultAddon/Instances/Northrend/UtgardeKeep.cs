@@ -63,8 +63,15 @@ namespace WCell.Addons.Default.Instances
 			dragonflayerIronhelm = NPCMgr.GetEntry(NPCId.DragonflayerIronhelm);
 
 			dragonflayerIronhelm.AddSpell(SpellId.HeroicStrike_9);
-			SpellHandler.Apply(spell => { spell.CooldownTime = 5000; },
-				SpellId.HeroicStrike_9);
+            SpellHandler.Apply(spell =>
+            {
+                if (spell.SpellCooldowns != null)
+                    spell.SpellCooldowns.CooldownTime = 5000;
+                else
+                {
+                    spell.SpellCooldowns = new SpellCooldowns { CooldownTime = 5000 };
+                }
+            },SpellId.HeroicStrike_9);
 
 
 			//Prince Keleseth
@@ -75,8 +82,15 @@ namespace WCell.Addons.Default.Instances
 			dragonflayerIronhelm = NPCMgr.GetEntry(NPCId.DragonflayerIronhelm);
 
 			dragonflayerIronhelm.AddSpell(SpellId.HeroicStrike_9);
-			SpellHandler.Apply(spell => { spell.CooldownTime = 5000; },
-				SpellId.HeroicStrike_9);
+            SpellHandler.Apply(spell =>
+            {
+                if (spell.SpellCooldowns != null)
+                    spell.SpellCooldowns.CooldownTime = 5000;
+                else
+                {
+                    spell.SpellCooldowns = new SpellCooldowns { CooldownTime = 5000 };
+                }
+            }, SpellId.HeroicStrike_9);
 		}
 
 		#endregion
@@ -165,7 +179,15 @@ namespace WCell.Addons.Default.Instances
 
 			// add spell to prince
 			PrinceSkeletonEntry.AddSpell(SpellId.Decrepify);
-			SpellHandler.Apply(spell => { spell.CooldownTime = 5000; }, SpellId.Decrepify);
+            SpellHandler.Apply(spell =>
+            {
+                if (spell.SpellCooldowns != null)
+                    spell.SpellCooldowns.CooldownTime = 5000;
+                else
+                {
+                    spell.SpellCooldowns = new SpellCooldowns { CooldownTime = 5000 };
+                }
+            }, SpellId.Decrepify);
 
 			var princeSpawnEntry = princeKelesethEntry.SpawnEntries[0];
 			var poolTemplate = princeSpawnEntry.PoolTemplate;
@@ -228,13 +250,27 @@ namespace WCell.Addons.Default.Instances
 			PrinceSkeletonEntry.Deleted += UpdateSkeleton;
 
 			princeKelesethEntry.AddSpell(SpellId.ShadowBolt_73);
-			SpellHandler.Apply(spell => { spell.CooldownTime = 10000; },
-				SpellId.ShadowBolt_73);
+            SpellHandler.Apply(spell =>
+            {
+                if (spell.SpellCooldowns != null)
+                    spell.SpellCooldowns.CooldownTime = 10000;
+                else
+                {
+                    spell.SpellCooldowns = new SpellCooldowns { CooldownTime = 10000 };
+                }
+            }, SpellId.ShadowBolt_73);
 
 			//Heroic
 			//princeKelesethEntry.AddSpell(SpellId.ShadowBolt_99);
-			//SpellHandler.Apply(spell => { spell.CooldownTime = 5000; },
-			//    SpellId.ShadowBolt_73);
+			//SpellHandler.Apply(spell =>
+            //{
+            //    if (spell.SpellCooldowns != null)
+            //        spell.SpellCooldowns.CooldownTime = 5000;
+            //    else
+            //    {
+            //        spell.SpellCooldowns = new SpellCooldowns { CooldownTime = 5000 };
+            //    }
+            //},SpellId.ShadowBolt_73);
 
 			//princeKelesethEntry.AddSpell(SpellId.FrostTomb_3);
 

@@ -24,13 +24,13 @@ namespace WCell.Addons.Default.Spells.Druid
 		public static void FixIt()
 		{
 			// Nature's Grace needs to set the correct set of affecting spells
-			SpellLineId.DruidBalanceNaturesGrace.Apply(spell =>
-			{
-				// copy AffectMask from proc effect, which has it all set correctly
-				var effect = spell.GetEffect(AuraType.ProcTriggerSpell);
-				var triggerSpellEffect = effect.GetTriggerSpell().GetEffect(AuraType.ModCastingSpeed);
-				effect.AffectMask = triggerSpellEffect.AffectMask;
-			});
+            //SpellLineId.DruidBalanceNaturesGrace.Apply(spell =>
+            //{
+            //    // copy AffectMask from proc effect, which has it all set correctly
+            //    var effect = spell.GetEffect(AuraType.ProcTriggerSpell);
+            //    var triggerSpellEffect = effect.GetTriggerSpell().GetEffect(AuraType.ModCastingSpeed);
+            //    effect.AffectMask = triggerSpellEffect.AffectMask;
+            //});
 
             /*
 			// Improved Moonkin Form is only active in Moonkin form, and applies an extra AreaAura to everyone
@@ -80,7 +80,7 @@ namespace WCell.Addons.Default.Spells.Druid
 			// Earth and Moon: "Your Wrath and Starfire spells have a $h% chance to apply the Earth and Moon effect"
 			SpellLineId.DruidBalanceEarthAndMoon.Apply(spell =>
 			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+				spell.SpellAuraOptions.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
 				var effect = spell.GetEffect(AuraType.ProcTriggerSpell);
 
 				// retricted to Wrath and Starfire

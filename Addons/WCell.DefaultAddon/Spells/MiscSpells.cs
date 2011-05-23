@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using WCell.Constants;
 using WCell.Constants.Spells;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Entities;
@@ -20,10 +21,22 @@ namespace WCell.Addons.Default.Spells
 		[Initialization(InitializationPass.Second)]
 		public static void Fix()
 		{
+            // Mark Of the chosen effect has wrong Misc Value
+            SpellHandler.Apply(spell =>
+            {
+                spell.Effects[0].MiscValue = -1;
+            }, SpellId.EffectMarkOfTheChosenRank1);
+
+            // Mark Of the chosen effect has wrong Misc Value
+            SpellHandler.Apply(spell =>
+            {
+                spell.Effects[0].MiscValue = (int)StatType.Agility;
+            }, SpellId.ClassSkillIntoTheWildernessPassive);
+
 			// Vehicle Spells need to send the vehicle as target and apply the vehicle aura to the caster
 			SpellHandler.Apply(spell =>
 			{
-				spell.TargetFlags = SpellTargetFlags.Unit;
+                spell.SpellTargetRestrictions = new SpellTargetRestrictions { TargetFlags = SpellTargetFlags.Unit }; 
 				var eff0 = spell.Effects[0];
 				spell.Effects[0] = spell.Effects[1];
 				spell.Effects[1] = eff0;
@@ -86,63 +99,56 @@ namespace WCell.Addons.Default.Spells
         private static void FixMounts()
         {
             // Invincible
-            SpellHandler.Apply(spell =>
-            {
-                spell.Effects[2].SpellEffectHandlerCreator =
-                    (cast, effect) =>
-                    new MountSpellHandler(cast, effect, SpellId.Invincible, SpellId.Invincible_2,
-                                          SpellId.Invincible_3, SpellId.Invincible_4);
-            },
-                               SpellId.ClassSkillInvincible);
+            //SpellHandler.Apply(spell =>
+            //{
+            //    spell.Effects[2].SpellEffectHandlerCreator =
+            //        (cast, effect) =>
+            //        new MountSpellHandler(cast, effect, SpellId.Invincible, SpellId.Invincible_2,
+            //                              SpellId.Invincible_3, SpellId.Invincible_4);
+            //},
+            //                   SpellId.ClassSkillInvincible);
 
             // Celestial Steed
-            SpellHandler.Apply(spell =>
-            {
-                spell.Effects[2].SpellEffectHandlerCreator =
-                    (cast, effect) =>
-                    new MountSpellHandler(cast, effect, SpellId.CelestialSteed_3, SpellId.CelestialSteed_4,
-                                          SpellId.CelestialSteed, SpellId.CelestialSteed_2);
-            },
-                               SpellId.ClassSkillCelestialSteed);
+            //SpellHandler.Apply(spell =>
+            //{
+            //    spell.Effects[2].SpellEffectHandlerCreator =
+            //        (cast, effect) =>
+            //        new MountSpellHandler(cast, effect, SpellId.CelestialSteed_3, SpellId.CelestialSteed_4,
+            //                              SpellId.CelestialSteed, SpellId.CelestialSteed_2);
+            //},
+            //                   SpellId.ClassSkillCelestialSteed);
 
             // Big Love Rocket
-            SpellHandler.Apply(spell =>
-            {
-                spell.Effects[2].SpellEffectHandlerCreator =
-                    (cast, effect) =>
-                    new MountSpellHandler(cast, effect, SpellId.BigLoveRocket_2, SpellId.BigLoveRocket_3,
-                                          SpellId.BigLoveRocket_4, SpellId.BigLoveRocket_5);
-            },
-                               SpellId.ClassSkillBigLoveRocket);
+            //SpellHandler.Apply(spell =>
+            //{
+            //    spell.Effects[2].SpellEffectHandlerCreator =
+            //        (cast, effect) =>
+            //        new MountSpellHandler(cast, effect, SpellId.BigLoveRocket_2, SpellId.BigLoveRocket_3,
+            //                              SpellId.BigLoveRocket_4, SpellId.BigLoveRocket_5);
+            //},
+            //                   SpellId.ClassSkillBigLoveRocket);
 
             // Winged Steed of the Ebon Blade
             SpellHandler.Apply(spell =>
-            {
-                spell.Effects[2].SpellEffectHandlerCreator =
-                    (cast, effect) =>
+                spell.AddEffect((cast, effect) =>
                     new MountSpellHandler(cast, effect, SpellId.None, SpellId.None,
-                                          SpellId.WingedSteedOfTheEbonBlade, SpellId.WingedSteedOfTheEbonBlade_2);
-            },
+                        SpellId.WingedSteedOfTheEbonBlade, SpellId.WingedSteedOfTheEbonBlade_2),
+                        ImplicitSpellTargetType.Self),
                                SpellId.ClassSkillWingedSteedOfTheEbonBlade);
 
             // X-53 Touring Rocket
             SpellHandler.Apply(spell =>
-            {
-                spell.Effects[2].SpellEffectHandlerCreator =
-                    (cast, effect) =>
+                spell.AddEffect((cast, effect) =>
                     new MountSpellHandler(cast, effect, SpellId.None, SpellId.None,
-                                          SpellId.X53TouringRocket_2, SpellId.X53TouringRocket_3);
-            },
+                        SpellId.X53TouringRocket, SpellId.X53TouringRocket),
+                        ImplicitSpellTargetType.Self),
                                SpellId.ClassSkillX53TouringRocket);
 
             // Blazing Hippogryph
             SpellHandler.Apply(spell =>
-            {
-                spell.Effects[2].SpellEffectHandlerCreator =
-                    (cast, effect) =>
+                spell.AddEffect((cast, effect) =>
                     new MountSpellHandler(cast, effect, SpellId.None, SpellId.None,
-                                          SpellId.BlazingHippogryph, SpellId.BlazingHippogryph_2);
-            },
+                        SpellId.BlazingHippogryph, SpellId.BlazingHippogryph_2), ImplicitSpellTargetType.Self),
                                SpellId.ClassSkillBlazingHippogryph);
         }
 

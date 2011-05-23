@@ -17,8 +17,7 @@ namespace WCell.Addons.Default.Spells.Mage
 		public static void FixMe()
 		{
 			// conjure water and food don't have any per level bonus
-			SpellLineId.MageConjureFood.Apply(spell => spell.ForeachEffect(effect => effect.RealPointsPerLevel = 0));
-			SpellLineId.MageConjureWater.Apply(spell => spell.ForeachEffect(effect => effect.RealPointsPerLevel = 0));
+			SpellLineId.MageConjureRefreshment.Apply(spell => spell.ForeachEffect(effect => effect.RealPointsPerLevel = 0));
 
             SpellLineId.MageArcaneArcanePotency.Apply(spell =>
             {

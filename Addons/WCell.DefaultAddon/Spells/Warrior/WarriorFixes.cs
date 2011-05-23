@@ -44,9 +44,7 @@ namespace WCell.Addons.Default.Spells.Warrior
 			// Enrage and Wrecking Crew proc effects don't stack
 			AuraHandler.AddAuraGroup(
 				SpellId.EffectEnrageRank1_3, SpellId.EffectEnrageRank2_3, SpellId.EffectEnrageRank3_2,
-				SpellId.EffectEnrageRank4_2, SpellId.EffectEnrageRank5_2,
-				SpellId.EffectEnrageRank1, SpellId.EffectEnrageRank2, SpellId.EffectEnrageRank3,
-				SpellId.EffectEnrageRank4, SpellId.EffectEnrageRank5);
+				SpellId.EffectEnrageRank1, SpellId.EffectEnrageRank2, SpellId.EffectEnrageRank3);
 
 			// Intimidating Shout should not have a single enemy target
 			SpellLineId.WarriorChallengingShout.Apply(spell => spell.ForeachEffect(

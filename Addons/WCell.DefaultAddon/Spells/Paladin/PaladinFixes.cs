@@ -24,9 +24,9 @@ namespace WCell.Addons.Default.Spells.Paladin
 			SpellLineId.PaladinDevotionAura, SpellLineId.PaladinCrusaderAura,
 		                                           		SpellLineId.PaladinConcentrationAura,
 		                                           		SpellLineId.PaladinRetributionAura,
-		                                           		SpellLineId.PaladinProtectionImprovedDevotionAura,
+		                                           		SpellLineId.PaladinCrusaderAura,
                                                         SpellLineId.PaladinResistanceAura,
-                                                        SpellLineId.PaladinHolyImprovedConcentrationAura
+                                                        SpellLineId.PaladinDevotionAura,
 		                                           	};
 
 		[Initialization(InitializationPass.Second)]
@@ -72,7 +72,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 				// Custom proc (target = the one who is blessed): 
 				// "When the target blocks, parries, or dodges a melee attack the target will gain $57319s1% of maximum displayed mana."
 				spell.AddProcHandler(new TriggerSpellProcHandlerTemplate(
-					SpellHandler.Get(SpellId.BlessingOfSanctuary),
+					SpellHandler.Get(SpellId.Sanctuary),
 					ProcTriggerFlags.MeleeHitOther | ProcTriggerFlags.RangedHitOther,
 					ProcHandler.DodgeBlockOrParryValidator
 					));
@@ -86,7 +86,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 				stamEff.MiscValue = (int)StatType.Stamina;
 				stamEff.BasePoints = 10;
 			},
-			SpellLineId.PaladinProtectionBlessingOfSanctuary);
+			SpellLineId.PaladinProtectionSanctuary);
 		}
 		#endregion
 
@@ -107,14 +107,14 @@ namespace WCell.Addons.Default.Spells.Paladin
 								SpellId.ClassSkillDivineShield,
 								SpellId.ClassSkillDivineProtection);
 
-			SpellHandler.Apply(spell => spell.AddTargetTriggerSpells(SpellId.AvengingWrathMarker, avengingWrathMarker2.SpellId),
+			SpellHandler.Apply(spell => spell.AddTargetTriggerSpells(avengingWrathMarker2.SpellId),
 								SpellLineId.PaladinHandOfProtection,
 								SpellId.ClassSkillAvengingWrath,
 								SpellId.ClassSkillDivineShield,
 								SpellId.ClassSkillDivineProtection);
 
-			SpellHandler.Apply(spell => { spell.IsPreventionDebuff = true; },
-							   SpellId.AvengingWrathMarker, SpellId.Forbearance);
+            //SpellHandler.Apply(spell => { spell.IsPreventionDebuff = true; },
+            //                   SpellId.AvengingWrathMarker, SpellId.Forbearance);
 		}
 
 		#region Holy Shock

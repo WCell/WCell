@@ -17,7 +17,7 @@ namespace WCell.Addons.Default.Spells.Priest
             // Holy Inspiration can be proced when priest crits with the given spells
             SpellLineId.PriestHolyInspiration.Apply(spell =>
             {
-                spell.ProcTriggerFlags = ProcTriggerFlags.HealOther;
+                spell.SpellAuraOptions.ProcTriggerFlags = ProcTriggerFlags.HealOther;
 
                 var effect = spell.GetEffect(AuraType.ProcTriggerSpell);
 
@@ -29,17 +29,17 @@ namespace WCell.Addons.Default.Spells.Priest
                     SpellLineId.PriestFlashHeal,
                     SpellLineId.PriestHeal,
                     SpellLineId.PriestBindingHeal,
-                    SpellLineId.PriestDisciplinePenance,
+                    SpellLineId.PriestPenance,
                     SpellLineId.PriestPrayerOfMending,
                     SpellLineId.PriestPrayerOfHealing,
                     SpellLineId.PriestHolyCircleOfHealing);
             });
 
-            SpellLineId.PriestResurrection.Apply(spell =>
-            {
-                var effect = spell.GetEffect(SpellEffectType.ResurrectFlat);
-                effect.ImplicitTargetA = ImplicitSpellTargetType.SingleFriend;
-            });
+            //SpellLineId.PriestResurrection.Apply(spell =>
+            //{
+            //    var effect = spell.GetEffect(SpellEffectType.ResurrectFlat);
+            //    effect.ImplicitTargetA = ImplicitSpellTargetType.SingleFriend;
+            //});
         }
     }
 }

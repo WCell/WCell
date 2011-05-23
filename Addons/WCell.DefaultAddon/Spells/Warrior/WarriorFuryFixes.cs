@@ -19,26 +19,9 @@ namespace WCell.Addons.Default.Spells.Warrior
 			// Blood craze should only trigger on crit hit
 			SpellLineId.WarriorFuryBloodCraze.Apply(spell =>
 			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.MeleeCriticalHit | ProcTriggerFlags.RangedCriticalHit;
+                spell.SpellAuraOptions.ProcTriggerFlags = ProcTriggerFlags.MeleeCriticalHit | ProcTriggerFlags.RangedCriticalHit;
 			});
 
-			// Improved Berserker Range can only be proc'ed by Berserker Rage
-			SpellLineId.WarriorFuryImprovedBerserkerRage.Apply(spell =>
-			{
-				spell.AddCasterProcSpells(SpellLineId.WarriorBerserkerRage);
-			});
-
-			// Blood Thirst deals damage in % of AP and triggers a proc aura
-			// It's proc'ed heal spell heals in % and not a flat value
-			SpellLineId.WarriorFuryBloodthirst.Apply(spell =>
-			{
-				var effect = spell.GetEffect(SpellEffectType.SchoolDamage);
-				effect.SpellEffectHandlerCreator = (cast, eff) => new SchoolDamageByAPPctEffectHandler(cast, eff);
-
-				var triggerEffect = spell.GetEffect(SpellEffectType.Dummy);
-				triggerEffect.EffectType = SpellEffectType.TriggerSpell;
-				triggerEffect.TriggerSpellId = SpellId.ClassSkillBloodthirst;
-			});
 			SpellHandler.Apply(spell =>
 			{
 				var effect = spell.GetEffect(SpellEffectType.Heal);

@@ -16,7 +16,7 @@ namespace WCell.Addons.Default.Spells.Shaman
 		public static void FixShaman()
 		{
 			// All elemental shields are mutually exclusive on one target:
-			AuraHandler.AddAuraGroup(SpellLineId.ShamanLightningShield, SpellLineId.ShamanRestorationEarthShield, SpellLineId.ShamanWaterShield);
+			AuraHandler.AddAuraGroup(SpellLineId.ShamanLightningShield, SpellLineId.ShamanEarthShield, SpellLineId.ShamanWaterShield);
 
 			// Lightning shield spells are missing the proc part
             /*
@@ -41,11 +41,11 @@ namespace WCell.Addons.Default.Spells.Shaman
 					eff.SpellEffectHandlerCreator = (cast, effect) => new LavaBursthandler(cast, effect);
 				});
 
-            SpellLineId.ShamanAncestralSpirit.Apply(spell =>
-            {
-                var effect = spell.GetEffect(SpellEffectType.ResurrectFlat);
-                effect.ImplicitTargetA = ImplicitSpellTargetType.SingleFriend;
-            });
+            //SpellLineId.ShamanAncestralSpirit.Apply(spell =>
+            //{
+            //    var effect = spell.GetEffect(SpellEffectType.ResurrectFlat);
+            //    effect.ImplicitTargetA = ImplicitSpellTargetType.SingleFriend;
+            //});
 
 			SpellLineId.ShamanBloodlust.Apply(spell => spell.AddCasterTriggerSpells(SpellId.Sated));
 			SpellLineId.ShamanHeroism.Apply(spell => spell.AddCasterTriggerSpells(SpellId.Exhaustion_3));

@@ -36,16 +36,16 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 					SpellLineId.DeathKnightIcyTouch, SpellLineId.DeathKnightObliterate);
 			});
 
-			// Improved Icy Touch needs to increase damage of Icy Touch
-			SpellLineId.DeathKnightFrostImprovedIcyTouch.Apply(spell =>
-			{
-				// "Your Icy Touch does an additional $s1% damage"
-				var effect = spell.GetEffect(AuraType.Dummy);
-				effect.AuraType = AuraType.AddModifierPercent;
-				effect.MiscValue = (int)SpellModifierType.SpellPower;
-				effect.ClearAffectMask();
-				effect.AddAffectingSpells(SpellLineId.DeathKnightIcyTouch);
-			});
+            //// Improved Icy Touch needs to increase damage of Icy Touch
+            //SpellLineId.DeathKnightFrostImprovedIcyTouch.Apply(spell =>
+            //{
+            //    // "Your Icy Touch does an additional $s1% damage"
+            //    var effect = spell.GetEffect(AuraType.Dummy);
+            //    effect.AuraType = AuraType.AddModifierPercent;
+            //    effect.MiscValue = (int)SpellModifierType.SpellPower;
+            //    effect.ClearAffectMask();
+            //    effect.AddAffectingSpells(SpellLineId.DeathKnightIcyTouch);
+            //});
 
 			FixBladeBarrier();
 			FixRime();
@@ -64,34 +64,34 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 				retainEffect.AddRequiredActivationAuras(SpellLineId.DeathKnightUnholyPresence, SpellLineId.DeathKnightBloodPresence);
 			});
 
-			// Icy Talons applies a buff, when casting FrostFever
-			SpellLineId.DeathKnightFrostIcyTalons.Apply(spell =>
-			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+            //// Icy Talons applies a buff, when casting FrostFever
+            //SpellLineId.DeathKnightFrostIcyTalons.Apply(spell =>
+            //{
+            //    spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
 
-				var effect = spell.GetEffect(AuraType.ProcTriggerSpellWithOverride);
-				effect.ClearAffectMask();
-				effect.AddAffectingSpells(SpellId.EffectFrostFever);
-			});
+            //    var effect = spell.GetEffect(AuraType.ProcTriggerSpellWithOverride);
+            //    effect.ClearAffectMask();
+            //    effect.AddAffectingSpells(SpellId.EffectFrostFever);
+            //});
 
 			// Killing Machine: Proc chance scales with rank (10% per rank)
-			SpellLineId.DeathKnightFrostKillingMachine.Apply(spell => spell.ProcChance = (uint)(10 * spell.Rank));
+			SpellLineId.DeathKnightFrostKillingMachine.Apply(spell => spell.SpellAuraOptions.ProcChance = (uint)(10 * spell.Rank));
 
 			FixObliterate();
 
-			// Blood of the north converts runes when using "Blood Strike or Pestilence"
-			DeathKnightFixes.MakeRuneConversionProc(SpellLineId.DeathKnightFrostBloodOfTheNorth,
-													SpellLineId.DeathKnightBloodStrike, SpellLineId.DeathKnightPestilence,
-													RuneType.Death, RuneType.Blood);
+            //// Blood of the north converts runes when using "Blood Strike or Pestilence"
+            //DeathKnightFixes.MakeRuneConversionProc(SpellLineId.DeathKnightFrostBloodOfTheNorth,
+            //                                        SpellLineId.DeathKnightBloodStrike, SpellLineId.DeathKnightPestilence,
+            //                                        RuneType.Death, RuneType.Blood);
 
 			// Improved Icy Talons only increases melee haste (not also ranged haste)
-			SpellLineId.DeathKnightFrostImprovedIcyTalons.Apply(spell =>
-			{
-				spell.GetEffect(AuraType.ModHaste).AuraType = AuraType.ModMeleeHastePercent;
-			});
+            //SpellLineId.DeathKnightFrostImprovedIcyTalons.Apply(spell =>
+            //{
+            //    spell.GetEffect(AuraType.ModHaste).AuraType = AuraType.ModMeleeHastePercent;
+            //});
 
 			FixThreatOfThassarian();
-			FixChainsOfIce();
+			//FixChainsOfIce();
 		}
 
 		#region Chains of Ice
@@ -133,7 +133,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 
 				// "your Death Strikes, Obliterates, Plague Strikes, Rune Strikes, Blood Strikes and Frost Strikes"
 				effect.AddAffectingSpells(SpellLineId.DeathKnightDeathStrike, SpellLineId.DeathKnightObliterate, SpellLineId.DeathKnightPlagueStrike,
-					SpellLineId.DeathKnightRuneStrike, SpellLineId.DeathKnightFrostFrostStrike);
+					SpellLineId.DeathKnightRuneStrike, SpellLineId.DeathKnightFrostStrike);
 
 				effect.AuraEffectHandlerCreator = () => new ThreatOfThassarianHandler();
 			});
@@ -203,23 +203,23 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 
 		private static void FixFrostPresence()
 		{
-			// Frost Presence toggles a second aura
-			SpellLineId.DeathKnightFrostPresence.Apply(spell =>
-			{
-				spell.AddAuraEffect(() => new ToggleAuraHandler(SpellId.FrostPresence));
-			});
+            //// Frost Presence toggles a second aura
+            //SpellLineId.DeathKnightFrostPresence.Apply(spell =>
+            //{
+            //    spell.AddAuraEffect(() => new ToggleAuraHandler(SpellId.FrostPresence));
+            //});
 		}
 
 		#region Glacier Rot
 		private static void FixGlacierRot()
 		{
-			// "Diseased enemies take $s1% more damage from your Icy Touch, Howling Blast and Frost Strike"
-			SpellLineId.DeathKnightFrostGlacierRot.Apply(spell =>
-			{
-				var effect = spell.GetEffect(AuraType.Dummy);
-				effect.MakeProc(() => new GlacierRotProcHandler(), SpellLineId.DeathKnightIcyTouch,
-								SpellLineId.DeathKnightFrostHowlingBlast, SpellLineId.DeathKnightFrostFrostStrike);
-			});
+            //// "Diseased enemies take $s1% more damage from your Icy Touch, Howling Blast and Frost Strike"
+            //SpellLineId.DeathKnightFrostGlacierRot.Apply(spell =>
+            //{
+            //    var effect = spell.GetEffect(AuraType.Dummy);
+            //    effect.MakeProc(() => new GlacierRotProcHandler(), SpellLineId.DeathKnightIcyTouch,
+            //                    SpellLineId.DeathKnightFrostHowlingBlast, SpellLineId.DeathKnightFrostFrostStrike);
+            //});
 		}
 
 		internal class GlacierRotProcHandler : ProcOnDiseaseTriggerSpellHandler
@@ -277,12 +277,12 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 		#region Tundra Stalker
 		private static void FixTundraStalker()
 		{
-			// Tundra Stalker needs a custom Attack event aura handler
-			SpellLineId.DeathKnightFrostTundraStalker.Apply(spell =>
-			{
-				var effect = spell.GetEffect(AuraType.OverrideClassScripts);
-				effect.AuraEffectHandlerCreator = () => new TundraStalkerHandler();
-			});
+            //// Tundra Stalker needs a custom Attack event aura handler
+            //SpellLineId.DeathKnightFrostTundraStalker.Apply(spell =>
+            //{
+            //    var effect = spell.GetEffect(AuraType.OverrideClassScripts);
+            //    effect.AuraEffectHandlerCreator = () => new TundraStalkerHandler();
+            //});
 		}
 
 		public class TundraStalkerHandler : AttackEventEffectHandler
@@ -310,18 +310,18 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 		{
 			// Frost Acclimation trigger a server-side Aura on the entire party to improve resistences
 			// http://www.wowhead.com/spell=50152#comments
-			var triggerSpellId = (uint)SpellLineId.DeathKnightFrostAcclimation.GetLine().FirstRank.GetEffect(AuraType.ProcTriggerSpell).TriggerSpellId;
-			var triggerSpell = SpellHandler.AddCustomSpell(triggerSpellId, "DeathKnightFrostAcclimation Buff");
-			triggerSpell.AddAuraEffect(() => new FrostAcclimationBuffHandler(), ImplicitSpellTargetType.AllParty);
-			triggerSpell.SetDuration(18000);	// "for 18 sec"
+            //var triggerSpellId = (uint)SpellLineId.DeathKnightFrostAcclimation.GetLine().FirstRank.GetEffect(AuraType.ProcTriggerSpell).TriggerSpellId;
+            //var triggerSpell = SpellHandler.AddCustomSpell(triggerSpellId, "DeathKnightFrostAcclimation Buff");
+            //triggerSpell.AddAuraEffect(() => new FrostAcclimationBuffHandler(), ImplicitSpellTargetType.AllParty);
+            //triggerSpell.SetDuration(18000);	// "for 18 sec"
 
-			SpellLineId.DeathKnightFrostAcclimation.Apply(spell =>
-			{
-				var effect = spell.GetEffect(AuraType.ProcTriggerSpell);
+            //SpellLineId.DeathKnightFrostAcclimation.Apply(spell =>
+            //{
+            //    var effect = spell.GetEffect(AuraType.ProcTriggerSpell);
 
-				// not restricted by any particular spell
-				effect.ClearAffectMask();
-			});
+            //    // not restricted by any particular spell
+            //    effect.ClearAffectMask();
+            //});
 		}
 
 		/// <summary>
@@ -362,7 +362,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			// Rime should only proc on Obliterate
 			SpellLineId.DeathKnightFrostRime.Apply(spell =>
 			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+				spell.SpellAuraOptions.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
 
 				var effect = spell.GetEffect(AuraType.ProcTriggerSpell);
 				effect.ClearAffectMask();
@@ -381,7 +381,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			// Blade Barrier only procs under special circumstances
 			SpellLineId.DeathKnightBloodBladeBarrier.Apply(spell =>
 			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.AuraStarted | ProcTriggerFlags.SpellCast;
+				spell.SpellAuraOptions.ProcTriggerFlags = ProcTriggerFlags.AuraStarted | ProcTriggerFlags.SpellCast;
 
 				var effect = spell.GetEffect(AuraType.ProcTriggerSpell);
 				effect.AuraEffectHandlerCreator = () => new BladeBarrierHandler();
@@ -411,7 +411,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			// Merciless Combat needs to be proc'ed and needs an extra check, so it only procs on "targets with less than 35% health"
 			SpellLineId.DeathKnightFrostMercilessCombat.Apply(spell =>
 			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+				spell.SpellAuraOptions.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
 
 				var effect = spell.GetEffect(AuraType.OverrideClassScripts);
 				effect.IsProc = true;

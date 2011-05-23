@@ -27,7 +27,15 @@ namespace WCell.Addons.Default.Instances
             pandemoniusEntry.AddSpells(pandemoniusSpells);
 
 			SpellHandler.Apply(spell => spell.AISettings.SetCooldown(15000, 25000), SpellId.VoidBlast);
-			SpellHandler.Apply(spell => spell.CooldownTime = 20000, SpellId.DarkShell);
+            SpellHandler.Apply(spell =>
+                                   {
+                                       if (spell.SpellCooldowns != null)
+                                           spell.SpellCooldowns.CooldownTime = 20000;
+                                       else
+                                       {
+                                           spell.SpellCooldowns = new SpellCooldowns {CooldownTime = 20000};
+                                       }
+                                   }, SpellId.DarkShell);
         }
         #endregion
 

@@ -46,13 +46,13 @@ namespace WCell.Addons.Default.Instances
             rethilgoreEntry.BrainCreator = rethilgore => new RethilgoreBrain(rethilgore);
 
             // Rethilgore spell has a cooldown of about 30s
-            SpellHandler.Apply(spell => { spell.CooldownTime = 30000; }, SpellId.SoulDrain);
+            SpellHandler.Apply(spell => { spell.SpellCooldowns = new SpellCooldowns {CooldownTime = 30000}; }, SpellId.SoulDrain);
 
 
             // (!)Baron Silverlaine
             baronsilverlaineEntry = NPCMgr.GetEntry(NPCId.BaronSilverlaine);
             baronsilverlaineEntry.AddSpell(SpellId.VeilOfShadow);
-            SpellHandler.Apply(spell => { spell.CooldownTime = 15000; }, SpellId.VeilOfShadow);
+            SpellHandler.Apply(spell => { spell.SpellCooldowns = new SpellCooldowns { CooldownTime = 15000 }; }, SpellId.VeilOfShadow);
 
 
             // (!)Commander Springvale
@@ -60,15 +60,15 @@ namespace WCell.Addons.Default.Instances
             commanderspringvaleEntry.AddSpell(SpellId.ClassSkillHammerOfJustice);
             commanderspringvaleEntry.AddSpell(SpellId.HolyLight_7);
 
-            SpellHandler.Apply(spell => { spell.CooldownTime = 60000; }, SpellId.ClassSkillHammerOfJustice);
-            SpellHandler.Apply(spell => { spell.CooldownTime = 45000; }, SpellId.HolyLight_7);
+            SpellHandler.Apply(spell => { spell.SpellCooldowns.CooldownTime = 60000; }, SpellId.ClassSkillHammerOfJustice);
+            SpellHandler.Apply(spell => { spell.SpellCooldowns = new SpellCooldowns { CooldownTime = 45000 }; }, SpellId.HolyLight_7);
 
 
             // (!)Odo the Blindwatcher
             blindwatcherEntry = NPCMgr.GetEntry(NPCId.OdoTheBlindwatcher);
             blindwatcherEntry.AddSpell(SpellId.SkullforgeBrand);
 
-            SpellHandler.Apply(spell => { spell.CooldownTime = 60000; }, SpellId.HowlingRage_3);
+            SpellHandler.Apply(spell => { spell.SpellCooldowns = new SpellCooldowns { CooldownTime = 60000 }; }, SpellId.HowlingRage_3);
 
 
             // (!)Fenrus the Devourer
@@ -76,7 +76,7 @@ namespace WCell.Addons.Default.Instances
             fenrusEntry.AddSpell(SpellId.ToxicSaliva);
             fenrusEntry.BrainCreator = fenrus => new FenrusBrain(fenrus);
 
-            SpellHandler.Apply(spell => { spell.CooldownTime = 60000; }, SpellId.ToxicSaliva);
+            SpellHandler.Apply(spell => { spell.SpellCooldowns.CooldownTime = 60000; }, SpellId.ToxicSaliva);
 
 
             // (!)Archmage Arugal
@@ -84,8 +84,16 @@ namespace WCell.Addons.Default.Instances
             arugalEntry.AddSpell(SpellId.Thundershock);
             arugalEntry.AddSpell(SpellId.VoidBolt);
 
-            SpellHandler.Apply(spell => { spell.CooldownTime = 25000; }, SpellId.Thundershock);
-            SpellHandler.Apply(spell => { spell.CooldownTime = 40000; }, SpellId.VoidBolt);
+            SpellHandler.Apply(spell => { spell.SpellCooldowns = new SpellCooldowns { CooldownTime = 25000 }; }, SpellId.Thundershock);
+            SpellHandler.Apply(spell =>
+                                   {
+                                       if(spell.SpellCooldowns != null)
+                                           spell.SpellCooldowns.CooldownTime = 40000;
+                                       else
+                                       {
+                                           spell.SpellCooldowns = new SpellCooldowns {CooldownTime = 40000};
+                                       }
+                                   }, SpellId.VoidBolt);
         }
 
         [Initialization]
@@ -133,8 +141,8 @@ namespace WCell.Addons.Default.Instances
         private static void FixForMob()
         {
             SpellHandler.Apply(spell =>
-            { 
-                spell.CooldownTime = 500000;
+            {
+                spell.SpellCooldowns = new SpellCooldowns {CooldownTime = 500000};
                 spell.Range = new SimpleRange(0, 5);
             }, SpellId.HauntingSpirits);
         }

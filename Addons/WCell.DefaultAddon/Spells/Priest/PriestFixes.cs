@@ -48,7 +48,7 @@ namespace WCell.Addons.Default.Spells.Priest
                     //{
                     //    chr.Auras.RemoveFirstVisibleAura(aura => aura.Spell.HasHarmfulEffects);
                     //}
-                    if (Cast.CasterChar.Spells.Contains(SpellId.GlyphOfDispelMagic) || Cast.CasterChar.Spells.Contains(SpellId.GlyphOfDispelMagic_2))
+                    if (Cast.CasterChar.Spells.Contains(SpellId.GlyphOfDispelMagic))
                     {
                         int amountToHeal = (chr.Health * 3) / 100;
                         chr.Target.Heal(amountToHeal, Cast.CasterChar, Effect);

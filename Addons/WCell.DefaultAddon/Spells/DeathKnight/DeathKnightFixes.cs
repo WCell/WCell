@@ -36,12 +36,12 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 		{
 			line.Apply(spell =>
 			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+				spell.SpellAuraOptions.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
 
 				var effect = spell.GetEffect(AuraType.Dummy2);
 				// should not have an amplitude 
 				// (although it's probably the timeout for when the death rune is converted back to its original but it's not mentioned in the tooltip)
-				effect.Amplitude = 0;
+				effect.AuraPeriod = 0;
 
 				effect.ClearAffectMask();
 				effect.AddAffectingSpells(trigger1, trigger2);

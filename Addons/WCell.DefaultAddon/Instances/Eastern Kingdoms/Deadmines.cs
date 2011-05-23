@@ -42,15 +42,15 @@ namespace WCell.Addons.Default.Instances
 											   DefaultTargetFilters.IsPlayer, DefaultTargetFilters.IsHostile);
 
 
-			SpellHandler.Apply(spell => spell.CooldownTime = 20000, SpellId.MoltenMetal);
-			SpellHandler.Apply(spell => spell.CooldownTime = 25000, SpellId.MeltOre);
+            SpellHandler.Apply(spell => spell.SpellCooldowns = new SpellCooldowns { CooldownTime = 20000 }, SpellId.MoltenMetal);
+            SpellHandler.Apply(spell => spell.SpellCooldowns = new SpellCooldowns { CooldownTime = 25000 }, SpellId.MeltOre);
 
 
 			// Rhakzor's slam has a cooldown of about 12s
 			SpellHandler.Apply(spell => { spell.AISettings.SetCooldown(10000, 14000); }, SpellId.RhahkZorSlam);
 
 
-			SpellHandler.Apply(spell => spell.CooldownTime = 10000, SpellId.SmiteSlam);
+            SpellHandler.Apply(spell => spell.SpellCooldowns.CooldownTime = 10000, SpellId.SmiteSlam);
 
 			// remember the Spells for later use
 			terrify = SpellHandler.Get(SpellId.Terrify);

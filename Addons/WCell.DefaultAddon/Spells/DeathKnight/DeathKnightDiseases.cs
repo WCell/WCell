@@ -30,7 +30,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			//FixPassiveDiseaseTalent(SpellLineId.DeathKnightBloodPlague, SpellId.EffectBloodPlague);
 			//FixPassiveDiseaseTalent(SpellLineId.DeathKnightFrostFever, SpellId.EffectFrostFever);
 
-			FixUnholyFeverAndEbonPlague();
+			//FixUnholyFeverAndEbonPlague();
 			FixUnholyBlight();
 			FixWanderingPlague();
 			FixPestilence();
@@ -137,19 +137,19 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 		private static void FixWanderingPlague()
 		{
 			// Wandering Plague has a proc and an AoE damage component
-			SpellLineId.DeathKnightUnholyWanderingPlague.Apply(spell =>
-			{
-                spell.SpellAuraOptions.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+            //SpellLineId.DeathKnightUnholyWanderingPlague.Apply(spell =>
+            //{
+            //    spell.SpellAuraOptions.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
 
-				var effect = spell.GetEffect(AuraType.Dummy);
-				effect.IsProc = true;
-				effect.AuraEffectHandlerCreator = () => new WanderingPlagueProcHandler();
-			});
-			SpellHandler.Apply(spell =>
-			{
-				spell.GetEffect(SpellEffectType.SchoolDamage).SpellEffectHandlerCreator =
-					(cast, effct) => new WanderingPlagueDamageHandler(cast, effct);
-			}, SpellId.WanderingPlague_2);
+            //    var effect = spell.GetEffect(AuraType.Dummy);
+            //    effect.IsProc = true;
+            //    effect.AuraEffectHandlerCreator = () => new WanderingPlagueProcHandler();
+            //});
+            //SpellHandler.Apply(spell =>
+            //{
+            //    spell.GetEffect(SpellEffectType.SchoolDamage).SpellEffectHandlerCreator =
+            //        (cast, effct) => new WanderingPlagueDamageHandler(cast, effct);
+            //}, SpellId.WanderingPlague_2);
 		}
 
 		/// <summary>
@@ -174,7 +174,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			public override void OnProc(Unit triggerer, IUnitAction action)
 			{
 				// gives the proc action to the actual damage spell
-				Owner.SpellCast.Trigger(SpellHandler.Get(SpellId.WanderingPlague_2), m_spellEffect, action);
+                //Owner.SpellCast.Trigger(SpellHandler.Get(SpellId.WanderingPlague_2), m_spellEffect, action);
 			}
 		}
 
@@ -211,18 +211,18 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 		#endregion
 
 		#region Unholy Fever & Ebon Plague
-		static readonly SpellId[] CryptFeverRanks = new[]
-		{
-			SpellId.CryptFeverRank1,
-			SpellId.CryptFever,
-			SpellId.CryptFever_2,
-		};
-		static readonly SpellId[] EbonPlagueRanks = new[]
-		{
-			SpellId.EbonPlague,
-			SpellId.EbonPlague_2,
-			SpellId.EbonPlague_3,
-		};
+        //static readonly SpellId[] CryptFeverRanks = new[]
+        //{
+        //    SpellId.CryptFeverRank1,
+        //    SpellId.CryptFever,
+        //    SpellId.CryptFever_2,
+        //};
+        //static readonly SpellId[] EbonPlagueRanks = new[]
+        //{
+        //    SpellId.EbonPlague,
+        //    SpellId.EbonPlague_2,
+        //    SpellId.EbonPlague_3,
+        //};
 
 		private static void FixUnholyFeverAndEbonPlague()
 		{
@@ -232,24 +232,24 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			dmgAmplifierEffect.OverrideEffectValue = true;
 
 			// Crypt Fever does not proc correctly
-			SpellLineId.DeathKnightUnholyCryptFever.Apply(spell =>
-			{
-				// proc when a new Aura is applied to a target
-                spell.SpellAuraOptions.ProcTriggerFlags = ProcTriggerFlags.AuraStarted;
+            //SpellLineId.DeathKnightUnholyCryptFever.Apply(spell =>
+            //{
+            //    // proc when a new Aura is applied to a target
+            //    spell.SpellAuraOptions.ProcTriggerFlags = ProcTriggerFlags.AuraStarted;
 
-				var effect = spell.GetEffect(AuraType.OverrideClassScripts);
-				effect.IsProc = true;
-				effect.TriggerSpellId = CryptFeverRanks[spell.Rank - 1];
-				effect.AuraEffectHandlerCreator = () => new CryptFeverHandler();
-				effect.ClearAffectMask();
-			});
+            //    var effect = spell.GetEffect(AuraType.OverrideClassScripts);
+            //    effect.IsProc = true;
+            //    effect.TriggerSpellId = CryptFeverRanks[spell.Rank - 1];
+            //    effect.AuraEffectHandlerCreator = () => new CryptFeverHandler();
+            //    effect.ClearAffectMask();
+            //});
 
 			// The Ebon Plague effect also "increases magic damage taken by $s2%"
-			SpellHandler.Apply(spell =>
-			{
-				var effect = spell.GetEffect(AuraType.Dummy);
-				effect.AuraType = AuraType.ModDamageTakenPercent;
-			}, EbonPlagueRanks);
+            //SpellHandler.Apply(spell =>
+            //{
+            //    var effect = spell.GetEffect(AuraType.Dummy);
+            //    effect.AuraType = AuraType.ModDamageTakenPercent;
+            //}, EbonPlagueRanks);
 		}
 
 		public class CryptFeverHandler : ProcOnDiseaseTriggerSpellHandler	// only proc on disease
@@ -258,21 +258,21 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			{
 				// Crypt Fever is triggered by default but changes to Ebon Plague, if
 				// the caster (which by default is also the owner of this Aura) has the Ebon Plaguebringer talent.
-				var ebonPlague = m_aura.Owner.Spells.GetHighestRankOf(SpellLineId.DeathKnightUnholyEbonPlaguebringer);
-				SpellId spell;
+                //var ebonPlague = m_aura.Owner.Spells.GetHighestRankOf(SpellLineId.DeathKnightUnholyEbonPlaguebringer);
+                //SpellId spell;
 
-				// select spell to be triggered, based on talent rank
-				if (ebonPlague != null)
-				{
-					spell = EbonPlagueRanks[ebonPlague.Rank - 1];				// Ebon Plaguebringer
-				}
-				else
-				{
-					spell = CryptFeverRanks[m_spellEffect.Spell.Rank - 1];		// Crypt Fever
-				}
+                //// select spell to be triggered, based on talent rank
+                //if (ebonPlague != null)
+                //{
+                //    spell = EbonPlagueRanks[ebonPlague.Rank - 1];				// Ebon Plaguebringer
+                //}
+                //else
+                //{
+                //    spell = CryptFeverRanks[m_spellEffect.Spell.Rank - 1];		// Crypt Fever
+                //}
 
-				SpellCast.ValidateAndTriggerNew(SpellHandler.Get(spell), m_aura.CasterReference, Owner, triggerer,
-												m_aura.Controller as SpellChannel, m_aura.UsedItem, action, m_spellEffect);
+                //SpellCast.ValidateAndTriggerNew(SpellHandler.Get(spell), m_aura.CasterReference, Owner, triggerer,
+                //                                m_aura.Controller as SpellChannel, m_aura.UsedItem, action, m_spellEffect);
 			}
 		}
 

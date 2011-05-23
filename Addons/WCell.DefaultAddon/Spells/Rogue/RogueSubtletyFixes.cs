@@ -81,12 +81,10 @@ namespace WCell.Addons.Default.Spells.Rogue
             SpellLineId.RogueEvasion,
             SpellLineId.RogueSprint,
             SpellLineId.RogueAssassinationColdBlood,
-            SpellLineId.RogueSubtletyShadowstep
         };
 
         private SpellLineId[] spellsWithGlyph = new[]
         {
-            SpellLineId.RogueCombatBladeFlurry,
             SpellLineId.RogueDismantle,
             SpellLineId.RogueKick
         };
@@ -110,7 +108,7 @@ namespace WCell.Addons.Default.Spells.Rogue
                         }
                     });
                 }
-                if (chr.Spells.Contains(SpellId.GlyphOfPreparation) || chr.Spells.Contains(SpellId.GlyphOfPreparation_2))
+                if (chr.Spells.Contains(SpellId.GlyphOfPreparation))
                 {
                     foreach (var line in spellsWithGlyph)
                     {
@@ -150,10 +148,10 @@ namespace WCell.Addons.Default.Spells.Rogue
 						chr.Auras.CreateAndStartAura(m_aura.CasterReference, SpellHandler.Get(SpellId.ClassSkillOverkill), true);
 				}
 				//Master of Subtlety
-				if (chr.Auras[SpellLineId.RogueSubtletyMasterOfSubtlety] != null)
+				if (chr.Auras[SpellLineId.RogueMasterOfSubtlety] != null)
 				{
 					chr.Auras.Remove(SpellId.MasterOfSubtlety_2);//remove periodic dummy so dmg buff doesn't get removed if casting stealth again
-					var masterofsub = chr.Auras[SpellLineId.RogueSubtletyMasterOfSubtlety, true];
+					var masterofsub = chr.Auras[SpellLineId.RogueMasterOfSubtlety, true];
 					var customspell = SpellHandler.Get(SpellId.MasterOfSubtlety);
 					customspell.Effects[0].BasePoints = masterofsub.Spell.Effects[0].BasePoints;
 					chr.Auras.CreateAndStartAura(m_aura.CasterReference, customspell, true);

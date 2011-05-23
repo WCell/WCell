@@ -27,7 +27,7 @@ namespace WCell.Addons.Default.Spells.Mage
 				(cast, effect) => new ColdSnapHandler(cast, effect);
 			});
 
-			SpellLineId.MageFrostSummonWaterElemental.Apply(spell =>
+			SpellLineId.MageSummonWaterElemental.Apply(spell =>
 			{
 				spell.Effects[0].SpellEffectHandlerCreator =
 				(cast, effect) => new SummonWaterElementalHandler(cast, effect);
@@ -41,14 +41,14 @@ namespace WCell.Addons.Default.Spells.Mage
 			});
 
 			// Frost Channeling has reversed affect masks for the 2 effects
-			SpellLineId.MageFrostFrostChanneling.Apply(spell =>
-			{
-				var powerCostEffect = spell.GetEffect(AuraType.ModPowerCost);
-				var threatEffect = spell.GetEffect(AuraType.ModThreat);
+            //SpellLineId.MageFrostFrostChanneling.Apply(spell =>
+            //{
+            //    var powerCostEffect = spell.GetEffect(AuraType.ModPowerCost);
+            //    var threatEffect = spell.GetEffect(AuraType.ModThreat);
 
-				powerCostEffect.CopyAffectMaskTo(threatEffect.AffectMask);	// mods threat of frost spells
-				powerCostEffect.ClearAffectMask();							// reduces mana cost of all spells
-			});
+            //    powerCostEffect.CopyAffectMaskTo(threatEffect.AffectMask);	// mods threat of frost spells
+            //    powerCostEffect.ClearAffectMask();							// reduces mana cost of all spells
+            //});
 
 			// Blizzard adds a chill effect if caster has Improved Blizzard
 			SpellLineId.MageBlizzard.Apply(spell =>
@@ -114,10 +114,10 @@ namespace WCell.Addons.Default.Spells.Mage
 				var chr = m_cast.CasterUnit as Character;
 				if (chr != null)
 				{
-					var glyphaura = chr.Auras[SpellId.GlyphOfEternalWater];
-					if (glyphaura != null)
-						chr.SpellCast.Trigger(SpellId.SummonWaterElemental_7, chr);
-					else
+                    //var glyphaura = chr.Auras[SpellId.GlyphOfEternalWater];
+                    //if (glyphaura != null)
+                    //    chr.SpellCast.Trigger(SpellId.SummonWaterElemental_7, chr);
+                    //else
 						chr.SpellCast.Trigger(SpellId.SummonWaterElemental_6, chr);
 				}
 			}
@@ -139,9 +139,9 @@ namespace WCell.Addons.Default.Spells.Mage
 						case SpellId.MageFrostShatterRank2:
 							action.AddBonusCritChance(34);
 							break;
-						case SpellId.MageFrostShatterRank3:
-							action.AddBonusCritChance(50);
-							break;
+                        //case SpellId.MageFrostShatterRank3:
+                        //    action.AddBonusCritChance(50);
+                        //    break;
 					}
 				}
 			}
@@ -160,18 +160,18 @@ namespace WCell.Addons.Default.Spells.Mage
 				var caster = m_cast.CasterUnit;
 				if (caster != null)
 				{
-					var improvedBlizzard = caster.Auras[SpellLineId.MageFrostImprovedBlizzard];
-					if (improvedBlizzard != null)
-					{
-						// Caster has Improved Blizzard
-						var rank = improvedBlizzard.Spell.Rank;
-                        //var chilledLine = SpellLineId.MageChilled.GetLine();
-                        //var chilledSpell = chilledLine.GetRank(rank);
-                        //if (chilledSpell != null)
-                        //{
-                        //    m_cast.Trigger(chilledSpell, Effect, target);
-                        //}
-					}
+                    //var improvedBlizzard = caster.Auras[SpellLineId.MageFrostImprovedBlizzard];
+                    //if (improvedBlizzard != null)
+                    //{
+                    //    // Caster has Improved Blizzard
+                    //    var rank = improvedBlizzard.Spell.Rank;
+                    //    //var chilledLine = SpellLineId.MageChilled.GetLine();
+                    //    //var chilledSpell = chilledLine.GetRank(rank);
+                    //    //if (chilledSpell != null)
+                    //    //{
+                    //    //    m_cast.Trigger(chilledSpell, Effect, target);
+                    //    //}
+                    //}
 				}
 			}
 		}
