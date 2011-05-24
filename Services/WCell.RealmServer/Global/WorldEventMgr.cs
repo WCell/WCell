@@ -1,20 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NLog;
-using WCell.Constants.Quests;
 using WCell.Core.Initialization;
-using WCell.Core.Timers;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.GameObjects;
 using WCell.RealmServer.NPCs;
-using WCell.RealmServer.NPCs.Spawns;
 using WCell.RealmServer.Quests;
 using WCell.RealmServer.Spells;
 using WCell.Util;
-using WCell.Util.Threading.TaskParallel;
 
 namespace WCell.RealmServer.Global
 {	
@@ -107,8 +101,7 @@ namespace WCell.RealmServer.Global
 
             var updateInterval = DateTime.Now - LastUpdateTime;
             LastUpdateTime = DateTime.Now;
-            foreach (var worldEvent in
-                AllEvents.Where(worldEvent => worldEvent != null).Where(worldEvent => worldEvent.TimeUntilNextStart != null))
+            foreach (var worldEvent in AllEvents.Where(worldEvent => worldEvent != null).Where(worldEvent => worldEvent.TimeUntilNextStart != null))
             {
                 worldEvent.TimeUntilNextStart -= updateInterval;
                 worldEvent.TimeUntilEnd -= updateInterval;
