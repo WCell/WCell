@@ -684,7 +684,16 @@ namespace WCell.RealmServer.Items
 					{
 						if (looter.QuestLog.HasActiveQuest(q.Id))
 						{
-							return true;
+							for (int it = 0; it < q.CollectableItems.Length; it++)
+							{
+								if (q.CollectableItems[it].ItemId == ItemId)
+								{
+									if (q.CollectableItems[it].Amount > looter.QuestLog.GetActiveQuest(q.Id).CollectedItems[it])
+									{
+										return true;
+									}
+								}
+							}
 						}
 					}
 				}
