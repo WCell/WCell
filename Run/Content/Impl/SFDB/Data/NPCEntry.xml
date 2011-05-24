@@ -40,10 +40,10 @@
     <Flat Name="InfoString" Column="IconName" />
     <Flat Name="MinLevel" Column="minlevel" />
     <Flat Name="MaxLevel" Column="maxlevel" />
-    <!--<Flat Name="MinHealth" Column="minhealth" />
-    <Flat Name="MaxHealth" Column="maxhealth" />
-    <Flat Name="MinMana" Column="minmana" />
-    <Flat Name="MaxMana" Column="maxmana" />-->
+    <Flat Name="Expansion" Column="exp" />
+    <Flat Name="HealthModifier" Column="Health_mod" />
+    <Flat Name="ManaModifier" Column="Mana_mod" />
+    <Flat Name="ArmorModifier" Column="Armor_mod" />
     <Flat Name="MinDamage" Column="mindmg" />
     <Flat Name="MaxDamage" Column="maxdmg" />
     <FlatArray Name="Resistances">

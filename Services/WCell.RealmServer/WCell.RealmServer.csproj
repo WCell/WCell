@@ -237,6 +237,7 @@
     <Compile Include="Entities\Character.StartOutfit.DBC.cs" />
     <Compile Include="Gossips\GossipTextHelper.cs" />
     <Compile Include="Handlers\WorldStateHandler.cs" />
+    <Compile Include="NPCs\NPCBaseStats.cs" />
     <Compile Include="Spells\Auras\Misc\FearHandler.cs" />
     <Compile Include="Spells\Auras\Misc\ModConfuseHandler.cs" />
     <Compile Include="Spells\Auras\Misc\ModPossessAuraHandler.cs" />

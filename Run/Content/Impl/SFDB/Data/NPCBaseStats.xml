@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <DataHolder Name="NPCBaseStats">
+    <DefaultTable>creature_classlevelstats</DefaultTable>
+    <Flat Name="Level" Column="level"/>
+    <Flat Name="Class" Column="class"/>
+    <FlatArray Name="BaseHpByExpansion">
+      <Column Name="basehp0"/>
+      <Column Name="basehp1"/>
+      <Column Name="basehp2"/>
+      <Column Name="basehp3"/>
+    </FlatArray>
+    <Flat Name="BaseMana" Column="basemana"/>
+    <Flat Name="BaseArmor" Column="basearmor"/>
+  </DataHolder>
+</DataHolders>

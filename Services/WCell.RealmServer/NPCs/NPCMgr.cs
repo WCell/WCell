@@ -217,6 +217,9 @@ namespace WCell.RealmServer.NPCs
 
 		[NotVariable]
 		internal static Spell[][] PetSpells;
+
+        [NotVariable]
+        public static Dictionary<KeyValuePair<int, int>, NPCBaseStats> NPCBaseStats = new Dictionary<KeyValuePair<int, int>, NPCBaseStats>();
 		#endregion
 
 		#region Spawn Containers
@@ -579,6 +582,8 @@ namespace WCell.RealmServer.NPCs
 			}
 			FactionMgr.Initialize();
 
+            if (ContentMgr.HasMapper(typeof(NPCBaseStats)))
+		        ContentMgr.Load<NPCBaseStats>();
 			ContentMgr.Load<NPCEquipmentEntry>();
 			ContentMgr.Load<NPCEntry>();
 

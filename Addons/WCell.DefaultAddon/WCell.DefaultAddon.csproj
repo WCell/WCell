@@ -244,6 +244,7 @@
     <Compile Include="Lang\AddonMsgKey.cs" />
     <Compile Include="Lang\DefaultAddonLocalizer.cs" />
     <Compile Include="MiscFixes\ClassFixes.cs" />
+    <Compile Include="MiscFixes\DBFixes.cs" />
     <Compile Include="MiscFixes\RaceFixes.cs" />
     <Compile Include="MiscFixes\ShapeshiftFixes.cs" />
     <Compile Include="NPCs\NPCCorrections.cs" />

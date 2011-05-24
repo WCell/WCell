@@ -94,6 +94,12 @@
     <PrimaryColumn Name="instance"/>
   </Table>
 -->
+
+  <Table Name="creature_classlevelstats" MainDataHolder="NPCBaseStats">
+    <PrimaryColumn Name="level"/>
+    <PrimaryColumn Name="class"/>
+  </Table>
+  
   <Table Name="creature_template" MainDataHolder="NPCEntry">
     <PrimaryColumn Name="entry"/>
   </Table>

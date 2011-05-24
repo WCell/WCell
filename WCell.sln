@@ -196,6 +196,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SFDB", "SFDB", "{F30E9E55-A
 		Run\Content\Impl\SFDB\Data\LootEntries.xml = Run\Content\Impl\SFDB\Data\LootEntries.xml
 		Run\Content\Impl\SFDB\Data\MapTemplate.xml = Run\Content\Impl\SFDB\Data\MapTemplate.xml
 		Run\Content\Impl\SFDB\Data\NpcAiText.xml = Run\Content\Impl\SFDB\Data\NpcAiText.xml
+		Run\Content\Impl\SFDB\Data\NPCBaseStats.xml = Run\Content\Impl\SFDB\Data\NPCBaseStats.xml
 		Run\Content\Impl\SFDB\Data\NPCEntry.xml = Run\Content\Impl\SFDB\Data\NPCEntry.xml
 		Run\Content\Impl\SFDB\Data\NPCEquipmentEntry.xml = Run\Content\Impl\SFDB\Data\NPCEquipmentEntry.xml
 		Run\Content\Impl\SFDB\Data\NPCLootItemEntry.xml = Run\Content\Impl\SFDB\Data\NPCLootItemEntry.xml

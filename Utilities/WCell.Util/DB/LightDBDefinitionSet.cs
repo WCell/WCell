@@ -301,7 +301,7 @@ namespace WCell.Util.DB
 						var i = varCount;
 						foreach (var primaryCol in primCols)
 						{
-							// PrimaryKey-field is not explicitely mapped but only used as a reference
+							// PrimaryKey-field is not explicitly mapped but only used as a reference
 							var proxyField = new DataFieldProxy(primaryCol.Name, table.MainDataHolder);
 
 							var reader = Converters.GetReader(primaryCol.TypeName);
@@ -309,7 +309,7 @@ namespace WCell.Util.DB
 							{
 								throw new DataHolderException("Invalid Type \"" + primaryCol.TypeName
 															  + "\" for PrimaryColumn \"" + primaryCol.Name + "\" in definition for Table: " + table + " - " +
-															  "You must explicitely define the TypeName attribute inside the PrimaryColumn node, if it is only an additional table for a DataHolder!");
+															  "You must explicitly define the TypeName attribute inside the PrimaryColumn node, if it is only an additional table for a DataHolder!");
 							}
 							var col = new SimpleDataColumn(primaryCol.Name, reader, 0) { IsPrimaryKey = true };
 							col.FieldList.Add(proxyField);
@@ -531,10 +531,6 @@ namespace WCell.Util.DB
 
 					DefaultTables[dataDef.Name] = defaultTables;
 
-					if (dataRawDef.DataHolderName.Contains("Trainer"))
-					{
-						ToString();
-					}
 					AddFieldMappings(dataRawDef.Fields, dataDef.Fields, fieldMap);
 					if (oldTables != null)
 					{

@@ -87,6 +87,11 @@ namespace WCell.RealmServer.Content
 			return mapper;
 		}
 
+        public static bool HasMapper(Type t)
+        {
+            return s_mappersByType.ContainsKey(t);
+        }
+
 		public static Dictionary<object, IDataHolder> GetObjectMap<T>() where T : IDataHolder
 		{
 			return GetMapper<T>().GetObjectMap<T>();

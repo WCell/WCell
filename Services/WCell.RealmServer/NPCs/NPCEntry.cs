@@ -289,6 +289,16 @@ namespace WCell.RealmServer.NPCs
 
 		public float OffhandMaxDamage;
 
+        //Begin SFDB Specific fields
+	    public short Expansion = -1;
+
+	    public float HealthModifier;
+
+        public float ManaModifier;
+
+        public float ArmorModifier;
+        //End SFDB Specific fields
+
 		public int GetRandomLevel()
 		{
 			return Utility.Random(MinLevel, MaxLevel);
@@ -881,6 +891,21 @@ namespace WCell.RealmServer.NPCs
 				ContentMgr.OnInvalidDBData("NPCEntry has no valid DisplayId: {0} ({1})", this, DisplayIds.ToString(", "));
 				return;
 			}
+
+            //Begin SFDB Specific
+
+            //If this is not SFDB then this dictionary will be empty
+            //and nothing will happen, so our health/mana/armor values
+            //won't be overwritten
+            NPCBaseStats npcBaseStats;
+            if(NPCMgr.NPCBaseStats.TryGetValue(new KeyValuePair<int, int>(GetRandomLevel(), (int)ClassId), out npcBaseStats))
+            {
+                Resistances[0] = npcBaseStats.GenerateArmor(ArmorModifier);
+                SetMana(npcBaseStats.GenerateMana(ManaModifier));
+                SetHealth(npcBaseStats.GenerateHealth(Expansion, HealthModifier));
+            }
+
+            //End SFDB Specific
 
 			if (AddonData != null)
 			{
