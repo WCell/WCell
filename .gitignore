@@ -15,3 +15,4 @@ Utilities/WCell.SolutionItems/bin/*
 Addons/.gitignore
 
 Addons/GossipMenus/bin
+/Run/Content/DBC*
