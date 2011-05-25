@@ -354,17 +354,20 @@ namespace WCell.RealmServer.Spells
 		{
 			var chr = OwnerChar;
 			// add reagents
-			foreach (var reagent in spell.SpellReagents.Reagents)
-			{
-				var templ = reagent.Template;
-				if (templ != null)
-				{
-					var amt = reagent.Amount * 10;
-					chr.Inventory.Ensure(templ, amt);
-				}
-			}
+		    if (spell.SpellReagents != null)
+		    {
+		        foreach (var reagent in spell.SpellReagents.Reagents)
+		        {
+		            var templ = reagent.Template;
+		            if (templ != null)
+		            {
+		                var amt = reagent.Amount * 10;
+		                chr.Inventory.Ensure(templ, amt);
+		            }
+		        }
+		    }
 
-			// add tools
+		    // add tools
 			if (spell.RequiredTools != null)
 			{
 				foreach (var tool in spell.RequiredTools)
@@ -372,19 +375,22 @@ namespace WCell.RealmServer.Spells
 					chr.Inventory.Ensure(tool.Template, 1);
 				}
 			}
-			if (spell.SpellTotems.RequiredToolCategories != null)
-			{
-                foreach (var cat in spell.SpellTotems.RequiredToolCategories)
-				{
-					var tool = ItemMgr.GetFirstItemOfToolCategory(cat);
-					if (tool != null)
-					{
-						chr.Inventory.Ensure(tool, 1);
-					}
-				}
-			}
+		    if (spell.SpellTotems != null)
+		    {
+		        if (spell.SpellTotems.RequiredToolCategories != null)
+		        {
+		            foreach (var cat in spell.SpellTotems.RequiredToolCategories)
+		            {
+		                var tool = ItemMgr.GetFirstItemOfToolCategory(cat);
+		                if (tool != null)
+		                {
+		                    chr.Inventory.Ensure(tool, 1);
+		                }
+		            }
+		        }
+		    }
 
-			// Profession
+		    // Profession
 			if (spell.Ability.Skill != null)
 			{
 				chr.Skills.TryLearn(spell.Ability.Skill.Id);
@@ -392,25 +398,28 @@ namespace WCell.RealmServer.Spells
 
 
 			// add spellfocus object (if not present)
-            if (spell.SpellCastingRequirements.RequiredSpellFocus != 0)
-			{
-				var range = Owner.GetSpellMaxRange(spell);
-                var go = chr.Map.GetGOWithSpellFocus(chr.Position, spell.SpellCastingRequirements.RequiredSpellFocus,
-					range > 0 ? (range) : 5f, chr.Phase);
+		    if (spell.SpellCastingRequirements != null)
+		    {
+		        if (spell.SpellCastingRequirements.RequiredSpellFocus != 0)
+		        {
+		            var range = Owner.GetSpellMaxRange(spell);
+		            var go = chr.Map.GetGOWithSpellFocus(chr.Position, spell.SpellCastingRequirements.RequiredSpellFocus,
+		                                                 range > 0 ? (range) : 5f, chr.Phase);
 
-				if (go == null)
-				{
-					foreach (var entry in GOMgr.Entries.Values)
-					{
-						if (entry is GOSpellFocusEntry &&
-                            ((GOSpellFocusEntry)entry).SpellFocus == spell.SpellCastingRequirements.RequiredSpellFocus)
-						{
-							entry.Spawn(chr, chr);
-							break;
-						}
-					}
-				}
-			}
+		            if (go == null)
+		            {
+		                foreach (var entry in GOMgr.Entries.Values)
+		                {
+		                    if (entry is GOSpellFocusEntry &&
+		                        ((GOSpellFocusEntry)entry).SpellFocus == spell.SpellCastingRequirements.RequiredSpellFocus)
+		                    {
+		                        entry.Spawn(chr, chr);
+		                        break;
+		                    }
+		                }
+		            }
+		        }
+		    }
 		}
 		#endregion
 
@@ -423,43 +432,49 @@ namespace WCell.RealmServer.Spells
 		{
 			// check for individual cooldown
 			ISpellIdCooldown idCooldown = null;
-			if (spell.SpellCooldowns.CooldownTime > 0)
-			{
-				for (var i = 0; i < m_idCooldowns.Count; i++)
-				{
-					idCooldown = m_idCooldowns[i];
-					if (idCooldown.SpellId == spell.Id)
-					{
-						if (idCooldown.Until > DateTime.Now)
-						{
-							return false;
-						}
-						m_idCooldowns.RemoveAt(i);
-						break;
-					}
-				}
-			}
+		    if (spell.SpellCooldowns != null)
+		    {
+		        if (spell.SpellCooldowns.CooldownTime > 0)
+		        {
+		            for (var i = 0; i < m_idCooldowns.Count; i++)
+		            {
+		                idCooldown = m_idCooldowns[i];
+		                if (idCooldown.SpellId == spell.Id)
+		                {
+		                    if (idCooldown.Until > DateTime.Now)
+		                    {
+		                        return false;
+		                    }
+		                    m_idCooldowns.RemoveAt(i);
+		                    break;
+		                }
+		            }
+		        }
+		    }
 
-			// check for category cooldown
+		    // check for category cooldown
 			ISpellCategoryCooldown catCooldown = null;
-            if (spell.SpellCooldowns.CategoryCooldownTime > 0)
-			{
-				for (var i = 0; i < m_categoryCooldowns.Count; i++)
-				{
-					catCooldown = m_categoryCooldowns[i];
-					if (catCooldown.CategoryId == spell.SpellCategories.Category)
-					{
-						if (catCooldown.Until > DateTime.Now)
-						{
-							return false;
-						}
-						m_categoryCooldowns.RemoveAt(i);
-						break;
-					}
-				}
-			}
+		    if (spell.SpellCooldowns != null)
+		    {
+		        if (spell.SpellCooldowns.CategoryCooldownTime > 0)
+		        {
+		            for (var i = 0; i < m_categoryCooldowns.Count; i++)
+		            {
+		                catCooldown = m_categoryCooldowns[i];
+		                if (catCooldown.CategoryId == spell.SpellCategories.Category)
+		                {
+		                    if (catCooldown.Until > DateTime.Now)
+		                    {
+		                        return false;
+		                    }
+		                    m_categoryCooldowns.RemoveAt(i);
+		                    break;
+		                }
+		            }
+		        }
+		    }
 
-			// enqueue task to delete persistent cooldowns
+		    // enqueue task to delete persistent cooldowns
 			if (idCooldown is PersistentSpellIdCooldown || catCooldown is PersistentSpellCategoryCooldown)
 			{
 				var removedId = idCooldown as PersistentSpellIdCooldown;

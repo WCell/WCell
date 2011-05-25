@@ -73,7 +73,7 @@ namespace WCell.RealmServer.Spells
 			// Not while silenced		
 			else if (!caster.CanCastSpells &&
 					(!IsPhysicalAbility ||
-                    (SpellInterrupts.InterruptFlags.HasFlag(InterruptFlags.OnSilence) &&
+                    (SpellInterrupts != null && SpellInterrupts.InterruptFlags.HasFlag(InterruptFlags.OnSilence) &&
 					 caster.IsUnderInfluenceOf(SpellMechanic.Silenced))))
 			{
 				return SpellFailedReason.Silenced;
@@ -95,69 +95,75 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// AuraStates
-            if (SpellAuraRestrictions.RequiredCasterAuraState != 0 || SpellAuraRestrictions.ExcludeCasterAuraState != 0)
-			{
-				// check AuraStates
-				var state = caster.AuraState;
-                if ((SpellAuraRestrictions.RequiredCasterAuraState != 0 && !state.HasAnyFlag(SpellAuraRestrictions.RequiredCasterAuraState)) ||
-                    (SpellAuraRestrictions.ExcludeCasterAuraState != 0 && state.HasAnyFlag(SpellAuraRestrictions.ExcludeCasterAuraState)))
-				{
-					return SpellFailedReason.CasterAurastate;
-				}
-			}
+            if (SpellAuraRestrictions != null)
+            {
+                if (SpellAuraRestrictions.RequiredCasterAuraState != 0 || SpellAuraRestrictions.ExcludeCasterAuraState != 0)
+                {
+                    // check AuraStates
+                    var state = caster.AuraState;
+                    if ((SpellAuraRestrictions.RequiredCasterAuraState != 0 && !state.HasAnyFlag(SpellAuraRestrictions.RequiredCasterAuraState)) ||
+                        (SpellAuraRestrictions.ExcludeCasterAuraState != 0 && state.HasAnyFlag(SpellAuraRestrictions.ExcludeCasterAuraState)))
+                    {
+                        return SpellFailedReason.CasterAurastate;
+                    }
+                }
 
-			// Required Auras
-            if ((SpellAuraRestrictions.ExcludeCasterAuraId != 0 && caster.Auras.Contains(SpellAuraRestrictions.ExcludeCasterAuraId)) ||
-                (SpellAuraRestrictions.RequiredCasterAuraId != 0 && !caster.Auras.Contains(SpellAuraRestrictions.RequiredCasterAuraId)))
-			{
-				return SpellFailedReason.CasterAurastate;
-			}
+                // Required Auras
+                if ((SpellAuraRestrictions.ExcludeCasterAuraId != 0 && caster.Auras.Contains(SpellAuraRestrictions.ExcludeCasterAuraId)) ||
+                    (SpellAuraRestrictions.RequiredCasterAuraId != 0 && !caster.Auras.Contains(SpellAuraRestrictions.RequiredCasterAuraId)))
+                {
+                    return SpellFailedReason.CasterAurastate;
+                }
+            }
 
 			// Shapeshift
-			var shapeshiftMask = caster.ShapeshiftMask;
-			bool ignoreShapeshiftRequirement = false;	// use this to allow for lazy requirement lookup
-			if (SpellShapeshift.ExcludeShapeshiftMask.HasAnyFlag(shapeshiftMask))
-			{
-				if (!(ignoreShapeshiftRequirement = caster.Auras.IsShapeshiftRequirementIgnored(this)))
-				{
-					return SpellFailedReason.NotShapeshift;
-				}
-			}
-            else if (!SpellShapeshift.RequiredShapeshiftMask.HasAnyFlag(shapeshiftMask))
-			{
-				// our mask did not pass -> do the default checks
-				var shapeshiftEntry = caster.ShapeshiftEntry;
-				var shapeshifted = shapeshiftEntry != null && (shapeshiftEntry.Flags & ShapeshiftInfoFlags.NotActualShapeshift) == 0;
+            if (SpellShapeshift != null)
+            {
+                var shapeshiftMask = caster.ShapeshiftMask;
+                bool ignoreShapeshiftRequirement = false;	// use this to allow for lazy requirement lookup
+                if (SpellShapeshift.ExcludeShapeshiftMask.HasAnyFlag(shapeshiftMask))
+                {
+                    if (!(ignoreShapeshiftRequirement = caster.Auras.IsShapeshiftRequirementIgnored(this)))
+                    {
+                        return SpellFailedReason.NotShapeshift;
+                    }
+                }
+                else if (!SpellShapeshift.RequiredShapeshiftMask.HasAnyFlag(shapeshiftMask))
+                {
+                    // our mask did not pass -> do the default checks
+                    var shapeshiftEntry = caster.ShapeshiftEntry;
+                    var shapeshifted = shapeshiftEntry != null && (shapeshiftEntry.Flags & ShapeshiftInfoFlags.NotActualShapeshift) == 0;
 
-				if (shapeshifted)
-				{
-                    if (SpellShapeshift.RequiredShapeshiftMask != 0)
-					{
-						// When shapeshifted, can only use spells that allow this form
-						if (!(ignoreShapeshiftRequirement = caster.Auras.IsShapeshiftRequirementIgnored(this)))
-						{
-							return SpellFailedReason.OnlyShapeshift;
-						}
-					}
-					else if (Attributes.HasAnyFlag(SpellAttributes.NotWhileShapeshifted))
-					{
-						if (!(ignoreShapeshiftRequirement = caster.Auras.IsShapeshiftRequirementIgnored(this)))
-						{
-							// cannot cast this spell when shapeshifted
-							return SpellFailedReason.NotShapeshift;
-						}
-					}
-				}
+                    if (shapeshifted)
+                    {
+                        if (SpellShapeshift.RequiredShapeshiftMask != 0)
+                        {
+                            // When shapeshifted, can only use spells that allow this form
+                            if (!(ignoreShapeshiftRequirement = caster.Auras.IsShapeshiftRequirementIgnored(this)))
+                            {
+                                return SpellFailedReason.OnlyShapeshift;
+                            }
+                        }
+                        else if (Attributes.HasAnyFlag(SpellAttributes.NotWhileShapeshifted))
+                        {
+                            if (!(ignoreShapeshiftRequirement = caster.Auras.IsShapeshiftRequirementIgnored(this)))
+                            {
+                                // cannot cast this spell when shapeshifted
+                                return SpellFailedReason.NotShapeshift;
+                            }
+                        }
+                    }
 
-				if (Attributes.HasFlag(SpellAttributes.RequiresStealth) && caster.Stealthed < 1)
-				{
-					if (!caster.Auras.IsShapeshiftRequirementIgnored(this))
-					{
-						// Stealth Required, but not stealthed and not ignored by a SPELL_AURA_MOD_IGNORE_SHAPESHIFT aura
-						return SpellFailedReason.OnlyStealthed;
-					}
-				}
-			}
+                    if (Attributes.HasFlag(SpellAttributes.RequiresStealth) && caster.Stealthed < 1)
+                    {
+                        if (!caster.Auras.IsShapeshiftRequirementIgnored(this))
+                        {
+                            // Stealth Required, but not stealthed and not ignored by a SPELL_AURA_MOD_IGNORE_SHAPESHIFT aura
+                            return SpellFailedReason.OnlyStealthed;
+                        }
+                    }
+                }
+            }
 
 			var spells = caster.Spells as PlayerSpellCollection;
 

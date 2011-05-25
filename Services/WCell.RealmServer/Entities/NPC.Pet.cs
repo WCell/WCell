@@ -354,7 +354,7 @@ namespace WCell.RealmServer.Entities
 			var level = Level;
 			foreach (var spell in m_entry.Spells.Values)
 			{
-				if (spell.SpellLevels.Level > level)
+				if (spell.SpellLevels != null && spell.SpellLevels.Level > level)
 				{
 					// remove spells that have a too high level
 					m_spells.Remove(spell);

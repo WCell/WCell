@@ -1712,8 +1712,11 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public DateTime LastLogin
 		{
-			get { return m_record.LastLogin.Value; }
-			set { m_record.LastLogin = value; }
+			get
+			{
+			    return m_record.LastLogin != null ? m_record.LastLogin.Value : DateTime.Now;
+			}
+		    set { m_record.LastLogin = value; }
 		}
 
 		/// <summary>

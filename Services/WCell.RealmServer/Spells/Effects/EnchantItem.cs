@@ -40,13 +40,16 @@ namespace WCell.RealmServer.Spells.Effects
 				return;
 			}
 
-			if (m_cast.TargetItem.Template.Level < Effect.Spell.SpellLevels.BaseLevel)
-			{
-				failReason = SpellFailedReason.Lowlevel;
-				return;
-			}
+		    if (Effect.Spell.SpellLevels != null)
+		    {
+		        if (m_cast.TargetItem.Template.Level < Effect.Spell.SpellLevels.BaseLevel)
+		        {
+		            failReason = SpellFailedReason.Lowlevel;
+		            return;
+		        }
+		    }
 
-			enchantEntry = EnchantMgr.GetEnchantmentEntry((uint)Effect.MiscValue);
+		    enchantEntry = EnchantMgr.GetEnchantmentEntry((uint)Effect.MiscValue);
 			if (enchantEntry == null)
 			{
 				log.Error("Spell {0} refers to invalid EnchantmentEntry {1}", Effect.Spell, Effect.MiscValue);

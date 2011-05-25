@@ -1443,12 +1443,15 @@ namespace WCell.RealmServer.Spells
 				writer.WriteLine(indent + "Desc: " + Description);
 			}
 
-			if (SpellReagents.Reagents.Length > 0)
-			{
-                writer.WriteLine(indent + "Reagents: " + SpellReagents.Reagents.ToString(", "));
-			}
+		    if (SpellReagents != null)
+		    {
+		        if (SpellReagents.Reagents.Length > 0)
+		        {
+		            writer.WriteLine(indent + "Reagents: " + SpellReagents.Reagents.ToString(", "));
+		        }
+		    }
 
-			if (Ability != null)
+		    if (Ability != null)
 			{
 				writer.WriteLine(indent + string.Format("Skill: {0}", Ability.SkillInfo));
 			}

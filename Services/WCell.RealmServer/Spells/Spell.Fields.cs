@@ -22,6 +22,7 @@ using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
 using WCell.Core.ClientDB;
 using WCell.RealmServer.Items;
+using WCell.Util;
 using WCell.Util.Data;
 using WCell.RealmServer.Misc;
 using WCell.Util.Graphics;
@@ -76,6 +77,7 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// Read from SpellRange.dbc
 		/// </summary>
+		[CanBeNull]
 		[NotPersistent]
 		public SimpleRange Range;//40
 		/// <summary>
@@ -157,35 +159,49 @@ namespace WCell.RealmServer.Spells
 		public DamageSchool[] Schools;
 
 	    public int ShapeShiftId;
+        [CanBeNull]
         public SpellShapeshift SpellShapeshift;
 	    public float ExtraCoeffiecient;
 
         public int SpellAuraOptionsId;
+        [NotNull]
         public SpellAuraOptions SpellAuraOptions;
         public int SpellAuraRestrictionsId;
+        [CanBeNull]
         public SpellAuraRestrictions SpellAuraRestrictions;
         public int SpellCastingRequirementsId;
+        [CanBeNull]
         public SpellCastingRequirements SpellCastingRequirements;
         public int SpellCategoriesId;
+        [NotNull]
         public SpellCategories SpellCategories;
         public int SpellClassOptionsId;
+        [NotNull]
         public SpellClassOptions SpellClassOptions;
         public int SpellCooldownsId;
+        [CanBeNull]
         public SpellCooldowns SpellCooldowns;
         public int UnknownIndex;
         public int SpellEquippedItemsId;
+        [CanBeNull]
         public SpellEquippedItems SpellEquippedItems;
         public int SpellInterruptsId;
+        [CanBeNull]
         public SpellInterrupts SpellInterrupts;
         public int SpellLevelsId;
+        [CanBeNull]
         public SpellLevels SpellLevels;
         public int SpellPowerId;
+        [CanBeNull]
 	    public SpellPower SpellPower;
         public int SpellReagentsId;
+        [CanBeNull]
 	    public SpellReagents SpellReagents;
         public int SpellTargetRestrictionsId;
+        [CanBeNull]
         public SpellTargetRestrictions SpellTargetRestrictions;
         public int SpellTotemsId;
+        [CanBeNull]
         public SpellTotems SpellTotems;
 	    public int UnknownIndex2;
 

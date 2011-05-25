@@ -207,7 +207,7 @@ namespace WCell.RealmServer.Spells
 			var handlers = m_channelHandlers;
 
 			// consume power periodically
-			if (spell.SpellPower.PowerPerSecond > 0)
+			if (spell.SpellPower != null && spell.SpellPower.PowerPerSecond > 0)
 			{
                 var cost = spell.SpellPower.PowerPerSecond;
 				if (m_auraPeriod != 1000 && m_auraPeriod != 0)
