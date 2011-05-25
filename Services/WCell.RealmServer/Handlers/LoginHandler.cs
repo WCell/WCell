@@ -287,7 +287,7 @@ namespace WCell.RealmServer.Handlers
 						record = evt(client, record);
 						if (record == null)
 						{
-							throw new ArgumentNullException("OnBeforeLogin returned null");
+							throw new ArgumentNullException("record", "BeforeLogin returned null");
 						}
 					}
 					chr = record.CreateCharacter();
