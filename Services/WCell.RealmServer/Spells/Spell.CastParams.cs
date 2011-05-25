@@ -48,7 +48,7 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// Not while silenced			
-            if (SpellInterrupts.InterruptFlags.HasFlag(InterruptFlags.OnSilence) && caster.IsUnderInfluenceOf(SpellMechanic.Silenced))
+            if (SpellInterrupts != null && SpellInterrupts.InterruptFlags.HasFlag(InterruptFlags.OnSilence) && caster.IsUnderInfluenceOf(SpellMechanic.Silenced))
 			{
 				return SpellFailedReason.Silenced;
 			}
