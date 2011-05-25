@@ -437,7 +437,8 @@ namespace WCell.RealmServer.Entities
 			{
 				// durability loss
 				m_inventory.ApplyDurabilityLoss(PlayerInventory.DeathDurabilityLossPct);
-                Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.KilledByCreature, (uint)((NPC)action.Attacker).Entry.NPCId);
+                if(action.Attacker != null && action.Attacker is NPC)
+                    Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.KilledByCreature, (uint)((NPC)action.Attacker).Entry.NPCId);
 			}
 
 			m_Map.MapTemplate.NotifyPlayerDied(action);

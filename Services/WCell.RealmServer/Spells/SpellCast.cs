@@ -612,7 +612,7 @@ namespace WCell.RealmServer.Spells
 		/// This starts a spell-cast, requested by the client.
 		/// The client submits where or what the user selected in the packet.
 		/// </summary>
-		internal SpellFailedReason Start(Spell spell, RealmPacketIn packet, byte castId, byte unkFlags, uint glyphSlot = 0)
+		internal SpellFailedReason Start(Spell spell, RealmPacketIn packet, byte castId, byte unkFlags, uint glyphSlot = (uint)0)
 		{
 			isPlayerCast = true;
 
