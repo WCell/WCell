@@ -136,7 +136,6 @@
     <Compile Include="..\..\Utilities\WCell.SolutionItems\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="AnnotationAttributes.cs" />
     <Compile Include="ArrayExtensions.cs" />
     <Compile Include="Collections\BaseImmutableDictionary.cs" />
     <Compile Include="Collections\ImmutableDictionary.cs" />
