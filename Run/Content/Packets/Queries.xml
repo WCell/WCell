@@ -142,7 +142,7 @@
       <SegmentType>NPCs.CreatureFamilyId</SegmentType>
     </Simple>
     <Simple>
-      <Name>Int 4</Name>
+      <Name>Rank</Name>
       <Type>Int</Type>
     </Simple>
     <Simple>
@@ -153,29 +153,20 @@
       <Name>SpellGroupId</Name>
       <Type>Int</Type>
     </Simple>
-    <Simple>
-      <Name>DisplayId</Name>
-      <Type>Int</Type>
-    </Simple>
-    <Simple>
-      <Name>Int 8</Name>
-      <Type>Int</Type>
-    </Simple>
-    <Simple>
-      <Name>Int 9</Name>
-      <Type>Int</Type>
-    </Simple>
-    <Simple>
-      <Name>Int 10</Name>
-      <Type>Int</Type>
-    </Simple>
+    <StaticList Length="4">
+      <Name>DisplayIds</Name>
+      <Simple>
+        <Name>Id</Name>
+        <Type>Int</Type>
+      </Simple>
+    </StaticList>
 
     <Simple>
-      <Name>Float 1</Name>
+      <Name>Health Modifier</Name>
       <Type>Float</Type>
     </Simple>
     <Simple>
-      <Name>Float 2</Name>
+      <Name>Mana Modifier</Name>
       <Type>Float</Type>
     </Simple>
 
@@ -184,10 +175,10 @@
       <Type>Byte</Type>
     </Simple>
 
-    <StaticList Length="4">
-      <Name>Unk Int Array</Name>
+    <StaticList Length="6">
+      <Name>Quest Drop Item Ids</Name>
       <Simple>
-        <Name>Array Int</Name>
+        <Name>Item Id</Name>
         <Type>Int</Type>
       </Simple>
     </StaticList>
@@ -195,7 +186,12 @@
     <Simple>
       <Name>CreatureMovementId</Name>
       <Type>Int</Type>
-    </Simple>    
+    </Simple>
+
+    <Simple>
+      <Name>Expansion</Name>
+      <Type>Int</Type>
+    </Simple>
   </RealmPacket>
 
   <!--<RealmPacket OpCode="CMSG_ITEM_QUERY_SINGLE">

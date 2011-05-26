@@ -97,10 +97,12 @@ namespace WCell.RealmServer.GameObjects
 
                 packet.Write(entry.Scale); // size
 
-                for (i = 0; i < 4; i++)
+                for (i = 0; i < 6; i++)
                 {
-                    packet.Write(0); // new 3.1
+                    packet.Write(0); // quest drop item id
                 }
+
+                packet.Write(0); //Required Client Expansion
 
                 client.Send(packet);
             }

@@ -149,7 +149,7 @@ namespace WCell.RealmServer.Handlers
 			var title = entry.Titles.Localize(client);
 			using (
 				var pkt = new RealmPacketOut(RealmServerOpCode.SMSG_CREATURE_QUERY_RESPONSE,
-											 48 + name.Length + title.Length))
+											 88 + name.Length + title.Length + entry.InfoString.Length))
 			{
 				pkt.WriteUInt(entry.Id);
 				pkt.WriteCString(name);
@@ -174,15 +174,16 @@ namespace WCell.RealmServer.Handlers
 					pkt.Write(0);
 				}
 
-				pkt.Write(0);						// hp mod?
-				pkt.Write(0);						// mana mod?
+				pkt.Write(entry.HealthModifier);						// hp mod?
+				pkt.Write(entry.ManaModifier);						// mana mod?
 				pkt.Write(entry.IsLeader);
 
-				for (i = 0; i < 4; i++)
+				for (i = 0; i < 6; i++)
 				{
-					pkt.Write(entry.QuestIds[i]);
+					pkt.Write(entry.QuestItemIds[i]);
 				}
 				pkt.Write(0); // id from CreatureMovement.dbc
+                pkt.WriteUInt(entry.Expansion);
 
 				client.Send(pkt);
 			}
@@ -200,14 +201,6 @@ namespace WCell.RealmServer.Handlers
 		{
 			var textId = packet.ReadUInt32();
 			var entityId = packet.ReadEntityId();
-
-			//var obj = client.ActiveCharacter.Map.GetObject(entityId) as IGossipEntry;
-
-			//if (obj != null)
-			//{
-			//    SendNPCTextUpdate(client.ActiveCharacter, obj);
-			//}
-			//else
 
 			var text = GossipMgr.GetEntry(textId);
 			if (text != null)
@@ -250,7 +243,7 @@ namespace WCell.RealmServer.Handlers
 
 					packet.Write((uint)entry.Language);
 
-					for (int emoteIndex = 0; emoteIndex < 3; emoteIndex++)
+					for (var emoteIndex = 0; emoteIndex < 3; emoteIndex++)
 					{
 						// TODO: Emotes
 						//packet.Write((uint)entry.Emotes[emoteIndex]);
@@ -261,10 +254,11 @@ namespace WCell.RealmServer.Handlers
 
 				for (; i < 8; i++)
 				{
-					packet.WriteFloat(0);
-					packet.WriteByte(0);
-					packet.WriteByte(0);
-					packet.Fill(0, 4 * 7);
+					packet.WriteFloat(0); //Probability
+					packet.WriteByte(0); //Male Text
+					packet.WriteByte(0); //Female Text
+                    packet.Write(0); //Language
+					packet.Fill(0, 6 * 4); //3 emotes * 2 values = 6 * size of uint
 				}
 
 				character.Client.Send(packet);
@@ -287,14 +281,16 @@ namespace WCell.RealmServer.Handlers
 				packet.WriteFloat(1);
 				packet.WriteCString(title);
 				packet.WriteCString(text);
-				packet.Fill(0, 4 * 7);
+                packet.Write(0); //Language
+                packet.Fill(0, 6 * 4); //3 emotes * 2 values = 6 * size of uint
 
 				for (var i = 1; i < 8; i++)
 				{
-					packet.WriteFloat(0);
-					packet.WriteByte(0);
-					packet.WriteByte(0);
-					packet.Fill(0, 4 * 7);
+                    packet.WriteFloat(0); //Probability
+                    packet.WriteByte(0); //Male Text
+                    packet.WriteByte(0); //Female Text
+                    packet.Write(0); //Language
+                    packet.Fill(0, 6 * 4); //3 emotes * 2 values = 6 * size of uint
 				}
 
 				character.Client.Send(packet);
