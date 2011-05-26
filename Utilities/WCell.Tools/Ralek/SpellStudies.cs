@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using WCell.RealmServer.Spells;
 using WCell.Constants.Spells;
+using WCell.Util.Toolshed;
 
 namespace WCell.Tools.Ralek
 {
@@ -18,11 +19,12 @@ namespace WCell.Tools.Ralek
 			SpellHandler.LoadSpells();
 		}
 
-		public static void FindAllWithAttribute(SpellAttributes attr)
+        #region SpellAttributes
+        [Tool]
+        public static void FindAllWithAttribute(SpellAttributes attr)
 		{
 			var query = from spell in SpellHandler.ById
-			            where spell != null
-			            where spell.Has(attr)
+                        where spell.Has(attr)
 			            select spell;
 
 			foreach (var spell in query)
@@ -34,11 +36,11 @@ namespace WCell.Tools.Ralek
 			Console.WriteLine("{0} spells have Attribute {1}", query.Count(), attr);
 		}
 
+        [Tool]
 		public static void FindAllWithAttributeEx(SpellAttributesEx attr)
 		{
 			var query = from spell in SpellHandler.ById
-			            where spell != null
-			            where spell.Has(attr)
+                        where spell.Has(attr)
 			            select spell;
 
 			foreach (var spell in query)
@@ -51,10 +53,10 @@ namespace WCell.Tools.Ralek
 			Console.WriteLine();
 		}
 
+        [Tool]
 		public static void FindAllWithAttributeExB(SpellAttributesExB attr)
 		{
 			var query = from spell in SpellHandler.ById
-			            where spell != null
 			            where spell.Has(attr)
 			            select spell;
 
@@ -68,7 +70,110 @@ namespace WCell.Tools.Ralek
 			Console.WriteLine();
 		}
 
-		public static void FindAllWithFamilyName(Constants.Spells.SpellClassSet set)
+        [Tool]
+        public static void FindAllWithAttributeExC(SpellAttributesExC attr)
+        {
+            var query = from spell in SpellHandler.ById
+                        where spell.Has(attr)
+                        select spell;
+
+            foreach (var spell in query)
+            {
+                Console.WriteLine("{0}: {1} - {2}", spell.Id, spell.Name, spell.AttributesExC);
+                Console.WriteLine();
+            }
+
+            Console.WriteLine("{0} spells have Attribute {1}", query.Count(), attr);
+            Console.WriteLine();
+        }
+
+        [Tool]
+        public static void FindAllWithAttributeExD(SpellAttributesExD attr)
+        {
+            var query = from spell in SpellHandler.ById
+                        where spell.Has(attr)
+                        select spell;
+
+            foreach (var spell in query)
+            {
+                Console.WriteLine("{0}: {1} - {2}", spell.Id, spell.Name, spell.AttributesExD);
+                Console.WriteLine();
+            }
+
+            Console.WriteLine("{0} spells have Attribute {1}", query.Count(), attr);
+            Console.WriteLine();
+        }
+
+        [Tool]
+        public static void FindAllWithAttributeExE(SpellAttributesExE attr)
+        {
+            var query = from spell in SpellHandler.ById
+                        where spell.Has(attr)
+                        select spell;
+
+            foreach (var spell in query)
+            {
+                Console.WriteLine("{0}: {1} - {2}", spell.Id, spell.Name, spell.AttributesExE);
+                Console.WriteLine();
+            }
+
+            Console.WriteLine("{0} spells have Attribute {1}", query.Count(), attr);
+            Console.WriteLine();
+        }
+
+        [Tool]
+        public static void FindAllWithAttributeExF(SpellAttributesExF attr)
+        {
+            var query = from spell in SpellHandler.ById
+                        where spell.Has(attr)
+                        select spell;
+
+            foreach (var spell in query)
+            {
+                Console.WriteLine("{0}: {1} - {2}", spell.Id, spell.Name, spell.AttributesExF);
+                Console.WriteLine();
+            }
+
+            Console.WriteLine("{0} spells have Attribute {1}", query.Count(), attr);
+            Console.WriteLine();
+        }
+
+        [Tool]
+        public static void FindAllWithAttributeExG(SpellAttributesExG attr)
+        {
+            var query = from spell in SpellHandler.ById
+                        where spell.Has(attr)
+                        select spell;
+
+            foreach (var spell in query)
+            {
+                Console.WriteLine("{0}: {1} - {2}", spell.Id, spell.Name, spell.AttributesExG);
+                Console.WriteLine();
+            }
+
+            Console.WriteLine("{0} spells have Attribute {1}", query.Count(), attr);
+            Console.WriteLine();
+        }
+
+        [Tool]
+        public static void FindAllWithAttributeExH(SpellAttributesExH attr)
+        {
+            var query = from spell in SpellHandler.ById
+                        where spell.Has(attr)
+                        select spell;
+
+            foreach (var spell in query)
+            {
+                Console.WriteLine("{0}: {1} - {2}", spell.Id, spell.Name, spell.AttributesExH);
+                Console.WriteLine();
+            }
+
+            Console.WriteLine("{0} spells have Attribute {1}", query.Count(), attr);
+            Console.WriteLine();
+        }
+        #endregion
+
+        public static void FindAllWithFamilyName(Constants.Spells.SpellClassSet set)
 		{
 			var query = from spell in SpellHandler.ById
 			            where spell != null
@@ -775,7 +880,7 @@ namespace WCell.Tools.Ralek
 			if (spell == null)
 				return false;
 
-			return (spell.Attributes & toCheck) == toCheck;
+			return spell.Attributes.HasFlag(toCheck);
 		}
 
 		public static bool Has(this Spell spell, SpellAttributesEx toCheck)
@@ -783,7 +888,7 @@ namespace WCell.Tools.Ralek
 			if (spell == null)
 				return false;
 
-			return (spell.AttributesEx & toCheck) == toCheck;
+			return spell.AttributesEx.HasFlag(toCheck);
 		}
 
 		public static bool Has(this Spell spell, SpellAttributesExB toCheck)
@@ -791,13 +896,64 @@ namespace WCell.Tools.Ralek
 			if (spell == null)
 				return false;
 
-			return (spell.AttributesExB & toCheck) == toCheck;
+			return spell.AttributesExB.HasFlag(toCheck);
 		}
+
+        public static bool Has(this Spell spell, SpellAttributesExC toCheck)
+        {
+            if (spell == null)
+                return false;
+
+            return spell.AttributesExC.HasFlag(toCheck);
+        }
+
+        public static bool Has(this Spell spell, SpellAttributesExD toCheck)
+        {
+            if (spell == null)
+                return false;
+
+            return spell.AttributesExD.HasFlag(toCheck);
+        }
+
+        public static bool Has(this Spell spell, SpellAttributesExE toCheck)
+        {
+            if (spell == null)
+                return false;
+
+            return spell.AttributesExE.HasFlag(toCheck);
+        }
+
+        public static bool Has(this Spell spell, SpellAttributesExF toCheck)
+        {
+            if (spell == null)
+                return false;
+
+            return spell.AttributesExF.HasFlag(toCheck);
+        }
+
+        public static bool Has(this Spell spell, SpellAttributesExG toCheck)
+        {
+            if (spell == null)
+                return false;
+
+            return spell.AttributesExG.HasFlag(toCheck);
+        }
+
+        public static bool Has(this Spell spell, SpellAttributesExH toCheck)
+        {
+            if (spell == null)
+                return false;
+
+            return spell.AttributesExH.HasFlag(toCheck);
+        }
 
 		public static bool HasFacingFlag(this Spell spell, SpellFacingFlags toCheck)
 		{
 			if (spell == null)
 				return false;
+
+            if (spell.SpellCastingRequirements == null)
+                return false;
 
 			return (spell.SpellCastingRequirements.FacingFlags & toCheck) == toCheck;
 		}
