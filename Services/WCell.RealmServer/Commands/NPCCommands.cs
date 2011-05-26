@@ -15,6 +15,7 @@
  *************************************************************************/
 
 using System.Linq;
+using WCell.Constants;
 using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
@@ -374,10 +375,20 @@ namespace WCell.RealmServer.Commands
 					else
 					{
 						var chr = trigger.Args.Character;
-						if (trigger.Args.HasCharacter)
-						{
-							chr.Target = npc;
-						}
+                        if (trigger.Args.HasCharacter)
+                        {
+                            if (name == "" && chr.Target != null)
+                            {
+                                if (chr.Target is NPC)
+                                    npc = chr.Target as NPC;
+                                else
+                                    chr.Target = npc;
+                            }
+                            else
+                            {
+                                chr.Target = npc;
+                            }
+                        }
 						else
 						{
 							trigger.Args.Target = npc;
@@ -390,7 +401,106 @@ namespace WCell.RealmServer.Commands
 			}
 		}
 		#endregion
-	}
+
+        #region Flags
+        public class FlagsNPCCommand : SubCommand
+		{
+			protected override void Initialize()
+			{
+				Init("Flags", "F");
+				EnglishParamInfo = "[-[n] [<name>]]";
+			    EnglishDescription = "Selects the NPC that is the characters current selection or whose name matches"
+			                         + " the given name and is closest to the given location. All arguments are optional. " +
+			                         "If no arguments are supplied and there is no current selection, the first available NPC will be selected. ";
+			}
+
+			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+			{
+				var mod = trigger.Text.NextModifiers();
+				var name = "";
+
+				if (mod.Contains("n"))
+				{
+					name = trigger.Text.NextWord();
+				}
+
+				Map rgn;
+				{
+					var target = trigger.Args.Target;
+					if (target == null)
+					{
+						trigger.Reply("No target found.");
+						return;
+					}
+					rgn = target.Map;
+				}
+
+				if (rgn == null)
+				{
+					trigger.Reply("Instances are currently not supported.");
+					return;
+				}
+
+				NPC npc = null;
+
+				// add message to iterate and then reply
+			    rgn.ExecuteInContext(() =>
+			                             {
+			                                 foreach (var obj in rgn)
+			                                 {
+			                                     if (obj is NPC && (name == "" || obj.Name.ContainsIgnoreCase(name)))
+			                                     {
+			                                         npc = (NPC) obj;
+			                                         break;
+			                                     }
+			                                 }
+			                             });
+
+                if (npc == null)
+                {
+                    trigger.Reply("Could not find a matching NPC.");
+                }
+                else
+                {
+                    var chr = trigger.Args.Character;
+                    if (trigger.Args.HasCharacter)
+                    {
+                        if (name == "" && chr.Target != null)
+                        {
+                            if (chr.Target is NPC)
+                                npc = chr.Target as NPC;
+                            else
+                                chr.Target = npc;
+                        }
+                        else
+                        {
+                            chr.Target = npc;
+                        }
+                    }
+                    else
+                    {
+                        trigger.Args.Target = npc;
+                        trigger.Args.Context = npc;
+                    }
+                    trigger.Reply("Selected: {0}", npc);
+                    var npcflags = npc.NPCFlags;
+                    trigger.Reply("NPCFlags {0}:{1}", npcflags, (int)npcflags);
+                    var dynamicFlags = npc.DynamicFlags;
+                    trigger.Reply("DynamicFlags {0}:{1}", dynamicFlags, (int)dynamicFlags);
+                    var extraFlags = npc.ExtraFlags;
+                    trigger.Reply("ExtraFlags {0}:{1}", extraFlags, (int)extraFlags);
+                    var stateFlags = npc.StateFlags;
+                    trigger.Reply("StateFlags {0}:{1}", stateFlags, (int)stateFlags);
+                    var unitFlags = npc.UnitFlags;
+                    trigger.Reply("UnitFlags {0}:{1}", unitFlags, (int)unitFlags);
+                    var unitFlags2 = npc.UnitFlags2;
+                    trigger.Reply("UnitFlags2 {0}:{1}", unitFlags2, (int)unitFlags2);
+                    trigger.Reply("Minimum required expansion {0}:{1}", (ClientId)npc.Entry.Expansion, npc.Entry.Expansion);
+                }
+			}
+		}
+        #endregion
+    }
 
 	#region Respawn
 	public class RespawnCommand : RealmServerCommand
