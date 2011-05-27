@@ -33,7 +33,7 @@ namespace WCell.Constants
 		/// <summary>
 		/// Rename? Dead?
 		/// </summary>
-		Flag_0x10 = 0x10,
+		Rename = 0x10,
 
 		/// <summary>
 		/// Spells are free, and some have no reagent cost
@@ -50,10 +50,15 @@ namespace WCell.Constants
 		/// </summary>
 		SelectableNotAttackable_2 = 0x80,
 
+        /// <summary>
+        /// Unit is an invalid target except by spells with 
+        /// m_attributesExC & 0x10000000 || m_attributesExE & 0x200000
+        /// </summary>
 		NotAttackable = 0x100,
 
 		/// <summary>
-		/// 
+        /// Unable to attack anything.
+        /// Will ignore it's surroundings and not engage in combat unless "called upon" or engaged by another unit.
 		/// </summary>
 		Passive = 0x200,
 
@@ -68,8 +73,11 @@ namespace WCell.Constants
 
 		Silenced = 0x2000,//3.0.3
 
-		Flag_14_0x4000 = 0x4000,
+		CannotSwim = 0x4000,
 
+        /// <summary>
+        /// Related to CanSwin
+        /// </summary>
 		Flag_15_0x8000 = 0x8000,
 
 		/// <summary>
@@ -88,6 +96,7 @@ namespace WCell.Constants
 
 		/// <summary>
 		/// Unit is in Combat
+		/// SetRegenEnabled
 		/// </summary>
 		Combat = 0x80000, // 3.1.1
 
@@ -110,13 +119,13 @@ namespace WCell.Constants
 
 		Mounted = 0x8000000,
 
-		Flag_28_0x10000000 = 0x10000000,
+        PreventKneelingWhenLooting = 0x10000000,
 
-		Flag_29_0x20000000 = 0x20000000,
+        PreventEmotes = 0x20000000,
 
-		Flag_30_0x40000000 = 0x40000000,
+        UNIT_FLAG_SHEATH = 0x40000000,
 
-		Flag_31_0x80000000 = 0x80000000,
+        Flag_31_0x80000000 = 0x80000000
 	}
 
 	[Flags]
@@ -125,25 +134,39 @@ namespace WCell.Constants
 		FeignDeath = 0x1,
 		NoModel = 0x2,
 		Flag_0x4 = 0x4,
-		Flag_0x8 = 0x8,
-		Flag_0x10 = 0x10,
-		Flag_0x20 = 0x20,
+		ComprehendLanguages = 0x8,
+		MirrorImage = 0x10,
+		DontFadeIn = 0x20,
 		ForceAutoRunForward = 0x40,
 
 		/// <summary>
 		/// Treat as disarmed?
 		/// Treat main and off hand weapons as not being equipped?
 		/// </summary>
-		Flag_0x80 = 0x80,
+		OffHandDisarmed = 0x80,
+
+        DisablePredictedStats											= 0x00000100,
 
 		/// <summary>
-		/// Skip checks on ranged weapon?
-		/// Treat it as not being equipped?
+		/// Skip checks on ranged weapon
+		/// Treat it as not being equipped
+		/// Does not disable display
 		/// </summary>
-		Flag_0x400 = 0x400,
+		RangedDisarm = 0x400,
 
 		RegeneratePower = 0x800,
+
 		Flag_0x1000 = 0x1000,
+
+        PreventSpellClick = 0x00002000,
+
+        CanInteract = 0x00004000,
+
+        CannotTurn = 0x00008000,
+
+        NoActions = 0x00800000,
+
+        SwimPrevent = 0x01000000
 	}
 
 	[Flags]
