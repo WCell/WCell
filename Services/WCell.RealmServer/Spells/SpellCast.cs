@@ -1077,7 +1077,7 @@ namespace WCell.RealmServer.Spells
 		protected SpellFailedReason CheckPlayerCast(WorldObject selected)
 		{
 			var caster = (Character)CasterUnit;
-            if (m_spell.SpellTargetRestrictions.TargetFlags != 0 && !IsAoE && selected == caster)
+            if (m_spell.SpellTargetRestrictions != null && m_spell.SpellTargetRestrictions.TargetFlags != 0 && !IsAoE && selected == caster)
 			{
 				// Caster is selected by default
 				return SpellFailedReason.NoValidTargets;

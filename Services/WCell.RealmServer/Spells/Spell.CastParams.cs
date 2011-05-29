@@ -186,7 +186,7 @@ namespace WCell.RealmServer.Spells
 		private bool CheckSpellFocus(Unit caster)
 		{
             if (SpellCastingRequirements == null)
-                return false;
+                return true;
 			var range = caster.GetSpellMaxRange(this);
             return SpellCastingRequirements.RequiredSpellFocus == SpellFocus.None ||
                    caster.Map.GetGOWithSpellFocus(caster.Position, SpellCastingRequirements.RequiredSpellFocus, range > 0 ? (range) : 5f, caster.Phase) != null;
