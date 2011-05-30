@@ -495,7 +495,6 @@ namespace WCell.RealmServer.Commands
                     trigger.Reply("UnitFlags {0}:{1}", unitFlags, (int)unitFlags);
                     var unitFlags2 = npc.UnitFlags2;
                     trigger.Reply("UnitFlags2 {0}:{1}", unitFlags2, (int)unitFlags2);
-                    trigger.Reply("Minimum required expansion {0}:{1}", (ClientId)npc.Entry.Expansion, npc.Entry.Expansion);
                 }
 			}
 		}

@@ -61,7 +61,7 @@ namespace WCell.RealmServer.Handlers
 
 		public static void SendInBounds(Character duelist)
 		{
-            using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_DUEL_INBOUNDS,4))
+            using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_DUEL_INBOUNDS, 4))
             {
                 duelist.Send(packet);
             }
