@@ -126,6 +126,11 @@ namespace WCell.Addons.Default.Spells.Druid
 			{
 				spell.GetEffect(AuraType.PeriodicEnergize).AuraEffectHandlerCreator = () => new InnervateHandler();
 			});
+			//Glyph of Innervate: Innervate now grants the caster 45% of <his/her> base mana pool over 10 sec in addition to the normal effects of Innervate.
+			SpellHandler.Apply(spell =>
+			{
+				spell.GetEffect(AuraType.PeriodicEnergize).AuraEffectHandlerCreator = () => new InnervateGlyphHandler();
+			}, SpellId.GlyphOfInnervate_2);
 		}
 	}
 
@@ -137,7 +142,23 @@ namespace WCell.Addons.Default.Spells.Druid
 			var caster = m_aura.CasterUnit;
 			if (caster != null)
 			{
-				BaseEffectValue = (caster.BasePower * EffectValue + 50) / 100;
+				if (caster.Auras[SpellId.GlyphOfInnervate] != null && caster.Auras[SpellId.GlyphOfInnervate_2] == null)
+				{
+					caster.SpellCast.Trigger(SpellId.GlyphOfInnervate_2, caster);
+				}
+				BaseEffectValue = ((caster.BasePower * m_spellEffect.CalcEffectValue(caster)) / 100) / 10;
+			}
+			base.Apply();
+		}
+	}
+	public class InnervateGlyphHandler : PeriodicEnergizeHandler
+	{
+		protected override void Apply()
+		{
+			var caster = m_aura.CasterUnit;
+			if (caster != null)
+			{
+				BaseEffectValue = ((caster.BasePower * (m_spellEffect.CalcEffectValue(caster)/2)) / 100) / 10;
 			}
 			base.Apply();
 		}

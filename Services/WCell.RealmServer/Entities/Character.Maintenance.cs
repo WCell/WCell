@@ -228,6 +228,8 @@ namespace WCell.RealmServer.Entities
 				// existing Character
 				try
 				{
+					//Set Playerfields for glyphs on load
+					InitGlyphsForLevel();
 					// load & validate SpecProfiles
 					SpecProfiles = SpecProfile.LoadAllOfCharacter(this);
 					if (SpecProfiles.Length == 0)

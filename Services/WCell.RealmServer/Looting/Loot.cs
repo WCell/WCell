@@ -495,6 +495,7 @@ namespace WCell.RealmServer.Looting
 				{
 					RemoveItem(lootItem);
 				}
+                chr.Achievements.CheckPossibleAchievementUpdates(Constants.Achievements.AchievementCriteriaType.LootItem, (uint)lootItem.Template.ItemId, (uint)lootItem.Amount);
 			}
 			else
 			{

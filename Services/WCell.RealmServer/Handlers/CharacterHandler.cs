@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using WCell.Util.Logging;
 using WCell.Constants;
+using WCell.Constants.Achievements;
 using WCell.Constants.Items;
 using WCell.Constants.Login;
 using WCell.Constants.NPCs;
@@ -804,7 +805,7 @@ namespace WCell.RealmServer.Handlers
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_SET_PLAYER_DECLINED_NAMES_RESULT, 9))
 			{
-				packet.Write(failed?1:0);
+				packet.Write(failed ? 1 : 0);
 				packet.Write(chr);
 				client.Send(packet);
 			}
@@ -1320,6 +1321,9 @@ namespace WCell.RealmServer.Handlers
 
 			// Get up.
 			chr.StandState = StandState.Stand;
+
+            chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.GoldSpentAtBarber, cost);
+			chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.VisitBarberShop);
 		}
 
 		/// <summary>

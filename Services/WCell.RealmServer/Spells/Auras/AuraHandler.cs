@@ -218,7 +218,8 @@ namespace WCell.RealmServer.Spells.Auras
 			EffectHandlers[(int)AuraType.ToggleAura] = () => new ToggleAuraHandler();
 			EffectHandlers[(int)AuraType.ModAttackerSpellCritChance] = () => new ModAttackerSpellCritChanceHandler();
             EffectHandlers[(int)AuraType.ModArmorByPercentOfIntellect] = () => new ModArmorByPercentOfIntellectHandler();
-			
+            EffectHandlers[(int)AuraType.ModConfuse] = () => new ModConfuseHandler();
+            EffectHandlers[(int)AuraType.Fear] = () => new FearHandler();
 
 			// make sure, there are no missing handlers
 			for (var i = 0; i < (int)AuraType.End; i++)

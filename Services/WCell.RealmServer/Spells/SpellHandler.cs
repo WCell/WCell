@@ -446,84 +446,85 @@ namespace WCell.RealmServer.Spells
 
 		static void InitEffectHandlers()
 		{
-			SpellEffectCreators[(int)SpellEffectType.InstantKill] = (cast, effect) => new InstantKillEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.SchoolDamage] = (cast, effect) => new SchoolDamageEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.TeleportUnits] = (cast, effect) => new TeleportUnitsEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.ApplyAura] = (cast, effect) => new ApplyAuraEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.EnvironmentalDamage] = (cast, effect) => new EnvironmentalDamageEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.PowerDrain] = (cast, effect) => new PowerDrainEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.HealthLeech] = (cast, effect) => new HealthLeechEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.Heal] = (cast, effect) => new HealEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.WeaponDamageNoSchool] = (cast, effect) => new WeaponDamageNoSchoolEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.Resurrect] = (cast, effect) => new ResurrectEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.AddExtraAttacks] = (cast, effect) => new AddExtraAttacksEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.CreateItem] = (cast, effect) => new CreateItemEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.Weapon] = (cast, effect) => new WeaponEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.PersistantAreaAura] = (cast, effect) => new PersistantAreaAuraEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.Summon] = (cast, effect) => new SummonEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.Energize] = (cast, effect) => new EnergizeEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.WeaponPercentDamage] = (cast, effect) => new WeaponDamageEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.OpenLock] = (cast, effect) => new OpenLockEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.ApplyAreaAura] = (cast, effect) => new ApplyAreaAuraEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.ApplyGroupAura] = (cast, effect) => new ApplyAreaAura2EffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.LearnSpell] = (cast, effect) => new LearnSpellEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.Dispel] = (cast, effect) => new DispelEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.Language] = (cast, effect) => new LanguageEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.DualWeild] = (cast, effect) => new DualWeildEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.SkillStep] = (cast, effect) => new SkillStepEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.Stealth] = (cast, effect) => new StealthEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.SummonObject] = (cast, effect) => new SummonObjectEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.SummonObjectWild] = (cast, effect) => new SummonObjectWildEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.EnchantItem] = (cast, effect) => new EnchantItemEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.EnchantItemTemporary] = (cast, effect) => new EnchantItemTemporaryEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.TameCreature] = (cast, effect) => new TameCreatureEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.SummonPet] = (cast, effect) => new SummonPetEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.WeaponDamage] = (cast, effect) => new WeaponDamageEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.SendEvent] = (cast, effect) => new SendEventEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.TriggerSpell] = (cast, effect) => new TriggerSpellEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.HealMaxHealth] = (cast, effect) => new HealMaxHealthEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.InterruptCast] = (cast, effect) => new InterruptCastEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.AddComboPoints] = (cast, effect) => new AddComboPointsEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.Duel] = (cast, effect) => new DuelEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.SummonPlayer] = (cast, effect) => new SummonPlayerEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.SelfResurrect] = (cast, effect) => new SelfResurrectEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.Skinning] = (cast, effect) => new SkinningEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.KnockBack] = (cast, effect) => new KnockBackEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.Disenchant] = (cast, effect) => new DisenchantEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.DismissPet] = (cast, effect) => new DismissPetEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.DispelMechanic] = (cast, effect) => new DispelMechanicEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.SummonDeadPet] = (cast, effect) => new SummonDeadPetEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.ResurrectFlat] = (cast, effect) => new ResurrectFlatEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.Skill] = (cast, effect) => new SkillEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.ApplyPetAura] = (cast, effect) => new ApplyPetAuraEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.NormalizedWeaponDamagePlus] = (cast, effect) => new NormalizedWeaponDamagePlusEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.Video] = (cast, effect) => new VideoEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.StealBeneficialBuff] = (cast, effect) => new StealBeneficialBuffEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.Prospecting] = (cast, effect) => new ProspectingEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.ApplyStatAura] = (cast, effect) => new ApplyStatAuraEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.ApplyStatAuraPercent] = (cast, effect) => new ApplyStatAuraPercentEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.ForgetSpecialization] = (cast, effect) => new ForgetSpecializationEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.RestoreHealthPercent] = (cast, effect) => new RestoreHealthPercentEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.RestoreManaPercent] = (cast, effect) => new RestoreManaPercentEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.ApplyAuraToMaster] = (cast, effect) => new ApplyAuraToMasterEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.TriggerRitualOfSummoning] = (cast, effect) => new TriggerRitualOfSummoningEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.FeedPet] = (cast, effect) => new FeedPetEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.SetNumberOfTalentGroups] = (cast, effect) => new SetNumberOfTalentGroupsHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.ActivateTalentGroup] = (cast, effect) => new ActivateTalentGroupHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.Charge] = (cast, effect) => new ChargeEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.QuestComplete] = (cast, effect) => new QuestCompleteEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.Proficiency] = (cast, effect) => new AddProficiencyHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.Portal] = (cast, effect) => new PortalHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.Threat] = (cast, effect) => new ThreatHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.Distract] = (cast, effect) => new DistractEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.SummonObjectSlot1] = (cast, effect) => new SummonObjectSlot1Handler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.SummonObjectSlot2] = (cast, effect) => new SummonObjectSlot2Handler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.SummonObjectSlot3] = (cast, effect) => new SummonObjectSlot1Handler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.SummonObjectSlot4] = (cast, effect) => new SummonObjectSlot2Handler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.DestroyAllTotems] = (cast, effect) => new DestroyAllTotemsHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.CreateManaGem] = (cast, effect) => new CreateManaGemEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.Sanctuary] = (cast, effect) => new RemoveImpairingEffectsHandler(cast, effect);
-            SpellEffectCreators[(int)SpellEffectType.Inebriate] = (cast, effect) => new Inebriate(cast, effect);
+			SpellEffectCreators[(int)SpellEffectType.InstantKill] = (cast, effect) => new InstantKillEffectHandler(cast, effect);								// 1
+			SpellEffectCreators[(int)SpellEffectType.SchoolDamage] = (cast, effect) => new SchoolDamageEffectHandler(cast, effect);								// 2
+			SpellEffectCreators[(int)SpellEffectType.TeleportUnits] = (cast, effect) => new TeleportUnitsEffectHandler(cast, effect);							// 5
+			SpellEffectCreators[(int)SpellEffectType.ApplyAura] = (cast, effect) => new ApplyAuraEffectHandler(cast, effect);									// 6
+			SpellEffectCreators[(int)SpellEffectType.EnvironmentalDamage] = (cast, effect) => new EnvironmentalDamageEffectHandler(cast, effect);				// 7
+			SpellEffectCreators[(int)SpellEffectType.PowerDrain] = (cast, effect) => new PowerDrainEffectHandler(cast, effect);									// 8
+			SpellEffectCreators[(int)SpellEffectType.HealthLeech] = (cast, effect) => new HealthLeechEffectHandler(cast, effect);								// 9
+			SpellEffectCreators[(int)SpellEffectType.Heal] = (cast, effect) => new HealEffectHandler(cast, effect);												// 10
+			SpellEffectCreators[(int)SpellEffectType.Portal] = (cast, effect) => new PortalHandler(cast, effect);												// 12
+			SpellEffectCreators[(int)SpellEffectType.QuestComplete] = (cast, effect) => new QuestCompleteEffectHandler(cast, effect);							// 16
+			SpellEffectCreators[(int)SpellEffectType.WeaponDamageNoSchool] = (cast, effect) => new WeaponDamageNoSchoolEffectHandler(cast, effect);				// 17
+			SpellEffectCreators[(int)SpellEffectType.Resurrect] = (cast, effect) => new ResurrectEffectHandler(cast, effect);									// 18
+			SpellEffectCreators[(int)SpellEffectType.AddExtraAttacks] = (cast, effect) => new AddExtraAttacksEffectHandler(cast, effect);						// 19
+			SpellEffectCreators[(int)SpellEffectType.CreateItem] = (cast, effect) => new CreateItemEffectHandler(cast, effect);									// 24
+			SpellEffectCreators[(int)SpellEffectType.Weapon] = (cast, effect) => new WeaponEffectHandler(cast, effect);											// 25
+			SpellEffectCreators[(int)SpellEffectType.PersistantAreaAura] = (cast, effect) => new PersistantAreaAuraEffectHandler(cast, effect);					// 27
+			SpellEffectCreators[(int)SpellEffectType.Summon] = (cast, effect) => new SummonEffectHandler(cast, effect);											// 28
+			SpellEffectCreators[(int)SpellEffectType.Energize] = (cast, effect) => new EnergizeEffectHandler(cast, effect);										// 30
+			SpellEffectCreators[(int)SpellEffectType.WeaponPercentDamage] = (cast, effect) => new WeaponDamageEffectHandler(cast, effect);						// 31
+			SpellEffectCreators[(int)SpellEffectType.OpenLock] = (cast, effect) => new OpenLockEffectHandler(cast, effect);										// 33
+			SpellEffectCreators[(int)SpellEffectType.ApplyAreaAura] = (cast, effect) => new ApplyAreaAuraEffectHandler(cast, effect);							// 35
+			SpellEffectCreators[(int)SpellEffectType.ApplyRaidAura] = (cast, effect) => new ApplyAreaAura2EffectHandler(cast, effect);							// 65
+			SpellEffectCreators[(int)SpellEffectType.LearnSpell] = (cast, effect) => new LearnSpellEffectHandler(cast, effect);									// 36
+			SpellEffectCreators[(int)SpellEffectType.Dispel] = (cast, effect) => new DispelEffectHandler(cast, effect);											// 38
+			SpellEffectCreators[(int)SpellEffectType.Language] = (cast, effect) => new LanguageEffectHandler(cast, effect);										// 39
+			SpellEffectCreators[(int)SpellEffectType.DualWeild] = (cast, effect) => new DualWeildEffectHandler(cast, effect);									// 40
+			SpellEffectCreators[(int)SpellEffectType.SkillStep] = (cast, effect) => new SkillStepEffectHandler(cast, effect);									// 44
+			SpellEffectCreators[(int)SpellEffectType.Stealth] = (cast, effect) => new StealthEffectHandler(cast, effect);										// 48
+			SpellEffectCreators[(int)SpellEffectType.SummonObject] = (cast, effect) => new SummonObjectEffectHandler(cast, effect);								// 50
+			SpellEffectCreators[(int)SpellEffectType.SummonObjectWild] = (cast, effect) => new SummonObjectWildEffectHandler(cast, effect);						// 76
+			SpellEffectCreators[(int)SpellEffectType.EnchantItem] = (cast, effect) => new EnchantItemEffectHandler(cast, effect);								// 53
+			SpellEffectCreators[(int)SpellEffectType.EnchantItemTemporary] = (cast, effect) => new EnchantItemTemporaryEffectHandler(cast, effect);				// 54
+			SpellEffectCreators[(int)SpellEffectType.TameCreature] = (cast, effect) => new TameCreatureEffectHandler(cast, effect);								// 55
+			SpellEffectCreators[(int)SpellEffectType.SummonPet] = (cast, effect) => new SummonPetEffectHandler(cast, effect);									// 56
+			SpellEffectCreators[(int)SpellEffectType.WeaponDamage] = (cast, effect) => new WeaponDamageEffectHandler(cast, effect);								// 58
+			SpellEffectCreators[(int)SpellEffectType.Proficiency] = (cast, effect) => new AddProficiencyHandler(cast, effect);									// 60
+			SpellEffectCreators[(int)SpellEffectType.SendEvent] = (cast, effect) => new SendEventEffectHandler(cast, effect);									// 61
+			SpellEffectCreators[(int)SpellEffectType.Threat] = (cast, effect) => new ThreatHandler(cast, effect);												// 63
+			SpellEffectCreators[(int)SpellEffectType.TriggerSpell] = (cast, effect) => new TriggerSpellEffectHandler(cast, effect);								// 64
+			SpellEffectCreators[(int)SpellEffectType.CreateManaGem] = (cast, effect) => new CreateManaGemEffectHandler(cast, effect);							// 66
+			SpellEffectCreators[(int)SpellEffectType.HealMaxHealth] = (cast, effect) => new HealMaxHealthEffectHandler(cast, effect);							// 67
+			SpellEffectCreators[(int)SpellEffectType.InterruptCast] = (cast, effect) => new InterruptCastEffectHandler(cast, effect);							// 68
+			SpellEffectCreators[(int)SpellEffectType.Distract] = (cast, effect) => new DistractEffectHandler(cast, effect);										// 69
+			SpellEffectCreators[(int)SpellEffectType.ApplyGlyph] = (cast, effect) => new ApplyGlyphEffectHandler(cast, effect);									// 74
+			SpellEffectCreators[(int)SpellEffectType.Sanctuary] = (cast, effect) => new RemoveImpairingEffectsHandler(cast, effect);							// 79
+			SpellEffectCreators[(int)SpellEffectType.AddComboPoints] = (cast, effect) => new AddComboPointsEffectHandler(cast, effect);							// 80
+			SpellEffectCreators[(int)SpellEffectType.Duel] = (cast, effect) => new DuelEffectHandler(cast, effect);												// 83
+			SpellEffectCreators[(int)SpellEffectType.SummonPlayer] = (cast, effect) => new SummonPlayerEffectHandler(cast, effect);								// 85
+			SpellEffectCreators[(int)SpellEffectType.SelfResurrect] = (cast, effect) => new SelfResurrectEffectHandler(cast, effect);							// 94
+			SpellEffectCreators[(int)SpellEffectType.Skinning] = (cast, effect) => new SkinningEffectHandler(cast, effect);										// 95
+			SpellEffectCreators[(int)SpellEffectType.Charge] = (cast, effect) => new ChargeEffectHandler(cast, effect);											// 96
+			SpellEffectCreators[(int)SpellEffectType.KnockBack] = (cast, effect) => new KnockBackEffectHandler(cast, effect);									// 98
+			SpellEffectCreators[(int)SpellEffectType.Disenchant] = (cast, effect) => new DisenchantEffectHandler(cast, effect);									// 99
+			SpellEffectCreators[(int)SpellEffectType.Inebriate] = (cast, effect) => new Inebriate(cast, effect);												// 100
+			SpellEffectCreators[(int)SpellEffectType.DismissPet] = (cast, effect) => new DismissPetEffectHandler(cast, effect);									// 102
+			SpellEffectCreators[(int)SpellEffectType.DispelMechanic] = (cast, effect) => new DispelMechanicEffectHandler(cast, effect);							// 108
+			SpellEffectCreators[(int)SpellEffectType.SummonDeadPet] = (cast, effect) => new SummonDeadPetEffectHandler(cast, effect);							// 109
+			SpellEffectCreators[(int)SpellEffectType.ResurrectFlat] = (cast, effect) => new ResurrectFlatEffectHandler(cast, effect);							// 113
+			SpellEffectCreators[(int)SpellEffectType.Skill] = (cast, effect) => new SkillEffectHandler(cast, effect);											// 118
+			SpellEffectCreators[(int)SpellEffectType.ApplyPetAura] = (cast, effect) => new ApplyPetAuraEffectHandler(cast, effect);								// 119
+			SpellEffectCreators[(int)SpellEffectType.NormalizedWeaponDamagePlus] = (cast, effect) => new NormalizedWeaponDamagePlusEffectHandler(cast, effect); // 121
+			SpellEffectCreators[(int)SpellEffectType.Video] = (cast, effect) => new VideoEffectHandler(cast, effect);											// 123
+			SpellEffectCreators[(int)SpellEffectType.StealBeneficialBuff] = (cast, effect) => new StealBeneficialBuffEffectHandler(cast, effect);				// 126
+			SpellEffectCreators[(int)SpellEffectType.Prospecting] = (cast, effect) => new ProspectingEffectHandler(cast, effect);								// 127
+			SpellEffectCreators[(int)SpellEffectType.ApplyStatAura] = (cast, effect) => new ApplyStatAuraEffectHandler(cast, effect);							// 128
+			SpellEffectCreators[(int)SpellEffectType.ApplyStatAuraPercent] = (cast, effect) => new ApplyStatAuraPercentEffectHandler(cast, effect);				// 129
+			SpellEffectCreators[(int)SpellEffectType.ForgetSpecialization] = (cast, effect) => new ForgetSpecializationEffectHandler(cast, effect);				// 133
+			SpellEffectCreators[(int)SpellEffectType.RestoreHealthPercent] = (cast, effect) => new RestoreHealthPercentEffectHandler(cast, effect);				// 136
+			SpellEffectCreators[(int)SpellEffectType.RestoreManaPercent] = (cast, effect) => new RestoreManaPercentEffectHandler(cast, effect);					// 137
+			SpellEffectCreators[(int)SpellEffectType.ApplyAuraToMaster] = (cast, effect) => new ApplyAuraToMasterEffectHandler(cast, effect);					// 143
+			SpellEffectCreators[(int)SpellEffectType.TriggerRitualOfSummoning] = (cast, effect) => new TriggerRitualOfSummoningEffectHandler(cast, effect);		// 151
+			SpellEffectCreators[(int)SpellEffectType.FeedPet] = (cast, effect) => new FeedPetEffectHandler(cast, effect);										// 101
+			SpellEffectCreators[(int)SpellEffectType.SummonObjectSlot1] = (cast, effect) => new SummonObjectSlot1Handler(cast, effect);							// 104
+			SpellEffectCreators[(int)SpellEffectType.SummonObjectSlot2] = (cast, effect) => new SummonObjectSlot2Handler(cast, effect);							// 105
+			SpellEffectCreators[(int)SpellEffectType.SummonObjectSlot3] = (cast, effect) => new SummonObjectSlot1Handler(cast, effect);							// 106
+			SpellEffectCreators[(int)SpellEffectType.SummonObjectSlot4] = (cast, effect) => new SummonObjectSlot2Handler(cast, effect);							// 107
+			SpellEffectCreators[(int)SpellEffectType.DestroyAllTotems] = (cast, effect) => new DestroyAllTotemsHandler(cast, effect);							// 110
+			SpellEffectCreators[(int)SpellEffectType.SetNumberOfTalentGroups] = (cast, effect) => new SetNumberOfTalentGroupsHandler(cast, effect);				// 161
+			SpellEffectCreators[(int)SpellEffectType.ActivateTalentGroup] = (cast, effect) => new ActivateTalentGroupHandler(cast, effect);						// 162
 
 			for (var i = 0; i < SpellEffectCreators.Length; i++)
 			{

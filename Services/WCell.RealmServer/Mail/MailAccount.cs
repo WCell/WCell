@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using WCell.Util.Logging;
 using WCell.Constants;
+using WCell.Constants.Achievements;
 using WCell.Constants.Factions;
 using WCell.Constants.Items;
 using WCell.Core;
@@ -197,6 +198,7 @@ namespace WCell.RealmServer.Mail
 
 			// All good, send an ok message
 			MailHandler.SendResult(m_chr.Client, 0u, MailResult.MailSent, MailError.OK);
+            m_chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.GoldSpentForMail, requiredCash);
 
 			var deliveryDelay = 0u;
 			if (!m_chr.GodMode)

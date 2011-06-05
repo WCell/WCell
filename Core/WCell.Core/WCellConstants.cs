@@ -70,6 +70,10 @@ namespace WCell.Core
 
         public const string DBC_REGENMPPERSPIRIT = "gtRegenMPPerSpt.dbc";
 
+		public const string DBC_GLYPHSLOT = "GlyphSlot.dbc";
+
+		public const string DBC_GLYPHPROPERTIES = "GlyphProperties.dbc";
+
 		public const string DBC_BARBERSHOPSTYLE = "BarberShopStyle.dbc";
 
 		public const string DBC_CHATCHANNELS = "ChatChannels.dbc";

@@ -76,7 +76,7 @@ namespace WCell.Constants
 	}
 
 	/// <summary>
-	/// Priviledge levels
+	/// Privilege levels
 	/// </summary>
 	public enum GroupPrivs
 	{
@@ -101,11 +101,14 @@ namespace WCell.Constants
 		GroupIsFull = 4,
 		AlreadyInGroup = 5,
 		PlayerNotInParty = 6,
-		DontHavePermission = 7,
-		TargetIsUnfriendly = 8,
-		TargetIsIgnoringYou = 9,
-		PendingMatch = 12,
-		TrialCantInviteHighLevel = 13
+        DontHavePermission = 7,
+        TargetIsUnfriendly = 8,
+        TargetIsIgnoringYou = 9,
+        LfgPending = 10,
+        InviteRestricted = 11,
+        GroupSwapFailed = 12,
+        UnknownRealm = 13,
+        RaidDisallowedByLevel = 25,
 	}
 
 }

@@ -202,7 +202,7 @@ namespace WCell.RealmServer.Entities
 						// If the character current health is higher then the fall damage, the player survived the fall.
 						if (fallDamage < Health)
 						{
-							Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.FallWithoutDying, (uint)(m_fallStartHeight - m_position.Z * 100));
+							Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.FallWithoutDying, (uint)(m_fallStartHeight - m_position.Z));
 						}
 					//	DoEnvironmentalDamage(EnviromentalDamageType.Fall, fallDamage);
 					}

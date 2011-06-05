@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Linq;
 using WCell.Util.Logging;
 using WCell.Constants;
+using WCell.Constants.Achievements;
 using WCell.Constants.NPCs;
 using WCell.Constants.Pets;
 using WCell.Constants.Spells;
@@ -401,6 +402,7 @@ namespace WCell.RealmServer.Talents
 
 				chr.Money -= price;
 				CurrentResetTier = tier + 1;
+                chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.GoldSpentForTalents, price);
 				return true;
 			}
 			return false;

@@ -148,7 +148,7 @@ namespace WCell.RealmServer.Global
 
         public static void StartEvent(WorldEvent worldEvent)
         {
-            Log.Debug("Incrementing start event timer {0}: {1}", worldEvent.Id, worldEvent.Description);
+            //Log.Debug("Incrementing start event timer {0}: {1}", worldEvent.Id, worldEvent.Description);
             worldEvent.TimeUntilNextStart += worldEvent.Occurence;
             if (IsEventActive(worldEvent.Id))
                 return;
@@ -171,7 +171,7 @@ namespace WCell.RealmServer.Global
 
         public static void StopEvent(WorldEvent worldEvent)
         {
-            Log.Debug("Incrementing end event timer {0}: {1}", worldEvent.Id, worldEvent.Description);
+            //Log.Debug("Incrementing end event timer {0}: {1}", worldEvent.Id, worldEvent.Description);
             worldEvent.TimeUntilEnd += worldEvent.Occurence + worldEvent.Duration;
             if (!IsEventActive(worldEvent.Id))
                 return;
@@ -434,7 +434,7 @@ namespace WCell.RealmServer.Global
 
         public static bool IsHolidayActive(uint id)
         {
-            return id != 0 && ActiveEvents.Any(evnt => evnt.HolidayId == id);
+            return id != 0 && ActiveEvents.Any(evnt => evnt != null && evnt.HolidayId == id);
         }
 
 	    public static bool IsEventActive(uint id)

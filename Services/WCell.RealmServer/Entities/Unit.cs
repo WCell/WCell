@@ -18,32 +18,31 @@ using System;
 using System.Collections.Generic;
 using WCell.Util.Logging;
 using WCell.Constants;
+using WCell.Constants.Achievements;
+using WCell.Constants.Chat;
 using WCell.Constants.Misc;
 using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
-using WCell.Core.Timers;
 using WCell.Core;
+using WCell.Core.Timers;
+using WCell.RealmServer.AI;
 using WCell.RealmServer.AI.Brains;
 using WCell.RealmServer.Factions;
 using WCell.RealmServer.Formulas;
+using WCell.RealmServer.Gossips;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Modifiers;
 using WCell.RealmServer.NPCs;
+using WCell.RealmServer.NPCs.Vehicles;
 using WCell.RealmServer.Paths;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Taxi;
 using WCell.Util;
-using WCell.RealmServer.AI.Actions.Movement;
-using System.Threading;
-using WCell.RealmServer.Gossips;
-using WCell.RealmServer.AI;
-using WCell.RealmServer.NPCs.Vehicles;
 using WCell.Util.Graphics;
 using WCell.Constants.Chat;
-
 
 namespace WCell.RealmServer.Entities
 {
@@ -1270,6 +1269,10 @@ namespace WCell.RealmServer.Entities
 		/// <param name="emote">Anything that has a name (to do something with) or null</param>
 		public void TextEmote(TextEmote emote, INamed target)
 		{
+			if (this is Character)
+			{
+				((Character)this).Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.DoEmote, (uint)emote);
+			}
 			EmoteHandler.SendTextEmote(this, emote, target);
 		}
 

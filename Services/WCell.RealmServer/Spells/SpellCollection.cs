@@ -20,7 +20,9 @@ using System.Collections.Generic;
 using Castle.ActiveRecord;
 using Cell.Core;
 using WCell.Util.Logging;
+using WCell.Constants.Achievements;
 using WCell.Constants.Spells;
+using WCell.RealmServer.Achievements;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Spells.Auras.Handlers;
@@ -139,6 +141,10 @@ namespace WCell.RealmServer.Spells
 					AddSpell(spe);
 				}
 			}
+            if (Owner is Character)
+            {
+                ((Character)Owner).Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.LearnSpell, spell.Id);
+            }
 		}
 
 		/// <summary>

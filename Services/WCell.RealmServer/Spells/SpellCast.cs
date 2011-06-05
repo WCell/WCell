@@ -31,6 +31,7 @@ using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Items;
 using WCell.RealmServer.Network;
 using WCell.RealmServer.Spells.Auras;
+using WCell.RealmServer.Talents;
 using WCell.Util;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Misc;
@@ -93,6 +94,7 @@ namespace WCell.RealmServer.Spells
 		Spell m_spell;
 		private int m_castDelay;
 		private int m_startTime;
+		public uint m_glyphSlot;
 
 		public ObjectReference CasterReference
 		{
@@ -609,7 +611,7 @@ namespace WCell.RealmServer.Spells
 		/// This starts a spell-cast, requested by the client.
 		/// The client submits where or what the user selected in the packet.
 		/// </summary>
-		internal SpellFailedReason Start(Spell spell, RealmPacketIn packet, byte castId, byte unkFlags)
+		internal SpellFailedReason Start(Spell spell, RealmPacketIn packet, byte castId, byte unkFlags, uint glyphSlot = (uint)0)
 		{
 			isPlayerCast = true;
 
@@ -627,6 +629,8 @@ namespace WCell.RealmServer.Spells
 					Cancel(SpellFailedReason.DontReport);
 				}
 			}
+
+			m_glyphSlot = glyphSlot;
 
 			Map = CasterObject.Map;
 			Phase = CasterObject.Phase;

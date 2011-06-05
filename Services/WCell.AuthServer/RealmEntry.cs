@@ -156,11 +156,11 @@ namespace WCell.AuthServer
         /// <summary>
         /// Characters the client has on this realm. 
         /// </summary>
-        public byte Chars
-        {
-            get;
-            internal set;
-        }
+		public byte Chars
+		{
+			get;
+			internal set;
+		}
 
         /// <summary>
         /// Realm timezone.
@@ -294,8 +294,6 @@ namespace WCell.AuthServer
                 {
                 	// check for client version
                 	//if (realm.ClientVersion.IsSupported(client.Info.Version))
-
-                	//++count;
                 	realm.WriteRealm(client, packet);
                 }
 
@@ -349,10 +347,19 @@ namespace WCell.AuthServer
 
 			packet.WriteCString(GetAddress(addr.ToString()));
 
-            packet.Write(Population);
+            packet.WriteFloat(Population);
 			packet.Write(Chars); // TODO: Change to amount of Characters of the querying account on this Realm
-            packet.Write((byte)Category);
-            packet.Write((byte)0x00); // realm separator?
+			packet.Write((byte)Category);
+
+			if (flags.HasFlag(RealmFlags.SpecifyBuild))
+			{
+				packet.Write(ClientVersion.Major);
+				packet.Write(ClientVersion.Minor);
+				packet.Write(ClientVersion.Revision);
+				packet.Write(ClientVersion.Build);
+			}
+
+			packet.WriteByte(0x00);
         }
 
         #endregion

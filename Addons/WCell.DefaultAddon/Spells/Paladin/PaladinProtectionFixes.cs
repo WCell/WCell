@@ -34,7 +34,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 				}
 
 				// add heal effect as the 4th effect
-				var healEffect = spell.AddEffect(SpellEffectType.ApplyGroupAura, ImplicitSpellTargetType.AllPartyInArea);
+				var healEffect = spell.AddEffect(SpellEffectType.ApplyRaidAura, ImplicitSpellTargetType.AllPartyInArea);
 				healEffect.ImplicitTargetA = firstEffect.ImplicitTargetA;
 				healEffect.Radius = firstEffect.Radius;
 				healEffect.AuraType = AuraType.ModHealingTakenPercent;

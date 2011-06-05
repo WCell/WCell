@@ -139,7 +139,6 @@ namespace WCell.RealmServer.Battlegrounds
 			Loaded = true;
 
 			BattlegroundConfig.LoadSettings();
-			//LoadWorldSafeLocs();
 
 			EnsureBattlemasterRelations();
 		}

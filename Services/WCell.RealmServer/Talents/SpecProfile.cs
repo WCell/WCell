@@ -79,7 +79,7 @@ namespace WCell.RealmServer.Talents
 			var newProfile = new SpecProfile(owner.EntityId.Low, specIndex)
 			{
 				ActionButtons = actionbar,
-				GlyphIds = new uint[0]
+				GlyphIds = new uint[6]
 			};
 
 			return newProfile;
