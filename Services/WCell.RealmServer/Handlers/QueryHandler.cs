@@ -158,31 +158,31 @@ namespace WCell.RealmServer.Handlers
 				pkt.Write((byte)0); // Name4
 				pkt.WriteCString(title);
 				pkt.WriteCString(entry.InfoString);
-				pkt.Write((uint)entry.EntryFlags);
-				pkt.Write((uint)entry.Type);
-				pkt.Write((uint)entry.FamilyId);
-				pkt.Write((uint)entry.Rank);
-				pkt.Write(0); // UInt1
-				pkt.Write(entry.SpellGroupId);
+                pkt.WriteUInt((uint)entry.EntryFlags);
+                pkt.WriteUInt((uint)entry.Type);
+                pkt.WriteUInt((uint)entry.FamilyId);
+                pkt.WriteUInt((uint)entry.Rank);
+                pkt.WriteUInt(0); // UInt1
+                pkt.WriteUInt(entry.SpellGroupId);
 				var i = 0;
 				for (; i < entry.DisplayIds.Length; i++)
 				{
-					pkt.Write(entry.DisplayIds[i]);
+                    pkt.WriteUInt(entry.DisplayIds[i]);
 				}
 				for (; i < 4; i++)
 				{
 					pkt.Write(0);
 				}
 
-				pkt.Write(entry.HealthModifier);						// hp mod?
-				pkt.Write(entry.ManaModifier);						// mana mod?
+				pkt.WriteFloat(entry.HealthModifier);						// hp mod?
+                pkt.WriteFloat(entry.ManaModifier);						// mana mod?
 				pkt.Write(entry.IsLeader);
 
 				for (i = 0; i < 6; i++)
 				{
 					pkt.Write(entry.QuestItemIds[i]);
 				}
-				pkt.Write(0); // id from CreatureMovement.dbc
+                pkt.WriteUInt(0); // id from CreatureMovement.dbc
                 pkt.WriteUInt(entry.Expansion);
 
 				client.Send(pkt);

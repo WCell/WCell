@@ -169,22 +169,23 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public override void AddCooldown(Spell spell, Item item)
 		{
-			var millis = Math.Max(spell.GetCooldown(Owner), spell.SpellCooldowns.CategoryCooldownTime);
-			if (millis <= 0)
-			{
-				if (spell.CastDelay == 0 && spell.Durations.Max == 0)
-				{
-					// no cooldown, no cast delay, no duration: Add default cooldown
-					millis = Owner.Auras.GetModifiedInt(SpellModifierType.CooldownTime, spell, DefaultNPCSpellCooldownMillis);
-					AddCooldown(spell, millis);
-				}
-			}
-			else
-			{
-				// add existing cooldown
-				millis = Owner.Auras.GetModifiedInt(SpellModifierType.CooldownTime, spell, millis);
-				AddCooldown(spell, millis);
-			}
+		    var catCd = spell.SpellCooldowns != null ? spell.SpellCooldowns.CategoryCooldownTime : 0;
+		    var millis = Math.Max(spell.GetCooldown(Owner), catCd);
+		    if (millis <= 0)
+		    {
+		        if (spell.CastDelay == 0 && spell.Durations.Max == 0)
+		        {
+		            // no cooldown, no cast delay, no duration: Add default cooldown
+		            millis = Owner.Auras.GetModifiedInt(SpellModifierType.CooldownTime, spell, DefaultNPCSpellCooldownMillis);
+		            AddCooldown(spell, millis);
+		        }
+		    }
+		    else
+		    {
+		        // add existing cooldown
+		        millis = Owner.Auras.GetModifiedInt(SpellModifierType.CooldownTime, spell, millis);
+		        AddCooldown(spell, millis);
+		    }
 		}
 
 		public void AddCooldown(Spell spell, DateTime cdTime)

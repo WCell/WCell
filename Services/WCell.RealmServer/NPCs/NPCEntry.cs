@@ -290,7 +290,7 @@ namespace WCell.RealmServer.NPCs
 		public float OffhandMaxDamage;
 
         //Begin SFDB Specific fields
-	    public short Expansion = -1;
+	    public short Expansion;
 
 	    public float HealthModifier;
 
