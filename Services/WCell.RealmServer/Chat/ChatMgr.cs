@@ -298,8 +298,8 @@ namespace WCell.RealmServer.Chat
 		/// <param name="packet">the actual chat message packet</param>
 		private static void WhisperParser(Character sender, ChatMsgType type, ChatLanguage language, RealmPacketIn packet)
 		{
-			var recipient = packet.ReadCString();
 			var msg = ReadMessage(packet);
+            var recipient = packet.ReadCString();
 
 			if (msg.Length == 0)
 				return;
@@ -366,8 +366,8 @@ namespace WCell.RealmServer.Chat
 		/// <param name="packet">the actual chat message packet</param>
 		private static void ChannelParser(Character sender, ChatMsgType type, ChatLanguage language, RealmPacketIn packet)
 		{
-			var channel = packet.ReadCString();
 			var message = packet.ReadCString();
+            var channel = packet.ReadCString();
 
 			if (RealmCommandHandler.HandleCommand(sender, message, sender.Target as Character))
 				return;
