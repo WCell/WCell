@@ -217,7 +217,7 @@ namespace WCell.Collision
             var medianHeight = heightMap.MedianHeight;
             
             var fileName = String.Format("Chunk_{0}_{1}.txt", chunkCoord.ChunkX, chunkCoord.ChunkY);
-            var filePath = Path.Combine("C:\\Users\\Nate\\Desktop", fileName);
+            var filePath = Path.Combine(fileName);
             var writer = new StreamWriter(filePath);
 
             writer.WriteLine(String.Format("MedianHeight: {0}", medianHeight));
