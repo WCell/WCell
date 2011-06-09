@@ -261,7 +261,7 @@ namespace WCell.RealmServer.Handlers
 			packet.Write(auction.ItemLowId);
 			packet.Write(item.Template.Id);
 
-			for (var i = 0; i < ItemConstants.MaxEnchantsPerEntry; i++)
+			for (var i = 0; i < 7; i++)
 			{
 				if (item.EnchantIds != null)
 				{
