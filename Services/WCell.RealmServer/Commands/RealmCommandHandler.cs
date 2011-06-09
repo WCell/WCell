@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using WCell.Constants;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Chat;
@@ -455,13 +456,19 @@ namespace WCell.RealmServer.Commands
 
 		#region Autoexec
 		[Initialization(InitializationPass.Tenth)]
+		public static void OnStartup()
+		{
+			RealmServer.Started += AutoexecStartup;
+		}
+
 		public static void AutoexecStartup()
 		{
 			var args = new RealmServerCmdArgs(null, false, null);
 			var file = AutoExecDir + AutoExecStartupFile;
 			if (File.Exists(file))
 			{
-				Instance.ExecFile(file, args);
+				// execute auto exec on separate thread
+				ThreadPool.QueueUserWorkItem(stateInfo => Instance.ExecFile(file, args));
 			}
 		}
 
