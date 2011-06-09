@@ -264,8 +264,8 @@
     <Var Name="LootType" Value="Milling"/>
   </Table>
 
-  <Table Name="npc_gossip" >
-    <PrimaryColumn Name="npc_guid" />
+  <Table Name="gossip_menu" >
+    <PrimaryColumn Name="entry" />
   </Table>
 
   <Table Name="npc_gossip_textid" >

@@ -18,8 +18,8 @@
   </DataHolder>
 
   <DataHolder Name="NPCGossipRelation">
-    <DefaultTable>npc_gossip</DefaultTable>
-    <Flat Name="NPCSpawnId" Column="npc_guid" />
-    <Flat Name="GossipId" Column="textid" />
+    <DefaultTable>gossip_menu</DefaultTable>
+    <Flat Name="NPCSpawnId" Column="entry" />
+    <Flat Name="GossipId" Column="text_id" />
   </DataHolder>
 </DataHolders>
