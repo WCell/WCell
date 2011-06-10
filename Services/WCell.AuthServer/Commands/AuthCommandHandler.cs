@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using WCell.Intercommunication.DataTypes;
 using WCell.Util;
 using WCell.Util.Commands;
@@ -136,13 +137,19 @@ namespace WCell.AuthServer.Commands
 
 		#region Autoexec
 		[Initialization(InitializationPass.Tenth)]
+		public static void OnStartup()
+		{
+			AuthenticationServer.Started += AutoexecStartup;
+		}
+
 		public static void AutoexecStartup()
 		{
 			var args = new AuthServerCmdArgs(null);
-		    var file = AutoExecDir + AutoExecStartupFile;
+			var file = AutoExecDir + AutoExecStartupFile;
 			if (File.Exists(file))
 			{
-				Instance.ExecFile(file, args);
+				// execute auto exec on separate thread
+				ThreadPool.QueueUserWorkItem(stateInfo => Instance.ExecFile(file, args));
 			}
 		}
 
