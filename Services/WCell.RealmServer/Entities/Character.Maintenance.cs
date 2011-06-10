@@ -692,24 +692,41 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		private void OnLogin()
 		{
+            TutorialHandler.SendTutorialFlags(this);
 			InstanceHandler.SendDungeonDifficulty(this);
-			CharacterHandler.SendVerifyWorld(this);
+            //AUTH_CHALLENGE..again wtf!
+            // SMSG_GUILD_EVENT
 			AccountDataHandler.SendAccountDataTimes(m_client);
-			VoiceChatHandler.SendSystemStatus(this, VoiceSystemStatus.Disabled);
-			// SMSG_GUILD_EVENT
-			// SMSG_GUILD_BANK_LIST
+			
+
 			CharacterHandler.SendBindUpdate(this, BindLocation);
-			TutorialHandler.SendTutorialFlags(this);
+            TalentHandler.SendTalentGroupList(m_talents);
 			SpellHandler.SendSpellsAndCooldowns(this);
 			CharacterHandler.SendActionButtons(this);
 			FactionHandler.SendFactionList(this);
+            // SMSG_CORPSE_RECLAIM_DELAY
 			// SMSG_INIT_WORLD_STATES
+            // SMSG_INIT_CURRENCY
 			// SMSG_EQUIPMENT_SET_LIST
+            CharacterHandler.SendVerifyWorld(this);
+            VoiceChatHandler.SendSystemStatus(this, VoiceSystemStatus.Disabled);
+            // SMSG_GUILD_BANK_LIST
+            // SMSG_LEARNED_DANCE_MOVES
+            // SMSG_CONTACT_LIST
+            // SMSG_GUILD_RANK
+            CharacterHandler.SendTimeSpeed(this);
+            // SMSG_UPDATE_WORLD_STATE
+            // SMSG_SET_PHASE_SHIFT
+            // SMSG_POWER_UPDATE
+
+            // Anything after here is after an almighty create update
+            // SMSG_TIME_SYNC_REQ
+            AuraHandler.SendAllAuras(this);
 			AchievementHandler.SendAchievementData(this);
 			// SMSG_EXPLORATION_EXPERIENCE
-			CharacterHandler.SendTimeSpeed(this);
-            TalentHandler.SendTalentGroupList(m_talents);
-			AuraHandler.SendAllAuras(this);
+			
+            
+			
 			// SMSG_PET_GUIDS
 		}
 

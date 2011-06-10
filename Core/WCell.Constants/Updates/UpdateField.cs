@@ -100,15 +100,15 @@ namespace WCell.Constants.Updates
 		/// Fields with this flag are only to be known by party members
 		/// </summary>
 		GroupOnly = 0x40,
-		/// <summary>
-		/// Unused
-		/// </summary>
-		Flag_0x80_Unused = 0x80,
-		/// <summary>
-		/// Differs from player to player
-		/// In the case of health, it sends percents to everyone not in your party instead of the acutal value
-		/// </summary>
-		Dynamic = 0x100,
+        /// <summary>
+        /// Differs from player to player
+        /// In the case of health, it sends percents to everyone not in your party instead of the actual value
+        /// </summary>
+		Dynamic = 0x80,
+        /// <summary>
+        /// Unused
+        /// </summary>
+		Flag_0x100_Unused = 0x100,
 	}
 
 	public enum UpdateFieldType

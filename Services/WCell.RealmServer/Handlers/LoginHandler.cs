@@ -136,7 +136,7 @@ namespace WCell.RealmServer.Handlers
 		/// <param name="client">the client to send to</param>
 		public static void SendAuthChallenge(IRealmClient client)
 		{
-			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_AUTH_CHALLENGE))
+			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_AUTH_CHALLENGE, 37))
 			{
 			    var authSeed1 = new BigInteger(new Random(), 128);
                 packet.Write(authSeed1.GetBytes(16));
@@ -214,7 +214,17 @@ namespace WCell.RealmServer.Handlers
 
 			ClientAddonHandler.SendAddOnInfoPacket(client);
 
-            SendClientCacheVersion(client, 400);
+            SendClientCacheVersion(client, 0);
+
+			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_TUTORIAL_FLAGS, 32))
+			{
+                for (int i = 0; i < 32; i++)
+                {
+                    packet.WriteByte(0xFF);
+                }
+
+				client.Send(packet);
+			}
 
 			RealmServer.Instance.OnClientAccepted(null, null);
 		}
@@ -294,6 +304,18 @@ namespace WCell.RealmServer.Handlers
 				SendCharacterLoginFail(client, LoginErrorCode.CHAR_LOGIN_FAILED);
 			}
 		}
+
+        /// <summary>
+		/// Handles an incoming world login request.
+		/// </summary>
+		/// <param name="client">the Session the incoming packet belongs to</param>
+		/// <param name="packet">the full packet</param>        
+		[ClientPacketHandler(RealmServerOpCode.CMSG_WORLD_LOGIN, IsGamePacket = false, RequiresLogin = false)]
+		public static void WorldLoginRequest(IRealmClient client, RealmPacketIn packet)
+        {
+            var unk = packet.ReadUInt32();
+            var unk2 = packet.ReadByte();
+        }
 
 		/// <summary>
 		/// Checks whether the client is allowed to login and -if so- logs it in

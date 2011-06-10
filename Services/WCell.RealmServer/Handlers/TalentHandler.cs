@@ -14,8 +14,10 @@
  *
  *************************************************************************/
 
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Xml.Serialization;
 using WCell.Constants;
 using WCell.Constants.Talents;
@@ -153,6 +155,7 @@ namespace WCell.RealmServer.Handlers
 
 			for (var i = 0; i < talentGroupCount; i++)
 			{
+			    packet.Write(0); //Talent tab index for this spec profile
 				packet.Write((byte)talentList.Count);
 				foreach (var pair in talentList)
 				{

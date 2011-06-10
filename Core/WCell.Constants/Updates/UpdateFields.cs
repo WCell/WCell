@@ -1224,7 +1224,7 @@ namespace WCell.Constants.Updates
 				},
 				// UnitFields.DYNAMIC_FLAGS
 				new UpdateField {
-					Flags = UpdateFieldFlags.Flag_0x80_Unused,
+					Flags = UpdateFieldFlags.Dynamic,
 					Group = ObjectTypeId.Unit,
 					Name = "DYNAMIC_FLAGS",
 					Offset = 97,
@@ -1251,7 +1251,7 @@ namespace WCell.Constants.Updates
 				},
 				// UnitFields.NPC_FLAGS
 				new UpdateField {
-					Flags = UpdateFieldFlags.Flag_0x80_Unused,
+					Flags = UpdateFieldFlags.Dynamic,
 					Group = ObjectTypeId.Unit,
 					Name = "NPC_FLAGS",
 					Offset = 100,
@@ -5701,7 +5701,7 @@ namespace WCell.Constants.Updates
 				null,
 				// GameObjectFields.DYNAMIC
 				new UpdateField {
-					Flags = UpdateFieldFlags.Flag_0x80_Unused,
+					Flags = UpdateFieldFlags.Dynamic,
 					Group = ObjectTypeId.GameObject,
 					Name = "DYNAMIC",
 					Offset = 16,
@@ -5892,7 +5892,7 @@ namespace WCell.Constants.Updates
 				},
 				// CorpseFields.DYNAMIC_FLAGS
 				new UpdateField {
-					Flags = UpdateFieldFlags.Flag_0x80_Unused,
+					Flags = UpdateFieldFlags.Dynamic,
 					Group = ObjectTypeId.Corpse,
 					Name = "DYNAMIC_FLAGS",
 					Offset = 35,

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-             xsi:schemaLocation=". ../../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd"
+             xsi:schemaLocation=". ../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd"
              Version="4">
   
   <RealmPacket Sender="Client" OpCode="CMSG_REALM_SPLIT">
@@ -157,7 +157,7 @@
         <Simple>
           <Name>EnchantSpellId</Name>
           <Type>UInt</Type>
-          <Type>WCell.Constants.Spells.SpellId</Type>
+          <SegmentType>WCell.Constants.Spells.SpellId</SegmentType>
         </Simple>
       </StaticList>
     </List>
@@ -234,6 +234,37 @@
     </Simple>
   </RealmPacket>
 
+  <RealmPacket OpCode="SMSG_INIT_CURRENCY">
+    <List>
+      <Name>Currency List</Name>
+      <Type>UInt</Type>
+      <Simple>
+        <Name>Week Count</Name>
+        <Type>Int</Type>
+      </Simple>
+      <Simple>
+        <Name>Unk</Name>
+        <Type>Byte</Type>
+      </Simple>
+      <Simple>
+        <Name>Currency Id</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>Reset Time</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>Currency Cap</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>Total</Name>
+        <Type>UInt</Type>
+      </Simple>
+    </List>
+  </RealmPacket>
+  
   <RealmPacket OpCode="SMSG_LOGIN_VERIFY_WORLD">
     <Simple>
       <Name>Region Id</Name>

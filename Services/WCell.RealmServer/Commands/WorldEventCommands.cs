@@ -54,7 +54,7 @@ namespace WCell.RealmServer.Commands
                 }
                 worldEvent.TimeUntilNextStart = TimeSpan.Zero;
                 worldEvent.TimeUntilEnd = duration ?? worldEvent.Duration;
-
+                trigger.Reply("Started event {0}", id);
             }
         }
 
@@ -82,6 +82,7 @@ namespace WCell.RealmServer.Commands
                 }
                 
                 WorldEvent.CalculateEventDelays(worldEvent);
+                trigger.Reply("Ended event {0}", id);
             }
         }
         #endregion
@@ -167,6 +168,7 @@ namespace WCell.RealmServer.Commands
 
                 worldEvent.TimeUntilNextStart = null;
                 WorldEventMgr.StopEvent(worldEvent);
+                trigger.Reply("Removed event {0}", id);
             }
         }
         #endregion
@@ -207,6 +209,7 @@ namespace WCell.RealmServer.Commands
                 }
                 worldEvent.Duration = (TimeSpan)duration;
                 WorldEvent.CalculateEventDelays(worldEvent);
+                trigger.Reply("Set duration of {0} for event {1}", duration, id);
             }
         }
 
