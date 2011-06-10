@@ -24,12 +24,7 @@ namespace WCell.Addons.Default.Spells.Druid
 
 	public class TrackHumanoidsHandler : ShapeshiftHandler
 	{
-		protected override void Apply()
-		{
-			base.Apply();
-		}
-
-		protected override void Remove(bool cancelled)
+	    protected override void Remove(bool cancelled)
 		{
 			if (Owner.Auras[SpellId.ClassSkillTrackHumanoids] != null)
 			{
