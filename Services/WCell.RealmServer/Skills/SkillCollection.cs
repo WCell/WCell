@@ -395,7 +395,7 @@ namespace WCell.RealmServer.Skills
 			}
 			else if (skill.SkillLine.Category == SkillCategory.WeaponProficiency)
 			{
-				CharacterHandler.SendProfiency(m_owner, ItemClass.Armor, WeaponProficiency);
+				CharacterHandler.SendProfiency(m_owner, ItemClass.Weapon, WeaponProficiency);
 			}
 
 			if (isNew)
