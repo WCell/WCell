@@ -23,33 +23,37 @@
       <Name>NameRange</Name>
       <Type>Byte</Type>
     </Simple>
-	  <Simple>
-        <Name>Name</Name>
-        <Type>CString</Type>
-    </Simple>
-	  <Simple>
-        <Name>Text2</Name>
-        <Type>CString</Type>
-    </Simple>
-	  <Simple>
-      <Name>Race</Name>
-      <Type>Byte</Type>
-      <SegmentType>RaceId</SegmentType>
-    </Simple>
-	  <Simple>
-      <Name>Gender</Name>
-      <Type>Byte</Type>
-      <SegmentType>GenderType</SegmentType>
-    </Simple>
-	  <Simple>
-      <Name>Class</Name>
-      <Type>Byte</Type>
-      <SegmentType>ClassId</SegmentType>
-    </Simple>
-	  <Simple>
-      <Name>HasDeclinedNames</Name>
-      <Type>Byte</Type>
-    </Simple>
+    <Switch CompareWith="NameRange">
+      <Case Equals="0">
+        <Simple>
+          <Name>Name</Name>
+          <Type>CString</Type>
+        </Simple>
+        <Simple>
+          <Name>Text2</Name>
+          <Type>CString</Type>
+        </Simple>
+        <Simple>
+          <Name>Race</Name>
+          <Type>Byte</Type>
+          <SegmentType>RaceId</SegmentType>
+        </Simple>
+        <Simple>
+          <Name>Gender</Name>
+          <Type>Byte</Type>
+          <SegmentType>GenderType</SegmentType>
+        </Simple>
+        <Simple>
+          <Name>Class</Name>
+          <Type>Byte</Type>
+          <SegmentType>ClassId</SegmentType>
+        </Simple>
+        <Simple>
+          <Name>HasDeclinedNames</Name>
+          <Type>Byte</Type>
+        </Simple>
+      </Case>
+    </Switch>
   </RealmPacket>
   
   

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-             xsi:schemaLocation=". ../../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd"
+             xsi:schemaLocation=". ../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd"
              Version="4">
 
   <RealmPacket OpCode="CMSG_NAME_QUERY">
@@ -275,15 +275,19 @@
       <Name>Character</Name>
       <Type>PackedGuid</Type>
     </Simple>
-    <Simple>
-      <Name>Power Type</Name>
-      <Type>Byte</Type>
-      <SegmentType>PowerType</SegmentType>
-    </Simple>
-    <Simple>
-      <Name>Value</Name>
+    <List>
+      <Name>Power Updates</Name>
       <Type>Int</Type>
-    </Simple>
+      <Simple>
+        <Name>Power Type</Name>
+        <Type>Byte</Type>
+        <SegmentType>PowerType</SegmentType>
+      </Simple>
+      <Simple>
+        <Name>Value</Name>
+        <Type>Int</Type>
+      </Simple>
+    </List>
   </RealmPacket>
 
   <RealmPacket OpCode="SMSG_LOGIN_SETTIMESPEED">

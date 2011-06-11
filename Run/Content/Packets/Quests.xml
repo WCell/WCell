@@ -322,7 +322,7 @@
       <Type>Guid</Type>
     </Simple>
     <Simple>
-      <Name>Unknown GUID</Name>
+      <Name>Unknown GUID</Name> <!--This causes the client to send a packet back (8868) decimal in 406-->
       <Type>Guid</Type>
     </Simple>
     <Simple>
@@ -342,6 +342,31 @@
       <Name>Objectives</Name>
       <Type>CString</Type>
     </Simple>
+    
+    <Simple>
+      <Name>Unknown String</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Simple>
+      <Name>Unknown String2</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Simple>
+      <Name>Unknown String3</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Simple>
+      <Name>Unknown String4</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Simple>
+      <Name>Unknown Int</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Simple>
+      <Name>Unknown Int2</Name>
+      <Type>Int</Type>
+    </Simple>
 
     <Simple>
       <Name>Acceptable</Name>
@@ -360,65 +385,105 @@
       <Name>Quest Flags PVP</Name>
       <Type>Byte</Type>
     </Simple>
+    <Simple>
+      <Name>Unknown Byte</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>Unknown Int3</Name>
+      <Type>Int</Type>
+    </Simple>
+    
+    <!--Start Common code for OFFER REWARDS & QUEST DETAILS-->
+    <Simple>
+      <Name>Unk Int</Name>
+      <Type>Int</Type>
+    </Simple>
 
-    <List>
-      <Name>ChoiceItems</Name>
-      <Type>UInt</Type>
+    <StaticList Length="6">
+      <Name>Choice Item Ids</Name>
       <Simple>
-        <Name>ChoiceItemId</Name>
+        <Name>Id</Name>
         <Type>UInt</Type>
+        <SegmentType>WCell.Constants.Items.ItemId</SegmentType>
       </Simple>
-      <Simple>
-        <Name>ChoiceItemAmount</Name>
-        <Type>UInt</Type>
-      </Simple>
-      <Simple>
-        <Name>ChoiceItemDisplayID</Name>
-        <Type>UInt</Type>
-      </Simple>
-    </List>
+    </StaticList>
 
-    <List>
-      <Name>RewardItems</Name>
-      <Type>UInt</Type>
+    <StaticList Length="6">
+      <Name>Choice Item Amounts</Name>
       <Simple>
-        <Name>Reward Item Id</Name>
+        <Name>Amount</Name>
         <Type>UInt</Type>
       </Simple>
+    </StaticList>
+
+    <StaticList Length="6">
+      <Name>Choice Item Displays</Name>
       <Simple>
-        <Name>Reward Item Amount</Name>
+        <Name>Display ID</Name>
         <Type>UInt</Type>
       </Simple>
-      <Simple>
-        <Name>Reward Item Display ID</Name>
-        <Type>UInt</Type>
-      </Simple>
-    </List>
+    </StaticList>
 
     <Simple>
-      <Name>Reward/Required Money (Negative means you have to pay to do the quest)</Name>
-      <Type>Int</Type>
+      <Name>Unk Int1</Name>
+      <!--Doesnt affect the count of the following lists recieved in the client-->
+      <Type>UInt</Type>
+    </Simple>
+
+    <StaticList Length="4">
+      <Name>Reward Item Ids</Name>
+      <Simple>
+        <Name>Id</Name>
+        <Type>UInt</Type>
+        <SegmentType>WCell.Constants.Items.ItemId</SegmentType>
+      </Simple>
+    </StaticList>
+
+    <StaticList Length="4">
+      <Name>Reward Item Amounts</Name>
+      <Simple>
+        <Name>Amount</Name>
+        <Type>UInt</Type>
+      </Simple>
+    </StaticList>
+
+    <StaticList Length="4">
+      <Name>Reward Item Displays</Name>
+      <Simple>
+        <Name>Display ID</Name>
+        <Type>UInt</Type>
+      </Simple>
+    </StaticList>
+
+    <Simple>
+      <Name>Reward Spell</Name>
+      <!--Might no be correct :D-->
+      <Type>UInt</Type>
+      <SegmentType>WCell.Constants.Spells.SpellId</SegmentType>
+    </Simple>
+
+    <Simple>
+      <Name>Unk Int2</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Reward Money</Name>
+      <Type>UInt</Type>
     </Simple>
     <Simple>
       <Name>Reward XP</Name>
       <Type>UInt</Type>
     </Simple>
     <Simple>
-      <Name>Bonus Honor</Name>
-      <Type>UInt</Type>
+      <Name>Honor Multiplier</Name>
+      <Type>Float</Type>
     </Simple>
     <Simple>
-      <Name>Bonus Honor Multiplier</Name>
-      <Type>UInt</Type>
+      <Name>Unk Int3</Name>
+      <Type>Int</Type>
     </Simple>
-    <Simple>
-      <Name>Reward Spell</Name>
-      <Type>UInt</Type>
-    </Simple>
-    <Simple>
-      <Name>Cast Spell</Name>
-      <Type>UInt</Type>
-    </Simple>
+
     <Simple>
       <Name>Reward Title Id</Name>
       <Type>UInt</Type>
@@ -427,36 +492,74 @@
       <Name>Reward Talent Points</Name>
       <Type>UInt</Type>
     </Simple>
+
     <Simple>
-      <Name>Bonus Arena Points</Name>
-      <Type>UInt</Type>
+      <Name>Unk Int4</Name>
+      <Type>Int</Type>
     </Simple>
-    <Simple>
-      <Name>Bonus Arena Points Multiplier</Name>
-      <Type>UInt</Type>
-    </Simple>
+
     <StaticList Length="5">
-        <Name>Reward Reputation Factions</Name>
-        <Simple>
-           <Name>Reward Reputation Faction</Name>
-           <Type>UInt</Type>
-           <SegmentType>WCell.Constants.Factions.FactionId</SegmentType>
-        </Simple>
-    </StaticList>
-    <StaticList Length="5">
-        <Name>Reward Reputation Value Ids</Name>
+      <Name>Reward Rep Factions</Name>
       <Simple>
-        <Name>Reward Reputation Value Id</Name>
-        <Type>Int</Type>        
+        <Name>Faction</Name>
+        <Type>UInt</Type>
+        <SegmentType>WCell.Constants.Factions.FactionId</SegmentType>
       </Simple>
     </StaticList>
+
     <StaticList Length="5">
-        <Name>Reward Reputation Values</Name>
+      <Name>Reward Rep ValueIDs</Name>
       <Simple>
-        <Name>Reward Reputation Value</Name>
-        <Type>Int</Type>
+        <Name>Id</Name>
+        <Type>UInt</Type>
       </Simple>
     </StaticList>
+
+    <StaticList Length="5">
+      <Name>Reward Rep Values</Name>
+      <Simple>
+        <Name>Value</Name>
+        <Type>UInt</Type>
+      </Simple>
+    </StaticList>
+
+    <Simple>
+      <Name>Unk Int5</Name>
+      <Type>Int</Type>
+    </Simple>
+
+    <Simple>
+      <Name>Unk Int6</Name>
+      <Type>Int</Type>
+    </Simple>
+
+    <StaticList Length="4">
+      <Name>Unknowns</Name>
+      <Simple>
+        <Name>Value</Name>
+        <Type>UInt</Type>
+      </Simple>
+    </StaticList>
+
+    <StaticList Length="4">
+      <Name>Unknowns2</Name>
+      <Simple>
+        <Name>Value</Name>
+        <Type>UInt</Type>
+      </Simple>
+    </StaticList>
+
+    <Simple>
+      <Name>Unk Int7</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Simple>
+      <Name>Un kInt8</Name>
+      <Type>Int</Type>
+    </Simple>
+
+    <!--End Common code for OFFER REWARDS & QUEST DETAILS-->
+    
     <List>
       <Name>Emote Count</Name>
       <Type>UInt</Type>
@@ -613,6 +716,31 @@
     </Simple>
 
     <Simple>
+      <Name>UnkString1</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Simple>
+      <Name>UnkString2</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Simple>
+      <Name>UnkString3</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Simple>
+      <Name>UnkString4</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Simple>
+      <Name>UnkInt1</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Simple>
+      <Name>UnkInt2</Name>
+      <Type>Int</Type>
+    </Simple>
+    
+    <Simple>
       <Name>Has Next?</Name>
       <Type>Byte</Type>
     </Simple>
@@ -640,66 +768,94 @@
       </Simple>
     </List>
 
-    <List>
-      <Name>Choice Item</Name>
-      <Type>UInt</Type>
+    <!--Start Common code for OFFER REWARDS & QUEST DETAILS-->
+    <Simple>
+      <Name>Unk Int</Name>
+      <Type>Int</Type>
+    </Simple>
 
+    <StaticList Length="6">
+      <Name>Choice Item Ids</Name>
       <Simple>
         <Name>Id</Name>
         <Type>UInt</Type>
+        <SegmentType>WCell.Constants.Items.ItemId</SegmentType>
       </Simple>
+    </StaticList>
+
+    <StaticList Length="6">
+      <Name>Choice Item Amounts</Name>
       <Simple>
         <Name>Amount</Name>
         <Type>UInt</Type>
       </Simple>
+    </StaticList>
+
+    <StaticList Length="6">
+      <Name>Choice Item Displays</Name>
       <Simple>
         <Name>Display ID</Name>
         <Type>UInt</Type>
       </Simple>
-    </List>
+    </StaticList>
 
-    <List>
-      <Name>Reward Item</Name>
+    <Simple>
+      <Name>Unk Int1</Name>
+      <!--Doesnt affect the count of the following lists recieved in the client-->
       <Type>UInt</Type>
+    </Simple>
 
+    <StaticList Length="4">
+      <Name>Reward Item Ids</Name>
       <Simple>
         <Name>Id</Name>
         <Type>UInt</Type>
+        <SegmentType>WCell.Constants.Items.ItemId</SegmentType>
       </Simple>
+    </StaticList>
+
+    <StaticList Length="4">
+      <Name>Reward Item Amounts</Name>
       <Simple>
-        <Name> Amount</Name>
+        <Name>Amount</Name>
         <Type>UInt</Type>
       </Simple>
+    </StaticList>
+
+    <StaticList Length="4">
+      <Name>Reward Item Displays</Name>
       <Simple>
         <Name>Display ID</Name>
         <Type>UInt</Type>
       </Simple>
-    </List>
+    </StaticList>
 
+    <Simple>
+      <Name>Reward Spell</Name>
+      <!--Might no be correct :D-->
+      <Type>UInt</Type>
+      <SegmentType>WCell.Constants.Spells.SpellId</SegmentType>
+    </Simple>
+
+    <Simple>
+      <Name>Unk Int2</Name>
+      <Type>UInt</Type>
+    </Simple>
     <Simple>
       <Name>Reward Money</Name>
       <Type>UInt</Type>
     </Simple>
     <Simple>
-      <Name>Bonus Honor</Name>
+      <Name>Reward XP</Name>
       <Type>UInt</Type>
     </Simple>
-
     <Simple>
-      <Name>Eight (if it differs, please report)</Name>
-      <Type>UInt</Type>
+      <Name>Honor Multiplier</Name>
+      <Type>Float</Type>
     </Simple>
-
     <Simple>
-      <Name> Reward Spell</Name>
-      <Type>UInt</Type>
-      <SegmentType>WCell.Constants.Spells.SpellId</SegmentType>
-    </Simple>
-
-    <Simple>
-      <Name> Casted Spell</Name>
-      <Type>UInt</Type>
-      <SegmentType>WCell.Constants.Spells.SpellId</SegmentType>
+      <Name>Unk Int3</Name>
+      <Type>Int</Type>
     </Simple>
 
     <Simple>
@@ -711,6 +867,73 @@
       <Type>UInt</Type>
     </Simple>
 
+    <Simple>
+      <Name>Unk Int4</Name>
+        <Type>Int</Type>
+      </Simple>
+
+    <StaticList Length="5">
+      <Name>Reward Rep Factions</Name>
+      <Simple>
+        <Name>Faction</Name>
+        <Type>UInt</Type>
+        <SegmentType>WCell.Constants.Factions.FactionId</SegmentType>
+      </Simple>
+    </StaticList>
+
+    <StaticList Length="5">
+      <Name>Reward Rep ValueIDs</Name>
+      <Simple>
+        <Name>Id</Name>
+        <Type>UInt</Type>
+      </Simple>
+    </StaticList>
+
+    <StaticList Length="5">
+      <Name>Reward Rep Values</Name>
+      <Simple>
+        <Name>Value</Name>
+        <Type>UInt</Type>
+      </Simple>
+    </StaticList>
+
+    <Simple>
+      <Name>Unk Int5</Name>
+      <Type>Int</Type>
+    </Simple>
+
+    <Simple>
+      <Name>Unk Int6</Name>
+      <Type>Int</Type>
+    </Simple>
+
+    <StaticList Length="4">
+      <Name>Unknowns</Name>
+      <Simple>
+        <Name>Value</Name>
+        <Type>UInt</Type>
+      </Simple>
+    </StaticList>
+
+    <StaticList Length="4">
+      <Name>Unknowns2</Name>
+      <Simple>
+        <Name>Value</Name>
+        <Type>UInt</Type>
+      </Simple>
+    </StaticList>
+
+    <Simple>
+      <Name>Unk Int7</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Simple>
+      <Name>Un kInt8</Name>
+      <Type>Int</Type>
+    </Simple>
+
+    <!--End Common code for OFFER REWARDS & QUEST DETAILS-->
+    
   </RealmPacket>
 
   <!-- 3.0.3 -->

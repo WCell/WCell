@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-             xsi:schemaLocation=". ../../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd"
+             xsi:schemaLocation=". ../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd"
              Version="4">
   <RealmPacket OpCode="CMSG_GOSSIP_HELLO">
     <Simple>
@@ -27,7 +27,7 @@
       <Type>Guid</Type>
     </Simple>
     <Simple>
-      <Name>Unknown</Name>
+      <Name>Menu Id</Name>
       <Type>UInt</Type>
     </Simple>
     <Simple>
@@ -63,6 +63,7 @@
         <Type>CString</Type>
       </Simple>
     </List>
+    
     <List>
       <Name>Quest Items</Name>
       <Type>UInt</Type>
@@ -78,6 +79,14 @@
       <Simple>
         <Name>Level</Name>
         <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>Quest Flags</Name>
+        <Type>Int</Type>
+      </Simple>
+      <Simple>
+        <Name>Quest Icon Type</Name>
+        <Type>Byte</Type>
       </Simple>
       <Simple>
         <Name>Text</Name>

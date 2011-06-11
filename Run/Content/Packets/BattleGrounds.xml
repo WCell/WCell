@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-             xsi:schemaLocation=". ../../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd"
+             xsi:schemaLocation=". ../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd"
              Version="4">
 
   <RealmPacket OpCode="CMSG_BATTLEMASTER_HELLO">
@@ -25,14 +25,64 @@
   
   <RealmPacket OpCode="SMSG_BATTLEFIELD_LIST">
     <Simple>
+      <Name>Flags</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>Unknown</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>Holiday Win Honor Bonus</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Simple>
       <Name>BattleMaster</Name>
       <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Win Honor Bonus</Name>
+      <Type>Int</Type>
     </Simple>
     <Simple>
       <Name>FromGUI</Name>
       <Type>Byte</Type>
     </Simple>
+      <Simple>
+        <Name>Holiday Lose Honor Bonus</Name>
+        <Type>Int</Type>
+      </Simple>
     <Simple>
+      <Name>Holiday Lose Conquest Bonus</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Simple>
+      <Name>Win Conquest Bonus</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Simple>
+      <Name>Unknown2</Name>
+      <Type>Int</Type>
+    </Simple>
+
+    <Simple>
+      <Name>Count</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Simple>
+      <Name>Lose Honor Bonus</Name>
+      <Type>Int</Type>
+    </Simple>
+
+    <List LengthSegment="Count">
+      <Name>Battlegrounds</Name>
+      <Simple>
+        <Name>Battleground</Name>
+        <Type>UInt</Type>
+      </Simple>
+    </List>
+    <!--
+      <Simple>
       <Name>Battleground</Name>
       <Type>UInt</Type>
       <SegmentType>BattlegroundId</SegmentType>
@@ -44,15 +94,7 @@
     <Simple>
       <Name>Unk333</Name>
       <Type>Byte</Type>
-    </Simple>
-    <List>
-      <Name>Battlegrounds</Name>
-      <Type>UInt</Type>
-      <Simple>
-        <Name>Battleground</Name>
-        <Type>UInt</Type>
-      </Simple>
-    </List>
+    </Simple> -->
   </RealmPacket>
 
   <RealmPacket OpCode="CMSG_BATTLEMASTER_JOIN">

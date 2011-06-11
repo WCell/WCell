@@ -919,7 +919,7 @@
         <SegmentType>Spells.SpellId</SegmentType>
       </Simple>
       <Switch CompareWith="SpellId">
-        <Case NotEqual="None">
+        <Case NotEqual="0">
           <Simple>
             <Name>Flags</Name>
             <Type>Byte</Type>
@@ -949,6 +949,29 @@
                 <Name>Remaining</Name>
                 <Type>UInt</Type>
               </Simple>
+            </Case>
+            <Case And="Flag_0x40">
+              <Switch CompareWith="Flags">
+                <Case And="Effect1AppliesAura">
+                  <Simple>
+                    <Name>Unknown Aura Effect value 1</Name>
+                    <Type>UInt</Type>
+                  </Simple>
+                </Case>
+                <Case And="Effect2AppliesAura">
+                  <Simple>
+                    <Name>Unknown Aura Effect value 2</Name>
+                    <Type>UInt</Type>
+                  </Simple>
+                </Case>
+                <Case And="Effect3AppliesAura">
+                  <Simple>
+                    <Name>Unknown Aura Effect value 3</Name>
+                    <!--Conditional-->
+                    <Type>UInt</Type>
+                  </Simple>
+                </Case>
+              </Switch>
             </Case>
           </Switch>
         </Case>

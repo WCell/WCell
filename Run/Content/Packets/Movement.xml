@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-             xsi:schemaLocation=". ../../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd"
+             xsi:schemaLocation=". ../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd"
              Version="4">
   <RealmPacket Sender="Client">
     <OpCodes>
@@ -311,11 +311,11 @@
           <Case And="2048">
             <!-- flag 0x800 -->
             <Simple>
-              <Name>Flag0x800 Float</Name>
+              <Name>Z Speed</Name>
               <Type>Float</Type>
             </Simple>
             <Simple>
-              <Name>Flag0x800 Int</Name>
+              <Name>Walk Time</Name>
               <Type>UInt</Type>
             </Simple>
           </Case>
