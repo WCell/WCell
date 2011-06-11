@@ -100,6 +100,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 				spell.ProcDelay = 6000;
 				spell.ProcTriggerFlags = ProcTriggerFlags.AnyHit;
 				var effect = spell.GetEffect(AuraType.Dummy);
+				effect.IsProc = true;
 				effect.AuraEffectHandlerCreator = () => new SacredShieldHandler();
 			});
 
@@ -108,7 +109,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 				var effect = spell.GetEffect(AuraType.Dummy);
 				effect.AuraType = AuraType.AddModifierFlat;
 				effect.MiscValue = (int)SpellModifierType.CritChance;
-				effect.AddAffectingSpells(SpellLineId.PaladinFlashOfLight);
+				effect.AddToAffectMask(SpellLineId.PaladinFlashOfLight);
 			}, SpellId.EffectSacredShieldRank1);
 		}
 	}
