@@ -22,7 +22,7 @@ namespace WCell.RealmServer.Handlers
 		[PacketHandler(RealmServerOpCode.CMSG_GMTICKET_SYSTEMSTATUS)]
 		public static void HandleSystemStatusPacket(IRealmClient client, RealmPacketIn packet)
 		{
-			using (var repPacket = new RealmPacketOut(RealmServerOpCode.SMSG_GMTICKET_SYSTEMSTATUS))
+			using (var repPacket = new RealmPacketOut(RealmServerOpCode.SMSG_GMTICKET_SYSTEMSTATUS, 4))
 			{
 				// TODO: Add indicator to Account for whether person may use ticket system
 				repPacket.Write(1);
@@ -36,7 +36,7 @@ namespace WCell.RealmServer.Handlers
 			var chr = client.ActiveCharacter;
 			if (chr.Ticket == null)
 			{
-				var map = (MapId) packet.ReadUInt32();
+				var map = (MapId)packet.ReadUInt32();
 				var x = packet.ReadFloat();
 				var y = packet.ReadFloat();
 				var z = packet.ReadFloat();
@@ -57,6 +57,16 @@ namespace WCell.RealmServer.Handlers
 			{
 				SendCreateResponse(client, TicketInfoResponse.Fail);
 			}
+		}
+
+		[PacketHandler(RealmServerOpCode.CMSG_GM_REPORT_LAG)]
+		public static void HandleReportLagTicket(IRealmClient client, RealmPacketIn packet)
+		{
+			var type = (TicketReportLagType)packet.ReadUInt32();
+			var unk0 = packet.ReadUInt32(); // Seems to be always 0
+			var posX = packet.ReadFloat();
+			var posY = packet.ReadFloat();
+			var posZ = packet.ReadFloat();
 		}
 
 		[PacketHandler(RealmServerOpCode.CMSG_GMTICKET_GETTICKET)]
@@ -86,7 +96,6 @@ namespace WCell.RealmServer.Handlers
 			var ticket = client.ActiveCharacter.Ticket;
 			if (ticket != null)
 			{
-				packet.ReadBytes(1);
 				ticket.Message = packet.ReadCString();
 				SendUpdateResponse(client, TicketInfoResponse.Saved);
 			}
@@ -94,6 +103,12 @@ namespace WCell.RealmServer.Handlers
 			{
 				SendUpdateResponse(client, TicketInfoResponse.Fail);
 			}
+		}
+
+		[PacketHandler(RealmServerOpCode.CMSG_GMTICKET_RESOLVE_RESPONSE)]
+		public static void HandleResolveResponsePacket(IRealmClient client, RealmPacketIn packet)
+		{
+			SendResolveResponse(client, client.ActiveCharacter.Ticket);
 		}
 		#endregion
 
@@ -149,10 +164,19 @@ namespace WCell.RealmServer.Handlers
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_GMTICKET_DELETETICKET))
 			{
 				// packet.Write(9);	// deleted successfully
-				packet.Write((int)response);
+				packet.Write((uint)response);
 				client.Send(packet);
 			}
 		}
+
+		public static void SendResolveResponse(IPacketReceiver client, Ticket ticket)
+		{
+			ticket.Delete();
+			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_GMTICKET_RESOLVE_RESPONSE, 4))
+			{
+				packet.WriteByte(0);
+				client.Send(packet);
+			}
 		#endregion
 	}
 }
