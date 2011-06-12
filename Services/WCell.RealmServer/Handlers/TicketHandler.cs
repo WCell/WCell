@@ -43,9 +43,9 @@ namespace WCell.RealmServer.Handlers
 				var msg = packet.ReadCString();
 				var type = (TicketType)packet.ReadUInt32(); // prev. unk0
 
-                var unk1 = packet.ReadByte(); // unk1, 1
-                var unk2 = packet.ReadUInt32(); // unk2, 0
-                var unk3 = packet.ReadUInt32(); // unk3, 0
+				var unk1 = packet.ReadByte(); // unk1, 1
+				var unk2 = packet.ReadUInt32(); // unk2, 0
+				var unk3 = packet.ReadUInt32(); // unk3, 0
 
 				var ticket = new Ticket(chr, msg, type);
 
@@ -178,5 +178,6 @@ namespace WCell.RealmServer.Handlers
 				client.Send(packet);
 			}
 		#endregion
+		}
 	}
 }
