@@ -682,6 +682,17 @@
     </Simple>
   </RealmPacket>
 
+  <RealmPacket OpCode="CMSG_START_QUEST">
+    <List>
+      <Name>Quests Started</Name>
+      <Type>UInt</Type>
+      <Simple>
+        <Name>Id</Name>
+        <Type>UInt</Type>
+      </Simple>
+    </List>
+  </RealmPacket>
+
   <!-- 3.0.3-->
   <RealmPacket OpCode="CMSG_QUESTGIVER_REQUEST_REWARD">
     <!-- 396 -->
