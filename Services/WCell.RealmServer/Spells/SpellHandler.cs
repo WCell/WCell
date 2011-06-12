@@ -454,6 +454,7 @@ namespace WCell.RealmServer.Spells
 			SpellEffectCreators[(int)SpellEffectType.PowerDrain] = (cast, effect) => new PowerDrainEffectHandler(cast, effect);									// 8
 			SpellEffectCreators[(int)SpellEffectType.HealthLeech] = (cast, effect) => new HealthLeechEffectHandler(cast, effect);								// 9
 			SpellEffectCreators[(int)SpellEffectType.Heal] = (cast, effect) => new HealEffectHandler(cast, effect);												// 10
+			SpellEffectCreators[(int)SpellEffectType.Bind] = (cast, effect) => new BindEffectHandler(cast, effect);												// 11
 			SpellEffectCreators[(int)SpellEffectType.Portal] = (cast, effect) => new PortalHandler(cast, effect);												// 12
 			SpellEffectCreators[(int)SpellEffectType.QuestComplete] = (cast, effect) => new QuestCompleteEffectHandler(cast, effect);							// 16
 			SpellEffectCreators[(int)SpellEffectType.WeaponDamageNoSchool] = (cast, effect) => new WeaponDamageNoSchoolEffectHandler(cast, effect);				// 17
