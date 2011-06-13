@@ -481,12 +481,12 @@ namespace WCell.RealmServer.NPCs
 			});
 		}
 
-		public static void LoadAll()
+		public static void LoadAll(bool force = false)
 		{
 			if (!Loaded)
 			{
 				InitDefault();
-				LoadNPCDefs();
+				LoadNPCDefs(force);
 			}
 		}
 
@@ -568,24 +568,25 @@ namespace WCell.RealmServer.NPCs
 
 		private static bool entriesLoaded, spawnsLoaded;
 
-		public static void LoadNPCDefs()
+		public static void LoadNPCDefs(bool force = false)
 		{
-			LoadEntries();
-			LoadSpawns();
+			LoadEntries(force);
+			LoadSpawns(force);
 		}
 
-		public static void LoadEntries()
+		public static void LoadEntries(bool force)
 		{
-			if (entriesLoaded)
+			if (!force && entriesLoaded)
 			{
 				return;
 			}
+
 			FactionMgr.Initialize();
 
             if (ContentMgr.HasMapper(typeof(NPCBaseStats)))
-		        ContentMgr.Load<NPCBaseStats>();
-			ContentMgr.Load<NPCEquipmentEntry>();
-			ContentMgr.Load<NPCEntry>();
+		        ContentMgr.Load<NPCBaseStats>(force);
+			ContentMgr.Load<NPCEquipmentEntry>(force);
+			ContentMgr.Load<NPCEntry>(force);
 
 			//foreach (var entry in Entries)
 			//{
@@ -595,7 +596,7 @@ namespace WCell.RealmServer.NPCs
 			//    }
 			//}
 
-			LoadTrainers();
+			LoadTrainers(force);
 
 			// mount-entries
 			//foreach (var spell in SpellHandler.ById)
@@ -620,10 +621,10 @@ namespace WCell.RealmServer.NPCs
 			EntriesLoaded = true;
 		}
 
-		public static void LoadSpawns()
+		public static void LoadSpawns(bool force)
 		{
-			OnlyLoadSpawns();
-			LoadWaypoints();
+			OnlyLoadSpawns(force);
+			LoadWaypoints(force);
 			GossipMgr.LoadNPCRelations();
 
 			if (!RealmServer.Instance.IsRunning) return;
@@ -650,19 +651,19 @@ namespace WCell.RealmServer.NPCs
 			}
 		}
 
-		public static void OnlyLoadSpawns()
+		public static void OnlyLoadSpawns(bool force)
 		{
 			if (spawnsLoaded)
 			{
 				return;
 			}
-			ContentMgr.Load<NPCSpawnEntry>();
+			ContentMgr.Load<NPCSpawnEntry>(force);
 			SpawnsLoaded = true;
 		}
 
-		public static void LoadWaypoints()
+		public static void LoadWaypoints(bool force)
 		{
-			ContentMgr.Load<WaypointEntry>();
+			ContentMgr.Load<WaypointEntry>(force);
 		}
 
 		[Initialization]
@@ -670,7 +671,7 @@ namespace WCell.RealmServer.NPCs
 		[DependentInitialization(typeof(NPCMgr))]
 		public static void EnsureNPCItemRelations()
 		{
-			LoadVendors();
+			LoadVendors(false);
 		}
 		#endregion
 
@@ -698,9 +699,9 @@ namespace WCell.RealmServer.NPCs
 		#endregion
 
 		#region Trainers
-		private static void LoadTrainers()
+		private static void LoadTrainers(bool force)
 		{
-			ContentMgr.Load<TrainerSpellEntry>();
+			ContentMgr.Load<TrainerSpellEntry>(force);
 		}
 
 		static void OnNewTrainer(NPC npc)
@@ -804,10 +805,10 @@ namespace WCell.RealmServer.NPCs
 		public static Dictionary<int, ItemExtendedCostEntry> ItemExtendedCostEntries;
 		public static Dictionary<uint, List<VendorItemEntry>> VendorLists = new Dictionary<uint, List<VendorItemEntry>>(5000);
 
-		static void LoadVendors()
+		static void LoadVendors(bool force)
 		{
 			LoadItemExtendedCostEntries();
-			ContentMgr.Load<VendorItemEntry>();
+			ContentMgr.Load<VendorItemEntry>(force);
 		}
 
 		static void LoadItemExtendedCostEntries()

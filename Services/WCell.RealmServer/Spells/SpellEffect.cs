@@ -189,9 +189,9 @@ namespace WCell.RealmServer.Spells
 
 			IsAreaAuraEffect = (EffectType == SpellEffectType.PersistantAreaAura ||
 								EffectType == SpellEffectType.ApplyAreaAura ||
-								EffectType == SpellEffectType.ApplyGroupAura);
+								EffectType == SpellEffectType.ApplyRaidAura);
 
-			if (EffectType == SpellEffectType.ApplyGroupAura)
+			if (EffectType == SpellEffectType.ApplyRaidAura)
 			{
 				if (Radius > 0)
 				{

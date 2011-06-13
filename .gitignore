@@ -16,3 +16,8 @@ Addons/.gitignore
 
 Addons/GossipMenus/bin
 /Run/Content/DBC*
+wcelladdon/
+Recast/
+WCell-Terrain/
+*.docstates
+TestResults/

@@ -46,6 +46,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 				effect2.TriggerSpellId = SpellId.JudgementsOfTheWise;
 				effect2.AddToAffectMask(SealsAndJudgements.AllJudgements);
 			});
+
 			// Replenishment effect "Replenishes $s1% of maximum mana per 5 sec for $57669d."
 			SpellHandler.Apply(spell =>
 			{

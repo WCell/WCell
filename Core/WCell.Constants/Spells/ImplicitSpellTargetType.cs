@@ -127,13 +127,13 @@ namespace WCell.Constants.Spells
 		AreaEffectPartyAndClass = 61,
 		//Unused_PriestChampion = 62,
 		NatureSummonLocation = 63,
-		Type_64 = 64,
+		InFrontOfTargetLocation = 64,
 		/// <summary>
 		/// Eg Shadowstep, Warp etc
 		/// </summary>
 		BehindTargetLocation = 65,
-		Type_66 = 66,
-		Type_67 = 67,
+		RightFromTargetLocation = 66,
+		LeftFromTargetLocation = 67,
 		Type_68 = 68,
 		Type_69 = 69,
 		Type_70 = 70,

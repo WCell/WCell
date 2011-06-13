@@ -1078,6 +1078,11 @@ namespace WCell.RealmServer.Quests
 			{
 				receiver.SetTitle(RewardTitleId, false);
 			}
+
+			if(CastSpell != SpellId.None)
+			{
+				receiver.SpellCast.TriggerSelf(CastSpell);
+			}
 			return true;
 		}
 

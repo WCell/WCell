@@ -27,6 +27,19 @@ namespace WCell.Addons.Default.Spells.Hunter
 			AuraHandler.AddAuraGroup(SpellLineId.HunterSurvivalWyvernSting, SpellLineId.HunterSerpentSting,
 									 SpellLineId.HunterSurvivalNoxiousStings, SpellLineId.HunterSerpentSting);
 
+            //SpellLineId.HunterScorpidSting.Apply(spell =>
+            //{
+            //    spell.CooldownTime = 0;
+            //});
+
+            //SpellLineId.HunterConcussiveShot.Apply(spell =>
+            //    {
+            //        spell.CooldownTime = 12000;
+            //    });
+
+			// Expose Weakness aura applied on the target  - Seems the spell has changed
+			//SpellHandler.Apply(spell => spell.Effects[0].ImplicitTargetA = ImplicitTargetType.SingleEnemy,
+			//                   SpellId.ExposeWeakness_2);
 		}
 	}
 }

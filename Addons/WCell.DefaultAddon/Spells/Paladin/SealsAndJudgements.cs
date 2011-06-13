@@ -66,10 +66,19 @@ namespace WCell.Addons.Default.Spells.Paladin
             /*
              * Most Judgements' ProcTriggerSpells need to be changed to use customized values, depending on spellpower, weapon damage etc...
 
-                    - SpellLineId.PaladinSealOfJustice
-                        -> Should work
-                    - SpellLineId.PaladinSealOfWisdom
-                        -> Should work
+			// Seal Of Righteousness is a positive aura and should be reapplied
+			SpellHandler.Apply(spell =>
+			{
+				spell.HasBeneficialEffects = true;
+			}, SpellLineId.PaladinSealOfRighteousness);
+
+			/*
+			 * Most Judgements' ProcTriggerSpells need to be changed to use customized values, depending on spellpower, weapon damage etc...
+
+					- SpellLineId.PaladinSealOfJustice
+						-> Should work
+					- SpellLineId.PaladinSealOfWisdom
+						-> Should work
 					
                     - SpellLineId.PaladinSealOfRighteousness:
                         -> ClassSkillJudgementOfRighteousnessRank1: Dmg + ${$cond($eq($HND,1),0.85*($m1*1.2*1.03*$MWS/100)+0.03*($MW+$mw)/2-1,1.2*($m1*1.2*1.03*$MWS/100)+0.03*($MW+$mw)/2+1)}

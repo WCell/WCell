@@ -2587,7 +2587,7 @@ namespace WCell.RealmServer.Global
 		}
 
 		/// <summary>
-		/// Is called whenevr an honorable character was killed by another character
+		/// Is called whenever an honorable character was killed by another character
 		/// </summary>
 		/// <param name="action"></param>
 		protected internal virtual void OnHonorableKill(IDamageAction action)

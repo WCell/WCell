@@ -19,6 +19,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 		public static void FixIt()
 		{
 			// Devotion Aura: Improved devotion aura needs all auras to have a 2nd effect for healing
+
             //SpellHandler.Apply(spell =>
             //{
             //    var firstEffect = spell.Effects[0];
@@ -34,7 +35,7 @@ namespace WCell.Addons.Default.Spells.Paladin
             //    }
 
             //    // add heal effect as the 4th effect
-            //    var healEffect = spell.AddEffect(SpellEffectType.ApplyGroupAura, ImplicitSpellTargetType.AllPartyInArea);
+            //    var healEffect = spell.AddEffect(SpellEffectType.ApplyRaidAura, ImplicitSpellTargetType.AllPartyInArea);
             //    healEffect.ImplicitTargetA = firstEffect.ImplicitTargetA;
             //    healEffect.Radius = firstEffect.Radius;
             //    healEffect.AuraType = AuraType.ModHealingTakenPercent;

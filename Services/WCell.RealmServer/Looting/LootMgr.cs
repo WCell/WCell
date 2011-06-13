@@ -55,6 +55,11 @@ namespace WCell.RealmServer.Looting
 		/// TODO: Implement timeout timer
 		/// </summary>
 		public static int DefaultLootRollTimeout = 60 * 1000;
+
+        /// <summary>
+        /// The factor by which to multiply the amount of gold available to loot
+        /// </summary>
+	    public static uint DefaultMoneyDropFactor = 1;
 		#endregion
 
 		public static readonly ResolvedLootItemList[][] LootEntries = new ResolvedLootItemList[(int)LootEntryType.Count][];
@@ -236,7 +241,7 @@ namespace WCell.RealmServer.Looting
 			var looters = FindLooters(lootable, initialLooter);
 
 			var items = CreateLootItems(lootable.GetLootId(type), type, heroic, looters);
-			var money = lootable.LootMoney;
+			var money = lootable.LootMoney * DefaultMoneyDropFactor;
 			if (items.Length == 0 && money == 0)
 			{
 				if (lootable is GameObject)

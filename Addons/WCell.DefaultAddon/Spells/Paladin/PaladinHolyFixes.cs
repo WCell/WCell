@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NLog;
+using WCell.Constants;
 using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
 using WCell.Core.Initialization;
@@ -61,6 +62,39 @@ namespace WCell.Addons.Default.Spells.Paladin
 			{
 				spell.AddAuraEffect(() => new ApplySelfForbearanceHandler(), ImplicitSpellTargetType.Self);
 			});
+
+			// The buff of Paladin Sacred Shield should proc on hit
+            //SpellLineId.PaladinSacredShield.Apply(spell =>
+            //{
+            //    spell.ProcDelay = 6000;
+            //    spell.ProcTriggerFlags = ProcTriggerFlags.AnyHit;
+            //    var effect = spell.GetEffect(AuraType.Dummy);
+            //    effect.IsProc = true;
+            //    effect.AuraEffectHandlerCreator = () => new SacredShieldHandler();
+            //});
+
+            //SpellHandler.Apply(spell =>
+            //{
+            //    var effect = spell.GetEffect(AuraType.Dummy);
+            //    effect.AuraType = AuraType.AddModifierFlat;
+            //    effect.MiscValue = (int)SpellModifierType.CritChance;
+            //    effect.AddToAffectMask(SpellLineId.PaladinFlashOfLight);
+            //}, SpellId.EffectSacredShieldRank1);
+		}
+	}
+
+	public class IlluminationHandler : ProcTriggerSpellOnCritHandler
+	{
+		public override void OnProc(Unit triggerer, IUnitAction action)
+		{
+			if (!(action is HealAction))
+			{
+				LogManager.GetCurrentClassLogger().Warn("Illumination was proc'ed by non-heal action: {0}, on {1}", action, Owner);
+				return;
+			}
+			var caster = action.Attacker;
+			var cost = (((HealAction)action).Spell.CalcBasePowerCost(caster) * EffectValue + 50) / 100;
+			caster.Energize(cost, caster, SpellEffect);
 		}
 	}
 
@@ -73,6 +107,14 @@ namespace WCell.Addons.Default.Spells.Paladin
 				// apply Forbearance when casting on self
 				Owner.SpellCast.TriggerSelf(SpellId.Forbearance);
 			}
+		}
+	}
+
+	public class SacredShieldHandler : AuraEffectHandler
+	{
+		public override void OnProc(Unit triggerer, IUnitAction action)
+		{
+			m_aura.Owner.SpellCast.TriggerSelf(m_aura.ProcSpell);
 		}
 	}
 }
