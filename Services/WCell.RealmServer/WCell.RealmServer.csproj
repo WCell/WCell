@@ -241,6 +241,10 @@
     <Compile Include="Spells\Auras\PeriodicallyUpdatedAuraEffectHandler.cs" />
     <Compile Include="Spells\Effects\ApplyGlyph.cs" />
     <Compile Include="Spells\Effects\Inebriate.cs" />
+    <Compile Include="Spells\Effects\KillCreditPersonal.cs" />
+    <Compile Include="Spells\Effects\WMOChange.cs" />
+    <Compile Include="Spells\Effects\WMODamage.cs" />
+    <Compile Include="Spells\Effects\WMORepair.cs" />
     <Compile Include="Spells\Targeting\AISpellTargetCollection.cs" />
     <Compile Include="ArenaTeams\ArenaTeam.cs" />
     <Compile Include="ArenaTeams\ArenaTeamMember.cs" />

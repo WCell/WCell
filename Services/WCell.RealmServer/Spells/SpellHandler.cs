@@ -495,6 +495,10 @@ namespace WCell.RealmServer.Spells
 			SpellEffectCreators[(int)SpellEffectType.AddComboPoints] = (cast, effect) => new AddComboPointsEffectHandler(cast, effect);							// 80
 			SpellEffectCreators[(int)SpellEffectType.Duel] = (cast, effect) => new DuelEffectHandler(cast, effect);												// 83
 			SpellEffectCreators[(int)SpellEffectType.SummonPlayer] = (cast, effect) => new SummonPlayerEffectHandler(cast, effect);								// 85
+			SpellEffectCreators[(int)SpellEffectType.WMODamage] = (cast, effect) => new WMODamage(cast, effect);												// 87
+			SpellEffectCreators[(int)SpellEffectType.WMORepair] = (cast, effect) => new WMORepair(cast, effect);												// 88
+			SpellEffectCreators[(int)SpellEffectType.WMOChange] = (cast, effect) => new WMOChange(cast, effect);												// 89
+			SpellEffectCreators[(int)SpellEffectType.KillCreditPersonal] = (cast, effect) => new KillCreditPersonal(cast, effect);								// 90
 			SpellEffectCreators[(int)SpellEffectType.SelfResurrect] = (cast, effect) => new SelfResurrectEffectHandler(cast, effect);							// 94
 			SpellEffectCreators[(int)SpellEffectType.Skinning] = (cast, effect) => new SkinningEffectHandler(cast, effect);										// 95
 			SpellEffectCreators[(int)SpellEffectType.Charge] = (cast, effect) => new ChargeEffectHandler(cast, effect);											// 96
