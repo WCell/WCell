@@ -157,36 +157,6 @@
     <Compile Include="Global\WorldTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Core\Cell.Core\Cell.Core.csproj">
-      <Project>{71AB07AD-4D94-4693-8560-47862E5B6E61}</Project>
-      <Name>Cell.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Core\WCell.Constants\WCell.Constants.csproj">
-      <Project>{42F497A4-0347-491D-8FA8-50E4D8AD19EB}</Project>
-      <Name>WCell.Constants</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Core\WCell.Core\WCell.Core.csproj">
-      <Project>{EEA9DEB6-8EA6-46F1-B1B7-AB38D8BBCA6C}</Project>
-      <Name>WCell.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Core\WCell.Intercommunication\WCell.Intercommunication.csproj">
-      <Project>{5997613F-D2A5-4B86-BEE2-C823BC07D5AF}</Project>
-      <Name>WCell.Intercommunication</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Services\WCell.RealmServer\WCell.RealmServer.csproj">
-      <Project>{A38FAA6D-86B5-4429-85D0-BC93EB5E2C56}</Project>
-      <Name>WCell.RealmServer</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Utilities\WCell.PacketAnalyzer\WCell.PacketAnalyzer.csproj">
-      <Project>{65B2B094-13BB-4685-95AD-402FC9A4473A}</Project>
-      <Name>WCell.PacketAnalyzer</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Utilities\WCell.Util\WCell.Util.csproj">
-      <Project>{F753AF28-A251-4C12-9335-07E8236184F2}</Project>
-      <Name>WCell.Util</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
       <Visible>False</Visible>
       <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
@@ -220,6 +190,40 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Spells\Stress\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\Cell.Core\Cell.Core.csproj">
+      <Project>{71AB07AD-4D94-4693-8560-47862E5B6E61}</Project>
+      <Name>Cell.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Core\WCell.Constants\WCell.Constants.csproj">
+      <Project>{42F497A4-0347-491D-8FA8-50E4D8AD19EB}</Project>
+      <Name>WCell.Constants</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Core\WCell.Core\WCell.Core.csproj">
+      <Project>{EEA9DEB6-8EA6-46F1-B1B7-AB38D8BBCA6C}</Project>
+      <Name>WCell.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Core\WCell.Intercommunication\WCell.Intercommunication.csproj">
+      <Project>{5997613F-D2A5-4B86-BEE2-C823BC07D5AF}</Project>
+      <Name>WCell.Intercommunication</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Services\WCell.AuthServer\WCell.AuthServer.csproj">
+      <Project>{926BA681-C960-45D7-B02A-CA9AE2B80C4B}</Project>
+      <Name>WCell.AuthServer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Services\WCell.RealmServer\WCell.RealmServer.csproj">
+      <Project>{A38FAA6D-86B5-4429-85D0-BC93EB5E2C56}</Project>
+      <Name>WCell.RealmServer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Utilities\WCell.PacketAnalyzer\WCell.PacketAnalyzer.csproj">
+      <Project>{65B2B094-13BB-4685-95AD-402FC9A4473A}</Project>
+      <Name>WCell.PacketAnalyzer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Utilities\WCell.Util\WCell.Util.csproj">
+      <Project>{F753AF28-A251-4C12-9335-07E8236184F2}</Project>
+      <Name>WCell.Util</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

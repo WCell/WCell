@@ -71,7 +71,7 @@ namespace WCell.RealmServer.Tests.Tickets
 			{
 				using (var packet = new RealmPacketOut(RealmServerOpCode.CMSG_GMTICKET_CREATE))
 				{
-					packet.Write((uint)TicketType.Harassment);
+					packet.Write((uint)TicketType.TalkToGm);
 					packet.Write((byte)0);
 					packet.Write(chr.Position.X);
 					packet.Write(chr.Position.Y);
