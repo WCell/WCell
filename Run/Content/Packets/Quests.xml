@@ -344,23 +344,23 @@
     </Simple>
     
     <Simple>
-      <Name>Unknown String</Name>
+      <Name>Quest Portrait Body Text</Name>
       <Type>CString</Type>
     </Simple>
     <Simple>
-      <Name>Unknown String2</Name>
+      <Name>Quest Portrait Title Text</Name>
       <Type>CString</Type>
     </Simple>
     <Simple>
-      <Name>Unknown String3</Name>
+      <Name>Unknown String6</Name>
       <Type>CString</Type>
     </Simple>
     <Simple>
-      <Name>Unknown String4</Name>
+      <Name>Unknown String7</Name>
       <Type>CString</Type>
     </Simple>
     <Simple>
-      <Name>Unknown Int</Name>
+      <Name>Quest Portrait Display Id</Name>
       <Type>Int</Type>
     </Simple>
     <Simple>
@@ -457,6 +457,15 @@
     </StaticList>
 
     <Simple>
+      <Name>Reward Money</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Reward XP</Name>
+      <Type>UInt</Type>
+    </Simple>
+    
+    <Simple>
       <Name>Reward Spell</Name>
       <!--Might no be correct :D-->
       <Type>UInt</Type>
@@ -467,14 +476,7 @@
       <Name>Unk Int2</Name>
       <Type>UInt</Type>
     </Simple>
-    <Simple>
-      <Name>Reward Money</Name>
-      <Type>UInt</Type>
-    </Simple>
-    <Simple>
-      <Name>Reward XP</Name>
-      <Type>UInt</Type>
-    </Simple>
+
     <Simple>
       <Name>Honor Multiplier</Name>
       <Type>Float</Type>
@@ -488,11 +490,7 @@
       <Name>Reward Title Id</Name>
       <Type>UInt</Type>
     </Simple>
-    <Simple>
-      <Name>Reward Talent Points</Name>
-      <Type>UInt</Type>
-    </Simple>
-
+    
     <Simple>
       <Name>Unk Int4</Name>
       <Type>Int</Type>
@@ -554,7 +552,7 @@
       <Type>Int</Type>
     </Simple>
     <Simple>
-      <Name>Un kInt8</Name>
+      <Name>Unk Int8</Name>
       <Type>Int</Type>
     </Simple>
 
@@ -842,6 +840,15 @@
     </StaticList>
 
     <Simple>
+      <Name>Reward Money</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Reward XP</Name>
+      <Type>UInt</Type>
+    </Simple>
+
+    <Simple>
       <Name>Reward Spell</Name>
       <!--Might no be correct :D-->
       <Type>UInt</Type>
@@ -852,21 +859,10 @@
       <Name>Unk Int2</Name>
       <Type>UInt</Type>
     </Simple>
-    <Simple>
-      <Name>Reward Money</Name>
-      <Type>UInt</Type>
-    </Simple>
-    <Simple>
-      <Name>Reward XP</Name>
-      <Type>UInt</Type>
-    </Simple>
+
     <Simple>
       <Name>Honor Multiplier</Name>
       <Type>Float</Type>
-    </Simple>
-    <Simple>
-      <Name>Unk Int3</Name>
-      <Type>Int</Type>
     </Simple>
 
     <Simple>
@@ -877,11 +873,10 @@
       <Name>Reward Talent Points</Name>
       <Type>UInt</Type>
     </Simple>
-
     <Simple>
       <Name>Unk Int4</Name>
-        <Type>Int</Type>
-      </Simple>
+      <Type>Int</Type>
+    </Simple>
 
     <StaticList Length="5">
       <Name>Reward Rep Factions</Name>
@@ -939,7 +934,7 @@
       <Type>Int</Type>
     </Simple>
     <Simple>
-      <Name>Un kInt8</Name>
+      <Name>Unk Int8</Name>
       <Type>Int</Type>
     </Simple>
 

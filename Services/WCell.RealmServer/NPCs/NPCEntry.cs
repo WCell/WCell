@@ -900,6 +900,11 @@ namespace WCell.RealmServer.NPCs
             NPCBaseStats npcBaseStats;
             if(NPCMgr.NPCBaseStats.TryGetValue(new KeyValuePair<int, int>(GetRandomLevel(), (int)ClassId), out npcBaseStats))
             {
+                if (Expansion >= (short)ClientId.End)
+                {
+                    ContentMgr.OnInvalidDBData("NPCEntry has invalid Expansion: {0} ({1})", this, Expansion);
+                    return;
+                }
                 Resistances[0] = npcBaseStats.GenerateArmor(ArmorModifier);
                 SetMana(npcBaseStats.GenerateMana(ManaModifier));
                 SetHealth(npcBaseStats.GenerateHealth(Expansion, HealthModifier));

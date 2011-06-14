@@ -141,7 +141,7 @@ namespace WCell.AuthServer.Commands
 						if (trigger.Text.HasNext)
 						{
 							clientId = trigger.Text.NextEnum((ClientId)int.MaxValue);
-							if (clientId == (ClientId)int.MaxValue)
+							if (clientId >= ClientId.End)
 							{
 								trigger.Reply("Invalid ClientId specified - Choose either of: " +
 									Enum.GetValues(typeof(ClientId)).OfType<object>().ToString(", "));

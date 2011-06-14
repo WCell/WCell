@@ -21,7 +21,9 @@ namespace WCell.Constants
         /// <summary>
         /// Cataclysm
         /// </summary>
-        Cataclysm = 3
+        Cataclysm = 3,
+
+        End
 	}
 
 	public enum SkillCategory

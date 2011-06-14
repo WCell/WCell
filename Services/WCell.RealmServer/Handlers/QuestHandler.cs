@@ -539,13 +539,13 @@ namespace WCell.RealmServer.Handlers
                     pckt.Write(0u); //count
                 }
 
-                pckt.Write((byte)0); //unk string
-                pckt.Write((byte)0); //unk string
+                pckt.Write((byte)0); //quest portrait body text
+                pckt.Write((byte)0); //quest portrait title text
                 pckt.Write((byte)0); //unk string
                 pckt.Write((byte)0); //unk string
 
-                pckt.Write(0u); // play soundid on accept
-                pckt.Write(0u); // play soundid on finish
+                pckt.Write(0); //quest portrait displayid
+                pckt.Write(0); //unk
 			    chr.Client.Send(pckt);
 			}
 		}
@@ -583,12 +583,12 @@ namespace WCell.RealmServer.Handlers
 				pckt.WriteCString(qt.Details.Localize(locale));
 				pckt.WriteCString(qt.Instructions.Localize(locale));
 
+                pckt.Write((byte)0); //quest portrait body text (quest portrait npc displayid must be present)
+                pckt.Write((byte)0); //quest portrait title text (not displayed without npc quest portrait displayid)
+                pckt.Write((byte)0); //unk string (maybe go portraits?!?)
                 pckt.Write((byte)0); //unk string
-                pckt.Write((byte)0); //unk string
-                pckt.Write((byte)0); //unk string
-                pckt.Write((byte)0); //unk string
-                pckt.Write(0u); //unk
-                pckt.Write(0u); //unk
+                pckt.Write(0); //quest portrait npc displayid
+                pckt.Write(0); //unk
 
 				pckt.Write((byte)(acceptable ? 1 : 0));			// doesn't work
 				pckt.Write((uint)qt.Flags);
@@ -669,9 +669,6 @@ namespace WCell.RealmServer.Handlers
                 }
 			    for (; i < 4; i++ )
                         pckt.WriteUInt(0u); //item display ids
-                
-                pckt.Write(0u); //unk
-                pckt.Write(0u); //unk
 
                 if (chr.Level >= RealmServerConfiguration.MaxCharacterLevel)
                 {
@@ -682,17 +679,17 @@ namespace WCell.RealmServer.Handlers
                     pckt.Write(qt.RewMoney);
                 }
                 pckt.Write(qt.CalcRewardXp(chr));
-				
-
-				//pckt.Write(qt.RewHonorAddition);
-				pckt.Write(qt.RewHonorMultiplier);
-                pckt.Write(0u); //unk
-				pckt.Write((uint)qt.RewardTitleId);
-				pckt.Write(qt.RewardTalents);
 
                 // #### since 3.3
                 //pckt.Write(0u);						// bonus arena points
                 //pckt.Write(0u);
+                pckt.Write(0u); //unk
+                pckt.Write(0u); //unk
+                
+				//pckt.Write(qt.RewHonorAddition);
+				pckt.Write(qt.RewHonorMultiplier);
+				pckt.Write((uint)qt.RewardTitleId);
+				pckt.Write(qt.RewardTalents);
 
                 pckt.Write(0u); //unk
 				for (i = 0; i < QuestConstants.MaxReputations; ++i)
@@ -839,9 +836,6 @@ namespace WCell.RealmServer.Handlers
                 for (; i < 4; i++)
                     pckt.WriteUInt(0u); //item display ids
 
-                pckt.Write(0u); //unk
-                pckt.Write(0u); //unk
-
                 if (chr.Level >= RealmServerConfiguration.MaxCharacterLevel)
                 {
                     pckt.Write(qt.MoneyAtMaxLevel);
@@ -852,16 +846,16 @@ namespace WCell.RealmServer.Handlers
                 }
                 pckt.Write(qt.CalcRewardXp(chr));
 
-
-                //pckt.Write(qt.RewHonorAddition);
-                pckt.Write(qt.RewHonorMultiplier);
-                pckt.Write(0u); //unk
-                pckt.Write((uint)qt.RewardTitleId);
-                pckt.Write(qt.RewardTalents);
-
                 // #### since 3.3
                 //pckt.Write(0u);						// bonus arena points
                 //pckt.Write(0u);
+                pckt.Write(0u); //unk
+                pckt.Write(0u); //unk
+
+                //pckt.Write(qt.RewHonorAddition);
+                pckt.Write(qt.RewHonorMultiplier);
+                pckt.Write((uint)qt.RewardTitleId);
+                pckt.Write(qt.RewardTalents);
 
                 pckt.Write(0u); //unk
                 for (i = 0; i < QuestConstants.MaxReputations; ++i)

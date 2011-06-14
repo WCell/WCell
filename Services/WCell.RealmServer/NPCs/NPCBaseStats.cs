@@ -13,7 +13,7 @@ namespace WCell.RealmServer.NPCs
         public byte Level;
         public byte Class;
         [Persistent(4)]
-        public int[] BaseHpByExpansion = new int[(int)ClientId.Cataclysm + 1];
+        public int[] BaseHpByExpansion = new int[(int)ClientId.End];
         public short BaseMana;
         public short BaseArmor;
 
@@ -34,10 +34,6 @@ namespace WCell.RealmServer.NPCs
 
         public void FinalizeDataHolder()
         {
-            if(1==1)
-            {
-                this.ToString();
-            }
             NPCMgr.NPCBaseStats.Add(new KeyValuePair<int, int>(Level, Class), this);
         }
     }

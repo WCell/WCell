@@ -950,7 +950,7 @@
                 <Type>UInt</Type>
               </Simple>
             </Case>
-            <Case And="Flag_0x40">
+            <Case And="HasExtraAuraEffectInfo">
               <Switch CompareWith="Flags">
                 <Case And="Effect1AppliesAura">
                   <Simple>
@@ -1028,7 +1028,7 @@
                 <Type>UInt</Type>
               </Simple>
             </Case>
-            <Case And="Flag_0x40">
+            <Case And="HasExtraAuraEffectInfo">
               <Switch CompareWith="Flags">
                 <Case And="Effect1AppliesAura">
                   <Simple>

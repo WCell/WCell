@@ -934,7 +934,16 @@ namespace WCell.Constants.Spells
 		TargetIsCaster = 0x8,
 		Positive = 0x10,
 		HasDuration = 0x20,
-		Flag_0x40 = 0x40,
+        /// <summary>
+        /// Appears to be only used in aura 333 and 358.
+        /// For 333 each of the ints is a spellid corresponding to one of the 3 effects
+        /// which applies a spelloverride
+        /// For 358 (something with altered forms)
+        /// if its set to 2 client looks to perform a display transition
+        /// Apply Aura: Periodic Damage, send damage value per time e.g 378 Fire damage every 3 sec send 378
+        /// Apply Aura: Mounted, maybe flight mount speed increase
+        /// </summary>
+		HasExtraAuraEffectInfo = 0x40,
 		Negative = 0x80,
 	}
 
