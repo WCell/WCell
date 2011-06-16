@@ -20,7 +20,9 @@ namespace WCell.Constants
 		DalaranSewers = 10,
 		TheRingOfValor = 11,
 		IsleOfConquest = 30,
-		ABGUnknown = 31,
+		RandomBattleground = 32,
+        TwinPeaks = 108,
+        TheBattleForGilneas = 120,
 		End
 	}
 

@@ -592,7 +592,7 @@ namespace WCell.RealmServer.Handlers
 
 			packet.Write(numWaypoints);
 
-			if (moveFlags.HasAnyFlag(MonsterMoveFlags.Flag_0x2000_FullPoints_1 | MonsterMoveFlags.Flag_0x40000_FullPoints_2))
+			if (moveFlags.HasFlag(MonsterMoveFlags.FullPoints))
 			{
 				foreach (IPathVertex waypoint in waypoints)
 				{
@@ -601,6 +601,7 @@ namespace WCell.RealmServer.Handlers
 			}
 			else
 			{
+                packet.Write(waypoints.First().Position);
 				// OnMonsterMove_pathPoints_compressed
 				foreach (IPathVertex waypoint in waypoints)
 				{

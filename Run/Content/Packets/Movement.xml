@@ -327,28 +327,25 @@
         </Simple>
 
         <Switch CompareWith="MonsterMovementFlags">
-
-          <Case AndNot="270336">
-            <!-- does not have flag 0x42000 -->
-            <Simple>
-              <Name>Flag_0x42000 Vector3</Name>
-              <Type>Vector3</Type>
-            </Simple>
-            <List LengthSegment="PointCount" LengthExpr="{0} - 1">
-              <Name>PackedVector3 Delta</Name>
-              <Simple>
-                <Name>Point Delta</Name>
-                <Type>PackedVector3</Type>
-              </Simple>
-            </List>
-          </Case>
-          <Case And="768">
-            <!-- standard -->
+          <Case And="FullPoints">
             <List LengthSegment="PointCount">
               <Name>Points</Name>
               <Simple>
                 <Name>Point</Name>
                 <Type>Vector3</Type>
+              </Simple>
+            </List>
+          </Case>
+          <Case AndNot="FullPoints">
+            <Simple>
+              <Name>Starting Reference</Name>
+              <Type>Vector3</Type>
+            </Simple>
+            <List LengthSegment="PointCount" LengthExpr="{0} - 1">
+              <Name>Delta</Name>
+              <Simple>
+                <Name>Point Delta</Name>
+                <Type>PackedVector3</Type>
               </Simple>
             </List>
           </Case>

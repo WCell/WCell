@@ -98,16 +98,16 @@ namespace WCell.Constants.NPCs
 		Flag_0x8000000 = 0x8000000,
 		Flag_0x10000000 = 0x10000000,
 		Flag_0x20000000 = 0x20000000,
-		Flag_0x40000000 = 0x40000000,
+		FullPoints = 0x40000000,
 		Flag_0x80000000 = 0x80000000,
 
 		/// <summary>
 		/// The default mask sets the Run flag and the flag that makes the client expect full vector3's for the intermediate points
 		/// </summary>
 		//DefaultMask = Sprint | Flag_0x2000_FullPoints_1,
-		DefaultMask = Flag_0x2000_FullPoints_1,
+        DefaultMask = FullPoints,
 
-		Fly = Flag_0x2000_FullPoints_1,
+        Fly = Flag_0x2000_FullPoints_1 | FullPoints,
 	}
 
 	public enum MonsterMoveType

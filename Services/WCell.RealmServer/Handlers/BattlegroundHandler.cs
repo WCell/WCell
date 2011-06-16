@@ -174,9 +174,7 @@ namespace WCell.RealmServer.Handlers
         [ClientPacketHandler(RealmServerOpCode.CMSG_BATTLEFIELD_LIST)]
 		public static void HandleBattlefieldList(IRealmClient client, RealmPacketIn packet)
 		{
-        	var bgId = (BattlegroundId)packet.ReadUInt32();
-        	var fromGui = packet.ReadBoolean();
-            var unk1 = packet.ReadByte();
+        	var bgId = (BattlegroundId)packet.ReadByte();
 			
 			var templ = BattlegroundMgr.GetTemplate(bgId);
         	var chr = client.ActiveCharacter;

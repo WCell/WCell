@@ -13,12 +13,7 @@
 
   <RealmPacket OpCode="CMSG_BATTLEFIELD_LIST">
     <Simple>
-      <Name>Battleground</Name>
-      <Type>UInt</Type>
-      <SegmentType>BattlegroundId</SegmentType>
-    </Simple>
-    <Simple>
-      <Name>From UI</Name>
+      <Name>Battleground Type</Name>
       <Type>Byte</Type>
     </Simple>
   </RealmPacket>

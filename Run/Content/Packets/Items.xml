@@ -220,7 +220,7 @@
         <Name>Items In Set</Name>
         <Simple>
           <Name>Item Guid</Name>
-          <Type>Guid</Type>
+          <Type>PackedGuid</Type>
         </Simple>
       </StaticList>
     </List>

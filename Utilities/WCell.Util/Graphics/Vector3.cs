@@ -274,18 +274,25 @@ namespace WCell.Util.Graphics
 		public static Vector3 FromPacked(uint packed)
 		{
 			Vector3 vector;
-			vector.X = packed & 0x7FF;
-			vector.Y = (packed >> 11) & 0x7FF;
-			vector.Z = (packed >> 21) & 0x3FF;
+            vector.X = (packed & 0x7FF) << 21 >> 21;
+            vector.Y = (((packed >> 11) & 0x7FF) << 21) >> 21;
+            vector.Z = (packed >> 22 << 22) >> 22;
+			//vector.X = packed & 0x7FF;
+			//vector.Y = (packed >> 11) & 0x7FF;
+			//vector.Z = (packed >> 21) & 0x3FF;
 
 			return vector;
 		}
 
 		public static Vector3 FromDeltaPacked(uint packed, Vector3 startingVector, Vector3 firstPoint)
 		{
-			float xPart = packed & 0x7FF;
-			float yPart = (packed >> 11) & 0x7FF;
-			float zPart = (packed >> 21) & 0x3FF;
+            float xPart = (packed & 0x7FF) << 21 >> 21;
+            float yPart = (((packed >> 11) & 0x7FF) << 21) >> 21;
+            float zPart = (packed >> 22 << 22) >> 22;
+
+			//float xPart = packed & 0x7FF;
+			//float yPart = (packed >> 11) & 0x7FF;
+			//float zPart = (packed >> 21) & 0x3FF;
 
 			Vector3 dst;
 			dst.X = (xPart / 4) - (startingVector.X + firstPoint.X) / 2;
@@ -299,7 +306,7 @@ namespace WCell.Util.Graphics
 			uint packed = 0;
 			packed |= ((uint)X) & 0x7FF;
 			packed |= ((uint)Y & 0x7FF) << 11;
-			packed |= ((uint)Z & 0x3FF) << 22;
+			packed |= ((uint)Z) << 22;
 
 			return packed;
 		}
@@ -319,7 +326,7 @@ namespace WCell.Util.Graphics
 			uint packed = 0;
 			packed |= ((uint)xPart) & 0x7FF;
 			packed |= ((uint)yPart & 0x7FF) << 11;
-			packed |= ((uint)zPart & 0x3FF) << 22;
+			packed |= ((uint)zPart) << 22;
 
 			return packed;
 		}
