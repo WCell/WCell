@@ -413,7 +413,7 @@ namespace WCell.RealmServer.Quests
 		/// <summary>
 		/// Required class mask to check availability to player.
 		/// </summary>
-		public ClassId RequiredClass;
+		public ClassMask RequiredClass;
 
 		public int ReqSkillOrClass;
 
@@ -629,7 +629,7 @@ namespace WCell.RealmServer.Quests
 			{
 				return QuestInvalidReason.WrongRace;
 			}
-			if (RequiredClass != 0 && RequiredClass != chr.Class)
+            if (RequiredClass != 0 && !RequiredClass.HasAnyFlag(chr.ClassMask))
 			{
 				return QuestInvalidReason.WrongClass;
 			}
@@ -1267,10 +1267,10 @@ namespace WCell.RealmServer.Quests
 				// skill
 				RequiredSkill = (SkillId)ReqSkillOrClass;
 			}
-			else
+            else if (ReqSkillOrClass < 0)
 			{
 				// class
-				RequiredClass = (ClassId)ReqSkillOrClass;
+				RequiredClass = (ClassMask)(-ReqSkillOrClass);
 			}
 
 			if (Category < 0)
@@ -1279,7 +1279,7 @@ namespace WCell.RealmServer.Quests
 				var clss = ((QuestSort)(-Category)).GetClassId();
 				if (clss != ClassId.End)
 				{
-					RequiredClass = clss;
+					RequiredClass = clss.ToMask();
 				}
 			}
 			else if (Category > 0)
