@@ -10,8 +10,8 @@
     <Flat Name="Level" Column="QuestLevel" />
     <Flat Name="QuestType" Column="Type" />
     <Flat Name="RequiredRaces" Column="RequiredRaces" />
-    <!--http://wiki.udbforums.org/index.php/Quest_template#SkillOrClass-->
-    <Flat Name="ReqSkill" Column="RequiredSkill" />
+    <!--http://www.trinitycore.info/Quest_template_tc2#SkillOrClassMask-->
+    <Flat Name="ReqSkillOrClass" Column="SkillOrClassMask" />
     <Flat Name="RequiredSkillValue" Column="RequiredSkillValue" />
     <Nested Name="MinReqReputation">
       <Flat Name="FactionId" Column="RequiredMinRepFaction" />

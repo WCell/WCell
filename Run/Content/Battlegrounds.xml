@@ -44,4 +44,16 @@
     <Name>IsleOfConquest</Name>
     <Type> </Type>
   </Setting>
+  <Setting>
+    <Name>RandomBattleground</Name>
+    <Type> </Type>
+  </Setting>
+  <Setting>
+    <Name>TwinPeaks</Name>
+    <Type> </Type>
+  </Setting>
+  <Setting>
+    <Name>TheBattleForGilneas</Name>
+    <Type> </Type>
+  </Setting>
 </Battlegrounds>

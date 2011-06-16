@@ -413,7 +413,7 @@ namespace WCell.RealmServer.Quests
 		/// <summary>
 		/// Required class mask to check availability to player.
 		/// </summary>
-		public ClassId RequiredClass;
+		public ClassMask RequiredClass;
 
 		public int ReqSkillOrClass;
 
@@ -629,7 +629,7 @@ namespace WCell.RealmServer.Quests
 			{
 				return QuestInvalidReason.WrongRace;
 			}
-			if (RequiredClass != 0 && RequiredClass != chr.Class)
+			if (RequiredClass != 0 && !RequiredClass.HasAnyFlag(chr.ClassMask))
 			{
 				return QuestInvalidReason.WrongClass;
 			}
@@ -1262,15 +1262,19 @@ namespace WCell.RealmServer.Quests
 		#region Deserialization
 		public void FinalizeDataHolder()
 		{
+            //if(Condition > 0) else if(Condition) < 0, so that values
+            //are not overwritten as SFDB uses this column.
+            //but UDB doesnt which would mean that,
+            //if(Condition > 0) else would make RequiredClass always 0
 			if (ReqSkillOrClass > 0)
 			{
 				// skill
 				RequiredSkill = (SkillId)ReqSkillOrClass;
 			}
-			else
+			else if(ReqSkillOrClass < 0)
 			{
 				// class
-				RequiredClass = (ClassId)ReqSkillOrClass;
+				RequiredClass = (ClassMask)(-ReqSkillOrClass);
 			}
 
 			if (Category < 0)
@@ -1279,7 +1283,7 @@ namespace WCell.RealmServer.Quests
 				var clss = ((QuestSort)(-Category)).GetClassId();
 				if (clss != ClassId.End)
 				{
-					RequiredClass = clss;
+					RequiredClass = clss.ToMask();
 				}
 			}
 			else if (Category > 0)

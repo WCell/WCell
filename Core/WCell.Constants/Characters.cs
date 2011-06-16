@@ -41,7 +41,7 @@ namespace WCell.Constants
 
 
 	/// <summary>
-	/// The Ids for the different races
+	/// The Ids for the different classes
 	/// </summary>
 	/// <remarks>Values come from column 1 of ChrClasses.dbc</remarks>
 	public enum ClassId : uint

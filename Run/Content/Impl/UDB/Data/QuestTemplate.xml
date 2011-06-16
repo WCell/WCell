@@ -9,9 +9,9 @@
     <Flat Name="RequiredLevel" Column="MinLevel" />
     <Flat Name="Level" Column="QuestLevel" />
     <Flat Name="QuestType" Column="Type" />
+    <Flat Name="RequiredClass" Column="RequiredClasses" />
     <Flat Name="RequiredRaces" Column="RequiredRaces" />
-    <!--http://wiki.udbforums.org/index.php/Quest_template#SkillOrClass-->
-    <Flat Name="ReqSkill" Column="RequiredSkill" />
+    <Flat Name="RequiredSkill" Column="RequiredSkill" />
     <Flat Name="RequiredSkillValue" Column="RequiredSkillValue" />
     <Nested Name="MinReqReputation">
       <Flat Name="FactionId" Column="RequiredMinRepFaction" />
