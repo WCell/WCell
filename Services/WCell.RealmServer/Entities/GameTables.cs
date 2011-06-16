@@ -18,7 +18,7 @@ namespace WCell.RealmServer.Entities
 {
     public class GameTables
     {
-        
+        private static float[] s_spellScaling;
 
         private static float[] s_baseMeleeCritChance;
         private static float[] s_baseSpellCritChance;
@@ -229,6 +229,11 @@ namespace WCell.RealmServer.Entities
             return true;
         }
 
+        private static bool LoadGtSpellScalingDBC()
+        {
+            return LoadRatingChanceDBC(ClientDBConstants.DBC_GTSPELLSCALING, out s_spellScaling);
+        }
+
         private static bool LoadGtBaseSpellCritChanceDBC()
         {
             return LoadRatingChanceDBC(ClientDBConstants.DBC_GTCHANCETOSPELLCRITBASE, out s_baseSpellCritChance);
@@ -312,6 +317,13 @@ namespace WCell.RealmServer.Entities
         /// <returns>Wether all gametables were loaded</returns>
         public static bool LoadGtDBCs()
         {
+            if(!LoadGtSpellScalingDBC())
+            {
+                s_log.Info(string.Format(Resources.DBCLoadFailed, ClientDBConstants.DBC_GTSPELLSCALING));
+
+                return false;
+            }
+
             if (!LoadGtBaseSpellCritChanceDBC())
             {
                 s_log.Info(string.Format(Resources.DBCLoadFailed, ClientDBConstants.DBC_GTCHANCETOSPELLCRITBASE));
