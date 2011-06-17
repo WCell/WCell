@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation=". ../../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd" Version="4">
+<Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation=". ../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd" Version="4">
   <RealmPacket Sender="Client" OpCode="CMSG_CAST_SPELL">
     <Simple>
       <Name>CastId</Name>
@@ -1055,5 +1055,25 @@
         <Type>UInt</Type>
       </Simple>
     </List>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_TOTEM_CREATED">
+    <Simple>
+      <Name>Summon Slot</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>Totem EntityId</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Duration</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Spell Id</Name>
+      <Type>UInt</Type>
+      <SegmentType>WCell.Constants.Spells.SpellId</SegmentType>
+    </Simple>
   </RealmPacket>
 </Definitions>
