@@ -517,11 +517,14 @@ namespace WCell.RealmServer.Spells
 			SpellEffectCreators[(int)SpellEffectType.Prospecting] = (cast, effect) => new ProspectingEffectHandler(cast, effect);								// 127
 			SpellEffectCreators[(int)SpellEffectType.ApplyStatAura] = (cast, effect) => new ApplyStatAuraEffectHandler(cast, effect);							// 128
 			SpellEffectCreators[(int)SpellEffectType.ApplyStatAuraPercent] = (cast, effect) => new ApplyStatAuraPercentEffectHandler(cast, effect);				// 129
+			SpellEffectCreators[(int)SpellEffectType.PlayMusic] = (cast, effect) => new PlayMusicEffectHandler(cast, effect);									// 132
 			SpellEffectCreators[(int)SpellEffectType.ForgetSpecialization] = (cast, effect) => new ForgetSpecializationEffectHandler(cast, effect);				// 133
 			SpellEffectCreators[(int)SpellEffectType.RestoreHealthPercent] = (cast, effect) => new RestoreHealthPercentEffectHandler(cast, effect);				// 136
 			SpellEffectCreators[(int)SpellEffectType.RestoreManaPercent] = (cast, effect) => new RestoreManaPercentEffectHandler(cast, effect);					// 137
+			SpellEffectCreators[(int)SpellEffectType.ClearQuest] = (cast, effect) => new ClearQuestEffectHandler(cast, effect);									// 139
 			SpellEffectCreators[(int)SpellEffectType.ApplyAuraToMaster] = (cast, effect) => new ApplyAuraToMasterEffectHandler(cast, effect);					// 143
 			SpellEffectCreators[(int)SpellEffectType.TriggerRitualOfSummoning] = (cast, effect) => new TriggerRitualOfSummoningEffectHandler(cast, effect);		// 151
+			SpellEffectCreators[(int)SpellEffectType.TeachFlightPath] = (cast, effect) => new TeachFlightPathEffectHandler(cast, effect);						// 154
 			SpellEffectCreators[(int)SpellEffectType.FeedPet] = (cast, effect) => new FeedPetEffectHandler(cast, effect);										// 101
 			SpellEffectCreators[(int)SpellEffectType.SummonObjectSlot1] = (cast, effect) => new SummonObjectSlot1Handler(cast, effect);							// 104
 			SpellEffectCreators[(int)SpellEffectType.SummonObjectSlot2] = (cast, effect) => new SummonObjectSlot2Handler(cast, effect);							// 105

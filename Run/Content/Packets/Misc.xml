@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-             xsi:schemaLocation=". ../../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd"
+             xsi:schemaLocation=". ../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd"
              Version="4">
 
   <RealmPacket OpCode="CMSG_NAME_QUERY">
@@ -48,6 +48,13 @@
     </Simple>
   </RealmPacket>
 
+  <RealmPacket OpCode="SMSG_PLAY_MUSIC">
+	<Simple>
+	  <Name>Sound</Name>
+	  <Type>UInt</Type>
+	</Simple>
+  </RealmPacket>
+  
   <RealmPacket OpCode="CMSG_AREATRIGGER">
     <Simple>
       <Name>AreaTrigger</Name>
@@ -139,15 +146,15 @@
 
   <RealmPacket OpCode="MSG_SET_DUNGEON_DIFFICULTY">
     <Simple>
-      <Name>Int 1</Name>
-      <Type>Int</Type>
+      <Name>DifficultyIndex</Name>
+      <Type>UInt</Type>
     </Simple>
     <Simple>
       <Name>Int 2</Name>
       <Type>Int</Type>
     </Simple>
     <Simple>
-      <Name>Int 3</Name>
+      <Name>IsInGroup</Name>
       <Type>Int</Type>
     </Simple>
   </RealmPacket>
