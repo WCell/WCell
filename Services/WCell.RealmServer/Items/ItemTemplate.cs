@@ -492,8 +492,7 @@ namespace WCell.RealmServer.Items
 			IsTwoHandWeapon = InventorySlotType == InventorySlotType.TwoHandWeapon;
 			SetIsWeapon();
 
-			if (ToolCategory != 0// && TotemCategory != TotemCategory.SkinningKnife)
-				)
+			if (ToolCategory != 0)// && TotemCategory != TotemCategory.SkinningKnife)
 			{
 				ItemMgr.FirstTotemsPerCat[(uint)ToolCategory] = this;
 			}

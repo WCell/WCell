@@ -198,7 +198,7 @@ namespace WCell.RealmServer.Commands
 
 				if (target == null) return;
 
-				if (mod.Length > 0)
+				if (mod.Length > 0 && !(mod.Length == 1 && mod.Contains("r")))
 				{
 					if (mod.Contains("c"))
 					{

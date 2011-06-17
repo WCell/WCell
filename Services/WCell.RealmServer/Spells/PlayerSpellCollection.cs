@@ -385,7 +385,7 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// Profession
-			if (spell.Ability.Skill != null)
+			if (spell.Ability != null && spell.Ability.Skill != null)
 			{
 				chr.Skills.TryLearn(spell.Ability.Skill.Id);
 			}
