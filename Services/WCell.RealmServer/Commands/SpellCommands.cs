@@ -106,7 +106,7 @@ namespace WCell.RealmServer.Commands
 					SpellLineId lineid;
 					if (EnumUtil.TryParse(id, out lineid))
 					{
-						var line = SpellLines.GetLine(lineid);
+						var line = lineid.GetLine();
 						if (line != null)
 						{
 							spell = line.HighestRank;

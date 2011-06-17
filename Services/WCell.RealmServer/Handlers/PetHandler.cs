@@ -241,12 +241,6 @@ namespace WCell.RealmServer.Handlers
 #endif
 		}
 
-		[PacketHandler(RealmServerOpCode.CMSG_TOTEM_DESTROYED)]
-		public static void HandleDestroyTotem(IRealmClient client, RealmPacketIn packet)
-		{
-			var totemSlot = packet.ReadUInt32();
-			log.Debug("Received CMSG_TOTEM_DESTROYED for Slot {0}", totemSlot);
-		}
 		#endregion
 
 		public static void SendTameFailure(IPacketReceiver receiver, TameFailReason reason)

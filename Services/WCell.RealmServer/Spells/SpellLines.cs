@@ -15,15 +15,15 @@ namespace WCell.RealmServer.Spells
 
 		public static SpellLine GetLine(this SpellLineId id)
 		{
-			return ById[(int)id];
+		    return (uint)id >= ById.Length ? null : ById[(int)id];
 		}
 
-		public static SpellLine[] GetLines(ClassId clss)
+	    public static SpellLine[] GetLines(ClassId clss)
 		{
-			return SpellLinesByClass[(int)clss];
+		    return (int)clss >= SpellLinesByClass.Length ? null : SpellLinesByClass[(int)clss];
 		}
 
-		internal static void InitSpellLines()
+	    internal static void InitSpellLines()
 		{
 			SetupSpellLines();
 		}

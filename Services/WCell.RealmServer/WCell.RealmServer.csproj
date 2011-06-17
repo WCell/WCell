@@ -234,6 +234,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Gossips\GossipTextHelper.cs" />
+    <Compile Include="Handlers\TotemHandler.cs" />
     <Compile Include="Handlers\WorldStateHandler.cs" />
     <Compile Include="Spells\Auras\Misc\FearHandler.cs" />
     <Compile Include="Spells\Auras\Misc\ModConfuseHandler.cs" />

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Cell.Core;
 using WCell.Constants;
 using WCell.Constants.Spells;
+using WCell.Core;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.GameObjects;
 using WCell.RealmServer.Handlers;
@@ -122,7 +123,35 @@ namespace WCell.RealmServer.Commands
 		}
 		#endregion
 
-		public override ObjectTypeCustom TargetTypes
+        #region SendTotemCreated
+        public class SendTotemCreated : SubCommand
+        {
+            protected SendTotemCreated() { }
+
+            protected override void Initialize()
+            {
+                Init("TotemCreated", "TC");
+                EnglishParamInfo = "[<spellId>]";
+            }
+
+            public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+            {
+                var spellId = trigger.Text.NextEnum(SpellId.EarthElementalTotem);
+                var spell = SpellHandler.Get(spellId);
+                if(spell == null)
+                    trigger.Reply("Invalid spell id {0} supplied", spellId);
+                if(!TotemHandler.SendTotemCreated(trigger.Args.Character, spell, EntityId.Zero))
+                {
+                    trigger.Reply("Error sending packet");
+                    return;
+                }
+
+                trigger.Reply("Sent");
+            }
+        }
+        #endregion
+
+        public override ObjectTypeCustom TargetTypes
 		{
 			get { return ObjectTypeCustom.Player; }
 		}
