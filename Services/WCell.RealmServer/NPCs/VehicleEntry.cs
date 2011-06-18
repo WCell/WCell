@@ -163,6 +163,8 @@ namespace WCell.RealmServer.NPCs
 
 		public uint FlagB; //45
 
+        // custom
 
+	    public uint PassengerNPCId;
 	}
 }
