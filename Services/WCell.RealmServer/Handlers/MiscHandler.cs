@@ -182,6 +182,14 @@ namespace WCell.RealmServer.Handlers
             }
         }
 
+		public static void SendPlayMusic(WorldObject obj, uint sound, float range)
+		{
+			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PLAY_MUSIC, 4))
+			{
+				packet.WriteUInt(sound);
+				obj.SendPacketToArea(packet, range != 0 ? range : WorldObject.BroadcastRange, true);
+			}
+		}
 
 		public static void SendGameObjectTextPage(IPacketReceiver rcv, IEntity obj)
 		{
