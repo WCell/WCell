@@ -594,7 +594,7 @@ namespace WCell.RealmServer.Handlers
 		/// <param name="stableMaster">The stable the client is interacting with.</param>
 		/// <param name="numStableSlots">The number of stable slots the character owns.</param>
 		/// <param name="pets">An array of NPCs containing the ActivePet and the StabledPets</param>
-		public static void SendStabledPetsList(IPacketReceiver receiver, NPC stableMaster, byte numStableSlots,
+		public static void SendStabledPetsList(IPacketReceiver receiver, Unit stableMaster, byte numStableSlots,
 			List<PermanentPetRecord> pets)
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.MSG_LIST_STABLED_PETS))
@@ -620,7 +620,7 @@ namespace WCell.RealmServer.Handlers
 					}
 					else if (!pet.IsActivePet && pet.Flags.HasFlag(PetFlags.Stabled))
 					{
-						packet.Write((byte)(0x02 + count));
+						packet.Write((byte)(0x02));
 						count++;
 					}
 					else
