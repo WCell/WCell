@@ -921,7 +921,7 @@ namespace WCell.RealmServer.Items
         }
 
 		#region Apply changes when loading
-		private static readonly List<KeyValuePair<ItemId, Action<ItemTemplate>>> loadHooks = new List<KeyValuePair<ItemId, Action<ItemTemplate>>>();
+		private static readonly List<Tuple<ItemId, Action<ItemTemplate>>> loadHooks = new List<Tuple<ItemId, Action<ItemTemplate>>>();
 
 		/// <summary>
 		/// Adds a callback to be called on the given set of ItemTemplates after load and before Item initialization
@@ -930,7 +930,7 @@ namespace WCell.RealmServer.Items
 		{
 			foreach (var id in ids)
 			{
-				loadHooks.Add(new KeyValuePair<ItemId, Action<ItemTemplate>>(id, cb));
+				loadHooks.Add(Tuple.Create(id, cb));
 			}
 		}
 
@@ -938,7 +938,7 @@ namespace WCell.RealmServer.Items
 		{
 			foreach (var hook in loadHooks)
 			{
-				hook.Value(GetTemplateForced(hook.Key));
+				hook.Item2(GetTemplateForced(hook.Item1));
 			}
 		}
 		#endregion

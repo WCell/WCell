@@ -94,7 +94,7 @@ namespace WCell.RealmServer.GameObjects
 						// also delete marker
 						marker.CallPeriodically(2000, obj =>
 													{
-														if (!chr.IsInWorld || chr.Map != obj.Map || !selection.GO.IsInWorld)
+														if (!chr.IsInWorld || chr.Map != marker.Map || selection.GO == null || !selection.GO.IsInWorld)
 														{
 															marker.Delete();
 														}

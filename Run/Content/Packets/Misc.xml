@@ -382,4 +382,12 @@
       <Type>Int</Type>
     </Simple>
   </RealmPacket>
+	
+	<RealmPacket OpCode="CMSG_GET_MIRRORIMAGE_DATA">
+		<Simple>
+			<Name>Entity</Name>
+			<Type>Guid</Type>
+		</Simple>
+	</RealmPacket>
+
 </Definitions>
