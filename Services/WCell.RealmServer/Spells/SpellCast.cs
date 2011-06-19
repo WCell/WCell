@@ -1053,7 +1053,7 @@ namespace WCell.RealmServer.Spells
 				missedTargets = null;
 			}
 
-			if (!m_spell.IsPassive && !m_spell.Attributes.HasAnyFlag(SpellAttributes.InvisibleAura) &&
+			if (m_spell != null && !m_spell.IsPassive && !m_spell.Attributes.HasAnyFlag(SpellAttributes.InvisibleAura) &&
 				!m_spell.HasEffectWith(effect => effect.EffectType == SpellEffectType.OpenLock) &&
 				m_spell.ShouldShowToClient())
 			{

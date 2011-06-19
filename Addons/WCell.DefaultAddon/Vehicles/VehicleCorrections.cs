@@ -75,6 +75,7 @@ namespace WCell.Addons.Default.Vehicles
         [DependentInitialization(typeof(NPCMgr))]
         public static void FixVehicleSpellData()
         {
+            #region Frosthound
             var npcEntry = NPCMgr.GetEntry(NPCId.Frosthound);
             if (npcEntry == null) return;
 
@@ -85,6 +86,7 @@ namespace WCell.Addons.Default.Vehicles
             spell = SpellHandler.Get(SpellId.CastNet_2);
             if (spell != null)
                 npcEntry.AddSpell(spell);
+            #endregion
         }
     }
 }
