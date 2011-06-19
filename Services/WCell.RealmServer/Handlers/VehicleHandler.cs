@@ -7,8 +7,10 @@ using WCell.RealmServer.NPCs.Vehicles;
 namespace WCell.RealmServer.Handlers {
     public static class VehicleHandler {
         [PacketHandler(RealmServerOpCode.CMSG_DISMISS_CONTROLLED_VEHICLE)]
-        public static void HandleDismissControlledVehicle(IRealmClient client, RealmPacketIn packet) 
+        public static void HandleDismissControlledVehicle(IRealmClient client, RealmPacketIn packet)
         {
+            client.ActiveCharacter.Vehicle.ClearAllSeats();
+            MovementHandler.HandleMovement(client, packet);
         }
 
         [PacketHandler(RealmServerOpCode.CMSG_REQUEST_VEHICLE_EXIT)]

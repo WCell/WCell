@@ -335,6 +335,7 @@
     <Compile Include="Teleport\TeleportNode.cs" />
     <Compile Include="Teleport\ZeppelinMaster.cs" />
     <Compile Include="Vehicles\VehicleCorrections.cs" />
+    <Compile Include="Vehicles\VehicleData.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Core\Cell.Core\Cell.Core.csproj">

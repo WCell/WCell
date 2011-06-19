@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using WCell.Constants;
 using WCell.Constants.NPCs;
+using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
 using WCell.Core;
@@ -65,7 +66,7 @@ namespace WCell.RealmServer.NPCs.Vehicles
 				VehicleHandler.Send_SMSG_ON_CANCEL_EXPECTED_RIDE_VEHICLE_AURA(chr);
 				VehicleHandler.SendBreakTarget(chr, Vehicle);
 
-				MovementHandler.SendRooted(chr, 9);
+                chr.IncMechanicCount(SpellMechanic.Rooted);
 				MovementHandler.SendEnterTransport(chr);
 				MiscHandler.SendCancelAutoRepeat(chr, Vehicle);
 				MovementHandler.SendMoveToPacket(Vehicle, ref pos, 0, 0, MonsterMoveFlags.Walk);
@@ -95,15 +96,22 @@ namespace WCell.RealmServer.NPCs.Vehicles
 			}
 
 			Vehicle.m_passengerCount--;
-			m_passenger.MovementFlags &= ~MovementFlags.OnTransport;
+            if (m_passenger.MovementFlags.HasFlag(MovementFlags.Flying))
+            {
+                var cast = Vehicle.SpellCast;
+                    if(cast != null)
+                        cast.Trigger(SpellId.EffectParachute);
+            }
+
+		    m_passenger.MovementFlags &= ~MovementFlags.OnTransport;
 			m_passenger.Auras.RemoveFirstVisibleAura(aura => aura.Spell.IsVehicle);
 
 			if (m_passenger is Character)
 			{
 				var chr = (Character)m_passenger;
 				VehicleHandler.Send_SMSG_ON_CANCEL_EXPECTED_RIDE_VEHICLE_AURA(chr);
-				MovementHandler.SendUnrooted(chr);
-				MovementHandler.SendLeaveTransport(chr);
+                //SendTeleportAck
+                MovementHandler.SendMoved(chr);
 				MiscHandler.SendCancelAutoRepeat(chr, Vehicle);
 				chr.ResetMover();
 				chr.FarSight = EntityId.Zero;
@@ -111,7 +119,8 @@ namespace WCell.RealmServer.NPCs.Vehicles
 				//MovementHandler.SendEnterTransport(chr);
 			}
             m_passenger.m_vehicleSeat = null;
-
+		    MovementHandler.SendHeartbeat(m_passenger, m_passenger.Position, m_passenger.Orientation);
+            m_passenger.DecMechanicCount(SpellMechanic.Rooted);
 			m_passenger = null;
 		}
 	}

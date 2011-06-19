@@ -385,21 +385,26 @@ namespace WCell.RealmServer.Handlers
 
 		public static void SendVehicleSpells(IPacketReceiver receiver, Vehicle vehicle)
 		{
+		    var actions = vehicle.BuildVehicleActionBar();
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PET_SPELLS, 18))
 			{
 				packet.Write(vehicle.EntityId);
-				packet.Write((short)0);
-				packet.Write(0);
-				packet.Write(0x00000101);
+				packet.Write((ushort)CreatureFamilyId.None);
+				packet.Write(0); //duration
+                packet.Write((byte)PetAttackMode.Defensive);
+                packet.Write((byte)PetAction.Follow);
+                packet.Write((ushort)PetFlags.None);
 
-				for (var i = 0; i < 10; i++)
-				{
-					packet.Write((short)0);
-					packet.Write((byte)0);
-					packet.Write((byte)i + 8);
-				}
+                //action bar
+                for (var i = 0; i < PetConstants.PetActionCount; i++)
+                {
+                    var action = actions[i];
+                    packet.Write(action);
+                }
 
-				packet.Write((short)0);
+                packet.Write((byte)0); // No Spells
+
+                packet.Write((byte)0); // No Cooldowns
 
 				receiver.Send(packet);
 			}

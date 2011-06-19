@@ -2,9 +2,13 @@
 using System.IO;
 using System.Xml;
 using NLog;
+using WCell.Constants.NPCs;
+using WCell.Constants.Spells;
 using WCell.Core.Initialization;
 using WCell.RealmServer;
 using WCell.RealmServer.NPCs;
+using WCell.RealmServer.Spells;
+using WCell.Util;
 
 namespace WCell.Addons.Default.Vehicles
 {
@@ -14,102 +18,74 @@ namespace WCell.Addons.Default.Vehicles
 
         [Initialization]
         [DependentInitialization(typeof(NPCMgr))]
-        public static void FixVehicles()
+        public static void FixVehicleData()
         {
             var count = 0;
-            try
+
+            var path = Path.Combine(RealmServerConfiguration.ContentDir, "VehicleData.xml");
+
+            Log.Info("Loading VehicleData.xml");
+
+            var dataCollection = XmlFile<VehicleDataCollection>.Load(path);
+
+            foreach (var data in dataCollection.VehicleDataList)
             {
-                var path = Path.Combine(RealmServerConfiguration.ContentDir, "VehicleData.xml");
-                var doc = new XmlDocument();
-                doc.Load(path);
-                var root = doc.DocumentElement;
-                if (root == null)
-                    return;
-
-                Log.Info("Loading VehicleData.xml");
-
-                foreach (XmlNode vehicleNode in root.ChildNodes)
+                var npcEntry = NPCMgr.GetEntry(data.NPCId);
+                if (npcEntry != null)
                 {
-                    uint npcId;
-                    if (!uint.TryParse(vehicleNode.FirstChild.InnerText, out npcId))
-                        continue;
-
-                    var npcEntry = NPCMgr.GetEntry(npcId);
-                    if (npcEntry == null)
-                        continue;
-
-                    int seat = 0;
-
-                    foreach (XmlNode child in vehicleNode)
+                    npcEntry.VehicleId = data.VehicleId;
+                    if (data.PassengerNPCId != 0)
                     {
-                        if (string.IsNullOrEmpty(child.InnerText))
-                            continue;
-
-                        switch (child.Name)
+                        if (npcEntry.VehicleEntry.Seats == null)
                         {
-                            case "VehicleId":
-                                {
-                                    uint vehicleId;
-                                    if (!uint.TryParse(child.InnerText, out vehicleId))
-                                    {
-                                        break;
-                                    }
-                                    npcEntry.VehicleId = vehicleId;
-                                    if (npcEntry.VehicleEntry == null)
-                                        break;
-                                }
-                                break;
-                            case "Seat":
-                                {
-                                    if (!int.TryParse(child.InnerText, out seat))
-                                    {
-                                        break;
-                                    }
-                                }
-                                break;
-                            case "PassengerNPCId":
-                                {
-                                    if (npcEntry.VehicleEntry == null)
-                                        continue;
-                                    uint passengerNPCId;
-                                    if (uint.TryParse(child.InnerText, out passengerNPCId))
-                                    {
-                                        if(npcEntry.VehicleEntry.Seats == null)
-                                        {
-                                            npcEntry.VehicleEntry.Seats = new VehicleSeatEntry[8];
-                                        }
+                            npcEntry.VehicleEntry.Seats = new VehicleSeatEntry[8];
+                        }
 
-                                        if (seat > npcEntry.VehicleEntry.Seats.Length)
-                                            Array.Resize(ref npcEntry.VehicleEntry.Seats, seat);
+                        if (data.Seat > npcEntry.VehicleEntry.Seats.Length)
+                            Array.Resize(ref npcEntry.VehicleEntry.Seats, (int) data.Seat);
 
-                                        if (npcEntry.VehicleEntry.Seats[seat] == null)
-                                        {
-                                            var seatEntry = NPCMgr.GetVehicleSeatEntry((uint)seat);
-                                            if (seatEntry == null)
-                                                break;
-                                            npcEntry.VehicleEntry.Seats[seat] = seatEntry;
-                                        }
+                        if (npcEntry.VehicleEntry.Seats[data.Seat] == null)
+                        {
+                            var seatEntry = NPCMgr.GetVehicleSeatEntry(data.Seat);
+                            if (seatEntry != null)
+                                npcEntry.VehicleEntry.Seats[data.Seat] = seatEntry;
+                        }
 
-                                        var npc = NPCMgr.GetEntry(passengerNPCId);
-                                        if(npc == null)
-                                            break;
-
-                                        npcEntry.VehicleEntry.Seats[seat].PassengerNPCId = passengerNPCId;
-                                    }
-
-                                }
-                                break;
-
+                        var npc = NPCMgr.GetEntry(data.PassengerNPCId);
+                        if (npc != null && npcEntry.VehicleEntry.Seats[data.Seat] != null)
+                        {
+                            npcEntry.VehicleEntry.Seats[data.Seat].PassengerNPCId = data.PassengerNPCId;
                         }
                     }
+
+                    if (data.VehicleAimAdjustment != 0)
+                    {
+                        npcEntry.VehicleAimAdjustment = data.VehicleAimAdjustment;
+                    }
+
+                    npcEntry.VehicleEntry.IsMinion = data.IsMinion;
                     count++;
                 }
             }
-            catch (Exception ex)
-            {
-                Log.WarnException("Error loading addon vehicle data from Content//VehicleData.xml", ex);
-            }
+
             Log.Info("Loaded {0} corrections from VehicleData.xml", count);
+        }
+
+        [Initialization]
+        [DependentInitialization(typeof(NPCMgr))]
+        public static void FixVehicleSpellData()
+        {
+            var npcEntry = NPCMgr.GetEntry(NPCId.Frosthound);
+            if (npcEntry == null) return;
+
+            var spell = SpellHandler.Get(SpellId.IceSlick);
+            if (spell != null)
+                npcEntry.AddSpell(spell);
+
+            spell = SpellHandler.Get(SpellId.CastNet_2);
+            if (spell != null)
+                npcEntry.AddSpell(spell);
         }
     }
 }
+
