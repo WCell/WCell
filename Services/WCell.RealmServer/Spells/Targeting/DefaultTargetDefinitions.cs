@@ -78,10 +78,9 @@ namespace WCell.RealmServer.Spells.Targeting
 					DefaultTargetAdders.AddAreaSource,
 					DefaultTargetFilters.IsSamePartyAndClass);
 
-			//targetHandlers.Add(ImplicitTargetType.BehindTargetLocation,
-			//    new TargetDefinition(
-			//        TargetMethods.AddSelection,
-			//        DefaultTargetFilters.IsBehind));
+			DefaultTargetHandlers[(int)ImplicitSpellTargetType.BehindTargetLocation] = new TargetDefinition(
+				DefaultTargetAdders.AddSelection,
+				null);
 
 			// ImplicitTargetType.CaliriEggs
 
