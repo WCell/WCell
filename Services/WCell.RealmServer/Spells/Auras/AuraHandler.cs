@@ -220,6 +220,7 @@ namespace WCell.RealmServer.Spells.Auras
             EffectHandlers[(int)AuraType.ModArmorByPercentOfIntellect] = () => new ModArmorByPercentOfIntellectHandler();
             EffectHandlers[(int)AuraType.ModConfuse] = () => new ModConfuseHandler();
             EffectHandlers[(int)AuraType.Fear] = () => new FearHandler();
+			EffectHandlers[(int)AuraType.MirrorImage] = () => new MirrorImageHandler();
 
 			// make sure, there are no missing handlers
 			for (var i = 0; i < (int)AuraType.End; i++)

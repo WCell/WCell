@@ -451,7 +451,7 @@ namespace WCell.Constants.Spells
 		/// Used in Pure of Heart and Master Poisoner
 		/// </summary>
 		ModPoisonDurationPct = 246,
-		Aura_247 = 247,
+		MirrorImage = 247,
 		ModChanceTargetDodgesAttackPercent = 248,
 		ConvertRune = 249,
 		Aura_250 = 250,
