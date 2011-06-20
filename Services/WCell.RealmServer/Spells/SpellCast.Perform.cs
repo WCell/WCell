@@ -437,12 +437,12 @@ namespace WCell.RealmServer.Spells
 				{
 
 					var runeMask = UsesRunes ? CasterChar.PlayerSpells.Runes.GetActiveRuneMask() : (byte)0;
+					CheckHitAndSendSpellGo(false, runeMask);
+					
 					if (CasterUnit != null)
 					{
 						OnCasted();
 					}
-					// TODO: Fix this in case the spellcast got cancelled
-					CheckHitAndSendSpellGo(false, runeMask);
 				}
 
 				if (m_casting)
