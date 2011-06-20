@@ -295,6 +295,51 @@ namespace WCell.Collision
 
         private static HeightMap ReadHeightMap(BinaryReader reader, bool readLiquid)
         {
+            /* This method should now read this structure
+             * TileExtractor WriteChunkInfo(BinaryWriter writer, ADTChunk chunk)
+            writer.Write(chunk.NodeId);
+            writer.Write(chunk.IsFlat);
+            // The base height for this chunk
+            writer.Write(chunk.Header.Z);
+            // The wmos and m2s (UniqueIds) that overlap this chunk
+            WriteChunkModelRefs(writer, chunk.DoodadRefs);
+            WriteChunkObjRefs(writer, chunk.ObjectRefs);
+
+            writer.Write(chunk.TerrainTris);
+            //writer.Write(chunk.Header.Holes > 0);
+            //if (chunk.Header.Holes > 0)
+            //{
+            //    WriteChunkHolesMap(writer, chunk.Header.GetHolesMap());
+            //}
+
+            //// The height map
+            //if (!chunk.IsFlat)
+            //{
+            //    WriteChunkHeightMap(writer, chunk);
+            //}
+
+            // The liquid information);
+            if (chunk.WaterInfo == null)
+            {
+                writer.Write(false);
+                return;
+            }
+
+            writer.Write(chunk.WaterInfo.Header.Used);
+            if (!chunk.WaterInfo.Header.Used) return;
+
+            writer.Write((ushort)chunk.WaterInfo.Header.Flags);
+            writer.Write((ushort)chunk.WaterInfo.Header.Type);
+            writer.Write(chunk.WaterInfo.IsFlat);
+            writer.Write(chunk.WaterInfo.Header.HeightLevel1);
+            writer.Write(chunk.WaterInfo.Header.HeightLevel2);
+
+            if (chunk.WaterInfo.Header.Flags.HasFlag(MH2OFlags.Ocean)) return;
+            WriteWaterRenderBits(writer, chunk.WaterInfo.GetRenderBitMapMatrix());
+
+            if (chunk.WaterInfo.IsFlat) return;
+            WriteWaterHeights(writer, chunk.WaterInfo.GetMapHeightsMatrix());*/
+
             var map = new HeightMap
             {
                 IsFlat = reader.ReadBoolean(),

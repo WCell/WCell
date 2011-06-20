@@ -57,7 +57,10 @@ namespace WCell.Collision.Addon
 		public static void Init()
 		{
 			// TODO: Stream is read beyond end; memory inflation
-			TerrainMgr.Provider = new FullTerrainProvider();
+            // TODO: Above is because map file format changed in terrain project, update wcell to use new structure
+            // See TileExtractor.cs WriteChunkInfo line 500++
+            // vs WorlMapTile.cs ReadHeightMap line 296++
+			//TerrainMgr.Provider = new FullTerrainProvider();
 		}
 	}
 }
