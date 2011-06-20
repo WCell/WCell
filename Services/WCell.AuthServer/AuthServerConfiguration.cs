@@ -153,6 +153,7 @@ namespace WCell.AuthServer
 		/// <summary>
 		/// The connection string for the authentication server database.
 		/// </summary>
+		[Variable(IsFileOnly = true)]
 		public static string DBConnectionString = @"Server=127.0.0.1;Port=3306;Database=WCellAuthServer;CharSet=utf8;Uid=root;Pwd=;";
 
 		/// <summary>

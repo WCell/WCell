@@ -18,6 +18,11 @@ namespace WCell.Util.Variables
 			get;
 		}
 
+		bool IsFileOnly
+		{
+			get;
+		}
+
 		string TypeName
 		{
 			get;

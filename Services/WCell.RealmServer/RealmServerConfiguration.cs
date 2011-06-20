@@ -340,6 +340,7 @@ namespace WCell.RealmServer
 		/// <summary>
 		/// The connection string for the authentication server database.
 		/// </summary>
+		[Variable(IsFileOnly = true)]
 		public static string DBConnectionString
 		{
 			get { return dbConnectionString; }
