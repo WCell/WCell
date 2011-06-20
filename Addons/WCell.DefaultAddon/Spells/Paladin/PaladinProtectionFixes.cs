@@ -61,7 +61,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 			// Combat Expertise increases "chance to critically hit by $s2%"
 			SpellLineId.PaladinProtectionCombatExpertise.Apply(spell =>
 			{
-				var effect = spell.Effects[1];
+				var effect = spell.GetEffect(AuraType.Aura_290_Unused);
 				effect.AuraType = AuraType.ModCritPercent;
 			});
 

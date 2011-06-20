@@ -111,6 +111,12 @@ namespace WCell.Addons.Default.Spells.Paladin
 				effect.MiscValue = (int)SpellModifierType.CritChance;
 				effect.AddToAffectMask(SpellLineId.PaladinFlashOfLight);
 			}, SpellId.EffectSacredShieldRank1);
+
+			// Only one seal active at a time
+			AuraHandler.AddAuraGroup(SpellLineId.PaladinSealOfWisdom, SpellLineId.PaladinSealOfVengeance,
+			                         SpellLineId.PaladinSealOfRighteousness,
+			                         SpellLineId.PaladinSealOfLight, SpellLineId.PaladinSealOfJustice,
+			                         SpellLineId.PaladinSealOfCorruption);
 		}
 	}
 

@@ -317,7 +317,7 @@ namespace WCell.RealmServer.Commands
 				{
 					var state = trigger.Text.HasNext ? trigger.Text.NextBool() : !go.IsEnabled;
 					go.IsEnabled = state;
-					trigger.Reply("{0} is now {1}", go, state);
+					trigger.Reply("{0} is now {1}", go, state == true ? "enabled" : "disabled");
 				}
 			}
 		}

@@ -29,7 +29,7 @@ namespace WCell.RealmServer.Spells.Auras
 				{
 					var val = GetStatValue(stat);
 					m_vals[(int)stat] = val;
-					Owner.AddStatMod(stat, GetModifiedValue(val), false);
+					Owner.AddStatMod(stat, GetModifiedValue(val), m_aura.Spell.IsPassive);
 				}
 			}
 			else
@@ -37,7 +37,7 @@ namespace WCell.RealmServer.Spells.Auras
 				var stat = (StatType)SpellEffect.MiscValue;
 
 				m_singleVal = GetStatValue(stat);
-				Owner.AddStatMod(stat, GetModifiedValue(m_singleVal), false);
+				Owner.AddStatMod(stat, GetModifiedValue(m_singleVal), m_aura.Spell.IsPassive);
 			}
 		}
 
