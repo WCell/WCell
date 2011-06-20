@@ -150,10 +150,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Libraries\Binaries\Castle.ActiveRecord\Iesi.Collections.dll</HintPath>
     </Reference>
-    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Libraries\Binaries\Castle.ActiveRecord\log4net.dll</HintPath>
-    </Reference>
     <Reference Include="MySql.Data, Version=6.0.4.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Libraries\Binaries\Release\MySql\MySql.Data.dll</HintPath>
