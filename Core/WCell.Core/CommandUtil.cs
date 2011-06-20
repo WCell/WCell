@@ -89,6 +89,16 @@ namespace WCell.Core
 				var val = cfg.Get(name);
 				if (val != null)
 				{
+					if (cfg is VariableConfiguration<WCellVariableDefinition>)
+					{
+						var vcfg = (VariableConfiguration<WCellVariableDefinition>)cfg;
+						var def = vcfg.GetDefinition(name);
+						if (def.IsFileOnly)
+						{
+							trigger.Reply("Cannot display variable: \"{0}\"", name);
+							return false;
+						}
+					}
 					trigger.Reply("Variable {0} = {1}", name, Utility.GetStringRepresentation(val));
 					return true;
 				}
@@ -114,7 +124,7 @@ namespace WCell.Core
 			{
 				cfg.Foreach((def) =>
 				{
-					if (def.Name.IndexOf(filter, StringComparison.InvariantCultureIgnoreCase) >= 0)
+					if (!def.IsFileOnly && def.Name.IndexOf(filter, StringComparison.InvariantCultureIgnoreCase) >= 0)
 					{
 						vars.Add(def);
 					}
@@ -122,16 +132,22 @@ namespace WCell.Core
 
 				if (vars.Count == 0)
 				{
-					trigger.Reply("Could not find any globals that contain \"{0}\". - Do you have sufficient rights?", filter);
+					trigger.Reply("Could not find any readable globals that contain \"{0}\".", filter);
 				}
 			}
 			else
 			{
-				cfg.Foreach(vars.Add);
+				cfg.Foreach(def =>
+				{
+					if (!def.IsFileOnly)
+					{
+						vars.Add(def);
+					}
+				});
 
 				if (vars.Count == 0)
 				{
-					trigger.Reply("No variables found.");
+					trigger.Reply("No readable variables found.");
 				}
 			}
 

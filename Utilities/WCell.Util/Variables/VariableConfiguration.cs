@@ -301,9 +301,9 @@ namespace WCell.Util.Variables
 		#endregion
 
 		#region Create & Add
-		public V CreateDefinition(string name, MemberInfo member, bool serialized, bool readOnly)
+		public V CreateDefinition(string name, MemberInfo member, bool serialized, bool readOnly, bool fileOnly)
 		{
-			var def = new V { Name = name, Member = member, Serialized = serialized, IsReadOnly = readOnly };
+			var def = new V { Name = name, Member = member, Serialized = serialized, IsReadOnly = readOnly, IsFileOnly = fileOnly };
 			VariableDefinintionInitializor(def);
 			return def;
 		}
@@ -358,6 +358,7 @@ namespace WCell.Util.Variables
 
 				var varAttr = member.GetCustomAttributes(typeof(A), true).FirstOrDefault() as A;
 				var readOnly = member.IsReadonly() || (varAttr != null && varAttr.IsReadOnly);
+				var fileOnly = varAttr != null && varAttr.IsFileOnly;
 
 				Type memberType;
 				if ((!readOnly || (varAttr != null && member.IsFieldOrProp())) &&
@@ -380,7 +381,7 @@ namespace WCell.Util.Variables
 						name = member.Name;
 					}
 
-					Add(name, member, serialized, readOnly);
+					Add(name, member, serialized, readOnly, fileOnly);
 				}
 				else if (varAttr != null)
 				{
@@ -391,7 +392,7 @@ namespace WCell.Util.Variables
 			}
 		}
 
-		public V Add(string name, MemberInfo member, bool serialized, bool readOnly)
+		public V Add(string name, MemberInfo member, bool serialized, bool readOnly, bool fileOnly)
 		{
 			V existingDef;
 			if (Definitions.TryGetValue(name, out existingDef))
@@ -401,7 +402,7 @@ namespace WCell.Util.Variables
 				"(public static variables that are not read-only, are automatically added to the global variable collection)");
 			}
 
-			var def = CreateDefinition(name, member, serialized, readOnly);
+			var def = CreateDefinition(name, member, serialized, readOnly, fileOnly);
 			if (def != null)
 			{
 				Add(def, serialized);

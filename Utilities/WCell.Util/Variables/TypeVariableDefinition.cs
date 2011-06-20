@@ -63,6 +63,12 @@ namespace WCell.Util.Variables
 			internal set { m_readOnly = value; }
 		}
 
+		public bool IsFileOnly
+		{
+			get;
+			internal set;
+		}
+
 		public MemberInfo Member
 		{
 			get { return m_Member; }
