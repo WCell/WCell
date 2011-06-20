@@ -437,12 +437,12 @@ namespace WCell.RealmServer.Spells
 				{
 
 					var runeMask = UsesRunes ? CasterChar.PlayerSpells.Runes.GetActiveRuneMask() : (byte)0;
+					CheckHitAndSendSpellGo(false, runeMask);
+					
 					if (CasterUnit != null)
 					{
 						OnCasted();
 					}
-					// TODO: Fix this in case the spellcast got cancelled
-					CheckHitAndSendSpellGo(false, runeMask);
 				}
 
 				if (m_casting)
@@ -705,7 +705,7 @@ namespace WCell.RealmServer.Spells
 					}
 
 					// Check for quest progress
-					chr.QuestLog.OnSpellCast(this);
+					chr.QuestLog.OnSpellCast(this);																// can potentially execute arbitrary code
 				}
 
 				// casting a spell on a combatant also puts the Caster in combat mode
@@ -735,7 +735,7 @@ namespace WCell.RealmServer.Spells
 			if (TargetItem != null)
 			{
                 CasterChar.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.UseItem, Spell.Id);
-				TargetItem.OnUse();
+				TargetItem.OnUse();																				// can execute arbitrary code
 			}
 
 			// update AuraState
@@ -750,7 +750,7 @@ namespace WCell.RealmServer.Spells
 				var target = m_targets.FirstOrDefault() as Unit;
 				CasterUnit.Proc(ProcTriggerFlags.SpellCast, target,
 								new SimpleUnitAction { Attacker = CasterUnit, Victim = target, IsCritical = false, Spell = m_spell },
-								true);
+								true);																			// can execute arbitrary code
 			}
 
 			var hasRunes = UsesRunes;
@@ -816,7 +816,7 @@ namespace WCell.RealmServer.Spells
 				for (var i = 0; i < m_spell.TargetTriggerSpells.Length; i++)
 				{
 					var trigSpell = m_spell.TargetTriggerSpells[i];
-					Trigger(trigSpell, m_targets.ToArray());
+					Trigger(trigSpell, m_targets.ToArray());													// can execute arbitrary code
 					if (!m_casting)
 					{
 						return; // should not happen (but might)
@@ -828,7 +828,7 @@ namespace WCell.RealmServer.Spells
 				for (var i = 0; i < m_spell.CasterTriggerSpells.Length; i++)
 				{
 					var trigSpell = m_spell.CasterTriggerSpells[i];
-					Trigger(trigSpell, m_targets.ToArray());
+					Trigger(trigSpell, m_targets.ToArray());													// can execute arbitrary code
 					if (!m_casting)
 					{
 						return; // should not happen (but might)
@@ -837,7 +837,7 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// trigger dynamic post-cast spells, eg Shadow Weaving etc
-			caster.Spells.TriggerSpellsFor(this);
+			caster.Spells.TriggerSpellsFor(this);																// can execute arbitrary code
 			if (!m_casting)
 			{
 				return; // should not happen (but might)
@@ -858,7 +858,7 @@ namespace WCell.RealmServer.Spells
 
 			if (IsAICast)
 			{
-				OnAICasted();
+				OnAICasted();																					// can execute arbitrary code
 				if (!m_casting)
 				{
 					return; // should not happen (but might)
