@@ -132,10 +132,12 @@ namespace WCell.RealmServer.NPCs.Vehicles
 				}
 			}
 
-            if(Entry.VehicleEntry.IsMinion)
+            if (Entry.VehicleEntry.IsMinion)
                 Dismiss();
             else
-                SetPosition(SpawnEntry.Position, SpawnEntry.Orientation);
+            {
+                //TODO: Return to spawn point, without causing exceptions!
+            }
 		}
 
         public void Dismiss()
