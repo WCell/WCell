@@ -14,6 +14,7 @@ namespace WCell.RealmServer.NPCs.Vendors
 	[DataHolder]
 	public class VendorItemEntry : IDataHolder
 	{
+        [NotPersistent]
 		public static readonly List<VendorItemEntry> EmptyList = new List<VendorItemEntry>(1);
 
 		private int remainingStackAmount;
