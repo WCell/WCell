@@ -112,6 +112,25 @@ namespace WCell.RealmServer.Items
 		}
 
 		/// <summary>
+		///  Returns a List of templates with the given ItemClass
+		/// </summary>
+		public static List<ItemTemplate> GetTemplates(ItemClass type)
+		{
+			var templates = new List<ItemTemplate>();
+			foreach (var template in Templates)
+			{
+				if (template != null)
+				{
+					if (template.Class == type)
+					{
+						templates.Add(template);
+					}
+				}
+			}
+			return templates;
+		}
+
+		/// <summary>
 		/// Returns the ItemSet with the given id
 		/// </summary>
 		public static ItemSet GetSet(ItemSetId id)
@@ -922,7 +941,7 @@ namespace WCell.RealmServer.Items
 
 		#region Apply changes when loading
 		private static readonly List<Tuple<ItemId, Action<ItemTemplate>>> loadHooks = new List<Tuple<ItemId, Action<ItemTemplate>>>();
-
+		private static readonly List<Tuple<ItemClass, Action<ItemTemplate>>> itemClassLoadHooks = new List<Tuple<ItemClass, Action<ItemTemplate>>>();
 		/// <summary>
 		/// Adds a callback to be called on the given set of ItemTemplates after load and before Item initialization
 		/// </summary>
@@ -934,11 +953,29 @@ namespace WCell.RealmServer.Items
 			}
 		}
 
+		public static void Apply(Action<ItemTemplate> cb, params ItemClass[] classes)
+		{
+			foreach (var cls in classes)
+			{
+				itemClassLoadHooks.Add(Tuple.Create(cls, cb));
+			}
+		}
+
 		static void OnLoaded()
 		{
+			// Perform the action on a template
 			foreach (var hook in loadHooks)
 			{
 				hook.Item2(GetTemplateForced(hook.Item1));
+			}
+
+			// Perform an action an each member of the itemclasses
+			foreach(var hook in itemClassLoadHooks)
+			{
+				foreach(var template in GetTemplates(hook.Item1))
+				{
+					hook.Item2(template);
+				}
 			}
 		}
 		#endregion
