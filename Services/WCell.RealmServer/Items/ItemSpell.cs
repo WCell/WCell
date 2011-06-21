@@ -30,7 +30,7 @@ namespace WCell.RealmServer.Items
 
 		public ItemSpellTrigger Trigger;
 
-		public uint Charges;
+		public short Charges;
 
 		/// <summary>
 		/// SpellCategory.dbc
@@ -48,7 +48,7 @@ namespace WCell.RealmServer.Items
 		public void FinalizeAfterLoad()
 		{
 			Spell = SpellHandler.Get(Id);
-			HasCharges = (int)Charges > 0;
+			HasCharges = Charges > 0;
 		}
 
 		public override string ToString()

@@ -5,6 +5,7 @@ using System.Linq;
 using WCell.Constants;
 using WCell.Constants.Factions;
 using WCell.Constants.Items;
+using WCell.Constants.Misc;
 using WCell.Constants.Skills;
 using WCell.Constants.Spells;
 using WCell.Constants.World;
@@ -150,7 +151,7 @@ namespace WCell.RealmServer.Items
 
 		public uint PageTextId;
 
-		public uint PageCount;
+		public ChatLanguage LanguageId;
 
 		public PageMaterial PageMaterial;
 
@@ -1024,9 +1025,9 @@ namespace WCell.RealmServer.Items
 			{
 				writer.WriteLine(indent + "PageMaterial: " + PageMaterial);
 			}
-			if ((int)PageCount != 0)
+			if ((int)LanguageId != 0)
 			{
-				writer.WriteLine(indent + "PageCount: " + PageCount);
+				writer.WriteLine(indent + "LanguageId: " + LanguageId);
 			}
 			if ((int)LockId != 0)
 			{

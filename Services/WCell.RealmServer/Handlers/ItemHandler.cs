@@ -11,6 +11,7 @@ using WCell.RealmServer.Lang;
 using WCell.RealmServer.Looting;
 using WCell.RealmServer.Network;
 using WCell.Util;
+using System;
 
 namespace WCell.RealmServer.Handlers
 {
@@ -528,7 +529,7 @@ namespace WCell.RealmServer.Handlers
 
 
 				// In 3.1 there are only 2 damages instead of 5
-				for (var i = 0; i < 2; i++)
+				for (var i = 0; i < ItemConstants.MaxDmgCount; i++)
 				{
                     if(i >= item.Damages.Length)
                     {
@@ -562,7 +563,7 @@ namespace WCell.RealmServer.Handlers
                     {
                         packet.Write((uint)spell.Id);
                         packet.Write((uint)spell.Trigger);
-                        packet.Write(spell.Charges);
+                        packet.Write((uint)-Math.Abs(spell.Charges));
                         packet.Write(spell.Cooldown);
                         packet.Write(spell.CategoryId);
                         packet.Write(spell.CategoryCooldown);
@@ -582,7 +583,7 @@ namespace WCell.RealmServer.Handlers
 				packet.WriteCString(item.Descriptions.Localize(locale));
 
 				packet.Write(item.PageTextId);
-				packet.Write(item.PageCount);
+				packet.Write((uint)item.LanguageId);
 				packet.Write((uint)item.PageMaterial);
 				packet.Write(item.QuestId);
 				packet.Write(item.LockId);

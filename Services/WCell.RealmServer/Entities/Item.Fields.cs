@@ -183,11 +183,11 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Charges of the <c>UseSpell</c> of this Item.
 		/// </summary>
-		public uint SpellCharges
+		public int SpellCharges
 		{
 			get
 			{
-				return (uint)m_record.Charges;
+				return (int)m_record.Charges;
 			}
 			set
 			{
@@ -214,9 +214,9 @@ namespace WCell.RealmServer.Entities
 			SetUInt32((int)ItemFields.SPELL_CHARGES + (int)index, (uint)(GetSpellCharges(index) + delta));
 		}
 
-		public void SetSpellCharges(uint index, uint value)
+		public void SetSpellCharges(uint index, int value)
 		{
-			SetUInt32((int)ItemFields.SPELL_CHARGES + (int)index, value);
+			SetUInt32((int)ItemFields.SPELL_CHARGES + (int)index, (uint)value);
 		}
 
 		public ItemFlags Flags

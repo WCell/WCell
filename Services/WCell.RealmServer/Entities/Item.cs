@@ -133,7 +133,7 @@ namespace WCell.RealmServer.Entities
 			// set charges to max
 			if (m_template.UseSpell != null && m_template.UseSpell.HasCharges)
 			{
-				SpellCharges = m_template.UseSpell.Charges;
+				SpellCharges = (int)m_template.UseSpell.Charges;
 			}
 
 			var randomEnchants = m_template.RandomPrefixes;
@@ -193,7 +193,7 @@ namespace WCell.RealmServer.Entities
 
 			if (m_template.UseSpell != null)
 			{
-				SetSpellCharges(m_template.UseSpell.Index, (uint)record.Charges);
+				SetSpellCharges(m_template.UseSpell.Index, (int)record.Charges);
 			}
 			MaxDurability = m_template.MaxDurability;
 
@@ -1281,7 +1281,7 @@ namespace WCell.RealmServer.Entities
             if (m_template.UseSpell != null)
 			{
 				// consume a charge
-				if (m_template.Class == ItemClass.Consumable)
+				if (m_template.Class == ItemClass.Consumable || m_template.Class == ItemClass.Miscellaneous)
 				{
 					SpellCharges--;
 				}
