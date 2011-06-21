@@ -57,6 +57,7 @@ namespace WCell.RealmServer.Addons
 		{
 			var mgr = new InitMgr();
 			InitAddon(context, mgr);
+			mgr.AddGlobalMgrsOfAsm(typeof(RealmAddonMgr).Assembly);		// Add all GlobalMgrs
 			mgr.PerformInitialization();
 		}
 

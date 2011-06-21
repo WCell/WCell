@@ -162,6 +162,18 @@ namespace WCell.Core.Initialization
             //s_log.Info(string.Format(Resources.InitStepsLoaded, totalStepCount.ToString(), (totalStepCount == 1 ? "step" : "steps")));
         }
 
+		public void AddGlobalMgrsOfAsm(Assembly asm)
+		{
+			foreach (var type in asm.GetTypes())
+			{
+				var mgrAttr = type.GetCustomAttributes<GlobalMgrAttribute>().FirstOrDefault();
+				if (mgrAttr != null)
+				{
+					UnresolvedDependencies.Add(type, new GlobalMgrInfo());
+				}
+			}
+		}
+
         public GlobalMgrInfo GetGlobalMgrInfo(Type t)
         {
             GlobalMgrInfo info;
