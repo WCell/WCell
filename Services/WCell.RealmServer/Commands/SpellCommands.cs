@@ -70,6 +70,7 @@ namespace WCell.RealmServer.Commands
 			Init("spelladd", "addspell");
 			EnglishParamInfo = "";
 			EnglishDescription = "Deprecated - Use \"spell add\" instead.";
+			Enabled = false;
 		}
 
 		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
@@ -416,7 +417,7 @@ namespace WCell.RealmServer.Commands
 		{
 			protected override void Initialize()
 			{
-				Init("Reset");
+				Init("Reset", "Clear", "C");
 				EnglishDescription = "Resets all talents for free";
 			}
 

@@ -243,6 +243,12 @@ namespace WCell.RealmServer.Spells
 				chr.Skills.Remove(spell.Ability.Skill.Id);
 			}
 
+			// Remove any active auras from the player
+			if (spell.IsAura)
+			{
+				chr.Auras.Remove(spell);
+			}
+
 			// figure out from where to remove and do it
 			var spells = GetSpellList(spell);
 			for (var i = 0; i < spells.Count; i++)
