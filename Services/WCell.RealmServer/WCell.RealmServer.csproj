@@ -232,6 +232,7 @@
     <Compile Include="Gossips\GossipTextHelper.cs" />
     <Compile Include="Handlers\TotemHandler.cs" />
     <Compile Include="Handlers\WorldStateHandler.cs" />
+    <Compile Include="NPCs\Trainers\TrainerSpellTemplate.cs" />
     <Compile Include="Spells\Auras\Misc\CallStabledPetHandler.cs" />
     <Compile Include="Spells\Auras\Misc\FearHandler.cs" />
     <Compile Include="Spells\Auras\Misc\ModConfuseHandler.cs" />

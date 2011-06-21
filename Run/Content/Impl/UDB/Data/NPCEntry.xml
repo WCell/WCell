@@ -98,6 +98,9 @@
 
     <FlatArray Name="FixedSpells" Pattern="spell{#}" Offset="1" />
 
+    <Flat Name="TrainerTemplateId" Column="trainer_id" />
+    <Flat Name="VendorTemplateId" Column="vendor_id" />
+
     <Nested Name="TrainerEntry">
       <Flat Name="TrainerType" Column="trainer_type" />
       <Flat Name="RequiredSpellId" Column="trainer_spell" />

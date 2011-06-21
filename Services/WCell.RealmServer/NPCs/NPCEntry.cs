@@ -114,6 +114,10 @@ namespace WCell.RealmServer.NPCs
 
 		public bool Regenerates;
 
+	    public uint TrainerTemplateId;
+
+        public uint VendorTemplateId;
+
 		// addon data
 		public NPCAddonData AddonData
 		{
@@ -881,6 +885,25 @@ namespace WCell.RealmServer.NPCs
 				ContentMgr.OnInvalidDBData("NPCEntry has no valid DisplayId: {0} ({1})", this, DisplayIds.ToString(", "));
 				return;
 			}
+
+            if(TrainerTemplateId != 0)
+            {
+                if (!NPCMgr.TrainerSpellTemplates.ContainsKey(TrainerTemplateId))
+                {
+                    ContentMgr.OnInvalidDBData("NPCEntry has invalid TrainerTemplateId: {0} ({1})", this, TrainerTemplateId);
+                }
+                else
+                {
+                    if (TrainerEntry == null)
+                    {
+                        TrainerEntry = new TrainerEntry();
+                    }
+                    foreach (var trainerSpell in NPCMgr.TrainerSpellTemplates[TrainerTemplateId])
+                    {
+                        TrainerEntry.AddSpell(trainerSpell);
+                    }
+                }
+            }
 
 			if (AddonData != null)
 			{
