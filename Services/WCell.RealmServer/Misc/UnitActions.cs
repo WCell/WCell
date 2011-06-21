@@ -1106,10 +1106,10 @@ namespace WCell.RealmServer.Misc
 		{
 			if (IsCritical) return;
 
-			var origCritChance = (float)CalcCritChance();	// 0-10000
-			var critChance = ((critBonusPct * 100.0f) / (10000.0f - origCritChance))*10000.0f;
+			var origCritChance = CalcCritChance();	// 0-10000
+			var critChance = ((critBonusPct * 100)*10000) / (10000 - origCritChance);
 
-			IsCritical = Utility.Random(0, 10000) < (int)critChance;
+			IsCritical = Utility.Random(0, 10000) < critChance;
 			if (IsCritical)
 			{
 				SetCriticalDamage();

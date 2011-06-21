@@ -67,9 +67,6 @@ namespace WCell.Addons.Default.NPCs
 			mirrorimage.Activated += image =>
 			{
 				image.PlayerOwner.SpellCast.Start(SpellHandler.Get(SpellId.CloneMe), true, image);
-				//EFF0: Aura Id 247 (SPELL_AURA_247), value = 2 
-				//EFF1: SPELL_EFFECT_SCRIPT_EFFECT BasePoints = 41055 --> Copy Weapon
-				//EFF2: SPELL_EFFECT_SCRIPT_EFFECT BasePoints = 45206 --> Copy Off-hand Weapon
 
 				//image.SpellCast.Start(SpellId.HallsOfReflectionClone_2);//id 69837 is this even needed?
 				//EFF0: Aura Id 279 (SPELL_AURA_279), value = 1
