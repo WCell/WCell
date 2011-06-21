@@ -191,7 +191,7 @@ namespace WCell.RealmServer.Handlers
 				chr.OnStopSwimming();
 			}
 
-			if (moveFlags.HasFlag(MovementFlags.Spline))
+			if (moveFlags.HasFlag(MovementFlags.SplineElevation))
 			{
 				var spline = packet.ReadFloat();
 			}

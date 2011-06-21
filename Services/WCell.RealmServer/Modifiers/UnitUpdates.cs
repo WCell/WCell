@@ -537,7 +537,7 @@ namespace WCell.RealmServer.Modifiers
 																				 chr.GetCombatRating(CombatRating.Dodge),
 																				 chr.GetCombatRating(CombatRating.DefenseSkill)
 																				 );
-				dodgeChance += (dodgeChance * unit.IntMods[(int)StatModifierInt.DodgeChance] + 50) / 100;
+				dodgeChance += unit.IntMods[(int) StatModifierInt.DodgeChance];
 				chr.DodgeChance = dodgeChance;
 			}
 		}

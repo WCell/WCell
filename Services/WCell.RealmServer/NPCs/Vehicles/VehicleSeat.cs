@@ -50,6 +50,7 @@ namespace WCell.RealmServer.NPCs.Vehicles
 			passenger.TransportPosition = Entry.AttachmentOffset;
 			passenger.TransportOrientation = Entry.PassengerYaw;
 			Vehicle.m_passengerCount++;
+            Vehicle.MovementFlags2 |= MovementFlags2.PreventJumping;
 
 			if (IsDriverSeat)
 			{
@@ -105,6 +106,7 @@ namespace WCell.RealmServer.NPCs.Vehicles
 
 		    m_passenger.MovementFlags &= ~MovementFlags.OnTransport;
 			m_passenger.Auras.RemoveFirstVisibleAura(aura => aura.Spell.IsVehicle);
+            Vehicle.MovementFlags2 &= ~MovementFlags2.PreventJumping;
 
 			if (m_passenger is Character)
 			{

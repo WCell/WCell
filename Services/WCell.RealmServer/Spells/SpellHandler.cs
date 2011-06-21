@@ -491,6 +491,7 @@ namespace WCell.RealmServer.Spells
 			SpellEffectCreators[(int)SpellEffectType.InterruptCast] = (cast, effect) => new InterruptCastEffectHandler(cast, effect);							// 68
 			SpellEffectCreators[(int)SpellEffectType.Distract] = (cast, effect) => new DistractEffectHandler(cast, effect);										// 69
 			SpellEffectCreators[(int)SpellEffectType.ApplyGlyph] = (cast, effect) => new ApplyGlyphEffectHandler(cast, effect);									// 74
+			SpellEffectCreators[(int)SpellEffectType.ScriptEffect] = (cast, effect) => new ScriptEffectHandler(cast, effect);									// 77
 			SpellEffectCreators[(int)SpellEffectType.Sanctuary] = (cast, effect) => new RemoveImpairingEffectsHandler(cast, effect);							// 79
 			SpellEffectCreators[(int)SpellEffectType.AddComboPoints] = (cast, effect) => new AddComboPointsEffectHandler(cast, effect);							// 80
 			SpellEffectCreators[(int)SpellEffectType.Duel] = (cast, effect) => new DuelEffectHandler(cast, effect);												// 83
@@ -548,7 +549,6 @@ namespace WCell.RealmServer.Spells
 			UnsetHandler(SpellEffectType.Defense);
 			UnsetHandler(SpellEffectType.SpellDefense);
 			UnsetHandler(SpellEffectType.Block);
-			UnsetHandler(SpellEffectType.ScriptEffect);
 			UnsetHandler(SpellEffectType.Detect);
 			UnsetHandler(SpellEffectType.Dummy);
 			UnsetHandler(SpellEffectType.Parry);

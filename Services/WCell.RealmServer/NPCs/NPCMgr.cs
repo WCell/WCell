@@ -581,6 +581,9 @@ namespace WCell.RealmServer.NPCs
 			FactionMgr.Initialize();
 
 			ContentMgr.Load<NPCEquipmentEntry>(force);
+            //Dont move this into LoadTrainers, the templates must
+            //be loaded before NPC Entries
+            ContentMgr.Load<TrainerSpellTemplate>(force);
 			ContentMgr.Load<NPCEntry>(force);
 
 			//foreach (var entry in Entries)
@@ -694,6 +697,12 @@ namespace WCell.RealmServer.NPCs
 		#endregion
 
 		#region Trainers
+
+        /// <summary>
+        /// Trainer spell entries by trainer spell template id
+        /// </summary>
+        public static Dictionary<uint, List<TrainerSpellEntry>> TrainerSpellTemplates = new Dictionary<uint, List<TrainerSpellEntry>>();
+
 		private static void LoadTrainers(bool force)
 		{
 			ContentMgr.Load<TrainerSpellEntry>(force);

@@ -132,10 +132,12 @@ namespace WCell.RealmServer.NPCs.Vehicles
 				}
 			}
 
-            if(Entry.VehicleEntry.IsMinion)
+            if (Entry.VehicleEntry.IsMinion)
                 Dismiss();
             else
-                SetPosition(SpawnEntry.Position, SpawnEntry.Orientation);
+            {
+                //TODO: Return to spawn point, without causing exceptions!
+            }
 		}
 
         public void Dismiss()
@@ -148,7 +150,6 @@ namespace WCell.RealmServer.NPCs.Vehicles
             var bar = new uint[PetConstants.PetActionCount];
             var i = 0;
 
-            //TODO: Check this works and dont be lazy implement BuildActionBar in the vehicle class
             byte j = 0;
             if (Entry.Spells != null)
             {
