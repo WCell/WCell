@@ -1,3 +1,4 @@
+using System;
 using WCell.Constants.Items;
 using WCell.Constants.Skills;
 using WCell.Constants.Updates;
@@ -216,7 +217,7 @@ namespace WCell.RealmServer.Entities
 
 		public void SetSpellCharges(uint index, int value)
 		{
-			SetUInt32((int)ItemFields.SPELL_CHARGES + (int)index, (uint)value);
+			SetUInt32((int)ItemFields.SPELL_CHARGES + (int)index, (uint)Math.Abs(value));
 		}
 
 		public ItemFlags Flags

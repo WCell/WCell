@@ -563,7 +563,7 @@ namespace WCell.RealmServer.Handlers
                     {
                         packet.Write((uint)spell.Id);
                         packet.Write((uint)spell.Trigger);
-                        packet.Write((uint)-Math.Abs(spell.Charges));
+                        packet.Write((uint)Math.Abs(spell.Charges));
                         packet.Write(spell.Cooldown);
                         packet.Write(spell.CategoryId);
                         packet.Write(spell.CategoryCooldown);
