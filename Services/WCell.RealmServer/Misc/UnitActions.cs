@@ -1096,18 +1096,13 @@ namespace WCell.RealmServer.Misc
 		/// <summary>
 		/// After we already know that we did not crit, we want to check
 		/// again against a bonus crit chance.
-		/// 
-		/// We use basic laws of probability:
-		/// P(CritWithBonus | NoCrit) = 
-		/// P(CritWithBonus) / P(NoCrit) =
-		/// critBonus / (1 - origCritChance)
 		/// </summary>
 		public void AddBonusCritChance(int critBonusPct)
 		{
 			if (IsCritical) return;
 
 			var origCritChance = CalcCritChance();	// 0-10000
-			var critChance = (critBonusPct * 100) / (1 - origCritChance);
+			var critChance = (critBonusPct * 100) + origCritChance;
 
 			IsCritical = Utility.Random(0, 10000) < critChance;
 			if (IsCritical)
