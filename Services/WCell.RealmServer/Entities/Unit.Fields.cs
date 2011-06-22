@@ -1022,7 +1022,29 @@ namespace WCell.RealmServer.Entities
 				}
 			}
 		}
-
+		/// <summary>
+		/// Helper function for Aurastate related fix and Conflagrate spell.
+		/// see UpdateFieldHandler/Warlockfixes
+		/// </summary>
+		public SpellId GetStrongestImmolate()
+		{
+			var immolate = this.Auras[SpellLineId.WarlockImmolate];
+			var shadowflamerank1 = this.Auras[SpellId.Shadowflame_3];
+			var shadowflamerank2 = this.Auras[SpellId.Shadowflame_5];
+			if (immolate != null)
+			{
+				return immolate.Spell.SpellId;
+			}
+			else if (shadowflamerank2 != null)
+			{
+				return shadowflamerank2.Spell.SpellId;
+			}
+			else if (shadowflamerank1 != null)
+			{
+				return shadowflamerank1.Spell.SpellId;
+			}
+			return SpellId.None;
+		}
 
 		#region UNIT_FIELD_BYTES_0
 

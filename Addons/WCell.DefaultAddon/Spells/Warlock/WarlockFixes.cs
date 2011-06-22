@@ -64,6 +64,11 @@ namespace WCell.Addons.Default.Spells.Warlock
                 var spellEffect = spell.GetEffect(SpellEffectType.Dummy);
                 spellEffect.SpellEffectHandlerCreator = (cast, effect) => new LifeTapHandler(cast, effect);
             }, SpellLineId.WarlockLifeTap);
+
+			SpellLineId.WarlockImmolate.Apply(spell =>
+			{
+				spell.AddAuraEffect(() => new ApplyImmolateStateHandler(),ImplicitSpellTargetType.SingleEnemy);
+			});
         }
 
         public class IncreaseDamageIfAuraPresentHandler : SpellEffectHandler
@@ -141,5 +146,18 @@ namespace WCell.Addons.Default.Spells.Warlock
                 return base.InitializeTarget(target);
             }
         }
-    }
+		#region ApplyImmolateStateHandler
+		public class ApplyImmolateStateHandler : DummyHandler
+		{
+			protected override void Apply()
+			{
+				Owner.IncMechanicCount(SpellMechanic.Custom_Immolate, true);
+			}
+			protected override void Remove(bool cancelled)
+			{
+				Owner.DecMechanicCount(SpellMechanic.Custom_Immolate, true);
+			}
+		}
+		#endregion
+	}
 }
