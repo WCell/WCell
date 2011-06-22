@@ -64,6 +64,12 @@ namespace WCell.Addons.Default.Spells.Warlock
                 var spellEffect = spell.GetEffect(SpellEffectType.Dummy);
                 spellEffect.SpellEffectHandlerCreator = (cast, effect) => new LifeTapHandler(cast, effect);
             }, SpellLineId.WarlockLifeTap);
+
+			SpellLineId.WarlockImmolate.Apply(spell =>
+			{
+				var eff = spell.GetEffect(AuraType.PeriodicDamage);
+				eff.AuraEffectHandlerCreator = () => new ApplyImmolateStateHandler();
+			});
         }
 
         public class IncreaseDamageIfAuraPresentHandler : SpellEffectHandler
@@ -141,5 +147,20 @@ namespace WCell.Addons.Default.Spells.Warlock
                 return base.InitializeTarget(target);
             }
         }
-    }
+		#region ApplyImmolateStateHandler
+		public class ApplyImmolateStateHandler : PeriodicDamageHandler
+		{
+			protected override void Apply()
+			{	//TODO: use those inc/dec mechaniccount functions
+				Owner.AuraState |= AuraStateMask.Immolate;
+				base.Apply();
+			}
+			protected override void Remove(bool cancelled)
+			{
+				base.Remove(cancelled);
+				Owner.AuraState &= ~AuraStateMask.Immolate;
+			}
+		}
+		#endregion
+	}
 }
