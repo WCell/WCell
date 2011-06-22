@@ -319,6 +319,20 @@ namespace WCell.RealmServer.Quests
 				}
 			}
 
+            if (quest.CollectedSourceItems != null)
+            {
+                m_RequireItemsQuests.Add(quest);
+                for (var i = 0; i < quest.Template.CollectableSourceItems.Length; i++)
+                {
+                    var item = quest.Template.CollectableSourceItems[i];
+                    if (item.ItemId != ItemId.None)
+                    {
+                        // find items that are already there
+                        quest.CollectedSourceItems[i] = m_Owner.Inventory.GetAmount(item.ItemId);
+                    }
+                }
+            }
+
 			quest.UpdateStatus();
 
 			qt.NotifyStarted(quest);
@@ -395,6 +409,17 @@ namespace WCell.RealmServer.Quests
 					m_Owner.Inventory.Consume((uint)quest.Template.CollectableItems[i].ItemId, true, quest.CollectedItems[i]);
 				}
 			}
+
+            if (quest.CollectedSourceItems != null)
+            {
+                m_RequireItemsQuests.Remove(quest);
+                var amt = quest.Template.CollectableSourceItems.Length;
+                for (var i = 0; i < amt; i++)
+                {
+                    // remove all source Items
+                    m_Owner.Inventory.Consume((uint)quest.Template.CollectableSourceItems[i].ItemId, true, quest.CollectedSourceItems[i]);
+                }
+            }
 
 			// remove all provided Items
 			if (quest.Template.ProvidedItems.Count > 0)
@@ -726,6 +751,25 @@ namespace WCell.RealmServer.Quests
 						break;
 					}
 				}
+                for (var i = 0; i < quest.Template.CollectableSourceItems.Length; i++)
+                {
+                    var requiredItem = quest.Template.CollectableSourceItems[i];
+                    if (requiredItem.ItemId == item.Template.ItemId)
+                    {
+                        var amount = quest.CollectedSourceItems[i];
+                        var newAmount = amount + delta;
+
+                        var needsUpdate = amount < requiredItem.Amount || newAmount < requiredItem.Amount;
+
+                        quest.CollectedSourceItems[i] = newAmount;
+                        if (needsUpdate)
+                        {
+                            QuestHandler.SendUpdateItems(item.Template.ItemId, delta, m_Owner);
+                            quest.UpdateStatus();
+                        }
+                        break;
+                    }
+                }
 			}
 		}
 
@@ -745,6 +789,14 @@ namespace WCell.RealmServer.Quests
 						return quest;
 					}
 				}
+                for (var i = 0; i < quest.Template.CollectableSourceItems.Length; i++)
+                {
+                    var requiredItem = quest.Template.CollectableSourceItems[i];
+                    if (requiredItem.ItemId == item)
+                    {
+                        return quest;
+                    }
+                }
 			}
 			return null;
 		}
@@ -767,6 +819,14 @@ namespace WCell.RealmServer.Quests
 						return quest.CollectedItems[i] < requiredItem.Amount;
 					}
 				}
+                for (var i = 0; i < quest.Template.CollectableSourceItems.Length; i++)
+                {
+                    var requiredItem = quest.Template.CollectableSourceItems[i];
+                    if (requiredItem.ItemId == item)
+                    {
+                        return quest.CollectedSourceItems[i] < requiredItem.Amount;
+                    }
+                }
 			}
 			return false;
 		}

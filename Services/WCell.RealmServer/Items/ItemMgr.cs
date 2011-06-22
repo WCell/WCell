@@ -758,6 +758,27 @@ namespace WCell.RealmServer.Items
 						}
 					}
 				}
+
+                foreach (var itemInfo in quest.CollectableSourceItems)
+                {
+                    var item = GetTemplate(itemInfo.ItemId);
+                    if (item == null)
+                    {
+                        ContentMgr.OnInvalidDBData("QuestTemplate \"{0}\" refered to non-existing Item: {1}",
+                                                       quest, itemInfo);
+                    }
+                    else
+                    {
+                        if (item.CollectQuests == null)
+                        {
+                            item.CollectQuests = new[] { quest };
+                        }
+                        else
+                        {
+                            ArrayUtil.AddOnlyOne(ref item.CollectQuests, quest);
+                        }
+                    }
+                }
 			}
 
 			// Item QuestGivers

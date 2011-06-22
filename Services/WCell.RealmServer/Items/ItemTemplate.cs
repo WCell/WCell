@@ -694,6 +694,16 @@ namespace WCell.RealmServer.Items
 									}
 								}
 							}
+                            for (int it = 0; it < q.CollectableSourceItems.Length; it++)
+                            {
+                                if (q.CollectableSourceItems[it].ItemId == ItemId)
+                                {
+                                    if (q.CollectableSourceItems[it].Amount > looter.QuestLog.GetActiveQuest(q.Id).CollectedSourceItems[it])
+                                    {
+                                        return true;
+                                    }
+                                }
+                            }
 						}
 					}
 				}

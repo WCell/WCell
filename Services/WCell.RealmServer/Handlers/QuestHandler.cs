@@ -493,8 +493,8 @@ namespace WCell.RealmServer.Handlers
 				{
 					pckt.Write(qt.ObjectOrSpellInteractions[i].RawId);		// Mob or GO entry ID [i]
 					pckt.Write(qt.ObjectOrSpellInteractions[i].Amount);	// amount [i],
-					pckt.Write(0);
-					pckt.Write(0);									// since 3.3
+					pckt.Write((uint)qt.CollectableSourceItems[i].ItemId);
+					pckt.Write(qt.CollectableSourceItems[i].Amount);
 				}
 
 				for (i = 0; i < QuestConstants.MaxCollectableItems; i++)
