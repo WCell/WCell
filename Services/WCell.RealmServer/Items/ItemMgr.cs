@@ -114,20 +114,9 @@ namespace WCell.RealmServer.Items
 		/// <summary>
 		///  Returns a List of templates with the given ItemClass
 		/// </summary>
-		public static List<ItemTemplate> GetTemplates(ItemClass type)
+		public static IEnumerable<ItemTemplate> GetTemplates(ItemClass type)
 		{
-			var templates = new List<ItemTemplate>();
-			foreach (var template in Templates)
-			{
-				if (template != null)
-				{
-					if (template.Class == type)
-					{
-						templates.Add(template);
-					}
-				}
-			}
-			return templates;
+			return Templates.Where(template => template != null).Where(template => template.Class == type);
 		}
 
 		/// <summary>
