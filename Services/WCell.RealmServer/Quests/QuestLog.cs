@@ -321,7 +321,8 @@ namespace WCell.RealmServer.Quests
 
             if (quest.CollectedSourceItems != null)
             {
-                m_RequireItemsQuests.Add(quest);
+                if(!m_RequireItemsQuests.Contains(quest))
+                    m_RequireItemsQuests.Add(quest);
                 for (var i = 0; i < quest.Template.CollectableSourceItems.Length; i++)
                 {
                     var item = quest.Template.CollectableSourceItems[i];
@@ -821,10 +822,10 @@ namespace WCell.RealmServer.Quests
 				}
                 for (var i = 0; i < quest.Template.CollectableSourceItems.Length; i++)
                 {
-                    var requiredItem = quest.Template.CollectableSourceItems[i];
-                    if (requiredItem.ItemId == item)
+                    var collectableSourceItem = quest.Template.CollectableSourceItems[i];
+                    if (collectableSourceItem.ItemId == item)
                     {
-                        return quest.CollectedSourceItems[i] < requiredItem.Amount;
+                        return quest.CollectedSourceItems[i] < collectableSourceItem.Amount;
                     }
                 }
 			}

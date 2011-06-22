@@ -206,7 +206,8 @@ namespace WCell.RealmServer.Skills
 			{
 				return false;
 			}
-			else if (amount > 0 && skill.ActualValue < amount)
+			
+            if (amount > 0 && skill.ActualValue < amount)
 			{
 				return false;
 			}

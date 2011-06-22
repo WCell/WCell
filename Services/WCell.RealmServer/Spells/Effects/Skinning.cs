@@ -35,7 +35,7 @@ namespace WCell.RealmServer.Spells.Effects
 		public override SpellFailedReason InitializeTarget(WorldObject target)
 		{
 			var unit = (Unit) target;
-			if (Cast.CasterChar.Skills.CheckSkill(SkillHandler.GetSkill((SkinningType)Effect.MiscValue), unit.Level * 5))
+			if (!Cast.CasterChar.Skills.CheckSkill(SkillHandler.GetSkill((SkinningType)Effect.MiscValue), unit.Level * 5))
 			{
 				return SpellFailedReason.TargetUnskinnable;
 			}
