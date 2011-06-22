@@ -40,7 +40,8 @@ namespace WCell.Constants.Spells
 		Invulnerable_2 = 29,
 		Sapped = 30,
 		Enraged = 31,
-		End
+		End = 32,
+		Custom_Immolate = 33
 	}
 
 }

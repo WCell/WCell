@@ -67,8 +67,7 @@ namespace WCell.Addons.Default.Spells.Warlock
 
 			SpellLineId.WarlockImmolate.Apply(spell =>
 			{
-				var eff = spell.GetEffect(AuraType.PeriodicDamage);
-				eff.AuraEffectHandlerCreator = () => new ApplyImmolateStateHandler();
+				spell.AddAuraEffect(() => new ApplyImmolateStateHandler(),ImplicitSpellTargetType.SingleEnemy);
 			});
         }
 
@@ -148,17 +147,15 @@ namespace WCell.Addons.Default.Spells.Warlock
             }
         }
 		#region ApplyImmolateStateHandler
-		public class ApplyImmolateStateHandler : PeriodicDamageHandler
+		public class ApplyImmolateStateHandler : DummyHandler
 		{
 			protected override void Apply()
-			{	//TODO: use those inc/dec mechaniccount functions
-				Owner.AuraState |= AuraStateMask.Immolate;
-				base.Apply();
+			{
+				Owner.IncMechanicCount(SpellMechanic.Custom_Immolate, true);
 			}
 			protected override void Remove(bool cancelled)
 			{
-				base.Remove(cancelled);
-				Owner.AuraState &= ~AuraStateMask.Immolate;
+				Owner.DecMechanicCount(SpellMechanic.Custom_Immolate, true);
 			}
 		}
 		#endregion

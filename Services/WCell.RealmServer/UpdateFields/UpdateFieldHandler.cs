@@ -114,7 +114,7 @@ namespace WCell.RealmServer.UpdateFields
 				packet.Write((uint)(unit.AuraState | AuraStateMask.Immolate));
 			}
 			else
-				packet.Write((uint)(unit.AuraState &= ~AuraStateMask.Immolate));
+				packet.Write((uint)(unit.AuraState & ~AuraStateMask.Immolate));
 		}
 
 		private static void WriteNPCFlags(ObjectBase obj, Character chr, UpdatePacket packet)
