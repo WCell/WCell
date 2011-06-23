@@ -394,7 +394,7 @@ namespace WCell.RealmServer.Gossips
 
 		public override string ToString()
 		{
-			return string.Format("NPC: {0} <-> Gossip id: {2}", NPCSpawnId, GossipId);
+			return string.Format("NPC: {0} <-> Gossip id: {1}", NPCSpawnId, GossipId);
 		}
 	}
 	#endregion

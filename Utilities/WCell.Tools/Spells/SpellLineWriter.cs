@@ -34,7 +34,7 @@ namespace WCell.Tools.Spells
 
 		private static HashSet<SkillId> LineSkills = new HashSet<SkillId>();
 
-		[Tool]
+		[Tool("Lines")]
 		public static void WriteSpellLines()
 		{
 			WriteSpellLines(ToolConfig.RealmServerRoot + "Spells/SpellLines.Def.cs");
@@ -336,14 +336,19 @@ namespace WCell.Tools.Spells
 					return;
 				}
 
+				if (spell.Id == 49240)
+				{
+					spell.ToString();
+				}
+
 				 // don't add weird copies or unknown anonymous triggered effects
 				if (line.Any(spll => spell.Rank == spll.Rank &&
-					(spll.Description.Contains(spell.Id.ToString()) || spll.CategoryCooldownTime > 0)))
+					(spll.Description.Contains(spell.Id.ToString()) || spll.CategoryCooldownTime > 0 || (spll.CastDelay >0 && spell.CastDelay == 0))))
 				{
 					return;
 				}
-				line.RemoveWhere(spll => spell.Rank == spll.Rank && 
-					(spell.Description.Contains(spll.Id.ToString()) || spll.CategoryCooldownTime == 0));
+				line.RemoveWhere(spll => spell.Rank == spll.Rank &&
+					(spell.Description.Contains(spll.Id.ToString()) || spll.CategoryCooldownTime == 0 || (spll.CastDelay > 0 && spell.CastDelay == 0)));
 			}
 
 			line.Add(spell);

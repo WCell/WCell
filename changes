@@ -1,1 +1,1 @@
-- changed AICombatAction to reset combat only if CheckCombat returns false -> this might come with certain issues but definitely fixes some
+- fixed SpellLineWriter heuristics - better match evaluation: "first.CastDelay > 0 && second.CastDelay == 0" favors first over second
