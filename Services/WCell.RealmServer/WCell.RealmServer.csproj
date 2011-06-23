@@ -651,7 +651,6 @@
     <Compile Include="Battlegrounds\BattlegroundQueue.cs" />
     <Compile Include="Battlegrounds\BattlegroundTemplate.cs" />
     <Compile Include="Battlegrounds\BattlegroundMgr.cs" />
-    <Compile Include="Battlegrounds\Battlegroup.cs" />
     <Compile Include="Chat\ChatUtility.cs" />
     <Compile Include="Chat\IChatTarget.cs" />
     <Compile Include="Chat\ChannelMember.cs" />

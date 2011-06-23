@@ -1,3 +1,0 @@
-- added missing file
-- added Map.Save() and invoke it with World.Save() (used when shutdown, and in other cases)
-- added InstanceProgress and InstanceSettings to save and customize raids and dungeons

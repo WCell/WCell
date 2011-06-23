@@ -38,7 +38,7 @@ namespace WCell.RealmServer.Global
     }
 
 	/// <summary>
-	/// The template of a Zone
+	/// The template of a Map
 	/// </summary>
 	[DataHolder]
 	public partial class MapTemplate : IDataHolder, IComparable

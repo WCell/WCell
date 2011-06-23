@@ -33,6 +33,7 @@ namespace WCell.RealmServer.Instances
 		private DateTime m_lastReset;
 		private TimerEntry m_timeoutTimer;
 		private InstanceProgress progress;
+		private InstanceSettings settings;
 
 		protected BaseInstance()
 		{
@@ -54,6 +55,14 @@ namespace WCell.RealmServer.Instances
 			m_timeoutTimer = new TimerEntry(OnTimeout);
 
 			RegisterUpdatableLater(this); 
+
+			// create InstanceSettings object
+			settings = CreateSettings();
+		}
+
+		protected virtual InstanceSettings CreateSettings()
+		{
+			return Difficulty.IsDungeon ? (InstanceSettings)new DungeonInstanceSettings(this) : new RaidInstanceSettings(this);
 		}
 
 		/// <summary>
@@ -75,6 +84,16 @@ namespace WCell.RealmServer.Instances
 		public override MapDifficultyEntry Difficulty
 		{
 			get { return difficulty; }
+		}
+
+		public InstanceSettings Settings
+		{
+			get { return settings; }
+		}
+
+		public InstanceProgress Progress
+		{
+			get { return progress; }
 		}
 
 		public IInstanceHolderSet Owner

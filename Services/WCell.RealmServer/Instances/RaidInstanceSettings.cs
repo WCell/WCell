@@ -10,7 +10,8 @@ namespace WCell.RealmServer.Instances
 	/// </summary>
 	public class RaidInstanceSettings : InstanceSettings
 	{
-		protected RaidInstanceSettings(BaseInstance instance) : base(instance)
+		public RaidInstanceSettings(BaseInstance instance)
+			: base(instance)
 		{
 		}
 	}

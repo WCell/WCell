@@ -74,35 +74,50 @@ namespace WCell.RealmServer.Groups
 
 		public void ForeachCharacter(Action<Character> callback)
 		{
-			
+			using (Group.SyncRoot.EnterReadLock())
+			{
+				foreach (var member in m_members)
+				{
+					var chr = member.Character;
+					if (chr != null)
+					{
+						callback(chr);
+					}
+				}
+			}
+		}
+
+		public void ForeachMember(Action<GroupMember> callback)
+		{
+			using (Group.SyncRoot.EnterReadLock())
+			{
+				foreach (var member in m_members)
+				{
+					callback(member);
+				}
+			}
 		}
 
 		public Character[] GetAllCharacters()
 		{
-			var chrs = new Character[MaxMemberCount];
-			var c = 0;
-
-			m_group.SyncRoot.EnterReadLock();
-			try
+			using (Group.SyncRoot.EnterReadLock())
 			{
+				var chrs = new Character[Members.Length];
+				var i = 0;
 				foreach (var member in m_members)
 				{
-					if (member.Character != null)
+					var chr = member.Character;
+					if (chr != null)
 					{
-						chrs[c++] = member.Character;
+						chrs[i++] = chr;
 					}
 				}
+				if (i < Members.Length)
+				{
+					Array.Resize(ref chrs, i);
+				}
+				return chrs;
 			}
-			finally
-			{
-				m_group.SyncRoot.ExitReadLock();
-			}
-
-			if (chrs.Length > c)
-			{
-				Array.Resize(ref chrs, c);
-			}
-			return chrs;
 		}
 
 		public GroupMember[] Members
@@ -189,26 +204,18 @@ namespace WCell.RealmServer.Groups
 		public void Send(RealmPacketOut packet, GroupMember ignored)
 		{
 			Character charMember;
-			m_group.SyncRoot.EnterReadLock();
-			try
+			ForeachMember(member =>
 			{
-				foreach (var member in m_members)
+				if (member != ignored)
 				{
-					if (member != ignored)
-					{
-						charMember = member.Character;
+					charMember = member.Character;
 
-						if (charMember != null)
-						{
-							charMember.Client.Send(packet);
-						}
+					if (charMember != null)
+					{
+						charMember.Client.Send(packet);
 					}
 				}
-			}
-			finally
-			{
-				m_group.SyncRoot.ExitReadLock();
-			}
+			});
 		}
 
 		public void Send(RealmPacketOut packet)

@@ -10,7 +10,7 @@ namespace WCell.RealmServer.Instances
 	/// </summary>
 	public class DungeonInstanceSettings : InstanceSettings
 	{
-		protected DungeonInstanceSettings(BaseInstance instance) : base(instance)
+		public DungeonInstanceSettings(BaseInstance instance) : base(instance)
 		{
 		}
 	}

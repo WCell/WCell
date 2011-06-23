@@ -5,7 +5,7 @@ using System.Text;
 
 namespace WCell.RealmServer.Instances
 {
-	public class InstanceSettings
+	public abstract class InstanceSettings
 	{
 		protected InstanceSettings(BaseInstance instance)
 		{
