@@ -314,22 +314,24 @@ namespace WCell.RealmServer.Groups
 		/// </summary>
 		public void ForeachCharacter(Action<Character> callback)
 		{
-			var chrs = new Character[m_Count];
-			m_syncLock.EnterReadLock();
-			int count;
 			try
 			{
-				count = GetAllCharactersUnlocked(chrs);
+				for (var i = 0; i < SubGroups.Length; i++)
+				{
+					var subGroup = SubGroups[i];
+					foreach (var member in subGroup)
+					{
+						var chr = member.Character;
+						if (chr != null)
+						{
+							chr.ExecuteInContext(() => callback(chr));
+						}
+					}
+				}
 			}
 			finally
 			{
 				m_syncLock.ExitReadLock();
-			}
-
-			for (var i = 0; i < count; i++)
-			{
-				var chr = chrs[i];
-				chr.ExecuteInContext(() => callback(chr));
 			}
 		}
 
