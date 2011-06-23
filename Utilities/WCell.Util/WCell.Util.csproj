@@ -255,6 +255,8 @@
     <Compile Include="NLog\LogUtil.cs" />
     <Compile Include="NLog\StreamLogger.cs" />
     <Compile Include="ReflectionUtils.cs" />
+    <Compile Include="Serialization\SerializerCollection.cs" />
+    <Compile Include="Serialization\VersionedSerializer.cs" />
     <Compile Include="SortedTopN.cs" />
     <Compile Include="Strings\StringStream.cs" />
     <Compile Include="Strings\StringNode.cs" />

@@ -2631,5 +2631,10 @@ namespace WCell.RealmServer.Global
 				}
 			}
 		}
+
+		public virtual void Save()
+		{
+			// do nothing
+		}
 	}
 }

@@ -234,6 +234,7 @@
     <Compile Include="Handlers\TotemHandler.cs" />
     <Compile Include="Handlers\WorldStateHandler.cs" />
     <Compile Include="Instances\DungeonInstanceSettings.cs" />
+    <Compile Include="Instances\InstanceProgress.cs" />
     <Compile Include="Instances\RaidInstanceSettings.cs" />
     <Compile Include="NPCs\Trainers\TrainerSpellTemplate.cs" />
     <Compile Include="Spells\Auras\Misc\CallStabledPetHandler.cs" />

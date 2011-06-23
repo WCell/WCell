@@ -32,6 +32,7 @@ namespace WCell.RealmServer.Instances
 		internal MapDifficultyEntry difficulty;
 		private DateTime m_lastReset;
 		private TimerEntry m_timeoutTimer;
+		private InstanceProgress progress;
 
 		protected BaseInstance()
 		{
@@ -206,6 +207,23 @@ namespace WCell.RealmServer.Instances
 				ownerStr = " - Owned by: " + Owner.InstanceLeader.Name;
 			}
 			return base.ToString() + ((difficulty.IsHeroic ? " [Heroic]" : "") + ownerStr);
+		}
+
+		public override sealed void Save()
+		{
+			if (progress == null)
+			{
+				progress = new InstanceProgress(MapId, InstanceId);
+			}
+			PerformSave();
+			progress.Save();
+		}
+
+		/// <summary>
+		/// Method is to be overridden by instance implementation
+		/// </summary>
+		protected virtual void PerformSave()
+		{
 		}
 		#endregion
 	}

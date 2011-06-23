@@ -77,6 +77,10 @@ namespace WCell.Addons.Default.Instances
             }
         };
         #endregion
+
+    	protected override void PerformSave()
+    	{
+    	}
     }
 
 }

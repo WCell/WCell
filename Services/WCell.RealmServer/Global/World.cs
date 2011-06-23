@@ -337,7 +337,13 @@ namespace WCell.RealmServer.Global
 					// pause the world so nothing else can happen anymore
 					//Paused = true;
 
-					// save everything
+					// save maps
+					foreach (var map in GetAllMaps())
+					{
+						map.Save();
+					}
+
+					// save characters
 					var chars = GetAllCharacters();
 					var saveCount = chars.Count;
 					RealmServer.IOQueue.ExecuteInContext(() =>
