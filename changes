@@ -1,1 +1,1 @@
-- fixed up all hostility/friendly/ally checks
+- changed AICombatAction to reset combat only if CheckCombat returns false -> this might come with certain issues but definitely fixes some

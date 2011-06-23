@@ -146,7 +146,7 @@ namespace WCell.RealmServer.AI.Actions.States
 						if (!m_owner.Brain.CheckCombat())
 						{
 							// run back
-							owner.Brain.State = BrainState.Evade;
+							owner.Brain.ClearCombat(BrainState.Evade);
 						}
 					}
 				}
@@ -156,7 +156,7 @@ namespace WCell.RealmServer.AI.Actions.States
 					if (!owner.Brain.CheckCombat())
 					{
 						// go back to what we did before
-						owner.Brain.EnterDefaultState();
+						owner.Brain.ClearCombat(owner.Brain.DefaultState);
 					}
 				}
 			}
@@ -164,20 +164,17 @@ namespace WCell.RealmServer.AI.Actions.States
 
 		public override void Stop()
 		{
-			((NPC)m_owner).ThreatCollection.Clear();
 			if (m_Strategy != null)
 			{
 				m_Strategy.Stop();
 			}
 
-			m_owner.IsInCombat = false;
-
 			if (m_init && m_owner.Target != null)
 			{
 				Disengage(m_owner.Target);
 			}
-			m_owner.Target = null;
 
+			m_owner.Target = null;
 			m_owner.MarkUpdate(UnitFields.DYNAMIC_FLAGS);
 		}
 

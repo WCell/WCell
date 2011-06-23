@@ -395,6 +395,17 @@ namespace WCell.RealmServer.AI.Brains
 			return false;
 		}
 
+		public void ClearCombat(BrainState newState)
+		{
+			if ((m_owner is NPC))
+			{
+				((NPC)m_owner).ThreatCollection.Clear();
+			}
+			m_owner.IsInCombat = false;
+			m_owner.MarkUpdate(UnitFields.DYNAMIC_FLAGS);
+			State = newState;
+		}
+
 		public void OnGroupChange(AIGroup newGroup)
 		{
 			//if (newGroup != null)

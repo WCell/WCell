@@ -86,6 +86,11 @@ namespace WCell.RealmServer.AI.Brains
 		bool CheckCombat();
 
 		/// <summary>
+		/// Used to get the owner of this brain out of combat and leave all fighting behind
+		/// </summary>
+		void ClearCombat(BrainState newState);
+
+		/// <summary>
 		/// Called when the AIGroup of an NPC is about to change
 		/// </summary>
 		void OnGroupChange(AIGroup newGroup);

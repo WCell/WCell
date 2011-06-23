@@ -21,8 +21,6 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 {
 	public class ModAttackerCritChancePercentHandler : AuraEffectHandler
 	{
-		float amount;
-
 		protected override void Apply()
 		{
 			Owner.AttackerPhysicalCritChancePercentMod += EffectValue;
