@@ -105,7 +105,7 @@ namespace WCell.RealmServer.NPCs.Trainers
 				return TrainerSpellState.Unavailable;
 			}
 
-			if (RequiredSpellId != 0 && !character.Spells.Contains(RequiredSpellId))
+			if (RequiredSpellId != 0)
 				return TrainerSpellState.Unavailable;
 
 			if (RequiredSkillId != 0 && !character.Skills.CheckSkill(RequiredSkillId, (int)RequiredSkillAmount))

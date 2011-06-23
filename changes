@@ -1,1 +1,2 @@
-- fixed SpellLineWriter heuristics - better match evaluation: "first.CastDelay > 0 && second.CastDelay == 0" favors first over second
+- trainers will now list all spells they have - let me know if there are certain spells it should not always display
+- vendors should not display certain types of items - don't know which ones, but I changed SendVendorInventoryList so it can be easily added

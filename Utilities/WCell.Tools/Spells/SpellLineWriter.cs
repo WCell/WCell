@@ -336,11 +336,6 @@ namespace WCell.Tools.Spells
 					return;
 				}
 
-				if (spell.Id == 49240)
-				{
-					spell.ToString();
-				}
-
 				 // don't add weird copies or unknown anonymous triggered effects
 				if (line.Any(spll => spell.Rank == spll.Rank &&
 					(spll.Description.Contains(spell.Id.ToString()) || spll.CategoryCooldownTime > 0 || (spll.CastDelay >0 && spell.CastDelay == 0))))

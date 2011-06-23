@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using NLog;
 using WCell.Constants.Achievements;
 using WCell.Constants.Items;
 using WCell.Constants.Spells;
@@ -77,7 +78,7 @@ namespace WCell.RealmServer.NPCs.Vendors
 				return;
 
 			var error = SellItemError.Success;
-			if (!CheckCanSellItem(chr, item, ref error))
+			if (!CanPlayerSellItem(chr, item, ref error))
 			{
 				NPCHandler.SendSellError(chr.Client, NPC.EntityId, item.EntityId, error);
 				return;
@@ -199,16 +200,14 @@ namespace WCell.RealmServer.NPCs.Vendors
 				amount = amount * item.BuyStackSize;
 			}
 
-			if (!CheckBuyItem(chr, item, amount))
-				return;
-
-			// Does the player have enough money?
-			var price = chr.Reputations.GetDiscountedCost(NPC.Faction.ReputationIndex, item.Template.BuyPrice);
-			if (chr.Money < price)
+			uint price;
+			var buyErr = CanPlayerBuyItem(chr, item, amount, out price);
+			if (buyErr != BuyItemError.Ok)
 			{
-				NPCHandler.SendBuyError(chr, NPC, item.Template.ItemId, BuyItemError.NotEnoughMoney);
+				NPCHandler.SendBuyError(chr, NPC, item.Template.ItemId, buyErr);
 				return;
 			}
+
 			BaseInventory inv = chr.Inventory;
 			InventoryError err;
 			if (inv.IsValidSlot(slot))
@@ -252,12 +251,14 @@ namespace WCell.RealmServer.NPCs.Vendors
 
 					if (!chr.Inventory.RemoveByItemId(reqItem.Id, reqItem.Cost, false))
 					{
-						NPCHandler.SendBuyError(chr, NPC, item.Template.ItemId, BuyItemError.NotEnoughMoney);
-						return;
+						// should not happen
+						LogManager.GetCurrentClassLogger().Warn("Unable to remove required item \"{0}\" from player \"{1}\" when purchasing item: {2}",
+							reqItem.Template, chr, item.Template);
 					}
 				}
 			}
 
+			// manage stock
 			int remainingAmount;
 			if (item.RemainingStockAmount != UnlimitedSupply)
 			{
@@ -270,6 +271,7 @@ namespace WCell.RealmServer.NPCs.Vendors
 				remainingAmount = UnlimitedSupply;
 			}
 
+			// send packet
 			NPCHandler.SendBuyItem(chr.Client, NPC, item.Template.ItemId, amount, remainingAmount);
 		}
 
@@ -291,7 +293,7 @@ namespace WCell.RealmServer.NPCs.Vendors
 		/// <param name="chr"></param>
 		/// <param name="item"></param>
 		/// <returns></returns>
-		public bool CheckCanSellItem(Character chr, Item item, ref SellItemError error)
+		public bool CanPlayerSellItem(Character chr, Item item, ref SellItemError error)
 		{
 			// Can't sell items that don't belong to you.
 			if (chr != item.OwningCharacter)
@@ -351,7 +353,7 @@ namespace WCell.RealmServer.NPCs.Vendors
 			return item;
 		}
 
-		private bool CheckBuyItem(Character chr, VendorItemEntry vendorItem, int count)
+		public BuyItemError CanPlayerBuyItem(Character chr, VendorItemEntry vendorItem, int count, out uint price)
 		{
 			// Can the player use this item?
 			//if (vendorItem.Template.CheckRequirements(curChar) != InventoryError.OK)
@@ -360,11 +362,17 @@ namespace WCell.RealmServer.NPCs.Vendors
 			//	return false;
 			//}
 
+			// Does the player have enough money?
+			price = chr.Reputations.GetDiscountedCost(NPC.Faction.ReputationIndex, vendorItem.Template.BuyPrice);
+			if (chr.Money < price)
+			{
+				return BuyItemError.NotEnoughMoney;
+			}
+
 			// Does the vendor have enough inventory for this trade?
 			if (vendorItem.RemainingStockAmount != UnlimitedSupply && vendorItem.RemainingStockAmount < count)
 			{
-				NPCHandler.SendBuyError(chr, NPC, vendorItem.Template.ItemId, BuyItemError.ItemAlreadySold);
-				return false;
+				return BuyItemError.ItemAlreadySold;
 			}
 
 			// Is the player's faction standing high enough with this vendor?
@@ -372,8 +380,7 @@ namespace WCell.RealmServer.NPCs.Vendors
 			{
 				if (chr.Reputations.GetStandingLevel(vendorItem.Template.RequiredFaction.ReputationIndex) < vendorItem.Template.RequiredFactionStanding)
 				{
-					NPCHandler.SendBuyError(chr, NPC, vendorItem.Template.ItemId, BuyItemError.ReputationRequirementNotMet);
-					return false;
+					return BuyItemError.ReputationRequirementNotMet;
 				}
 			}
 
@@ -382,20 +389,17 @@ namespace WCell.RealmServer.NPCs.Vendors
 				var exCost = vendorItem.ExtendedCostEntry;
 				if (chr.HonorPoints < exCost.HonorCost)
 				{
-					NPCHandler.SendBuyError(chr, NPC, vendorItem.Template.ItemId, BuyItemError.NotEnoughMoney);
-					return false;
+					return BuyItemError.NotEnoughMoney;
 				}
 
 				if (chr.ArenaPoints < exCost.ArenaPointCost)
 				{
-					NPCHandler.SendBuyError(chr, NPC, vendorItem.Template.ItemId, BuyItemError.NotEnoughMoney);
-					return false;
+					return BuyItemError.NotEnoughMoney;
 				}
 
 				if (chr.MaxPersonalArenaRating < exCost.ReqArenaRating)
 				{
-					NPCHandler.SendBuyError(chr, NPC, vendorItem.Template.ItemId, BuyItemError.RankRequirementNotMet);
-					return false;
+					return BuyItemError.RankRequirementNotMet;
 				}
 
 				foreach (var reqItem in exCost.RequiredItems)
@@ -404,12 +408,11 @@ namespace WCell.RealmServer.NPCs.Vendors
 					var amt = chr.Inventory.GetItemAmountByItemId(reqItem.Id);
 					if (amt < reqItem.Cost)
 					{
-						NPCHandler.SendBuyError(chr, NPC, vendorItem.Template.ItemId, BuyItemError.NotEnoughMoney);
-						return false;
+						return BuyItemError.NotEnoughMoney;
 					}
 				}
 			}
-			return true;
+			return BuyItemError.Ok;
 		}
 
 		public List<VendorItemEntry> ConstructVendorItemList(Character curChar)

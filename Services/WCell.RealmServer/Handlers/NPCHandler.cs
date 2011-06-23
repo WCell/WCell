@@ -732,29 +732,34 @@ namespace WCell.RealmServer.Handlers
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_LIST_INVENTORY, 10 + (28 * numItems)))
 			{
 				packet.Write(vendor.EntityId);
-				packet.Write((byte)numItems);
+				int countPos = (int) packet.Position;
+				packet.Write(0);
+
+				for (var i = 0; i < numItems; ++i)
+				{
+					// TODO: Exclude items that the buyer may never purchase
+
+					numItems++;
+					// Write in the item number (1 - 256)
+					packet.Write(i + 1);
+
+					var item = itemsForSale[i];
+					var price = buyer.Reputations.GetDiscountedCost(vendor.Faction.ReputationIndex, item.Template.BuyPrice);
+
+					packet.Write(item.Template.Id);
+					packet.Write(item.Template.DisplayId);
+					packet.Write(item.RemainingStockAmount);
+					packet.Write(price);
+					packet.Write(item.Template.MaxDurability);
+					packet.Write(item.BuyStackSize);
+					packet.Write(item.ExtendedCostId);
+				}
+
+				packet.Position = countPos;
+				packet.Write((byte) numItems);
 				if (numItems == 0)
 				{
-					packet.Write((byte)VendorInventoryError.NoInventory);
-				}
-				else
-				{
-					for (var i = 0; i < numItems; ++i)
-					{
-						// Write in the item number (1 - 256)
-						packet.Write(i + 1);
-
-						var item = itemsForSale[i];
-						var price = buyer.Reputations.GetDiscountedCost(vendor.Faction.ReputationIndex, item.Template.BuyPrice);
-
-						packet.Write(item.Template.Id);
-						packet.Write(item.Template.DisplayId);
-						packet.Write(item.RemainingStockAmount);
-						packet.Write(price);
-						packet.Write(item.Template.MaxDurability);
-						packet.Write(item.BuyStackSize);
-						packet.Write(item.ExtendedCostId);
-					}
+					packet.Write((byte) VendorInventoryError.NoInventory);
 				}
 				buyer.Send(packet);
 			}
@@ -861,7 +866,8 @@ namespace WCell.RealmServer.Handlers
 				var spellCount = 0;
 				foreach (var trainerSpell in spells)
 				{
-					if (!chr.CanLearn(trainerSpell))
+					//if (!chr.CanLearn(trainerSpell))
+					if (trainerSpell.Spell == null)
 					{
 						continue;
 					}
@@ -877,7 +883,7 @@ namespace WCell.RealmServer.Handlers
 					packet.Write((byte)trainerSpell.GetTrainerSpellState(chr));
 					packet.Write(trainerSpell.GetDiscountedCost(chr, trainer));
 					packet.Write(spell.Talent != null ? 1u : 0u);						// talent cost
-					packet.Write(trainerSpell.Spell.IsProfession && trainerSpell.Spell.TeachesApprenticeAbility ? 1 : 0);	// Profession cost
+					packet.Write(trainerSpell.Spell.IsProfession && spell.TeachesApprenticeAbility ? 1 : 0);	// Profession cost
 					packet.Write((byte)trainerSpell.RequiredLevel);
 					packet.Write((uint)trainerSpell.RequiredSkillId);
 					packet.Write(trainerSpell.RequiredSkillAmount);
