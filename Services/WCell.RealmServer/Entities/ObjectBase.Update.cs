@@ -245,7 +245,7 @@ namespace WCell.RealmServer.Entities
 
 		protected void WriteUpdateValue(UpdatePacket packet, Character receiver, int index)
 		{
-			if (_UpdateFieldInfos.FieldFlags[index] == UpdateFieldFlags.Dynamic)
+			if (_UpdateFieldInfos.FieldFlags[index].HasAnyFlag(UpdateFieldFlags.Dynamic))
 			{
 				DynamicUpdateFieldHandlers[index](this, receiver, packet);
 			}

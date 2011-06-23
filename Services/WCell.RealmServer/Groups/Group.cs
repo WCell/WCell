@@ -310,22 +310,26 @@ namespace WCell.RealmServer.Groups
 		}
 
 		/// <summary>
-		/// WARNING: Does not ensure to execute within the Character's context
+		/// Executes the given callback in each character's current context
 		/// </summary>
 		public void ForeachCharacter(Action<Character> callback)
 		{
+			var chrs = new Character[m_Count];
 			m_syncLock.EnterReadLock();
-
+			int count;
 			try
 			{
-				foreach (var chr in GetAllCharacters())
-				{
-					callback(chr);
-				}
+				count = GetAllCharactersUnlocked(chrs);
 			}
 			finally
 			{
 				m_syncLock.ExitReadLock();
+			}
+
+			for (var i = 0; i < count; i++)
+			{
+				var chr = chrs[i];
+				chr.ExecuteInContext(() => callback(chr));
 			}
 		}
 
@@ -1333,23 +1337,11 @@ namespace WCell.RealmServer.Groups
 		public Character[] GetAllCharacters()
 		{
 			var chrs = new Character[m_Count];
-			var c = 0;
-
 			m_syncLock.EnterReadLock();
+			int c;
 			try
 			{
-				for (var i = 0; i < SubGroups.Length; i++)
-				{
-					var subGroup = SubGroups[i];
-					foreach (var member in subGroup)
-					{
-						if (member.Character != null)
-						{
-							chrs[c++] = member.Character;
-						}
-
-					}
-				}
+				c = GetAllCharactersUnlocked(chrs);
 			}
 			finally
 			{
@@ -1361,6 +1353,23 @@ namespace WCell.RealmServer.Groups
 				Array.Resize(ref chrs, c);
 			}
 			return chrs;
+		}
+
+		private int GetAllCharactersUnlocked(Character[] chrs)
+		{
+			int c = 0;
+			for (var i = 0; i < SubGroups.Length; i++)
+			{
+				var subGroup = SubGroups[i];
+				foreach (var member in subGroup)
+				{
+					if (member.Character != null)
+					{
+						chrs[c++] = member.Character;
+					}
+				}
+			}
+			return c;
 		}
 
 		/// <summary>
