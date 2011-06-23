@@ -579,7 +579,9 @@ namespace WCell.RealmServer.Entities
 		{
 			get
 			{
-				return m_mechanics != null && m_mechanics[(int)SpellMechanic.Invulnerable] > 0;
+				return m_mechanics != null && 
+					(m_mechanics[(int)SpellMechanic.Invulnerable] > 0 || 
+					m_mechanics[(int)SpellMechanic.Invulnerable_2] > 0);
 			}
 			set
 			{

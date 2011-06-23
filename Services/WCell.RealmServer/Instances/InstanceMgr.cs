@@ -318,7 +318,7 @@ namespace WCell.RealmServer.Instances
 		{
 			using (syncLock.EnterReadLock())
 			{
-				var instances = GetOfflineInstances(character.EntityId.Low, false, true);
+				var instances = GetOfflineInstancesUnlocked(character.EntityId.Low, false, true);
 				if (instances != null)
 				{
 					instances.Character = character;

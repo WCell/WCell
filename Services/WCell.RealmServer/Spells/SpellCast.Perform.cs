@@ -17,20 +17,28 @@ namespace WCell.RealmServer.Spells
 	public partial class SpellCast
 	{
 		/// <summary>
-		/// Returns whether the spell can be casted (true) or if immunity of the target prevents it (false)
+		/// Returns whether the given target is immune to the given spell
 		/// </summary>
-		public static bool CheckImmune(Unit target, Spell spell, bool hostile)
+		public static bool IsImmune(Unit target, Spell spell, bool hostile)
 		{
-			if (spell.Mechanic != SpellMechanic.None &&
-						hostile == spell.Mechanic.IsNegative() &&
-						((spell.Mechanic == SpellMechanic.Invulnerable_2 || spell.Mechanic == SpellMechanic.Invulnerable) &&
+			if (
+						hostile &&
+						spell.Mechanic.IsNegative() &&
 						!spell.Attributes.HasFlag(SpellAttributes.UnaffectedByInvulnerability) &&
-						(target.IsImmune(SpellMechanic.Invulnerable_2) || target.IsImmune(SpellMechanic.Invulnerable))) ||
-						(target.IsImmune(spell.Mechanic) || target.IsImmune(spell.DispelType)))
+						(spell.Mechanic == SpellMechanic.Invulnerable_2 || spell.Mechanic == SpellMechanic.Invulnerable) &&
+						(
+							// immune against spell
+							target.IsInvulnerable ||
+							target.IsImmune(SpellMechanic.Invulnerable_2) ||
+							target.IsImmune(SpellMechanic.Invulnerable) ||
+							target.IsImmune(spell.Mechanic) ||
+							target.IsImmune(spell.DispelType)
+						)
+				)
 			{
-				return false;
+				return true;
 			}
-			return true;
+			return false;
 		}
 
 		#region InitHandlers
@@ -238,7 +246,7 @@ namespace WCell.RealmServer.Spells
 				if (!IsAoE && Selected is Unit && !m_spell.IsPreventionDebuff)
 				{
 					var hostile = m_spell.IsHarmfulFor(CasterReference, Selected);
-					if (!CheckImmune((Unit)Selected, m_spell, hostile))
+					if (IsImmune((Unit)Selected, m_spell, hostile))
 					{
 						Cancel(SpellFailedReason.Immune);
 						return SpellFailedReason.Immune;
@@ -438,7 +446,7 @@ namespace WCell.RealmServer.Spells
 
 					var runeMask = UsesRunes ? CasterChar.PlayerSpells.Runes.GetActiveRuneMask() : (byte)0;
 					CheckHitAndSendSpellGo(false, runeMask);
-					
+
 					if (CasterUnit != null)
 					{
 						OnCasted();
@@ -734,7 +742,7 @@ namespace WCell.RealmServer.Spells
 			// Used an item
 			if (TargetItem != null)
 			{
-                CasterChar.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.UseItem, Spell.Id);
+				CasterChar.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.UseItem, Spell.Id);
 				TargetItem.OnUse();																				// can execute arbitrary code
 			}
 

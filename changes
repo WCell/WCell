@@ -1,0 +1,3 @@
+- fixed recursive locking on login
+- added fixed version of Stika's ShatteringThrow fix
+- fixed invulnerability and immune checks in spell system and Unit.Mechanics
