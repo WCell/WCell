@@ -28,7 +28,7 @@ namespace WCell.Tools.Domi
 			foreach (var instance in InstanceMgr.InstanceInfos)
 			{
 				var className = instance.Id.ToString();
-				var baseClass = instance.Type == MapType.Raid ? typeof(RaidInstance).Name : typeof(DungeonInstance).Name;
+				var baseClass = typeof(BaseInstance).Name;
 				var file = dir + className + ".cs";
 				if (!File.Exists(file))
 				{

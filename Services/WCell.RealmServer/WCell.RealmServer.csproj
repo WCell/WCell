@@ -233,6 +233,8 @@
     <Compile Include="Handlers\MirrorImageHandler.cs" />
     <Compile Include="Handlers\TotemHandler.cs" />
     <Compile Include="Handlers\WorldStateHandler.cs" />
+    <Compile Include="Instances\DungeonInstanceSettings.cs" />
+    <Compile Include="Instances\RaidInstanceSettings.cs" />
     <Compile Include="NPCs\Trainers\TrainerSpellTemplate.cs" />
     <Compile Include="Spells\Auras\Misc\CallStabledPetHandler.cs" />
     <Compile Include="Spells\Auras\Misc\FearHandler.cs" />
@@ -782,7 +784,6 @@
     <Compile Include="Looting\LootRollProgress.cs" />
     <Compile Include="Misc\CfgCategories.cs" />
     <Compile Include="Instances\InstanceBinding.cs" />
-    <Compile Include="Instances\RaidInstance.cs" />
     <Compile Include="Interaction\IBaseRelation.cs" />
     <Compile Include="Looting\ILootable.cs" />
     <Compile Include="Looting\Loot.cs" />
@@ -804,7 +805,6 @@
     <Compile Include="Handlers\TaxiHandler.cs" />
     <Compile Include="Handlers\GossipHandler.cs" />
     <Compile Include="Handlers\TutorialHandler.cs" />
-    <Compile Include="Instances\DungeonInstance.cs" />
     <Compile Include="Instances\InstanceCollection.cs" />
     <Compile Include="Instances\InstanceMgr.cs" />
     <Compile Include="Handlers\InstanceHandler.cs" />

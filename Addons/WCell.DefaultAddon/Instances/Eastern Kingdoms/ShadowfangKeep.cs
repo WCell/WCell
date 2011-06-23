@@ -23,7 +23,7 @@ using WCell.Util.Graphics;
 
 namespace WCell.Addons.Default.Instances
 {
-    public class ShadowfangKeep : RaidInstance
+    public class ShadowfangKeep : BaseInstance
     {
 
         #region Setup Content

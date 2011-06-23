@@ -19,7 +19,7 @@ using WCell.Util.Graphics;
 
 namespace WCell.Addons.Default.Instances
 {
-	public class Deadmines : RaidInstance
+	public class Deadmines : BaseInstance
 	{
 		static NPCEntry rhahkzorEntry;
 		static NPCEntry sneedEntry;

@@ -213,6 +213,7 @@
     <Compile Include="Graphics\Ray2D.cs" />
     <Compile Include="Graphics\Rect.cs" />
     <Compile Include="Graphics\Size.cs" />
+    <Compile Include="ReaderWriterLockWrapper.cs" />
     <Compile Include="ReflectionUtil\MemberAccessor.cs" />
     <Compile Include="ReflectionUtil\ReflectionMember.cs" />
     <Compile Include="ReflectionUtil\ReflectionMemberChain.cs" />

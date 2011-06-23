@@ -7,7 +7,7 @@ using WCell.RealmServer.Instances;
 
 namespace WCell.Addons.Default.Instances
 {
-	public class ScarletMonastery : RaidInstance
+	public class ScarletMonastery : BaseInstance
 	{
 	}
 

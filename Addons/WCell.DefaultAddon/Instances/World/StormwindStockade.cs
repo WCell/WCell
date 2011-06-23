@@ -7,7 +7,7 @@ using WCell.RealmServer.Instances;
 
 namespace WCell.Addons.Default.Instances
 {
-	public class StormwindStockade : DungeonInstance
+	public class StormwindStockade : BaseInstance
 	{
 	}
 

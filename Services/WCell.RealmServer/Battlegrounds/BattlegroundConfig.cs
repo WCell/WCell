@@ -31,9 +31,9 @@ namespace WCell.RealmServer.Battlegrounds
 			Instance = LoadSettings("Battlegrounds.xml");
 		}
 
-		protected override void InitSetting(InstanceSetting<BattlegroundId> setting)
+		protected override void InitSetting(InstanceConfigEntry<BattlegroundId> configEntry)
 		{
-			BattlegroundMgr.SetCreator(setting.Name, setting.TypeName.Trim());
+			BattlegroundMgr.SetCreator(configEntry.Name, configEntry.TypeName.Trim());
 		}
 	}
 }

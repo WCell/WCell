@@ -7,7 +7,7 @@ using WCell.RealmServer.Instances;
 
 namespace WCell.Addons.Default.Instances
 {
-	public class CoilfangTheSteamvault : DungeonInstance
+	public class CoilfangTheSteamvault : BaseInstance
 	{
 	}
 

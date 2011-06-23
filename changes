@@ -1,2 +1,2 @@
-- trainers will now list all spells they have - let me know if there are certain spells it should not always display
-- vendors should not display certain types of items - don't know which ones, but I changed SendVendorInventoryList so it can be easily added
+- started rolling up those sleaves and digging into the instances core
+- added ReaderWriterLockWrapper - Warning: Do not use ReaderWriterLockSlim or similar anymore - Too bug-prone!

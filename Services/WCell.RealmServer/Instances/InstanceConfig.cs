@@ -21,9 +21,9 @@ namespace WCell.RealmServer.Instances
 			Instance = LoadSettings("Instances.xml");
 		}
 
-		protected override void InitSetting(InstanceSetting<MapId> setting)
+		protected override void InitSetting(InstanceConfigEntry<MapId> configEntry)
 		{
-			InstanceMgr.SetCreator(setting.Name, setting.TypeName.Trim());
+			InstanceMgr.SetCreator(configEntry.Name, configEntry.TypeName.Trim());
 		}
 
 		public override IEnumerable<MapId> SortedIds
