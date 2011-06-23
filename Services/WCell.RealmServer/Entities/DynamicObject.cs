@@ -116,27 +116,6 @@ namespace WCell.RealmServer.Entities
 				//throw new Exception("Faction of DynamicObject cannot be set.");
 			}
 		}
-
-		public override bool IsHostileWith(IFactionMember opponent)
-		{
-			return m_master.IsHostileWith(opponent);
-		}
-
-		public override bool IsAlliedWith(IFactionMember opponent)
-		{
-			return m_master.IsAlliedWith(opponent);
-		}
-
-		public override bool IsFriendlyWith(IFactionMember opponent)
-		{
-			return m_master.IsFriendlyWith(opponent);
-		}
-
-        public override bool IsNeutralWith(IFactionMember opponent)
-		{
-            return m_master.IsNeutralWith(opponent);
-		}
-        
 		#endregion
 
 		public override ObjectTypeId ObjectTypeId

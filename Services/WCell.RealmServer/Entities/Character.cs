@@ -1010,38 +1010,32 @@ namespace WCell.RealmServer.Entities
 				return true;
 			}
 
-			var rep = m_reputations[opponent.Faction.ReputationIndex];
-			return rep != null && rep.Standing >= Standing.Friendly;
+			var opFaction = opponent.Faction;
+			var rep = m_reputations[opFaction.ReputationIndex];
+			if (rep != null)
+			{
+				return rep.Standing >= Standing.Friendly;
+			}
+			return m_faction.IsFriendlyTowards(opFaction);
 		}
 
-        public override bool IsNeutralWith(IFactionMember opponent)
+        public override bool IsAtLeastNeutralWith(IFactionMember opponent)
         {
-            if (IsAlliedWith(opponent))
+            if (IsFriendlyWith(opponent))
             {
                 return true;
             }
 
-            var rep = m_reputations[opponent.Faction.ReputationIndex];
-            return rep != null && rep.Standing >= Standing.Neutral;
+			var opFaction = opponent.Faction;
+			var rep = m_reputations[opFaction.ReputationIndex];
+			if (rep != null)
+			{
+				return rep.Standing >= Standing.Neutral;
+			}
+			return m_faction.Neutrals.Contains(opFaction);
         }
 
 		public override bool IsHostileWith(IFactionMember opponent)
-		{
-			if (object.ReferenceEquals(opponent, this) || (opponent is Unit && ((Unit)opponent).Master == this))
-			{
-				return false;
-			}
-
-			if (opponent is Character)
-			{
-				var chr = (Character)opponent;
-				return CanPvP(chr);
-			}
-
-			return m_reputations.IsHostile(opponent.Faction);
-		}
-
-		public override bool MayAttack(IFactionMember opponent)
 		{
 			if (ReferenceEquals(opponent, this) || (opponent is Unit && ((Unit)opponent).Master == this))
 			{
@@ -1053,7 +1047,14 @@ namespace WCell.RealmServer.Entities
 				return CanPvP((Character)opponent);
 			}
 
-			return m_reputations.CanAttack(opponent.Faction);
+			var opFaction = opponent.Faction;
+			return m_faction.Enemies.Contains(opFaction) || (!m_faction.Friends.Contains(opFaction) && m_reputations.CanAttack(opFaction));
+		}
+
+		public override bool MayAttack(IFactionMember opponent)
+		{
+			// TODO: Sometimes we are hostile with someone but cannot attack
+			return IsHostileWith(opponent);
 		}
 
 		public bool CanPvP(Character chr)
@@ -1066,7 +1067,7 @@ namespace WCell.RealmServer.Entities
 			}
 
 			return
-				(state == PvPState.PVP && chr.Faction.IsAlliance != m_faction.IsAlliance) ||					// default case
+				(state == PvPState.PVP && chr.Faction.IsAlliance != m_faction.IsAlliance) ||					// world pvp
 				(IsInBattleground && chr.IsInBattleground && chr.Battlegrounds.Team != Battlegrounds.Team) ||	// battlegrounds
 				(DuelOpponent == chr && Duel.IsActive);															// duels
 		}

@@ -199,7 +199,7 @@ namespace WCell.RealmServer.Spells
 			if (TargetEvaluator != null)
 			{
 				log.Warn("Target Evaluator is not null, but only a single target adder was used - " +
-					"Consider using an \"AddArea*\" adder to add the best choice from any possible nearby target.");
+					"Consider using an \"AddArea*\" adder to add the best choice from any possible nearby target for spell: " + FirstHandler.Effect.Spell);
 			}
 			Add(target);
 		}

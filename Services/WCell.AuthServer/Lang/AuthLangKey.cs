@@ -16,6 +16,10 @@ namespace WCell.AuthServer.Lang
 		PlayerNotOnline,
 		XRealmsConnected,
 
+		// ########################################################################
+		// Server
+		Initializing,
+
 		// #######################################################################
 		// Commands
 		SubCommandNotFound,

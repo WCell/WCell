@@ -26,6 +26,7 @@ using WCell.Constants.Realm;
 using WCell.Core;
 using WCell.Core.Initialization;
 using WCell.Core.Variables;
+using WCell.RealmServer.Lang;
 using WCell.RealmServer.Privileges;
 using WCell.RealmServer.Res;
 using WCell.Util;
@@ -33,6 +34,8 @@ using WCell.Util.Variables;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Handlers;
 using WCell.Util.NLog;
+
+using RealmServ = WCell.RealmServer.RealmServer;
 
 namespace WCell.RealmServer
 {
@@ -75,10 +78,16 @@ namespace WCell.RealmServer
 			set;
 		}
 
+		private static bool m_Loaded;
+
 		public static bool Loaded
 		{
-			get;
-			private set;
+			get { return m_Loaded; }
+			protected set
+			{
+				m_Loaded = value;
+				RealmServ.Instance.SetTitle("{0} - {1} ...", RealmServ.Instance, RealmLocalizer.Instance.Translate(DefaultLocale, RealmLangKey.Initializing));
+			}
 		}
 
 		public static string LangDirName = "Lang";
@@ -135,6 +144,8 @@ namespace WCell.RealmServer
 					return false;
 				}
 			}
+
+			Loaded = true;
 			return true;
 		}
 

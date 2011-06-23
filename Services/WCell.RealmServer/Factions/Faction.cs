@@ -201,8 +201,13 @@ namespace WCell.RealmServer.Factions
 		}
 
         public bool IsHostileTowards(Faction otherFaction)
-        {
-            // Start out with specific checks
+		{
+			if (Enemies.Contains(otherFaction))
+			{
+				return true;
+			}
+
+            // specific checks
             if (Template.EnemyFactions.Length > 0)
             {
                 for (int i = 0; i < Template.EnemyFactions.Length; i++)
@@ -221,9 +226,19 @@ namespace WCell.RealmServer.Factions
 			return Template.EnemyGroup.HasAnyFlag(otherFaction.Template.FactionGroup);
         }
 
+		public bool IsNeutralWith(Faction otherFaction)
+		{
+			return Neutrals.Contains(otherFaction);
+		}
+
         public bool IsFriendlyTowards(Faction otherFaction)
         {
-            // Start out with specific checks
+			if (Friends.Contains(otherFaction))
+			{
+				return true;
+			}
+
+            // specific checks
             if (Template.EnemyFactions.Length > 0)
             {
                 for (int i = 0; i < Template.FriendlyFactions.Length; i++)

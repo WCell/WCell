@@ -19,6 +19,7 @@ using System.IO;
 using System.Net;
 using System.Reflection;
 using NLog;
+using WCell.AuthServer.Lang;
 using WCell.Core;
 using WCell.Constants;
 using WCell.Core.Addons;
@@ -44,10 +45,16 @@ namespace WCell.AuthServer
 			get { return s_instance; }
 		}
 
+		private static bool m_Loaded;
+
 		public static bool Loaded
 		{
-			get;
-			private set;
+			get { return m_Loaded; }
+			protected set
+			{
+				m_Loaded = value;
+				AuthenticationServer.Instance.SetTitle("{0} - {1} ...", AuthenticationServer.Instance, AuthLocalizer.Instance.Translate(DefaultLocale, AuthLangKey.Initializing));
+			}
 		}
 
 		public override string FilePath
@@ -75,8 +82,6 @@ namespace WCell.AuthServer
 		{
 			if (Loaded) return true;
 
-			Loaded = true;
-
 			s_instance.AddVariablesOfAsm<VariableAttribute>(typeof(AuthServerConfiguration).Assembly);
 			try
 			{
@@ -92,7 +97,6 @@ namespace WCell.AuthServer
 					{
 						s_instance.Save(true, true);
 					}
-					return true;
 				}
 			}
 			catch (Exception e)
@@ -101,6 +105,9 @@ namespace WCell.AuthServer
 				log.Error("Please correct the invalid values in your configuration file and restart the Applicaton.");
 				return false;
 			}
+
+			Loaded = true;
+			return true;
 		}
 
 		private string m_executablePath;

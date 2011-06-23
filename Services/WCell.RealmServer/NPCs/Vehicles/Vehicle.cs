@@ -94,7 +94,7 @@ namespace WCell.RealmServer.NPCs.Vehicles
 
 		public bool CanEnter(Unit unit)
 		{
-            return IsNeutralWith(unit) && !IsFull;
+            return IsAtLeastNeutralWith(unit) && !IsFull;
 		}
 
 		public VehicleSeat GetFirstFreeSeat()

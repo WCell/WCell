@@ -157,7 +157,6 @@ namespace WCell.RealmServer.Server
 					if (!m_warned)
 					{
 						log.Error(Resources.IPCProxyFailed, UpdateInterval);
-						m_warned = true;
 					}
 				}
 				else
@@ -166,6 +165,7 @@ namespace WCell.RealmServer.Server
 				}
 				conn = false;
 			}
+			m_warned = true;
 
 			if (conn)
 			{

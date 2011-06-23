@@ -1127,7 +1127,15 @@ namespace WCell.RealmServer.Entities
 		/// <returns></returns>
 		public virtual bool IsFriendlyWith(IFactionMember opponent)
 		{
-			if ( object.ReferenceEquals(opponent, this) || (opponent is Unit && ((Unit)opponent).Master == this))
+			if (HasMaster)
+			{
+				return Master.IsFriendlyWith(opponent);
+			}
+			if ((opponent is WorldObject && ((WorldObject)opponent).HasMaster))
+			{
+				opponent = ((WorldObject)opponent).Master;
+			}
+			if (ReferenceEquals(opponent, this))
 			{
 				return true;
 			}
@@ -1143,37 +1151,30 @@ namespace WCell.RealmServer.Entities
 				return true;
 			}
 
-			if (faction != null && opponent.Faction != null)
+			if (faction != null && opFaction != null)
 				return faction.IsFriendlyTowards(opFaction);
 			return false;
 		}
 
-        /// <summary>
-        /// Indicates whether the 2 units are neutral towards each other.
-        /// </summary>
-        /// <returns></returns>
-        public virtual bool IsNeutralWith(IFactionMember opponent)
-        {
-            if (object.ReferenceEquals(opponent, this) || (opponent is Unit && ((Unit)opponent).Master == this))
-            {
-                return true;
-            }
-            if (opponent is Character)
-            {
-                return ((Character)opponent).IsNeutralWith(this);
-            }
+		/// <summary>
+		/// Indicates whether the 2 units are neutral towards each other.
+		/// </summary>
+		/// <returns></returns>
+		public virtual bool IsAtLeastNeutralWith(IFactionMember opponent)
+		{
+			if (IsFriendlyWith(opponent))
+			{
+				return true;
+			}
 
-            var faction = Faction;
-            var opFaction = opponent.Faction;
-            if (faction == opponent.Faction)
-            {
-                return true;
-            }
-
-            if (faction != null && opponent.Faction != null)
-                return faction.IsFriendlyTowards(opFaction);
-            return false;
-        }
+			var faction = Faction;
+			var opFaction = opponent.Faction;
+			if (faction != null && opFaction != null && faction.Neutrals.Contains(opFaction))
+			{
+				return true;
+			}
+			return false;
+		}
 
 		/// <summary>
 		/// Indicates whether the 2 units are hostile towards each other.
@@ -1181,9 +1182,21 @@ namespace WCell.RealmServer.Entities
 		/// <returns></returns>
 		public virtual bool IsHostileWith(IFactionMember opponent)
 		{
-			if ( object.ReferenceEquals(opponent, this) || (opponent is Unit && ((Unit)opponent).Master == this))
+			if (HasMaster)
+			{
+				return Master.IsHostileWith(opponent);
+			}
+			if ((opponent is WorldObject && ((WorldObject)opponent).HasMaster))
+			{
+				opponent = ((WorldObject)opponent).Master;
+			}
+			if (ReferenceEquals(opponent, this))
 			{
 				return false;
+			}
+			if (opponent is Character)
+			{
+				return ((Character)opponent).IsHostileWith(this);
 			}
 
 			var faction = Faction;
@@ -1197,19 +1210,30 @@ namespace WCell.RealmServer.Entities
 			{
 				return true;
 			}
-
-			if (opponent is Character)
-			{
-				return ((Character)opponent).IsHostileWith(this);
-			}
 			return false;
 		}
 
 		public virtual bool MayAttack(IFactionMember opponent)
 		{
-			if (!opponent.IsInWorld ||  ReferenceEquals(opponent, this) || (opponent is Unit && ((Unit)opponent).Master == this))
+			if (HasMaster)
+			{
+				return Master.MayAttack(opponent);
+			}
+			if ((opponent is WorldObject && ((WorldObject)opponent).HasMaster))
+			{
+				opponent = ((WorldObject)opponent).Master;
+			}
+			if (opponent == null)
 			{
 				return false;
+			}
+			if (ReferenceEquals(opponent, this))
+			{
+				return false;
+			}
+			if (opponent is Character)
+			{
+				return ((Character)opponent).MayAttack(this);
 			}
 
 			var faction = Faction;
@@ -1219,31 +1243,24 @@ namespace WCell.RealmServer.Entities
 				return false;
 			}
 
-			if (faction != null && opFaction != null)
+			if (faction != null && opFaction != null && faction.Enemies.Contains(opFaction))
 			{
-				if (faction.Enemies.Contains(opFaction))
-				{
-					return true;
-				}
-
-				if (faction.Friends.Contains(opFaction))
-				{
-					return false;
-				}
-			}
-
-			if (opponent is Character)
-			{
-				return ((Character)opponent).MayAttack(this);
+				return true;
 			}
 			return false;
 		}
 
 		public virtual bool IsAlliedWith(IFactionMember opponent)
 		{
-			if ( object.ReferenceEquals(opponent, this) ||
-				(opponent is Unit && ((Unit)opponent).Master == this) ||
-				 object.ReferenceEquals(Master, opponent) )
+			if (HasMaster)
+			{
+				return Master.IsAlliedWith(opponent);
+			}
+			if ((opponent is WorldObject && ((WorldObject)opponent).HasMaster))
+			{
+				opponent = ((WorldObject)opponent).Master;
+			}
+			if (ReferenceEquals(opponent, this))
 			{
 				return true;
 			}
@@ -1416,7 +1433,7 @@ namespace WCell.RealmServer.Entities
 
 		public Character PlayerOwner
 		{
-			get { return this is Character ? (Character) this : m_master as Character; }
+			get { return this is Character ? (Character)this : m_master as Character; }
 		}
 
 		/// <summary>
@@ -1455,18 +1472,18 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
-        /// <summary>
-        /// Play a text and sound identify by the id
-        /// </summary>
-        /// <param name="id">Id of the text in creature_ai_texts</param>
-        public void PlayTextAndSoundById(int id)
-        {
-            var text = NPCAiTextMgr.GetFirstTextById(id);
-            if (text != null)
-            {
-                PlayTextAndSound(text);
-            }
-        }
+		/// <summary>
+		/// Play a text and sound identify by the id
+		/// </summary>
+		/// <param name="id">Id of the text in creature_ai_texts</param>
+		public void PlayTextAndSoundById(int id)
+		{
+			var text = NPCAiTextMgr.GetFirstTextById(id);
+			if (text != null)
+			{
+				PlayTextAndSound(text);
+			}
+		}
 
 		public void PlayTextAndSound(NPCAiText text)
 		{
