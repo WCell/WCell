@@ -1407,12 +1407,12 @@ namespace WCell.RealmServer.Spells
 			}
 
 
-			if (Description.Length > 0)
+			if (!string.IsNullOrEmpty(Description))
 			{
 				writer.WriteLine(indent + "Desc: " + Description);
 			}
 
-			if (Reagents.Length > 0)
+            if (Reagents != null && Reagents.Length > 0)
 			{
 				writer.WriteLine(indent + "Reagents: " + Reagents.ToString(", "));
 			}

@@ -206,7 +206,7 @@ namespace WCell.RealmServer.Skills
 			if (SkillLine.HasTier(tier))
 			{
 				uint tierLimit = SkillLine.Tiers.GetMaxValue(tier);
-				if (CurrentValue >= tierLimit - 100)
+				if (CurrentValue >= (int)tierLimit - 100)
 				{
 					// cannot be learnt if we have less than max - 100 in that skill
 					return true;

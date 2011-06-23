@@ -284,6 +284,12 @@ namespace WCell.RealmServer.Quests
 		[Persistent(QuestConstants.MaxObjectInteractions)]
 		public QuestInteractionTemplate[] ObjectOrSpellInteractions = new QuestInteractionTemplate[QuestConstants.MaxObjectInteractions];
 
+        /// <summary>
+        /// Array of source items interactions containing ID and quantity.
+        /// </summary>
+        [Persistent(QuestConstants.MaxObjectInteractions)]
+        public ItemStackDescription[] CollectableSourceItems = new ItemStackDescription[QuestConstants.MaxObjectInteractions];
+
 		[NotPersistent]
 		public QuestInteractionTemplate[] GOInteractions;
 
@@ -1358,6 +1364,14 @@ namespace WCell.RealmServer.Quests
 				colItems.Add(item);
 			}
 			CollectableItems = colItems.ToArray();
+
+            for (var i = 0; i < CollectableSourceItems.Length; i++)
+            {
+                if (CollectableSourceItems[i].ItemId != ItemId.None && CollectableSourceItems[i].Amount == 0)
+                {
+                    CollectableSourceItems[i].Amount = 1;
+                }
+            }
 
 			if (goInteractions != null)
 			{

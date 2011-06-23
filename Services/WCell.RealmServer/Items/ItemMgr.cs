@@ -112,6 +112,14 @@ namespace WCell.RealmServer.Items
 		}
 
 		/// <summary>
+		///  Returns a List of templates with the given ItemClass
+		/// </summary>
+		public static IEnumerable<ItemTemplate> GetTemplates(ItemClass type)
+		{
+			return Templates.Where(template => template != null).Where(template => template.Class == type);
+		}
+
+		/// <summary>
 		/// Returns the ItemSet with the given id
 		/// </summary>
 		public static ItemSet GetSet(ItemSetId id)
@@ -739,6 +747,27 @@ namespace WCell.RealmServer.Items
 						}
 					}
 				}
+
+                foreach (var itemInfo in quest.CollectableSourceItems)
+                {
+                    var item = GetTemplate(itemInfo.ItemId);
+                    if (item == null)
+                    {
+                        ContentMgr.OnInvalidDBData("QuestTemplate \"{0}\" refered to non-existing Item: {1}",
+                                                       quest, itemInfo);
+                    }
+                    else
+                    {
+                        if (item.CollectQuests == null)
+                        {
+                            item.CollectQuests = new[] { quest };
+                        }
+                        else
+                        {
+                            ArrayUtil.AddOnlyOne(ref item.CollectQuests, quest);
+                        }
+                    }
+                }
 			}
 
 			// Item QuestGivers
@@ -922,7 +951,7 @@ namespace WCell.RealmServer.Items
 
 		#region Apply changes when loading
 		private static readonly List<Tuple<ItemId, Action<ItemTemplate>>> loadHooks = new List<Tuple<ItemId, Action<ItemTemplate>>>();
-
+		private static readonly List<Tuple<ItemClass, Action<ItemTemplate>>> itemClassLoadHooks = new List<Tuple<ItemClass, Action<ItemTemplate>>>();
 		/// <summary>
 		/// Adds a callback to be called on the given set of ItemTemplates after load and before Item initialization
 		/// </summary>
@@ -934,11 +963,29 @@ namespace WCell.RealmServer.Items
 			}
 		}
 
+		public static void Apply(Action<ItemTemplate> cb, params ItemClass[] classes)
+		{
+			foreach (var cls in classes)
+			{
+				itemClassLoadHooks.Add(Tuple.Create(cls, cb));
+			}
+		}
+
 		static void OnLoaded()
 		{
+			// Perform the action on a template
 			foreach (var hook in loadHooks)
 			{
 				hook.Item2(GetTemplateForced(hook.Item1));
+			}
+
+			// Perform an action an each member of the itemclasses
+			foreach(var hook in itemClassLoadHooks)
+			{
+				foreach(var template in GetTemplates(hook.Item1))
+				{
+					hook.Item2(template);
+				}
 			}
 		}
 		#endregion

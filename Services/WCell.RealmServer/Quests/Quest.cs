@@ -109,6 +109,11 @@ namespace WCell.RealmServer.Quests
 				CollectedItems = new int[template.CollectableItems.Length];
 			}
 
+            if (template.CollectableSourceItems.Length > 0)
+            {
+                CollectedSourceItems = new int[template.CollectableSourceItems.Length];
+            }
+
 			m_Log = log;
 			Template = template;
 		}
@@ -117,6 +122,11 @@ namespace WCell.RealmServer.Quests
 		/// Amounts of picked up Items
 		/// </summary>
 		public readonly int[] CollectedItems;
+
+        /// <summary>
+        /// Amounts of picked up Items
+        /// </summary>
+        public readonly int[] CollectedSourceItems;
 
 		/// <summary>
 		/// Amounts interactions

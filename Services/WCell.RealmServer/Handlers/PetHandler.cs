@@ -240,7 +240,6 @@ namespace WCell.RealmServer.Handlers
 			}
 #endif
 		}
-
 		#endregion
 
 		public static void SendTameFailure(IPacketReceiver receiver, TameFailReason reason)
@@ -637,23 +636,24 @@ namespace WCell.RealmServer.Handlers
 
 		#region Talents
 
-		[PacketHandler(RealmServerOpCode.CMSG_PET_LEARN_TALENT)]
-		public static void HandlePetLearnTalent(IRealmClient client, RealmPacketIn packet)
-		{
-			var petGuid = packet.ReadEntityId();
-			var talentId = (TalentId)packet.ReadInt32();
-			var rank = packet.ReadInt32();						// 0 based rank
+        [PacketHandler(RealmServerOpCode.CMSG_PET_LEARN_TALENT)]
+        public static void HandlePetLearnTalent(IRealmClient client, RealmPacketIn packet)
+        {
+            var petId = packet.ReadEntityId();
 
-			var chr = client.ActiveCharacter;
-			var pet = chr.Map.GetObject(petGuid) as NPC;
+            var chr = client.ActiveCharacter;
+            var pet = chr.Map.GetObject(petId) as NPC;
 
-			if (pet != null)
-			{
-				if (chr.ActivePet != pet) return;
+            if (pet == null || !pet.IsAlive) return;
+            if (pet != chr.ActivePet) return;
 
-				pet.Talents.Learn(talentId, rank);
-			}
-		}
+            var talents = pet.Talents;
+            var talentId = (TalentId)packet.ReadUInt32();
+            var rank = packet.ReadInt32();
+            talents.Learn(talentId, rank);
+
+            TalentHandler.SendTalentGroupList(talents);
+        }
 
 		[PacketHandler(RealmServerOpCode.CMSG_PET_UNLEARN)]
 		public static void HandlePetUnlearn(IRealmClient client, RealmPacketIn packet)
@@ -668,6 +668,34 @@ namespace WCell.RealmServer.Handlers
 				pet.Talents.ResetTalents();
 			}
 		}
+
+        [PacketHandler(RealmServerOpCode.CMSG_PET_LEARN_PREVIEWED_TALENTS)]
+        public static void SavePetTalentChanges(IRealmClient client, RealmPacketIn packet)
+        {
+            var petId = packet.ReadEntityId();
+
+            var chr = client.ActiveCharacter;
+            var pet = chr.Map.GetObject(petId) as NPC;
+
+            if (pet != null && pet.IsAlive)
+            {
+                if (pet == chr.ActivePet)
+                {
+                    var count = packet.ReadInt32();
+
+                    var talents = pet.Talents;
+                    for (var i = 0; i < count; i++)
+                    {
+                        var talentId = (TalentId)packet.ReadUInt32();
+                        var rank = packet.ReadInt32();
+
+                        talents.Learn(talentId, rank);
+                    }
+
+                    TalentHandler.SendTalentGroupList(talents);
+                }
+            }
+        }
 
 		#endregion
 	}

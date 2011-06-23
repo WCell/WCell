@@ -39,6 +39,10 @@
       <Flat Name="ItemId" Pattern="ReqItemId{#}" Offset="1" />
       <Flat Name="Amount" Pattern="ReqItemCount{#}" Offset="1" />
     </NestedArray>
+    <NestedArray Name="CollectableSourceItems">
+      <Flat Name="ItemId" Pattern="ReqSourceId{#}" Offset="1" />
+      <Flat Name="Amount" Pattern="ReqSourceCount{#}" Offset="1" />
+    </NestedArray>
     <NestedArray Name="ObjectOrSpellInteractions">
       <Flat Name="RawId" Pattern="ReqCreatureOrGOId{#}" Offset="1" />
       <Flat Name="Amount" Pattern="ReqCreatureOrGOCount{#}" Offset="1" />

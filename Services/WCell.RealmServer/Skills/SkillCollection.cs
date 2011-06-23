@@ -178,6 +178,10 @@ namespace WCell.RealmServer.Skills
 			if (skill.CanLearnTier(tier))
 			{
 				skill.MaxValue = (ushort)skill.SkillLine.Tiers.GetMaxValue(tier);
+				if (id == SkillId.Riding)
+				{
+					skill.CurrentValue = skill.MaxValue;
+				}
 			}
 			return true;
 		}
@@ -202,7 +206,8 @@ namespace WCell.RealmServer.Skills
 			{
 				return false;
 			}
-			else if (amount > 0 && skill.ActualValue < amount)
+			
+            if (amount > 0 && skill.ActualValue < amount)
 			{
 				return false;
 			}
