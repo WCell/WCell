@@ -361,7 +361,7 @@ namespace WCell.Util.Variables
 				var fileOnly = varAttr != null && varAttr.IsFileOnly;
 
 				Type memberType;
-				if ((!readOnly || (varAttr != null && member.IsFieldOrProp())) &&
+				if (member.IsFieldOrProp() && (!readOnly || varAttr != null) &&
 					((memberType = member.GetVariableType()).IsSimpleType() ||
 					readOnly ||
 					memberType.IsArray ||

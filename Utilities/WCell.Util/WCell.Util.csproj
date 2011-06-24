@@ -258,6 +258,7 @@
     <Compile Include="Serialization\SerializerCollection.cs" />
     <Compile Include="Serialization\VersionedSerializer.cs" />
     <Compile Include="SortedTopN.cs" />
+    <Compile Include="StringParser.cs" />
     <Compile Include="Strings\StringStream.cs" />
     <Compile Include="Strings\StringNode.cs" />
     <Compile Include="Strings\StringTree.cs">

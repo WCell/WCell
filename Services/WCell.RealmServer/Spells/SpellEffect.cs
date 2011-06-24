@@ -824,7 +824,7 @@ namespace WCell.RealmServer.Spells
 		string GetMiscStr(Type type, int val)
 		{
 			object obj = null;
-			if (type != null && Utility.Parse(val.ToString(), type, ref obj))
+			if (type != null && StringParser.Parse(val.ToString(), type, ref obj))
 			{
 				return string.Format("{0} ({1})", obj, val);
 			}

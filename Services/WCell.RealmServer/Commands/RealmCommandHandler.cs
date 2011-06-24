@@ -543,7 +543,7 @@ namespace WCell.RealmServer.Commands
 						var classStr = text.Remainder.Trim();
 						var val = 0L;
 						object err = null;
-						if (!Utility.Eval(typeof(ClassMask), ref val, classStr, ref err, false))
+						if (!StringParser.Eval(typeof(ClassMask), ref val, classStr, ref err, false))
 						{
 							log.Warn("Invalid Class restriction in file {0} (line {1}): {2}", file, line, err);
 						}

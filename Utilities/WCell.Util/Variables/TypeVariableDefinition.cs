@@ -157,7 +157,7 @@ namespace WCell.Util.Variables
 		static object TryParse(string strValue, Type type)
 		{
 			object valueObj = null;
-			if (Utility.Parse(strValue, type, ref valueObj))
+			if (StringParser.Parse(strValue, type, ref valueObj))
 			{
 				return valueObj;
 			}

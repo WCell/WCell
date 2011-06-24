@@ -25,6 +25,8 @@ namespace WCell.AuthServer
     /// </summary>
     public class Program
     {
+    	public static int[] TestArray = new []{ 1, 4, 10 };
+
         private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
         /// <summary>
