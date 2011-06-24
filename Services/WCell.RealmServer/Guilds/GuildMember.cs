@@ -233,11 +233,6 @@ namespace WCell.RealmServer.Guilds
         #endregion
 
         #region Methods
-        internal void Init(Guild guild)
-		{
-			Init(guild, World.GetCharacter((uint)CharacterLowId));
-        }
-
 		internal void Init(Guild guild, Character chr)
 		{
 			Guild = guild;

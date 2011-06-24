@@ -411,6 +411,8 @@ namespace WCell.RealmServer.Handlers
 		{
             var petitionGuid = packet.ReadEntityId();
             var petition = client.ActiveCharacter.Inventory.GetItem(petitionGuid) as PetitionCharter;
+			if (petition == null) return;
+
             var name = petition.Petition.Name;
             var type = petition.Petition.Type;
 

@@ -55,9 +55,12 @@ namespace WCell.RealmServer.Guilds
 		[Field("BankMoneyAllowanceResetTime", NotNull = true)]
 		private DateTime _moneyAllowanceResetTime;
 
-		public static GuildMember[] FindAll(Guild guild)
+		/// <summary>
+		/// Loads all members of the given guild from the DB
+		/// </summary>
+		public static GuildMember[] FindAll(uint guildId)
 		{
-			return FindAllByProperty("m_GuildId", (int)guild.Id);
+			return FindAllByProperty("m_GuildId", (int)guildId);
 		}
 
 		public GuildMember(CharacterRecord chr, Guild guild, GuildRank rank)

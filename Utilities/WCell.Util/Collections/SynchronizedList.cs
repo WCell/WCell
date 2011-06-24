@@ -22,6 +22,10 @@ using System.Threading;
 
 namespace WCell.Util.Collections
 {
+	/// <summary>
+	/// Not actually synchronized.
+	/// It's especially missing a synchronized enumerator.
+	/// </summary>
 	public class SynchronizedList<T> : List<T>
 	{
 		private readonly object _syncLock = new object();

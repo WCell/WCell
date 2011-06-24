@@ -1,3 +1,0 @@
-- moved string parsing from Utility to new StringParser class
-- added parsing of quoted strings and arrays to StringParser & StringStream
-- we thus can now set array values (using cfg set, set etc.)

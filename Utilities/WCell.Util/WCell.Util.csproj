@@ -137,6 +137,7 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="ArrayExtensions.cs" />
+    <Compile Include="StaticCircularList.cs" />
     <Compile Include="Collections\BaseImmutableDictionary.cs" />
     <Compile Include="Collections\ImmutableDictionary.cs" />
     <Compile Include="Collections\ImmutableList.cs" />
@@ -213,7 +214,7 @@
     <Compile Include="Graphics\Ray2D.cs" />
     <Compile Include="Graphics\Rect.cs" />
     <Compile Include="Graphics\Size.cs" />
-    <Compile Include="ReaderWriterLockWrapper.cs" />
+    <Compile Include="Synchronization\ReaderWriterLockWrapper.cs" />
     <Compile Include="ReflectionUtil\MemberAccessor.cs" />
     <Compile Include="ReflectionUtil\ReflectionMember.cs" />
     <Compile Include="ReflectionUtil\ReflectionMemberChain.cs" />
@@ -265,6 +266,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="StringUtils.cs" />
+    <Compile Include="Synchronization\SimpleLockWrapper.cs" />
     <Compile Include="Threading\ActorModel\Actor.cs" />
     <Compile Include="Threading\ActorModel\ActorException.cs" />
     <Compile Include="Threading\ActorModel\ActorStatus.cs" />

@@ -253,6 +253,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public bool CanBeUsedBy(Character chr)
 		{
+			// TODO: Check distance
 			if (IsEnabled)
 			{
 				return !Flags.HasFlag(GameObjectFlags.ConditionalInteraction) || chr.QuestLog.IsRequiredForAnyQuest(this);
