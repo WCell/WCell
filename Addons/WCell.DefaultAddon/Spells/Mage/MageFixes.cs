@@ -84,6 +84,7 @@ namespace WCell.Addons.Default.Spells.Mage
 				efct.EffectType = SpellEffectType.TriggerSpell;
 				efct.TriggerSpellId = (SpellId)efct.CalcEffectValue();
 			}, SpellLineId.MageConjureManaGem);
+
 		}
 
 		public class TriggerSpellAfterAuraRemovedHandler : AuraEffectHandler
