@@ -170,7 +170,8 @@ namespace WCell.RealmServer.Debugging
 						try
 						{
 							var file = Path.Combine(DumpDir.FullName, account.Name + ".txt");
-							var append = new FileInfo(file).Length < MaxDumpFileSize;
+							var len = new FileInfo(file).Length;
+							var append = len != 0 && len < MaxDumpFileSize;
 							writer = new IndentTextWriter(new StreamWriter(file, append))
 							{
 								AutoFlush = true
