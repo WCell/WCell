@@ -90,7 +90,7 @@ namespace WCell.RealmServer.Looting
 			{
 				if (loaded = value)
 				{
-					RealmServer.InitMgr.SignalGlobalMgrReady(typeof(LootMgr));
+					Events.RealmServer.InitMgr.SignalGlobalMgrReady(typeof(LootMgr));
 				}
 			}
 		}

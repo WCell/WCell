@@ -134,7 +134,7 @@ namespace WCell.RealmServer.Handlers
 					Parameter2 = record
 				};
 
-				RealmServer.IOQueue.AddMessage(charCreateTask);
+				Events.RealmServer.IOQueue.AddMessage(charCreateTask);
 			}
 			catch (Exception e)
 			{
@@ -232,7 +232,7 @@ namespace WCell.RealmServer.Handlers
 						if (context != null)
 						{
 							context.AddMessage(() =>
-							RealmServer.IOQueue.AddMessage(new Message(() =>
+							Events.RealmServer.IOQueue.AddMessage(new Message(() =>
 							{
 								var returnCode = record.TryDelete();
 								SendCharDeleteReply(client, returnCode);
@@ -242,7 +242,7 @@ namespace WCell.RealmServer.Handlers
 					}
 				}
 
-				RealmServer.IOQueue.AddMessage(new Message(() =>
+				Events.RealmServer.IOQueue.AddMessage(new Message(() =>
 				{
 					var returnCode = record.TryDelete();
 					SendCharDeleteReply(client, returnCode);
@@ -281,7 +281,7 @@ namespace WCell.RealmServer.Handlers
 				return;
 
 			AccountDataHandler.SendAccountDataTimes(client, AccountDataHandler.CacheMask.GlobalCache);
-			RealmServer.IOQueue.AddMessage(() => SendCharEnum(client));
+			Events.RealmServer.IOQueue.AddMessage(() => SendCharEnum(client));
 		}
 
 		/// <summary>
@@ -481,7 +481,7 @@ namespace WCell.RealmServer.Handlers
 		/// <remarks>Usually, this speed is equivalent to real-life.</remarks>
 		public static void SendTimeSpeed(IPacketReceiver client)
 		{
-			SendTimeSpeed(client, RealmServer.IngameTime, RealmServerConfiguration.IngameMinutesPerSecond);
+			SendTimeSpeed(client, Events.RealmServer.IngameTime, RealmServerConfiguration.IngameMinutesPerSecond);
 		}
 
 		/// <summary>
@@ -857,7 +857,7 @@ namespace WCell.RealmServer.Handlers
 							};
 
 						// only enqueue to IO Queue if we are in a map context?
-						RealmServer.IOQueue.AddMessage(charRenameTask);
+						Events.RealmServer.IOQueue.AddMessage(charRenameTask);
 					}
 				}
 			}

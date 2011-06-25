@@ -8,7 +8,8 @@ using WCell.Constants.Spells;
 using WCell.Constants.World;
 using WCell.Core;
 using WCell.Core.Network;
-using WCell.RealmServer.ArenaTeams;
+using WCell.RealmServer.Battlegrounds.Arenas;
+using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Guilds;
@@ -245,12 +246,12 @@ namespace WCell.RealmServer.Handlers
 						default:
 							return;
 					}
-                    if (!ArenaTeamMgr.IsValidArenaTeamName(name))
+                    if (!ArenaMgr.IsValidArenaTeamName(name))
                     {
                         ArenaTeamHandler.SendResult(chr, ArenaTeamCommandId.CREATE, name, string.Empty, ArenaTeamResult.NAME_INVALID);
                         return;
                     }
-                    else if (ArenaTeamMgr.DoesArenaTeamExist(name))
+                    else if (ArenaMgr.DoesArenaTeamExist(name))
                     {
                         ArenaTeamHandler.SendResult(chr, ArenaTeamCommandId.CREATE, name, string.Empty, ArenaTeamResult.NAME_EXISTS);
                         return;
@@ -334,12 +335,12 @@ namespace WCell.RealmServer.Handlers
                 }
                 else
                 {
-                    if (!ArenaTeamMgr.IsValidArenaTeamName(newName))
+                    if (!ArenaMgr.IsValidArenaTeamName(newName))
                     {
                         ArenaTeamHandler.SendResult(chr, ArenaTeamCommandId.CREATE, newName, string.Empty, ArenaTeamResult.NAME_INVALID);
                         return;
                     }
-                    else if (ArenaTeamMgr.DoesArenaTeamExist(newName))
+                    else if (ArenaMgr.DoesArenaTeamExist(newName))
                     {
                         ArenaTeamHandler.SendResult(chr, ArenaTeamCommandId.CREATE, newName, string.Empty, ArenaTeamResult.NAME_EXISTS);
                         return;
@@ -391,7 +392,7 @@ namespace WCell.RealmServer.Handlers
             }
             else 
             {
-                if (player.ArenaTeamMember[(uint)ArenaTeamMgr.GetSlotByType((uint)petition.Type)] != null)
+                if (player.ArenaTeamMember[(uint)ArenaMgr.GetSlotByType((uint)petition.Type)] != null)
                 {
                     ArenaTeamHandler.SendResult(client, ArenaTeamCommandId.CREATE, string.Empty, namePlayer, ArenaTeamResult.ALREADY_IN_ARENA_TEAM_S);
                     return;
@@ -426,7 +427,7 @@ namespace WCell.RealmServer.Handlers
                 SendPetitionTurnInResults(client, PetitionTurns.ALREADY_IN_GUILD);
                 return;
             }
-            else if (client.ActiveCharacter.ArenaTeamMember[(uint)ArenaTeamMgr.GetSlotByType((uint)type)] != null)
+            else if (client.ActiveCharacter.ArenaTeamMember[(uint)ArenaMgr.GetSlotByType((uint)type)] != null)
             {
                 ArenaTeamHandler.SendResult(client, ArenaTeamCommandId.CREATE, name, string.Empty, ArenaTeamResult.ALREADY_IN_ARENA_TEAM);
                 return;
@@ -436,7 +437,7 @@ namespace WCell.RealmServer.Handlers
                 GuildHandler.SendResult(client, GuildCommandId.CREATE, name, GuildResult.NAME_EXISTS);
                 return;
             }
-            else if (ArenaTeamMgr.DoesArenaTeamExist(name))
+            else if (ArenaMgr.DoesArenaTeamExist(name))
             {
                 ArenaTeamHandler.SendResult(client, ArenaTeamCommandId.CREATE, name, string.Empty, ArenaTeamResult.NAME_EXISTS);
                 return;

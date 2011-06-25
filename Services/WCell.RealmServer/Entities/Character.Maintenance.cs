@@ -635,7 +635,7 @@ namespace WCell.RealmServer.Entities
 				}
 				else
 				{
-					RealmServer.IOQueue.AddMessage(() =>
+					Events.RealmServer.IOQueue.AddMessage(() =>
 					{
 						try
 						{
@@ -755,7 +755,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public void SaveLater()
 		{
-			RealmServer.IOQueue.AddMessage(new Message(() => SaveNow()));
+			Events.RealmServer.IOQueue.AddMessage(new Message(() => SaveNow()));
 		}
 
 		/// <summary>
@@ -1138,7 +1138,7 @@ namespace WCell.RealmServer.Entities
 		/// <remarks>Requires map context for synchronization.</remarks>
 		internal void FinishLogout()
 		{
-			RealmServer.IOQueue.AddMessage(new Message(() =>
+			Events.RealmServer.IOQueue.AddMessage(new Message(() =>
 			{
 				SaveNow();
 

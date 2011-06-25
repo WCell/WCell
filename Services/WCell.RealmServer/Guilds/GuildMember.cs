@@ -268,7 +268,7 @@ namespace WCell.RealmServer.Guilds
 
         public void SaveLater()
 		{
-			RealmServer.IOQueue.AddMessage(SaveAndFlush);
+			Events.RealmServer.IOQueue.AddMessage(SaveAndFlush);
 		}
         #endregion
     }

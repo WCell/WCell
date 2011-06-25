@@ -286,7 +286,7 @@ namespace WCell.RealmServer.Database
 		/// </summary>
 		public bool IsOnline
 		{
-			get { return LastLogin != null && LastLogin > RealmServer.StartTime && (LastLogout == null || LastLogout < LastLogin); }
+			get { return LastLogin != null && LastLogin > Events.RealmServer.StartTime && (LastLogout == null || LastLogout < LastLogin); }
 		}
 
 		[Property]
@@ -1040,7 +1040,7 @@ namespace WCell.RealmServer.Database
 		#region Delete
 		public void DeleteLater()
 		{
-			RealmServer.IOQueue.AddMessage(new Message(Delete));
+			Events.RealmServer.IOQueue.AddMessage(new Message(Delete));
 		}
 
 		public override void Delete()
@@ -1066,7 +1066,7 @@ namespace WCell.RealmServer.Database
 
 		public static void DeleteChar(uint charId)
 		{
-			RealmServer.IOQueue.ExecuteInContext(() =>
+			Events.RealmServer.IOQueue.ExecuteInContext(() =>
 			{
 				var chr = World.GetCharacter(charId);
 				uint guildId;

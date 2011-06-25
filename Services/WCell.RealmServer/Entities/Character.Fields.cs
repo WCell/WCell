@@ -29,7 +29,7 @@ using WCell.Constants.Updates;
 using WCell.Constants.World;
 using WCell.Core.Timers;
 using WCell.RealmServer.AreaTriggers;
-using WCell.RealmServer.ArenaTeams;
+using WCell.RealmServer.Battlegrounds.Arenas;
 using WCell.RealmServer.Chat;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Factions;

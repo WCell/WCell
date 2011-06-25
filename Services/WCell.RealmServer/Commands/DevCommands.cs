@@ -334,7 +334,7 @@ namespace WCell.RealmServer.Commands
 				}
 				else
 				{
-					RealmServer.IOQueue.AddMessage(() =>
+					Events.RealmServer.IOQueue.AddMessage(() =>
 					{
 						trigger.Reply("Loading Items...");
 						ItemMgr.LoadAll();
@@ -363,7 +363,7 @@ namespace WCell.RealmServer.Commands
 				}
 				else
 				{
-					RealmServer.IOQueue.AddMessage(() =>
+					Events.RealmServer.IOQueue.AddMessage(() =>
 					{
 						trigger.Reply("Loading GOs...");
 						GOMgr.LoadAll();
@@ -403,7 +403,7 @@ namespace WCell.RealmServer.Commands
 				}
 				else
 				{
-					RealmServer.IOQueue.AddMessage(() =>
+					Events.RealmServer.IOQueue.AddMessage(() =>
 					{
 						trigger.Reply("Loading NPCs{0}...", force ? " (FORCED) " : "");
 						if (!trigger.Text.HasNext)
@@ -457,7 +457,7 @@ namespace WCell.RealmServer.Commands
 				}
 				else
 				{
-					RealmServer.IOQueue.AddMessage(() =>
+					Events.RealmServer.IOQueue.AddMessage(() =>
 					{
 						trigger.Reply("Loading Quests...");
 						QuestMgr.LoadAll();
@@ -485,7 +485,7 @@ namespace WCell.RealmServer.Commands
 				}
 				else
 				{
-					RealmServer.IOQueue.AddMessage(() =>
+					Events.RealmServer.IOQueue.AddMessage(() =>
 					{
 						trigger.Reply("Loading Loot...");
 						LootMgr.LoadAll();
@@ -515,7 +515,7 @@ namespace WCell.RealmServer.Commands
 				}
 				else
 				{
-					RealmServer.IOQueue.AddMessage(() => LoadAll(trigger, false));
+					Events.RealmServer.IOQueue.AddMessage(() => LoadAll(trigger, false));
 				}
 			}
 
@@ -871,7 +871,7 @@ namespace WCell.RealmServer.Commands
 
 		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 		{
-			RealmServer.IOQueue.WaitOne();
+			Events.RealmServer.IOQueue.WaitOne();
 		}
 	}
 	#endregion

@@ -1,4 +1,4 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: PrivilegeMgr.cs
  *   copyright		: (C) The WCell Team
@@ -141,7 +141,7 @@ namespace WCell.RealmServer.Privileges
 
 		public void Setup()
 		{
-			var client = RealmServer.Instance.AuthClient;
+			var client = Events.RealmServer.Instance.AuthClient;
 			if (client.IsConnected)
 			{
 				var groups = client.Channel.RetrieveRoleGroups();

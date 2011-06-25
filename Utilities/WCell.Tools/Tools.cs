@@ -37,7 +37,7 @@ using WCell.Util;
 using WCell.Util.NLog;
 using WCell.Util.Strings;
 using WCell.Util.Toolshed;
-using RealmServ = WCell.RealmServer.RealmServer;
+using RealmServ = WCell.RealmServer.Events.RealmServer;
 
 
 namespace WCell.Tools

@@ -157,10 +157,10 @@ namespace WCell.RealmServer
 			set
 			{
 				m_HighestCharLevel = value;
-				RealmServer.IOQueue.AddMessage(new Message(() => {
-					if (RealmServer.Instance.AuthClient.IsRunning)
+				Events.RealmServer.IOQueue.AddMessage(new Message(() => {
+					if (Events.RealmServer.Instance.AuthClient.IsRunning)
 					{
-						RealmServer.Instance.AuthClient.Channel.SetHighestLevel(AccountId,
+						Events.RealmServer.Instance.AuthClient.Channel.SetHighestLevel(AccountId,
 																				m_HighestCharLevel);
 					}
 				}));
@@ -274,7 +274,7 @@ namespace WCell.RealmServer
 			var wasStaff = Role.IsStaff;
 			if (!Role.Equals(role))
 			{
-				if (!RealmServer.Instance.AuthClient.Channel.SetAccountRole(AccountId, role.Name))
+				if (!Events.RealmServer.Instance.AuthClient.Channel.SetAccountRole(AccountId, role.Name))
 				{
 					return false;
 				}
@@ -318,7 +318,7 @@ namespace WCell.RealmServer
 
 		public bool SetAccountActive(bool active, DateTime? statusUntil)
 		{
-			if (!RealmServer.Instance.AuthClient.Channel.SetAccountActive(AccountId, active, statusUntil))
+			if (!Events.RealmServer.Instance.AuthClient.Channel.SetAccountActive(AccountId, active, statusUntil))
 			{
 				return false;
 			}
@@ -339,7 +339,7 @@ namespace WCell.RealmServer
 		{
 			if (EmailAddress != email)
 			{
-				if (!RealmServer.Instance.AuthClient.Channel.SetAccountEmail(AccountId, email))
+				if (!Events.RealmServer.Instance.AuthClient.Channel.SetAccountEmail(AccountId, email))
 				{
 					return false;
 				}
@@ -366,7 +366,7 @@ namespace WCell.RealmServer
 			{
 				pass = null;
 			}
-			return RealmServer.Instance.AuthClient.Channel.SetAccountPass(AccountId, oldPassStr, pass);
+			return Events.RealmServer.Instance.AuthClient.Channel.SetAccountPass(AccountId, oldPassStr, pass);
 		}
 
 		/// <summary>
@@ -411,12 +411,12 @@ namespace WCell.RealmServer
 				return;
 			}
 
-			if (RealmServer.Instance.IsAccountLoggedIn(accountName))
+			if (Events.RealmServer.Instance.IsAccountLoggedIn(accountName))
 			{
 				log.Info("Client ({0}) tried to use online Account: {1}.", client, accountName);
 				LoginHandler.SendAuthSessionErrorReply(client, LoginErrorCode.AUTH_ALREADY_ONLINE);
 			}
-			else if (!RealmServer.Instance.AuthClient.IsConnected)
+			else if (!Events.RealmServer.Instance.AuthClient.IsConnected)
 			{
 				LoginHandler.SendAuthSessionErrorReply(client, LoginErrorCode.AUTH_DB_BUSY);
 			}
@@ -429,12 +429,12 @@ namespace WCell.RealmServer
 					return;
 				}
 
-				var accountInfo = RealmServer.Instance.RequestAccountInfo(accountName, addr.GetAddressBytes());
+				var accountInfo = Events.RealmServer.Instance.RequestAccountInfo(accountName, addr.GetAddressBytes());
 
 				if (accountInfo == null)
 				{
 					// Account not found
-					RealmServer.Instance.Error(client, Resources.FailedToRetrieveAccount, accountName);
+					Events.RealmServer.Instance.Error(client, Resources.FailedToRetrieveAccount, accountName);
 
 					LoginHandler.SendAuthSessionErrorReply(client, LoginErrorCode.AUTH_UNKNOWN_ACCOUNT);
 					return;
@@ -457,7 +457,7 @@ namespace WCell.RealmServer
 					return;
 				}
 
-				RealmServer.Instance.RegisterAccount(account);
+				Events.RealmServer.Instance.RegisterAccount(account);
 				account.LoadCharacters();
 			    account.LoadAccountData();
 
@@ -466,7 +466,7 @@ namespace WCell.RealmServer
 
 				log.Info("Account \"{0}\" logged in from {1}.", accountName, client.ClientAddress);
 
-				if (RealmServer.Instance.ClientCount > RealmServerConfiguration.MaxClientCount &&
+				if (Events.RealmServer.Instance.ClientCount > RealmServerConfiguration.MaxClientCount &&
 					!account.Role.MaySkipAuthQueue)
 				{
 					AuthQueue.EnqueueClient(client);
@@ -485,11 +485,11 @@ namespace WCell.RealmServer
 		/// <returns>The session key or null if authentication failed</returns>
 		private static bool ValidateAuthentication(IRealmClient client, string accountName)
 		{
-			var authInfo = RealmServer.Instance.GetAuthenticationInfo(accountName);
+			var authInfo = Events.RealmServer.Instance.GetAuthenticationInfo(accountName);
 
 			if (authInfo == null)
 			{
-				RealmServer.Instance.Error(client, Resources.FailedToRetrieveAccount, accountName);
+				Events.RealmServer.Instance.Error(client, Resources.FailedToRetrieveAccount, accountName);
 
 				LoginHandler.SendAuthSessionErrorReply(client, LoginErrorCode.AUTH_FAILED);
 			}
@@ -502,7 +502,7 @@ namespace WCell.RealmServer
 
 					var srp = new SecureRemotePassword(accountName, authInfo.Verifier, authInfo.Salt);
 
-					BigInteger clientVerifier = srp.Hash(srp.Username, new byte[4], client.ClientSeed, RealmServer.Instance.AuthSeed, client.SessionKey);
+					BigInteger clientVerifier = srp.Hash(srp.Username, new byte[4], client.ClientSeed, Events.RealmServer.Instance.AuthSeed, client.SessionKey);
 
 					if (clientVerifier != client.ClientDigest)
 					{

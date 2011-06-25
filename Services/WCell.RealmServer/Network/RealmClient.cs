@@ -47,9 +47,9 @@ namespace WCell.RealmServer.Network
 		/// <summary>
 		/// The server this client is connected to.
 		/// </summary>
-		public new RealmServer Server
+		public new Events.RealmServer Server
 		{
-			get { return (RealmServer)_server; }
+			get { return (Events.RealmServer)_server; }
 		}
 
 		/// <summary>
@@ -124,7 +124,7 @@ namespace WCell.RealmServer.Network
 		/// Create an realm client for a given server.
 		/// </summary>
 		/// <param name="server">reference to the parent RealmServer</param>
-		public RealmClient(RealmServer server)
+		public RealmClient(Events.RealmServer server)
 			: base(server)
 		{
 		}
@@ -209,7 +209,7 @@ namespace WCell.RealmServer.Network
 					var str = Encoding.UTF8.GetString(bytes);
 					if (str.Equals("GET HT", StringComparison.InvariantCultureIgnoreCase))
 					{
-						log.Warn("HTTP crawler bot connected from {0} and has been disconnected.", this);
+						log.Warn("HTTP crawler bot connected from {0} - requesting: {1}", this, str);
 					}
 					else
 					{

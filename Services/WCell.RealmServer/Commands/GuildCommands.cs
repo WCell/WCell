@@ -45,7 +45,7 @@ namespace WCell.RealmServer.Commands
 
 				if (leaderName.Length > 0)
 				{
-					RealmServer.IOQueue.AddMessage(() =>
+					Events.RealmServer.IOQueue.AddMessage(() =>
 					{
 						var leaderRecord = CharacterRecord.GetRecordByName(leaderName);
 						if (leaderRecord == null)
@@ -117,7 +117,7 @@ namespace WCell.RealmServer.Commands
 
 				if (memberName.Length > 0)
 				{
-					RealmServer.IOQueue.AddMessage(() =>
+					Events.RealmServer.IOQueue.AddMessage(() =>
 					{
 						var record = CharacterRecord.GetRecordByName(memberName);
 						if (record == null)

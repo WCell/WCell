@@ -1,4 +1,4 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: QuestMgr.cs
  *   copyright		: (C) The WCell Team
@@ -118,7 +118,7 @@ namespace WCell.RealmServer.Quests
 			{
 				if (loaded = value)
 				{
-					RealmServer.InitMgr.SignalGlobalMgrReady(typeof(QuestMgr));
+					Events.RealmServer.InitMgr.SignalGlobalMgrReady(typeof(QuestMgr));
 				}
 			}
 		}

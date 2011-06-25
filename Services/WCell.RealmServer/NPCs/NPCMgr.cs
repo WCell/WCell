@@ -472,7 +472,7 @@ namespace WCell.RealmServer.NPCs
 
 		public static void LoadAllLater()
 		{
-			RealmServer.IOQueue.AddMessage(() =>
+			Events.RealmServer.IOQueue.AddMessage(() =>
 			{
 				LoadAll();
 			});
@@ -559,7 +559,7 @@ namespace WCell.RealmServer.NPCs
 		{
 			if (Loaded)
 			{
-				RealmServer.InitMgr.SignalGlobalMgrReady(typeof(NPCMgr));
+				Events.RealmServer.InitMgr.SignalGlobalMgrReady(typeof(NPCMgr));
 			}
 		}
 
@@ -625,7 +625,7 @@ namespace WCell.RealmServer.NPCs
 			LoadWaypoints(force);
 			GossipMgr.LoadNPCRelations();
 
-			if (!RealmServer.Instance.IsRunning) return;
+			if (!Events.RealmServer.Instance.IsRunning) return;
 
 			// spawn immediately
 			for (MapId mapId = 0; mapId < MapId.End; mapId++)

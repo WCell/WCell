@@ -14,7 +14,7 @@ namespace WCell.RealmServer.Network
 		protected static Logger s_log = LogManager.GetCurrentClassLogger();
 
 		public FakeRealmClient(RealmAccount acc)
-			: base(RealmServer.Instance, FakePacketMgr.Instance)
+			: base(Events.RealmServer.Instance, FakePacketMgr.Instance)
 		{
 			Account = acc;
 			//if (!Account.Initialize())
@@ -120,11 +120,11 @@ namespace WCell.RealmServer.Network
 			set;
 		}
 
-		public new RealmServer Server
+		public new Events.RealmServer Server
 		{
 			get
 			{
-				return (RealmServer)m_server;
+				return (Events.RealmServer)m_server;
 			}
 		}
 

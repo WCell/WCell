@@ -65,7 +65,7 @@ namespace WCell.RealmServer.Stats
 
 		public override void GetStats(ICollection<string> list)
 		{
-			list.Add(string.Format("+ Uptime: {0}", Utility.Format(RealmServer.RunTime)));
+			list.Add(string.Format("+ Uptime: {0}", Utility.Format(Events.RealmServer.RunTime)));
 			list.Add(string.Format("+ Players Online: {0} (Horde: {1}, Alliance: {2})",
 				World.CharacterCount, World.HordeCharCount, World.AllianceCharCount));
 			base.GetStats(list);

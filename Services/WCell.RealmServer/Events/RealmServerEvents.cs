@@ -4,15 +4,13 @@ using System.Linq;
 using System.Text;
 using WCell.Constants.Login;
 
-namespace WCell.RealmServer
+namespace WCell.RealmServer.Events
 {
 	public partial class RealmServer
 	{
 		public event Action<RealmStatus> StatusChanged;
 	}
-}
 
-namespace WCell.RealmServer.Server {
 	public partial class AuthenticationClient
 	{
 		/// <summary>

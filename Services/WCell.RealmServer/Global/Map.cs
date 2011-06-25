@@ -498,7 +498,7 @@ namespace WCell.RealmServer.Global
 
 		public virtual DateTime CreationTime
 		{
-			get { return RealmServer.StartTime; }
+			get { return Events.RealmServer.StartTime; }
 		}
 
 		/// <summary>

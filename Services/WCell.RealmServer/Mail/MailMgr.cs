@@ -218,7 +218,7 @@ namespace WCell.RealmServer.Mail
 			// Make a new TextItem that contains the body of the message
 
 			letter.ExpireTime = letter.DeliveryTime.AddDays(letter.CashOnDelivery > 0 ? MaxCODExpiryDelay : MailExpiryDelay);
-			RealmServer.IOQueue.ExecuteInContext(() =>
+			Events.RealmServer.IOQueue.ExecuteInContext(() =>
 			{
 				letter.Save();
 

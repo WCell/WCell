@@ -35,7 +35,7 @@ using WCell.RealmServer.Global;
 using WCell.RealmServer.Handlers;
 using WCell.Util.NLog;
 
-using RealmServ = WCell.RealmServer.RealmServer;
+using RealmServ = WCell.RealmServer.Events.RealmServer;
 
 namespace WCell.RealmServer
 {
@@ -215,10 +215,10 @@ namespace WCell.RealmServer
 			set
 			{
 				realmName = value;
-				if (RealmServer.Instance.IsRunning)
+				if (RealmServ.Instance.IsRunning)
 				{
-					RealmServer.Instance.SetTitle(RealmServer.Instance.ToString());
-					RealmServer.Instance.UpdateRealm();
+					RealmServ.Instance.SetTitle(RealmServ.Instance.ToString());
+					RealmServ.Instance.UpdateRealm();
 				}
 			}
 		}
@@ -241,9 +241,9 @@ namespace WCell.RealmServer
 				if (serverType != value)
 				{
 					serverType = value;
-					if (RealmServer.Instance.IsRunning)
+					if (RealmServ.Instance.IsRunning)
 					{
-						RealmServer.Instance.UpdateRealm();
+						RealmServ.Instance.UpdateRealm();
 					}
 				}
 			}
@@ -263,9 +263,9 @@ namespace WCell.RealmServer
 				{
 					var oldStatus = status;
 					status = value;
-					if (RealmServer.Instance.IsRunning)
+					if (RealmServ.Instance.IsRunning)
 					{
-						RealmServer.Instance.OnStatusChange(oldStatus);
+						RealmServ.Instance.OnStatusChange(oldStatus);
 					}
 				}
 			}
@@ -282,9 +282,9 @@ namespace WCell.RealmServer
 			set
 			{
 				category = value;
-				if (RealmServer.Instance.IsRunning)
+				if (RealmServ.Instance.IsRunning)
 				{
-					RealmServer.Instance.UpdateRealm();
+					RealmServ.Instance.UpdateRealm();
 				}
 			}
 		}
@@ -300,9 +300,9 @@ namespace WCell.RealmServer
 			set
 			{
 				flags = value;
-				if (RealmServer.Instance.IsRunning)
+				if (RealmServ.Instance.IsRunning)
 				{
-					RealmServer.Instance.UpdateRealm();
+					RealmServ.Instance.UpdateRealm();
 				}
 			}
 		}
@@ -336,9 +336,9 @@ namespace WCell.RealmServer
 			set
 			{
 				registerExternalAddress = value;
-				if (RealmServer.Instance.IsRunning)
+				if (RealmServ.Instance.IsRunning)
 				{
-					RealmServer.Instance.UpdateRealm();
+					RealmServ.Instance.UpdateRealm();
 				}
 			}
 		}
@@ -414,10 +414,10 @@ namespace WCell.RealmServer
 					value = 60;
 				}
 
-				if (RealmServer.Instance.IsRunning)
+				if (RealmServ.Instance.IsRunning)
 				{
 					// make sure to reset before changing the speed
-					RealmServer.ResetTimeStart();
+					RealmServ.ResetTimeStart();
 					ingameMinutePerSecond = value;
 					foreach (var chr in World.GetAllCharacters())
 					{

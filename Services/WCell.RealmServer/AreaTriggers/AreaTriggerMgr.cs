@@ -163,9 +163,9 @@ namespace WCell.RealmServer.AreaTriggers
 
 			ContentMgr.Load<ATTemplate>();
 
-			if (RealmServer.InitMgr != null)
+			if (Events.RealmServer.InitMgr != null)
 			{
-				RealmServer.InitMgr.SignalGlobalMgrReady(typeof (AreaTriggerMgr));
+				Events.RealmServer.InitMgr.SignalGlobalMgrReady(typeof (AreaTriggerMgr));
 			}
 		}
 
@@ -179,9 +179,9 @@ namespace WCell.RealmServer.AreaTriggers
             {
                 if (_loaded = value)
                 {
-                    if (RealmServer.InitMgr != null)
+                    if (Events.RealmServer.InitMgr != null)
                     {
-                        RealmServer.InitMgr.SignalGlobalMgrReady(typeof(AreaTriggerMgr));
+                        Events.RealmServer.InitMgr.SignalGlobalMgrReady(typeof(AreaTriggerMgr));
                     }
                 }
             }

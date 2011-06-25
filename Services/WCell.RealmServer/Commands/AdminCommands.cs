@@ -44,14 +44,14 @@ namespace WCell.RealmServer.Commands
 
 		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 		{
-			if (RealmServer.IsPreparingShutdown)
+			if (Events.RealmServer.IsPreparingShutdown)
 			{
-				RealmServer.Instance.CancelShutdown();
+				Events.RealmServer.Instance.CancelShutdown();
 			}
 			else
 			{
 				var delay = trigger.Text.NextUInt(10);
-				RealmServer.Instance.ShutdownIn(delay * 1000);
+				Events.RealmServer.Instance.ShutdownIn(delay * 1000);
 			}
 		}
 	}
@@ -193,7 +193,7 @@ namespace WCell.RealmServer.Commands
 			trigger.Reply("Banning Account {0} ({1}) {2}...", chr.Account.Name, chr.Name,
 				timeStr);
 
-			RealmServer.IOQueue.AddMessage(new Message(() =>
+			Events.RealmServer.IOQueue.AddMessage(new Message(() =>
 			{
 				var context = chr.ContextHandler;
 				var acc = chr.Account;
@@ -264,7 +264,7 @@ namespace WCell.RealmServer.Commands
 
 				// Since setting the role is a task sent to the Auth-Server, this is a blocking call
 				// and thus must not be executed within the Map context (which is the default context for Commands)
-				RealmServer.IOQueue.AddMessage(new Message(() =>
+				Events.RealmServer.IOQueue.AddMessage(new Message(() =>
 				{
 					if (chr.Account.SetRole(role))
 					{
@@ -529,13 +529,13 @@ namespace WCell.RealmServer.Commands
 
 		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 		{
-			if (RealmServer.Instance.AuthClient.Channel == null || !RealmServer.Instance.AuthClient.IsConnected)
+			if (Events.RealmServer.Instance.AuthClient.Channel == null || !Events.RealmServer.Instance.AuthClient.IsConnected)
 			{
 				trigger.Reply("Connection to AuthServer is currently not established.");
 				return;
 			}
 
-			var response = RealmServer.Instance.AuthClient.Channel.ExecuteCommand(trigger.Text.Remainder);
+			var response = Events.RealmServer.Instance.AuthClient.Channel.ExecuteCommand(trigger.Text.Remainder);
 			if (response != null)
 			{
 				if (response.Replies.Count > 0)
@@ -722,10 +722,10 @@ namespace WCell.RealmServer.Commands
 			else
 			{
 				// toggle
-				run = !RealmServer.Instance.AuthClient.IsRunning;
+				run = !Events.RealmServer.Instance.AuthClient.IsRunning;
 			}
 
-			RealmServer.Instance.AuthClient.IsRunning = run;
+			Events.RealmServer.Instance.AuthClient.IsRunning = run;
 
 			//trigger.Reply("Done. - IPC-Client is now {0}.", run ? "Online" : "Offline");
 			trigger.Reply("Done.");

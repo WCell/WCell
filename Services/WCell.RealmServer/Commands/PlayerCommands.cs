@@ -32,7 +32,7 @@ namespace WCell.RealmServer.Commands
 			trigger.Reply("Saving...");
 			var chr = (Character)trigger.Args.Target;
 
-			RealmServer.IOQueue.AddMessage(new Message(() =>
+			Events.RealmServer.IOQueue.AddMessage(new Message(() =>
 			{
 				if (chr == null)
 				{
@@ -81,7 +81,7 @@ namespace WCell.RealmServer.Commands
 			{
 				trigger.Reply("Setting mail address to " + email + "...");
 
-				RealmServer.IOQueue.AddMessage(new Message(() =>
+				Events.RealmServer.IOQueue.AddMessage(new Message(() =>
 				{
 					var chr = ((Character)trigger.Args.Target);
 
@@ -165,7 +165,7 @@ namespace WCell.RealmServer.Commands
 				//    log.Info("{0} is changing {1}'s Password.", trigger.Args.Character, trigger.Args.Target);
 				//}
 
-				RealmServer.IOQueue.AddMessage(new Message(() =>
+				Events.RealmServer.IOQueue.AddMessage(new Message(() =>
 				{
 					var chr = ((Character)trigger.Args.Target);
 
@@ -279,8 +279,8 @@ namespace WCell.RealmServer.Commands
 
 		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 		{
-			trigger.Reply(RealmServer.Title + " located at: " + RealmServerConfiguration.ExternalAddress + " (Required Client: " + WCellInfo.RequiredVersion.BasicString + ")");
-			trigger.Reply("Server has been running for {0}.", RealmServer.RunTime.Format());
+			trigger.Reply(Events.RealmServer.Title + " located at: " + RealmServerConfiguration.ExternalAddress + " (Required Client: " + WCellInfo.RequiredVersion.BasicString + ")");
+			trigger.Reply("Server has been running for {0}.", Events.RealmServer.RunTime.Format());
 			trigger.Reply("There are {0} players online (Alliance: {1}, Horde: {2}).",
 						  World.CharacterCount, World.AllianceCharCount, World.HordeCharCount);
 

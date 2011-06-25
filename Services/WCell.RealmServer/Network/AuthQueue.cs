@@ -74,7 +74,7 @@ namespace WCell.RealmServer.Network
 
 			try
 			{
-				var clientAccepts = RealmServerConfiguration.MaxClientCount - RealmServer.Instance.AcceptedClients;
+				var clientAccepts = RealmServerConfiguration.MaxClientCount - Events.RealmServer.Instance.AcceptedClients;
 
 				IRealmClient client;
 

@@ -1,4 +1,4 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: Program.cs
  *   copyright		: (C) The WCell Team
@@ -30,7 +30,7 @@ namespace WCell.RealmServer
         /// </summary>
         public static void Start()
 		{
-			RealmServer.Instance.Start();
+			Events.RealmServer.Instance.Start();
         }
     }
 }
