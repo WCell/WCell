@@ -95,7 +95,7 @@ namespace WCell.Core.Addons
 		public static void LoadAddons(string folderName, string ignoreString)
 		{
 			var folder = new DirectoryInfo(folderName);
-			var ignores = ignoreString.Split(new[] { ';' }).TransformArray(s => s.ToLower().Trim().Replace(".dll", ""));
+			var ignores = ignoreString.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).TransformArray(s => s.ToLower().Trim().Replace(".dll", ""));
 
 			LoadAddons(folder, ignores);
 		}

@@ -83,6 +83,7 @@ namespace WCell.Core.Initialization
         }
 
         public readonly Dictionary<InitializationPass, List<InitializationStep>> InitSteps;
+    	private int totalStepCount;
         private InitializationPass m_currentPass;
         private int totalFails, totalSuccess;
         private InitFailedHandler failHandler;
@@ -255,6 +256,7 @@ namespace WCell.Core.Initialization
 
     	private void AddIndipendentStep(InitializationStep step)
     	{
+    		totalStepCount++;
 			InitSteps[step.Pass].Add(step);
     	}
 

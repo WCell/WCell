@@ -15,8 +15,7 @@ namespace WCell.RealmServer.Spells.Auras
 
 		protected virtual int GetStatValue(StatType stat)
 		{
-			//return Owner.GetUnmodifiedBaseStatValue(stat);
-			return Owner.GetBaseStatValue(stat);
+			return Owner.GetUnmodifiedBaseStatValue(stat);
 		}
 
 		protected override void Apply()

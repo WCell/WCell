@@ -91,13 +91,6 @@ namespace WCell.AuthServer
 					log.Warn("Config-file \"{0}\" not found - Created new \"{0}\". Please take a little time to configure your server and then restart the Application.",Instance.FilePath);
 					return false;
 				}
-				else
-				{
-					if (s_instance.AutoSave)
-					{
-						s_instance.Save(true, true);
-					}
-				}
 			}
 			catch (Exception e)
 			{
@@ -124,6 +117,15 @@ namespace WCell.AuthServer
 			m_executablePath = executablePath;
 			m_cfg = new AppConfig(executablePath);
 			RealmIPs.Add("127.0.0.1");
+		}
+
+		[Initialization(InitializationPass.Last)]
+		public static void PerformAutoSave()
+		{
+			if (s_instance.AutoSave)
+			{
+				s_instance.Save(true, true);
+			}
 		}
 
 		/// <summary>

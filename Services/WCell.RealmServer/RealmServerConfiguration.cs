@@ -129,13 +129,6 @@ namespace WCell.RealmServer
 						log.Warn("See http://wiki.wcell.org/index.php/Configuration for more information.");
 						return false;
 					}
-					else
-					{
-						if (s_instance.AutoSave)
-						{
-							s_instance.Save(true, true);
-						}
-					}
 				}
 				catch (Exception e)
 				{
@@ -155,6 +148,15 @@ namespace WCell.RealmServer
 			foreach (var def in s_instance.Definitions.Values)
 			{
 				//def.Initialize();
+			}
+		}
+
+		[Initialization(InitializationPass.Last)]
+		public static void PerformAutoSave()
+		{
+			if (s_instance.AutoSave)
+			{
+				s_instance.Save(true, true);
 			}
 		}
 

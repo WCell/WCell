@@ -325,31 +325,17 @@ namespace WCell.RealmServer.Groups
 						var chr = member.Character;
 						if (chr != null)
 						{
-							chr.ExecuteInContext(() => callback(chr));
+							chr.ExecuteInContext(() =>
+							{
+								// character might have left group in the meantime
+								if (chr.Group == this)
+								{
+									callback(chr);
+								}
+							});
 						}
 					}
 				}
-			}
-		}
-
-		/// <summary>
-		/// Executes the given callback for every online group member.
-		/// Callback is called immediately on everyone who is in the current context and delayed for everyone who is not.
-		/// Callback will only execute if character is still in group at the time of execution.
-		/// Execution is not guaranteed!
-		/// </summary>
-		public void CallOnAllInContext(Action<Character> callback)
-		{
-			foreach (var chr in GetAllCharacters())
-			{
-				var c = chr;
-				chr.ExecuteInContext(() =>
-				{
-					if (c.Group == this)
-					{
-						callback(c);
-					}
-				});
 			}
 		}
 

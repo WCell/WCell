@@ -10,6 +10,7 @@ using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Spells.Auras.Misc;
 using WCell.RealmServer.Misc;
+using WCell.Util;
 
 namespace WCell.Addons.Default.Spells.Mage
 {
@@ -94,7 +95,63 @@ namespace WCell.Addons.Default.Spells.Mage
 				var effect = spell.GetEffect(AuraType.OverrideClassScripts);
 				effect.AuraEffectHandlerCreator = () => new MoltenFuryHandler();
 			});
+
+			// Fire Starter has the wrong trigger spells
+			// "Blast Wave and Dragon's Breath spells have a $h% chance to..."
+			SpellLineId.MageFireFirestarter.Apply(spell =>
+			{
+				var effect = spell.GetEffect(AuraType.ProcTriggerSpell);
+				effect.SetAffectMask(SpellLineId.MageFireDragonsBreath, SpellLineId.MageFireBlastWave);
+			});
+
+			// "Any time you score 2 non-periodic spell criticals in a row using Fireball, Fire Blast, Scorch, Living Bomb, or Frostfire Bolt, 
+			// you have a $m1% chance the next Pyroblast spell cast within $48108d will be instant cast."
+			SpellLineId.MageFireHotStreak.Apply(spell => {
+				var effect = spell.GetEffect(AuraType.Dummy);
+				effect.AuraEffectHandlerCreator = () => new HotStreakHandler();
+			});
 		}
+
+		#region Hot Streak
+		public class HotStreakHandler : AttackEventEffectHandler
+		{
+			public readonly static HashSet<SpellLineId> TriggerSpells = new HashSet<SpellLineId>()
+			{
+				SpellLineId.MageFireball,
+				SpellLineId.MageFireBlast,
+				SpellLineId.MageScorch,
+				SpellLineId.MageFireLivingBomb,
+				SpellLineId.MageFrostfireBolt
+			};
+
+			private int critCount;
+
+			public override void OnAttack(DamageAction action)
+			{
+				if (action.IsMagic && TriggerSpells.Contains(action.Spell.Line.LineId))
+				{
+					if (!action.IsCritical)
+					{
+						critCount = 0;				// reset critCount
+					}
+					else
+					{
+						critCount++;
+						if (critCount == 2)
+						{
+							// 2 crits in a row
+							critCount = 0;			// reset critCount
+							if (Utility.Random(0, 101) < EffectValue)
+							{
+								// we have a Hot Streak
+								Owner.SpellCast.TriggerSelf(SpellId.HotStreak);
+							}
+						}
+					}
+				}
+			}
+		}
+		#endregion
 
 		#region Molten Fury
 		public class MoltenFuryHandler : AttackEventEffectHandler
