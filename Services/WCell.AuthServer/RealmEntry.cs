@@ -46,6 +46,11 @@ namespace WCell.AuthServer
         }
 
         #region Properties
+    	public bool IsOnline
+    	{
+    		get { return !Flags.HasFlag(RealmFlags.Offline); }
+    	}
+
         public DateTime LastUpdate
         {
             get;
@@ -238,23 +243,8 @@ namespace WCell.AuthServer
         /// Also removes all logged in accounts.
         /// </summary>
         internal void SetOffline(bool remove)
-        {
-            var serv = AuthenticationServer.Instance;
-
-            serv.ClearAccounts(ChannelId);
-
-            //m_maintenanceTimer.Change(Timeout.Infinite, Timeout.Infinite);
-			//m_maintenanceTimer.Dispose();
-
-			if (remove)
-			{
-				AuthenticationServer.RemoveRealm(this);
-			}
-			else
-			{
-				Flags = RealmFlags.Offline;
-				Status = RealmStatus.Locked;
-			}
+		{
+			AuthenticationServer.RemoveRealm(this, remove);
         }
 
         #region Send + Receive

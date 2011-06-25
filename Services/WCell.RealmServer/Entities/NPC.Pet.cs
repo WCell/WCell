@@ -567,7 +567,7 @@ namespace WCell.RealmServer.Entities
 		void DeletePetRecord()
 		{
 			var record = m_PetRecord;
-			Events.RealmServer.IOQueue.AddMessage(record.Delete);
+			RealmServer.IOQueue.AddMessage(record.Delete);
 			m_PetRecord = null;
 		}
 	}

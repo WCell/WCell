@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using NLog;
 using WCell.Constants;
 using WCell.Constants.Relations;
 using WCell.Core;
@@ -53,35 +54,8 @@ namespace WCell.RealmServer.Interaction
 	{
 		private readonly Dictionary<uint, HashSet<IBaseRelation>>[] m_activeRelations;
 		private readonly Dictionary<uint, HashSet<IBaseRelation>>[] m_passiveRelations;
-		private new readonly ReaderWriterLockSlim m_lock;
-
-		/// <summary>
-		/// Starts the relation manager
-		/// </summary>
-		/// <returns>True if the relation manager started successfully. False otherwise</returns>
-		protected override bool InternalStart()
-		{
-			Initialize();
-			return true;
-		}
-
-		/// <summary>
-		/// Stops the relation manager
-		/// </summary>
-		/// <returns>True if the relation manager stopped succesfully. False otherwise</returns>
-		protected override bool InternalStop()
-		{
-			return true;
-		}
-
-		/// <summary>
-		/// Restarts the relation manager
-		/// </summary>
-		/// <returns>True if the relation manager stopped succesfully. False otherwise</returns>
-		protected override bool InternalRestart(bool forced)
-		{
-			return true;
-		}
+		private readonly ReaderWriterLockSlim m_lock;
+		private static readonly Logger _log = LogManager.GetCurrentClassLogger();
 
 		private RelationMgr()
 		{
@@ -405,7 +379,7 @@ namespace WCell.RealmServer.Interaction
 			    RelationResult relResult;
 			    if (!relation.Validate(character.Record, relatedCharInfo, out relResult))
 				{
-					s_log.Debug(Resources.CharacterRelationValidationFailed, character.Name,
+					_log.Debug(Resources.CharacterRelationValidationFailed, character.Name,
 						character.EntityId, relatedCharName, relatedCharInfo.EntityLowId, relationType, relResult);
 				}
 				else
@@ -467,7 +441,7 @@ namespace WCell.RealmServer.Interaction
 					m_lock.ExitWriteLock();
 				}
 
-				s_log.Debug(Resources.CharacterRelationAdded, string.Empty, relation.CharacterId,
+				_log.Debug(Resources.CharacterRelationAdded, string.Empty, relation.CharacterId,
 				string.Empty, relation.RelatedCharacterId, relation.Type, 0);
 			}
 			catch (Exception ex)
@@ -495,7 +469,7 @@ namespace WCell.RealmServer.Interaction
 			else
 			{
 				relResult = RelationResult.FRIEND_DB_ERROR;
-				s_log.Debug(Resources.CharacterRelationRemoveFailed, charId, relCharId, relationType, relResult);
+				_log.Debug(Resources.CharacterRelationRemoveFailed, charId, relCharId, relationType, relResult);
 			}
 
 			//Send relation status to the client
@@ -560,7 +534,7 @@ namespace WCell.RealmServer.Interaction
 				((PersistedRelation)relation).Delete();
 			}
 
-			s_log.Debug(Resources.CharacterRelationRemoved, relation.CharacterId,
+			_log.Debug(Resources.CharacterRelationRemoved, relation.CharacterId,
 				relation.RelatedCharacterId, relation.Type, 0);
 
 			return success;
@@ -750,9 +724,9 @@ namespace WCell.RealmServer.Interaction
 		}
 
 		[Initialization(InitializationPass.Fifth, "Start relation manager")]
-		public static bool StartRelationMgr()
+		public static void StartRelationMgr()
 		{
-			return Instance.Start();
+			Instance.Initialize();
 		}
 
 		#region Send/Reply methods

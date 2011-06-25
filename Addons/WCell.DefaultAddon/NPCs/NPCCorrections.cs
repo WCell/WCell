@@ -1,23 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using WCell.Constants.Spells;
 using WCell.Core.Initialization;
 using WCell.RealmServer.NPCs;
 using WCell.Constants.NPCs;
-using WCell.Util;
 using WCell.Util.Graphics;
 using WCell.RealmServer.AI.Brains;
-using WCell.RealmServer.GameObjects;
-using WCell.RealmServer.Instances;
-using WCell.RealmServer.NPCs;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Entities;
-using WCell.Constants.Spells;
-using WCell.Constants;
-using WCell.Constants.GameObjects;
-using WCell.RealmServer.AI.Actions.Combat;
 
 namespace WCell.Addons.Default.NPCs
 {

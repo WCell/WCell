@@ -22,7 +22,7 @@ namespace WCell.RealmServer.Network
         /// <summary>
         /// The server this client is serviced by.
         /// </summary>
-        new Events.RealmServer Server { get; }
+        new RealmServer Server { get; }
 
         /// <summary>
         /// The <see cref="ClientInformation">system information</see> for this client.

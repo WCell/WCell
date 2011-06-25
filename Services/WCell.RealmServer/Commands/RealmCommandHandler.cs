@@ -49,7 +49,7 @@ namespace WCell.RealmServer.Commands
 
 		public override string ExecFileDir
 		{
-			get { return Path.GetDirectoryName(Events.RealmServer.EntryLocation); }
+			get { return Path.GetDirectoryName(RealmServer.EntryLocation); }
 		}
 
 
@@ -458,7 +458,7 @@ namespace WCell.RealmServer.Commands
 		[Initialization(InitializationPass.Tenth)]
 		public static void OnStartup()
 		{
-			Events.RealmServer.Started += AutoexecStartup;
+			RealmServer.Started += AutoexecStartup;
 		}
 
 		public static void AutoexecStartup()
@@ -650,7 +650,7 @@ namespace WCell.RealmServer.Commands
 					var name = trigger.Text.NextWord();
 					if (isAcc)
 					{
-						var acc = Events.RealmServer.Instance.GetLoggedInAccount(name);
+						var acc = RealmServer.Instance.GetLoggedInAccount(name);
 						if (acc == null || (chr = acc.ActiveCharacter) == null)
 						{
 							trigger.Reply("Account {0} is not online.", name);

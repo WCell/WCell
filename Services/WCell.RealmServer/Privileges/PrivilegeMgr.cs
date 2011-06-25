@@ -128,20 +128,9 @@ namespace WCell.RealmServer.Privileges
 
 		#region Initialization/teardown
 
-		[Initialization(InitializationPass.Fourth, "Privilege manager")]
-		public static bool Initialize()
-		{
-			if (Instance.Start())
-			{
-				Instance.IsInitialized = true;
-				return true;
-			}
-			return false;
-		}
-
 		public void Setup()
 		{
-			var client = Events.RealmServer.Instance.AuthClient;
+			var client = RealmServer.Instance.AuthClient;
 			if (client.IsConnected)
 			{
 				var groups = client.Channel.RetrieveRoleGroups();
@@ -153,15 +142,5 @@ namespace WCell.RealmServer.Privileges
 		}
 
 		#endregion
-
-		protected override bool InternalStart()
-		{
-			return true;
-		}
-
-		protected override bool InternalStop()
-		{
-			return true;
-		}
 	}
 }

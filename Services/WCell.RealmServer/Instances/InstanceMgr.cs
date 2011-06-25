@@ -59,7 +59,7 @@ namespace WCell.RealmServer.Instances
 		#region Enter & Creation
 		public static void SetCreator(MapId id, string typeName)
 		{
-			var type = Events.RealmServer.GetType(typeName);
+			var type = RealmServer.GetType(typeName);
 			if (type == null)
 			{
 				log.Warn("Invalid Creator for Instance \"" + id + "\": " + typeName + "  - " +

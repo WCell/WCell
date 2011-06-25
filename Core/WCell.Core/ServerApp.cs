@@ -173,7 +173,7 @@ namespace WCell.Core
 			get;
 		}
 
-		protected void UpdateTitle()
+		public void UpdateTitle()
 		{
 			SetTitle(ToString());
 		}

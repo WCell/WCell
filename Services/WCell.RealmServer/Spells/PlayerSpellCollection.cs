@@ -257,7 +257,7 @@ namespace WCell.RealmServer.Spells
 				if (record.SpellId == spell.SpellId)
 				{
 					// delete and remove
-					Events.RealmServer.IOQueue.AddMessage(new Message(record.Delete));
+					RealmServer.IOQueue.AddMessage(new Message(record.Delete));
 					spells.RemoveAt(i);
 					return;
 				}
@@ -470,7 +470,7 @@ namespace WCell.RealmServer.Spells
 			{
 				var removedId = idCooldown as PersistentSpellIdCooldown;
 				var removedCat = catCooldown as PersistentSpellCategoryCooldown;
-				Events.RealmServer.IOQueue.AddMessage(new Message(() =>
+				RealmServer.IOQueue.AddMessage(new Message(() =>
 				{
 					if (removedId != null)
 					{
@@ -575,7 +575,7 @@ namespace WCell.RealmServer.Spells
 			m_idCooldowns.Clear();
 			m_categoryCooldowns.Clear();
 
-			Events.RealmServer.IOQueue.AddMessage(new Message(() =>
+			RealmServer.IOQueue.AddMessage(new Message(() =>
 			{
 				foreach (var cooldown in cds)
 				{
@@ -627,7 +627,7 @@ namespace WCell.RealmServer.Spells
 			// enqueue task
 			if (idCooldown is ActiveRecordBase || catCooldown is ActiveRecordBase)
 			{
-				Events.RealmServer.IOQueue.AddMessage(new Message(() =>
+				RealmServer.IOQueue.AddMessage(new Message(() =>
 				{
 					if (idCooldown is ActiveRecordBase)
 					{

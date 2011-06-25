@@ -51,7 +51,7 @@ namespace WCell.RealmServer.Misc
 					excepRaisingSpeed = (3 * excepRaisingSpeed + (1 / delay)) / 4;
 				}
 
-				if (recentExceptions > 5 && excepRaisingSpeed > 50 && !Events.RealmServer.IsShuttingDown)
+				if (recentExceptions > 5 && excepRaisingSpeed > 50 && !RealmServer.IsShuttingDown)
 				{
 					//World.Broadcast("[Warning] Server has become unstable...");
 					//RealmServer.Instance.ShutdownIn(5000);

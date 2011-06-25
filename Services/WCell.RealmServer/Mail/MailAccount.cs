@@ -282,7 +282,7 @@ namespace WCell.RealmServer.Mail
 			{
 				// enqueue Task to load from DB
 				// then enqueue another task to do the actual sending from the Map thread
-				Events.RealmServer.IOQueue.AddMessage(new Message(() =>
+				RealmServer.IOQueue.AddMessage(new Message(() =>
 				{
 					Load();
 					var context = m_chr.ContextHandler;
@@ -439,7 +439,7 @@ namespace WCell.RealmServer.Mail
                 letter.CashOnDelivery = 0;
 			}
 
-			Events.RealmServer.IOQueue.AddMessage(new Message(() =>
+			RealmServer.IOQueue.AddMessage(new Message(() =>
 			{
 				letter.Update();
 				MailHandler.SendResult(m_chr.Client, (uint)letter.Guid, MailResult.ItemTaken, MailError.OK, itemId, count);
@@ -507,7 +507,7 @@ namespace WCell.RealmServer.Mail
 
 			mail.CopiedToItem = true;
 
-			Events.RealmServer.IOQueue.AddMessage(new Message(() =>
+			RealmServer.IOQueue.AddMessage(new Message(() =>
 			{
 				mail.Save();
 				MailHandler.SendResult(m_chr, messageId, MailResult.MadePermanent, MailError.OK);
@@ -565,7 +565,7 @@ namespace WCell.RealmServer.Mail
 			else
 			{
 				letter.DeletedTime = DateTime.Now;
-				Events.RealmServer.IOQueue.AddMessage(new Message(letter.Destroy));
+				RealmServer.IOQueue.AddMessage(new Message(letter.Destroy));
 			}
 		}
 	}

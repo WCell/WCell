@@ -91,8 +91,6 @@ namespace WCell.RealmServer.Mail
 				RealmDBMgr.OnDBError(e);
 				CreateIdGenerators();
 			}
-
-			Instance.InternalStart();
 		}
 
 		private static void CreateIdGenerators()
@@ -111,16 +109,6 @@ namespace WCell.RealmServer.Mail
 
 		protected MailMgr()
 		{
-		}
-
-		protected override bool InternalStart()
-		{
-			return true;
-		}
-
-		protected override bool InternalStop()
-		{
-			return true;
 		}
 		#endregion
 
@@ -218,7 +206,7 @@ namespace WCell.RealmServer.Mail
 			// Make a new TextItem that contains the body of the message
 
 			letter.ExpireTime = letter.DeliveryTime.AddDays(letter.CashOnDelivery > 0 ? MaxCODExpiryDelay : MailExpiryDelay);
-			Events.RealmServer.IOQueue.ExecuteInContext(() =>
+			RealmServer.IOQueue.ExecuteInContext(() =>
 			{
 				letter.Save();
 

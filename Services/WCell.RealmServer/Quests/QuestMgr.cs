@@ -118,7 +118,7 @@ namespace WCell.RealmServer.Quests
 			{
 				if (loaded = value)
 				{
-					Events.RealmServer.InitMgr.SignalGlobalMgrReady(typeof(QuestMgr));
+					RealmServer.InitMgr.SignalGlobalMgrReady(typeof(QuestMgr));
 				}
 			}
 		}

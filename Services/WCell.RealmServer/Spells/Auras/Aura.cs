@@ -1250,7 +1250,7 @@ namespace WCell.RealmServer.Spells.Auras
 		#region Persistance
 		public void Save()
 		{
-			Events.RealmServer.IOQueue.AddMessage(SaveNow);
+			RealmServer.IOQueue.AddMessage(SaveNow);
 		}
 
 		internal void SaveNow()

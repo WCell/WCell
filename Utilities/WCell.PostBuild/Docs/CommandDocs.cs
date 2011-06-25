@@ -11,7 +11,7 @@ using WCell.Tools.Commands;
 using WCell.Util;
 using WCell.AuthServer;
 using WCell.Util.NLog;
-using RealmServ = WCell.RealmServer.Events.RealmServer;
+using RealmServ = WCell.RealmServer.RealmServer;
 
 namespace WCell.PostBuild.Docs
 {

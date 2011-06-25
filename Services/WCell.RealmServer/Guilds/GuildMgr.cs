@@ -105,12 +105,12 @@ namespace WCell.RealmServer.Guilds
 		}
 
 		[Initialization(InitializationPass.Fifth, "Initialize Guilds")]
-		public static void Initialize()
+		public static bool Initialize()
 		{
-			Instance.Start();
+			return Instance.Start();
 		}
 
-		protected override bool InternalStart()
+		private bool Start()
 		{
 			Guild[] guilds = null;
 
@@ -135,15 +135,6 @@ namespace WCell.RealmServer.Guilds
 					guild.InitAfterLoad();
 				}
 			}
-
-			return true;
-		}
-
-		protected override bool InternalStop()
-		{
-			GuildsById.Clear();
-			GuildsByName.Clear();
-			OfflineMembers.Clear();
 
 			return true;
 		}

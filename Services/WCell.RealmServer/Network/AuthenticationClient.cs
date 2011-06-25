@@ -30,8 +30,18 @@ namespace WCell.RealmServer.Network
 	/// Provides a client wrapper around the authentication service used for 
 	/// authentication-to-realm server communication.
 	/// </summary>
-	public partial class AuthenticationClient
+	public class AuthenticationClient
 	{
+		/// <summary>
+		/// Is called when the RealmServer successfully connects to the AuthServer
+		/// </summary>
+		public event EventHandler Connected;
+
+		/// <summary>
+		/// Is called when the RealmServer disconnects from or loses connection to the AuthServer
+		/// </summary>
+		public event EventHandler Disconnected;
+
 		protected static Logger log = LogManager.GetCurrentClassLogger();
 
 		[Variable("IPCUpdateInterval")]
@@ -74,7 +84,7 @@ namespace WCell.RealmServer.Network
 		/// </summary>
 		public bool IsConnected
 		{
-			get { return (m_ClientProxy != null && m_ClientProxy.State == CommunicationState.Opened && Events.RealmServer.Instance.IsRunning); }
+			get { return (m_ClientProxy != null && m_ClientProxy.State == CommunicationState.Opened && RealmServer.Instance.IsRunning); }
 		}
 
 		/// <summary>
@@ -112,7 +122,7 @@ namespace WCell.RealmServer.Network
 			m_IsRunning = true;
 			if (lastUpdate == default(DateTime))
 			{
-				Events.RealmServer.IOQueue.RegisterUpdatable(new SimpleUpdatable(MaintainConnectionCallback));
+				RealmServer.IOQueue.RegisterUpdatable(new SimpleUpdatable(MaintainConnectionCallback));
 				lastUpdate = DateTime.Now;
 			}
 		}
@@ -128,7 +138,7 @@ namespace WCell.RealmServer.Network
 				log.Info(Resources.ConnectingToAuthServer);
 			}
 
-			Events.RealmServer.IOQueue.EnsureContext();
+			RealmServer.IOQueue.EnsureContext();
 
 			Disconnect(true);
 			
@@ -142,7 +152,7 @@ namespace WCell.RealmServer.Network
                 m_ClientProxy.Open();
 
 				//if (!RealmServer.Instance.IsRegisteredAtAuthServer)
-				Events.RealmServer.Instance.RegisterRealm();
+				RealmServer.Instance.RegisterRealm();
 				conn = IsConnected;
 				lastUpdate = DateTime.Now;
 			}
@@ -218,7 +228,7 @@ namespace WCell.RealmServer.Network
 			{
 				lock (lck)
 				{
-					if (!Events.RealmServer.Instance.IsRunning)
+					if (!RealmServer.Instance.IsRunning)
 					{
 						RearmDisconnectWarning();
 						return;
@@ -236,7 +246,7 @@ namespace WCell.RealmServer.Network
 				{
 					if (IsConnected) // check again if we are connected after obtaining the lock
 					{
-						Events.RealmServer.Instance.UpdateRealm();
+						RealmServer.Instance.UpdateRealm();
 						lastUpdate = DateTime.Now;
 					}
 				}
@@ -245,7 +255,7 @@ namespace WCell.RealmServer.Network
 
 		protected void Disconnect(bool notify)
 		{
-			Events.RealmServer.IOQueue.EnsureContext();
+			RealmServer.IOQueue.EnsureContext();
 
 			if (m_ClientProxy != null &&
 				m_ClientProxy.State != CommunicationState.Closed &&
@@ -256,7 +266,7 @@ namespace WCell.RealmServer.Network
 				{
 					if (notify && m_ClientProxy.State == CommunicationState.Opened)
 					{
-						Events.RealmServer.Instance.UnregisterRealm();
+						RealmServer.Instance.UnregisterRealm();
 					}
 
 					lock (lck)

@@ -35,7 +35,7 @@ using WCell.RealmServer.Global;
 using WCell.RealmServer.Handlers;
 using WCell.Util.NLog;
 
-using RealmServ = WCell.RealmServer.Events.RealmServer;
+using RealmServ = WCell.RealmServer.RealmServer;
 
 namespace WCell.RealmServer
 {

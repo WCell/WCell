@@ -83,32 +83,6 @@ namespace WCell.RealmServer.Gossips
 		//}
 		#endregion
 
-		#region Start/Stop System
-
-		protected override bool InternalStart()
-		{
-			return true;
-		}
-
-		protected override bool InternalStop()
-		{
-			Dispose();
-
-			return true;
-		}
-
-		protected override bool InternalRestart(bool forced)
-		{
-			if (State == ManagerStates.Error)
-			{
-				InternalStop();
-			}
-
-			return InternalStart();
-		}
-
-		#endregion
-
 		#region IDisposable
 
 		public void Dispose()

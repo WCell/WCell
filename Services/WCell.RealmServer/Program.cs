@@ -30,7 +30,7 @@ namespace WCell.RealmServer
         /// </summary>
         public static void Start()
 		{
-			Events.RealmServer.Instance.Start();
+			RealmServer.Instance.Start();
         }
     }
 }

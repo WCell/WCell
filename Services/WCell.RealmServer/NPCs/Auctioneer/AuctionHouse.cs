@@ -50,7 +50,7 @@ namespace WCell.RealmServer.NPCs.Auctioneer
             
             
             //remove from database
-            Events.RealmServer.IOQueue.AddMessage(() => {
+            RealmServer.IOQueue.AddMessage(() => {
                 if (record != null) {
                     record.IsAuctioned = false;
                     record.Save();

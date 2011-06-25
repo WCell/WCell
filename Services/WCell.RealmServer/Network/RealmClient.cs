@@ -47,9 +47,9 @@ namespace WCell.RealmServer.Network
 		/// <summary>
 		/// The server this client is connected to.
 		/// </summary>
-		public new Events.RealmServer Server
+		public new RealmServer Server
 		{
-			get { return (Events.RealmServer)_server; }
+			get { return (RealmServer)_server; }
 		}
 
 		/// <summary>
@@ -124,7 +124,7 @@ namespace WCell.RealmServer.Network
 		/// Create an realm client for a given server.
 		/// </summary>
 		/// <param name="server">reference to the parent RealmServer</param>
-		public RealmClient(Events.RealmServer server)
+		public RealmClient(RealmServer server)
 			: base(server)
 		{
 		}

@@ -236,6 +236,7 @@
     <Compile Include="Instances\DungeonInstanceSettings.cs" />
     <Compile Include="Instances\InstanceProgress.cs" />
     <Compile Include="Instances\RaidInstanceSettings.cs" />
+    <Compile Include="LFG\LFGMgr.cs" />
     <Compile Include="NPCs\Trainers\TrainerSpellTemplate.cs" />
     <Compile Include="Spells\Auras\Misc\CallStabledPetHandler.cs" />
     <Compile Include="Spells\Auras\Misc\FearHandler.cs" />
@@ -535,7 +536,6 @@
     <Compile Include="Events\Global\MapEvents.cs" />
     <Compile Include="Events\Global\ZoneEvents.cs" />
     <Compile Include="Events\QuestEvents.cs" />
-    <Compile Include="Events\RealmServerEvents.cs" />
     <Compile Include="GameObjects\GOPortalEntry.cs" />
     <Compile Include="GameObjects\Handlers\GossipGOHandler.cs" />
     <Compile Include="GameObjects\Portal.cs" />
@@ -1412,7 +1412,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="AI\Spells\" />
-    <Folder Include="ArenaTeams\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

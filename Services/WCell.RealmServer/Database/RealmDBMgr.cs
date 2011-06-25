@@ -86,28 +86,28 @@ namespace WCell.RealmServer.Database
 
 			NHIdGenerator.InitializeCreators(OnDBError);
 
-			Events.RealmServer.InitMgr.SignalGlobalMgrReady(typeof(RealmDBMgr));
+			RealmServer.InitMgr.SignalGlobalMgrReady(typeof(RealmDBMgr));
 			return true;
 		}
 
 		public static void UpdateLater(this ActiveRecordBase record)
 		{
-			Events.RealmServer.IOQueue.AddMessage(() => record.Update());			// leave it as a Lambda Expr to get a complete stacktrace
+			RealmServer.IOQueue.AddMessage(() => record.Update());			// leave it as a Lambda Expr to get a complete stacktrace
 		}
 
 		public static void SaveLater(this ActiveRecordBase record)
 		{
-			Events.RealmServer.IOQueue.AddMessage(() => record.Save());			// leave it as a Lambda Expr to get a complete stacktrace
+			RealmServer.IOQueue.AddMessage(() => record.Save());			// leave it as a Lambda Expr to get a complete stacktrace
 		}
 
 		public static void CreateLater(this ActiveRecordBase record)
 		{
-			Events.RealmServer.IOQueue.AddMessage(() => record.Create());			// leave it as a Lambda Expr to get a complete stacktrace
+			RealmServer.IOQueue.AddMessage(() => record.Create());			// leave it as a Lambda Expr to get a complete stacktrace
 		}
 
 		public static void DeleteLater(this ActiveRecordBase record)
 		{
-			Events.RealmServer.IOQueue.AddMessage(() => record.Delete());			// leave it as a Lambda Expr to get a complete stacktrace
+			RealmServer.IOQueue.AddMessage(() => record.Delete());			// leave it as a Lambda Expr to get a complete stacktrace
 		}
 	}
 }

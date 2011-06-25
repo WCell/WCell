@@ -689,7 +689,7 @@ namespace WCell.RealmServer.Items
 					EnsureItemQuestRelations();
 				}
 
-				Events.RealmServer.InitMgr.SignalGlobalMgrReady(typeof(ItemMgr));
+				RealmServer.InitMgr.SignalGlobalMgrReady(typeof(ItemMgr));
 				Loaded = true;
 			}
 		}

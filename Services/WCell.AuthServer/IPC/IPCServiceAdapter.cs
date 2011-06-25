@@ -71,22 +71,25 @@ namespace WCell.AuthServer.IPC
             s_authServer = AuthenticationServer.Instance;
 			var channel = OperationContext.Current.Channel;
 
-            channel.Faulted += (sender, args) =>
-            {
-            	var realm = GetRealmByChannel((IContextChannel) sender);
-            	String msg;
-				if (realm != null)
-				{
-					msg = realm.ToString();
-					realm.SetOffline(AuthServerConfiguration.RemoveOfflineRealms);
-				}
-				else
-				{
-					msg = "<Unknown>";
-				}
-				log.Warn(resources.RealmDisconnected, msg);
-            };
+        	channel.Closed += OnDisconnected;
+            channel.Faulted += OnDisconnected;
         }
+
+		private void OnDisconnected(object sender, EventArgs args)
+		{
+			var realm = GetRealmByChannel((IContextChannel) sender);
+			String msg;
+			if (realm != null)
+			{
+				msg = realm.ToString();
+				realm.SetOffline(AuthServerConfiguration.RemoveOfflineRealms);
+			}
+			else
+			{
+				msg = "<Unknown>";
+			}
+			log.Warn(resources.RealmDisconnected, msg);
+		}
 
     	private RealmEntry GetRealmByChannel(IContextChannel chan)
     	{

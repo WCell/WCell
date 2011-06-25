@@ -33,7 +33,7 @@ using WCell.Util.NLog;
 using System.Text.RegularExpressions;
 using WCell.Util.Strings;
 
-using RealmServ = WCell.RealmServer.Events.RealmServer;
+using RealmServ = WCell.RealmServer.RealmServer;
 
 namespace WCell.RealmServerConsole
 {

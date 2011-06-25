@@ -79,7 +79,7 @@ namespace WCell.RealmServer.Handlers
 				Compression.DecompressZLib(compressedData, client.Addons);
 
 				var acctLoadTask = Message.Obtain(() => RealmAccount.InitializeAccount(client, accName));
-				Events.RealmServer.IOQueue.AddMessage(acctLoadTask);
+				RealmServer.IOQueue.AddMessage(acctLoadTask);
 			}
 		}
 
@@ -92,7 +92,7 @@ namespace WCell.RealmServer.Handlers
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_AUTH_CHALLENGE))
 			{
 				packet.Write(1); // 1...31
-				packet.Write(Events.RealmServer.Instance.AuthSeed);
+				packet.Write(RealmServer.Instance.AuthSeed);
 
 				// new 3.2.2 random data
 				packet.WriteUInt(0xF3539DA3);
@@ -170,7 +170,7 @@ namespace WCell.RealmServer.Handlers
 
 			ClientAddonHandler.SendAddOnInfoPacket(client);
 
-			Events.RealmServer.Instance.OnClientAccepted(null, null);
+			RealmServer.Instance.OnClientAccepted(null, null);
 		}
 
 		/// <summary>
@@ -226,7 +226,7 @@ namespace WCell.RealmServer.Handlers
 							{
 								// Character was removed in the meantime -> Login again
 								// enqueue task in IO-Queue to sync with Character.Save()
-								Events.RealmServer.IOQueue.AddMessage(
+								RealmServer.IOQueue.AddMessage(
 									new Message(() => LoginCharacter(client, charLowId)));
 							}
 							else
@@ -294,7 +294,7 @@ namespace WCell.RealmServer.Handlers
 					chr.Create(acc, record, client);
 					chr.LoadAndLogin();
 
-					var message = String.Format("Welcome to " + Events.RealmServer.FormattedTitle);
+					var message = String.Format("Welcome to " + RealmServer.FormattedTitle);
 
 					//chr.SendSystemMessage(message);
 					MiscHandler.SendMotd(client, message);

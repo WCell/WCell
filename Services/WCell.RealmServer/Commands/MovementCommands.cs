@@ -476,7 +476,7 @@ namespace WCell.RealmServer.Commands
 				Character chr;
 				if (mod.Contains("a"))
 				{
-					var acc = Events.RealmServer.Instance.GetLoggedInAccount(name);
+					var acc = RealmServer.Instance.GetLoggedInAccount(name);
 					if (acc != null)
 					{
 						chr = acc.ActiveCharacter;

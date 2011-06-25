@@ -187,7 +187,7 @@ namespace WCell.RealmServer.Global
 		/// </summary>
 		public static void ExecuteWhilePaused(Action onPause)
 		{
-			Events.RealmServer.IOQueue.AddMessageAndWait(true, () =>
+			RealmServer.IOQueue.AddMessageAndWait(true, () =>
 			{
 				Paused = true;
 				onPause();
@@ -242,7 +242,7 @@ namespace WCell.RealmServer.Global
 								{
 									if (map.IsInContext)
 									{
-										if (!_saving && !Events.RealmServer.IsShuttingDown)
+										if (!_saving && !RealmServer.IsShuttingDown)
 										{
 											lock (PauseObject)
 											{
@@ -346,7 +346,7 @@ namespace WCell.RealmServer.Global
 					// save characters
 					var chars = GetAllCharacters();
 					var saveCount = chars.Count;
-					Events.RealmServer.IOQueue.ExecuteInContext(() =>
+					RealmServer.IOQueue.ExecuteInContext(() =>
 					{
 						for (var i = 0; i < chars.Count; i++)
 						{

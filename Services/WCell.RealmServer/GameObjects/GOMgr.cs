@@ -166,9 +166,9 @@ namespace WCell.RealmServer.GameObjects
 			{
 				if (loaded = value)
 				{
-					if (Events.RealmServer.InitMgr != null)
+					if (RealmServer.InitMgr != null)
 					{
-						Events.RealmServer.InitMgr.SignalGlobalMgrReady(typeof(GOMgr));
+						RealmServer.InitMgr.SignalGlobalMgrReady(typeof(GOMgr));
 					}
 				}
 			}
@@ -176,7 +176,7 @@ namespace WCell.RealmServer.GameObjects
 
 		public static void LoadAllLater()
 		{
-			Events.RealmServer.IOQueue.AddMessage(() => LoadAll());
+			RealmServer.IOQueue.AddMessage(() => LoadAll());
 		}
 
 		public static void LoadAll()

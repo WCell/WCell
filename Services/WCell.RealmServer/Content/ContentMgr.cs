@@ -171,7 +171,7 @@ namespace WCell.RealmServer.Content
 		{
 			InitializeAndLoad(typeof(ContentMgr).Assembly);
 
-			Events.RealmServer.InitMgr.SignalGlobalMgrReady(typeof(ContentMgr));
+			RealmServer.InitMgr.SignalGlobalMgrReady(typeof(ContentMgr));
 		}
 
 		public static void InitializeDefault()
@@ -471,7 +471,7 @@ namespace WCell.RealmServer.Content
 		public static void FlushCommit<T>() where T : IDataHolder
 		{
 			var mapper = GetMapper(typeof(T));
-			Events.RealmServer.IOQueue.ExecuteInContext(() => mapper.Flush());
+			RealmServer.IOQueue.ExecuteInContext(() => mapper.Flush());
 		}
 
 		/// <summary>
@@ -482,7 +482,7 @@ namespace WCell.RealmServer.Content
 		public static void FlushCommit(Type t)
 		{
 			var mapper = GetMapper(t);
-			Events.RealmServer.IOQueue.ExecuteInContext(() => mapper.Flush());
+			RealmServer.IOQueue.ExecuteInContext(() => mapper.Flush());
 		}
 		#endregion
 

@@ -400,7 +400,7 @@ namespace WCell.RealmServer.Mail
 		/// </summary>
 		public void ReturnToSender()
 		{
-			Events.RealmServer.IOQueue.ExecuteInContext(() =>
+			RealmServer.IOQueue.ExecuteInContext(() =>
 			{
 				if (!CharacterRecord.Exists(SenderId))
 				{

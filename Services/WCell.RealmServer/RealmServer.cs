@@ -36,7 +36,6 @@ using WCell.Util;
 using WCell.Core.Initialization;
 using WCell.Util.Variables;
 using WCell.RealmServer.Handlers;
-using AuthenticationClient = WCell.RealmServer.Events.AuthenticationClient;
 
 namespace WCell.RealmServer
 {
@@ -46,8 +45,10 @@ namespace WCell.RealmServer
 	/// authentication server 
 	/// </summary>
 	[VariableClassAttribute(true)]
-	public sealed partial class RealmServer : ServerApp<Events.RealmServer>
+	public sealed class RealmServer : ServerApp<RealmServer>
 	{
+		public event Action<RealmStatus> StatusChanged;
+
 		static DateTime timeStart;
 		private static long timeStartTicks;
 

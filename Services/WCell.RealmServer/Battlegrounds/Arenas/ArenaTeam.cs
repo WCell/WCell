@@ -144,7 +144,7 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
 		/// </summary>
 		/// <param name="leader">leader's character record</param>
 		/// <param name="name">the name of the new character</param>
-		/// <returns>the <seealso cref="Database.ArenaTeam"/> object</returns>
+		/// <returns>the <seealso cref="ArenaTeam"/> object</returns>
 		public ArenaTeam(CharacterRecord leader, string name, uint type)
 			: this()
 		{
@@ -161,7 +161,7 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
 			Members.Add(m_leader.Id, m_leader);
             m_leader.Create();
 			
-            Events.RealmServer.IOQueue.AddMessage(Create);
+            RealmServer.IOQueue.AddMessage(Create);
             Register();
 		}
         #endregion
@@ -332,7 +332,7 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
                 //ArenaTeamHandler.SendEventToTeam(this, ArenaTeamEvents.LEAVED_SS, member);
             }
 
-            Events.RealmServer.IOQueue.AddMessage(() =>
+            RealmServer.IOQueue.AddMessage(() =>
             {
                 member.Delete();
                 if (update)
@@ -490,7 +490,7 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
 				}
 
 				ArenaMgr.UnregisterArenaTeam(this);
-				Events.RealmServer.IOQueue.AddMessage(() => Delete());
+				RealmServer.IOQueue.AddMessage(() => Delete());
 			}
 			finally
 			{
@@ -514,7 +514,7 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
 			Leader = newLeader;
             newLeader.Character.SetArenaTeamInfoField(Slot, ArenaTeamInfoType.ARENA_TEAM_MEMBER, 0);
 
-			Events.RealmServer.IOQueue.AddMessage(new Message(() =>
+			RealmServer.IOQueue.AddMessage(new Message(() =>
 			{
 				if (currentLeader != null)
 				{

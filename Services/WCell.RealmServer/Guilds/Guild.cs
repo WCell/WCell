@@ -367,7 +367,7 @@ namespace WCell.RealmServer.Guilds
 				GuildHandler.SendEventToGuild(this, GuildEvents.LEFT, member);
 			}
 
-			Events.RealmServer.IOQueue.AddMessage(() =>
+			RealmServer.IOQueue.AddMessage(() =>
 			{
 				member.Delete();
 				if (update)
@@ -493,7 +493,7 @@ namespace WCell.RealmServer.Guilds
 
 				m_ranks.RemoveAt(lastRankId);
 
-				Events.RealmServer.IOQueue.AddMessage(() => m_ranks[lastRankId].Delete());
+				RealmServer.IOQueue.AddMessage(() => m_ranks[lastRankId].Delete());
 			}
 			catch (Exception e)
 			{
@@ -634,7 +634,7 @@ namespace WCell.RealmServer.Guilds
 				}
 
 				GuildMgr.Instance.UnregisterGuild(this);
-				Events.RealmServer.IOQueue.AddMessage(() => Delete());
+				RealmServer.IOQueue.AddMessage(() => Delete());
 			}
 		}
 
@@ -660,7 +660,7 @@ namespace WCell.RealmServer.Guilds
 				Leader = newLeader;
 			}
 
-			Events.RealmServer.IOQueue.AddMessage(new Message(() =>
+			RealmServer.IOQueue.AddMessage(new Message(() =>
 			{
 				if (currentLeader != null)
 				{

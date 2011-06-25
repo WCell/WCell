@@ -165,7 +165,7 @@ namespace WCell.RealmServer.Battlegrounds
 		#region Getters/Setters
 		public static void SetCreator(BattlegroundId id, string typeName)
 		{
-			var type = Events.RealmServer.GetType(typeName);
+			var type = RealmServer.GetType(typeName);
 			var template = GetTemplate(id);
 			if (type == null || template == null)
 			{
