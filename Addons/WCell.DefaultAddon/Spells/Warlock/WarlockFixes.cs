@@ -6,6 +6,7 @@ using WCell.RealmServer.Entities;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Spells.Auras.Handlers;
+using WCell.RealmServer.Spells.Effects;
 using WCell.Constants;
 
 namespace WCell.Addons.Default.Spells.Warlock
@@ -68,6 +69,14 @@ namespace WCell.Addons.Default.Spells.Warlock
 			SpellLineId.WarlockImmolate.Apply(spell =>
 			{
 				spell.AddAuraEffect(() => new ApplyImmolateStateHandler(),ImplicitSpellTargetType.SingleEnemy);
+			});
+
+			SpellLineId.WarlockDestructionConflagrate.Apply(spell =>
+			{
+				var dmgeff = spell.GetEffect(SpellEffectType.SchoolDamage);
+				var periodicdmgeff = spell.GetEffect(AuraType.PeriodicDamage);
+				dmgeff.SpellEffectHandlerCreator = (cast, effect) => new ConflagrateHandler(cast, effect);
+				periodicdmgeff.AuraEffectHandlerCreator = () => new ConflagratePeriodicHandler();
 			});
         }
 
@@ -158,6 +167,47 @@ namespace WCell.Addons.Default.Spells.Warlock
 				Owner.DecMechanicCount(SpellMechanic.Custom_Immolate, true);
 			}
 		}
+		#endregion
+
+		#region Conflagrate
+		public class ConflagrateHandler : SchoolDamageEffectHandler
+		{
+			public ConflagrateHandler(SpellCast cast, SpellEffect effect)
+            : base(cast, effect)
+            {
+            }
+
+			protected override void Apply(WorldObject target)
+			{
+				var unit = (Unit)target;
+				if (unit != null)
+				{
+					var aura = unit.Auras[unit.GetStrongestImmolate()];
+					var modbasepoints = aura.Spell.Effects[0].GetModifiedDamage(m_cast.CasterUnit); //basepoints after applying all damage modifiers
+					var totalbasepoints = modbasepoints * aura.MaxTicks;//total damage of immolate aura with all mods
+					m_cast.Spell.Effects[0].BasePoints = 60 * totalbasepoints / 100; //60% of total damage
+				}
+				base.Apply(target);
+			}
+		}
+		public class ConflagratePeriodicHandler : PeriodicDamageHandler
+		{
+			protected override void Apply()
+			{
+				var aura = Owner.Auras[Owner.GetStrongestImmolate()];
+				if (aura != null)
+				{
+					var modbasepoints = aura.Spell.Effects[0].GetModifiedDamage(m_aura.CasterUnit);
+					var totalbasepoints = modbasepoints * aura.MaxTicks;
+					var finalvalue = m_aura.Spell.Effects[2].CalcEffectValue() * totalbasepoints / (100 * m_aura.MaxTicks);//40% of total damage
+					m_aura.Spell.Effects[1].BasePoints = finalvalue;
+					UpdateEffectValue();
+					Owner.Auras.Remove(aura.Id);
+				}
+				base.Apply();
+			}
+		}
+		
 		#endregion
 	}
 }

@@ -1005,7 +1005,20 @@ namespace WCell.RealmServer.Spells
 			}
 		}
 		#endregion
-
+		/// <summary>
+		/// Get's Basepoints for a spell after applying DamageMods.
+		/// </summary>
+		public int GetModifiedDamage(Unit caster)
+		{
+			if (IsPeriodic)
+			{
+				return caster.Auras.GetModifiedInt(SpellModifierType.PeriodicEffectValue, this.Spell, CalcEffectValue());
+			}
+			else
+			{
+				return caster.GetFinalDamage(caster.GetLeastResistantSchool(this.Spell), CalcEffectValue(), this.Spell);
+			}
+		}
 		public override bool Equals(object obj)
 		{
 			return obj is SpellEffect && ((SpellEffect)obj).EffectType == EffectType;
