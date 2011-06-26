@@ -34,7 +34,7 @@ namespace WCell.Addons.Default.Spells.Mage
 				var effect = spell.GetEffect(AuraType.Dummy);
 				spell.ProcChance = 100;
 				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCastCritical;
-
+				
 				effect.AuraType = AuraType.ProcTriggerSpell;		// make it a ProcTriggerSpell
 				effect.AffectMask = burnoutEffect.AffectMask;		// set the correct affect mask
 				effect.TriggerSpellId = SpellId.ClassSkillBurnout;	// trigger the mana consumption spell

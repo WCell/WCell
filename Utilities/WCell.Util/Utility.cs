@@ -488,6 +488,14 @@ namespace WCell.Util
 
 		private static long holdrand = DateTime.Now.Ticks;
 
+		/// <summary>
+		/// Random bool value
+		/// </summary>
+		public static bool HeadsOrTails()
+		{
+			return Random(2) == 0;
+		}
+
 		public static int Random()
 		{
 			return (int)(((holdrand = holdrand * 214013L + 2531011L) >> 16) & 0x7fff);

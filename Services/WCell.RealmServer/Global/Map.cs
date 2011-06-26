@@ -20,6 +20,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using WCell.Constants.Factions;
 using WCell.RealmServer.GameObjects.Spawns;
 using WCell.RealmServer.NPCs.Spawns;
 using WCell.RealmServer.Res;
@@ -669,6 +670,11 @@ namespace WCell.RealmServer.Global
 			}
 		}
 
+
+		public virtual FactionGroup OwningFaction
+		{
+			get { return FactionGroup.Invalid; }
+		}
 		#endregion
 
 		#region Start / Stop
@@ -1970,7 +1976,7 @@ namespace WCell.RealmServer.Global
 						m_characters.Add(chr);
 						if (chr.Role.Status == RoleStatus.Player)
 						{
-							AddPlayerCount(chr);
+							IncreasePlayerCount(chr);
 						}
 						OnEnter(chr);
 					}
@@ -2013,7 +2019,7 @@ namespace WCell.RealmServer.Global
 			}
 		}
 
-		internal void AddPlayerCount(Character chr)
+		internal void IncreasePlayerCount(Character chr)
 		{
 			if (chr.Faction.IsHorde)
 			{
@@ -2022,6 +2028,18 @@ namespace WCell.RealmServer.Global
 			else
 			{
 				m_allyCount++;
+			}
+		}
+
+		internal void DecreasePlayerCount(Character chr)
+		{
+			if (chr.Faction.IsHorde)
+			{
+				m_hordeCount--;
+			}
+			else
+			{
+				m_allyCount--;
 			}
 		}
 
@@ -2036,18 +2054,6 @@ namespace WCell.RealmServer.Global
 			WorldObject entity;
 			m_objects.TryGetValue(id, out entity);
 			return entity;
-		}
-
-		internal void RemovePlayerCount(Character chr)
-		{
-			if (chr.Faction.IsHorde)
-			{
-				m_hordeCount--;
-			}
-			else
-			{
-				m_allyCount--;
-			}
 		}
 
 		/// <summary>
@@ -2108,7 +2114,7 @@ namespace WCell.RealmServer.Global
 				{
 					if (chr.Role.Status == RoleStatus.Player)
 					{
-						RemovePlayerCount(chr);
+						DecreasePlayerCount(chr);
 					}
 					OnLeave(chr);
 				}

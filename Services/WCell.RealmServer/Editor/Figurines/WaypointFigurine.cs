@@ -47,7 +47,7 @@ namespace WCell.RealmServer.Editor.Figurines
 
 		public override Faction Faction
 		{
-			get { return SpawnPoint.SpawnEntry.Entry.Faction; }
+			get { return SpawnPoint.SpawnEntry.Entry.RandomFaction; }
 			set { }
 		}
 	}

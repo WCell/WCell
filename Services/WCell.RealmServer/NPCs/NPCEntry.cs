@@ -517,15 +517,64 @@ namespace WCell.RealmServer.NPCs
 		#endregion
 
 		#region Factions
+		private FactionTemplateId m_HordeFactionId;
+		private FactionTemplateId m_AllianceFactionId;
+
 		/// <summary>
 		/// 
 		/// </summary>
-		public FactionTemplateId HordeFactionId, AllianceFactionId;
+		public FactionTemplateId HordeFactionId
+		{
+			get { return m_HordeFactionId; }
+			set
+			{
+				m_HordeFactionId = value;
+				if (HordeFaction != null)
+				{
+					HordeFaction = FactionMgr.Get(value);
+				}
+			}
+		}
+
+		public FactionTemplateId AllianceFactionId
+		{
+			get { return m_AllianceFactionId; }
+			set
+			{
+				m_AllianceFactionId = value;
+				if (AllianceFaction != null)
+				{
+					AllianceFaction = FactionMgr.Get(value);
+				}
+			}
+		}
 
 		[NotPersistent]
-		public Faction HordeFaction, AllianceFaction;
+		public Faction HordeFaction
+		{
+			get;
+			private set;
+		}
+		
+		[NotPersistent]
+		public Faction AllianceFaction
+		{
+			get;
+			private set;
+		}
 
-		public Faction Faction { get { return HordeFaction; } }
+		public Faction RandomFaction
+		{
+			get
+			{
+				return Utility.HeadsOrTails() ? HordeFaction : AllianceFaction;
+			}
+		}
+
+		public Faction GetFaction(FactionGroup fact)
+		{
+			return fact == FactionGroup.Alliance ? AllianceFaction : HordeFaction;
+		}
 		#endregion
 
 		#region Spells
@@ -821,8 +870,7 @@ namespace WCell.RealmServer.NPCs
 			if (AllianceFaction == null)
 			{
 				ContentMgr.OnInvalidDBData("NPCEntry has no valid Faction: " + this);
-				AllianceFaction = NPCMgr.DefaultFaction;
-				HordeFaction = AllianceFaction;
+				HordeFaction = AllianceFaction = NPCMgr.DefaultFaction;
 			}
 
 			if (SpeedFactor < 0.01)

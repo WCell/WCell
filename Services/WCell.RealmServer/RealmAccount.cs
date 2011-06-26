@@ -299,13 +299,13 @@ namespace WCell.RealmServer
 								{
 									// not staff anymore
 									World.StaffMemberCount--;
-									map.AddPlayerCount(chr);
+									map.IncreasePlayerCount(chr);
 								}
 								else
 								{
 									// new staff
 									World.StaffMemberCount++;
-									map.RemovePlayerCount(chr);
+									map.DecreasePlayerCount(chr);
 								}
 							});
 						}

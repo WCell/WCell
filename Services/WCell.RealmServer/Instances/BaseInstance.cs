@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using WCell.Constants;
+using WCell.Constants.Factions;
 using WCell.Constants.World;
 using WCell.Core.Timers;
 using WCell.RealmServer.Battlegrounds;
@@ -51,10 +52,10 @@ namespace WCell.RealmServer.Instances
 			}
 
 			m_lastReset = DateTime.Now;
-			
+
 			m_timeoutTimer = new TimerEntry(OnTimeout);
 
-			RegisterUpdatableLater(this); 
+			RegisterUpdatableLater(this);
 
 			// create InstanceSettings object
 			settings = CreateSettings();
@@ -101,15 +102,21 @@ namespace WCell.RealmServer.Instances
 			get { return m_owner; }
 			set { m_owner = value; }
 		}
-		
+
+		private FactionGroup m_OwningFaction = FactionGroup.Invalid;
+		public override FactionGroup OwningFaction
+		{
+			get { return m_OwningFaction; }
+		}
+
 		public int TimeoutDelay
 		{
 			get { return DefaultInstanceTimeoutMillis; }
 		}
 
-        /// <summary>
-        /// The last time this Instance was reset
-        /// </summary>
+		/// <summary>
+		/// The last time this Instance was reset
+		/// </summary>
 		public DateTime LastReset
 		{
 			get { return m_lastReset; }
@@ -134,45 +141,54 @@ namespace WCell.RealmServer.Instances
 		{
 			base.OnEnter(chr);
 
+			// stop timeout timer
 			if (m_timeoutTimer.IsRunning)
 			{
 				m_timeoutTimer.Stop();
 				s_log.Debug("{0} #{1} timeout timer stopped by: {2}", Name, m_InstanceId, chr.Name);
 			}
 
-			if (!chr.Role.IsStaff && Difficulty.BindingType == BindingType.Soft)
+			// Bind to dungeon
+			if (!chr.GodMode && Difficulty.BindingType == BindingType.Soft)
 			{
 				Bind(chr);
+			}
+
+			// set faction if not already set
+			if (m_OwningFaction == FactionGroup.Invalid)
+			{
+				m_OwningFaction = chr.FactionGroup;
 			}
 		}
 
 		protected void Bind(IInstanceHolderSet holder)
 		{
-            if (holder.InstanceLeader.Group != null)
-            {
-                holder.InstanceLeader.Group.ForeachCharacter((chr) => {
+			if (holder.InstanceLeader.Group != null)
+			{
+				holder.InstanceLeader.Group.ForeachCharacter((chr) =>
+				{
 					var instances = chr.Instances;
-                    if (instances != null)
-                    {
+					if (instances != null)
+					{
 						instances.BindTo(this);
-                    }
-                });
-            }
-            else
-            {
-                holder.InstanceLeaderCollection.BindTo(this);
-            }
+					}
+				});
+			}
+			else
+			{
+				holder.InstanceLeaderCollection.BindTo(this);
+			}
 		}
 
 		protected override void OnLeave(Character chr)
 		{
-		    if (PlayerCount > 1) return;
-		    
-            if (TimeoutDelay > 0)
-		    {
+			if (PlayerCount > 1) return;
+
+			if (TimeoutDelay > 0)
+			{
 				m_timeoutTimer.Start(TimeoutDelay, 0);
-		    }
-		    s_log.Debug("{0} #{1} timeout timer started.", Name, m_InstanceId);
+			}
+			s_log.Debug("{0} #{1} timeout timer started.", Name, m_InstanceId);
 		}
 
 		#region IUpdatable Members
@@ -188,7 +204,7 @@ namespace WCell.RealmServer.Instances
 		{
 			if (chr.LastLogout > m_lastReset)
 			{
-				
+
 			}
 			if (base.CanEnter(chr))
 			{

@@ -140,13 +140,13 @@ namespace WCell.RealmServer.Editor.Figurines
 
 		public override Faction Faction
 		{
-			get { return m_SpawnPoint.SpawnEntry.Entry.Faction; }
+			get { return m_SpawnPoint.SpawnEntry.Entry.RandomFaction; }
 			set {/* cannot be set */}
 		}
 
 		public override Faction DefaultFaction
 		{
-			get { return m_SpawnPoint.SpawnEntry.Entry.Faction; }
+			get { return m_SpawnPoint.SpawnEntry.Entry.RandomFaction; }
 		}
 
 		public override FactionId FactionId

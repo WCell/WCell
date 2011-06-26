@@ -149,7 +149,6 @@ namespace WCell.RealmServer.Entities
 
 			// misc stuff
 			Name = m_entry.DefaultName;
-			Faction = entry.Faction;
 			NPCFlags = entry.NPCFlags;
 			UnitFlags = entry.UnitFlags;
 			DynamicFlags = entry.DynamicFlags;
@@ -157,6 +156,20 @@ namespace WCell.RealmServer.Entities
 			Race = entry.RaceId;
 			YieldsXpOrHonor = entry.GeneratesXp;
 			SheathType = SheathType.Melee;
+
+			// decide which faction
+			if (m_spawnPoint != null)
+			{
+				var map = m_spawnPoint.Map;
+				if (map != null)
+				{
+					Faction = entry.GetFaction(map.OwningFaction);
+				}
+			}
+			if (Faction == null)
+			{
+				Faction = entry.RandomFaction;
+			}
 
 			// speeds
 			m_runSpeed = entry.RunSpeed;
@@ -422,7 +435,7 @@ namespace WCell.RealmServer.Entities
 
 		public override Faction DefaultFaction
 		{
-			get { return m_entry.Faction; }
+			get { return m_entry.RandomFaction; }
 		}
 
 		public ThreatCollection ThreatCollection
