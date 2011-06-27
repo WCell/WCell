@@ -102,8 +102,8 @@ namespace WCell.RealmServer.Instances
 			get { return m_owner; }
 			set { m_owner = value; }
 		}
-
-		private FactionGroup m_OwningFaction = FactionGroup.Invalid;
+		
+		internal FactionGroup m_OwningFaction = FactionGroup.Invalid;
 		public override FactionGroup OwningFaction
 		{
 			get { return m_OwningFaction; }
@@ -152,12 +152,6 @@ namespace WCell.RealmServer.Instances
 			if (!chr.GodMode && Difficulty.BindingType == BindingType.Soft)
 			{
 				Bind(chr);
-			}
-
-			// set faction if not already set
-			if (m_OwningFaction == FactionGroup.Invalid)
-			{
-				m_OwningFaction = chr.FactionGroup;
 			}
 		}
 
