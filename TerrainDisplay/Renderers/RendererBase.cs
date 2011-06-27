@@ -24,12 +24,11 @@ namespace TerrainDisplay
         {
             get
             {
-                if (_renderCached)
-                {
-                    return _cachedVertices;
+                if (!_renderCached)
+				{
+					BuildVerticiesAndIndicies();
                 }
 
-                BuildVerticiesAndIndicies();
                 return _cachedVertices;
             }
         }

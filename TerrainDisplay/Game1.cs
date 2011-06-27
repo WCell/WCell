@@ -40,7 +40,8 @@ namespace TerrainDisplay
 		private Matrix _proj;
 
 		BasicEffect _basicEffect;
-		float ForwardSpeed = 50f / 60f;
+		//float ForwardSpeed = 50f / 60f;
+		float ForwardSpeed = 1.2f;
 		
 		//private readonly ADTManager _manager;
 		/// <summary>
@@ -125,7 +126,7 @@ namespace TerrainDisplay
 			_graphics.ApplyChanges();
 			InitializeEffect();
 
-			// TODO: Add your initialization logic here
+
 			Components.Add(new RecastFrameRenderer(this, _graphics, TerrainProgram.TerrainManager.MeshManager));
 			Components.Add(new RecastSolidRenderer(this, _graphics, TerrainProgram.TerrainManager.MeshManager));
 			Components.Add(new AxisRenderer(this));
@@ -310,28 +311,30 @@ namespace TerrainDisplay
 
 				var forwardMovement = Matrix.CreateRotationY(avatarYaw);
 				var v = new Vector3(1, 0, 0);
-				v = Vector3.Transform(v, forwardMovement);
-				avatarPosition.X -= v.X;
-				avatarPosition.Y -= v.Y;
-				avatarPosition.Z -= v.Z;
+				avatarPosition -= Vector3.Transform(v, forwardMovement);
 			}
 
 			if (keyboardState.IsKeyDown(Keys.W) || (currentState.DPad.Up == ButtonState.Pressed))
 			{
-				var forwardMovement = Matrix.CreateRotationY(avatarYaw);
-				var v = new Vector3(0, 0, ForwardSpeed);
-				v = Vector3.Transform(v, forwardMovement);
-				avatarPosition.Z += v.Z;
-				avatarPosition.X += v.X;
+				//var forwardMovement = Matrix.CreateRotationY(avatarYaw);
+				//var v = new Vector3(0, 0, ForwardSpeed);
+				//v = Vector3.Transform(v, forwardMovement);
+				//avatarPosition.Z += v.Z;
+				//avatarPosition.X += v.X;
+				var horizontal = avatarPitch.Cos();
+				var vertical = -avatarPitch.Sin();
+				var v = new Vector3(avatarYaw.Sin() * horizontal, vertical, avatarYaw.Cos() * horizontal);
+				v.Normalize();
+				avatarPosition += v * ForwardSpeed;
 			}
 
 			if (keyboardState.IsKeyDown(Keys.S) || (currentState.DPad.Down == ButtonState.Pressed))
 			{
-				var forwardMovement = Matrix.CreateRotationY(avatarYaw);
-				var v = new Vector3(0, 0, -ForwardSpeed);
-				v = Vector3.Transform(v, forwardMovement);
-				avatarPosition.Z += v.Z;
-				avatarPosition.X += v.X;
+				var horizontal = avatarPitch.Cos();
+				var vertical = -avatarPitch.Sin();
+				var v = new Vector3(avatarYaw.Sin() * horizontal, vertical, avatarYaw.Cos() * horizontal);
+				v.Normalize();
+				avatarPosition -= v * ForwardSpeed;
 			}
 
 			if (keyboardState.IsKeyDown(Keys.F))

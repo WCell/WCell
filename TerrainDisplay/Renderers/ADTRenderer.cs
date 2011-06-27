@@ -19,7 +19,8 @@ namespace TerrainDisplay.MPQ.ADT
 
         private static Color WaterColor
         {
-            get { return Color.DarkSlateGray; }
+            //get { return Color.DarkSlateGray; }
+			get { return Color.Blue; }
         }
 
         /// <summary>
@@ -110,7 +111,7 @@ namespace TerrainDisplay.MPQ.ADT
                 }
                 offset = tempVertices.Count;
 
-                if (!DrawLiquids) continue;
+                //if (!DrawLiquids) continue;
                 for (var v = 0; v < adt.LiquidVertices.Count; v++)
                 {
                     var vertex = adt.LiquidVertices[v];
