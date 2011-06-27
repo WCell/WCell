@@ -1298,7 +1298,7 @@ namespace WCell.RealmServer.Spells.Auras
 		public override string ToString()
 		{
 			return "Aura " + m_spell + ": " + (IsBeneficial ? "Beneficial" : "Harmful") +
-				" [TimeLeft: " + TimeSpan.FromMilliseconds(TimeLeft) + "]" +
+				(HasTimeout ? " [TimeLeft: " + TimeSpan.FromMilliseconds(TimeLeft) + "]" : "") +
 				(m_controller != null ? (" Controlled by: " + m_controller) : "");
 		}
 

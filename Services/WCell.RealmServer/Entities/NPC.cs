@@ -163,7 +163,7 @@ namespace WCell.RealmServer.Entities
 				var map = m_spawnPoint.Map;
 				if (map != null)
 				{
-					Faction = entry.GetFaction(map.OwningFaction);
+					Faction = DefaultFaction;
 				}
 			}
 			if (Faction == null)
@@ -435,7 +435,14 @@ namespace WCell.RealmServer.Entities
 
 		public override Faction DefaultFaction
 		{
-			get { return m_entry.RandomFaction; }
+			get
+			{
+				if (Map != null)
+				{
+					return m_entry.GetFaction(Map.OwningFaction);
+				}
+				return m_entry.HordeFaction;				// just return anything... this should never be relevant anyway
+			}
 		}
 
 		public ThreatCollection ThreatCollection

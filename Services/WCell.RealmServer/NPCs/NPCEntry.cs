@@ -855,24 +855,28 @@ namespace WCell.RealmServer.NPCs
 			}
 
 			SetFlagIndices = Utility.GetSetIndices((uint)NPCFlags);
+
+			// set/fix factions
 			HordeFaction = FactionMgr.Get(HordeFactionId);
 			AllianceFaction = FactionMgr.Get(AllianceFactionId);
-
 			if (HordeFaction == null)
 			{
 				HordeFaction = AllianceFaction;
+				HordeFactionId = AllianceFactionId;
 			}
 			else if (AllianceFaction == null)
 			{
 				AllianceFaction = HordeFaction;
+				AllianceFactionId = HordeFactionId;
 			}
-
 			if (AllianceFaction == null)
 			{
 				ContentMgr.OnInvalidDBData("NPCEntry has no valid Faction: " + this);
 				HordeFaction = AllianceFaction = NPCMgr.DefaultFaction;
+				HordeFactionId = AllianceFactionId = (FactionTemplateId) HordeFaction.Template.Id;
 			}
 
+			// speeds
 			if (SpeedFactor < 0.01)
 			{
 				SpeedFactor = 1;
