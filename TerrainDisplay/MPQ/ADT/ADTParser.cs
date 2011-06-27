@@ -372,7 +372,8 @@ namespace TerrainDisplay.MPQ.ADT
             }
 
 
-            var heightMapLen = (water.Header.Width + 1) * (water.Header.Height + 1);
+            //var heightMapLen = (water.Header.Width + 1) * (water.Header.Height + 1);
+			var heightMapLen = (TerrainConstants.UnitsPerChunkSide + 1) * (TerrainConstants.UnitsPerChunkSide + 1);
             water.Heights = new float[heightMapLen];
 
             // If flags is 2, the chunk is for an ocean, and there is no heightmap

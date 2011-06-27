@@ -23,9 +23,11 @@ namespace TerrainDisplay.MPQ.ADT.Components
         public float[,] GetMapHeightsMatrix()
         {
             if ((Header.Used != true) || (Heights == null))
-                throw new Exception("This MH2O chunk is not used");
+            {
+            	throw new Exception("This MH2O chunk is not used");
+            }
 
-            //var heights = new float[Header.Width + 1, Header.Height + 1];
+        	//var heights = new float[Header.Width + 1, Header.Height + 1];
             var heights = new float[TerrainConstants.UnitsPerChunkSide + 1,TerrainConstants.UnitsPerChunkSide + 1];
             for (var r = 0; r <= TerrainConstants.UnitsPerChunkSide; r++)
             {

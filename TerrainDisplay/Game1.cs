@@ -1,3 +1,5 @@
+using System;
+using System.Windows.Forms;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -8,11 +10,14 @@ using TerrainDisplay.MPQ.WMO;
 using TerrainDisplay.Recast;
 using TerrainDisplay.Util;
 using WCell.Util.Graphics;
+using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 using Color = Microsoft.Xna.Framework.Graphics.Color;
+using Keys = Microsoft.Xna.Framework.Input.Keys;
 using MathHelper = Microsoft.Xna.Framework.MathHelper;
 using Matrix = Microsoft.Xna.Framework.Matrix;
 using Ray = WCell.Util.Graphics.Ray;
 using Vector3 = Microsoft.Xna.Framework.Vector3;
+using Vector4 = Microsoft.Xna.Framework.Vector4;
 
 namespace TerrainDisplay
 {
@@ -21,11 +26,10 @@ namespace TerrainDisplay
 	/// </summary>
 	public class Game1 : Game
 	{
-		const float RotationSpeed = 1f / 60f;
-		const float ForwardSpeed = 50f / 60f;
 		const float ViewAngle = MathHelper.PiOver4;
 		const float NearClip = 1.0f;
 		const float FarClip = 2000.0f;
+		const float MouseSensitivity = 0.008f;
 
 		// XNA uses this variable for graphics information
 		private readonly GraphicsDeviceManager _graphics;
@@ -36,6 +40,7 @@ namespace TerrainDisplay
 		private Matrix _proj;
 
 		BasicEffect _basicEffect;
+		float ForwardSpeed = 50f / 60f;
 		
 		//private readonly ADTManager _manager;
 		/// <summary>
@@ -45,12 +50,21 @@ namespace TerrainDisplay
 
 		// Camera Stuff
 		Vector3 avatarHeadOffset = new Vector3(0, 10, 0);
-		float _avatarYaw;
+		float avatarYaw, avatarPitch;
 		Vector3 cameraReference = new Vector3(0, 0, 10);
 		Vector3 _thirdPersonReference = new Vector3(0, 20, -20);
 		private bool mouseLeftButtonDown;
 
-		public static Vector3 _avatarPosition = new Vector3(-100, 100, -100);
+		/// <summary>
+		/// The form of this application
+		/// </summary>
+		public Form Form
+		{
+			get;
+			private set;
+		}
+
+		public static Vector3 avatarPosition = new Vector3(-100, 100, -100);
 
 		SpriteBatch _spriteBatch;
 		SpriteFont _spriteFont;
@@ -60,11 +74,11 @@ namespace TerrainDisplay
 		/// </summary>
 		public Game1(Vector3 avatarPosition)
 		{
-			_avatarPosition = avatarPosition;
+			Game1.avatarPosition = avatarPosition;
 			_graphics = new GraphicsDeviceManager(this);
 			Content.RootDirectory = "Content";
 
-			_avatarYaw = 90;
+			avatarYaw = 90;
 		}
 
 		/// <summary>
@@ -103,6 +117,7 @@ namespace TerrainDisplay
 		/// </summary>
 		protected override void Initialize()
 		{
+			Form = (Form)Form.FromHandle(Window.Handle);
 		    IsMouseVisible = true;
 			_graphics.PreferredBackBufferWidth = 1024;
 			_graphics.PreferredBackBufferHeight = 768;
@@ -151,6 +166,27 @@ namespace TerrainDisplay
 		protected override void Update(GameTime gameTime)
 		{
 			UpdateAvatarPosition();
+
+			// use mouse navigation
+
+			var w = Form.Width;
+			var h = Form.Height;
+
+			if (w != 0 && h != 0 && Form.ActiveForm == Form)
+			{
+				var x = Mouse.GetState().X;
+				var y = Mouse.GetState().Y;
+
+				var cx = w/2;
+				var cy = h/2;
+
+				avatarPitch += (y - cy) * MouseSensitivity;
+				avatarYaw += (cx - x) * MouseSensitivity;
+
+				Mouse.SetPosition(cx, cy); // move back to center
+			}
+
+
 			//var ray = new Ray(_avatarPosition, Vector3.Down);
 			//collider = new Triangle(Vector3.UnitX, Vector3.UnitY, Vector3.UnitZ);
 			//var list = tree.GetPotentialColliders(ray, float.MaxValue);
@@ -257,62 +293,55 @@ namespace TerrainDisplay
 
 			if (keyboardState.IsKeyDown(Keys.A) || (currentState.DPad.Left == ButtonState.Pressed))
 			{
-				// Rotate left.
-				_avatarYaw += RotationSpeed;
+				// move left
+				//avatarYaw += RotationSpeed;
+				var forwardMovement = Matrix.CreateRotationY(avatarYaw);
+				var v = new Vector3(1, 0, 0);
+				v = Vector3.Transform(v, forwardMovement);
+				avatarPosition.X += v.X;
+				avatarPosition.Y += v.Y;
+				avatarPosition.Z += v.Z;
 			}
 
 			if (keyboardState.IsKeyDown(Keys.D) || (currentState.DPad.Right == ButtonState.Pressed))
 			{
-				// Rotate right.
-				_avatarYaw -= RotationSpeed;
+				// move right
+				//avatarYaw -= RotationSpeed;
+
+				var forwardMovement = Matrix.CreateRotationY(avatarYaw);
+				var v = new Vector3(1, 0, 0);
+				v = Vector3.Transform(v, forwardMovement);
+				avatarPosition.X -= v.X;
+				avatarPosition.Y -= v.Y;
+				avatarPosition.Z -= v.Z;
 			}
 
 			if (keyboardState.IsKeyDown(Keys.W) || (currentState.DPad.Up == ButtonState.Pressed))
 			{
-				var forwardMovement = Matrix.CreateRotationY(_avatarYaw);
+				var forwardMovement = Matrix.CreateRotationY(avatarYaw);
 				var v = new Vector3(0, 0, ForwardSpeed);
 				v = Vector3.Transform(v, forwardMovement);
-				_avatarPosition.Z += v.Z;
-				_avatarPosition.X += v.X;
+				avatarPosition.Z += v.Z;
+				avatarPosition.X += v.X;
 			}
 
 			if (keyboardState.IsKeyDown(Keys.S) || (currentState.DPad.Down == ButtonState.Pressed))
 			{
-				var forwardMovement = Matrix.CreateRotationY(_avatarYaw);
+				var forwardMovement = Matrix.CreateRotationY(avatarYaw);
 				var v = new Vector3(0, 0, -ForwardSpeed);
 				v = Vector3.Transform(v, forwardMovement);
-				_avatarPosition.Z += v.Z;
-				_avatarPosition.X += v.X;
+				avatarPosition.Z += v.Z;
+				avatarPosition.X += v.X;
 			}
 
 			if (keyboardState.IsKeyDown(Keys.F))
 			{
-				_avatarPosition.Y = _avatarPosition.Y - 1;
+				avatarPosition.Y = avatarPosition.Y - 1;
 			}
 
 			if (keyboardState.IsKeyDown(Keys.R) || keyboardState.IsKeyDown(Keys.Space))
 			{
-				_avatarPosition.Y = _avatarPosition.Y + 1;
-			}
-
-			if (keyboardState.IsKeyDown(Keys.E))
-			{
-				var forwardMovement = Matrix.CreateRotationY(_avatarYaw);
-				var v = new Vector3(1, 0, 0);
-				v = Vector3.Transform(v, forwardMovement);
-				_avatarPosition.X -= v.X;
-				_avatarPosition.Y -= v.Y;
-				_avatarPosition.Z -= v.Z;
-			}
-
-			if (keyboardState.IsKeyDown(Keys.Q))
-			{
-				var forwardMovement = Matrix.CreateRotationY(_avatarYaw);
-				var v = new Vector3(1, 0, 0);
-				v = Vector3.Transform(v, forwardMovement);
-				_avatarPosition.X += v.X;
-				_avatarPosition.Y += v.Y;
-				_avatarPosition.Z += v.Z;
+				avatarPosition.Y = avatarPosition.Y + 1;
 			}
 
 			if (keyboardState.IsKeyDown(Keys.T))
@@ -324,8 +353,20 @@ namespace TerrainDisplay
 				_thirdPersonReference.Y = _thirdPersonReference.Y + 0.25f;
 			}
 
+			// adjust speed
+			if (keyboardState.IsKeyDown(Keys.OemPlus))
+			{
+				ForwardSpeed = Math.Min(ForwardSpeed + 0.1f, 15);
+			}
+			else if (keyboardState.IsKeyDown(Keys.OemMinus))
+			{
+				ForwardSpeed = Math.Max(ForwardSpeed - 0.1f, 0.1f);
+			}
+
+
 		    if (mouseState.LeftButton == ButtonState.Pressed && !mouseLeftButtonDown)
 		    {
+				// select polygon
 		        mouseLeftButtonDown = true;
 
 		        var width = _graphics.GraphicsDevice.Viewport.Width;
@@ -357,20 +398,18 @@ namespace TerrainDisplay
 
 		void UpdateCameraThirdPerson()
 		{
-			var rotationMatrix = Matrix.CreateRotationY(_avatarYaw);
-
 			// Create a vector pointing the direction the camera is facing.
-			var transformedReference = Vector3.Transform(_thirdPersonReference, rotationMatrix);
+			//var transformedReference = Vector3.Transform(, Matrix.CreateRotationY(avatarYaw));
+			//transformedReference = Vector3.Transform(transformedReference, Matrix.CreateRotationX(avatarPitch));
 
-			// Calculate the position the camera is looking from.
-			var cameraPosition = transformedReference + _avatarPosition;
+			// Calculate the position the camera is looking from
+			var target = avatarPosition + Vector3.Transform(Vector3.UnitZ, Matrix.CreateFromYawPitchRoll(avatarYaw, avatarPitch, 0));
 
-			// Set up the view matrix and projection matrix.
-			_view = Matrix.CreateLookAt(cameraPosition, _avatarPosition, new Vector3(0.0f, 1.0f, 0.0f));
+			// Set up the view matrix and projection matrix
+			_view = Matrix.CreateLookAt(avatarPosition, target, new Vector3(0.0f, 1.0f, 0.0f));
 
 			var viewport = _graphics.GraphicsDevice.Viewport;
 			var aspectRatio = viewport.Width/(float)viewport.Height;
-
 			_proj = Matrix.CreatePerspectiveFieldOfView(ViewAngle, aspectRatio, NearClip, FarClip);
 		}
 	}

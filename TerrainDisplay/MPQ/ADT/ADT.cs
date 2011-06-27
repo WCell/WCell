@@ -269,7 +269,7 @@ namespace TerrainDisplay.MPQ.ADT
             //}
 
             var mh2OHeightMap = mh2O.GetMapHeightsMatrix();
-            for (var xStep = 0; xStep < 9; xStep++)
+            for (var xStep = 0; xStep <= TerrainConstants.UnitsPerChunkSide; xStep++)
             {
                 for (var yStep = 0; yStep < 9; yStep++)
                 {
