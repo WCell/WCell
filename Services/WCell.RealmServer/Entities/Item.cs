@@ -1293,7 +1293,7 @@ namespace WCell.RealmServer.Entities
 					|| m_template.Class == ItemClass.Glyph || m_template.Class == ItemClass.Recipe
 					|| m_template.Class == ItemClass.TradeGoods)
 				{
-					SpellCharges--;
+					SpellCharges = SpellCharges < 0 ? SpellCharges++ : SpellCharges--;
 				}
 			}
 
