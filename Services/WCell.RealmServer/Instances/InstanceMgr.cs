@@ -127,8 +127,11 @@ namespace WCell.RealmServer.Instances
 			{
 				instance.difficulty = template.MapTemplate.GetDifficulty(difficultyIndex) ?? template.MapTemplate.Difficulties[0];
 
+
 				if (creator != null)
 				{
+					// set faction & leader
+					instance.m_OwningFaction = creator.FactionGroup;
 					instance.Owner = creator.InstanceLeader;
 				}
 				instance.InitMap(template.MapTemplate);
