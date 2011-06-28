@@ -3,12 +3,11 @@ changes
 #ignore thumbnails created by windows
 Thumbs.db
 
-#Ignore files build by Visual Studio
+#Ignore files built by Visual Studio
 ipch
 *sdf
 *.obj
 *.exe
-*.pdb
 *.user
 *.aps
 *.pch
@@ -23,9 +22,8 @@ ipch
 *.cache
 *.ilk
 *.log
-[Bb]in
-[Dd]ebug*/
-*.lib
+[Bb]in/
+[Dd]ebug/
 *.sbr
 obj/
 [Rr]elease*/

@@ -78,7 +78,7 @@
       <HintPath>..\Lib\WCell.Constants.dll</HintPath>
     </Reference>
     <Reference Include="WCell.MPQTool">
-      <HintPath>..\Lib\WCell.MPQTool.exe</HintPath>
+      <HintPath>..\..\Run\Debug\WCell.MPQTool.exe</HintPath>
     </Reference>
     <Reference Include="WCell.Util">
       <HintPath>..\Lib\WCell.Util.dll</HintPath>

@@ -17,7 +17,5 @@ Addons/.gitignore
 
 Addons/GossipMenus/bin
 wcelladdon/
-Recast/
-WCell-Terrain/
 *.docstates
 TestResults/
