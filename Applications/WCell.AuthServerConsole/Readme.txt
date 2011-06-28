@@ -1,0 +1,3 @@
+﻿Hello!
+
+Gonna write a new Readme soon...
