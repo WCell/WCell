@@ -1,0 +1,42 @@
+
+#ignore thumbnails created by windows
+Thumbs.db
+
+#Ignore files build by Visual Studio
+ipch
+*sdf
+*.obj
+*.exe
+*.pdb
+*.user
+*.aps
+*.pch
+*.vspscc
+*_i.c
+*_p.c
+*.ncb
+*.suo
+*.tlb
+*.tlh
+*.bak
+*.cache
+*.ilk
+*.log
+[Bb]in
+[Dd]ebug*/
+*.lib
+*.sbr
+obj/
+[Rr]elease*/
+_ReSharper*/
+[Tt]est[Rr]esult*
+changes.diff
+
+<<<<<<< HEAD
+#ignore the program config
+TerrainDisplay/App.config
+Terra/terra/
+=======
+#ignore the program config
+TerrainDisplay/App.config
+>>>>>>> 52f6719e2e2c2882901f1475c0857fbf8c622121
