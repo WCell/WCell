@@ -34,6 +34,7 @@ namespace TerrainDisplay
 
         public static bool UseExtractedData = false;
         public static string MpqPath = @"D:\Games\MPQFiles";
+		public static string WoWPath = @"D:\Games\WoW";
         
     	public static string OutputDir = Path.GetFullPath(TerrainDisplayRoot + "output/");
         public static ClientLocale DefaultLocale = ClientLocale.English;

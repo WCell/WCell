@@ -54,7 +54,7 @@ namespace TerrainExtractor.Parsers
                 throw new Exception("WDTExtractor.Parsed must be set before calling WDTExtractor.Process");
             }
 
-            var wowRootDir = DBCTool.FindWowDir();
+            var wowRootDir = DBCTool.FindWowDir(TerrainDisplayConfig.WoWPath);
             MpqManager = new MpqManager(wowRootDir);
             var entryList = GetMapEntries();
 

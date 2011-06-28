@@ -61,7 +61,7 @@ namespace TerrainDisplay.MPQ
 
         public MpqTerrainManager(TileIdentifier tileId)
         {
-            var wowRootDir = DBCTool.FindWowDir();
+            var wowRootDir = DBCTool.FindWowDir(TerrainDisplayConfig.WoWPath);
             MpqManager = new MpqManager(wowRootDir);
             TileId = tileId;
 
