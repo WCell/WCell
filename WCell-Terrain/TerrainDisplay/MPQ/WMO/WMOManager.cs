@@ -166,9 +166,12 @@ namespace TerrainDisplay.MPQ.WMO
         /// <param name="currentMODF">MODF (placement information for this WMO)</param>
         public void AddWMO(MapObjectDefinition currentMODF)
         {
-            _fileNames.Add(currentMODF.FilePath);
+			lock (_fileNames)
+			{
+				_fileNames.Add(currentMODF.FilePath);
+			}
 
-            // Parse the WMORoot
+        	// Parse the WMORoot
             var wmoRoot = WMORootParser.Process(MpqTerrainManager.MpqManager, currentMODF.FilePath);
             
             // Parse the WMOGroups
@@ -220,7 +223,10 @@ namespace TerrainDisplay.MPQ.WMO
             var bounds = new BoundingBox(wmoRoot.WmoVertices);
             wmoRoot.Bounds = bounds;
             
-            WMOs.Add(wmoRoot);
+			lock (WMOs)
+			{
+				WMOs.Add(wmoRoot);
+			}
         }
 
         private static void TransformWMO(MapObjectDefinition currentMODF, WMORoot currentWMO)

@@ -63,8 +63,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Lib\Microsoft.Xna.Framework.Game.dll</HintPath>
     </Reference>
-    <Reference Include="NLog">
-      <HintPath>..\Lib\NLog.dll</HintPath>
+    <Reference Include="NLog, Version=1.0.0.505, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Libraries\Binaries\Release\NLog\NLog.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -74,15 +75,6 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="WCell.Constants">
-      <HintPath>..\Lib\WCell.Constants.dll</HintPath>
-    </Reference>
-    <Reference Include="WCell.MPQTool">
-      <HintPath>..\..\Run\Debug\WCell.MPQTool.exe</HintPath>
-    </Reference>
-    <Reference Include="WCell.Util">
-      <HintPath>..\Lib\WCell.Util.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Collision\BSPTree\BSPTree.cs" />
@@ -247,6 +239,18 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Core\WCell.Constants\WCell.Constants.csproj">
+      <Project>{42F497A4-0347-491D-8FA8-50E4D8AD19EB}</Project>
+      <Name>WCell.Constants</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Utilities\WCell.MPQTool\WCell.MPQTool.csproj">
+      <Project>{5F96293A-1276-4515-8048-EBC49CD81D71}</Project>
+      <Name>WCell.MPQTool</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Utilities\WCell.Util\WCell.Util.csproj">
+      <Project>{F753AF28-A251-4C12-9335-07E8236184F2}</Project>
+      <Name>WCell.Util</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Terra\Terra.csproj">
       <Project>{1E90346C-7D04-4D97-8399-397B2E7DD0D6}</Project>
       <Name>Terra</Name>

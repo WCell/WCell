@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using WCell.Core.Paths;
+using WCell.Core.Terrain;
 using WCell.Core.TerrainAnalysis;
 using WCell.Constants.World;
 using WCell.Util.Graphics;

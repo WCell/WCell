@@ -21,6 +21,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using WCell.Constants.Factions;
+using WCell.Core.Terrain;
 using WCell.RealmServer.GameObjects.Spawns;
 using WCell.RealmServer.NPCs.Spawns;
 using WCell.RealmServer.Res;

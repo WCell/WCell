@@ -86,6 +86,8 @@ namespace TerrainDisplay.MPQ.ADT
 
                 ReadMCNK(fileReader, adt);
             }
+
+
             
             return adt;
         }

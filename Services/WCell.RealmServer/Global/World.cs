@@ -26,6 +26,7 @@ using WCell.Core.DBC;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Battlegrounds;
 using WCell.RealmServer.Lang;
+using WCell.Util.Graphics;
 using WCell.Util.Threading;
 using WCell.RealmServer.Chat;
 using WCell.RealmServer.Content;
@@ -927,6 +928,16 @@ namespace WCell.RealmServer.Global
 				LoadMapData();
 			}
 			return s_MapTemplates.Get((uint)mapID);
+		}
+
+		public static BoundingBox GetMapBoundingBox(MapId mapId)
+		{
+			var templ = s_MapTemplates.Get((uint)mapId);
+			if (templ != null)
+			{
+				return templ.Bounds;
+			}
+			return default(BoundingBox);
 		}
 
 		public static bool IsInstance(MapId mapId)

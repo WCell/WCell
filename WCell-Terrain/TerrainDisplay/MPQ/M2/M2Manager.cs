@@ -89,13 +89,19 @@ namespace TerrainDisplay.MPQ.M2
                 filePath = Path.ChangeExtension(filePath, ".m2");
             }
 
-            _names.Add(filePath);
-            var currentM2 = Process(doodadDefinition);
+			lock (_names)
+			{
+				_names.Add(filePath);
+			}
+        	var currentM2 = Process(doodadDefinition);
             
             // Ignore models with no bounding volumes
             if (currentM2.Vertices.Count < 1) return;
             
-            M2s.Add(currentM2);
+			lock (M2s)
+			{
+				M2s.Add(currentM2);
+			}
         }
 
         private static M2 Process(MapDoodadDefinition doodadDefinition)

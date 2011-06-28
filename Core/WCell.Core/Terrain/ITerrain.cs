@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using WCell.Core.Paths;
 using WCell.Util.Graphics;
 
-namespace WCell.Core.TerrainAnalysis
+namespace WCell.Core.Terrain
 {
 	/// <summary>
 	/// Represents the Terrain of a certain Map

@@ -139,8 +139,8 @@
     <Compile Include="..\..\Utilities\WCell.SolutionItems\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="Addon\CollisionCommands.cs" />
-    <Compile Include="Addon\FullTerrainProvider.cs" />
+    <Compile Include="Commands\CollisionCommands.cs" />
+    <Compile Include="FullTerrainProvider.cs" />
     <Compile Include="Addon\CollisionAddon.cs" />
     <Compile Include="BSPTree.cs" />
     <Compile Include="Components\M2Reference.cs" />
@@ -158,7 +158,7 @@
     <Compile Include="WorldMapObjects.cs" />
     <Compile Include="WorldMap.cs" />
     <Compile Include="WorldMapTile.cs" />
-    <Compile Include="WorldModels.cs" />
+    <Compile Include="MapModelCollection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Core\WCell.Constants\WCell.Constants.csproj">

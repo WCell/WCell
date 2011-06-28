@@ -60,7 +60,7 @@ namespace WCell.Collision.Addon
             // TODO: Above is because map file format changed in terrain project, update wcell to use new structure
             // See TileExtractor.cs WriteChunkInfo line 500++
             // vs WorlMapTile.cs ReadHeightMap line 296++
-			//TerrainMgr.Provider = new FullTerrainProvider();
+			// TerrainMgr.Provider = new FullTerrainProvider();
 		}
 	}
 }

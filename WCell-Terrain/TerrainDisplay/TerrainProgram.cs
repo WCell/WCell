@@ -17,10 +17,25 @@ namespace TerrainDisplay
 		public static ITerrainManager TerrainManager;
 
 		/// <summary>
+		/// Parallel loading is still experimental
+		/// </summary>
+		public static bool ParallelLoading = false;
+
+		/// <summary>
 		/// The main entry point for the application.
 		/// </summary>
 		static void Main(string[] args)
 		{
+			if (args.Length > 0)
+			{
+				int num;
+				if (!int.TryParse(args[0], out num))
+				{
+					throw new Exception("Invalid argument for ParallelLoading: " + args[0]);
+				}
+				ParallelLoading = num != 0;
+			}
+
             TerrainDisplayConfig.Initialize();
             LogUtil.SetupConsoleLogging();
             NativeMethods.StormLibFolder = TerrainDisplayConfig.LibDir;
@@ -38,7 +53,10 @@ namespace TerrainDisplay
 				TerrainManager = new MpqTerrainManager(defaultTileId);
 			}
 
+			var start = DateTime.Now;
+			Console.Write("Loading default tile...");
 			TerrainManager.LoadTile(defaultTileId);
+			Console.WriteLine("Done - Loading time: {0:0.000}s", (DateTime.Now - start).TotalSeconds);
 
 			AvatarPosition = new Vector3(TerrainConstants.CenterPoint - (defaultTileId.TileX + 1)*TerrainConstants.TileSize,
 										  TerrainConstants.CenterPoint - (defaultTileId.TileY)*TerrainConstants.TileSize,
