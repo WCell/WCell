@@ -1,1 +1,0 @@
-start .\RecastDemo\Build\VC9\Recast.sln
