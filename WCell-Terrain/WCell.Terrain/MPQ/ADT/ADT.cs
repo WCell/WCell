@@ -8,6 +8,7 @@ using TerrainDisplay.Collision._3D;
 using TerrainDisplay.Util;
 using WCell.Collision;
 using WCell.Constants.World;
+using WCell.Terrain.Collision.QuadTree;
 using WCell.Terrain.MPQ.ADT.Components;
 using WCell.Terrain.MPQ.WMO;
 using WCell.Util;

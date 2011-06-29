@@ -6,6 +6,7 @@ using NLog;
 using TerrainDisplay.Collision;
 using TerrainDisplay.Collision.QuadTree;
 using WCell.Terrain;
+using WCell.Terrain.Collision.QuadTree;
 using WCell.Terrain.MPQ;
 using WCell.Terrain.MPQ.ADT;
 using WCell.Terrain.MPQ.M2;

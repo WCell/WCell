@@ -8,8 +8,8 @@
     <ProjectGuid>{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>WCell.Collision</RootNamespace>
-    <AssemblyName>WCell.Collision</AssemblyName>
+    <RootNamespace>WCell.Addons.Collision</RootNamespace>
+    <AssemblyName>WCell.Addons.Collision</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <StartupObject>

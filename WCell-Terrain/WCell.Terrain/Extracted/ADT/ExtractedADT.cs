@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using TerrainDisplay.Collision;
+using WCell.Terrain.Collision.QuadTree;
 using WCell.Terrain.MPQ.WMO;
 using WCell.Constants.World;
 using WCell.Util.Graphics;

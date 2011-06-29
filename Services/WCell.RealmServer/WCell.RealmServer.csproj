@@ -911,7 +911,6 @@
     <Compile Include="Network\FakeRealmClient.cs" />
     <Compile Include="Network\FakePacketMgr.cs" />
     <Compile Include="Network\IRealmClient.cs" />
-    <Compile Include="Network\NetworkExtensions.cs" />
     <Compile Include="Network\PacketMessage.cs" />
     <Compile Include="NPCs\Armorer\ArmorerMgr.cs" />
     <Compile Include="NPCs\Armorer\DurabilityCost.cs" />

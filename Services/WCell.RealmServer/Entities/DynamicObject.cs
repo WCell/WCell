@@ -22,9 +22,9 @@ using WCell.Core;
 using WCell.Core.Network;
 using WCell.RealmServer.Factions;
 using WCell.RealmServer.Global;
-using WCell.RealmServer.Network;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.UpdateFields;
+using WCell.Util;
 using WCell.Util.Graphics;
 
 namespace WCell.RealmServer.Entities

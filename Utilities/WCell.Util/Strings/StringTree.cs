@@ -24,7 +24,7 @@ namespace WCell.Util.Strings
 		{
 			m_tree = this;
 			m_Seperators = seperators;
-			errorHandler = errorHandler;
+			this.errorHandler = errorHandler;
 			m_depth = 0;
 			m_indent = indent;
 		}

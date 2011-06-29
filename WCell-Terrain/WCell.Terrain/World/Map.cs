@@ -6,6 +6,7 @@ using TerrainDisplay.Collision;
 using TerrainDisplay.Extracted;
 using WCell.Constants.World;
 using WCell.Terrain;
+using WCell.Terrain.Collision.QuadTree;
 using WCell.Util.Graphics;
 
 namespace TerrainDisplay.World

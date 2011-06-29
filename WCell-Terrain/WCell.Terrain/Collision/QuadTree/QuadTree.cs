@@ -1,14 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
-using TerrainDisplay.Util;
 using WCell.Collision;
 using WCell.Util;
 using WCell.Util.Graphics;
 
-
-namespace TerrainDisplay.Collision
+namespace WCell.Terrain.Collision.QuadTree
 {
     public class QuadTree<T> where T : class, IQuadObject
     {

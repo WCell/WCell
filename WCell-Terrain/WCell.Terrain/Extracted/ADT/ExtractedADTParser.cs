@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using TerrainDisplay.Collision;
 using WCell.Terrain;
+using WCell.Terrain.Collision.QuadTree;
 using WCell.Terrain.MPQ;
 using WCell.Terrain.MPQ.ADT.Components;
 using TerrainDisplay.Util;
