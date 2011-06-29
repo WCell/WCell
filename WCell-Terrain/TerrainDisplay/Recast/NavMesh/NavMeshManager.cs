@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using TerrainDisplay.MPQ;
 using TerrainDisplay.Util;
 using WCell.Util.Graphics;
 
@@ -7,19 +10,64 @@ namespace TerrainDisplay.Recast
 {
     public class NavMeshManager
     {
-        private NavMesh _mesh;
+    	private NavMesh _mesh;
+
+		public NavMeshManager(ITerrainManager manager)
+		{
+			Manager = manager;
+
+			// configure Recast
+			RecastAPI.InitAPI();
+			RecastAPI.AddInputMeshGenerator("[Default]", GenerateInputMesh);		// Input
+			RecastAPI.NavMeshGenerated += SetNavMesh;								// Ouptut
+		}
+
+		bool GenerateInputMesh(IntPtr geom)
+		{
+			//Console.WriteLine("GenMesh");
+			Vector3[] vectors;
+			int[] indices;
+
+			Manager.GetRecastTriangleMesh(out vectors, out indices);
+			RecastAPI.GenerateInputMesh(geom, vectors, indices, "[Default]");
+			return true;
+		}
+
+    	public ITerrainManager Manager
+    	{
+    		get; 
+			private set;
+    	}
 
         public void SetNavMesh(NavMesh mesh)
         {
             _mesh = mesh;
+			lock (this)
+			{
+				Monitor.PulseAll(this);
+			}
         }
 
         public void GetMeshVerticesAndIndices(out List<Vector3> vertices, out List<int> indices)
-        {
-            vertices = new List<Vector3>();
-            indices = new List<int>();
+		{
+			vertices = new List<Vector3>();
+			indices = new List<int>();
 
-            if (_mesh == null) return;
+			if (_mesh == null)
+			{
+				//lock (this)
+				//{
+				//    if (_mesh == null)			// check again, after obtaining lock
+				//    {
+						
+				//        lock (this)
+				//        {
+				//            Monitor.Wait(this);
+				//        }
+				//    }
+				//}
+				return;
+			}
 
             var tiles = _mesh.Tiles;
             var debugCount = 0;

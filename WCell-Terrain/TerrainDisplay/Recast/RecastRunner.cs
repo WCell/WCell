@@ -54,18 +54,13 @@ namespace TerrainDisplay.Recast
 			return true;
 		}
 
-		// TODO: Make RecastRenderer work, too
 		public void Start()
 		{
 			//RecastAPI.RemoveMeshGenerator("xxx");
 			RecastAPI.InitAPI();
-
 			RecastAPI.AddInputMeshGenerator("[Default]", InputMeshGenerator);		// Input
-
 			RecastAPI.NavMeshGenerated += OnNewNavMesh; // Ouptut
-
 			RecastAPI.SetNavSpeed(100.0f);
-
 			RecastAPI.RunRecast();
 		}
 

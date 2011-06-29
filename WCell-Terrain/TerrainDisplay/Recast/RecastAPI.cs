@@ -73,7 +73,7 @@ namespace TerrainDisplay.Recast
 
 		#region Misc & Init
 		public const string RecastDllName = "Recast.dll";
-		public const string RecastFolder = "../../../../Recast/Bin/";
+		public const string RecastFolder = "../../Recast/Bin/";
 
 		public static readonly string[] Dlls = new[] { RecastDllName, "SDL.dll" };
 
@@ -120,7 +120,8 @@ namespace TerrainDisplay.Recast
 		{
 			if (inited)
 			{
-				throw new InvalidOperationException("Tried to initialize API twice.");
+				return;
+				//throw new InvalidOperationException("Tried to initialize API twice.");
 			}
 			inited = true;
 			// must do this, so it finds the dlls and other files (since those paths arent configurable)

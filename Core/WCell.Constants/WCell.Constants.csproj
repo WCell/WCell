@@ -29,6 +29,7 @@
     <DocumentationFile>..\..\Run\Debug\WCell.Constants.xml</DocumentationFile>
     <NoWarn>1591,1587,1570,1573,1572</NoWarn>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>

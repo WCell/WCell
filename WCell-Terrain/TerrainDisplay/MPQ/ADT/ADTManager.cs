@@ -48,7 +48,7 @@ namespace TerrainDisplay.MPQ.ADT
 		/// <param name="tileId">The <see cref="TileIdentifier"/> describing the tile to load.</param>
 		public bool LoadTile(TileIdentifier tileId)
 		{
-			if (!TerrainProgram.ParallelLoading)
+			if (!TerrainProgram.UseMultiThreadedLoading)
 			{
 				return LoadTileSerially(tileId);
 			}

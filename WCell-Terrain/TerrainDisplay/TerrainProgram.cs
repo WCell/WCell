@@ -19,7 +19,7 @@ namespace TerrainDisplay
 		/// <summary>
 		/// Parallel loading is still experimental
 		/// </summary>
-		public static bool ParallelLoading = false;
+		public static bool UseMultiThreadedLoading = false;
 
 		/// <summary>
 		/// The main entry point for the application.
@@ -33,7 +33,7 @@ namespace TerrainDisplay
 				{
 					throw new Exception("Invalid argument for ParallelLoading: " + args[0]);
 				}
-				ParallelLoading = num != 0;
+				UseMultiThreadedLoading = num != 0;
 			}
 
             TerrainDisplayConfig.Initialize();
@@ -63,15 +63,20 @@ namespace TerrainDisplay
 										  100.0f);
 			
 			PositionUtil.TransformWoWCoordsToXNACoords(ref AvatarPosition);
-			//new RecastRunner(TerrainManager).Start();
 
-			using (var game = new Game1(AvatarPosition.ToXna()))
+			//new RecastRunner(TerrainManager).Start();
+			StartDefaultViewer();
+		}
+
+		private static void StartDefaultViewer()
+		{
+			using (var game = new TerrainRenderWindow(AvatarPosition.ToXna()))
 			{
 				game.Run();
 			}
 		}
 
-        static TerrainProgram()
+		static TerrainProgram()
         {
             new TerrainDisplayConfig();
         }

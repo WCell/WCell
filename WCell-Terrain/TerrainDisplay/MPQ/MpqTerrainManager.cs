@@ -81,7 +81,7 @@ namespace TerrainDisplay.MPQ
             _adtManager = new ADTManager(this);
             _wmoManager = new WMOManager();
             _m2Manager = new M2Manager();
-            _meshManager = new NavMeshManager();
+            _meshManager = new NavMeshManager(this);
             _selectedTriangleManager = new SelectedTriangleManager(_adtManager);
         }
 

@@ -77,7 +77,7 @@ namespace TerrainDisplay.Extracted
             _adtManager = new ExtractedADTManager(this, _baseDirectory, _mapId);
             _m2Manager = new ExtractedM2Manager(_baseDirectory, _mapId);
             _wmoManager = new ExtractedWMOManager(_baseDirectory, _mapId);
-            _meshManager = new NavMeshManager();
+            _meshManager = new NavMeshManager(this);
             _selectedTriangleManager = new SelectedTriangleManager(_adtManager);
         }
 

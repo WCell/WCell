@@ -40,6 +40,7 @@ void ErrorExit(LPTSTR lpszFunction)
     ExitProcess(dw); 
 }
 
+// Functor types
 typedef void (* EmptyVoidCallback)();
 typedef bool (* EmptyBoolCallback)();
 
