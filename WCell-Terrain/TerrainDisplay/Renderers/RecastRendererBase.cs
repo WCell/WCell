@@ -1,9 +1,8 @@
 using Microsoft.Xna.Framework;
-using WCell.Util.Graphics;
+using TerrainDisplay.Recast;
 using Microsoft.Xna.Framework.Graphics;
-using TerrainDisplay.Util;
 
-namespace TerrainDisplay.Recast
+namespace TerrainDisplay.Renderers
 {
     public abstract class RecastRendererBase : DrawableGameComponent
     {

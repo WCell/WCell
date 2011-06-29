@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TerrainDisplay.Util;
 
-namespace TerrainDisplay
+namespace TerrainDisplay.Renderers
 {
     class AxisRenderer : DrawableGameComponent
     {
@@ -83,8 +83,8 @@ namespace TerrainDisplay
             // The Top-Lefthand corner of a Tile in WoW coords
             var endAxisVec = baseAxisVec + new Vector3(TerrainConstants.TileSize*2);
             
-            PositionUtil.TransformWoWCoordsToXNACoords(ref baseAxisVec);
-            PositionUtil.TransformWoWCoordsToXNACoords(ref endAxisVec);
+            XNAUtil.TransformWoWCoordsToXNACoords(ref baseAxisVec);
+            XNAUtil.TransformWoWCoordsToXNACoords(ref endAxisVec);
 
             // The WoW X-axis drawn in XNA coords
             tempVertices.Add(new VertexPositionNormalColored(baseAxisVec, Color.Red, Vector3.Up));

@@ -4,12 +4,13 @@ using System.IO;
 using System.Linq;
 using NLog;
 using TerrainDisplay;
-using TerrainDisplay.MPQ.ADT;
-using TerrainDisplay.MPQ.ADT.Components;
-using TerrainDisplay.MPQ.M2;
-using TerrainDisplay.MPQ.WDT;
-using TerrainDisplay.MPQ.WMO;
-using TerrainDisplay.MPQ.WMO.Components;
+using WCell.Terrain;
+using WCell.Terrain.MPQ.ADT;
+using WCell.Terrain.MPQ.ADT.Components;
+using WCell.Terrain.MPQ.M2;
+using WCell.Terrain.MPQ.WDT;
+using WCell.Terrain.MPQ.WMO;
+using WCell.Terrain.MPQ.WMO.Components;
 using TerrainDisplay.Util;
 using TerrainDisplay.World.DBC;
 using TerrainExtractor.Parsers;
@@ -120,7 +121,7 @@ namespace TerrainExtractor.Extractors
 		#region M2 Write
 		private static void WriteMapM2s(MapInfo mapEntry)
 		{
-            var path = Path.Combine(TerrainDisplayConfig.M2Dir, mapEntry.Id.ToString());
+            var path = Path.Combine(WCellTerrainSettings.M2Dir, mapEntry.Id.ToString());
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
@@ -316,7 +317,7 @@ namespace TerrainExtractor.Extractors
         #region WMO Write
         public static void WriteMapWMOs(MapInfo entry)
 		{
-            var path = Path.Combine(TerrainDisplayConfig.M2Dir, entry.Id.ToString());
+            var path = Path.Combine(WCellTerrainSettings.M2Dir, entry.Id.ToString());
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);

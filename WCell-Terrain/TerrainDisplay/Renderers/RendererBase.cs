@@ -1,9 +1,8 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using TerrainDisplay.MPQ.WMO;
 using TerrainDisplay.Util;
 
-namespace TerrainDisplay
+namespace TerrainDisplay.Renderers
 {
     public abstract class RendererBase : DrawableGameComponent
     {

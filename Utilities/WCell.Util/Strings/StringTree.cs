@@ -7,39 +7,37 @@ namespace WCell.Util.Strings
 		where V : class, IXmlSerializable
 	{
 		private char[] m_Seperators;
-		private Action<string> m_onError;
+		private Action<string> errorHandler;
 
-		public StringTree(Action<string> onError)
-			: this(onError, '.')
+		public StringTree(Action<string> errorHandler)
+			: this(errorHandler, '.')
 		{
 		}
 
-		public StringTree(Action<string> onError, params char[] seperators)
-			: this(onError, "\t", seperators)
+		public StringTree(Action<string> errorHandler, params char[] seperators)
+			: this(errorHandler, "\t", seperators)
 		{
 		}
 
-		public StringTree(Action<string> onError, string indent, params char[] seperators)
+		public StringTree(Action<string> errorHandler, string indent, params char[] seperators)
 			: base(null)
 		{
 			m_tree = this;
 			m_Seperators = seperators;
-			m_onError = onError;
+			errorHandler = errorHandler;
 			m_depth = 0;
 			m_indent = indent;
 		}
 
 		public void OnError(string msg, params object[] args)
 		{
-			m_onError(string.Format(msg, args));
+			errorHandler(string.Format(msg, args));
 		}
 
-		public Action<string> OnErrorHandler
+		public Action<string> ErrorHandler
 		{
-			get
-			{
-				return m_onError;
-			}
+			get{return errorHandler;}
+			set { errorHandler = value;}
 		}
 
 		public char[] Seperators

@@ -4,7 +4,8 @@ using System.IO;
 using System.Linq;
 using NLog;
 using TerrainDisplay;
-using TerrainDisplay.MPQ.WDT;
+using WCell.Terrain;
+using WCell.Terrain.MPQ.WDT;
 using TerrainDisplay.World.DBC;
 using TerrainExtractor.Extractors;
 using WCell.Constants.World;
@@ -54,7 +55,7 @@ namespace TerrainExtractor.Parsers
                 throw new Exception("WDTExtractor.Parsed must be set before calling WDTExtractor.Process");
             }
 
-            var wowRootDir = DBCTool.FindWowDir(TerrainDisplayConfig.WoWPath);
+            var wowRootDir = DBCTool.FindWowDir(WCellTerrainSettings.WoWPath);
             MpqManager = new MpqManager(wowRootDir);
             var entryList = GetMapEntries();
 
@@ -65,7 +66,7 @@ namespace TerrainExtractor.Parsers
                 var wdt = WDTParser.Process(mapEntry);
                 if (wdt == null) continue;
                 
-                var path = Path.Combine(TerrainDisplayConfig.MapDir, wdt.Entry.Id.ToString());
+                var path = Path.Combine(WCellTerrainSettings.MapDir, wdt.Entry.Id.ToString());
                 if (!Directory.Exists(path))
                 {
                     Directory.CreateDirectory(path);
@@ -83,7 +84,7 @@ namespace TerrainExtractor.Parsers
 
         private static IEnumerable<MapInfo> GetMapEntries()
         {
-            var dbcPath = Path.Combine(TerrainDisplayConfig.DBCDir, TerrainDisplayConfig.MapDBCName);
+            var dbcPath = Path.Combine(WCellTerrainSettings.DBCDir, WCellTerrainSettings.MapDBCName);
             var dbcMapReader = new MappedDBCReader<MapInfo, DBCMapEntryConverter>(dbcPath);
             return dbcMapReader.Entries.Values.ToList();
         }

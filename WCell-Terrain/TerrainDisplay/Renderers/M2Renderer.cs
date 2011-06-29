@@ -1,10 +1,9 @@
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TerrainDisplay.Util;
-using Vector3 = WCell.Util.Graphics.Vector3;
+using WCell.Terrain.MPQ.M2;
 
-namespace TerrainDisplay.MPQ.M2
+namespace TerrainDisplay.Renderers
 {
     public class M2Renderer : RendererBase
     {
@@ -30,7 +29,7 @@ namespace TerrainDisplay.MPQ.M2
             for (var i = 0; i < tempVertices.Count; i++)
             {
                 var vec = tempVertices[i];
-                PositionUtil.TransformWoWCoordsToXNACoords(ref vec);
+                XNAUtil.TransformWoWCoordsToXNACoords(ref vec);
                 _cachedVertices[i] = new VertexPositionNormalColored(vec.ToXna(), M2Color,
                                                                      Microsoft.Xna.Framework.Vector3.Down);
             }

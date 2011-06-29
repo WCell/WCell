@@ -4,9 +4,10 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using TerrainDisplay.Collision;
-using TerrainDisplay.MPQ.ADT;
-using TerrainDisplay.MPQ.M2;
-using TerrainDisplay.MPQ.WMO;
+using TerrainDisplay.Renderers;
+using WCell.Terrain.MPQ.ADT;
+using WCell.Terrain.MPQ.M2;
+using WCell.Terrain.MPQ.WMO;
 using TerrainDisplay.Recast;
 using TerrainDisplay.Util;
 using WCell.Util.Graphics;
@@ -133,7 +134,7 @@ namespace TerrainDisplay
 			Components.Add(new ADTRenderer(this, TerrainProgram.TerrainManager.ADTManager));
 			Components.Add(new M2Renderer(this, TerrainProgram.TerrainManager.M2Manager));
 			Components.Add(new WMORenderer(this, TerrainProgram.TerrainManager.WMOManager));
-			Components.Add(new SelectedTriangleRender(this, TerrainProgram.TerrainManager.SelectedTriangleManager));
+			Components.Add(new SelectedTriangleRender(this, TerrainProgram.SelectedTriangleManager));
 			
 			base.Initialize();
 		}
@@ -390,7 +391,7 @@ namespace TerrainDisplay
 		        var dir = (far - near).NormalizedCopy();
 		        var ray = new Ray(near, dir);
 
-		        TerrainProgram.TerrainManager.SelectedTriangleManager.UpdateSelectedTriangle(ray, add);
+		        TerrainProgram.SelectedTriangleManager.UpdateSelectedTriangle(ray, add);
 		    }
 
 		    if (mouseState.LeftButton == ButtonState.Released && mouseLeftButtonDown)

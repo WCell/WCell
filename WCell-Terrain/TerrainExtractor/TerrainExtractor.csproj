@@ -97,9 +97,9 @@
       <Project>{F753AF28-A251-4C12-9335-07E8236184F2}</Project>
       <Name>WCell.Util</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TerrainDisplay\TerrainDisplay.csproj">
-      <Project>{B59C21AA-8AB5-439B-AABA-FEB03EFF251A}</Project>
-      <Name>TerrainDisplay</Name>
+    <ProjectReference Include="..\WCell.Terrain\WCell.Terrain.csproj">
+      <Project>{5F86593D-8412-46C2-9438-A0D7FE21DB14}</Project>
+      <Name>WCell.Terrain</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -110,7 +110,7 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="App.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

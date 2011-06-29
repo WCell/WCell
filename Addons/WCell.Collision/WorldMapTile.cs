@@ -2,11 +2,12 @@ using System;
 using System.IO;
 using System.Text;
 using WCell.Constants;
+using WCell.Terrain.MPQ.ADT;
 using WCell.Util.Graphics;
 
 namespace WCell.Collision
 {
-    internal class WorldMapTile
+    internal class WorldMapTile// : ADT
     {
         private const string fileType = "ter";
 
@@ -22,10 +23,11 @@ namespace WCell.Collision
         
         
         /// <summary>
-        /// Constructor
+        /// Reads a new Tile from the given file.
+		/// The writer is defined in <see cref="TerrainExtractor.Extractor.TileExtractor">the TileExtractor class</see>
         /// </summary>
         /// <param name="file">The full path to the TileInfo file to open.</param>
-        internal WorldMapTile(string file)
+        public WorldMapTile(string file) : base()
         {
             if (!File.Exists(file))
                 return;
@@ -36,8 +38,10 @@ namespace WCell.Collision
                 var key = br.ReadString();
                 if (key != fileType)
                 {
-                    Console.WriteLine("Invalid file format, suckah!");
+                    throw new ArgumentException("File does not contain tile information: " + file);
                 }
+
+
 
                 ReadLiquidProfile(br, LiquidProfile);
                 ReadLiquidTypes(br, LiquidTypes);

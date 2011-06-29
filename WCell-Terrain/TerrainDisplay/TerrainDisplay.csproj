@@ -114,132 +114,27 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Collision\BSPTree\BSPTree.cs" />
-    <Compile Include="Collision\ICollidable.cs" />
-    <Compile Include="Collision\QuadTree\WMOHolder.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="RecastRunner.cs" />
     <Compile Include="Renderers\AxisRenderer.cs" />
-    <Compile Include="Collision\AABB.cs" />
-    <Compile Include="Collision\Intersection.cs" />
-    <Compile Include="Collision\IShape.cs" />
-    <Compile Include="Collision\OCTree\IntermediateOCTreeNode.cs" />
-    <Compile Include="Collision\OCTree\OCTPoly.cs" />
-    <Compile Include="Collision\OCTree\OCTree.cs" />
-    <Compile Include="Collision\OCTree\OCTreeBuilder.cs" />
-    <Compile Include="Collision\OCTree\OCTreeIntersectionType.cs" />
-    <Compile Include="Collision\OCTree\OCTreeIntersection.cs" />
-    <Compile Include="Collision\OCTree\OCTreeNode.cs" />
-    <Compile Include="Collision\QuadTree\IQuadObject.cs" />
-    <Compile Include="Collision\QuadTree\M2Holder.cs" />
-    <Compile Include="Collision\QuadTree\QuadTree.cs" />
-    <Compile Include="Collision\QuadTree\TerrainTriangleHolder.cs" />
-    <Compile Include="Collision\SelectedTriangleManager.cs" />
     <Compile Include="Renderers\SelectedTriangleRender.cs" />
-    <Compile Include="Collision\Triangle.cs" />
-    <Compile Include="Collision\OBB.cs" />
-    <Compile Include="Config\TileIdentifier.cs" />
     <Compile Include="Config\TerrainDisplayConfig.cs" />
     <Compile Include="Console\KeyBindings.cs" />
     <Compile Include="Console\MpqConsole.cs" />
     <Compile Include="Console\XnaConsole.cs" />
-    <Compile Include="Utils\Extensions.cs" />
-    <Compile Include="Extracted\ADT\ExtractedADT.cs" />
-    <Compile Include="Extracted\ADT\ExtractedADTChunk.cs" />
-    <Compile Include="Extracted\ADT\ExtractedADTManager.cs" />
-    <Compile Include="Extracted\ADT\ExtractedADTParser.cs" />
-    <Compile Include="Extracted\M2\ExtractedM2.cs" />
-    <Compile Include="Extracted\M2\ExtractedM2Manager.cs" />
-    <Compile Include="Extracted\ExtractedTerrainManager.cs" />
-    <Compile Include="Extracted\M2\ExtractedM2Parser.cs" />
-    <Compile Include="Extracted\WMO\ExtractedWMO.cs" />
-    <Compile Include="Extracted\WMO\ExtractedWMOGroup.cs" />
-    <Compile Include="Extracted\WMO\ExtractedWMOM2Definition.cs" />
-    <Compile Include="Extracted\WMO\ExtractedWMOManager.cs" />
-    <Compile Include="Extracted\M2\ExtractedMapM2Definition.cs" />
-    <Compile Include="Extracted\WMO\ExtractedWMODefinition.cs" />
-    <Compile Include="Extracted\WMO\ExtractedWMOParser.cs" />
+    <Compile Include="SelectedTriangleManager.cs" />
     <Compile Include="TerrainRenderWindow.cs" />
-    <Compile Include="MPQ\ADT\ADT.cs" />
-    <Compile Include="MPQ\ADT\ADTBase.cs" />
-    <Compile Include="MPQ\ADT\ADTChunkParser.cs" />
-    <Compile Include="MPQ\ADT\ADTManager.cs" />
-    <Compile Include="MPQ\ADT\ADTParser.cs" />
     <Compile Include="Renderers\ADTRenderer.cs" />
-    <Compile Include="MPQ\ADT\Components\MapChunkHeader.cs" />
-    <Compile Include="MPQ\ADT\Components\MapChunkInfo.cs" />
-    <Compile Include="MPQ\ADT\Components\MapDoodadDefinition.cs" />
-    <Compile Include="MPQ\ADT\Components\MapHeader.cs" />
-    <Compile Include="MPQ\ADT\Components\MapNormals.cs" />
-    <Compile Include="MPQ\ADT\Components\MapObjectDefinition.cs" />
-    <Compile Include="MPQ\ADT\Components\MapVertices.cs" />
-    <Compile Include="MPQ\ADT\Components\MH2O.cs" />
-    <Compile Include="MPQ\ADT\IADTManager.cs" />
-    <Compile Include="MPQ\M2\IM2Manager.cs" />
-    <Compile Include="MPQ\WDT\ContinentType.cs" />
-    <Compile Include="MPQ\Color4.cs" />
-    <Compile Include="MPQ\ITerrainManager.cs" />
-    <Compile Include="MPQ\M2\Components\ModelHeader.cs" />
-    <Compile Include="MPQ\M2\Components\ModelVertices.cs" />
-    <Compile Include="MPQ\M2\M2.cs" />
-    <Compile Include="MPQ\M2\M2Manager.cs" />
-    <Compile Include="MPQ\M2\M2Model.cs" />
-    <Compile Include="MPQ\M2\M2ModelParser.cs" />
     <Compile Include="Renderers\M2Renderer.cs" />
-    <Compile Include="MPQ\OffsetLocation.cs" />
-    <Compile Include="MPQ\WMO\Index3.cs" />
     <Compile Include="Renderers\RendererBase.cs" />
-    <Compile Include="Recast\NavMesh\NavMeshDetailTriIndex.cs" />
-    <Compile Include="Recast\NavMesh\NavMeshPolyDetail.cs" />
     <Compile Include="Renderers\RecastRendererBase.cs" />
-    <Compile Include="Utils\MathHelpers.cs" />
-    <Compile Include="Utils\PositionUtil.cs" />
-    <Compile Include="MPQ\Signatures.cs" />
-    <Compile Include="MPQ\TerrainConstants.cs" />
-    <Compile Include="MPQ\MpqTerrainManager.cs" />
-    <Compile Include="MPQ\VertexSpan.cs" />
-    <Compile Include="MPQ\WDT\WDT.cs" />
-    <Compile Include="MPQ\WDT\WDTParser.cs" />
     <Compile Include="Renderers\WDTRenderer.cs" />
-    <Compile Include="MPQ\WMO\Components\BSPNode.cs" />
-    <Compile Include="MPQ\WMO\Components\DoodadDefinition.cs" />
-    <Compile Include="MPQ\WMO\Components\DoodadSet.cs" />
-    <Compile Include="MPQ\WMO\Components\Fog.cs" />
-    <Compile Include="MPQ\WMO\Components\GroupHeader.cs" />
-    <Compile Include="MPQ\WMO\Components\GroupInformation.cs" />
-    <Compile Include="MPQ\WMO\Components\LightInformation.cs" />
-    <Compile Include="MPQ\WMO\Components\LiquidInfo.cs" />
-    <Compile Include="MPQ\WMO\Components\MapPoly.cs" />
-    <Compile Include="MPQ\WMO\Components\Material.cs" />
-    <Compile Include="MPQ\WMO\Components\PortalInformation.cs" />
-    <Compile Include="MPQ\WMO\Components\PortalRelation.cs" />
-    <Compile Include="MPQ\WMO\Components\RenderBatch.cs" />
-    <Compile Include="MPQ\WMO\Components\RootHeader.cs" />
-    <Compile Include="MPQ\WMO\Components\WMOGroupFlags.cs" />
-    <Compile Include="MPQ\WMO\IWMOManager.cs" />
-    <Compile Include="MPQ\WMO\WMO.cs" />
-    <Compile Include="MPQ\WMO\WMOGroup.cs" />
-    <Compile Include="MPQ\WMO\WMOGroupParser.cs" />
-    <Compile Include="MPQ\WMO\WMOManager.cs" />
     <Compile Include="Renderers\WMORenderer.cs" />
-    <Compile Include="MPQ\WMO\WMORoot.cs" />
-    <Compile Include="MPQ\WMO\WMORootParser.cs" />
-    <Compile Include="Recast\NavMesh\NavMeshManager.cs" />
-    <Compile Include="Recast\NavMesh\NavMeshPolygon.cs" />
-    <Compile Include="Recast\NavMesh\NavMeshPolyLink.cs" />
-    <Compile Include="Recast\NavMesh\NavMeshTile.cs" />
-    <Compile Include="Recast\NavMesh\NavOffMeshConnection.cs" />
     <Compile Include="TerrainProgram.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Recast\RecastAPI.cs" />
-    <Compile Include="Recast\NavMesh\NavMesh.cs" />
     <Compile Include="Renderers\RecastFrameRenderer.cs" />
-    <Compile Include="Recast\RecastRunner.cs" />
+    <Compile Include="Util\XNAUtil.cs" />
     <Compile Include="VertexPositionNormalColored.cs" />
-    <Compile Include="World\DBC\DBCMapEntry.cs" />
-    <Compile Include="World\DBC\DBCReader.cs" />
-    <Compile Include="World\DBC\DBCRecordConverter.cs" />
-    <Compile Include="World\Map.cs" />
-    <Compile Include="World\Tile.cs" />
-    <Compile Include="World\World.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -250,9 +145,7 @@
   <ItemGroup>
     <Content Include="Game.ico" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="MPQ\WDL\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0,Profile=Client">
       <Visible>False</Visible>
@@ -291,6 +184,10 @@
     <ProjectReference Include="..\Terra\Terra.csproj">
       <Project>{1E90346C-7D04-4D97-8399-397B2E7DD0D6}</Project>
       <Name>Terra</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WCell.Terrain\WCell.Terrain.csproj">
+      <Project>{5F86593D-8412-46C2-9438-A0D7FE21DB14}</Project>
+      <Name>WCell.Terrain</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -4,11 +4,12 @@ using System.IO;
 using NLog;
 using TerrainDisplay;
 using TerrainDisplay.Collision;
-using TerrainDisplay.MPQ.ADT;
-using TerrainDisplay.MPQ.ADT.Components;
-using TerrainDisplay.MPQ.M2;
-using TerrainDisplay.MPQ.WDT;
-using TerrainDisplay.MPQ.WMO;
+using WCell.Terrain;
+using WCell.Terrain.MPQ.ADT;
+using WCell.Terrain.MPQ.ADT.Components;
+using WCell.Terrain.MPQ.M2;
+using WCell.Terrain.MPQ.WDT;
+using WCell.Terrain.MPQ.WMO;
 using TerrainDisplay.Util;
 using TerrainExtractor.Parsers;
 using WCell.MPQTool;
@@ -38,7 +39,7 @@ namespace TerrainExtractor.Extractors
 		{
             // Map data should only be stored per map
 		    ClearObjectData();
-            var path = Path.Combine(TerrainDisplayConfig.MapDir, wdt.Entry.Id.ToString());
+            var path = Path.Combine(WCellTerrainSettings.MapDir, wdt.Entry.Id.ToString());
 
 			if (wdt.IsWMOOnly)
 			{

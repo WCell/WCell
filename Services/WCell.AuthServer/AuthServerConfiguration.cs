@@ -110,7 +110,7 @@ namespace WCell.AuthServer
 		/// Default constructor.
 		/// </summary>
 		/// <param name="executablePath">The path of the executable whose App-config to load</param>
-		public AuthServerConfiguration(string executablePath)
+		internal AuthServerConfiguration(string executablePath)
 			: base(OnError)
 		{
 			s_instance = this;

@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using TerrainDisplay.Collision;
 using TerrainDisplay.Util;
 
-namespace TerrainDisplay.Collision
+namespace TerrainDisplay.Renderers
 {
     public class SelectedTriangleRender : RendererBase
     {
@@ -26,7 +23,7 @@ namespace TerrainDisplay.Collision
             for (var i = 0; i < _manager.Vertices.Count; i++)
             {
                 var position = _manager.Vertices[i];
-                PositionUtil.TransformWoWCoordsToXNACoords(ref position);
+                XNAUtil.TransformWoWCoordsToXNACoords(ref position);
                 _cachedVertices[i] = new VertexPositionNormalColored(position.ToXna(), SelectedTriangleColor,
                                                                        Vector3.Up);
             }

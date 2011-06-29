@@ -7,6 +7,7 @@ using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 using NLog;
+using WCell.Util.NLog;
 using WCell.Util.Strings;
 using WCell.Util.Xml;
 using System.Diagnostics;
@@ -18,6 +19,9 @@ namespace WCell.Util.Variables
 		where C : VariableConfiguration<V>
 		where V : TypeVariableDefinition, new()
 	{
+		protected VariableConfiguration()
+		{
+		}
 		protected VariableConfiguration(Action<string> onError)
 			: base(onError)
 		{
@@ -27,7 +31,6 @@ namespace WCell.Util.Variables
 	public class VariableConfiguration<V> : IConfiguration
 		where V : TypeVariableDefinition, new()
 	{
-		private static readonly Logger log = LogManager.GetCurrentClassLogger();
 		protected string RootNodeName = "Config";
 		private const string SettingsNodeName = "Settings";
 
@@ -48,11 +51,21 @@ namespace WCell.Util.Variables
 		[XmlIgnore]
 		public Action<V> VariableDefinintionInitializor = DefaultDefinitionInitializor;
 
+		public VariableConfiguration() : this(null)
+		{
+		}
+
 		public VariableConfiguration(Action<string> onError)
 		{
 			Tree = new StringTree<TypeVariableDefinition>(onError, "\t", '.');
 			Definitions = new Dictionary<string, V>(StringComparer.InvariantCultureIgnoreCase);
 			AutoSave = true;
+		}
+
+		public Action<string> ErrorHandler
+		{
+			get { return Tree.ErrorHandler; }
+			set { Tree.ErrorHandler = value; }
 		}
 
 		public virtual string FilePath
@@ -311,7 +324,17 @@ namespace WCell.Util.Variables
 		public void AddVariablesOfAsm<A>(Assembly asm)
 			where A : VariableAttribute
 		{
-			var types = asm.GetTypes();
+			Type[] types;
+			try
+			{
+				types = asm.GetTypes();
+			}
+			catch (Exception e)
+			{
+				throw;
+				LogUtil.ErrorException(e, "Could not initialize {0}", GetType());
+				return;
+			}
 			foreach (var type in types)
 			{
 

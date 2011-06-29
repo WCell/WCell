@@ -1,10 +1,14 @@
 //test
 using System;
+using TerrainDisplay.Collision;
+using TerrainDisplay.Config;
 using TerrainDisplay.Extracted;
-using TerrainDisplay.MPQ;
-using TerrainDisplay.MPQ.ADT;
-using TerrainDisplay.Recast;
 using TerrainDisplay.Util;
+using WCell.Constants;
+using WCell.Terrain;
+using WCell.Terrain.MPQ;
+using WCell.Terrain.MPQ.ADT;
+using TerrainDisplay.Recast;
 using WCell.MPQTool.StormLibWrapper;
 using WCell.Util.Graphics;
 using WCell.Util.NLog;
@@ -15,6 +19,7 @@ namespace TerrainDisplay
 	{
 	    public static Vector3 AvatarPosition = new Vector3(-100, 100, -100);
 		public static ITerrainManager TerrainManager;
+		public static SelectedTriangleManager SelectedTriangleManager;
 
 		/// <summary>
 		/// Parallel loading is still experimental
@@ -36,9 +41,13 @@ namespace TerrainDisplay
 				UseMultiThreadedLoading = num != 0;
 			}
 
-            TerrainDisplayConfig.Initialize();
-            LogUtil.SetupConsoleLogging();
-            NativeMethods.StormLibFolder = TerrainDisplayConfig.LibDir;
+			TerrainDisplayConfig.Initialize();
+			LogUtil.SetupConsoleLogging();
+
+
+			WCellTerrainSettings.Config = TerrainDisplayConfig.Instance;
+
+            NativeMethods.StormLibFolder = WCellTerrainSettings.LibDir;
 		    NativeMethods.InitAPI();
 
             var defaultTileId = TileIdentifier.DefaultTileIdentifier;
@@ -46,12 +55,13 @@ namespace TerrainDisplay
 
 			if (useExtractedData)
 			{
-			    TerrainManager = new ExtractedTerrainManager(TerrainDisplayConfig.MapDir, defaultTileId);
+				TerrainManager = new ExtractedTerrainManager(WCellTerrainSettings.MapDir, defaultTileId);
 			}
 			else
 			{
 				TerrainManager = new MpqTerrainManager(defaultTileId);
 			}
+			SelectedTriangleManager = new SelectedTriangleManager(TerrainManager.ADTManager);
 
 			var start = DateTime.Now;
 			Console.Write("Loading default tile...");
@@ -62,7 +72,7 @@ namespace TerrainDisplay
 										  TerrainConstants.CenterPoint - (defaultTileId.TileY)*TerrainConstants.TileSize,
 										  100.0f);
 			
-			PositionUtil.TransformWoWCoordsToXNACoords(ref AvatarPosition);
+			XNAUtil.TransformWoWCoordsToXNACoords(ref AvatarPosition);
 
 			//new RecastRunner(TerrainManager).Start();
 			StartDefaultViewer();

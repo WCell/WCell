@@ -2,9 +2,9 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TerrainDisplay.Util;
-using Vector3 = WCell.Util.Graphics.Vector3;
+using WCell.Terrain.MPQ.ADT;
 
-namespace TerrainDisplay.MPQ.ADT
+namespace TerrainDisplay.Renderers
 {
     class ADTRenderer : DrawableGameComponent
     {
@@ -133,7 +133,7 @@ namespace TerrainDisplay.MPQ.ADT
 
             for (var i = 0; i < _cachedVertices.Length; i++)
             {
-                PositionUtil.TransformWoWCoordsToXNACoords(ref _cachedVertices[i]);
+				XNAUtil.TransformWoWCoordsToXNACoords(ref _cachedVertices[i]);
             }
         }
     }

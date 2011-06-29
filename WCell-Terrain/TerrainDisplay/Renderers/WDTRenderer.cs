@@ -1,4 +1,6 @@
-﻿namespace TerrainDisplay.MPQ.WDT
+﻿using WCell.Terrain.MPQ.WDT;
+
+namespace TerrainDisplay.Renderers
 {
     public class WDTRenderer
     {

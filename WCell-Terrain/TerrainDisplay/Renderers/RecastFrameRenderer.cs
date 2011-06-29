@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using TerrainDisplay.Recast;
 using TerrainDisplay.Util;
 using Vector3 = WCell.Util.Graphics.Vector3;
 
-namespace TerrainDisplay.Recast
+namespace TerrainDisplay.Renderers
 {
 	/// <summary>
     /// Render Recast NavMesh in XNA
@@ -61,6 +62,8 @@ namespace TerrainDisplay.Recast
         {
 	        List<Vector3> vertices;
 	        List<int> indices;
+
+			// TODO: Call on every vertex: PositionUtil.TransformRecastCoordsToWoWCoords(ref vertex);
             _manager.GetMeshVerticesAndIndices(out vertices, out indices);
 
             if (vertices.Count == 0 || indices.Count == 0) return false;
@@ -70,7 +73,7 @@ namespace TerrainDisplay.Recast
             {
                 _cachedPolyVertices[i] = new VertexPositionNormalColored(vertices[i].ToXna(), MeshPolyColor,
                                                                          Vector3.Up.ToXna());
-                PositionUtil.TransformWoWCoordsToXNACoords(ref _cachedPolyVertices[i]);
+                XNAUtil.TransformWoWCoordsToXNACoords(ref _cachedPolyVertices[i]);
             }
 
             _cachedPolyIndices = new int[indices.Count];
@@ -143,6 +146,8 @@ namespace TerrainDisplay.Recast
         {
             List<Vector3> polyVertices;
             List<int> polyIndices;
+
+			// TODO: Call on every vertex: PositionUtil.TransformRecastCoordsToWoWCoords(ref vertex);
             _manager.GetMeshVerticesAndIndices(out polyVertices, out polyIndices);
             if (polyVertices.Count == 0 || polyIndices == null) return false;
             
@@ -151,7 +156,7 @@ namespace TerrainDisplay.Recast
             {
                 _cachedPolyVertices[i] = new VertexPositionNormalColored(polyVertices[i].ToXna(), RecastFrameColor,
                                                                          Vector3.Up.ToXna());
-                PositionUtil.TransformWoWCoordsToXNACoords(ref _cachedPolyVertices[i]);
+                XNAUtil.TransformWoWCoordsToXNACoords(ref _cachedPolyVertices[i]);
             }
 
             _cachedPolyIndices = new int[polyIndices.Count];
