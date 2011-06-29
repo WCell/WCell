@@ -224,7 +224,7 @@ namespace TerrainDisplay.Collision
 
         public void DumpTree(Vector3[] vectors)
         {
-            var file = File.CreateText("C:\\Users\\Nate\\Desktop\\Divider.txt");
+            var file = File.CreateText("Divider.txt");
             DumpNodes(rootId, vectors, file);
             file.Close();
         }
