@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using WCell.Terrain.MPQ;
-using WCell.Terrain.MPQ.WMO;
 using WCell.Util.Graphics;
 
-namespace TerrainDisplay.Util
+namespace WCell.Util
 {
     ///<summary>
     /// Adds functonality to the BoundingBox class
@@ -31,7 +29,7 @@ namespace TerrainDisplay.Util
         }
     }
 
-    public static class CollectionExtensions
+    public static class MiscExtensions
     {
         public static void AddUnique<T>(this ICollection<T> collection, T item)
         {
@@ -118,23 +116,27 @@ namespace TerrainDisplay.Util
 
     public static class IOExtensions
     {
-        public static OffsetLocation ReadOffsetLocation(this BinaryReader br)
-        {
-            return new OffsetLocation
-            {
-                Count = br.ReadInt32(),
-                Offset = br.ReadInt32()
-            };
-        }
-
-        public static void ReadOffsetLocation(this BinaryReader br, ref OffsetLocation offsetLoc)
-        {
-            offsetLoc = new OffsetLocation
-            {
-                Count = br.ReadInt32(),
-                Offset = br.ReadInt32()
-            };
-        }
+		public static Matrix ReadMatrix(this BinaryReader br)
+		{
+			return new Matrix(
+				br.ReadSingle(),
+				br.ReadSingle(),
+				br.ReadSingle(),
+				br.ReadSingle(),
+				br.ReadSingle(),
+				br.ReadSingle(),
+				br.ReadSingle(),
+				br.ReadSingle(),
+				br.ReadSingle(),
+				br.ReadSingle(),
+				br.ReadSingle(),
+				br.ReadSingle(),
+				br.ReadSingle(),
+				br.ReadSingle(),
+				br.ReadSingle(),
+				br.ReadSingle()
+				);
+		}
 
         public static Vector2 ReadVector2(this BinaryReader br)
         {
@@ -152,64 +154,6 @@ namespace TerrainDisplay.Util
             var Y = br.ReadSingle();
             var Z = br.ReadSingle();
             return new Vector3(X, Y, Z);
-        }
-
-        public static Index3 ReadIndex3(this BinaryReader br)
-        {
-            return new Index3
-            {
-                Index0 = br.ReadInt16(),
-                Index1 = br.ReadInt16(),
-                Index2 = br.ReadInt16()
-            };
-        }
-
-        public static Quaternion ReadQuaternion(this BinaryReader br)
-        {
-            return new Quaternion(br.ReadVector3(), br.ReadSingle());
-        }
-
-        public static BoundingBox ReadBoundingBox(this BinaryReader br)
-        {
-            return new BoundingBox(br.ReadVector3(), br.ReadVector3());
-        }
-
-        public static Plane ReadPlane(this BinaryReader br)
-        {
-            return new Plane(br.ReadVector3(), br.ReadSingle());
-        }
-
-        public static Color4 ReadColor4(this BinaryReader br)
-        {
-            return new Color4
-            {
-                B = br.ReadByte(),
-                G = br.ReadByte(),
-                R = br.ReadByte(),
-                A = br.ReadByte()
-            };
-        }
-
-        public static Matrix ReadMatrix(this BinaryReader br)
-        {
-            return new Matrix(
-                br.ReadSingle(),
-                br.ReadSingle(),
-                br.ReadSingle(),
-                br.ReadSingle(),
-                br.ReadSingle(),
-                br.ReadSingle(),
-                br.ReadSingle(),
-                br.ReadSingle(),
-                br.ReadSingle(),
-                br.ReadSingle(),
-                br.ReadSingle(),
-                br.ReadSingle(),
-                br.ReadSingle(),
-                br.ReadSingle(),
-                br.ReadSingle(),
-                br.ReadSingle()
-                );
         }
 
         public static List<int> ReadInt32List(this BinaryReader br)
@@ -243,17 +187,6 @@ namespace TerrainDisplay.Util
             for (var i = 0; i < count; i++)
             {
                 list.Add(br.ReadVector3());
-            }
-            return list;
-        }
-
-        public static List<Index3> ReadIndex3List(this BinaryReader br)
-        {
-            var count = br.ReadInt32();
-            var list = new List<Index3>(count);
-            for (var i = 0; i < count; i++)
-            {
-                list.Add(br.ReadIndex3());
             }
             return list;
         }
@@ -313,13 +246,6 @@ namespace TerrainDisplay.Util
             return br.BaseStream.Position < br.BaseStream.Length;
         }
 
-        public static void Write(this BinaryWriter writer, Index3 idx)
-        {
-            writer.Write(idx.Index0);
-            writer.Write(idx.Index1);
-            writer.Write(idx.Index2);
-        }
-
         public static void Write(this BinaryWriter writer, Vector3 vector3)
         {
             writer.Write(vector3.X);
@@ -353,38 +279,35 @@ namespace TerrainDisplay.Util
             writer.Write(mat.M44);
         }
 
-        public static void Write(this BinaryWriter writer, ICollection<int> list)
-        {
-            if (list == null)
-            {
-                writer.Write(0);
-                return;
-            }
+		public static void Write(this BinaryWriter writer, ICollection<int> list)
+		{
+			if (list == null)
+			{
+				writer.Write(0);
+				return;
+			}
 
-            writer.Write(list.Count);
-            foreach (var item in list)
-            {
-                writer.Write(item);
-            }
-        }
+			writer.Write(list.Count);
+			foreach (var item in list)
+			{
+				writer.Write(item);
+			}
+		}
 
-        public static void Write(this BinaryWriter writer, ICollection<Vector3> list)
-        {
-            writer.Write(list.Count);
-            foreach (var item in list)
-            {
-                writer.Write(item);
-            }
-        }
+		public static void Write(this BinaryWriter writer, ICollection<Vector3> list)
+		{
+			if (list == null)
+			{
+				writer.Write(0);
+				return;
+			}
 
-        public static void Write(this BinaryWriter writer, ICollection<Index3> list)
-        {
-            writer.Write(list.Count);
-            foreach (var item in list)
-            {
-                writer.Write(item);
-            }
-        }
+			writer.Write(list.Count);
+			foreach (var item in list)
+			{
+				writer.Write(item);
+			}
+		}
 
         public static void Write(this BinaryWriter writer, Rect rect)
         {

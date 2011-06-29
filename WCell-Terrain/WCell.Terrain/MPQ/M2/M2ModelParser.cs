@@ -3,6 +3,7 @@ using System.IO;
 using WCell.MPQTool;
 using WCell.Terrain.MPQ.M2.Components;
 using WCell.Terrain.MPQ.WMO;
+using WCell.Util;
 using WCell.Util.Graphics;
 using TerrainDisplay.Util;
 

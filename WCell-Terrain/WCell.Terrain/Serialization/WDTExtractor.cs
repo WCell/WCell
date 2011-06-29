@@ -4,24 +4,27 @@ using System.IO;
 using System.Linq;
 using NLog;
 using TerrainDisplay;
-using WCell.Terrain;
 using WCell.Terrain.MPQ.WDT;
 using TerrainDisplay.World.DBC;
-using TerrainExtractor.Extractors;
-using WCell.Constants.World;
 using WCell.MPQTool;
 
-namespace TerrainExtractor.Parsers
+namespace WCell.Terrain.Serialization
 {
     public class WDTExtractor
     {
+		/// <summary>
+		/// Version of our custom map file format
+		/// </summary>
+		public const int Version = 2;
+
+		private const string FileTypeId = "map";
+
         private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
         public static event Action<WDT> Parsed;
         public static MpqManager MpqManager;
 
         private const string baseDir = "WORLD\\MAPS\\";
-        private const string FileTypeId = "map";
         public const string Extension = ".map";
 
         internal static void EnsureEventEmpty()
@@ -76,7 +79,6 @@ namespace TerrainExtractor.Parsers
                 using (var file = File.Create(filePath))
                 {
                     WriteWdt(file, wdt);
-                    file.Close();
                 }
                 Parsed(wdt);
             }
@@ -91,8 +93,10 @@ namespace TerrainExtractor.Parsers
 
         private static void WriteWdt(Stream file, WDT wdt)
         {
-            var writer = new BinaryWriter(file);
-            writer.Write(FileTypeId);
+			var writer = new BinaryWriter(file);
+
+			writer.Write(FileTypeId);
+			writer.Write(Version);
 
             writer.Write(wdt.IsWMOOnly);
             if (wdt.IsWMOOnly) return;

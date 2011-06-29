@@ -4,6 +4,7 @@ using NLog;
 using TerrainDisplay;
 using WCell.MPQTool;
 using WCell.Terrain.MPQ.ADT.Components;
+using WCell.Util;
 using WCell.Util.Graphics;
 using TerrainDisplay.Util;
 
@@ -18,9 +19,9 @@ namespace WCell.Terrain.MPQ.ADT
         
         public static ADT Process(MpqManager mpqManager, TileIdentifier tileId)
         {
-            var fileName = string.Format("{0}\\{0}_{1}_{2}{3}", tileId.MapName, tileId.TileY, tileId.TileX, Extension);
+            var fileName = string.Format("{0}\\{0}_{1}_{2}{3}", tileId.MapName, tileId.Y, tileId.X, Extension);
             var filePath = Path.Combine(baseDir, fileName);
-            var adt = new ADT(tileId);
+            var adt = new ADT(tileId, tileId.MapId);
 
             if (!mpqManager.FileExists(filePath))
             {

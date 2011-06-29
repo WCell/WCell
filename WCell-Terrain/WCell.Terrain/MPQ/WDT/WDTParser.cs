@@ -7,6 +7,7 @@ using TerrainDisplay.Util;
 using TerrainDisplay.World.DBC;
 using WCell.MPQTool;
 using WCell.Terrain.MPQ.ADT.Components;
+using WCell.Util;
 
 
 namespace WCell.Terrain.MPQ.WDT

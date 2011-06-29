@@ -1,9 +1,8 @@
 using System.Globalization;
 using WCell.Core.Addons;
 using WCell.Core.Initialization;
-using WCell.RealmServer.Global;
 
-namespace WCell.Collision.Addon
+namespace WCell.Collision
 {
 	public class CollisionAddon : WCellAddonBase
 	{

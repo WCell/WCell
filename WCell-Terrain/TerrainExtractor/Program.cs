@@ -5,8 +5,8 @@ using System.Text;
 using TerrainDisplay;
 using WCell.Terrain;
 using WCell.Terrain.MPQ.WDT;
-using TerrainExtractor.Parsers;
 using WCell.MPQTool.StormLibWrapper;
+using WCell.Terrain.Serialization;
 using WCell.Util.NLog;
 
 namespace TerrainExtractor

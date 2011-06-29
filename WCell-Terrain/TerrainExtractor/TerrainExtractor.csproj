@@ -78,11 +78,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Extractors\WorldObjectExtractor.cs" />
-    <Compile Include="Extractors\WDTExtractor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Extractors\TileExtractor.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Core\WCell.Constants\WCell.Constants.csproj">
@@ -102,10 +99,7 @@
       <Name>WCell.Terrain</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="MPQ\WDT\" />
-    <Folder Include="Parsers\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
   </ItemGroup>

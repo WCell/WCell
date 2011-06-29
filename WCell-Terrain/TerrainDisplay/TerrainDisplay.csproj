@@ -118,12 +118,12 @@
     <Compile Include="RecastRunner.cs" />
     <Compile Include="Renderers\AxisRenderer.cs" />
     <Compile Include="Renderers\SelectedTriangleRender.cs" />
-    <Compile Include="Config\TerrainDisplayConfig.cs" />
+    <Compile Include="TerrainDisplayConfig.cs" />
     <Compile Include="Console\KeyBindings.cs" />
     <Compile Include="Console\MpqConsole.cs" />
     <Compile Include="Console\XnaConsole.cs" />
     <Compile Include="SelectedTriangleManager.cs" />
-    <Compile Include="TerrainRenderWindow.cs" />
+    <Compile Include="TerrainViewer.cs" />
     <Compile Include="Renderers\ADTRenderer.cs" />
     <Compile Include="Renderers\M2Renderer.cs" />
     <Compile Include="Renderers\RendererBase.cs" />

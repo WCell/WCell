@@ -6,6 +6,7 @@ using System.Text;
 using WCell.Terrain.MPQ.WMO;
 using WCell.Terrain.MPQ.WMO.Components;
 using TerrainDisplay.Util;
+using WCell.Util;
 using WCell.Util.Graphics;
 
 namespace TerrainDisplay.Collision

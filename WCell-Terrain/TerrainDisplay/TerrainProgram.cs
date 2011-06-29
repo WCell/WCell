@@ -1,7 +1,6 @@
 //test
 using System;
 using TerrainDisplay.Collision;
-using TerrainDisplay.Config;
 using TerrainDisplay.Extracted;
 using TerrainDisplay.Util;
 using WCell.Constants;
@@ -68,8 +67,8 @@ namespace TerrainDisplay
 			TerrainManager.LoadTile(defaultTileId);
 			Console.WriteLine("Done - Loading time: {0:0.000}s", (DateTime.Now - start).TotalSeconds);
 
-			AvatarPosition = new Vector3(TerrainConstants.CenterPoint - (defaultTileId.TileX + 1)*TerrainConstants.TileSize,
-										  TerrainConstants.CenterPoint - (defaultTileId.TileY)*TerrainConstants.TileSize,
+			AvatarPosition = new Vector3(TerrainConstants.CenterPoint - (defaultTileId.X + 1)*TerrainConstants.TileSize,
+										  TerrainConstants.CenterPoint - (defaultTileId.Y)*TerrainConstants.TileSize,
 										  100.0f);
 			
 			XNAUtil.TransformWoWCoordsToXNACoords(ref AvatarPosition);
@@ -80,7 +79,7 @@ namespace TerrainDisplay
 
 		private static void StartDefaultViewer()
 		{
-			using (var game = new TerrainRenderWindow(AvatarPosition.ToXna()))
+			using (var game = new TerrainViewer(AvatarPosition.ToXna()))
 			{
 				game.Run();
 			}

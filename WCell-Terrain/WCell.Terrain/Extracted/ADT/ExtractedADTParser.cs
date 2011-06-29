@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using TerrainDisplay.Collision;
+using WCell.Terrain;
 using WCell.Terrain.MPQ;
 using WCell.Terrain.MPQ.ADT.Components;
 using TerrainDisplay.Util;
@@ -11,6 +12,7 @@ using TerrainDisplay.Extracted.ADT;
 using TerrainDisplay.Extracted.M2;
 using TerrainDisplay.Extracted.WMO;
 using WCell.Constants.World;
+using WCell.Util;
 
 namespace TerrainDisplay.Extracted
 {

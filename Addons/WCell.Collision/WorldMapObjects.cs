@@ -91,7 +91,7 @@ namespace WCell.Collision
         }
 
         #region Load Data
-        internal static QuadTree<WMO> GetBuildingTree(MapId mapId, TileCoord tileCoord)
+        internal static QuadTree<WMO> GetBuildingTree(MapId mapId, Point2D tileCoord)
         {
             if (!MapDataExists(mapId))
                 return null;
@@ -136,33 +136,33 @@ namespace WCell.Collision
             return tree.Query(footPrint);
         }
 
-        private static bool EnsureGroupLoaded(TreeReference<WMO> tree, MapId map, TileCoord tileCoord)
+        private static bool EnsureGroupLoaded(TreeReference<WMO> tree, MapId map, Point2D tileCoord)
         {
             var result = true;
 
-            var tile = new TileCoord {
-                TileX = tileCoord.TileX,
-                TileY = tileCoord.TileY
+            var tile = new Point2D {
+                X = tileCoord.X,
+                Y = tileCoord.Y
             };
             result = EnsureTileLoaded(map, tile, tree);
 
-            tile.TileX = tileCoord.TileX - 1;
+            tile.X = tileCoord.X - 1;
             result = result && EnsureTileLoaded(map, tile, tree);
 
-            tile.TileX = tileCoord.TileX + 1;
+            tile.X = tileCoord.X + 1;
             result = result && EnsureTileLoaded(map, tile, tree);
 
-            tile.TileX = tileCoord.TileX;
-            tile.TileY = tileCoord.TileY - 1;
+            tile.X = tileCoord.X;
+            tile.Y = tileCoord.Y - 1;
             result = result && EnsureTileLoaded(map, tile, tree);
 
-            tile.TileY = tileCoord.TileY + 1;
+            tile.Y = tileCoord.Y + 1;
             result = result && EnsureTileLoaded(map, tile, tree);
 
             return result;
         }
 
-        private static bool EnsureTileLoaded(MapId map, TileCoord tile, TreeReference<WMO> tree)
+        private static bool EnsureTileLoaded(MapId map, Point2D tile, TreeReference<WMO> tree)
         {
             if (IsTileLoaded(map, tile) || noTileExists.ContainsKey(GenerateKey(map, tile))) return true;
 
@@ -174,12 +174,12 @@ namespace WCell.Collision
             return true;
         }
 
-        private static bool LoadTile(TreeReference<WMO> tree, MapId mapId, TileCoord tileCoord)
+        private static bool LoadTile(TreeReference<WMO> tree, MapId mapId, Point2D tileCoord)
         {
 			var dir = Path.Combine(WorldMap.HeightMapFolder, ((int)mapId).ToString());
             if (!Directory.Exists(dir)) return false;
 
-            var fileName = TerrainConstants.GetWMOFile(tileCoord.TileX, tileCoord.TileY);
+            var fileName = TerrainConstants.GetWMOFile(tileCoord.X, tileCoord.Y);
             var fullPath = Path.Combine(dir, fileName);
             if (!File.Exists(fullPath)) return false;
 
@@ -208,14 +208,14 @@ namespace WCell.Collision
             return mapData.ContainsKey(mapId);
         }
 
-        private static bool IsTileLoaded(MapId map, TileCoord tileCoord)
+        private static bool IsTileLoaded(MapId map, Point2D tileCoord)
         {
             return (tileLoaded.ContainsKey(GenerateKey(map, tileCoord)));
         }
 
-        private static string GenerateKey(MapId map, TileCoord tileCoord)
+        private static string GenerateKey(MapId map, Point2D tileCoord)
         {
-            return String.Format("{0}_{1}_{2}", (int)map, tileCoord.TileX, tileCoord.TileY);
+            return String.Format("{0}_{1}_{2}", (int)map, tileCoord.X, tileCoord.Y);
         }
 
         private static BoundingBox MakeBounds(ref Vector3 startPos, ref Vector3 endPos)

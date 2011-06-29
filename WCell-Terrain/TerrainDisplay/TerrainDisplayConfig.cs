@@ -7,7 +7,7 @@ using WCell.Util.Variables;
 
 //using WCell.MPQTool;
 
-namespace TerrainDisplay.Config
+namespace TerrainDisplay
 {
 	[VariableClass(true)]
     public class TerrainDisplayConfig : TerrainConfiguration<TerrainDisplayConfig>

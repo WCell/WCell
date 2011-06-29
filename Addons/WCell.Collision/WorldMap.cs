@@ -59,22 +59,22 @@ namespace WCell.Collision
 			{
 				var currentPos = ray.Position + ray.Direction * t;
 
-				TileCoord currentTileCoord;
-				ChunkCoord currentChunkCoord;
-				PointX2D currentPointX2D;
+				Point2D tileCoord;
+				Point2D chunkCoord;
+				Point2D unitCoord;
 				var currentHeightMapFraction = LocationHelper.GetFullInfoForPos(currentPos,
-																				out currentTileCoord,
-																				out currentChunkCoord,
-																				out currentPointX2D);
+																				out tileCoord,
+																				out chunkCoord,
+																				out unitCoord);
 
-				var currentTile = GetTile(mapId, currentTileCoord);
+				var currentTile = GetTile(mapId, tileCoord);
 				if (currentTile == null)
 				{
 					// Can't check non-existant tiles.
 					return false;
 				}
 
-				var terrainHeight = currentTile.GetInterpolatedHeight(currentChunkCoord, currentPointX2D, currentHeightMapFraction);
+				var terrainHeight = currentTile.GetInterpolatedHeight(chunkCoord, unitCoord, currentHeightMapFraction);
 
 				if (terrainHeight < currentPos.Z) continue;
 				return false;
@@ -107,20 +107,20 @@ namespace WCell.Collision
 		{
 			liquidHeight = float.NaN;
 
-			TileCoord tileCoord;
-			ChunkCoord chunkCoord;
-			PointX2D pointX2D;
-			var heightMapFraction = LocationHelper.GetFullInfoForPos(worldPos, out tileCoord, out chunkCoord, out pointX2D);
+			Point2D tileCoord;
+			Point2D chunkCoord;
+			Point2D point2D;
+			var heightMapFraction = LocationHelper.GetFullInfoForPos(worldPos, out tileCoord, out chunkCoord, out point2D);
 
 			var tile = GetTile(mapId, tileCoord);
 			if (tile == null) return float.NaN;
 
 			if (seekLiquid)
 			{
-				liquidHeight = tile.GetLiquidHeight(chunkCoord, pointX2D);
+				liquidHeight = tile.GetLiquidHeight(chunkCoord, point2D);
 			}
 
-			return tile.GetInterpolatedHeight(chunkCoord, pointX2D, heightMapFraction);
+			return tile.GetInterpolatedHeight(chunkCoord, point2D, heightMapFraction);
 		}
 
 		public static Vector3[] GetDirectPath(MapId mapId, Vector3 from, Vector3 to)
@@ -153,8 +153,8 @@ namespace WCell.Collision
 
 		public static FluidType GetFluidTypeAtPoint(MapId mapId, Vector3 worldPos)
 		{
-			TileCoord tileCoord;
-			var chunkCoord = LocationHelper.GetChunkXYForPos(worldPos, out tileCoord);
+			Point2D tileCoord;
+			var chunkCoord = LocationHelper.GetXYForPos(worldPos, out tileCoord);
 
 			var tile = GetTile(mapId, tileCoord);
 			if (tile == null) return FluidType.None;
@@ -164,8 +164,8 @@ namespace WCell.Collision
 
 		public static void DumpMapTileChunk(MapId mapId, Vector3 worldPos)
 		{
-			TileCoord tileCoord;
-			var chunkCoord = LocationHelper.GetChunkXYForPos(worldPos, out tileCoord);
+			Point2D tileCoord;
+			var chunkCoord = LocationHelper.GetXYForPos(worldPos, out tileCoord);
 
 			var tile = GetTile(mapId, tileCoord);
 			if (tile == null) return;
@@ -173,12 +173,12 @@ namespace WCell.Collision
 			tile.DumpChunk(chunkCoord);
 		}
 
-		internal static WorldMapTile GetTile(MapId mapId, TileCoord tileCoord)
+		internal static WorldMapTile GetTile(MapId mapId, Point2D tileCoord)
 		{
 			if (!HasMap(mapId))
 				return null;
 
-			var key = string.Format("{0}_{1}_{2}", (int)mapId, tileCoord.TileX, tileCoord.TileY);
+			var key = string.Format("{0}_{1}_{2}", (int)mapId, tileCoord.X, tileCoord.Y);
 
 			TileReference reference;
 
@@ -220,15 +220,15 @@ namespace WCell.Collision
 			}
 		}
 
-		private static WorldMapTile LoadTile(MapId mapId, TileCoord tileCoord)
+		private static WorldMapTile LoadTile(MapId mapId, Point2D tileCoord)
 		{
 			var dir = Path.Combine(HeightMapFolder, ((int)mapId).ToString());
 			if (!Directory.Exists(dir)) return null;
 
-			var fileName = TerrainConstants.GetMapFilename(tileCoord.TileX, tileCoord.TileY);
+			var fileName = TerrainConstants.GetMapFilename(tileCoord.X, tileCoord.Y);
 			var fullPath = Path.Combine(dir, fileName);
 
-			return (File.Exists(fullPath)) ? new WorldMapTile(fullPath) : null;
+			return (File.Exists(fullPath)) ? new WorldMapTile(fullPath, tileCoord, mapId) : null;
 		}
 
 		private static bool HasMap(MapId mapId)

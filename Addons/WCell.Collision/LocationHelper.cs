@@ -7,58 +7,58 @@ namespace WCell.Collision
 {
     internal static class LocationHelper
     {
-        internal static TileCoord GetTileXYForPos(Vector3 worldPos)
+        internal static Point2D GetTileXYForPos(Vector3 worldPos)
         {
             var tileX = (int)GetTileFraction(worldPos.Y);
             var tileY = (int)GetTileFraction(worldPos.X);
 
-            VerifyTileCoord(worldPos, tileX, tileY);
+            VerifyPoint2D(worldPos, tileX, tileY);
 
-            return new TileCoord
+            return new Point2D
             {
-                TileX = tileX,
-                TileY = tileY
+                X = tileX,
+                Y = tileY
             };
         }
 
-        internal static ChunkCoord GetChunkXYForPos(Vector3 worldPos, out TileCoord tileCoord)
+        internal static Point2D GetXYForPos(Vector3 worldPos, out Point2D tileCoord)
         {
             var tileXFraction = GetTileFraction(worldPos.Y);
             var tileYFraction = GetTileFraction(worldPos.X);
             var tileX = (int)tileXFraction;
             var tileY = (int)tileYFraction;
 
-            VerifyTileCoord(worldPos, tileX, tileY);
+            VerifyPoint2D(worldPos, tileX, tileY);
 
-            tileCoord = new TileCoord {
-                TileX = tileX,
-                TileY = tileY
+            tileCoord = new Point2D {
+                X = tileX,
+                Y = tileY
             };
 
             var chunkX = (int)GetChunkFraction(tileXFraction);
             var chunkY = (int)GetChunkFraction(tileYFraction);
 
-            VerifyChunkCoord(worldPos, (int)tileXFraction, (int)tileYFraction, chunkX, chunkY);
+            VerifyPoint2D(worldPos, (int)tileXFraction, (int)tileYFraction, chunkX, chunkY);
 
-            return new ChunkCoord
+            return new Point2D
             {
-                ChunkX = chunkX,
-                ChunkY = chunkY
+                X = chunkX,
+                Y = chunkY
             };
         }
 
-        internal static PointX2D GetHeightMapXYForPos(Vector3 worldPos, out TileCoord tileCoord, out ChunkCoord chunkCoord)
+        internal static Point2D GetHeightMapXYForPos(Vector3 worldPos, out Point2D tileCoord, out Point2D chunkCoord)
         {
             var tileXFraction = GetTileFraction(worldPos.Y);
             var tileYFraction = GetTileFraction(worldPos.X);
             var tileX = (int)tileXFraction;
             var tileY = (int)tileYFraction;
 
-            VerifyTileCoord(worldPos, tileX, tileY);
+            VerifyPoint2D(worldPos, tileX, tileY);
 
-            tileCoord = new TileCoord {
-                TileX = tileX,
-                TileY = tileY
+            tileCoord = new Point2D {
+                X = tileX,
+                Y = tileY
             };
 
             var chunkXFraction = GetChunkFraction(tileXFraction);
@@ -66,11 +66,11 @@ namespace WCell.Collision
             var chunkX = (int)chunkXFraction;
             var chunkY = (int)chunkYFraction;
 
-            VerifyChunkCoord(worldPos, tileX, tileY, chunkX, chunkY);
+            VerifyPoint2D(worldPos, tileX, tileY, chunkX, chunkY);
 
-            chunkCoord = new ChunkCoord {
-                ChunkX = chunkX,
-                ChunkY = chunkY
+            chunkCoord = new Point2D {
+                X = chunkX,
+                Y = chunkY
             };
 
             var heightMapX = (int)GetHeightMapFraction(chunkXFraction);
@@ -79,25 +79,26 @@ namespace WCell.Collision
             VerifyHeightMapCoord(worldPos, (int)tileXFraction, (int)tileYFraction, (int)chunkXFraction,
                                  (int)chunkYFraction, heightMapX, heightMapY);
 
-            return new PointX2D
+            return new Point2D
             {
                 X = heightMapX,
                 Y = heightMapY
             };
         }
 
-        internal static HeightMapFraction GetFullInfoForPos(Vector3 worldPos, out TileCoord tileCoord, out ChunkCoord chunkCoord, out PointX2D pointX2D)
+        internal static HeightMapFraction GetFullInfoForPos(Vector3 worldPos, 
+			out Point2D tileCoord, out Point2D chunkCoord, out Point2D unitCoord)
         {
             var tileXFraction = GetTileFraction(worldPos.Y);
             var tileYFraction = GetTileFraction(worldPos.X);
             var tileX = (int)tileXFraction;
             var tileY = (int)tileYFraction;
 
-            VerifyTileCoord(worldPos, tileX, tileY);
+            VerifyPoint2D(worldPos, tileX, tileY);
 
-            tileCoord = new TileCoord {
-                TileX = tileX,
-                TileY = tileY
+            tileCoord = new Point2D {
+                X = tileX,
+                Y = tileY
             };
 
             var chunkXFraction = GetChunkFraction(tileXFraction);
@@ -105,11 +106,11 @@ namespace WCell.Collision
             var chunkX = (int)chunkXFraction;
             var chunkY = (int)chunkYFraction;
 
-            VerifyChunkCoord(worldPos, tileX, tileY, chunkX, chunkY);
+            VerifyPoint2D(worldPos, tileX, tileY, chunkX, chunkY);
 
-            chunkCoord = new ChunkCoord {
-                ChunkX = chunkX,
-                ChunkY = chunkY
+            chunkCoord = new Point2D {
+                X = chunkX,
+                Y = chunkY
             };
 
             var heightMapXFraction = GetHeightMapFraction(chunkXFraction);
@@ -120,7 +121,7 @@ namespace WCell.Collision
 
             VerifyHeightMapCoord(worldPos, tileX, tileY, chunkX, chunkY, heightMapX, heightMapY);
 
-            pointX2D =  new PointX2D
+            unitCoord =  new Point2D
             {
                 X = heightMapX,
                 Y = heightMapY
@@ -147,7 +148,7 @@ namespace WCell.Collision
             return ((chunkLocFraction - ((int)chunkLocFraction))*TerrainConstants.UnitsPerChunkSide);
         }
 
-        private static void VerifyTileCoord(Vector3 worldPos, int tileX, int tileY)
+        private static void VerifyPoint2D(Vector3 worldPos, int tileX, int tileY)
         {
             if (tileX < 0)
                 throw new InvalidDataException(String.Format("WorldPos: {0} is off the map. tileX < 0.", worldPos));
@@ -161,7 +162,7 @@ namespace WCell.Collision
                                                              TerrainConstants.TilesPerMapSide));
         }
 
-        private static void VerifyChunkCoord(Vector3 worldPos, int tileX, int tileY, int chunkX, int chunkY)
+        private static void VerifyPoint2D(Vector3 worldPos, int tileX, int tileY, int chunkX, int chunkY)
         {
             if (chunkX < 0)
                 throw new InvalidDataException(
@@ -199,126 +200,6 @@ namespace WCell.Collision
                 throw new InvalidDataException(
                     String.Format("WorldPos: {0} does not correspond to a valid chunk in Tile:[{1}, {2}], Chunk:[{3}, {4}]. chunkY >= {5}.",
                                   worldPos, tileX, tileY, chunkX, chunkY, TerrainConstants.ChunksPerTileSide));
-        }
-    }
-
-    internal class TileCoord : IEquatable<TileCoord>
-    {
-        public int TileX;
-        public int TileY;
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != typeof (TileCoord)) return false;
-            return Equals((TileCoord)obj);
-        }
-
-        public bool Equals(TileCoord obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            return obj.TileX == TileX && obj.TileY == TileY;
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                return (TileX*397) ^ TileY;
-            }
-        }
-
-        public static bool operator ==(TileCoord left, TileCoord right)
-        {
-            return Equals(left, right);
-        }
-
-        public static bool operator !=(TileCoord left, TileCoord right)
-        {
-            return !Equals(left, right);
-        }
-    }
-
-    internal class ChunkCoord : IEquatable<ChunkCoord>
-    {
-        public int ChunkX;
-        public int ChunkY;
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != typeof (ChunkCoord)) return false;
-            return Equals((ChunkCoord)obj);
-        }
-
-        public bool Equals(ChunkCoord obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            return obj.ChunkX == ChunkX && obj.ChunkY == ChunkY;
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                return (ChunkX*397) ^ ChunkY;
-            }
-        }
-
-        public static bool operator ==(ChunkCoord left, ChunkCoord right)
-        {
-            return Equals(left, right);
-        }
-
-        public static bool operator !=(ChunkCoord left, ChunkCoord right)
-        {
-            return !Equals(left, right);
-        }
-    }
-
-	/// <summary>
-	/// Fixed 2D point (using integers for components)
-	/// </summary>
-    internal class PointX2D : IEquatable<PointX2D>
-    {
-        public int X;
-        public int Y;
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != typeof (PointX2D)) return false;
-            return Equals((PointX2D)obj);
-        }
-
-        public bool Equals(PointX2D obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            return obj.X == X && obj.Y == Y;
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                return (X*397) ^ Y;
-            }
-        }
-
-        public static bool operator ==(PointX2D left, PointX2D right)
-        {
-            return Equals(left, right);
-        }
-
-        public static bool operator !=(PointX2D left, PointX2D right)
-        {
-            return !Equals(left, right);
         }
     }
 

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TerrainDisplay.Util;
+using WCell.Terrain;
 
 namespace TerrainDisplay.Renderers
 {
@@ -72,8 +73,8 @@ namespace TerrainDisplay.Renderers
             var tempIndices = new List<int>();
             var offset = 0;
 
-            var baseXPos = TerrainConstants.CenterPoint - (tileId.TileX + 1)*TerrainConstants.TileSize;
-            var baseYPos = TerrainConstants.CenterPoint - (tileId.TileY + 1)*TerrainConstants.TileSize;
+            var baseXPos = TerrainConstants.CenterPoint - (tileId.X + 1)*TerrainConstants.TileSize;
+            var baseYPos = TerrainConstants.CenterPoint - (tileId.Y + 1)*TerrainConstants.TileSize;
             var baseZPos = -100.0f;
 
             // The Bottom-Righthand corner of a Tile in WoW coords

@@ -3,14 +3,9 @@ using System.Windows.Forms;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using TerrainDisplay.Collision;
 using TerrainDisplay.Renderers;
-using WCell.Terrain.MPQ.ADT;
-using WCell.Terrain.MPQ.M2;
-using WCell.Terrain.MPQ.WMO;
-using TerrainDisplay.Recast;
 using TerrainDisplay.Util;
-using WCell.Util.Graphics;
+using WCell.Util;
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 using Color = Microsoft.Xna.Framework.Graphics.Color;
 using Keys = Microsoft.Xna.Framework.Input.Keys;
@@ -18,19 +13,22 @@ using MathHelper = Microsoft.Xna.Framework.MathHelper;
 using Matrix = Microsoft.Xna.Framework.Matrix;
 using Ray = WCell.Util.Graphics.Ray;
 using Vector3 = Microsoft.Xna.Framework.Vector3;
-using Vector4 = Microsoft.Xna.Framework.Vector4;
 
 namespace TerrainDisplay
 {
 	/// <summary>
-	/// The terrain renderer
+	/// GUI component that lets us view and navigate through a map
 	/// </summary>
-	public class TerrainRenderWindow : Game
+	public class TerrainViewer : Game
 	{
 		const float ViewAngle = MathHelper.PiOver4;
 		const float NearClip = 1.0f;
 		const float FarClip = 2000.0f;
-		const float MouseSensitivity = 0.008f;
+
+		/// <summary>
+		/// Default sensitivity for most games is 3
+		/// </summary>
+		public static float MouseSensitivity = 3;
 
 		// XNA uses this variable for graphics information
 		private readonly GraphicsDeviceManager _graphics;
@@ -51,9 +49,7 @@ namespace TerrainDisplay
 		public MpqConsole Console;
 
 		// Camera Stuff
-		Vector3 avatarHeadOffset = new Vector3(0, 10, 0);
 		float avatarYaw, avatarPitch;
-		Vector3 cameraReference = new Vector3(0, 0, 10);
 		Vector3 _thirdPersonReference = new Vector3(0, 20, -20);
 		private bool mouseLeftButtonDown;
 
@@ -74,9 +70,9 @@ namespace TerrainDisplay
 		/// <summary>
 		/// Constructor for the game.
 		/// </summary>
-		public TerrainRenderWindow(Vector3 avatarPosition)
+		public TerrainViewer(Vector3 avatarPosition)
 		{
-			TerrainRenderWindow.avatarPosition = avatarPosition;
+			TerrainViewer.avatarPosition = avatarPosition;
 			_graphics = new GraphicsDeviceManager(this);
 			Content.RootDirectory = "Content";
 
@@ -182,8 +178,8 @@ namespace TerrainDisplay
 				var cx = w/2;
 				var cy = h/2;
 
-				avatarPitch += (y - cy) * MouseSensitivity;
-				avatarYaw += (cx - x) * MouseSensitivity;
+				avatarPitch += (y - cy) * (MouseSensitivity / 1000);
+				avatarYaw += (cx - x) * (MouseSensitivity / 1000);
 
 				Mouse.SetPosition(cx, cy); // move back to center
 			}

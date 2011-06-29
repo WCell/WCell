@@ -5,15 +5,13 @@ using System.Linq;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
-using TerrainDisplay.Util;
 using TerrainDisplay.World.DBC;
 using WCell.Constants.World;
-using WCell.Terrain;
 using WCell.Util.Graphics;
 
-namespace TerrainDisplay
+namespace WCell.Terrain
 {
-    public class TileIdentifier : IXmlSerializable, IEquatable<TileIdentifier>
+    public class TileIdentifier : Point2D, IXmlSerializable, IEquatable<TileIdentifier>
     {
         // This dictionary is initialized on startup.
         public static readonly Dictionary<MapId, string> InternalMapNames;
@@ -24,12 +22,11 @@ namespace TerrainDisplay
         /// </summary>
     	public string TileName;
         public MapId MapId;
+
         /// <summary>
         /// The InternalName from Map.dbc
         /// </summary>
         public string MapName;
-        public int TileX;
-        public int TileY;
 
         static TileIdentifier()
         {
@@ -46,8 +43,8 @@ namespace TerrainDisplay
                 TileName = "Redridge",
                 MapId = MapId.EasternKingdoms,
                 MapName = InternalMapNames[MapId.EasternKingdoms],
-                TileX = 49,
-                TileY = 36
+                X = 49,
+                Y = 36
             };
 
             CenterTile = new TileIdentifier
@@ -55,8 +52,8 @@ namespace TerrainDisplay
                 TileName = "Map Center",
                 MapId = MapId.EasternKingdoms,
                 MapName = InternalMapNames[MapId.EasternKingdoms],
-                TileX = 32,
-                TileY = 32
+                X = 32,
+                Y = 32
             };
 
             Stormwind = new TileIdentifier
@@ -64,8 +61,8 @@ namespace TerrainDisplay
                 TileName = "Stormwind",
                 MapId = MapId.EasternKingdoms,
                 MapName = InternalMapNames[MapId.EasternKingdoms],
-                TileX = 48,
-                TileY = 30
+                X = 48,
+                Y = 30
             };
 
             BurningSteppes = new TileIdentifier
@@ -73,8 +70,8 @@ namespace TerrainDisplay
                 TileName = "Burning Steppes",
                 MapId = MapId.EasternKingdoms,
                 MapName = InternalMapNames[MapId.EasternKingdoms],
-                TileX = 49,
-                TileY = 33
+                X = 49,
+                Y = 33
             };
         }
 
@@ -87,13 +84,13 @@ namespace TerrainDisplay
             TileName = tileName;
             MapId = mapId;
             MapName = mapName;
-            TileX = tileX;
-            TileY = tileY;
+            X = tileX;
+            Y = tileY;
         }
 
         public TileIdentifier Copy()
 		{
-			return new TileIdentifier(TileName, MapId, MapName, TileX, TileY);
+			return new TileIdentifier(TileName, MapId, MapName, X, Y);
 		}
 
         public static TileIdentifier ByPosition(MapId mapId, Vector3 position)
@@ -108,8 +105,8 @@ namespace TerrainDisplay
             {
                 MapId = mapId,
                 MapName = InternalMapNames[mapId],
-                TileX = tileX,
-                TileY = tileY
+                X = tileX,
+                Y = tileY
             };
         }
 
@@ -126,8 +123,8 @@ namespace TerrainDisplay
             TileName = "Redridge",
             MapId = MapId.EasternKingdoms,
             MapName = "Azeroth",
-            TileX = 49,
-            TileY = 36
+            X = 49,
+            Y = 36
         };
 
         #region Implementation of IXmlSerializable
@@ -181,11 +178,11 @@ namespace TerrainDisplay
             {
                 Console.WriteLine(
                     "Malformed TileIdentifer entry in the config Xml. TileX should be fourth element.");
-                TileX = 32;
+                X = 32;
             }
             else
             {
-                TileX = reader.ReadElementContentAsInt();
+                X = reader.ReadElementContentAsInt();
             }
             
             reader.Read();
@@ -193,11 +190,11 @@ namespace TerrainDisplay
             {
                 Console.WriteLine(
                     "Malformed TileIdentifer entry in the config Xml. TileY should be the fifth element. ... (Speaking of Fifth Element, what a great show, yeah?)");
-                TileY = 32;
+                Y = 32;
             }
             else
             {
-                TileY = reader.ReadElementContentAsInt();
+                Y = reader.ReadElementContentAsInt();
             }
         }
 
@@ -206,8 +203,8 @@ namespace TerrainDisplay
             writer.WriteElementString("TileName", TileName);
             writer.WriteElementString("MapId", MapId.ToString());
             writer.WriteElementString("MapName", MapName);
-            writer.WriteElementString("TileX", TileX.ToString());
-            writer.WriteElementString("TileY", TileY.ToString());
+            writer.WriteElementString("TileX", X.ToString());
+            writer.WriteElementString("TileY", Y.ToString());
         }
 
         #endregion
@@ -217,7 +214,7 @@ namespace TerrainDisplay
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Equals(other.MapId, MapId) && (other.TileX == TileX) && (other.TileY == TileY);
+            return Equals(other.MapId, MapId) && (other.X == X) && (other.Y == Y);
         }
 
         public override bool Equals(object obj)
@@ -233,8 +230,8 @@ namespace TerrainDisplay
             unchecked
             {
                 int result = MapId.GetHashCode();
-                result = (result*397) ^ TileX;
-                result = (result*397) ^ TileY;
+                result = (result*397) ^ X;
+                result = (result*397) ^ Y;
                 return result;
             }
         }
@@ -252,7 +249,7 @@ namespace TerrainDisplay
 
         public override string ToString()
         {
-            return String.Format("TileId: MapId: {0}, X: {1}, Y: {2}", MapId, TileX, TileY);
+            return String.Format("TileId: MapId: {0}, X: {1}, Y: {2}", MapId, X, Y);
         }
     }
 }

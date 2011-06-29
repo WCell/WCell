@@ -128,70 +128,70 @@ namespace WCell.Collision
 		/// <summary>
 		/// Makes sure that the given tile and all it's neighbors are loaded
 		/// </summary>
-		private bool EnsureGroupLoaded(TileCoord tileCoord)
+		private bool EnsureGroupLoaded(Point2D tileCoord)
 		{
 			var result = true;
 
-			var tile = new TileCoord
+			var tile = new Point2D
 			{
-				TileX = tileCoord.TileX,
-				TileY = tileCoord.TileY
+				X = tileCoord.X,
+				Y = tileCoord.Y
 			};
 			result = EnsureTileLoaded(tile);
 
-			tile.TileX = tileCoord.TileX - 1;
+			tile.X = tileCoord.X - 1;
 			result = result && EnsureTileLoaded(tile);
 
-			tile.TileX = tileCoord.TileX + 1;
+			tile.X = tileCoord.X + 1;
 			result = result && EnsureTileLoaded(tile);
 
-			tile.TileX = tileCoord.TileX;
-			tile.TileY = tileCoord.TileY - 1;
+			tile.X = tileCoord.X;
+			tile.Y = tileCoord.Y - 1;
 			result = result && EnsureTileLoaded(tile);
 
-			tile.TileY = tileCoord.TileY + 1;
+			tile.Y = tileCoord.Y + 1;
 			result = result && EnsureTileLoaded(tile);
 
 			return result;
 		}
 
-		private bool EnsureTileLoaded(TileCoord tile)
+		private bool EnsureTileLoaded(Point2D tile)
 		{
 			if (IsTileLoaded(tile) || NoTile(tile)) return true;
 			
 			if (!LoadTile(tile))
 			{
-				tileInvalid[tile.TileX, tile.TileY] = true;
+				tileInvalid[tile.X, tile.Y] = true;
 				return false;
 			}
 			return true;
 		}
 
-		private bool LoadTile(TileCoord tileCoord)
+		private bool LoadTile(Point2D tileCoord)
 		{
 			var dir = Path.Combine(WorldMap.HeightMapFolder, ((int)MapId).ToString());
 			if (!Directory.Exists(dir)) return false;
 
-			var fileName = String.Format("{0}{1}.fub", tileCoord.TileX, tileCoord.TileY);
+			var fileName = String.Format("{0}{1}.fub", tileCoord.X, tileCoord.Y);
 			var fullPath = Path.Combine(dir, fileName);
 			if (!File.Exists(fullPath)) return false;
 
 			return LoadTileModels(fullPath);
 		}
 
-		private bool IsTileLoaded(TileCoord tileCoord)
+		private bool IsTileLoaded(Point2D tileCoord)
 		{
-			return tileLoaded[tileCoord.TileX, tileCoord.TileY];
+			return tileLoaded[tileCoord.X, tileCoord.Y];
 		}
 
-		private bool NoTile(TileCoord tileCoord)
+		private bool NoTile(Point2D tileCoord)
 		{
-			return tileInvalid[tileCoord.TileX, tileCoord.TileY];
+			return tileInvalid[tileCoord.X, tileCoord.Y];
 		}
 
-		private string GenerateKey(MapId map, TileCoord tileCoord)
+		private string GenerateKey(MapId map, Point2D tileCoord)
 		{
-			return String.Format("{0}_{1}_{2}", (int)map, tileCoord.TileX, tileCoord.TileY);
+			return String.Format("{0}_{1}_{2}", (int)map, tileCoord.X, tileCoord.Y);
 		}
 
 		private static BoundingBox MakeBounds(ref Vector3 startPos, ref Vector3 endPos)

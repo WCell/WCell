@@ -40,10 +40,10 @@ namespace WCell.Terrain
 			tileX = (int)GetTileFraction(worldPos.Y);
 			tileY = (int)GetTileFraction(worldPos.X);
 
-			return VerifyTileCoord(worldPos, tileX, tileY);
+			return VerifyPoint2D(worldPos, tileX, tileY);
 		}
 
-		internal static void GetChunkXYForPos(Vector3 worldPos, out int chunkX, out int chunkY)
+		internal static void GetXYForPos(Vector3 worldPos, out int chunkX, out int chunkY)
 		{
 			var tileFractionX = GetTileFraction(worldPos.X);
 			var tileFractionY = GetTileFraction(worldPos.Y);
@@ -54,8 +54,8 @@ namespace WCell.Terrain
 
 		internal static Rect GetTileBoundingRect(TileIdentifier tileId)
 		{
-			var tileX = tileId.TileX;
-			var tileY = tileId.TileY;
+			var tileX = tileId.X;
+			var tileY = tileId.Y;
 			var x = TerrainConstants.CenterPoint - (tileX * TerrainConstants.TileSize);
 			var botX = x - TerrainConstants.TileSize;
 			var y = TerrainConstants.CenterPoint - (tileY * TerrainConstants.TileSize);
@@ -74,7 +74,7 @@ namespace WCell.Terrain
 			return (tileFraction - (int)tileFraction) * TerrainConstants.ChunksPerTileSide;
 		}
 
-		private static bool VerifyTileCoord(Vector3 worldPos, int tileX, int tileY)
+		private static bool VerifyPoint2D(Vector3 worldPos, int tileX, int tileY)
 		{
 			var result = true;
 			if (tileX < 0)

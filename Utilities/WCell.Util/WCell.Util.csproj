@@ -137,6 +137,8 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="ArrayExtensions.cs" />
+    <Compile Include="IOExtensions.cs" />
+    <Compile Include="Graphics\Point2D.cs" />
     <Compile Include="StaticCircularList.cs" />
     <Compile Include="Collections\BaseImmutableDictionary.cs" />
     <Compile Include="Collections\ImmutableDictionary.cs" />

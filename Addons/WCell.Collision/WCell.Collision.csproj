@@ -141,7 +141,7 @@
     </Compile>
     <Compile Include="Commands\CollisionCommands.cs" />
     <Compile Include="FullTerrainProvider.cs" />
-    <Compile Include="Addon\CollisionAddon.cs" />
+    <Compile Include="CollisionAddon.cs" />
     <Compile Include="BSPTree.cs" />
     <Compile Include="Components\M2Reference.cs" />
     <Compile Include="Components\ReferenceBase.cs" />

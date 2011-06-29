@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using WCell.Terrain;
 using WCell.Terrain.MPQ;
 using WCell.Terrain.MPQ.ADT;
 using WCell.Constants.World;
@@ -19,8 +20,8 @@ namespace TerrainDisplay.Extracted
 
         public bool LoadTile(TileIdentifier tileId)
         {
-            var tileX = tileId.TileX;
-            var tileY = tileId.TileY;
+            var tileX = tileId.X;
+            var tileY = tileId.Y;
 
             if (!Directory.Exists(_basePath))
             {

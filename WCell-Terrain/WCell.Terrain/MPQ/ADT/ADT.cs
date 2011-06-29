@@ -7,15 +7,21 @@ using TerrainDisplay.Collision;
 using TerrainDisplay.Collision._3D;
 using TerrainDisplay.Util;
 using WCell.Collision;
+using WCell.Constants.World;
 using WCell.Terrain.MPQ.ADT.Components;
 using WCell.Terrain.MPQ.WMO;
+using WCell.Util;
 using WCell.Util.Graphics;
 
 namespace WCell.Terrain.MPQ.ADT
 {
+	/// <summary>
+	/// Collection of heightmap-, liquid-, WMO- and M2- data of a single map tile
+	/// </summary>
     public class ADT : ADTBase, IQuadObject
     {
-        private const float MAX_FLAT_LAND_DELTA = 0.005f;
+    	public MapId Map { get; set; }
+    	private const float MAX_FLAT_LAND_DELTA = 0.005f;
         private const float MAX_FLAT_WATER_DELTA = 0.001f;
 
         #region Parsing
@@ -55,12 +61,10 @@ namespace WCell.Terrain.MPQ.ADT
 
         #region Variables
 
-        private MpqTerrainManager _mpqTerrainManager;
-
         /// <summary>
         /// The continent of the ADT
         /// </summary>
-        private TileIdentifier _tileId;
+		private readonly Point2D coordinates;
 
         /// <summary>
         /// Filename of the ADT
@@ -68,31 +72,31 @@ namespace WCell.Terrain.MPQ.ADT
         /// <example>Azeroth_32_32.adt</example>
         public string FileName
         {
-            get { return TerrainConstants.GetMapFilename(_tileX, _tileY); }
+            get { return TerrainConstants.GetMapFilename(TileX, TileY); }
         }
 
         /// <summary>
         /// The X offset of the map in the 64 x 64 grid
         /// </summary>
-        private int _tileX
+        public int TileX
         {
-            get { return _tileId.TileX; }
+            get { return coordinates.X; }
         }
 
         /// <summary>
         /// The Y offset of the map in the 64 x 64 grid
         /// </summary>
-        private int _tileY
+		public int TileY
         {
-            get { return _tileId.TileY; }
+            get { return coordinates.Y; }
         }
 
         public Rect Bounds
         {
             get
             {
-                var topLeftX = TerrainConstants.CenterPoint - ((_tileX)*TerrainConstants.TileSize);
-                var topLeftY = TerrainConstants.CenterPoint - ((_tileY)*TerrainConstants.TileSize);
+                var topLeftX = TerrainConstants.CenterPoint - ((TileX)*TerrainConstants.TileSize);
+                var topLeftY = TerrainConstants.CenterPoint - ((TileY)*TerrainConstants.TileSize);
                 var botRightX = topLeftX - TerrainConstants.TileSize;
                 var botRightY = topLeftY - TerrainConstants.TileSize;
                 return new Rect(new Point(topLeftX, topLeftY), new Point(botRightX, botRightY));
@@ -110,18 +114,15 @@ namespace WCell.Terrain.MPQ.ADT
         public bool IsWMOOnly;
         #endregion
 
+
         #region Constructors
-
-        public ADT(TileIdentifier tileId, MpqTerrainManager mpqTerrainManager) : this(tileId)
+        public ADT(Point2D coordinates, MapId map)
         {
-            _mpqTerrainManager = mpqTerrainManager;
+			this.coordinates = coordinates;
+			Map = map;
         }
 
-        public ADT(TileIdentifier tileId)
-        {
-            _tileId = tileId;
-        }
-        #endregion
+    	#endregion
 
         public override void GenerateLiquidVertexAndIndices()
         {
@@ -229,8 +230,8 @@ namespace WCell.Terrain.MPQ.ADT
             TerrainVertices = new List<Vector3>();
             foreach (var vertex in newVertices)
             {
-                var xPos = TerrainConstants.CenterPoint - (_tileX * TerrainConstants.TileSize) - (vertex.X * TerrainConstants.UnitSize);
-                var yPos = TerrainConstants.CenterPoint - (_tileY * TerrainConstants.TileSize) - (vertex.Y * TerrainConstants.UnitSize);
+                var xPos = TerrainConstants.CenterPoint - (TileX * TerrainConstants.TileSize) - (vertex.X * TerrainConstants.UnitSize);
+                var yPos = TerrainConstants.CenterPoint - (TileY * TerrainConstants.TileSize) - (vertex.Y * TerrainConstants.UnitSize);
                 TerrainVertices.Add(new Vector3(xPos, yPos, vertex.Z));
             }
 
@@ -274,9 +275,9 @@ namespace WCell.Terrain.MPQ.ADT
             {
                 for (var yStep = 0; yStep < 9; yStep++)
                 {
-                    var xPos = TerrainConstants.CenterPoint - (_tileX * TerrainConstants.TileSize) -
+                    var xPos = TerrainConstants.CenterPoint - (TileX * TerrainConstants.TileSize) -
                                (indexX * TerrainConstants.ChunkSize) - (xStep * TerrainConstants.UnitSize);
-                    var yPos = TerrainConstants.CenterPoint - (_tileY * TerrainConstants.TileSize) -
+                    var yPos = TerrainConstants.CenterPoint - (TileY * TerrainConstants.TileSize) -
                                (indexY * TerrainConstants.ChunkSize) - (yStep * TerrainConstants.UnitSize);
 
                     if (((xStep < mh2O.Header.XOffset) || ((xStep - mh2O.Header.XOffset) > mh2O.Header.Height)) ||
@@ -346,9 +347,9 @@ namespace WCell.Terrain.MPQ.ADT
             {
                 for (var yStep = 0; yStep < 9; yStep++)
                 {
-                    var xPos = TerrainConstants.CenterPoint - (_tileX * TerrainConstants.TileSize) - (indexX * TerrainConstants.ChunkSize) -
+                    var xPos = TerrainConstants.CenterPoint - (TileX * TerrainConstants.TileSize) - (indexX * TerrainConstants.ChunkSize) -
                                (xStep * TerrainConstants.UnitSize);
-                    var yPos = TerrainConstants.CenterPoint - (_tileY * TerrainConstants.TileSize) - (indexY * TerrainConstants.ChunkSize) -
+                    var yPos = TerrainConstants.CenterPoint - (TileY * TerrainConstants.TileSize) - (indexY * TerrainConstants.ChunkSize) -
                                (yStep * TerrainConstants.UnitSize);
                     var zPos = lowResMap[yStep, xStep] + mcnk.Header.Z;
 
@@ -430,7 +431,7 @@ namespace WCell.Terrain.MPQ.ADT
             }
         }
 
-        public void LoadQuadTree()
+        public void BuildQuadTree()
         {
             var basePoint = Bounds.BottomRight;
             QuadTree = new QuadTree<ADTChunk>(basePoint, TerrainConstants.ChunksPerTileSide, TerrainConstants.ChunkSize);
@@ -477,10 +478,10 @@ namespace WCell.Terrain.MPQ.ADT
                 var triRect = new Rect(new Point(min.X, min.Y), new Point(max.X, max.Y));
 
                 int startX, startY;
-                PositionUtil.GetChunkXYForPos(min, out startX, out startY);
+                PositionUtil.GetXYForPos(min, out startX, out startY);
 
                 int endX, endY;
-                PositionUtil.GetChunkXYForPos(max, out endX, out endY);
+                PositionUtil.GetXYForPos(max, out endX, out endY);
 
                 if (startX > endX) MathHelpers.Swap(ref startX, ref endX);
                 if (startY > endY) MathHelpers.Swap(ref startY, ref endY);

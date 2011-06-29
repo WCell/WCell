@@ -4,6 +4,7 @@ using System.IO;
 using NLog;
 using WCell.MPQTool;
 using WCell.Terrain.MPQ.WMO.Components;
+using WCell.Util;
 using WCell.Util.Graphics;
 using TerrainDisplay.Util;
 

@@ -171,9 +171,12 @@
     <Compile Include="Recast\NavMesh\NavMeshTile.cs" />
     <Compile Include="Recast\NavMesh\NavOffMeshConnection.cs" />
     <Compile Include="Recast\RecastAPI.cs" />
+    <Compile Include="Serialization\TileExtractor.cs" />
+    <Compile Include="Serialization\WDTExtractor.cs" />
+    <Compile Include="Serialization\WorldObjectExtractor.cs" />
+    <Compile Include="TerrainExtensions.cs" />
     <Compile Include="WCellTerrainSettings.cs" />
     <Compile Include="TileIdentifier.cs" />
-    <Compile Include="Utils\Extensions.cs" />
     <Compile Include="Utils\MathHelpers.cs" />
     <Compile Include="World\DBC\DBCMapEntry.cs" />
     <Compile Include="World\DBC\DBCReader.cs" />

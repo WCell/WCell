@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TerrainDisplay.Recast;
 using TerrainDisplay.Util;
+using WCell.Util;
 using Vector3 = WCell.Util.Graphics.Vector3;
 
 namespace TerrainDisplay.Renderers

@@ -2,12 +2,13 @@ using System;
 using System.IO;
 using System.Text;
 using WCell.Constants;
+using WCell.Constants.World;
 using WCell.Terrain.MPQ.ADT;
 using WCell.Util.Graphics;
 
 namespace WCell.Collision
 {
-    internal class WorldMapTile// : ADT
+    internal class WorldMapTile : ADT
     {
         private const string fileType = "ter";
 
@@ -27,241 +28,77 @@ namespace WCell.Collision
 		/// The writer is defined in <see cref="TerrainExtractor.Extractor.TileExtractor">the TileExtractor class</see>
         /// </summary>
         /// <param name="file">The full path to the TileInfo file to open.</param>
-        public WorldMapTile(string file) : base()
+		public WorldMapTile(string file, Point2D coord, MapId map) : 
+			base(coord, map)
         {
             if (!File.Exists(file))
                 return;
 
-            using (var fs = new FileStream(file, FileMode.Open))
-            using (var br = new BinaryReader(fs))
-            {
-                var key = br.ReadString();
-                if (key != fileType)
-                {
-                    throw new ArgumentException("File does not contain tile information: " + file);
-                }
-
-
-
-                ReadLiquidProfile(br, LiquidProfile);
-                ReadLiquidTypes(br, LiquidTypes);
-                ReadHeightMaps(br, LiquidProfile, HeightMaps);
-
-                br.Close();
-            }
+			Load(file);
         }
 
-        internal float GetInterpolatedHeight(ChunkCoord chunkCoord, PointX2D coord, HeightMapFraction heightMapFraction)
-        {
-            // Height stored as: h5 - its v8 grid, h1-h4 - its v9 grid
-            // +--------------> X
-            // | h1--------h2   Coordinates are:
-            // | |    |    |     h1 0,0
-            // | |  1 |  2 |     h2 0,1
-            // | |----h5---|     h3 1,0
-            // | |  3 |  4 |     h4 1,1
-            // | |    |    |     h5 1/2,1/2
-            // | h3--------h4
-            // V Y
-            if (HeightMaps == null) return float.NaN;
+		#region Loading
+    	private void Load(string file)
+    	{
+			using (var fs = new FileStream(file, FileMode.Open))
+			using (var reader = new BinaryReader(fs))
+			{
+				var key = reader.ReadString();
+				if (key != fileType)
+				{
+					throw new ArgumentException("Invalid tile file: " + file);
+				}
 
-            var heightMap = HeightMaps[chunkCoord.ChunkX, chunkCoord.ChunkY];
-            if (heightMap == null) return float.NaN;
+				/*
+				writer.Write(adt.IsWMOOnly);
+				WriteWMODefs(writer, adt.ObjectDefinitions);
 
-            var medianHeight = heightMap.MedianHeight;
-            if (heightMap.IsFlat) return medianHeight;
+				if (adt.IsWMOOnly) return;
+				WriteM2Defs(writer, adt.DoodadDefinitions);
 
-            // Fixme:  Indexing is backwards.
-            var heightX = (coord.Y == TerrainConstants.UnitsPerChunkSide)
-                              ? (TerrainConstants.UnitsPerChunkSide - 1)
-                              : coord.Y;
-            var heightY = (coord.X == TerrainConstants.UnitsPerChunkSide)
-                              ? (TerrainConstants.UnitsPerChunkSide - 1)
-                              : coord.X;
+				WriteQuadTree(writer, adt.QuadTree);
 
-            
-            // Determine what quad we're in
-            var xf = heightMapFraction.FractionX;
-            var yf = heightMapFraction.FractionY;
+				writer.Write(adt.TerrainVertices);
 
-            float topLeft, topRight, bottomLeft, bottomRight;
-            if (xf < 0.5f)
-            {
-                if (yf < 0.5)
-                {
-                    // Calc the #1 quad
-                    // +--------------> X
-                    // | h1--------h2    Coordinates are:
-                    // | |    |    |      h1 0,0
-                    // | |  1 |    |      h2 0,1
-                    // | |----h5---|      h3 1,0
-                    // | |    |    |      h4 1,1
-                    // | |    |    |      h5 1/2,1/2
-                    // | h3--------h4
-                    // V Y
-                    var h1 = heightMap.OuterHeightDiff[heightX, heightY];
-                    var h2 = heightMap.OuterHeightDiff[heightX, heightY + 1];
-                    var h3 = heightMap.OuterHeightDiff[heightX + 1, heightY];
-                    var h5 = heightMap.InnerHeightDiff[heightX, heightY];
+				for (var x = 0; x < TerrainConstants.ChunksPerTileSide; x++)
+				{
+					for (var y = 0; y < TerrainConstants.ChunksPerTileSide; y++)
+					{
+						var chunk = adt.MapChunks[y, x];
+						// Whether this chunk has a height map
+						WriteChunkInfo(writer, chunk);
+					}
+				}
+				 */
+				IsWMOOnly = reader.ReadBoolean();
+				ReadWMODefs(reader);
 
-                    topLeft = h1;
-                    topRight = (h1 + h2)/2.0f;
-                    bottomLeft = (h1 + h3)/2.0f;
-                    bottomRight = h5;
-                }
-                else
-                {
-                    // Calc the #3 quad
-                    // +--------------> X
-                    // | h1--------h2    Coordinates are:
-                    // | |    |    |      h1 0,0
-                    // | |    |    |      h2 0,1
-                    // | |----h5---|      h3 1,0
-                    // | |  3 |    |      h4 1,1
-                    // | |    |    |      h5 1/2,1/2
-                    // | h3--------h4
-                    // V Y
-                    var h1 = heightMap.OuterHeightDiff[heightX, heightY];
-                    var h3 = heightMap.OuterHeightDiff[heightX + 1, heightY];
-                    var h4 = heightMap.OuterHeightDiff[heightX + 1, heightY + 1];
-                    var h5 = heightMap.InnerHeightDiff[heightX, heightY];
+				if (IsWMOOnly) return;
+				ReadM2Defs(reader);
+				ReadQuadTree(reader);
+				
 
-                    topLeft = (h1 + h3) / 2.0f;
-                    topRight = h5;
-                    bottomLeft = h3;
-                    bottomRight = (h3 + h4) / 2.0f;
 
-                    yf -= 0.5f;
-                }
-            }
-            else
-            {
-                if (yf < 0.5)
-                {
-                    // Calc the #2 quad
-                    // +--------------> X
-                    // | h1--------h2    Coordinates are:
-                    // | |    |    |      h1 0,0
-                    // | |    |  2 |      h2 0,1
-                    // | |----h5---|      h3 1,0
-                    // | |    |    |      h4 1,1
-                    // | |    |    |      h5 1/2,1/2
-                    // | h3--------h4
-                    // V Y
-                    var h1 = heightMap.OuterHeightDiff[heightX, heightY];
-                    var h2 = heightMap.OuterHeightDiff[heightX, heightY + 1];
-                    var h4 = heightMap.OuterHeightDiff[heightX + 1, heightY + 1];
-                    var h5 = heightMap.InnerHeightDiff[heightX, heightY];
+				//ReadLiquidProfile(br, LiquidProfile);
+				//ReadLiquidTypes(br, LiquidTypes);
+				//ReadHeightMaps(br, LiquidProfile, HeightMaps);
+			}
+    	}
 
-                    topLeft = (h1 + h2) / 2.0f;
-                    topRight = h2;
-                    bottomLeft = h5;
-                    bottomRight = (h2 + h4) / 2.0f;
+		private void ReadWMODefs(BinaryReader reader)
+		{
 
-                    xf -= 0.5f;
-                }
-                else
-                {
-                    // Calc the #4 quad
-                    // +--------------> X
-                    // | h1--------h2    Coordinates are:
-                    // | |    |    |      h1 0,0
-                    // | |    |    |      h2 0,1
-                    // | |----h5---|      h3 1,0
-                    // | |    |  4 |      h4 1,1
-                    // | |    |    |      h5 1/2,1/2
-                    // | h3--------h4
-                    // V Y
-                    var h2 = heightMap.OuterHeightDiff[heightX, heightY + 1];
-                    var h3 = heightMap.OuterHeightDiff[heightX + 1, heightY];
-                    var h4 = heightMap.OuterHeightDiff[heightX + 1, heightY + 1];
-                    var h5 = heightMap.InnerHeightDiff[heightX, heightY];
+		}
 
-                    topLeft = h5;
-                    topRight = (h2 + h4) / 2.0f;
-                    bottomLeft = (h3 + h4) / 2.0f;
-                    bottomRight = h4;
+		private void ReadM2Defs(BinaryReader reader)
+		{
 
-                    xf -= 0.5f;
-                    yf -= 0.5f;
-                }
-            }
+		}
 
-            //var heightDiff = InterpolateTriangle(ref vec1, ref vec2, ref vec3, heightMapFraction);
-            var heightDiff = BilinearInterpolate(ref topLeft, ref topRight, ref bottomLeft, ref bottomRight, ref xf,
-                                                 ref yf);
-            return medianHeight + heightDiff;
-        }
+		private void ReadQuadTree(BinaryReader reader)
+		{
 
-        internal float GetLiquidHeight(ChunkCoord chunkCoord, PointX2D pointX2D)
-        {
-            if (!LiquidProfile[chunkCoord.ChunkX, chunkCoord.ChunkY])
-                return float.MinValue;
-
-            var heightMap = HeightMaps[chunkCoord.ChunkX, chunkCoord.ChunkY];
-            var liquidHeights = heightMap.LiquidHeight;
-
-            return (liquidHeights == null)
-                       ? float.MinValue
-                       : liquidHeights[pointX2D.X, pointX2D.Y];
-        }
-
-        internal FluidType GetLiquidType(ChunkCoord chunkCoord)
-        {
-            return LiquidTypes[chunkCoord.ChunkX, chunkCoord.ChunkY];
-        }
-
-        internal void DumpChunk(ChunkCoord chunkCoord)
-        {
-            if (HeightMaps == null) return;
-
-            var heightMap = HeightMaps[chunkCoord.ChunkX, chunkCoord.ChunkY];
-            if (heightMap == null) return;
-
-            var medianHeight = heightMap.MedianHeight;
-            
-            var fileName = String.Format("Chunk_{0}_{1}.txt", chunkCoord.ChunkX, chunkCoord.ChunkY);
-            var filePath = Path.Combine("C:\\Users\\Nate\\Desktop", fileName);
-            var writer = new StreamWriter(filePath);
-
-            writer.WriteLine(String.Format("MedianHeight: {0}", medianHeight));
-            if (heightMap.IsFlat)
-            {
-                writer.Close();
-                return;
-            }
-            writer.Write(writer.NewLine);
-
-            for (var row = 0; row < 9; row++)
-            {
-                for (var col = 0; col < 9; col++)
-                {
-                    var height = heightMap.OuterHeightDiff[row, col];
-                    var value = Math.Round(height, 2);
-                    if (value >= 0) writer.Write(" ");
-                    writer.Write(String.Format("{0:00.00}    ", value));
-                }
-                writer.Write(writer.NewLine);
-                writer.Write(writer.NewLine);
-
-                // write 8 floats
-                if (row < 8)
-                {
-                    writer.Write("    ");
-                    for (var col = 0; col < 8; col++)
-                    {
-                        var height = heightMap.InnerHeightDiff[row, col];
-                        var value = Math.Round(height, 2);
-                        if (value >= 0) writer.Write(" ");
-                        writer.Write(String.Format("{0:00.00}    ", value));
-                    }
-                    writer.Write(writer.NewLine);
-                    writer.Write(writer.NewLine);
-                }
-            }
-
-            writer.Close();
-        }
+		}
 
 
         private static void ReadLiquidProfile(BinaryReader reader, bool[,] profile)
@@ -391,7 +228,168 @@ namespace WCell.Collision
 
             return map;
         }
+		#endregion
 
+		#region Terrain Queries
+		internal float GetInterpolatedHeight(Point2D chunkCoord, Point2D unitCoord, HeightMapFraction heightMapFraction)
+		{
+			// Height stored as: h5 - its v8 grid, h1-h4 - its v9 grid
+			// +--------------> X
+			// | h1--------h2   Coordinates are:
+			// | |    |    |     h1 0,0
+			// | |  1 |  2 |     h2 0,1
+			// | |----h5---|     h3 1,0
+			// | |  3 |  4 |     h4 1,1
+			// | |    |    |     h5 1/2,1/2
+			// | h3--------h4
+			// V Y
+			if (HeightMaps == null) return float.NaN;
+
+			var heightMap = HeightMaps[chunkCoord.X, chunkCoord.Y];
+			if (heightMap == null) return float.NaN;
+
+			var medianHeight = heightMap.MedianHeight;
+			if (heightMap.IsFlat) return medianHeight;
+
+			// Fixme:  Indexing is backwards.
+			var heightX = (unitCoord.Y == TerrainConstants.UnitsPerChunkSide)
+							  ? (TerrainConstants.UnitsPerChunkSide - 1)
+							  : unitCoord.Y;
+			var heightY = (unitCoord.X == TerrainConstants.UnitsPerChunkSide)
+							  ? (TerrainConstants.UnitsPerChunkSide - 1)
+							  : unitCoord.X;
+
+
+			// Determine what quad we're in
+			var xf = heightMapFraction.FractionX;
+			var yf = heightMapFraction.FractionY;
+
+			float topLeft, topRight, bottomLeft, bottomRight;
+			if (xf < 0.5f)
+			{
+				if (yf < 0.5)
+				{
+					// Calc the #1 quad
+					// +--------------> X
+					// | h1--------h2    Coordinates are:
+					// | |    |    |      h1 0,0
+					// | |  1 |    |      h2 0,1
+					// | |----h5---|      h3 1,0
+					// | |    |    |      h4 1,1
+					// | |    |    |      h5 1/2,1/2
+					// | h3--------h4
+					// V Y
+					var h1 = heightMap.OuterHeightDiff[heightX, heightY];
+					var h2 = heightMap.OuterHeightDiff[heightX, heightY + 1];
+					var h3 = heightMap.OuterHeightDiff[heightX + 1, heightY];
+					var h5 = heightMap.InnerHeightDiff[heightX, heightY];
+
+					topLeft = h1;
+					topRight = (h1 + h2) / 2.0f;
+					bottomLeft = (h1 + h3) / 2.0f;
+					bottomRight = h5;
+				}
+				else
+				{
+					// Calc the #3 quad
+					// +--------------> X
+					// | h1--------h2    Coordinates are:
+					// | |    |    |      h1 0,0
+					// | |    |    |      h2 0,1
+					// | |----h5---|      h3 1,0
+					// | |  3 |    |      h4 1,1
+					// | |    |    |      h5 1/2,1/2
+					// | h3--------h4
+					// V Y
+					var h1 = heightMap.OuterHeightDiff[heightX, heightY];
+					var h3 = heightMap.OuterHeightDiff[heightX + 1, heightY];
+					var h4 = heightMap.OuterHeightDiff[heightX + 1, heightY + 1];
+					var h5 = heightMap.InnerHeightDiff[heightX, heightY];
+
+					topLeft = (h1 + h3) / 2.0f;
+					topRight = h5;
+					bottomLeft = h3;
+					bottomRight = (h3 + h4) / 2.0f;
+
+					yf -= 0.5f;
+				}
+			}
+			else
+			{
+				if (yf < 0.5)
+				{
+					// Calc the #2 quad
+					// +--------------> X
+					// | h1--------h2    Coordinates are:
+					// | |    |    |      h1 0,0
+					// | |    |  2 |      h2 0,1
+					// | |----h5---|      h3 1,0
+					// | |    |    |      h4 1,1
+					// | |    |    |      h5 1/2,1/2
+					// | h3--------h4
+					// V Y
+					var h1 = heightMap.OuterHeightDiff[heightX, heightY];
+					var h2 = heightMap.OuterHeightDiff[heightX, heightY + 1];
+					var h4 = heightMap.OuterHeightDiff[heightX + 1, heightY + 1];
+					var h5 = heightMap.InnerHeightDiff[heightX, heightY];
+
+					topLeft = (h1 + h2) / 2.0f;
+					topRight = h2;
+					bottomLeft = h5;
+					bottomRight = (h2 + h4) / 2.0f;
+
+					xf -= 0.5f;
+				}
+				else
+				{
+					// Calc the #4 quad
+					// +--------------> X
+					// | h1--------h2    Coordinates are:
+					// | |    |    |      h1 0,0
+					// | |    |    |      h2 0,1
+					// | |----h5---|      h3 1,0
+					// | |    |  4 |      h4 1,1
+					// | |    |    |      h5 1/2,1/2
+					// | h3--------h4
+					// V Y
+					var h2 = heightMap.OuterHeightDiff[heightX, heightY + 1];
+					var h3 = heightMap.OuterHeightDiff[heightX + 1, heightY];
+					var h4 = heightMap.OuterHeightDiff[heightX + 1, heightY + 1];
+					var h5 = heightMap.InnerHeightDiff[heightX, heightY];
+
+					topLeft = h5;
+					topRight = (h2 + h4) / 2.0f;
+					bottomLeft = (h3 + h4) / 2.0f;
+					bottomRight = h4;
+
+					xf -= 0.5f;
+					yf -= 0.5f;
+				}
+			}
+
+			//var heightDiff = InterpolateTriangle(ref vec1, ref vec2, ref vec3, heightMapFraction);
+			var heightDiff = BilinearInterpolate(ref topLeft, ref topRight, ref bottomLeft, ref bottomRight, ref xf,
+												 ref yf);
+			return medianHeight + heightDiff;
+		}
+
+		internal float GetLiquidHeight(Point2D chunkCoord, Point2D point2D)
+		{
+			if (!LiquidProfile[chunkCoord.X, chunkCoord.Y])
+				return float.MinValue;
+
+			var heightMap = HeightMaps[chunkCoord.X, chunkCoord.Y];
+			var liquidHeights = heightMap.LiquidHeight;
+
+			return (liquidHeights == null)
+					   ? float.MinValue
+					   : liquidHeights[point2D.X, point2D.Y];
+		}
+
+		internal FluidType GetLiquidType(Point2D chunkCoord)
+		{
+			return LiquidTypes[chunkCoord.X, chunkCoord.Y];
+		}
 /*
         private static float InterpolateTriangle(ref Vector3 point1, ref Vector3 point2, ref Vector3 point3, HeightMapFraction heightMapFraction)
         {
@@ -447,7 +445,62 @@ namespace WCell.Collision
             var hf1 = xxf*bottomRight + ((1 - xxf)*bottomLeft);
 
             return ((yyf*hf1) + ((1 - yyf)*hf0));
-        }
+		}
+		#endregion
+
+		#region Dump
+		internal void DumpChunk(Point2D chunkCoord)
+		{
+			if (HeightMaps == null) return;
+
+			var heightMap = HeightMaps[chunkCoord.X, chunkCoord.Y];
+			if (heightMap == null) return;
+
+			var medianHeight = heightMap.MedianHeight;
+
+			var fileName = String.Format("Chunk_{0}_{1}.txt", chunkCoord.X, chunkCoord.Y);
+			var filePath = Path.Combine("C:\\Users\\Nate\\Desktop", fileName);
+			var writer = new StreamWriter(filePath);
+
+			writer.WriteLine(String.Format("MedianHeight: {0}", medianHeight));
+			if (heightMap.IsFlat)
+			{
+				writer.Close();
+				return;
+			}
+			writer.Write(writer.NewLine);
+
+			for (var row = 0; row < 9; row++)
+			{
+				for (var col = 0; col < 9; col++)
+				{
+					var height = heightMap.OuterHeightDiff[row, col];
+					var value = Math.Round(height, 2);
+					if (value >= 0) writer.Write(" ");
+					writer.Write(String.Format("{0:00.00}    ", value));
+				}
+				writer.Write(writer.NewLine);
+				writer.Write(writer.NewLine);
+
+				// write 8 floats
+				if (row < 8)
+				{
+					writer.Write("    ");
+					for (var col = 0; col < 8; col++)
+					{
+						var height = heightMap.InnerHeightDiff[row, col];
+						var value = Math.Round(height, 2);
+						if (value >= 0) writer.Write(" ");
+						writer.Write(String.Format("{0:00.00}    ", value));
+					}
+					writer.Write(writer.NewLine);
+					writer.Write(writer.NewLine);
+				}
+			}
+
+			writer.Close();
+		}
+		#endregion
     }
 
     public class HeightMap

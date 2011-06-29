@@ -92,16 +92,19 @@ namespace WCell.Terrain.MPQ.ADT
 					});
 			}
 
-			currentADT.GenerateHeightVertexAndIndices();
-			currentADT.GenerateLiquidVertexAndIndices();
-			currentADT.LoadQuadTree();
-
-			_ADTs.Add(currentADT);
-
 			lock (this)
 			{
-				Monitor.Wait(this);
+				if (taskCount > 0)
+				{
+					Monitor.Wait(this);
+				}
 			}
+
+			currentADT.GenerateHeightVertexAndIndices();
+			currentADT.GenerateLiquidVertexAndIndices();
+			currentADT.BuildQuadTree();
+
+			_ADTs.Add(currentADT);
 
 			return true;
 		}
@@ -127,7 +130,7 @@ namespace WCell.Terrain.MPQ.ADT
 
 			currentADT.GenerateHeightVertexAndIndices();
 			currentADT.GenerateLiquidVertexAndIndices();
-			currentADT.LoadQuadTree();
+			currentADT.BuildQuadTree();
 
 			_ADTs.Add(currentADT);
 

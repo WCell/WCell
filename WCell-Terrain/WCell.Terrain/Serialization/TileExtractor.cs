@@ -3,29 +3,35 @@ using System.Collections.Generic;
 using System.IO;
 using NLog;
 using TerrainDisplay;
-using TerrainDisplay.Collision;
-using WCell.Terrain;
 using WCell.Terrain.MPQ.ADT;
 using WCell.Terrain.MPQ.ADT.Components;
 using WCell.Terrain.MPQ.M2;
 using WCell.Terrain.MPQ.WDT;
 using WCell.Terrain.MPQ.WMO;
-using TerrainDisplay.Util;
-using TerrainExtractor.Parsers;
 using WCell.MPQTool;
+using WCell.Util;
 using WCell.Util.Graphics;
 
-namespace TerrainExtractor.Extractors
+namespace WCell.Terrain.Serialization
 {
+	/// <summary>
+	/// Stores map tiles in a faster accessible format.
+	/// Question: Why not just decompress and store them as-is?
+	/// </summary>
     public static class TileExtractor
 	{
+		/// <summary>
+		/// Version of our custom tile file format
+		/// </summary>
+		public const int Version = 2;
+
+		private const string FileTypeId = "ter";
+
 		private static readonly Logger log = LogManager.GetCurrentClassLogger();
         public static readonly HashSet<string> ModelsToIgnore = new HashSet<string>();
         public static readonly HashSet<uint> LoadedM2Ids = new HashSet<uint>();
         public static readonly HashSet<uint> LoadedWmoIds = new HashSet<uint>();
         public static ADT[,] TerrainInfo;
-        
-        private const string FileTypeId = "ter";
 
 		public static void Prepare()
 		{
@@ -39,52 +45,56 @@ namespace TerrainExtractor.Extractors
 		{
             // Map data should only be stored per map
 		    ClearObjectData();
-            var path = Path.Combine(WCellTerrainSettings.MapDir, wdt.Entry.Id.ToString());
+			var path = Path.Combine(WCellTerrainSettings.MapDir, wdt.Entry.Id.ToString());
+			int count;
 
 			if (wdt.IsWMOOnly)
 			{
-				// This Map has no Tiles, but the MODF still needs to be written
-                // These maps will be considered to have one tile at {0, 0} with only one MODF written therein
+				// The Map has no Tiles, but the MODF still needs to be written
+				// These maps will be considered to have one tile at {0, 0} with only one MODF written therein
+				
+				count = 1;
+
 			    var adt = ExtractWMOOnly(wdt);
                 if (!Directory.Exists(path))
                 {
                     Directory.CreateDirectory(path);
                 }
-                using (var file = File.Create(Path.Combine(path, TerrainConstants.GetMapFilename(0, 0))))
+				using (var file = File.Create(Path.Combine(path, adt.FileName)))
                 {
                     WriteTileInfo(file, adt);
                 }
-				return;
 			}
-
-            // Read in the ADT data - this includes height and liquid maps, WMO information and M2 information
-			TerrainInfo = ExtractMapTiles(wdt);
-
-            // Write the processed data to files
-            var count = 0;
-			if (!Directory.Exists(path))
+			else
 			{
-				Directory.CreateDirectory(path);
-			}
+				// Read in the ADT data - this includes height and liquid maps, WMO information and M2 information
+				TerrainInfo = ExtractMapTiles(wdt);
 
-			for (var tileX = 0; tileX < TerrainConstants.TilesPerMapSide; tileX++)
-			{
-				for (var tileY = 0; tileY < TerrainConstants.TilesPerMapSide; tileY++)
+				// Write the processed data to files
+				if (!Directory.Exists(path))
 				{
-                    var adt = TerrainInfo[tileY, tileX];
-					if (adt == null) continue;
+					Directory.CreateDirectory(path);
+				}
 
-				    var filePath = Path.Combine(path, TerrainConstants.GetMapFilename(tileX, tileY));
-					using (var file = File.Create(filePath))
+				count = 0;
+				for (var tileX = 0; tileX < TerrainConstants.TilesPerMapSide; tileX++)
+				{
+					for (var tileY = 0; tileY < TerrainConstants.TilesPerMapSide; tileY++)
 					{
-					    WriteTileInfo(file, adt);
-                        file.Close();
+						var adt = TerrainInfo[tileY, tileX];
+						if (adt == null) continue;
+
+						var filePath = Path.Combine(path, adt.FileName);
+						using (var file = File.Create(filePath))
+						{
+							WriteTileInfo(file, adt);
+						}
+						count++;
 					}
-					count++;
 				}
 			}
 
-			log.Info("Extracted {0} tiles for {1}.", count, wdt.Entry.Id);
+			log.Info("Extracted {0} tile(s) for {1}.", count, wdt.Entry.Id);
 		}
 
 	    private static void ClearObjectData()
@@ -100,14 +110,7 @@ namespace TerrainExtractor.Extractors
 
         public static ADT ExtractWMOOnly(WDT wdt)
         {
-            var tileId = new TileIdentifier
-            {
-                MapId = wdt.Entry.Id,
-                MapName = wdt.Name,
-                TileX = 0,
-                TileY = 0
-            };
-            var adt = new ADT(tileId);
+			var adt = new ADT(new Point2D(0, 0), wdt.Entry.Id);
 
             adt.ObjectDefinitions.Capacity = wdt.WmoDefinitions.Count;
             foreach (var wmoDefinition in wdt.WmoDefinitions)
@@ -123,7 +126,7 @@ namespace TerrainExtractor.Extractors
 
             foreach (var def in adt.ObjectDefinitions)
             {
-                LoadWMO(wdt.Manager, def);
+                PrepareWMO(wdt.Manager, def);
             }
 
             adt.IsWMOOnly = true;
@@ -146,8 +149,8 @@ namespace TerrainExtractor.Extractors
 				    {
 				        MapId = wdt.Entry.Id,
 				        MapName = wdt.Name,
-				        TileX = x,
-				        TileY = y
+				        X = x,
+				        Y = y
 				    };
                     var adt = ADTParser.Process(WDTExtractor.MpqManager, tileId);
                     if (adt == null) continue;
@@ -159,7 +162,7 @@ namespace TerrainExtractor.Extractors
 				    PrepareChunkInfo(wdt.Manager, adt);
 
 				    ReduceTerrainTris(adt);
-				    LoadQuadTree(adt);
+				    adt.BuildQuadTree();
 
 					mapTiles[y, x] = adt;
 				}
@@ -206,7 +209,7 @@ namespace TerrainExtractor.Extractors
                     {
                         var oRef = adt.ObjectDefinitions[oRefId];
                         if (oRef == null) continue;
-                        LoadWMO(manager, oRef);
+                        PrepareWMO(manager, oRef);
                     }
 
                     PrepareChunk(adt, chunkX, chunkY);
@@ -219,12 +222,7 @@ namespace TerrainExtractor.Extractors
             adt.GenerateHeightVertexAndIndices();
         }
 
-        private static void LoadQuadTree(ADT adt)
-        {
-            adt.LoadQuadTree();
-        }
-
-        private static void LoadWMO(MpqManager manager, MapObjectDefinition def)
+        private static void PrepareWMO(MpqManager manager, MapObjectDefinition def)
 	    {
 	        if (LoadedWmoIds.Contains(def.UniqueId)) return;
             LoadedWmoIds.Add(def.UniqueId);
@@ -419,26 +417,27 @@ namespace TerrainExtractor.Extractors
 		#region Write to File
 		public static void WriteTileInfo(FileStream file, ADT adt)
 		{
-			var writer = new BinaryWriter(file);
-			writer.Write(FileTypeId);
-
-            writer.Write(adt.IsWMOOnly);
-            WriteWMODefs(writer, adt.ObjectDefinitions);
-
-            if (adt.IsWMOOnly) return;
-            WriteM2Defs(writer, adt.DoodadDefinitions);
-
-		    WriteQuadTree(writer, adt.QuadTree);
-
-            writer.Write(adt.TerrainVertices);
-
-			for (var x = 0; x < TerrainConstants.ChunksPerTileSide; x++)
+			using (var writer = new BinaryWriter(file))
 			{
-				for (var y = 0; y < TerrainConstants.ChunksPerTileSide; y++)
+				writer.Write(FileTypeId);
+				writer.Write(Version);
+
+				writer.Write(adt.IsWMOOnly);
+				WriteWMODefs(writer, adt.ObjectDefinitions);
+
+				if (adt.IsWMOOnly) return;
+
+				WriteM2Defs(writer, adt.DoodadDefinitions);
+				writer.Write(adt.TerrainVertices);
+
+				for (var x = 0; x < TerrainConstants.ChunksPerTileSide; x++)
 				{
-				    var chunk = adt.MapChunks[y, x];
-                    // Whether this chunk has a height map
-				    WriteChunkInfo(writer, chunk);
+					for (var y = 0; y < TerrainConstants.ChunksPerTileSide; y++)
+					{
+						var chunk = adt.MapChunks[y, x];
+						// Whether this chunk has a height map
+						WriteChunkInfo(writer, chunk);
+					}
 				}
 			}
 		}
@@ -476,24 +475,6 @@ namespace TerrainExtractor.Extractors
                 writer.Write(def.Position);
                 writer.Write(def.WorldToModel);
                 writer.Write(def.ModelToWorld);
-            }
-        }
-
-        private static void WriteQuadTree(BinaryWriter writer, QuadTree<ADTChunk> tree)
-        {
-            writer.Write(tree.Nodes.Count);
-            foreach (var node in tree.Nodes)
-            {
-                writer.Write(node.ParentId);
-                if (node.ChildIds.IsNullOrEmpty())
-                {
-                    writer.Write(0);
-                }
-                else
-                {
-                    writer.Write(node.ChildIds);
-                }
-                writer.Write(node.Bounds);
             }
         }
 

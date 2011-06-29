@@ -5,6 +5,7 @@ using System.Text;
 using TerrainDisplay.Collision;
 using TerrainDisplay.Util;
 using WCell.Constants.World;
+using WCell.Terrain;
 using WCell.Util.Graphics;
 using TerrainDisplay;
 using WCell.Terrain.MPQ;

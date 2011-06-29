@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using TerrainDisplay.Util;
 using WCell.Constants.World;
+using WCell.Terrain;
+using WCell.Util;
 
 namespace TerrainDisplay.Extracted.M2
 {

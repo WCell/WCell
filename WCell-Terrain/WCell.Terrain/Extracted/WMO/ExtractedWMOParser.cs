@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using WCell.Terrain;
 using WCell.Terrain.MPQ.WMO.Components;
 using TerrainDisplay.Util;
 using WCell.Constants.World;
+using WCell.Util;
 
 namespace TerrainDisplay.Extracted.WMO
 {

@@ -102,7 +102,7 @@ namespace TerrainDisplay.Renderers
                 {
                     var vertex = adt.TerrainVertices[v];
                     var vertexPosNmlCol = new VertexPositionNormalColored(vertex.ToXna(), TerrainColor,
-                                                                          Microsoft.Xna.Framework.Vector3.Down);
+                                                                          Vector3.Down);
                     tempVertices.Add(vertexPosNmlCol);
                 }
                 for (var i = 0; i < adt.Indices.Count; i++)
@@ -116,7 +116,7 @@ namespace TerrainDisplay.Renderers
                 {
                     var vertex = adt.LiquidVertices[v];
                     var vertexPosNmlCol = new VertexPositionNormalColored(vertex.ToXna(), WaterColor,
-                                                                          Microsoft.Xna.Framework.Vector3.Down);
+                                                                          Vector3.Down);
                     tempVertices.Add(vertexPosNmlCol);
                 }
                 for (var i = 0; i < adt.LiquidIndices.Count; i++)

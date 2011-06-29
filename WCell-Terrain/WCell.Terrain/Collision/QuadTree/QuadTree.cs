@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using TerrainDisplay.Util;
 using WCell.Collision;
+using WCell.Util;
 using WCell.Util.Graphics;
 
 
