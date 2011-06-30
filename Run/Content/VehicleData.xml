@@ -1305,4 +1305,11 @@
     <Seat>0</Seat>
     <PassengerNPCId>0</PassengerNPCId>
   </Vehicle>
+  <Vehicle>
+	<NPCId>35768</NPCId>
+	<VehicleId>489</VehicleId>
+	<IsMinion>true</IsMinion>
+	<Seat>0</Seat>
+	<PassengerNPCId>35330</PassengerNPCId>
+  </Vehicle>
 </VehicleData>
