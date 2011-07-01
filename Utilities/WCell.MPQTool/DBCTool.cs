@@ -182,7 +182,7 @@ namespace WCell.MPQTool
 		/// <exception cref="Exception">If dir could not be found</exception>
 		public static string FindWowDir(string wowDir)
 		{
-			if (wowDir != null)
+			if (wowDir != null && Directory.Exists(wowDir))
 			{
 				return wowDir;
 			}

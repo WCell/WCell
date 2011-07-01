@@ -1584,7 +1584,7 @@ namespace WCell.RealmServer.Entities
 		protected float internalPower;
 		internal void UpdatePower(int delayMillis)
 		{
-			internalPower += (m_PowerRegenPerTick * delayMillis) / (float)RegenerationFormulas.RegenTickDelayMillis;	// rounding
+			internalPower += (PowerRegenPerTickActual * delayMillis) / (float)RegenerationFormulas.RegenTickDelayMillis;	// rounding
 			internalPower = MathUtil.ClampMinMax(internalPower, 0, MaxPower);
 			//SetInt32(UnitFields.POWER1 + (int)PowerType, (int)(val + 0.5f));
 		}

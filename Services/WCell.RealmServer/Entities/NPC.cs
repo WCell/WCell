@@ -238,7 +238,7 @@ namespace WCell.RealmServer.Entities
 
 			if (PowerType == PowerType.Mana)
 			{
-				ManaRegenPerTickInterruptedPct = 20;
+				ManaRegenPerTickInterrupted = 20;
 			}
 
 			UpdateUnitState();
@@ -608,6 +608,12 @@ namespace WCell.RealmServer.Entities
 				return 0;
 			}
 		}
+
+		public override bool IsRegenerating
+		{
+			get { return IsAreaActive && base.IsRegenerating; }
+		}
+
 		#endregion
 
 		#region NPC-specific Fields
@@ -880,6 +886,7 @@ namespace WCell.RealmServer.Entities
 
 			m_entry.NotifyActivated(this);
 		}
+
 		#endregion
 
 		/// <summary>
