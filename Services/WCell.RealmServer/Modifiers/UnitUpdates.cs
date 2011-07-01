@@ -61,6 +61,7 @@ namespace WCell.RealmServer.Modifiers
 			FlatIntModHandlers[(int)StatModifierInt.HealthRegenNoCombat] = UpdateNormalHealthRegen;
 			FlatIntModHandlers[(int)StatModifierInt.PowerRegen] = UpdatePowerRegen;
 			FlatIntModHandlers[(int)StatModifierInt.PowerRegenPercent] = UpdatePowerRegen;
+			FlatIntModHandlers[(int)StatModifierInt.ManaRegenInterruptPct] = UpdatePowerRegen;
 			FlatIntModHandlers[(int)StatModifierInt.DodgeChance] = UpdateDodgeChance;
 			FlatIntModHandlers[(int)StatModifierInt.BlockValue] = UpdateBlockChance;
 			FlatIntModHandlers[(int)StatModifierInt.BlockChance] = UpdateBlockChance;
@@ -130,16 +131,34 @@ namespace WCell.RealmServer.Modifiers
 
 			if (unit.IsAlive)
 			{
-				regen = unit.GetBasePowerRegen();
+				var baseRegen = unit.GetBasePowerRegen();
 
 				if (unit.PowerType != PowerType.RunicPower || unit.IsInCombat) // runic power bonuses only apply during combat
 				{
-					regen += unit.IntMods[(int)StatModifierInt.PowerRegen];
-					regen += (unit.IntMods[(int)StatModifierInt.PowerRegenPercent] * regen + 50) / 100;	// rounding
+					regen += baseRegen + unit.IntMods[(int)StatModifierInt.PowerRegen]; // Mp5 from gear, auras
+					regen += (unit.IntMods[(int)StatModifierInt.PowerRegenPercent] * regen + 50) / 100;	// e.g. multipliers from auras & rounding
+					
+					// If the unit isn't a mana caster, the tick is always regular (PowerRegenPerTick)
+					unit.PowerRegenPerTick = unit.PowerRegenPerTickActual = regen;
+					
+					if(unit.PowerType == PowerType.Mana) // Interrupted mana gain will still be changed regardless of interrupt status
+					{
+						var interruptedRegen = (unit.IntMods[(int)StatModifierInt.ManaRegenInterruptPct] * baseRegen + 50) / 100; //rounding
+						interruptedRegen += unit.IntMods[(int)StatModifierInt.PowerRegen]; // Mp5 from gear, auras
+						interruptedRegen += (unit.IntMods[(int)StatModifierInt.PowerRegenPercent] * regen + 50) / 100; // multipliers from auras
+						unit.ManaRegenPerTickInterrupted = interruptedRegen;
+						
+						if(unit.IsManaRegenInterrupted)
+						{
+							unit.PowerRegenPerTickActual = interruptedRegen; // Unit will gain power according to the interrupted value
+						}
+					}
 				}
 			}
-
-			unit.PowerRegenPerTick = regen;
+			else
+			{
+				unit.PowerRegenPerTickActual = 0;
+			}
 		}
 		#endregion
 

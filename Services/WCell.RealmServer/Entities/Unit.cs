@@ -592,11 +592,18 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
+		/// <summary>
+		/// The real amount of Power that is added per regen-tick
+		/// </summary>
+		public int PowerRegenPerTickActual
+		{
+			get; internal set;
+		}
 		private int m_PowerRegenPerTick;
 
 		/// <summary>
 		/// The amount of Power to add per regen-tick (while not being "interrupted").
-		/// Value is automatically set, depending on Spirit
+		/// Value is automatically set, depending on stats
 		/// </summary>
 		public int PowerRegenPerTick
 		{
@@ -616,18 +623,22 @@ namespace WCell.RealmServer.Entities
 			get { return m_PowerRegenPerTick / (float)RegenerationFormulas.RegenTickDelayMillis; }
 		}
 
-		private int m_ManaRegenPerTickInterruptedPct;
+		private int _manaRegenPerTickInterrupted;
 
 		/// <summary>
-		/// The precentage of power to be generated during combat per regen tick (while being "interrupted")
+		/// The amount of power to be generated during combat per regen tick (while being "interrupted")
+		/// Only used for PowerType.Mana units
 		/// </summary>
-		public int ManaRegenPerTickInterruptedPct
+		public int ManaRegenPerTickInterrupted
 		{
-			get { return m_ManaRegenPerTickInterruptedPct; }
+			get { return _manaRegenPerTickInterrupted; }
 			internal set
 			{
-				m_ManaRegenPerTickInterruptedPct = value;
-				this.UpdatePowerRegen();
+				if (_manaRegenPerTickInterrupted != value)
+				{
+					_manaRegenPerTickInterrupted = value;
+					SetFloat(UnitFields.POWER_REGEN_INTERRUPTED_FLAT_MODIFIER + (int) PowerType, value);
+				}
 			}
 		}
 
@@ -682,7 +693,7 @@ namespace WCell.RealmServer.Entities
 
 			//if (IsManaRegenInterrupted)
 			//{
-			//    power = MathUtil.Divide(power * ManaRegenPerTickInterruptedPct, 100);
+			//    power = MathUtil.Divide(power * ManaRegenPerTickInterrupted, 100);
 			//}
 
 			// TODO: Find out when client is in interrupted mode

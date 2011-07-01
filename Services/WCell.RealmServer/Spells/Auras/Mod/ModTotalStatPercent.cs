@@ -39,7 +39,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 		                                                    	};
  		protected override int GetStatValue(StatType stat)
 		{
-			var val = Owner.GetBaseStatValue(stat);
+			var val = Owner.GetUnmodifiedBaseStatValue(stat);
 
 			var chr = Owner as Character;
 			if(chr != null)
