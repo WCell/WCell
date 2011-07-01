@@ -1,18 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using TerrainDisplay.Util;
-using WCell.Collision;
 using WCell.Util;
 using WCell.Util.Graphics;
 
-namespace TerrainDisplay.Collision
+namespace WCell.Terrain.Collision.QuadTree
 {
     public class TerrainTriangleHolder : IQuadObject, ICollidable
     {
-        public event EventHandler BoundsChanged;
-
-
         public Rect Bounds
         {
             get; 
@@ -59,7 +54,6 @@ namespace TerrainDisplay.Collision
         public TerrainTriangleHolder(int[] indices, Vector3[] vertices)
         {
             Bounds = Rect.Empty;
-            BoundsChanged = null;
 
             if (indices.IsNullOrEmpty())
                 throw new InvalidDataException("Cannot create a TerrainTriangleHolder from a null or empty integer array.");

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace TerrainDisplay.Util
+namespace WCell.Terrain.GUI.Util
 {
     public static class MathHelpers
     {

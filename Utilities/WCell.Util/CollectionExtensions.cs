@@ -99,7 +99,7 @@ namespace WCell.Util
 		}
 		#endregion
 
-		public static void AddUnique<T>(this IList<T> items, T item)
+		public static void AddUnique<T>(this ICollection<T> items, T item)
 		{
 			if (!items.Contains(item))
 			{

@@ -19,9 +19,9 @@ namespace WCell.Core.Terrain
         float QueryWorldHeight(Vector3 worldPos);
 
 		/// <summary>
-		/// Sends a query to retrieve the shortest path and calls the callback upon return.
+		/// Asynchronously queries the shortest path between the given two points and calls the callback upon return
 		/// </summary>
-		void QueryDirectPath(PathQuery query);
+		void QueryDirectPathAsync(PathQuery query);
 
         /// <summary>
         /// Returns the interpolated height of the terrain based on stored height-map data.
@@ -33,17 +33,17 @@ namespace WCell.Core.Terrain
         /// <summary>
         /// Returns true if the line between startPos and endPos does not intersect the terrain.
         /// </summary>
-        bool HasTerrainLOS(Vector3 startPos, Vector3 endPos);
+		bool HasTerrainLOS(Vector3 startPos, Vector3 endPos);
+
+		/// <summary>
+		/// Returns true if the line between startPos and endPos does not intersect any building parts.
+		/// </summary>
+		bool HasWMOLOS(Vector3 startPos, Vector3 endPos);
 
         /// <summary>
         /// Returns null if no buildings exist between startPos and endPos, else the distance to the first building.
         /// </summary>
 	    float? QueryWMOCollision(Vector3 startPos, Vector3 endPos);
-
-        /// <summary>
-        /// Returns true if the line between startPos and endPos does not intersect any building parts.
-        /// </summary>
-	    bool HasWMOLOS(Vector3 startPos, Vector3 endPos);
 
         /// <summary>
         /// Returns the height of the WMO piece directly beneath a position or null if no piece exists.

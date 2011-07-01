@@ -4,10 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using WCell.Terrain.Recast.NavMesh;
 using WCell.Util.Graphics;
 using WCell.Util.Variables;
 
-namespace TerrainDisplay.Recast
+namespace WCell.Terrain.GUI.Recast
 {
 	public delegate void PtrVoidCallback(IntPtr ptr);
 	public delegate bool PtrBoolCallback(IntPtr ptr);

@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using WCell.Util.Graphics;
 
-namespace TerrainDisplay.Collision
+namespace WCell.Terrain.Collision
 {
     public static class Intersection
     {
@@ -761,37 +761,37 @@ namespace TerrainDisplay.Collision
             return (((vector.Y >= 0f) && (vector.Z >= 0f)) && ((vector.Y + vector.Z) <= 1f));
         }
 
-        public static bool RayTriangleIntersect(Ray r, Vector3 vert0, Vector3 vert1, Vector3 vert2, out float distance)
-        {
-            distance = 0f;
-            var vector = vert1 - vert0;
-            var vector2 = vert2 - vert0;
-            var vector4 = Vector3.Cross(r.Direction, vector2);
-            var num = Vector3.Dot(vector, vector4);
-            if (num > -1E-05f)
-            {
-                return false;
-            }
-            var num2 = 1f / num;
-            var vector3 = r.Position - vert0;
-            var num3 = Vector3.Dot(vector3, vector4) * num2;
-            if ((num3 < -0.001f) || (num3 > 1.001f))
-            {
-                return false;
-            }
-            var vector5 = Vector3.Cross(vector3, vector);
-            var num4 = Vector3.Dot(r.Direction, vector5) * num2;
-            if ((num4 < -0.001f) || ((num3 + num4) > 1.001f))
-            {
-                return false;
-            }
-            distance = Vector3.Dot(vector2, vector5) * num2;
-            if (distance <= 0f)
-            {
-                return false;
-            }
-            return true;
-        }
+		public static bool RayTriangleIntersect(Ray r, Vector3 vert0, Vector3 vert1, Vector3 vert2, out float distance)
+		{
+			distance = 0f;
+			var vector = vert1 - vert0;
+			var vector2 = vert2 - vert0;
+			var vector4 = Vector3.Cross(r.Direction, vector2);
+			var num = Vector3.Dot(vector, vector4);
+			if (num > -1E-05f)
+			{
+				return false;
+			}
+			var num2 = 1f / num;
+			var vector3 = r.Position - vert0;
+			var num3 = Vector3.Dot(vector3, vector4) * num2;
+			if ((num3 < -0.001f) || (num3 > 1.001f))
+			{
+				return false;
+			}
+			var vector5 = Vector3.Cross(vector3, vector);
+			var num4 = Vector3.Dot(r.Direction, vector5) * num2;
+			if ((num4 < -0.001f) || ((num3 + num4) > 1.001f))
+			{
+				return false;
+			}
+			distance = Vector3.Dot(vector2, vector5) * num2;
+			if (distance <= 0f)
+			{
+				return false;
+			}
+			return true;
+		}
 
         public static bool RayTriangleIntersect(Vector3 ray_origin, Vector3 ray_direction, Vector3 vert0, Vector3 vert1, Vector3 vert2, out float t, out float u, out float v)
         {

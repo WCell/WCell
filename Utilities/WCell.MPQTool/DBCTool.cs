@@ -194,6 +194,16 @@ namespace WCell.MPQTool
 			return null;
 		}
 
+		public static string FindWowDirOrThrow(string wowDir)
+		{
+			var dir = FindWowDir(wowDir);
+			if (dir == null)
+			{
+				throw new Exception("Could not find WoW directory - Did you install it?");
+			}
+			return dir;
+		}
+
 		public void Dump()
 		{
 			Dump(null, true, true);

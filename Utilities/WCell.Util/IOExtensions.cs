@@ -31,11 +31,6 @@ namespace WCell.Util
 
     public static class MiscExtensions
     {
-        public static void AddUnique<T>(this ICollection<T> collection, T item)
-        {
-            if (collection.Contains(item)) return;
-            collection.Add(item);
-        }
 
         public static bool IsNullOrEmpty(this Array array)
         {
@@ -180,16 +175,27 @@ namespace WCell.Util
             return array;
         }
 
-        public static List<Vector3> ReadVector3List(this BinaryReader br)
-        {
-            var count = br.ReadInt32();
-            var list = new List<Vector3>(count);
-            for (var i = 0; i < count; i++)
-            {
-                list.Add(br.ReadVector3());
-            }
-            return list;
-        }
+		public static List<Vector3> ReadVector3List(this BinaryReader br)
+		{
+			var count = br.ReadInt32();
+			var list = new List<Vector3>(count);
+			for (var i = 0; i < count; i++)
+			{
+				list.Add(br.ReadVector3());
+			}
+			return list;
+		}
+
+		public static Vector3[] ReadVector3Array(this BinaryReader br)
+		{
+			var count = br.ReadInt32();
+			var arr = new Vector3[count];
+			for (var i = 0; i < count; i++)
+			{
+				arr[i] = br.ReadVector3();
+			}
+			return arr;
+		}
 
         public static Rect ReadRect(this BinaryReader br)
         {

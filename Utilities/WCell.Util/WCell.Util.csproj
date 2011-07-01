@@ -137,6 +137,9 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="ArrayExtensions.cs" />
+    <Compile Include="Code\CodeFileWriter.cs" />
+    <Compile Include="Graphics\RectInt32.cs" />
+    <Compile Include="Graphics\Triangle.cs" />
     <Compile Include="IOExtensions.cs" />
     <Compile Include="Graphics\Point2D.cs" />
     <Compile Include="StaticCircularList.cs" />

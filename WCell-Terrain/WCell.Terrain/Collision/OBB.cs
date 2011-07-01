@@ -1,7 +1,7 @@
 ﻿using System;
 using WCell.Util.Graphics;
 
-namespace TerrainDisplay.Collision._3D
+namespace WCell.Terrain.Collision
 {
     /// <summary>
     /// Orientated Bounding Box

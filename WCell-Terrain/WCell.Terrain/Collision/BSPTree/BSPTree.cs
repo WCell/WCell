@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using WCell.Terrain.MPQ.WMO;
-using WCell.Terrain.MPQ.WMO.Components;
-using TerrainDisplay.Util;
+using WCell.Terrain.MPQ;
+using WCell.Terrain.MPQ.WMOs;
 using WCell.Util;
 using WCell.Util.Graphics;
 
-namespace TerrainDisplay.Collision
+namespace WCell.Terrain.Collision.BSPTree
 {
     public class BSPTree
     {

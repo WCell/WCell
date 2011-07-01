@@ -1,4 +1,4 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: MovementHandler.cs
  *   copyright		: (C) The WCell Team
@@ -22,9 +22,10 @@ using WCell.Constants;
 using WCell.Constants.NPCs;
 using WCell.Constants.World;
 using WCell.Core.Network;
+using WCell.Core.Paths;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Network;
-using WCell.Core.Paths;
+using WCell.Core.Terrain.Paths;
 using WCell.Util;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.NPCs.Vehicles;

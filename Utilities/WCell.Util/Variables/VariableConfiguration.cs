@@ -331,21 +331,20 @@ namespace WCell.Util.Variables
 			}
 			catch (Exception e)
 			{
-				throw;
-				LogUtil.ErrorException(e, "Could not initialize {0}", GetType());
+				LogUtil.ErrorException(e, "Could not initialize assembly \"{0}\". You can probably fix this issue by making sure that the target platform of the assembly and all it's dependencies are equal.", asm.FullName);
 				return;
 			}
+
 			foreach (var type in types)
 			{
-
 				var members = type.GetMembers(BindingFlags.Public | BindingFlags.Static);
 				InitMembers<A>(members);
 
 				var varClassAttr = type.GetCustomAttributes(typeof(VariableClassAttribute), true).FirstOrDefault() as VariableClassAttribute;
 				if (varClassAttr != null && varClassAttr.Inherit)
 				{
-					Type t;
-					while ((t = type.BaseType) != null && !t.Namespace.StartsWith("System"))
+					Type t = type.BaseType;
+					while (t != null && (t.Namespace == null || !t.Namespace.StartsWith("System")))
 					{
 						var members2 = t.GetMembers(BindingFlags.Public | BindingFlags.Static);
 						InitMembers<A>(members2);

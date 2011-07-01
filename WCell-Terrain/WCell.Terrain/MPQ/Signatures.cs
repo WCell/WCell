@@ -3,7 +3,7 @@ using System.IO;
 
 namespace WCell.Terrain.MPQ
 {
-    static class Signatures
+    public static class Signatures
     {
         public static readonly uint MAIN = ToBin("MAIN");
         public static readonly uint MAOF = ToBin("MAOF");
@@ -80,10 +80,10 @@ namespace WCell.Terrain.MPQ
             var b2 = (uint) ca[2];
             var b3 = (uint) ca[3];
             var r = b3 | (b2 << 8) | (b1 << 16) | (b0 << 24);
-            using (var file = new StreamWriter("sigs.txt", true))
-            {
-                file.WriteLine("{0} - {1}", s, r);
-            }
+			//using (var file = new StreamWriter("sigs.txt", true))
+			//{
+			//    file.WriteLine("{0} - {1}", s, r);
+			//}
             return r;
         }
     }

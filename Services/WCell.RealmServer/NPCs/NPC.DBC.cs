@@ -85,9 +85,7 @@ namespace WCell.RealmServer.NPCs
                 TurnSpeed = GetFloat(rawData,2),
                 PitchSpeed = GetFloat(rawData,3),
                 PitchMin = GetFloat(rawData,4),
-                PitchMax = GetFloat(rawData,5),
-                // a vehicle has 1 - 8 seats
-                Seats = new VehicleSeatEntry[8],
+                PitchMax = GetFloat(rawData,5)
             };
 
         	var lastSeatId = 0;

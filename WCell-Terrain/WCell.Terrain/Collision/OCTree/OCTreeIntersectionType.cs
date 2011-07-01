@@ -1,4 +1,4 @@
-namespace TerrainDisplay.Collision.OCTree
+namespace WCell.Terrain.GUI.Collision.OCTree
 {
     public enum OCTreeIntersectionType
     {

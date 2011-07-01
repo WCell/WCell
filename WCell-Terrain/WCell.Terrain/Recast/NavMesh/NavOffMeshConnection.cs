@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using WCell.Util.Graphics;
+﻿using WCell.Util.Graphics;
 
-namespace TerrainDisplay.Recast
+namespace WCell.Terrain.Recast.NavMesh
 {
 	public class NavOffMeshConnection
 	{

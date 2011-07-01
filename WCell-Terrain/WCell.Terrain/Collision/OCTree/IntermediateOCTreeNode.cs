@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using TerrainDisplay.Util;
+using WCell.Terrain.GUI.Util;
 using WCell.Util;
 using WCell.Util.Graphics;
 
-namespace TerrainDisplay.Collision.OCTree
+namespace WCell.Terrain.GUI.Collision.OCTree
 {
     public class IntermediateOCTreeNode
     {

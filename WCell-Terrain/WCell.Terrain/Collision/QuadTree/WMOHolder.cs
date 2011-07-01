@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using WCell.Terrain.MPQ.WMO;
-using WCell.Collision;
+using WCell.Terrain.Collision;
+using WCell.Terrain.Collision.QuadTree;
+using WCell.Terrain.MPQ;
 using WCell.Util.Graphics;
 
-namespace TerrainDisplay.Collision.QuadTree
+namespace WCell.Terrain.GUI.Collision.QuadTree
 {
     public class WMOHolder : IQuadObject, ICollidable
     {

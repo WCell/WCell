@@ -167,7 +167,7 @@
     <Compile Include="DBC\Compare\DBCDirComparer.cs" />
     <Compile Include="DBC\Compare\DBCDirCompareResult.cs" />
     <Compile Include="DBCTool.cs" />
-    <Compile Include="MPQManager.cs" />
+    <Compile Include="MPQFinder.cs" />
     <Compile Include="DBC\CellReaders.cs" />
     <Compile Include="DBC\CellType.cs" />
     <Compile Include="DBC\DBCReader.cs" />

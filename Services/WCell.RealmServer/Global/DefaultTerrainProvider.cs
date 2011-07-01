@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using WCell.Core.Paths;
-using WCell.Core.Terrain;
-using WCell.Core.TerrainAnalysis;
+using WCell.Core.Terrain.Paths;
 using WCell.Constants.World;
 using WCell.Util.Graphics;
+using WCell.Core.Terrain;
 
 namespace WCell.RealmServer.Global
 {
@@ -30,7 +30,7 @@ namespace WCell.RealmServer.Global
 	        return worldPos.Z;
 	    }
 
-	    public void QueryDirectPath(PathQuery query)
+	    public void QueryDirectPathAsync(PathQuery query)
 		{
 			query.Reply(new Path(query.To));
 		}

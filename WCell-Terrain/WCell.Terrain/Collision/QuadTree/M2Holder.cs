@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using WCell.Terrain.MPQ.M2;
-using WCell.Collision;
+using WCell.Terrain.GUI.Collision;
+using WCell.Terrain.MPQ;
 using WCell.Util.Graphics;
 
-namespace TerrainDisplay.Collision.QuadTree
+namespace WCell.Terrain.Collision.QuadTree
 {
     public class M2Holder : IQuadObject, ICollidable
     {

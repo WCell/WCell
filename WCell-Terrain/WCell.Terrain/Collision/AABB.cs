@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using WCell.Util.Graphics;
 
-namespace TerrainDisplay.Collision._3D
+namespace WCell.Terrain.Collision
 {
     /// <summary>
     /// Axis-Aligned Bounding Box

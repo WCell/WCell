@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using WCell.Core.Paths;
 using WCell.RealmServer.Lang;
 using WCell.RealmServer.Looting;
 using WCell.RealmServer.NPCs;
@@ -41,7 +42,7 @@ using WCell.Constants.GameObjects;
 using WCell.RealmServer.Chat;
 using WCell.RealmServer.Handlers;
 using WCell.Constants.Spells;
-using WCell.Core.Paths;
+using WCell.Core.Terrain.Paths;
 using Cell.Core;
 
 namespace WCell.RealmServer.Entities

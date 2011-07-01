@@ -36,11 +36,6 @@ namespace WCell.Addons.Default.Vehicles
                     npcEntry.VehicleId = data.VehicleId;
                     if (data.PassengerNPCId != 0)
                     {
-                        if (npcEntry.VehicleEntry.Seats == null)
-                        {
-                            npcEntry.VehicleEntry.Seats = new VehicleSeatEntry[8];
-                        }
-
                         if (data.Seat > npcEntry.VehicleEntry.Seats.Length)
                             Array.Resize(ref npcEntry.VehicleEntry.Seats, (int) data.Seat);
 
@@ -48,13 +43,15 @@ namespace WCell.Addons.Default.Vehicles
                         {
                             var seatEntry = NPCMgr.GetVehicleSeatEntry(data.Seat);
                             if (seatEntry != null)
-                                npcEntry.VehicleEntry.Seats[data.Seat] = seatEntry;
-                        }
+                            {
+                            	npcEntry.VehicleEntry.Seats[data.Seat] = seatEntry;
 
-                        var npc = NPCMgr.GetEntry(data.PassengerNPCId);
-                        if (npc != null && npcEntry.VehicleEntry.Seats[data.Seat] != null)
-                        {
-                            npcEntry.VehicleEntry.Seats[data.Seat].PassengerNPCId = data.PassengerNPCId;
+								var npc = NPCMgr.GetEntry(data.PassengerNPCId);
+								if (npc != null)
+								{
+									seatEntry.PassengerNPCId = data.PassengerNPCId;
+								}
+                            }
                         }
                     }
 

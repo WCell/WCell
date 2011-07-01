@@ -33,7 +33,7 @@ namespace WCell.RealmServer.NPCs
 
 		public float PitchMax;
 
-		public VehicleSeatEntry[] Seats; //6-13
+		public VehicleSeatEntry[] Seats = new VehicleSeatEntry[8]; //6-13
 
 		public float MouseLookOffsetPitch; //14
 

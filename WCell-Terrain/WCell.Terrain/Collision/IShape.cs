@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using WCell.Util.Graphics;
 
-namespace TerrainDisplay.Collision._3D
+namespace WCell.Terrain.Collision
 {
     ///<summary>
     /// Describes a Shape contained in an AABB

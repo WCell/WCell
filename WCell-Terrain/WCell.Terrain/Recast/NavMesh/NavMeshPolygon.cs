@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace TerrainDisplay.Recast
+﻿namespace WCell.Terrain.Recast.NavMesh
 {
 	/// <summary>
 	/// Managed version of dtPoly

@@ -21,7 +21,7 @@ namespace WCell.Terrain
 	}
 
 	/// <summary>
-	/// 
+	/// TODO: Make this a separate config
 	/// </summary>
 	public static class WCellTerrainSettings
 	{

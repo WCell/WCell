@@ -17,6 +17,7 @@
 using WCell.Constants;
 using WCell.Constants.Chat;
 using WCell.Constants.Items;
+using WCell.Constants.World;
 
 namespace WCell.Core.DBC
 {

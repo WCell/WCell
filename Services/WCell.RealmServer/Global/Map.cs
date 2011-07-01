@@ -21,7 +21,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using WCell.Constants.Factions;
-using WCell.Core.Terrain;
+using WCell.Core.Paths;
 using WCell.RealmServer.GameObjects.Spawns;
 using WCell.RealmServer.NPCs.Spawns;
 using WCell.RealmServer.Res;
@@ -40,6 +40,7 @@ using WCell.RealmServer.Battlegrounds.Arenas;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Misc;
 using WCell.Util.Graphics;
+using WCell.Core.Terrain;
 using WCell.Util.Threading;
 using WCell.Util.Threading.TaskParallel;
 using WCell.Core.Timers;
@@ -49,7 +50,7 @@ using WCell.RealmServer.Formulas;
 using WCell.RealmServer.GameObjects;
 using WCell.RealmServer.GameObjects.GOEntries;
 using WCell.RealmServer.NPCs;
-using WCell.Core.Paths;
+using WCell.Core.Terrain.Paths;
 using WCell.Util;
 using WCell.Util.NLog;
 using WCell.Util.Variables;
@@ -57,7 +58,6 @@ using WCell.Intercommunication.DataTypes;
 using WCell.Constants.GameObjects;
 using WCell.Constants.NPCs;
 using WCell.RealmServer.AI;
-using WCell.Core.TerrainAnalysis;
 using WCell.Constants.Achievements;
 
 
@@ -1836,7 +1836,7 @@ namespace WCell.RealmServer.Global
 		#region Terrain Management
 		public void QueryDirectPath(PathQuery query)
 		{
-			m_Terrain.QueryDirectPath(query);
+			m_Terrain.QueryDirectPathAsync(query);
 		}
 		#endregion
 

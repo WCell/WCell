@@ -36,6 +36,12 @@ namespace WCell.Util
 		/// </summary>
 		public const float E = (float)Math.E;
 
+
+		/// <summary>
+		/// 1 degree = 0.0174532925 radians
+		/// </summary>
+		public const float RadiansPerDegree = 0.0174532925f;
+
 		/// <summary>
 		/// TODO: Implement faster version
 		/// </summary>

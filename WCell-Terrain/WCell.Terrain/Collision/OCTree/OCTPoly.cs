@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using WCell.Util.Graphics;
 
-namespace TerrainDisplay.Collision.OCTree
+namespace WCell.Terrain.GUI.Collision.OCTree
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct OCTPoly

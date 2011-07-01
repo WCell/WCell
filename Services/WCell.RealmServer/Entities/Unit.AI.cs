@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using WCell.Core.Paths;
+using WCell.Core.Terrain.Paths;
 using WCell.RealmServer.AI;
 using WCell.RealmServer.AI.Actions.Movement;
 using WCell.RealmServer.Misc;

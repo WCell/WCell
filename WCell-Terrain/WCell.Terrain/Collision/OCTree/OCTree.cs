@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using WCell.Util.Graphics;
 
-namespace TerrainDisplay.Collision.OCTree
+namespace WCell.Terrain.GUI.Collision.OCTree
 {
     public class OCTree
     {

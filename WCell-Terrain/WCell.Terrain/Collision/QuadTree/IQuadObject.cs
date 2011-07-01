@@ -1,11 +1,10 @@
-using System;
 using WCell.Util.Graphics;
 
-namespace WCell.Collision
+namespace WCell.Terrain.Collision.QuadTree
 {
     public interface IQuadObject
     {
-        Rect Bounds { get; }
-        int NodeId { get; set; }
+		int NodeId { get; set; }
+		Rect Bounds { get; }
     }
 }

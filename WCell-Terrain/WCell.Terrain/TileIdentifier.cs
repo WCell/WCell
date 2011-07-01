@@ -5,75 +5,131 @@ using System.Linq;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
-using TerrainDisplay.World.DBC;
+using WCell.Core.DBC;
 using WCell.Constants.World;
+using WCell.Terrain.MPQ.DBC;
 using WCell.Util.Graphics;
+using WCell.Util.NLog;
+using MapInfo = WCell.Terrain.MPQ.DBC.MapInfo;
 
 namespace WCell.Terrain
 {
     public class TileIdentifier : Point2D, IXmlSerializable, IEquatable<TileIdentifier>
-    {
-        // This dictionary is initialized on startup.
-        public static readonly Dictionary<MapId, string> InternalMapNames;
-        private const string mapDBCName = "Map.dbc";
+	{
+		// This dictionary is initialized on startup.
+		public static readonly Dictionary<MapId, string> InternalMapNames;
+		private const string mapDBCName = "Map.dbc";
 
-        /// <summary>
-        /// Optional name of the area in the map (i.e. Redridge, Burning Steppes)
-        /// </summary>
-    	public string TileName;
-        public MapId MapId;
+		public static readonly TileIdentifier Redridge;
 
-        /// <summary>
-        /// The InternalName from Map.dbc
-        /// </summary>
-        public string MapName;
+		public static readonly TileIdentifier CenterTile;
+
+		public static readonly TileIdentifier Stormwind;
+
+		public static readonly TileIdentifier BurningSteppes;
+
+		public static TileIdentifier DefaultTileIdentifier = new TileIdentifier
+		{
+			TileName = "Redridge",
+			MapId = MapId.EasternKingdoms,
+			MapName = "Azeroth",
+			X = 49,
+			Y = 36
+		};
 
         static TileIdentifier()
         {
-            InternalMapNames = new Dictionary<MapId, string>((int)MapId.End);
-            var dbcPath = Path.GetFullPath(Path.Combine(WCellTerrainSettings.DBCDir, mapDBCName));
-            var dbcMapReader = new MappedDBCReader<MapInfo, DBCMapEntryConverter>(dbcPath);
-            foreach (var mapInfo in dbcMapReader.Entries.Select(entry => entry.Value))
-            {
-                InternalMapNames.Add(mapInfo.Id, mapInfo.InternalName);
-            }
+			try
+			{
+				InternalMapNames = new Dictionary<MapId, string>((int) MapId.End);
+				var dbcPath = Path.GetFullPath(Path.Combine(WCellTerrainSettings.DBCDir, mapDBCName));
+				var dbcMapReader = new MappedDBCReader<MapInfo, DBCMapEntryConverter>(dbcPath);
+				foreach (var mapInfo in dbcMapReader.Entries.Select(entry => entry.Value))
+				{
+					InternalMapNames.Add(mapInfo.Id, mapInfo.InternalName);
+				}
 
-            Redridge = new TileIdentifier
-            {
-                TileName = "Redridge",
-                MapId = MapId.EasternKingdoms,
-                MapName = InternalMapNames[MapId.EasternKingdoms],
-                X = 49,
-                Y = 36
-            };
+				Redridge = new TileIdentifier
+					{
+						TileName = "Redridge",
+						MapId = MapId.EasternKingdoms,
+						MapName = InternalMapNames[MapId.EasternKingdoms],
+						X = 49,
+						Y = 36
+					};
 
-            CenterTile = new TileIdentifier
-            {
-                TileName = "Map Center",
-                MapId = MapId.EasternKingdoms,
-                MapName = InternalMapNames[MapId.EasternKingdoms],
-                X = 32,
-                Y = 32
-            };
+				CenterTile = new TileIdentifier
+					{
+						TileName = "Map Center",
+						MapId = MapId.EasternKingdoms,
+						MapName = InternalMapNames[MapId.EasternKingdoms],
+						X = 32,
+						Y = 32
+					};
 
-            Stormwind = new TileIdentifier
-            {
-                TileName = "Stormwind",
-                MapId = MapId.EasternKingdoms,
-                MapName = InternalMapNames[MapId.EasternKingdoms],
-                X = 48,
-                Y = 30
-            };
+				Stormwind = new TileIdentifier
+					{
+						TileName = "Stormwind",
+						MapId = MapId.EasternKingdoms,
+						MapName = InternalMapNames[MapId.EasternKingdoms],
+						X = 48,
+						Y = 30
+					};
 
-            BurningSteppes = new TileIdentifier
-            {
-                TileName = "Burning Steppes",
-                MapId = MapId.EasternKingdoms,
-                MapName = InternalMapNames[MapId.EasternKingdoms],
-                X = 49,
-                Y = 33
-            };
+				BurningSteppes = new TileIdentifier
+					{
+						TileName = "Burning Steppes",
+						MapId = MapId.EasternKingdoms,
+						MapName = InternalMapNames[MapId.EasternKingdoms],
+						X = 49,
+						Y = 33
+					};
+			}
+			catch (Exception e)
+			{
+				LogUtil.ErrorException(e, "Could not initialize Tile identifiers");
+			}
         }
+
+		public static string GetName(MapId map)
+		{
+			string name;
+			InternalMapNames.TryGetValue(map, out name);
+			return name;
+		}
+
+		public static TileIdentifier GetTileAt(MapId mapId, Vector3 position)
+		{
+			int tileX, tileY;
+			if (!PositionUtil.GetTileXYForPos(position, out tileX, out tileY))
+			{
+				return null;
+			}
+
+			string name;
+			if (InternalMapNames.TryGetValue(mapId, out name))
+			{
+				return new TileIdentifier
+					{
+						MapId = mapId,
+						MapName = InternalMapNames[mapId],
+						X = tileX,
+						Y = tileY
+					};
+			}
+			return null;
+		}
+
+		/// <summary>
+		/// Optional name of the area in the map (i.e. Redridge, Burning Steppes)
+		/// </summary>
+		public string TileName;
+		public MapId MapId;
+
+		/// <summary>
+		/// The InternalName from Map.dbc
+		/// </summary>
+		public string MapName;
 
         public TileIdentifier()
         {
@@ -87,45 +143,6 @@ namespace WCell.Terrain
             X = tileX;
             Y = tileY;
         }
-
-        public TileIdentifier Copy()
-		{
-			return new TileIdentifier(TileName, MapId, MapName, X, Y);
-		}
-
-        public static TileIdentifier ByPosition(MapId mapId, Vector3 position)
-        {
-            int tileX, tileY;
-            if (!PositionUtil.GetTileXYForPos(position, out tileX, out tileY))
-            {
-                return null;
-            }
-
-            return new TileIdentifier
-            {
-                MapId = mapId,
-                MapName = InternalMapNames[mapId],
-                X = tileX,
-                Y = tileY
-            };
-        }
-
-        public static readonly TileIdentifier Redridge;
-
-        public static readonly TileIdentifier CenterTile;
-
-        public static readonly TileIdentifier Stormwind;
-
-        public static readonly TileIdentifier BurningSteppes;
-
-        public static TileIdentifier DefaultTileIdentifier = new TileIdentifier
-        {
-            TileName = "Redridge",
-            MapId = MapId.EasternKingdoms,
-            MapName = "Azeroth",
-            X = 49,
-            Y = 36
-        };
 
         #region Implementation of IXmlSerializable
 
@@ -245,7 +262,13 @@ namespace WCell.Terrain
         {
             return !Equals(left, right);
         }
-        #endregion
+		#endregion
+
+		public TileIdentifier Copy()
+		{
+			return new TileIdentifier(TileName, MapId, MapName, X, Y);
+		}
+
 
         public override string ToString()
         {
