@@ -59,7 +59,7 @@ namespace WCell.Terrain.GUI
 		/// <summary>
 		/// Console used to execute commands while the game is running.
 		/// </summary>
-		public MpqConsole Console;
+		//public MpqConsole Console;
 
 		// Camera Stuff
 		float avatarYaw, avatarPitch;
@@ -584,6 +584,10 @@ namespace WCell.Terrain.GUI
 		/// </summary>
 		void InitGUI()
 		{
+			Console.WriteLine("");
+			Console.WriteLine("Help:");
+			Console.WriteLine("  Press ESCAPE to enter the menu");
+
 			Form = (Form)Form.FromHandle(Window.Handle);
 
 			menu = new MainMenu();
@@ -593,10 +597,6 @@ namespace WCell.Terrain.GUI
 			ClickedRenderingModeSwitch(null, null);
 
 			menu.MenuItems.Add(renderingModeSwitch);
-
-			Console.WriteLine("");
-			Console.WriteLine("Help:");
-			Console.WriteLine("  Press ESCAPE to enter the menu");
 		}
 
 		private void ClickedRenderingModeSwitch(object sender, EventArgs e)
