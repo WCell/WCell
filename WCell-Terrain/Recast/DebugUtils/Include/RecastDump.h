@@ -31,7 +31,13 @@ struct duFileIO
 bool duDumpPolyMeshToObj(struct rcPolyMesh& pmesh, duFileIO* io);
 bool duDumpPolyMeshDetailToObj(struct rcPolyMeshDetail& dmesh, duFileIO* io);
 
+bool duDumpContourSet(struct rcContourSet& cset, duFileIO* io);
+bool duReadContourSet(struct rcContourSet& cset, duFileIO* io);
+
 bool duDumpCompactHeightfield(struct rcCompactHeightfield& chf, duFileIO* io);
 bool duReadCompactHeightfield(struct rcCompactHeightfield& chf, duFileIO* io);
+
+void duLogBuildTimes(rcContext& ctx, const int totalTileUsec);
+
 
 #endif // RECAST_DUMP_H

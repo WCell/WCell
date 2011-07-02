@@ -24,6 +24,8 @@
 #include "Recast.h"
 #include "RecastDebugDraw.h"
 #include "DetourDebugDraw.h"
+#include "DetourNavMesh.h"
+#include "DetourNavMeshQuery.h"
 #include "imgui.h"
 #include "SDL.h"
 #include "SDL_opengl.h"
@@ -32,120 +34,22 @@
 #	define snprintf _snprintf
 #endif
 
-
-void DebugDrawGL::depthMask(bool state)
-{
-	glDepthMask(state ? GL_TRUE : GL_FALSE);
-}
-
-void DebugDrawGL::begin(duDebugDrawPrimitives prim, float size)
-{
-	switch (prim)
-	{
-		case DU_DRAW_POINTS:
-			glPointSize(size);
-			glBegin(GL_POINTS);
-			break;
-		case DU_DRAW_LINES:
-			glLineWidth(size);
-			glBegin(GL_LINES);
-			break;
-		case DU_DRAW_TRIS:
-			glBegin(GL_TRIANGLES);
-			break;
-		case DU_DRAW_QUADS:
-			glBegin(GL_QUADS);
-			break;
-	};
-}
-	
-void DebugDrawGL::vertex(const float* pos, unsigned int color)
-{
-	glColor4ubv((GLubyte*)&color);
-	glVertex3fv(pos);
-}
-	
-void DebugDrawGL::vertex(const float x, const float y, const float z, unsigned int color)
-{
-	glColor4ubv((GLubyte*)&color);
-	glVertex3f(x,y,z);
-}
-	
-void DebugDrawGL::end()
-{
-	glEnd();
-	glLineWidth(1.0f);
-	glPointSize(1.0f);
-}
-
-
-FileIO::FileIO() :
-	m_fp(0),
-	m_mode(-1)
-{
-}
-		
-FileIO::~FileIO()
-{
-	if (m_fp) fclose(m_fp);
-}
-
-bool FileIO::openForWrite(const char* path)
-{
-	if (m_fp) return false;
-	m_fp = fopen(path, "wb");
-	if (!m_fp) return false;
-	m_mode = 1;
-	return true;
-}
-
-bool FileIO::openForRead(const char* path)
-{
-	if (m_fp) return false;
-	m_fp = fopen(path, "rb");
-	if (!m_fp) return false;
-	m_mode = 2;
-	return true;
-}
-
-bool FileIO::isWriting() const
-{
-	return m_mode == 1;
-}
-
-bool FileIO::isReading() const
-{
-	return m_mode == 2;
-}
-
-bool FileIO::write(const void* ptr, const size_t size)
-{
-	if (!m_fp || m_mode != 1) return false;
-	fwrite(ptr, size, 1, m_fp);
-	return true;
-}
-
-bool FileIO::read(void* ptr, const size_t size)
-{
-	if (!m_fp || m_mode != 2) return false;
-	fread(ptr, size, 1, m_fp);
-	return true;
-}
-		
-
-
 Sample::Sample() :
 	m_geom(0),
 	m_navMesh(0),
-	m_navMeshDrawFlags(DU_DRAWNAVMESH_CLOSEDLIST|DU_DRAWNAVMESH_OFFMESHCONS),
-	m_tool(0)
+	m_navQuery(0),
+	m_navMeshDrawFlags(DU_DRAWNAVMESH_OFFMESHCONS|DU_DRAWNAVMESH_CLOSEDLIST),
+	m_tool(0),
+	m_ctx(0)
 {
 	resetCommonSettings();
+	m_navQuery = dtAllocNavMeshQuery();
 }
 
 Sample::~Sample()
 {
-	delete m_navMesh;
+	dtFreeNavMeshQuery(m_navQuery);
+	dtFreeNavMesh(m_navMesh);
 	delete m_tool;
 }
 
@@ -178,7 +82,7 @@ void Sample::handleRender()
 		
 	// Draw mesh
 	duDebugDrawTriMesh(&dd, m_geom->getMesh()->getVerts(), m_geom->getMesh()->getVertCount(),
-					   m_geom->getMesh()->getTris(), m_geom->getMesh()->getNormals(), m_geom->getMesh()->getTriCount(), 0);
+					   m_geom->getMesh()->getTris(), m_geom->getMesh()->getNormals(), m_geom->getMesh()->getTriCount(), 0, 1.0f);
 	// Draw bounds
 	const float* bmin = m_geom->getMeshBoundsMin();
 	const float* bmax = m_geom->getMeshBoundsMax();
@@ -208,14 +112,15 @@ const float* Sample::getBoundsMax()
 
 void Sample::resetCommonSettings()
 {
-	m_cellSize = 0.99f;
+	m_cellSize = 0.3f;
 	m_cellHeight = 0.2f;
 	m_agentHeight = 2.0f;
 	m_agentRadius = 0.6f;
 	m_agentMaxClimb = 0.9f;
 	m_agentMaxSlope = 45.0f;
-	m_regionMinSize = 50;
+	m_regionMinSize = 8;
 	m_regionMergeSize = 20;
+	m_monotonePartitioning = false;
 	m_edgeMaxLen = 12.0f;
 	m_edgeMaxError = 1.3f;
 	m_vertsPerPoly = 6.0f;
@@ -251,6 +156,8 @@ void Sample::handleCommonSettings()
 	imguiLabel("Region");
 	imguiSlider("Min Region Size", &m_regionMinSize, 0.0f, 150.0f, 1.0f);
 	imguiSlider("Merged Region Size", &m_regionMergeSize, 0.0f, 150.0f, 1.0f);
+	if (imguiCheck("Monotore Partitioning", m_monotonePartitioning))
+		m_monotonePartitioning = !m_monotonePartitioning;
 	
 	imguiSeparator();
 	imguiLabel("Polygonization");
@@ -266,10 +173,16 @@ void Sample::handleCommonSettings()
 	imguiSeparator();
 }
 
-void Sample::handleClick(const float* p, bool shift)
+void Sample::handleClick(const float* s, const float* p, bool shift)
 {
 	if (m_tool)
-		m_tool->handleClick(p, shift);
+		m_tool->handleClick(s, p, shift);
+}
+
+void Sample::handleToggle()
+{
+	if (m_tool)
+		m_tool->handleToggle();
 }
 
 void Sample::handleStep()
@@ -282,3 +195,10 @@ bool Sample::handleBuild()
 {
 	return true;
 }
+
+void Sample::handleUpdate(const float dt)
+{
+	if (m_tool)
+		m_tool->handleUpdate(dt);
+}
+

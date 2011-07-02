@@ -3,11 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Recast", "Recast.vcxproj", "{CEF242C5-E9A3-403B-BAFF-99397BDA5730}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Executable", "..\Executable\Executable.vcxproj", "{50901DA0-6AAE-402B-9BD1-0FF9BA36546C}"
-	ProjectSection(ProjectDependencies) = postProject
-		{CEF242C5-E9A3-403B-BAFF-99397BDA5730} = {CEF242C5-E9A3-403B-BAFF-99397BDA5730}
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -18,10 +13,6 @@ Global
 		{CEF242C5-E9A3-403B-BAFF-99397BDA5730}.Debug|Win32.Build.0 = Debug|Win32
 		{CEF242C5-E9A3-403B-BAFF-99397BDA5730}.Release|Win32.ActiveCfg = Release|Win32
 		{CEF242C5-E9A3-403B-BAFF-99397BDA5730}.Release|Win32.Build.0 = Release|Win32
-		{50901DA0-6AAE-402B-9BD1-0FF9BA36546C}.Debug|Win32.ActiveCfg = Debug|Win32
-		{50901DA0-6AAE-402B-9BD1-0FF9BA36546C}.Debug|Win32.Build.0 = Debug|Win32
-		{50901DA0-6AAE-402B-9BD1-0FF9BA36546C}.Release|Win32.ActiveCfg = Release|Win32
-		{50901DA0-6AAE-402B-9BD1-0FF9BA36546C}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

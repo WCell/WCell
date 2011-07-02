@@ -21,7 +21,6 @@
 
 #include "ChunkyTriMesh.h"
 #include "MeshLoaderObj.h"
-#include <FileList.h>
 
 static const int MAX_CONVEXVOL_PTS = 12;
 struct ConvexVolume
@@ -38,64 +37,65 @@ class InputGeom
 	rcMeshLoaderObj* m_mesh;
 	float m_meshBMin[3], m_meshBMax[3];
 	
-	// Off-Mesh connections.
-	//static const int MAX_OFFMESH_CONNECTIONS = 8192;
-	static const int MAX_OFFMESH_CONNECTIONS = 512;
-
+	/// @name Off-Mesh connections.
+	///@{
+	static const int MAX_OFFMESH_CONNECTIONS = 256;
 	float m_offMeshConVerts[MAX_OFFMESH_CONNECTIONS*3*2];
 	float m_offMeshConRads[MAX_OFFMESH_CONNECTIONS];
 	unsigned char m_offMeshConDirs[MAX_OFFMESH_CONNECTIONS];
 	unsigned char m_offMeshConAreas[MAX_OFFMESH_CONNECTIONS];
 	unsigned short m_offMeshConFlags[MAX_OFFMESH_CONNECTIONS];
+	unsigned int m_offMeshConId[MAX_OFFMESH_CONNECTIONS];
 	int m_offMeshConCount;
+	///@}
 
-	// Convex Volumes.
-	//static const int MAX_VOLUMES = 8192;
+	/// @name Convex Volumes.
+	///@{
 	static const int MAX_VOLUMES = 256;
-
 	ConvexVolume m_volumes[MAX_VOLUMES];
 	int m_volumeCount;
+	///@}
 	
 public:
 	InputGeom();
 	~InputGeom();
 	
-	bool loadMeshV(const char* virtualName);
+	bool loadMesh(class rcContext* ctx, const char* filepath);
 	
-	bool loadMesh(const char* filepath);
-	bool genMesh(float *vertices, int vcount, int *triangles, int tcount, const char* name);
-	
-	bool load(const char* filepath);
+	bool load(class rcContext* ctx, const char* filepath);
 	bool save(const char* filepath);
 	
-	// Method to return static mesh data.
+	/// Method to return static mesh data.
 	inline const rcMeshLoaderObj* getMesh() const { return m_mesh; }
 	inline const float* getMeshBoundsMin() const { return m_meshBMin; }
 	inline const float* getMeshBoundsMax() const { return m_meshBMax; }
 	inline const rcChunkyTriMesh* getChunkyMesh() const { return m_chunkyMesh; }
 	bool raycastMesh(float* src, float* dst, float& tmin);
 
-	// Off-Mesh connections.
+	/// @name Off-Mesh connections.
+	///@{
 	int getOffMeshConnectionCount() const { return m_offMeshConCount; }
 	const float* getOffMeshConnectionVerts() const { return m_offMeshConVerts; }
 	const float* getOffMeshConnectionRads() const { return m_offMeshConRads; }
 	const unsigned char* getOffMeshConnectionDirs() const { return m_offMeshConDirs; }
 	const unsigned char* getOffMeshConnectionAreas() const { return m_offMeshConAreas; }
 	const unsigned short* getOffMeshConnectionFlags() const { return m_offMeshConFlags; }
+	const unsigned int* getOffMeshConnectionId() const { return m_offMeshConId; }
 	void addOffMeshConnection(const float* spos, const float* epos, const float rad,
 							  unsigned char bidir, unsigned char area, unsigned short flags);
 	void deleteOffMeshConnection(int i);
 	void drawOffMeshConnections(struct duDebugDraw* dd, bool hilight = false);
+	///@}
 
-	// Box Volumes.
+	/// @name Box Volumes.
+	///@{
 	int getConvexVolumeCount() const { return m_volumeCount; }
 	const ConvexVolume* getConvexVolumes() const { return m_volumes; }
 	void addConvexVolume(const float* verts, const int nverts,
 						 const float minh, const float maxh, unsigned char area);
 	void deleteConvexVolume(int i);
 	void drawConvexVolumes(struct duDebugDraw* dd, bool hilight = false);
+	///@}
 };
-
-void meshGenAddToList(FileList& list);
 
 #endif // INPUTGEOM_H

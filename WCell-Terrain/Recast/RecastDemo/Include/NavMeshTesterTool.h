@@ -21,22 +21,29 @@
 
 #include "Sample.h"
 #include "DetourNavMesh.h"
+#include "DetourNavMeshQuery.h"
 
 class NavMeshTesterTool : public SampleTool
 {
 	Sample* m_sample;
 	
 	dtNavMesh* m_navMesh;
+	dtNavMeshQuery* m_navQuery;
 
 	dtQueryFilter m_filter;
 
+	dtStatus m_pathFindStatus;
+
 	enum ToolMode
 	{
-		TOOLMODE_PATHFIND_ITER,
+		TOOLMODE_PATHFIND_FOLLOW,
 		TOOLMODE_PATHFIND_STRAIGHT,
+		TOOLMODE_PATHFIND_SLICED,
 		TOOLMODE_RAYCAST,
 		TOOLMODE_DISTANCE_TO_WALL,
-		TOOLMODE_FIND_POLYS_AROUND,
+		TOOLMODE_FIND_POLYS_IN_CIRCLE,
+		TOOLMODE_FIND_POLYS_IN_SHAPE,
+		TOOLMODE_FIND_LOCAL_NEIGHBOURHOOD,
 	};
 	
 	ToolMode m_toolMode;
@@ -56,6 +63,7 @@ class NavMeshTesterTool : public SampleTool
 	float m_polyPickExt[3];
 	float m_smoothPath[MAX_SMOOTH*3];
 	int m_nsmoothPath;
+	float m_queryPoly[4*3];
 	
 	float m_spos[3];
 	float m_epos[3];
@@ -63,11 +71,12 @@ class NavMeshTesterTool : public SampleTool
 	float m_hitNormal[3];
 	bool m_hitResult;
 	float m_distanceToWall;
+	float m_neighbourhoodRadius;
 	bool m_sposSet;
 	bool m_eposSet;
 
 	int m_pathIterNum;
-	const dtPolyRef* m_pathIterPolys; 
+	dtPolyRef m_pathIterPolys[MAX_POLYS]; 
 	int m_pathIterPolyCount;
 	float m_prevIterPos[3], m_iterPos[3], m_steerPos[3], m_targetPos[3];
 	
@@ -83,8 +92,10 @@ public:
 	virtual void init(Sample* sample);
 	virtual void reset();
 	virtual void handleMenu();
-	virtual void handleClick(const float* p, bool shift);
+	virtual void handleClick(const float* s, const float* p, bool shift);
+	virtual void handleToggle();
 	virtual void handleStep();
+	virtual void handleUpdate(const float dt);
 	virtual void handleRender();
 	virtual void handleRenderOverlay(double* proj, double* model, int* view);
 

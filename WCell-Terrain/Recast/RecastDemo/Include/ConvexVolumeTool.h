@@ -44,8 +44,10 @@ public:
 	virtual void init(Sample* sample);
 	virtual void reset();
 	virtual void handleMenu();
-	virtual void handleClick(const float* p, bool shift);
+	virtual void handleClick(const float* s, const float* p, bool shift);
+	virtual void handleToggle();
 	virtual void handleStep();
+	virtual void handleUpdate(const float dt);
 	virtual void handleRender();
 	virtual void handleRenderOverlay(double* proj, double* model, int* view);
 };

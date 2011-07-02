@@ -19,20 +19,27 @@
 #ifndef DETOURNODE_H
 #define DETOURNODE_H
 
+#include "DetourNavMesh.h"
+
 enum dtNodeFlags
 {
 	DT_NODE_OPEN = 0x01,
 	DT_NODE_CLOSED = 0x02,
 };
 
+typedef unsigned short dtNodeIndex;
+static const dtNodeIndex DT_NULL_IDX = (dtNodeIndex)~0;
+
 struct dtNode
 {
-	float cost;
-	float total;
-	unsigned int id;
-	unsigned int pidx : 30;
-	unsigned int flags : 2;
+	float pos[3];				///< Position of the node.
+	float cost;					///< Cost from previous node to current node.
+	float total;				///< Cost up to the node.
+	unsigned int pidx : 30;		///< Index to parent node.
+	unsigned int flags : 2;		///< Node flags 0/open/closed.
+	dtPolyRef id;				///< Polygon ref the node corresponds to.
 };
+
 
 class dtNodePool
 {
@@ -41,8 +48,8 @@ public:
 	~dtNodePool();
 	inline void operator=(const dtNodePool&) {}
 	void clear();
-	dtNode* getNode(unsigned int id);
-	const dtNode* findNode(unsigned int id) const;
+	dtNode* getNode(dtPolyRef id);
+	dtNode* findNode(dtPolyRef id);
 
 	inline unsigned int getNodeIdx(const dtNode* node) const
 	{
@@ -55,30 +62,32 @@ public:
 		if (!idx) return 0;
 		return &m_nodes[idx-1];
 	}
+
+	inline const dtNode* getNodeAtIdx(unsigned int idx) const
+	{
+		if (!idx) return 0;
+		return &m_nodes[idx-1];
+	}
 	
 	inline int getMemUsed() const
 	{
 		return sizeof(*this) +
-		sizeof(dtNode)*m_maxNodes +
-		sizeof(unsigned short)*m_maxNodes +
-		sizeof(unsigned short)*m_hashSize;
+			sizeof(dtNode)*m_maxNodes +
+			sizeof(dtNodeIndex)*m_maxNodes +
+			sizeof(dtNodeIndex)*m_hashSize;
 	}
+	
+	inline int getMaxNodes() const { return m_maxNodes; }
+	
+	inline int getHashSize() const { return m_hashSize; }
+	inline dtNodeIndex getFirst(int bucket) const { return m_first[bucket]; }
+	inline dtNodeIndex getNext(int i) const { return m_next[i]; }
 	
 private:
-	inline unsigned int hashint(unsigned int a) const
-	{
-		a += ~(a<<15);
-		a ^=  (a>>10);
-		a +=  (a<<3);
-		a ^=  (a>>6);
-		a += ~(a<<11);
-		a ^=  (a>>16);
-		return a;
-	}
 	
 	dtNode* m_nodes;
-	unsigned short* m_first;
-	unsigned short* m_next;
+	dtNodeIndex* m_first;
+	dtNodeIndex* m_next;
 	const int m_maxNodes;
 	const int m_hashSize;
 	int m_nodeCount;
@@ -135,6 +144,7 @@ public:
 		sizeof(dtNode*)*(m_capacity+1);
 	}
 	
+	inline int getCapacity() const { return m_capacity; }
 	
 private:
 	void bubbleUp(int i, dtNode* node);

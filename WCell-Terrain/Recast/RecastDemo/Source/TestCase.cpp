@@ -22,10 +22,12 @@
 #include <math.h>
 #include "TestCase.h"
 #include "DetourNavMesh.h"
+#include "DetourNavMeshQuery.h"
+#include "DetourCommon.h"
 #include "SDL.h"
 #include "SDL_opengl.h"
 #include "imgui.h"
-#include "Recast.h"
+#include "PerfTimer.h"
 
 #ifdef WIN32
 #define snprintf _snprintf
@@ -156,9 +158,9 @@ void TestCase::resetTimes()
 	}
 }
 
-void TestCase::doTests(dtNavMesh* navmesh)
+void TestCase::doTests(dtNavMesh* navmesh, dtNavMeshQuery* navquery)
 {
-	if (!navmesh)
+	if (!navmesh || !navquery)
 		return;
 	
 	resetTimes();
@@ -178,38 +180,39 @@ void TestCase::doTests(dtNavMesh* navmesh)
 		iter->nstraight = 0;
 		
 		dtQueryFilter filter;
-		filter.includeFlags = (unsigned short)iter->includeFlags;
-		filter.excludeFlags = (unsigned short)iter->excludeFlags;
+		filter.setIncludeFlags((unsigned short)iter->includeFlags);
+		filter.setExcludeFlags((unsigned short)iter->excludeFlags);
 	
 		// Find start points
-		rcTimeVal findNearestPolyStart = rcGetPerformanceTimer();
+		TimeVal findNearestPolyStart = getPerfTime();
 		
-		dtPolyRef startRef = navmesh->findNearestPoly(iter->spos, polyPickExt, &filter, 0);
-		dtPolyRef endRef = navmesh->findNearestPoly(iter->epos, polyPickExt, &filter, 0);
+		dtPolyRef startRef, endRef;
+		navquery->findNearestPoly(iter->spos, polyPickExt, &filter, &startRef, 0);
+		navquery->findNearestPoly(iter->epos, polyPickExt, &filter, &endRef, 0);
 
-		rcTimeVal findNearestPolyEnd = rcGetPerformanceTimer();
-		iter->findNearestPolyTime += rcGetDeltaTimeUsec(findNearestPolyStart, findNearestPolyEnd);
+		TimeVal findNearestPolyEnd = getPerfTime();
+		iter->findNearestPolyTime += getPerfDeltaTimeUsec(findNearestPolyStart, findNearestPolyEnd);
 
 		if (!startRef || ! endRef)
 			continue;
 	
 		// Find path
-		rcTimeVal findPathStart = rcGetPerformanceTimer();
+		TimeVal findPathStart = getPerfTime();
 
-		iter->npolys = navmesh->findPath(startRef, endRef, iter->spos, iter->epos, &filter, polys, MAX_POLYS);
+		navquery->findPath(startRef, endRef, iter->spos, iter->epos, &filter, polys, &iter->npolys, MAX_POLYS);
 		
-		rcTimeVal findPathEnd = rcGetPerformanceTimer();
-		iter->findPathTime += rcGetDeltaTimeUsec(findPathStart, findPathEnd);
+		TimeVal findPathEnd = getPerfTime();
+		iter->findPathTime += getPerfDeltaTimeUsec(findPathStart, findPathEnd);
 		
 		// Find straight path
 		if (iter->npolys)
 		{
-			rcTimeVal findStraightPathStart = rcGetPerformanceTimer();
+			TimeVal findStraightPathStart = getPerfTime();
 			
-			iter->nstraight = navmesh->findStraightPath(iter->spos, iter->epos, polys, iter->npolys,
-														  straight, 0, 0, MAX_POLYS);
-			rcTimeVal findStraightPathEnd = rcGetPerformanceTimer();
-			iter->findStraightPathTime += rcGetDeltaTimeUsec(findStraightPathStart, findStraightPathEnd);
+			navquery->findStraightPath(iter->spos, iter->epos, polys, iter->npolys,
+									   straight, 0, 0, &iter->nstraight, MAX_POLYS);
+			TimeVal findStraightPathEnd = getPerfTime();
+			iter->findStraightPathTime += getPerfDeltaTimeUsec(findStraightPathStart, findStraightPathEnd);
 		}
 		
 		// Copy results
@@ -223,7 +226,19 @@ void TestCase::doTests(dtNavMesh* navmesh)
 			iter->straight = new float[iter->nstraight*3];
 			memcpy(iter->straight, straight, sizeof(float)*3*iter->nstraight);
 		}
-		
+	}
+
+
+	printf("Test Results:\n");
+	int n = 0;
+	for (Test* iter = m_tests; iter; iter = iter->next)
+	{
+		const int total = iter->findNearestPolyTime + iter->findPathTime + iter->findStraightPathTime;
+		printf(" - Path %02d:     %.4f ms\n", n, (float)total/1000.0f);
+		printf("    - poly:     %.4f ms\n", (float)iter->findNearestPolyTime/1000.0f);
+		printf("    - path:     %.4f ms\n", (float)iter->findPathTime/1000.0f);
+		printf("    - straight: %.4f ms\n", (float)iter->findStraightPathTime/1000.0f);
+		n++;
 	}
 }
 
@@ -234,8 +249,8 @@ void TestCase::handleRender()
 	for (Test* iter = m_tests; iter; iter = iter->next)
 	{
 		float dir[3];
-		rcVsub(dir, iter->epos, iter->spos);
-		rcVnormalize(dir);
+		dtVsub(dir, iter->epos, iter->spos);
+		dtVnormalize(dir);
 		glColor4ub(128,25,0,192);
 		glVertex3f(iter->spos[0],iter->spos[1]-0.3f,iter->spos[2]);
 		glVertex3f(iter->spos[0],iter->spos[1]+0.3f,iter->spos[2]);
@@ -263,7 +278,7 @@ void TestCase::handleRender()
 bool TestCase::handleRenderOverlay(double* proj, double* model, int* view)
 {
 	GLdouble x, y, z;
-	char text[64];
+	char text[64], subtext[64];
 	int n = 0;
 
 	static const float LABEL_DIST = 1.0f;
@@ -273,20 +288,20 @@ bool TestCase::handleRenderOverlay(double* proj, double* model, int* view)
 		float pt[3], dir[3];
 		if (iter->nstraight)
 		{
-			rcVcopy(pt, &iter->straight[3]);
-			if (rcVdist(pt, iter->spos) > LABEL_DIST)
+			dtVcopy(pt, &iter->straight[3]);
+			if (dtVdist(pt, iter->spos) > LABEL_DIST)
 			{
-				rcVsub(dir, pt, iter->spos);
-				rcVnormalize(dir);
-				rcVmad(pt, iter->spos, dir, LABEL_DIST);
+				dtVsub(dir, pt, iter->spos);
+				dtVnormalize(dir);
+				dtVmad(pt, iter->spos, dir, LABEL_DIST);
 			}
 			pt[1]+=0.5f;
 		}
 		else
 		{
-			rcVsub(dir, iter->epos, iter->spos);
-			rcVnormalize(dir);
-			rcVmad(pt, iter->spos, dir, LABEL_DIST);
+			dtVsub(dir, iter->epos, iter->spos);
+			dtVnormalize(dir);
+			dtVmad(pt, iter->spos, dir, LABEL_DIST);
 			pt[1]+=0.5f;
 		}
 		
@@ -309,27 +324,26 @@ bool TestCase::handleRenderOverlay(double* proj, double* model, int* view)
 	n = 0;
 	for (Test* iter = m_tests; iter; iter = iter->next)
 	{
-		snprintf(text, 64, "Path %d\n", n);
+		const int total = iter->findNearestPolyTime + iter->findPathTime + iter->findStraightPathTime;
+		snprintf(subtext, 64, "%.4f ms", (float)total/1000.0f);
+		snprintf(text, 64, "Path %d", n);
 		
-		if (imguiCollapse(text, iter->expand))
+		if (imguiCollapse(text, subtext, iter->expand))
 			iter->expand = !iter->expand;
 		if (iter->expand)
 		{
-			snprintf(text, 64, "Poly: %.4f ms\n", (float)iter->findNearestPolyTime/1000.0f);
+			snprintf(text, 64, "Poly: %.4f ms", (float)iter->findNearestPolyTime/1000.0f);
 			imguiValue(text);
 
-			snprintf(text, 64, "Path: %.4f ms\n", (float)iter->findPathTime/1000.0f);
+			snprintf(text, 64, "Path: %.4f ms", (float)iter->findPathTime/1000.0f);
 			imguiValue(text);
 
-			snprintf(text, 64, "Straight: %.4f ms\n", (float)iter->findStraightPathTime/1000.0f);
+			snprintf(text, 64, "Straight: %.4f ms", (float)iter->findStraightPathTime/1000.0f);
 			imguiValue(text);
+			
+			imguiSeparator();
 		}
-		rcTimeVal total = iter->findNearestPolyTime + iter->findPathTime + iter->findStraightPathTime;
-		snprintf(text, 64, "Total: %.4f ms\n", (float)total/1000.0f);
-		imguiValue(text);
 		
-		
-//		imguiDrawText(10, 700-n*20, IMGUI_ALIGN_LEFT, text, imguiRGBA(255,255,255,220));
 		n++;
 	}
 

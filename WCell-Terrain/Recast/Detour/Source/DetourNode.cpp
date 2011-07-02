@@ -17,13 +17,24 @@
 //
 
 #include "DetourNode.h"
+#include "DetourAlloc.h"
+#include "DetourAssert.h"
+#include "DetourCommon.h"
 #include <string.h>
 
-static const unsigned short DT_NULL_IDX = 0xffff;
+inline unsigned int dtHashRef(dtPolyRef a)
+{
+	a += ~(a<<15);
+	a ^=  (a>>10);
+	a +=  (a<<3);
+	a ^=  (a>>6);
+	a += ~(a<<11);
+	a ^=  (a>>16);
+	return (unsigned int)a;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 dtNodePool::dtNodePool(int maxNodes, int hashSize) :
-
 	m_nodes(0),
 	m_first(0),
 	m_next(0),
@@ -31,30 +42,38 @@ dtNodePool::dtNodePool(int maxNodes, int hashSize) :
 	m_hashSize(hashSize),
 	m_nodeCount(0)
 {
-	m_nodes = new dtNode[m_maxNodes];
-	m_next = new unsigned short[m_maxNodes];
-	m_first = new unsigned short[hashSize];
-	memset(m_first, 0xff, sizeof(unsigned short)*m_hashSize);
-	memset(m_next, 0xff, sizeof(unsigned short)*m_maxNodes);
+	dtAssert(dtNextPow2(m_hashSize) == (unsigned int)m_hashSize);
+	dtAssert(m_maxNodes > 0);
+
+	m_nodes = (dtNode*)dtAlloc(sizeof(dtNode)*m_maxNodes, DT_ALLOC_PERM);
+	m_next = (dtNodeIndex*)dtAlloc(sizeof(dtNodeIndex)*m_maxNodes, DT_ALLOC_PERM);
+	m_first = (dtNodeIndex*)dtAlloc(sizeof(dtNodeIndex)*hashSize, DT_ALLOC_PERM);
+
+	dtAssert(m_nodes);
+	dtAssert(m_next);
+	dtAssert(m_first);
+
+	memset(m_first, 0xff, sizeof(dtNodeIndex)*m_hashSize);
+	memset(m_next, 0xff, sizeof(dtNodeIndex)*m_maxNodes);
 }
 
 dtNodePool::~dtNodePool()
 {
-	delete [] m_nodes;
-	delete [] m_next;
-	delete [] m_first;
+	dtFree(m_nodes);
+	dtFree(m_next);
+	dtFree(m_first);
 }
 
 void dtNodePool::clear()
 {
-	memset(m_first, 0xff, sizeof(unsigned short)*m_hashSize);
+	memset(m_first, 0xff, sizeof(dtNodeIndex)*m_hashSize);
 	m_nodeCount = 0;
 }
 
-const dtNode* dtNodePool::findNode(unsigned int id) const
+dtNode* dtNodePool::findNode(dtPolyRef id)
 {
-	unsigned int bucket = hashint(id) & (m_hashSize-1);
-	unsigned short i = m_first[bucket];
+	unsigned int bucket = dtHashRef(id) & (m_hashSize-1);
+	dtNodeIndex i = m_first[bucket];
 	while (i != DT_NULL_IDX)
 	{
 		if (m_nodes[i].id == id)
@@ -64,10 +83,10 @@ const dtNode* dtNodePool::findNode(unsigned int id) const
 	return 0;
 }
 
-dtNode* dtNodePool::getNode(unsigned int id)
+dtNode* dtNodePool::getNode(dtPolyRef id)
 {
-	unsigned int bucket = hashint(id) & (m_hashSize-1);
-	unsigned short i = m_first[bucket];
+	unsigned int bucket = dtHashRef(id) & (m_hashSize-1);
+	dtNodeIndex i = m_first[bucket];
 	dtNode* node = 0;
 	while (i != DT_NULL_IDX)
 	{
@@ -79,7 +98,7 @@ dtNode* dtNodePool::getNode(unsigned int id)
 	if (m_nodeCount >= m_maxNodes)
 		return 0;
 	
-	i = (unsigned short)m_nodeCount;
+	i = (dtNodeIndex)m_nodeCount;
 	m_nodeCount++;
 	
 	// Init node
@@ -103,12 +122,15 @@ dtNodeQueue::dtNodeQueue(int n) :
 	m_capacity(n),
 	m_size(0)
 {
-	m_heap = new dtNode*[m_capacity+1];
+	dtAssert(m_capacity > 0);
+	
+	m_heap = (dtNode**)dtAlloc(sizeof(dtNode*)*(m_capacity+1), DT_ALLOC_PERM);
+	dtAssert(m_heap);
 }
 
 dtNodeQueue::~dtNodeQueue()
 {
-	delete [] m_heap;
+	dtFree(m_heap);
 }
 
 void dtNodeQueue::bubbleUp(int i, dtNode* node)

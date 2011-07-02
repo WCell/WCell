@@ -30,9 +30,6 @@ struct FileList
 	int size;
 };
 
-
-void fileListAdd(FileList& list, const char* path);
-
 void scanDirectory(const char* path, const char* ext, FileList& list);
 
 #endif // FILELIST_H

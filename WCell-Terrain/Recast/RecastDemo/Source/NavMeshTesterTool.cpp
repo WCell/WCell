@@ -30,6 +30,7 @@
 #include "DetourNavMesh.h"
 #include "DetourNavMeshBuilder.h"
 #include "DetourDebugDraw.h"
+#include "DetourCommon.h"
 
 #ifdef WIN32
 #	define snprintf _snprintf
@@ -46,7 +47,53 @@ inline bool inRange(const float* v1, const float* v2, const float r, const float
 	return (dx*dx + dz*dz) < r*r && fabsf(dy) < h;
 }
 
-static bool getSteerTarget(dtNavMesh* navMesh, const float* startPos, const float* endPos,
+
+static int fixupCorridor(dtPolyRef* path, const int npath, const int maxPath,
+						 const dtPolyRef* visited, const int nvisited)
+{
+	int furthestPath = -1;
+	int furthestVisited = -1;
+	
+	// Find furthest common polygon.
+	for (int i = npath-1; i >= 0; --i)
+	{
+		bool found = false;
+		for (int j = nvisited-1; j >= 0; --j)
+		{
+			if (path[i] == visited[j])
+			{
+				furthestPath = i;
+				furthestVisited = j;
+				found = true;
+			}
+		}
+		if (found)
+			break;
+	}
+
+	// If no intersection found just return current path. 
+	if (furthestPath == -1 || furthestVisited == -1)
+		return npath;
+	
+	// Concatenate paths.	
+
+	// Adjust beginning of the buffer to include the visited.
+	const int req = nvisited - furthestVisited;
+	const int orig = rcMin(furthestPath+1, npath);
+	int size = rcMax(0, npath-orig);
+	if (req+size > maxPath)
+		size = maxPath-req;
+	if (size)
+		memmove(path+req, path+orig, size*sizeof(dtPolyRef));
+	
+	// Store visited
+	for (int i = 0; i < req; ++i)
+		path[i] = visited[(nvisited-1)-i];				
+	
+	return req+size;
+}
+
+static bool getSteerTarget(dtNavMeshQuery* navQuery, const float* startPos, const float* endPos,
 						   const float minTargetDist,
 						   const dtPolyRef* path, const int pathSize,
 						   float* steerPos, unsigned char& steerPosFlag, dtPolyRef& steerPosRef,
@@ -57,8 +104,9 @@ static bool getSteerTarget(dtNavMesh* navMesh, const float* startPos, const floa
 	float steerPath[MAX_STEER_POINTS*3];
 	unsigned char steerPathFlags[MAX_STEER_POINTS];
 	dtPolyRef steerPathPolys[MAX_STEER_POINTS];
-	int nsteerPath = navMesh->findStraightPath(startPos, endPos, path, pathSize,
-											   steerPath, steerPathFlags, steerPathPolys, MAX_STEER_POINTS);
+	int nsteerPath = 0;
+	navQuery->findStraightPath(startPos, endPos, path, pathSize,
+							   steerPath, steerPathFlags, steerPathPolys, &nsteerPath, MAX_STEER_POINTS);
 	if (!nsteerPath)
 		return false;
 		
@@ -66,7 +114,7 @@ static bool getSteerTarget(dtNavMesh* navMesh, const float* startPos, const floa
 	{
 		*outPointCount = nsteerPath;
 		for (int i = 0; i < nsteerPath; ++i)
-			rcVcopy(&outPoints[i*3], &steerPath[i*3]);
+			dtVcopy(&outPoints[i*3], &steerPath[i*3]);
 	}
 
 	
@@ -84,7 +132,8 @@ static bool getSteerTarget(dtNavMesh* navMesh, const float* startPos, const floa
 	if (ns >= nsteerPath)
 		return false;
 	
-	rcVcopy(steerPos, &steerPath[ns*3]);
+	dtVcopy(steerPos, &steerPath[ns*3]);
+	steerPos[1] = startPos[1];
 	steerPosFlag = steerPathFlags[ns];
 	steerPosRef = steerPathPolys[ns];
 	
@@ -95,7 +144,9 @@ static bool getSteerTarget(dtNavMesh* navMesh, const float* startPos, const floa
 NavMeshTesterTool::NavMeshTesterTool() :
 	m_sample(0),
 	m_navMesh(0),
-	m_toolMode(TOOLMODE_PATHFIND_ITER),
+	m_navQuery(0),
+	m_pathFindStatus(DT_FAILURE),
+	m_toolMode(TOOLMODE_PATHFIND_FOLLOW),
 	m_startRef(0),
 	m_endRef(0),
 	m_npolys(0),
@@ -108,57 +159,46 @@ NavMeshTesterTool::NavMeshTesterTool() :
 	m_pathIterNum(0),
 	m_steerPointCount(0)
 {
-	m_filter.includeFlags = SAMPLE_POLYFLAGS_ALL;
-	m_filter.excludeFlags = 0;
+	m_filter.setIncludeFlags(SAMPLE_POLYFLAGS_ALL);
+	m_filter.setExcludeFlags(0);
 
 	m_polyPickExt[0] = 2;
 	m_polyPickExt[1] = 4;
 	m_polyPickExt[2] = 2;
+	
+	m_neighbourhoodRadius = 2.5f;
 }
 
 NavMeshTesterTool::~NavMeshTesterTool()
 {
-	if (m_sample)
-	{
-		unsigned char flags = DU_DRAWNAVMESH_CLOSEDLIST;
-		if (m_navMesh)
-			flags |= DU_DRAWNAVMESH_OFFMESHCONS;
-		m_sample->setNavMeshDrawFlags(flags);
-	}
 }
 
 void NavMeshTesterTool::init(Sample* sample)
 {
 	m_sample = sample;
 	m_navMesh = sample->getNavMesh();
+	m_navQuery = sample->getNavMeshQuery();
 	recalc();
 
-	if (m_navMesh)
+	if (m_navQuery)
 	{
 		// Change costs.
-		m_navMesh->setAreaCost(SAMPLE_POLYAREA_GROUND, 1.0f);
-		m_navMesh->setAreaCost(SAMPLE_POLYAREA_WATER, 10.0f);
-		m_navMesh->setAreaCost(SAMPLE_POLYAREA_ROAD, 1.0f);
-		m_navMesh->setAreaCost(SAMPLE_POLYAREA_DOOR, 1.0f);
-		m_navMesh->setAreaCost(SAMPLE_POLYAREA_GRASS, 2.0f);
-		m_navMesh->setAreaCost(SAMPLE_POLYAREA_JUMP, 1.5f);
-	}
-
-	if (m_toolMode == TOOLMODE_PATHFIND_ITER || m_toolMode == TOOLMODE_PATHFIND_STRAIGHT)
-	{
-		unsigned char flags = DU_DRAWNAVMESH_CLOSEDLIST;
-		if (m_navMesh)
-			flags |= DU_DRAWNAVMESH_OFFMESHCONS;
-		m_sample->setNavMeshDrawFlags(flags);
+		m_filter.setAreaCost(SAMPLE_POLYAREA_GROUND, 1.0f);
+		m_filter.setAreaCost(SAMPLE_POLYAREA_WATER, 10.0f);
+		m_filter.setAreaCost(SAMPLE_POLYAREA_ROAD, 1.0f);
+		m_filter.setAreaCost(SAMPLE_POLYAREA_DOOR, 1.0f);
+		m_filter.setAreaCost(SAMPLE_POLYAREA_GRASS, 2.0f);
+		m_filter.setAreaCost(SAMPLE_POLYAREA_JUMP, 1.5f);
 	}
 	
+	m_neighbourhoodRadius = sample->getAgentRadius() * 20.0f;
 }
 
 void NavMeshTesterTool::handleMenu()
 {
-	if (imguiCheck("Pathfind Iter", m_toolMode == TOOLMODE_PATHFIND_ITER))
+	if (imguiCheck("Pathfind Follow", m_toolMode == TOOLMODE_PATHFIND_FOLLOW))
 	{
-		m_toolMode = TOOLMODE_PATHFIND_ITER;
+		m_toolMode = TOOLMODE_PATHFIND_FOLLOW;
 		recalc();
 	}
 	if (imguiCheck("Pathfind Straight", m_toolMode == TOOLMODE_PATHFIND_STRAIGHT))
@@ -166,45 +206,72 @@ void NavMeshTesterTool::handleMenu()
 		m_toolMode = TOOLMODE_PATHFIND_STRAIGHT;
 		recalc();
 	}
-	if (imguiCheck("Distance to Wall", m_toolMode == TOOLMODE_DISTANCE_TO_WALL))
+	if (imguiCheck("Pathfind Sliced", m_toolMode == TOOLMODE_PATHFIND_SLICED))
 	{
-		m_toolMode = TOOLMODE_DISTANCE_TO_WALL;
-		recalc();
-	}
-	if (imguiCheck("Raycast", m_toolMode == TOOLMODE_RAYCAST))
-	{
-		m_toolMode = TOOLMODE_RAYCAST;
-		recalc();
-	}
-	if (imguiCheck("Find Polys Around", m_toolMode == TOOLMODE_FIND_POLYS_AROUND))
-	{
-		m_toolMode = TOOLMODE_FIND_POLYS_AROUND;
+		m_toolMode = TOOLMODE_PATHFIND_SLICED;
 		recalc();
 	}
 
 	imguiSeparator();
 
+	if (imguiCheck("Distance to Wall", m_toolMode == TOOLMODE_DISTANCE_TO_WALL))
+	{
+		m_toolMode = TOOLMODE_DISTANCE_TO_WALL;
+		recalc();
+	}
+
+	imguiSeparator();
+
+	if (imguiCheck("Raycast", m_toolMode == TOOLMODE_RAYCAST))
+	{
+		m_toolMode = TOOLMODE_RAYCAST;
+		recalc();
+	}
+
+	imguiSeparator();
+
+	if (imguiCheck("Find Polys in Circle", m_toolMode == TOOLMODE_FIND_POLYS_IN_CIRCLE))
+	{
+		m_toolMode = TOOLMODE_FIND_POLYS_IN_CIRCLE;
+		recalc();
+	}
+	if (imguiCheck("Find Polys in Shape", m_toolMode == TOOLMODE_FIND_POLYS_IN_SHAPE))
+	{
+		m_toolMode = TOOLMODE_FIND_POLYS_IN_SHAPE;
+		recalc();
+	}
+
+	imguiSeparator();
+
+	if (imguiCheck("Find Local Neighbourhood", m_toolMode == TOOLMODE_FIND_LOCAL_NEIGHBOURHOOD))
+	{
+		m_toolMode = TOOLMODE_FIND_LOCAL_NEIGHBOURHOOD;
+		recalc();
+	}
+	
+	imguiSeparator();
+
 	imguiLabel("Include Flags");
 
 	imguiIndent();
-	if (imguiCheck("Walk", (m_filter.includeFlags & SAMPLE_POLYFLAGS_WALK) != 0))
+	if (imguiCheck("Walk", (m_filter.getIncludeFlags() & SAMPLE_POLYFLAGS_WALK) != 0))
 	{
-		m_filter.includeFlags ^= SAMPLE_POLYFLAGS_WALK;
+		m_filter.setIncludeFlags(m_filter.getIncludeFlags() ^ SAMPLE_POLYFLAGS_WALK);
 		recalc();
 	}
-	if (imguiCheck("Swim", (m_filter.includeFlags & SAMPLE_POLYFLAGS_SWIM) != 0))
+	if (imguiCheck("Swim", (m_filter.getIncludeFlags() & SAMPLE_POLYFLAGS_SWIM) != 0))
 	{
-		m_filter.includeFlags ^= SAMPLE_POLYFLAGS_SWIM;
+		m_filter.setIncludeFlags(m_filter.getIncludeFlags() ^ SAMPLE_POLYFLAGS_SWIM);
 		recalc();
 	}
-	if (imguiCheck("Door", (m_filter.includeFlags & SAMPLE_POLYFLAGS_DOOR) != 0))
+	if (imguiCheck("Door", (m_filter.getIncludeFlags() & SAMPLE_POLYFLAGS_DOOR) != 0))
 	{
-		m_filter.includeFlags ^= SAMPLE_POLYFLAGS_DOOR;
+		m_filter.setIncludeFlags(m_filter.getIncludeFlags() ^ SAMPLE_POLYFLAGS_DOOR);
 		recalc();
 	}
-	if (imguiCheck("Jump", (m_filter.includeFlags & SAMPLE_POLYFLAGS_JUMP) != 0))
+	if (imguiCheck("Jump", (m_filter.getIncludeFlags() & SAMPLE_POLYFLAGS_JUMP) != 0))
 	{
-		m_filter.includeFlags ^= SAMPLE_POLYFLAGS_JUMP;
+		m_filter.setIncludeFlags(m_filter.getIncludeFlags() ^ SAMPLE_POLYFLAGS_JUMP);
 		recalc();
 	}
 	imguiUnindent();
@@ -213,65 +280,54 @@ void NavMeshTesterTool::handleMenu()
 	imguiLabel("Exclude Flags");
 	
 	imguiIndent();
-	if (imguiCheck("Walk", (m_filter.excludeFlags & SAMPLE_POLYFLAGS_WALK) != 0))
+	if (imguiCheck("Walk", (m_filter.getExcludeFlags() & SAMPLE_POLYFLAGS_WALK) != 0))
 	{
-		m_filter.excludeFlags ^= SAMPLE_POLYFLAGS_WALK;
+		m_filter.setExcludeFlags(m_filter.getExcludeFlags() ^ SAMPLE_POLYFLAGS_WALK);
 		recalc();
 	}
-	if (imguiCheck("Swim", (m_filter.excludeFlags & SAMPLE_POLYFLAGS_SWIM) != 0))
+	if (imguiCheck("Swim", (m_filter.getExcludeFlags() & SAMPLE_POLYFLAGS_SWIM) != 0))
 	{
-		m_filter.excludeFlags ^= SAMPLE_POLYFLAGS_SWIM;
+		m_filter.setExcludeFlags(m_filter.getExcludeFlags() ^ SAMPLE_POLYFLAGS_SWIM);
 		recalc();
 	}
-	if (imguiCheck("Door", (m_filter.excludeFlags & SAMPLE_POLYFLAGS_DOOR) != 0))
+	if (imguiCheck("Door", (m_filter.getExcludeFlags() & SAMPLE_POLYFLAGS_DOOR) != 0))
 	{
-		m_filter.excludeFlags ^= SAMPLE_POLYFLAGS_DOOR;
+		m_filter.setExcludeFlags(m_filter.getExcludeFlags() ^ SAMPLE_POLYFLAGS_DOOR);
 		recalc();
 	}
-	if (imguiCheck("Jump", (m_filter.excludeFlags & SAMPLE_POLYFLAGS_JUMP) != 0))
+	if (imguiCheck("Jump", (m_filter.getExcludeFlags() & SAMPLE_POLYFLAGS_JUMP) != 0))
 	{
-		m_filter.excludeFlags ^= SAMPLE_POLYFLAGS_JUMP;
+		m_filter.setExcludeFlags(m_filter.getExcludeFlags() ^ SAMPLE_POLYFLAGS_JUMP);
 		recalc();
 	}
 	imguiUnindent();
 
-	imguiSeparator();
-	
-	if (m_toolMode == TOOLMODE_PATHFIND_ITER || m_toolMode == TOOLMODE_PATHFIND_STRAIGHT)
-	{
-		unsigned char flags = DU_DRAWNAVMESH_CLOSEDLIST;
-		if (m_navMesh)
-			flags |= DU_DRAWNAVMESH_OFFMESHCONS;
-		m_sample->setNavMeshDrawFlags(flags);
-	}
-	else
-	{
-		unsigned char flags = 0;
-		if (m_navMesh)
-			flags |= DU_DRAWNAVMESH_OFFMESHCONS;
-		m_sample->setNavMeshDrawFlags(flags);
-	}
+	imguiSeparator();	
 }
 
-void NavMeshTesterTool::handleClick(const float* p, bool shift)
+void NavMeshTesterTool::handleClick(const float* /*s*/, const float* p, bool shift)
 {
 	if (shift)
 	{
 		m_sposSet = true;
-		rcVcopy(m_spos, p);
+		dtVcopy(m_spos, p);
 	}
 	else
 	{
 		m_eposSet = true;
-		rcVcopy(m_epos, p);
+		dtVcopy(m_epos, p);
 	}
 	recalc();
 }
 
 void NavMeshTesterTool::handleStep()
 {
+}
+
+void NavMeshTesterTool::handleToggle()
+{
 	// TODO: merge separate to a path iterator. Use same code in recalc() too.
-	if (m_toolMode != TOOLMODE_PATHFIND_ITER)
+	if (m_toolMode != TOOLMODE_PATHFIND_FOLLOW)
 		return;
 		
 	if (!m_sposSet || !m_eposSet || !m_startRef || !m_endRef)
@@ -282,27 +338,28 @@ void NavMeshTesterTool::handleStep()
 
 	if (m_pathIterNum == 0)
 	{
-		m_npolys = m_navMesh->findPath(m_startRef, m_endRef, m_spos, m_epos, &m_filter, m_polys, MAX_POLYS);
+		m_navQuery->findPath(m_startRef, m_endRef, m_spos, m_epos, &m_filter, m_polys, &m_npolys, MAX_POLYS);
 		m_nsmoothPath = 0;
 
-		m_pathIterPolys = m_polys; 
 		m_pathIterPolyCount = m_npolys;
+		if (m_pathIterPolyCount)
+			memcpy(m_pathIterPolys, m_polys, sizeof(dtPolyRef)*m_pathIterPolyCount); 
 		
 		if (m_pathIterPolyCount)
 		{
 			// Iterate over the path to find smooth path on the detail mesh surface.
 			
-			m_navMesh->closestPointOnPolyBoundary(m_startRef, m_spos, m_iterPos);
-			m_navMesh->closestPointOnPolyBoundary(m_pathIterPolys[m_pathIterPolyCount-1], m_epos, m_targetPos);
+			m_navQuery->closestPointOnPolyBoundary(m_startRef, m_spos, m_iterPos);
+			m_navQuery->closestPointOnPolyBoundary(m_pathIterPolys[m_pathIterPolyCount-1], m_epos, m_targetPos);
 			
 			m_nsmoothPath = 0;
 			
-			rcVcopy(&m_smoothPath[m_nsmoothPath*3], m_iterPos);
+			dtVcopy(&m_smoothPath[m_nsmoothPath*3], m_iterPos);
 			m_nsmoothPath++;
 		}
 	}
 	
-	rcVcopy(m_prevIterPos, m_iterPos);
+	dtVcopy(m_prevIterPos, m_iterPos);
 
 	m_pathIterNum++;
 
@@ -320,51 +377,48 @@ void NavMeshTesterTool::handleStep()
 	unsigned char steerPosFlag;
 	dtPolyRef steerPosRef;
 		
-	if (!getSteerTarget(m_navMesh, m_iterPos, m_targetPos, SLOP,
+	if (!getSteerTarget(m_navQuery, m_iterPos, m_targetPos, SLOP,
 						m_pathIterPolys, m_pathIterPolyCount, steerPos, steerPosFlag, steerPosRef,
 						m_steerPoints, &m_steerPointCount))
 		return;
 		
-	rcVcopy(m_steerPos, steerPos);
+	dtVcopy(m_steerPos, steerPos);
 	
 	bool endOfPath = (steerPosFlag & DT_STRAIGHTPATH_END) ? true : false;
 	bool offMeshConnection = (steerPosFlag & DT_STRAIGHTPATH_OFFMESH_CONNECTION) ? true : false;
 		
 	// Find movement delta.
 	float delta[3], len;
-	rcVsub(delta, steerPos, m_iterPos);
-	len = sqrtf(rcVdot(delta,delta));
+	dtVsub(delta, steerPos, m_iterPos);
+	len = sqrtf(dtVdot(delta,delta));
 	// If the steer target is end of path or off-mesh link, do not move past the location.
 	if ((endOfPath || offMeshConnection) && len < STEP_SIZE)
 		len = 1;
 	else
 		len = STEP_SIZE / len;
 	float moveTgt[3];
-	rcVmad(moveTgt, m_iterPos, delta, len);
+	dtVmad(moveTgt, m_iterPos, delta, len);
 		
 	// Move
 	float result[3];
-	int n = m_navMesh->moveAlongPathCorridor(m_iterPos, moveTgt, result, m_pathIterPolys, m_pathIterPolyCount);
+	dtPolyRef visited[16];
+	int nvisited = 0;
+	m_navQuery->moveAlongSurface(m_pathIterPolys[0], m_iterPos, moveTgt, &m_filter,
+								 result, visited, &nvisited, 16);
+	m_pathIterPolyCount = fixupCorridor(m_pathIterPolys, m_pathIterPolyCount, MAX_POLYS, visited, nvisited);
 	float h = 0;
-	m_navMesh->getPolyHeight(m_pathIterPolys[n], result, &h);
+	m_navQuery->getPolyHeight(m_pathIterPolys[0], result, &h);
 	result[1] = h;
-	// Shrink path corridor if advanced.
-	if (n)
-	{
-		m_pathIterPolys += n;
-		m_pathIterPolyCount -= n;
-	}
-	// Update position.
-	rcVcopy(m_iterPos, result);
-		
+	dtVcopy(m_iterPos, result);
+	
 	// Handle end of path and off-mesh links when close enough.
 	if (endOfPath && inRange(m_iterPos, steerPos, SLOP, 1.0f))
 	{
 		// Reached end of path.
-		rcVcopy(m_iterPos, m_targetPos);
+		dtVcopy(m_iterPos, m_targetPos);
 		if (m_nsmoothPath < MAX_SMOOTH)
 		{
-			rcVcopy(&m_smoothPath[m_nsmoothPath*3], m_iterPos);
+			dtVcopy(&m_smoothPath[m_nsmoothPath*3], m_iterPos);
 			m_nsmoothPath++;
 		}
 		return;
@@ -376,32 +430,36 @@ void NavMeshTesterTool::handleStep()
 		
 		// Advance the path up to and over the off-mesh connection.
 		dtPolyRef prevRef = 0, polyRef = m_pathIterPolys[0];
-		while (m_pathIterPolyCount && polyRef != steerPosRef)
+		int npos = 0;
+		while (npos < m_pathIterPolyCount && polyRef != steerPosRef)
 		{
 			prevRef = polyRef;
-			polyRef = m_pathIterPolys[0];
-			m_pathIterPolys++;
-			m_pathIterPolyCount--;
+			polyRef = m_pathIterPolys[npos];
+			npos++;
 		}
-		
+		for (int i = npos; i < m_pathIterPolyCount; ++i)
+			m_pathIterPolys[i-npos] = m_pathIterPolys[i];
+		m_pathIterPolyCount -= npos;
+				
 		// Handle the connection.
-		if (m_navMesh->getOffMeshConnectionPolyEndPoints(prevRef, polyRef, startPos, endPos))
+		dtStatus status = m_navMesh->getOffMeshConnectionPolyEndPoints(prevRef, polyRef, startPos, endPos);
+		if (dtStatusSucceed(status))
 		{
 			if (m_nsmoothPath < MAX_SMOOTH)
 			{
-				rcVcopy(&m_smoothPath[m_nsmoothPath*3], startPos);
+				dtVcopy(&m_smoothPath[m_nsmoothPath*3], startPos);
 				m_nsmoothPath++;
 				// Hack to make the dotted path not visible during off-mesh connection.
 				if (m_nsmoothPath & 1)
 				{
-					rcVcopy(&m_smoothPath[m_nsmoothPath*3], startPos);
+					dtVcopy(&m_smoothPath[m_nsmoothPath*3], startPos);
 					m_nsmoothPath++;
 				}
 			}
 			// Move position at the other side of the off-mesh link.
-			rcVcopy(m_iterPos, endPos);
+			dtVcopy(m_iterPos, endPos);
 			float h;
-			m_navMesh->getPolyHeight(m_pathIterPolys[0], m_iterPos, &h);
+			m_navQuery->getPolyHeight(m_pathIterPolys[0], m_iterPos, &h);
 			m_iterPos[1] = h;
 		}
 	}
@@ -409,10 +467,40 @@ void NavMeshTesterTool::handleStep()
 	// Store results.
 	if (m_nsmoothPath < MAX_SMOOTH)
 	{
-		rcVcopy(&m_smoothPath[m_nsmoothPath*3], m_iterPos);
+		dtVcopy(&m_smoothPath[m_nsmoothPath*3], m_iterPos);
 		m_nsmoothPath++;
 	}
 
+}
+
+void NavMeshTesterTool::handleUpdate(const float /*dt*/)
+{
+	if (m_toolMode == TOOLMODE_PATHFIND_SLICED)
+	{
+		if (dtStatusInProgress(m_pathFindStatus))
+		{
+			m_pathFindStatus = m_navQuery->updateSlicedFindPath(1,0);
+		}
+		if (dtStatusSucceed(m_pathFindStatus))
+		{
+			m_navQuery->finalizeSlicedFindPath(m_polys, &m_npolys, MAX_POLYS);
+			m_nstraightPath = 0;
+			if (m_npolys)
+			{
+				// In case of partial path, make sure the end point is clamped to the last polygon.
+				float epos[3];
+				dtVcopy(epos, m_epos);
+				if (m_polys[m_npolys-1] != m_endRef)
+				m_navQuery->closestPointOnPoly(m_polys[m_npolys-1], m_epos, epos);
+
+				m_navQuery->findStraightPath(m_spos, epos, m_polys, m_npolys,
+											 m_straightPath, m_straightPathFlags,
+											 m_straightPathPolys, &m_nstraightPath, MAX_POLYS);
+			}
+			 
+			m_pathFindStatus = DT_FAILURE;
+		}
+	}
 }
 
 void NavMeshTesterTool::reset()
@@ -434,16 +522,18 @@ void NavMeshTesterTool::recalc()
 		return;
 	
 	if (m_sposSet)
-		m_startRef = m_navMesh->findNearestPoly(m_spos, m_polyPickExt, &m_filter, 0);
+		m_navQuery->findNearestPoly(m_spos, m_polyPickExt, &m_filter, &m_startRef, 0);
 	else
 		m_startRef = 0;
 	
 	if (m_eposSet)
-		m_endRef = m_navMesh->findNearestPoly(m_epos, m_polyPickExt, &m_filter, 0);
+		m_navQuery->findNearestPoly(m_epos, m_polyPickExt, &m_filter, &m_endRef, 0);
 	else
 		m_endRef = 0;
 	
-	if (m_toolMode == TOOLMODE_PATHFIND_ITER)
+	m_pathFindStatus = DT_FAILURE;
+	
+	if (m_toolMode == TOOLMODE_PATHFIND_FOLLOW)
 	{
 		m_pathIterNum = 0;
 		if (m_sposSet && m_eposSet && m_startRef && m_endRef)
@@ -451,31 +541,30 @@ void NavMeshTesterTool::recalc()
 #ifdef DUMP_REQS
 			printf("pi  %f %f %f  %f %f %f  0x%x 0x%x\n",
 				   m_spos[0],m_spos[1],m_spos[2], m_epos[0],m_epos[1],m_epos[2],
-				   m_filter.includeFlags, m_filter.excludeFlags); 
+				   m_filter.getIncludeFlags(), m_filter.getExcludeFlags()); 
 #endif
 
-			m_npolys = m_navMesh->findPath(m_startRef, m_endRef, m_spos, m_epos, &m_filter, m_polys, MAX_POLYS);
-
-			printf("Found path over %d polys\n", m_npolys);
+			m_navQuery->findPath(m_startRef, m_endRef, m_spos, m_epos, &m_filter, m_polys, &m_npolys, MAX_POLYS);
 
 			m_nsmoothPath = 0;
 
 			if (m_npolys)
 			{
 				// Iterate over the path to find smooth path on the detail mesh surface.
-				const dtPolyRef* polys = m_polys; 
+				dtPolyRef polys[MAX_POLYS];
+				memcpy(polys, m_polys, sizeof(dtPolyRef)*m_npolys); 
 				int npolys = m_npolys;
 				
 				float iterPos[3], targetPos[3];
-				m_navMesh->closestPointOnPolyBoundary(m_startRef, m_spos, iterPos);
-				m_navMesh->closestPointOnPolyBoundary(polys[npolys-1], m_epos, targetPos);
+				m_navQuery->closestPointOnPolyBoundary(m_startRef, m_spos, iterPos);
+				m_navQuery->closestPointOnPolyBoundary(polys[npolys-1], m_epos, targetPos);
 				
 				static const float STEP_SIZE = 0.5f;
 				static const float SLOP = 0.01f;
 				
 				m_nsmoothPath = 0;
 				
-				rcVcopy(&m_smoothPath[m_nsmoothPath*3], iterPos);
+				dtVcopy(&m_smoothPath[m_nsmoothPath*3], iterPos);
 				m_nsmoothPath++;
 				
 				// Move towards target a small advancement at a time until target reached or
@@ -487,7 +576,7 @@ void NavMeshTesterTool::recalc()
 					unsigned char steerPosFlag;
 					dtPolyRef steerPosRef;
 					
-					if (!getSteerTarget(m_navMesh, iterPos, targetPos, SLOP,
+					if (!getSteerTarget(m_navQuery, iterPos, targetPos, SLOP,
 										polys, npolys, steerPos, steerPosFlag, steerPosRef))
 						break;
 					
@@ -496,39 +585,37 @@ void NavMeshTesterTool::recalc()
 					
 					// Find movement delta.
 					float delta[3], len;
-					rcVsub(delta, steerPos, iterPos);
-					len = sqrtf(rcVdot(delta,delta));
+					dtVsub(delta, steerPos, iterPos);
+					len = dtSqrt(dtVdot(delta,delta));
 					// If the steer target is end of path or off-mesh link, do not move past the location.
 					if ((endOfPath || offMeshConnection) && len < STEP_SIZE)
 						len = 1;
 					else
 						len = STEP_SIZE / len;
 					float moveTgt[3];
-					rcVmad(moveTgt, iterPos, delta, len);
+					dtVmad(moveTgt, iterPos, delta, len);
 					
 					// Move
 					float result[3];
-					int n = m_navMesh->moveAlongPathCorridor(iterPos, moveTgt, result, polys, npolys);
+					dtPolyRef visited[16];
+					int nvisited = 0;
+					m_navQuery->moveAlongSurface(polys[0], iterPos, moveTgt, &m_filter,
+												 result, visited, &nvisited, 16);
+															   
+					npolys = fixupCorridor(polys, npolys, MAX_POLYS, visited, nvisited);
 					float h = 0;
-					m_navMesh->getPolyHeight(polys[n], result, &h);
+					m_navQuery->getPolyHeight(polys[0], result, &h);
 					result[1] = h;
-					// Shrink path corridor if advanced.
-					if (n)
-					{
-						polys += n;
-						npolys -= n;
-					}
-					// Update position.
-					rcVcopy(iterPos, result);
+					dtVcopy(iterPos, result);
 
 					// Handle end of path and off-mesh links when close enough.
 					if (endOfPath && inRange(iterPos, steerPos, SLOP, 1.0f))
 					{
 						// Reached end of path.
-						rcVcopy(iterPos, targetPos);
+						dtVcopy(iterPos, targetPos);
 						if (m_nsmoothPath < MAX_SMOOTH)
 						{
-							rcVcopy(&m_smoothPath[m_nsmoothPath*3], iterPos);
+							dtVcopy(&m_smoothPath[m_nsmoothPath*3], iterPos);
 							m_nsmoothPath++;
 						}
 						break;
@@ -540,32 +627,36 @@ void NavMeshTesterTool::recalc()
 						
 						// Advance the path up to and over the off-mesh connection.
 						dtPolyRef prevRef = 0, polyRef = polys[0];
-						while (npolys && polyRef != steerPosRef)
+						int npos = 0;
+						while (npos < npolys && polyRef != steerPosRef)
 						{
 							prevRef = polyRef;
-							polyRef = polys[0];
-							polys++;
-							npolys--;
+							polyRef = polys[npos];
+							npos++;
 						}
+						for (int i = npos; i < npolys; ++i)
+							polys[i-npos] = polys[i];
+						npolys -= npos;
 						
 						// Handle the connection.
-						if (m_navMesh->getOffMeshConnectionPolyEndPoints(prevRef, polyRef, startPos, endPos))
+						dtStatus status = m_navMesh->getOffMeshConnectionPolyEndPoints(prevRef, polyRef, startPos, endPos);
+						if (dtStatusSucceed(status))
 						{
 							if (m_nsmoothPath < MAX_SMOOTH)
 							{
-								rcVcopy(&m_smoothPath[m_nsmoothPath*3], startPos);
+								dtVcopy(&m_smoothPath[m_nsmoothPath*3], startPos);
 								m_nsmoothPath++;
 								// Hack to make the dotted path not visible during off-mesh connection.
 								if (m_nsmoothPath & 1)
 								{
-									rcVcopy(&m_smoothPath[m_nsmoothPath*3], startPos);
+									dtVcopy(&m_smoothPath[m_nsmoothPath*3], startPos);
 									m_nsmoothPath++;
 								}
 							}
 							// Move position at the other side of the off-mesh link.
-							rcVcopy(iterPos, endPos);
+							dtVcopy(iterPos, endPos);
 							float h;
-							m_navMesh->getPolyHeight(polys[0], iterPos, &h);
+							m_navQuery->getPolyHeight(polys[0], iterPos, &h);
 							iterPos[1] = h;
 						}
 					}
@@ -573,12 +664,12 @@ void NavMeshTesterTool::recalc()
 					// Store results.
 					if (m_nsmoothPath < MAX_SMOOTH)
 					{
-						rcVcopy(&m_smoothPath[m_nsmoothPath*3], iterPos);
+						dtVcopy(&m_smoothPath[m_nsmoothPath*3], iterPos);
 						m_nsmoothPath++;
 					}
 				}
 			}
-			
+
 		}
 		else
 		{
@@ -593,16 +684,42 @@ void NavMeshTesterTool::recalc()
 #ifdef DUMP_REQS
 			printf("ps  %f %f %f  %f %f %f  0x%x 0x%x\n",
 				   m_spos[0],m_spos[1],m_spos[2], m_epos[0],m_epos[1],m_epos[2],
-				   m_filter.includeFlags, m_filter.excludeFlags); 
+				   m_filter.getIncludeFlags(), m_filter.getExcludeFlags()); 
 #endif
-			m_npolys = m_navMesh->findPath(m_startRef, m_endRef, m_spos, m_epos, &m_filter, m_polys, MAX_POLYS);
+			m_navQuery->findPath(m_startRef, m_endRef, m_spos, m_epos, &m_filter, m_polys, &m_npolys, MAX_POLYS);
 			m_nstraightPath = 0;
 			if (m_npolys)
 			{
-				m_nstraightPath = m_navMesh->findStraightPath(m_spos, m_epos, m_polys, m_npolys,
-															  m_straightPath, m_straightPathFlags,
-															  m_straightPathPolys, MAX_POLYS);
+				// In case of partial path, make sure the end point is clamped to the last polygon.
+				float epos[3];
+				dtVcopy(epos, m_epos);
+				if (m_polys[m_npolys-1] != m_endRef)
+					m_navQuery->closestPointOnPoly(m_polys[m_npolys-1], m_epos, epos);
+				
+				m_navQuery->findStraightPath(m_spos, epos, m_polys, m_npolys,
+											 m_straightPath, m_straightPathFlags,
+											 m_straightPathPolys, &m_nstraightPath, MAX_POLYS);
 			}
+		}
+		else
+		{
+			m_npolys = 0;
+			m_nstraightPath = 0;
+		}
+	}
+	else if (m_toolMode == TOOLMODE_PATHFIND_SLICED)
+	{
+		if (m_sposSet && m_eposSet && m_startRef && m_endRef)
+		{
+#ifdef DUMP_REQS
+			printf("ps  %f %f %f  %f %f %f  0x%x 0x%x\n",
+				   m_spos[0],m_spos[1],m_spos[2], m_epos[0],m_epos[1],m_epos[2],
+				   m_filter.getIncludeFlags(), m_filter.getExcludeFlags()); 
+#endif
+			m_npolys = 0;
+			m_nstraightPath = 0;
+			
+			m_pathFindStatus = m_navQuery->initSlicedFindPath(m_startRef, m_endRef, m_spos, m_epos, &m_filter);
 		}
 		else
 		{
@@ -618,7 +735,7 @@ void NavMeshTesterTool::recalc()
 #ifdef DUMP_REQS
 			printf("rc  %f %f %f  %f %f %f  0x%x 0x%x\n",
 				   m_spos[0],m_spos[1],m_spos[2], m_epos[0],m_epos[1],m_epos[2],
-				   m_filter.includeFlags, m_filter.excludeFlags); 
+				   m_filter.getIncludeFlags(), m_filter.getExcludeFlags()); 
 #endif
 			float t = 0;
 			m_npolys = 0;
@@ -626,11 +743,11 @@ void NavMeshTesterTool::recalc()
 			m_straightPath[0] = m_spos[0];
 			m_straightPath[1] = m_spos[1];
 			m_straightPath[2] = m_spos[2];
-			m_npolys = m_navMesh->raycast(m_startRef, m_spos, m_epos, &m_filter, t, m_hitNormal, m_polys, MAX_POLYS);
+			m_navQuery->raycast(m_startRef, m_spos, m_epos, &m_filter, &t, m_hitNormal, m_polys, &m_npolys, MAX_POLYS);
 			if (t > 1)
 			{
 				// No hit
-				rcVcopy(m_hitPos, m_epos);
+				dtVcopy(m_hitPos, m_epos);
 				m_hitResult = false;
 			}
 			else
@@ -642,12 +759,12 @@ void NavMeshTesterTool::recalc()
 				if (m_npolys)
 				{
 					float h = 0;
-					m_navMesh->getPolyHeight(m_polys[m_npolys-1], m_hitPos, &h);
+					m_navQuery->getPolyHeight(m_polys[m_npolys-1], m_hitPos, &h);
 					m_hitPos[1] = h;
 				}
 				m_hitResult = true;
 			}
-			rcVcopy(&m_straightPath[3], m_hitPos);
+			dtVcopy(&m_straightPath[3], m_hitPos);
 		}
 	}
 	else if (m_toolMode == TOOLMODE_DISTANCE_TO_WALL)
@@ -658,12 +775,13 @@ void NavMeshTesterTool::recalc()
 #ifdef DUMP_REQS
 			printf("dw  %f %f %f  %f  0x%x 0x%x\n",
 				   m_spos[0],m_spos[1],m_spos[2], 100.0f,
-				   m_filter.includeFlags, m_filter.excludeFlags); 
+				   m_filter.getIncludeFlags(), m_filter.getExcludeFlags()); 
 #endif
-			m_distanceToWall = m_navMesh->findDistanceToWall(m_startRef, m_spos, 100.0f, &m_filter, m_hitPos, m_hitNormal);
+			m_distanceToWall = 0.0f;
+			m_navQuery->findDistanceToWall(m_startRef, m_spos, 100.0f, &m_filter, &m_distanceToWall, m_hitPos, m_hitNormal);
 		}
 	}
-	else if (m_toolMode == TOOLMODE_FIND_POLYS_AROUND)
+	else if (m_toolMode == TOOLMODE_FIND_POLYS_IN_CIRCLE)
 	{
 		if (m_sposSet && m_startRef && m_eposSet)
 		{
@@ -671,35 +789,92 @@ void NavMeshTesterTool::recalc()
 			const float dz = m_epos[2] - m_spos[2];
 			float dist = sqrtf(dx*dx + dz*dz);
 #ifdef DUMP_REQS
-			printf("fp  %f %f %f  %f  0x%x 0x%x\n",
+			printf("fpc  %f %f %f  %f  0x%x 0x%x\n",
 				   m_spos[0],m_spos[1],m_spos[2], dist,
-				   m_filter.includeFlags, m_filter.excludeFlags); 
+				   m_filter.getIncludeFlags(), m_filter.getExcludeFlags());
 #endif
-			m_npolys = m_navMesh->findPolysAround(m_startRef, m_spos, dist, &m_filter, m_polys, m_parent, 0, MAX_POLYS);
+			m_navQuery->findPolysAroundCircle(m_startRef, m_spos, dist, &m_filter,
+											  m_polys, m_parent, 0, &m_npolys, MAX_POLYS);
+
+		}
+	}
+	else if (m_toolMode == TOOLMODE_FIND_POLYS_IN_SHAPE)
+	{
+		if (m_sposSet && m_startRef && m_eposSet)
+		{
+			const float nx = (m_epos[2] - m_spos[2])*0.25f;
+			const float nz = -(m_epos[0] - m_spos[0])*0.25f;
+			const float agentHeight = m_sample ? m_sample->getAgentHeight() : 0;
+
+			m_queryPoly[0] = m_spos[0] + nx*1.2f;
+			m_queryPoly[1] = m_spos[1] + agentHeight/2;
+			m_queryPoly[2] = m_spos[2] + nz*1.2f;
+
+			m_queryPoly[3] = m_spos[0] - nx*1.3f;
+			m_queryPoly[4] = m_spos[1] + agentHeight/2;
+			m_queryPoly[5] = m_spos[2] - nz*1.3f;
+
+			m_queryPoly[6] = m_epos[0] - nx*0.8f;
+			m_queryPoly[7] = m_epos[1] + agentHeight/2;
+			m_queryPoly[8] = m_epos[2] - nz*0.8f;
+
+			m_queryPoly[9] = m_epos[0] + nx;
+			m_queryPoly[10] = m_epos[1] + agentHeight/2;
+			m_queryPoly[11] = m_epos[2] + nz;
+			
+#ifdef DUMP_REQS
+			printf("fpp  %f %f %f  %f %f %f  %f %f %f  %f %f %f  0x%x 0x%x\n",
+				   m_queryPoly[0],m_queryPoly[1],m_queryPoly[2],
+				   m_queryPoly[3],m_queryPoly[4],m_queryPoly[5],
+				   m_queryPoly[6],m_queryPoly[7],m_queryPoly[8],
+				   m_queryPoly[9],m_queryPoly[10],m_queryPoly[11],
+				   m_filter.getIncludeFlags(), m_filter.getExcludeFlags());
+#endif
+			m_navQuery->findPolysAroundShape(m_startRef, m_queryPoly, 4, &m_filter,
+											 m_polys, m_parent, 0, &m_npolys, MAX_POLYS);
+		}
+	}
+	else if (m_toolMode == TOOLMODE_FIND_LOCAL_NEIGHBOURHOOD)
+	{
+		if (m_sposSet && m_startRef)
+		{
+#ifdef DUMP_REQS
+			printf("fln  %f %f %f  %f  0x%x 0x%x\n",
+				   m_spos[0],m_spos[1],m_spos[2], m_neighbourhoodRadius,
+				   m_filter.getIncludeFlags(), m_filter.getExcludeFlags());
+#endif
+			m_navQuery->findLocalNeighbourhood(m_startRef, m_spos, m_neighbourhoodRadius, &m_filter,
+											   m_polys, m_parent, &m_npolys, MAX_POLYS);
 		}
 	}
 }
 
 static void getPolyCenter(dtNavMesh* navMesh, dtPolyRef ref, float* center)
 {
-	const dtPoly* p = navMesh->getPolyByRef(ref);
-	if (!p) return;
-	const float* verts = navMesh->getPolyVertsByRef(ref);
 	center[0] = 0;
 	center[1] = 0;
 	center[2] = 0;
-	for (int i = 0; i < (int)p->vertCount; ++i)
+	
+	const dtMeshTile* tile = 0;
+	const dtPoly* poly = 0;
+	dtStatus status = navMesh->getTileAndPolyByRef(ref, &tile, &poly);
+	if (dtStatusFailed(status))
+		return;
+		
+	for (int i = 0; i < (int)poly->vertCount; ++i)
 	{
-		const float* v = &verts[p->verts[i]*3];
+		const float* v = &tile->verts[poly->verts[i]*3];
 		center[0] += v[0];
 		center[1] += v[1];
 		center[2] += v[2];
 	}
-	const float s = 1.0f / p->vertCount;
+	const float s = 1.0f / poly->vertCount;
 	center[0] *= s;
 	center[1] *= s;
 	center[2] *= s;
 }
+
+
 
 void NavMeshTesterTool::handleRender()
 {
@@ -725,7 +900,7 @@ void NavMeshTesterTool::handleRender()
 		return;
 	}
 
-	if (m_toolMode == TOOLMODE_PATHFIND_ITER)
+	if (m_toolMode == TOOLMODE_PATHFIND_FOLLOW)
 	{
 		duDebugDrawNavMeshPoly(&dd, *m_navMesh, m_startRef, startCol);
 		duDebugDrawNavMeshPoly(&dd, *m_navMesh, m_endRef, endCol);
@@ -772,15 +947,15 @@ void NavMeshTesterTool::handleRender()
 			
 			for (int i = 0; i < m_steerPointCount-1; ++i)
 			{
-				dd.vertex(m_steerPoints[i*3+0],m_steerPoints[i*3+1]+0.2f,m_steerPoints[i*3+2], duDarkenColor(steerCol));
-				dd.vertex(m_steerPoints[(i+1)*3+0],m_steerPoints[(i+1)*3+1]+0.2f,m_steerPoints[(i+1)*3+2], duDarkenColor(steerCol));
+				dd.vertex(m_steerPoints[i*3+0],m_steerPoints[i*3+1]+0.2f,m_steerPoints[i*3+2], duDarkenCol(steerCol));
+				dd.vertex(m_steerPoints[(i+1)*3+0],m_steerPoints[(i+1)*3+1]+0.2f,m_steerPoints[(i+1)*3+2], duDarkenCol(steerCol));
 			}
 			
 			dd.end();
 			dd.depthMask(true);
 		}
 	}
-	else if (m_toolMode == TOOLMODE_PATHFIND_STRAIGHT)
+	else if (m_toolMode == TOOLMODE_PATHFIND_STRAIGHT || m_toolMode == TOOLMODE_PATHFIND_SLICED)
 	{
 		duDebugDrawNavMeshPoly(&dd, *m_navMesh, m_startRef, startCol);
 		duDebugDrawNavMeshPoly(&dd, *m_navMesh, m_endRef, endCol);
@@ -874,7 +1049,7 @@ void NavMeshTesterTool::handleRender()
 		dd.end();
 		dd.depthMask(true);
 	}
-	else if (m_toolMode == TOOLMODE_FIND_POLYS_AROUND)
+	else if (m_toolMode == TOOLMODE_FIND_POLYS_IN_CIRCLE)
 	{
 		for (int i = 0; i < m_npolys; ++i)
 		{
@@ -902,6 +1077,114 @@ void NavMeshTesterTool::handleRender()
 			dd.depthMask(true);
 		}
 	}	
+	else if (m_toolMode == TOOLMODE_FIND_POLYS_IN_SHAPE)
+	{
+		for (int i = 0; i < m_npolys; ++i)
+		{
+			duDebugDrawNavMeshPoly(&dd, *m_navMesh, m_polys[i], pathCol);
+			dd.depthMask(false);
+			if (m_parent[i])
+			{
+				float p0[3], p1[3];
+				dd.depthMask(false);
+				getPolyCenter(m_navMesh, m_parent[i], p0);
+				getPolyCenter(m_navMesh, m_polys[i], p1);
+				duDebugDrawArc(&dd, p0[0],p0[1],p0[2], p1[0],p1[1],p1[2], 0.25f, 0.0f, 0.4f, duRGBA(0,0,0,128), 2.0f);
+				dd.depthMask(true);
+			}
+			dd.depthMask(true);
+		}
+		
+		if (m_sposSet && m_eposSet)
+		{
+			dd.depthMask(false);
+			const unsigned int col = duRGBA(64,16,0,220);
+			dd.begin(DU_DRAW_LINES, 2.0f);
+			for (int i = 0, j = 3; i < 4; j=i++)
+			{
+				const float* p0 = &m_queryPoly[j*3];
+				const float* p1 = &m_queryPoly[i*3];
+				dd.vertex(p0, col);
+				dd.vertex(p1, col);
+			}
+			dd.end();
+			dd.depthMask(true);
+		}
+	}
+	else if (m_toolMode == TOOLMODE_FIND_LOCAL_NEIGHBOURHOOD)
+	{
+		for (int i = 0; i < m_npolys; ++i)
+		{
+			duDebugDrawNavMeshPoly(&dd, *m_navMesh, m_polys[i], pathCol);
+			dd.depthMask(false);
+			if (m_parent[i])
+			{
+				float p0[3], p1[3];
+				dd.depthMask(false);
+				getPolyCenter(m_navMesh, m_parent[i], p0);
+				getPolyCenter(m_navMesh, m_polys[i], p1);
+				duDebugDrawArc(&dd, p0[0],p0[1],p0[2], p1[0],p1[1],p1[2], 0.25f, 0.0f, 0.4f, duRGBA(0,0,0,128), 2.0f);
+				dd.depthMask(true);
+			}
+
+			static const int MAX_SEGS = DT_VERTS_PER_POLYGON*4;
+			float segs[MAX_SEGS*6];
+			dtPolyRef refs[MAX_SEGS];
+			memset(refs, 0, sizeof(dtPolyRef)*MAX_SEGS); 
+			int nsegs = 0;
+			m_navQuery->getPolyWallSegments(m_polys[i], &m_filter, segs, refs, &nsegs, MAX_SEGS);
+			dd.begin(DU_DRAW_LINES, 2.0f);
+			for (int j = 0; j < nsegs; ++j)
+			{
+				const float* s = &segs[j*6];
+				
+				// Skip too distant segments.
+				float tseg;
+				float distSqr = dtDistancePtSegSqr2D(m_spos, s, s+3, tseg);
+				if (distSqr > dtSqr(m_neighbourhoodRadius))
+					continue;
+				
+				float delta[3], norm[3], p0[3], p1[3];
+				dtVsub(delta, s+3,s);
+				dtVmad(p0, s, delta, 0.5f);
+				norm[0] = delta[2];
+				norm[1] = 0;
+				norm[2] = -delta[0];
+				dtVnormalize(norm);
+				dtVmad(p1, p0, norm, agentRadius*0.5f);
+
+				// Skip backfacing segments.
+				if (refs[j])
+				{
+					unsigned int col = duRGBA(255,255,255,32);
+					dd.vertex(s[0],s[1]+agentClimb,s[2],col);
+					dd.vertex(s[3],s[4]+agentClimb,s[5],col);
+				}
+				else
+				{
+					unsigned int col = duRGBA(192,32,16,192);
+					if (dtTriArea2D(m_spos, s, s+3) < 0.0f)
+						col = duRGBA(96,32,16,192);
+					
+					dd.vertex(p0[0],p0[1]+agentClimb,p0[2],col);
+					dd.vertex(p1[0],p1[1]+agentClimb,p1[2],col);
+
+					dd.vertex(s[0],s[1]+agentClimb,s[2],col);
+					dd.vertex(s[3],s[4]+agentClimb,s[5],col);
+				}
+			}
+			dd.end();
+			
+			dd.depthMask(true);
+		}
+		
+		if (m_sposSet)
+		{
+			dd.depthMask(false);
+			duDebugDrawCircle(&dd, m_spos[0], m_spos[1]+agentHeight/2, m_spos[2], m_neighbourhoodRadius, duRGBA(64,16,0,220), 2.0f);
+			dd.depthMask(true);
+		}
+	}	
 }
 
 void NavMeshTesterTool::handleRenderOverlay(double* proj, double* model, int* view)
@@ -919,13 +1202,17 @@ void NavMeshTesterTool::handleRenderOverlay(double* proj, double* model, int* vi
 	{
 		imguiDrawText((int)x, (int)(y-25), IMGUI_ALIGN_CENTER, "End", imguiRGBA(0,0,0,220));
 	}
+	
+	// Tool help
+	const int h = view[3];
+	imguiDrawText(280, h-40, IMGUI_ALIGN_LEFT, "LMB+SHIFT: Set start location  LMB: Set end location", imguiRGBA(255,255,255,192));	
 }
 
 void NavMeshTesterTool::drawAgent(const float* pos, float r, float h, float c, const unsigned int col)
 {
 	DebugDrawGL dd;
 	
-	glDepthMask(GL_FALSE);
+	dd.depthMask(false);
 	
 	// Agent dimensions.	
 	duDebugDrawCylinderWire(&dd, pos[0]-r, pos[1]+0.02f, pos[2]-r, pos[0]+r, pos[1]+h, pos[2]+r, col, 2.0f);
@@ -942,5 +1229,5 @@ void NavMeshTesterTool::drawAgent(const float* pos, float r, float h, float c, c
 	dd.vertex(pos[0], pos[1]+0.02f, pos[2]+r/2, colb);
 	dd.end();
 	
-	glDepthMask(GL_TRUE);
+	dd.depthMask(true);
 }

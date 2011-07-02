@@ -22,24 +22,149 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdarg.h>
 #include "Recast.h"
-#include "RecastLog.h"
-#include "RecastTimer.h"
+#include "RecastAlloc.h"
+#include "RecastAssert.h"
 
-
-void rcIntArray::resize(int n)
+float rcSqrt(float x)
 {
-	if (n > m_cap)
-	{
-		if (!m_cap) m_cap = 8;
-		while (m_cap < n) m_cap *= 2;
-		int* newData = new int[m_cap];
-		if (m_size && newData) memcpy(newData, m_data, m_size*sizeof(int));
-		delete [] m_data;
-		m_data = newData;
-	}
-	m_size = n;
+	return sqrtf(x);
 }
+
+
+void rcContext::log(const rcLogCategory category, const char* format, ...)
+{
+	if (!m_logEnabled)
+		return;
+	static const int MSG_SIZE = 512;
+	char msg[MSG_SIZE];
+	va_list ap;
+	va_start(ap, format);
+	int len = vsnprintf(msg, MSG_SIZE, format, ap);
+	if (len >= MSG_SIZE)
+	{
+		len = MSG_SIZE-1;
+		msg[MSG_SIZE-1] = '\0';
+	}
+	va_end(ap);
+	doLog(category, msg, len);
+}
+
+rcHeightfield* rcAllocHeightfield()
+{
+	rcHeightfield* hf = (rcHeightfield*)rcAlloc(sizeof(rcHeightfield), RC_ALLOC_PERM);
+	memset(hf, 0, sizeof(rcHeightfield));
+	return hf;
+}
+
+void rcFreeHeightField(rcHeightfield* hf)
+{
+	if (!hf) return;
+	// Delete span array.
+	rcFree(hf->spans);
+	// Delete span pools.
+	while (hf->pools)
+	{
+		rcSpanPool* next = hf->pools->next;
+		rcFree(hf->pools);
+		hf->pools = next;
+	}
+	rcFree(hf);
+}
+
+rcCompactHeightfield* rcAllocCompactHeightfield()
+{
+	rcCompactHeightfield* chf = (rcCompactHeightfield*)rcAlloc(sizeof(rcCompactHeightfield), RC_ALLOC_PERM);
+	memset(chf, 0, sizeof(rcCompactHeightfield));
+	return chf;
+}
+
+void rcFreeCompactHeightfield(rcCompactHeightfield* chf)
+{
+	if (!chf) return;
+	rcFree(chf->cells);
+	rcFree(chf->spans);
+	rcFree(chf->dist);
+	rcFree(chf->areas);
+	rcFree(chf);
+}
+
+
+rcHeightfieldLayerSet* rcAllocHeightfieldLayerSet()
+{
+	rcHeightfieldLayerSet* lset = (rcHeightfieldLayerSet*)rcAlloc(sizeof(rcHeightfieldLayerSet), RC_ALLOC_PERM);
+	memset(lset, 0, sizeof(rcHeightfieldLayerSet));
+	return lset;
+}
+
+void rcFreeHeightfieldLayerSet(rcHeightfieldLayerSet* lset)
+{
+	if (!lset) return;
+	for (int i = 0; i < lset->nlayers; ++i)
+	{
+		rcFree(lset->layers[i].heights);
+		rcFree(lset->layers[i].areas);
+		rcFree(lset->layers[i].cons);
+	}
+	rcFree(lset->layers);
+	rcFree(lset);
+}
+
+
+rcContourSet* rcAllocContourSet()
+{
+	rcContourSet* cset = (rcContourSet*)rcAlloc(sizeof(rcContourSet), RC_ALLOC_PERM);
+	memset(cset, 0, sizeof(rcContourSet));
+	return cset;
+}
+
+void rcFreeContourSet(rcContourSet* cset)
+{
+	if (!cset) return;
+	for (int i = 0; i < cset->nconts; ++i)
+	{
+		rcFree(cset->conts[i].verts);
+		rcFree(cset->conts[i].rverts);
+	}
+	rcFree(cset->conts);
+	rcFree(cset);
+}
+
+rcPolyMesh* rcAllocPolyMesh()
+{
+	rcPolyMesh* pmesh = (rcPolyMesh*)rcAlloc(sizeof(rcPolyMesh), RC_ALLOC_PERM);
+	memset(pmesh, 0, sizeof(rcPolyMesh));
+	return pmesh;
+}
+
+void rcFreePolyMesh(rcPolyMesh* pmesh)
+{
+	if (!pmesh) return;
+	rcFree(pmesh->verts);
+	rcFree(pmesh->polys);
+	rcFree(pmesh->regs);
+	rcFree(pmesh->flags);
+	rcFree(pmesh->areas);
+	rcFree(pmesh);
+}
+
+rcPolyMeshDetail* rcAllocPolyMeshDetail()
+{
+	rcPolyMeshDetail* dmesh = (rcPolyMeshDetail*)rcAlloc(sizeof(rcPolyMeshDetail), RC_ALLOC_PERM);
+	memset(dmesh, 0, sizeof(rcPolyMeshDetail));
+	return dmesh;
+}
+
+void rcFreePolyMeshDetail(rcPolyMeshDetail* dmesh)
+{
+	if (!dmesh) return;
+	rcFree(dmesh->meshes);
+	rcFree(dmesh->verts);
+	rcFree(dmesh->tris);
+	rcFree(dmesh);
+}
+
 
 void rcCalcBounds(const float* verts, int nv, float* bmin, float* bmax)
 {
@@ -52,7 +177,6 @@ void rcCalcBounds(const float* verts, int nv, float* bmin, float* bmax)
 		rcVmin(bmin, v);
 		rcVmax(bmax, v);
 	}
-
 }
 
 void rcCalcGridSize(const float* bmin, const float* bmax, float cs, int* w, int* h)
@@ -61,17 +185,20 @@ void rcCalcGridSize(const float* bmin, const float* bmax, float cs, int* w, int*
 	*h = (int)((bmax[2] - bmin[2])/cs+0.5f);
 }
 
-bool rcCreateHeightfield(rcHeightfield& hf, int width, int height,
+bool rcCreateHeightfield(rcContext* /*ctx*/, rcHeightfield& hf, int width, int height,
 						 const float* bmin, const float* bmax,
 						 float cs, float ch)
 {
+	// TODO: VC complains about unref formal variable, figure out a way to handle this better.
+//	rcAssert(ctx);
+	
 	hf.width = width;
 	hf.height = height;
-	hf.spans = new rcSpan*[hf.width*hf.height];
 	rcVcopy(hf.bmin, bmin);
 	rcVcopy(hf.bmax, bmax);
 	hf.cs = cs;
 	hf.ch = ch;
+	hf.spans = (rcSpan**)rcAlloc(sizeof(rcSpan*)*hf.width*hf.height, RC_ALLOC_PERM);
 	if (!hf.spans)
 		return false;
 	memset(hf.spans, 0, sizeof(rcSpan*)*hf.width*hf.height);
@@ -87,12 +214,15 @@ static void calcTriNormal(const float* v0, const float* v1, const float* v2, flo
 	rcVnormalize(norm);
 }
 
-void rcMarkWalkableTriangles(const float walkableSlopeAngle,
+void rcMarkWalkableTriangles(rcContext* /*ctx*/, const float walkableSlopeAngle,
 							 const float* verts, int /*nv*/,
 							 const int* tris, int nt,
-							 unsigned char* flags)
+							 unsigned char* areas)
 {
-	const float walkableThr = cosf(walkableSlopeAngle/180.0f*(float)M_PI);
+	// TODO: VC complains about unref formal variable, figure out a way to handle this better.
+//	rcAssert(ctx);
+	
+	const float walkableThr = cosf(walkableSlopeAngle/180.0f*RC_PI);
 
 	float norm[3];
 	
@@ -102,12 +232,37 @@ void rcMarkWalkableTriangles(const float walkableSlopeAngle,
 		calcTriNormal(&verts[tri[0]*3], &verts[tri[1]*3], &verts[tri[2]*3], norm);
 		// Check if the face is walkable.
 		if (norm[1] > walkableThr)
-			flags[i] |= RC_WALKABLE;
+			areas[i] = RC_WALKABLE_AREA;
 	}
 }
 
-static int getSpanCount(unsigned char flags, rcHeightfield& hf)
+void rcClearUnwalkableTriangles(rcContext* /*ctx*/, const float walkableSlopeAngle,
+								const float* verts, int /*nv*/,
+								const int* tris, int nt,
+								unsigned char* areas)
 {
+	// TODO: VC complains about unref formal variable, figure out a way to handle this better.
+//	rcAssert(ctx);
+	
+	const float walkableThr = cosf(walkableSlopeAngle/180.0f*RC_PI);
+	
+	float norm[3];
+	
+	for (int i = 0; i < nt; ++i)
+	{
+		const int* tri = &tris[i*3];
+		calcTriNormal(&verts[tri[0]*3], &verts[tri[1]*3], &verts[tri[2]*3], norm);
+		// Check if the face is walkable.
+		if (norm[1] <= walkableThr)
+			areas[i] = RC_NULL_AREA;
+	}
+}
+
+int rcGetHeightFieldSpanCount(rcContext* /*ctx*/, rcHeightfield& hf)
+{
+	// TODO: VC complains about unref formal variable, figure out a way to handle this better.
+//	rcAssert(ctx);
+	
 	const int w = hf.width;
 	const int h = hf.height;
 	int spanCount = 0;
@@ -117,7 +272,7 @@ static int getSpanCount(unsigned char flags, rcHeightfield& hf)
 		{
 			for (rcSpan* s = hf.spans[x + y*w]; s; s = s->next)
 			{
-				if (s->flags == flags)
+				if (s->area != RC_NULL_AREA)
 					spanCount++;
 			}
 		}
@@ -125,15 +280,16 @@ static int getSpanCount(unsigned char flags, rcHeightfield& hf)
 	return spanCount;
 }
 
-bool rcBuildCompactHeightfield(const int walkableHeight, const int walkableClimb,
-							   unsigned char flags, rcHeightfield& hf,
-							   rcCompactHeightfield& chf)
+bool rcBuildCompactHeightfield(rcContext* ctx, const int walkableHeight, const int walkableClimb,
+							   rcHeightfield& hf, rcCompactHeightfield& chf)
 {
-	rcTimeVal startTime = rcGetPerformanceTimer();
+	rcAssert(ctx);
+	
+	ctx->startTimer(RC_TIMER_BUILD_COMPACTHEIGHTFIELD);
 	
 	const int w = hf.width;
 	const int h = hf.height;
-	const int spanCount = getSpanCount(flags, hf);
+	const int spanCount = rcGetHeightFieldSpanCount(ctx, hf);
 
 	// Fill in header.
 	chf.width = w;
@@ -147,30 +303,27 @@ bool rcBuildCompactHeightfield(const int walkableHeight, const int walkableClimb
 	chf.bmax[1] += walkableHeight*hf.ch;
 	chf.cs = hf.cs;
 	chf.ch = hf.ch;
-	chf.cells = new rcCompactCell[w*h];
+	chf.cells = (rcCompactCell*)rcAlloc(sizeof(rcCompactCell)*w*h, RC_ALLOC_PERM);
 	if (!chf.cells)
 	{
-		if (rcGetLog())
-			rcGetLog()->log(RC_LOG_ERROR, "rcBuildCompactHeightfield: Out of memory 'chf.cells' (%d)", w*h);
+		ctx->log(RC_LOG_ERROR, "rcBuildCompactHeightfield: Out of memory 'chf.cells' (%d)", w*h);
 		return false;
 	}
 	memset(chf.cells, 0, sizeof(rcCompactCell)*w*h);
-	chf.spans = new rcCompactSpan[spanCount];
+	chf.spans = (rcCompactSpan*)rcAlloc(sizeof(rcCompactSpan)*spanCount, RC_ALLOC_PERM);
 	if (!chf.spans)
 	{
-		if (rcGetLog())
-			rcGetLog()->log(RC_LOG_ERROR, "rcBuildCompactHeightfield: Out of memory 'chf.spans' (%d)", spanCount);
+		ctx->log(RC_LOG_ERROR, "rcBuildCompactHeightfield: Out of memory 'chf.spans' (%d)", spanCount);
 		return false;
 	}
 	memset(chf.spans, 0, sizeof(rcCompactSpan)*spanCount);
-	chf.areas = new unsigned char[spanCount];
+	chf.areas = (unsigned char*)rcAlloc(sizeof(unsigned char)*spanCount, RC_ALLOC_PERM);
 	if (!chf.areas)
 	{
-		if (rcGetLog())
-			rcGetLog()->log(RC_LOG_ERROR, "rcBuildCompactHeightfield: Out of memory 'chf.areas' (%d)", spanCount);
+		ctx->log(RC_LOG_ERROR, "rcBuildCompactHeightfield: Out of memory 'chf.areas' (%d)", spanCount);
 		return false;
 	}
-	memset(chf.areas, RC_WALKABLE_AREA, sizeof(unsigned char)*spanCount);
+	memset(chf.areas, RC_NULL_AREA, sizeof(unsigned char)*spanCount);
 	
 	const int MAX_HEIGHT = 0xffff;
 	
@@ -188,12 +341,13 @@ bool rcBuildCompactHeightfield(const int walkableHeight, const int walkableClimb
 			c.count = 0;
 			while (s)
 			{
-				if (s->flags == flags)
+				if (s->area != RC_NULL_AREA)
 				{
 					const int bot = (int)s->smax;
 					const int top = s->next ? (int)s->next->smin : MAX_HEIGHT;
 					chf.spans[idx].y = (unsigned short)rcClamp(bot, 0, 0xffff);
 					chf.spans[idx].h = (unsigned char)rcClamp(top - bot, 0, 0xff);
+					chf.areas[idx] = s->area;
 					idx++;
 					c.count++;
 				}
@@ -203,7 +357,7 @@ bool rcBuildCompactHeightfield(const int walkableHeight, const int walkableClimb
 	}
 
 	// Find neighbour connections.
-	const float MAX_LAYERS = RC_NOT_CONNECTED-1;
+	const int MAX_LAYERS = RC_NOT_CONNECTED-1;
 	int tooHighNeighbour = 0;
 	for (int y = 0; y < h; ++y)
 	{
@@ -255,14 +409,11 @@ bool rcBuildCompactHeightfield(const int walkableHeight, const int walkableClimb
 	
 	if (tooHighNeighbour > MAX_LAYERS)
 	{
-		if (rcGetLog())
-			rcGetLog()->log(RC_LOG_ERROR, "rcBuildCompactHeightfield: Heighfield has too many layers %d (max: %d)", tooHighNeighbour, MAX_LAYERS);
+		ctx->log(RC_LOG_ERROR, "rcBuildCompactHeightfield: Heightfield has too many layers %d (max: %d)",
+				 tooHighNeighbour, MAX_LAYERS);
 	}
-	
-	rcTimeVal endTime = rcGetPerformanceTimer();
-	
-	if (rcGetBuildTimes())
-		rcGetBuildTimes()->buildCompact += rcGetDeltaTimeUsec(startTime, endTime);
+		
+	ctx->stopTimer(RC_TIMER_BUILD_COMPACTHEIGHTFIELD);
 	
 	return true;
 }

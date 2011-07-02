@@ -21,8 +21,8 @@
 #include <string.h>
 #include <stdio.h>
 #include "Recast.h"
-#include "RecastLog.h"
-#include "RecastTimer.h"
+#include "RecastAlloc.h"
+#include "RecastAssert.h"
 
 
 static int getCornerHeight(int x, int y, int i, int dir,
@@ -231,17 +231,36 @@ static void simplifyContour(rcIntArray& points, rcIntArray& simplified,
 							const float maxError, const int maxEdgeLen, const int buildFlags)
 {
 	// Add initial points.
-	bool noConnections = true;
+	bool hasConnections = false;
 	for (int i = 0; i < points.size(); i += 4)
 	{
 		if ((points[i+3] & RC_CONTOUR_REG_MASK) != 0)
 		{
-			noConnections = false;
+			hasConnections = true;
 			break;
 		}
 	}
 	
-	if (noConnections)
+	if (hasConnections)
+	{
+		// The contour has some portals to other regions.
+		// Add a new point to every location where the region changes.
+		for (int i = 0, ni = points.size()/4; i < ni; ++i)
+		{
+			int ii = (i+1) % ni;
+			const bool differentRegs = (points[i*4+3] & RC_CONTOUR_REG_MASK) != (points[ii*4+3] & RC_CONTOUR_REG_MASK);
+			const bool areaBorders = (points[i*4+3] & RC_AREA_BORDER) != (points[ii*4+3] & RC_AREA_BORDER);
+			if (differentRegs || areaBorders)
+			{
+				simplified.push(points[i*4+0]);
+				simplified.push(points[i*4+1]);
+				simplified.push(points[i*4+2]);
+				simplified.push(i);
+			}
+		}       
+	}
+	
+	if (simplified.size() == 0)
 	{
 		// If there is no connections at all,
 		// create some initial points for the simplification process. 
@@ -284,24 +303,6 @@ static void simplifyContour(rcIntArray& points, rcIntArray& simplified,
 		simplified.push(urz);
 		simplified.push(uri);
 	}
-	else
-	{
-		// The contour has some portals to other regions.
-		// Add a new point to every location where the region changes.
-		for (int i = 0, ni = points.size()/4; i < ni; ++i)
-		{
-			int ii = (i+1) % ni;
-			const bool differentRegs = (points[i*4+3] & RC_CONTOUR_REG_MASK) != (points[ii*4+3] & RC_CONTOUR_REG_MASK);
-			const bool areaBorders = (points[i*4+3] & RC_AREA_BORDER) != (points[ii*4+3] & RC_AREA_BORDER);
-			if (differentRegs || areaBorders)
-			{
-				simplified.push(points[i*4+0]);
-				simplified.push(points[i*4+1]);
-				simplified.push(points[i*4+2]);
-				simplified.push(i);
-			}
-		}       
-	}
 	
 	// Add points until all raw points are within
 	// error tolerance to the simplified shape.
@@ -339,7 +340,7 @@ static void simplifyContour(rcIntArray& points, rcIntArray& simplified,
 			endi = ai;
 		}
 		
-		// Tesselate only outer edges oredges between areas.
+		// Tessellate only outer edges or edges between areas.
 		if ((points[ci*4+3] & RC_CONTOUR_REG_MASK) == 0 ||
 			(points[ci*4+3] & RC_AREA_BORDER))
 		{
@@ -401,7 +402,7 @@ static void simplifyContour(rcIntArray& points, rcIntArray& simplified,
 			int maxi = -1;
 			int ci = (ai+1) % pn;
 
-			// Tesselate only outer edges or edges between areas.
+			// Tessellate only outer edges or edges between areas.
 			bool tess = false;
 			// Wall edges.
 			if ((buildFlags & RC_CONTOUR_TESS_WALL_EDGES) && (points[ci*4+3] & RC_CONTOUR_REG_MASK) == 0)
@@ -550,7 +551,7 @@ static void getClosestIndices(const int* vertsa, const int nvertsa,
 static bool mergeContours(rcContour& ca, rcContour& cb, int ia, int ib)
 {
 	const int maxVerts = ca.nverts + cb.nverts + 2;
-	int* verts = new int[maxVerts*4];
+	int* verts = (int*)rcAlloc(sizeof(int)*maxVerts*4, RC_ALLOC_PERM);
 	if (!verts)
 		return false;
 
@@ -580,47 +581,60 @@ static bool mergeContours(rcContour& ca, rcContour& cb, int ia, int ib)
 		nv++;
 	}
 	
-	delete [] ca.verts;
+	rcFree(ca.verts);
 	ca.verts = verts;
 	ca.nverts = nv;
 
-	delete [] cb.verts;
+	rcFree(cb.verts);
 	cb.verts = 0;
 	cb.nverts = 0;
 	
 	return true;
 }
 
-bool rcBuildContours(rcCompactHeightfield& chf,
+bool rcBuildContours(rcContext* ctx, rcCompactHeightfield& chf,
 					 const float maxError, const int maxEdgeLen,
 					 rcContourSet& cset, const int buildFlags)
 {
+	rcAssert(ctx);
+	
 	const int w = chf.width;
 	const int h = chf.height;
+	const int borderSize = chf.borderSize;
 	
-	rcTimeVal startTime = rcGetPerformanceTimer();
+	ctx->startTimer(RC_TIMER_BUILD_CONTOURS);
 	
 	rcVcopy(cset.bmin, chf.bmin);
 	rcVcopy(cset.bmax, chf.bmax);
+	if (borderSize > 0)
+	{
+		// If the heightfield was build with bordersize, remove the offset.
+		const float pad = borderSize*chf.cs;
+		cset.bmin[0] += pad;
+		cset.bmin[2] += pad;
+		cset.bmax[0] -= pad;
+		cset.bmax[2] -= pad;
+	}
 	cset.cs = chf.cs;
 	cset.ch = chf.ch;
+	cset.width = chf.width - chf.borderSize*2;
+	cset.height = chf.height - chf.borderSize*2;
+	cset.borderSize = chf.borderSize;
 	
 	int maxContours = rcMax((int)chf.maxRegions, 8);
-	cset.conts = new rcContour[maxContours];
+	cset.conts = (rcContour*)rcAlloc(sizeof(rcContour)*maxContours, RC_ALLOC_PERM);
 	if (!cset.conts)
 		return false;
 	cset.nconts = 0;
 	
-	rcScopedDelete<unsigned char> flags = new unsigned char[chf.spanCount];
+	rcScopedDelete<unsigned char> flags = (unsigned char*)rcAlloc(sizeof(unsigned char)*chf.spanCount, RC_ALLOC_TEMP);
 	if (!flags)
 	{
-		if (rcGetLog())
-			rcGetLog()->log(RC_LOG_ERROR, "rcBuildContours: Out of memory 'flags'.");
+		ctx->log(RC_LOG_ERROR, "rcBuildContours: Out of memory 'flags' (%d).", chf.spanCount);
 		return false;
 	}
 	
-	rcTimeVal traceStartTime = rcGetPerformanceTimer();
-					
+	ctx->startTimer(RC_TIMER_BUILD_CONTOURS_TRACE);
 	
 	// Mark boundaries.
 	for (int y = 0; y < h; ++y)
@@ -655,9 +669,7 @@ bool rcBuildContours(rcCompactHeightfield& chf,
 		}
 	}
 	
-	rcTimeVal traceEndTime = rcGetPerformanceTimer();
-	
-	rcTimeVal simplifyStartTime = rcGetPerformanceTimer();
+	ctx->stopTimer(RC_TIMER_BUILD_CONTOURS_TRACE);
 	
 	rcIntArray verts(256);
 	rcIntArray simplified(64);
@@ -681,10 +693,17 @@ bool rcBuildContours(rcCompactHeightfield& chf,
 				
 				verts.resize(0);
 				simplified.resize(0);
+
+				ctx->startTimer(RC_TIMER_BUILD_CONTOURS_TRACE);
 				walkContour(x, y, i, chf, flags, verts);
+				ctx->stopTimer(RC_TIMER_BUILD_CONTOURS_TRACE);
+
+				ctx->startTimer(RC_TIMER_BUILD_CONTOURS_SIMPLIFY);
 				simplifyContour(verts, simplified, maxError, maxEdgeLen, buildFlags);
 				removeDegenerateSegments(simplified);
+				ctx->stopTimer(RC_TIMER_BUILD_CONTOURS_SIMPLIFY);
 				
+
 				// Store region->contour remap info.
 				// Create contour.
 				if (simplified.size()/4 >= 3)
@@ -692,10 +711,10 @@ bool rcBuildContours(rcCompactHeightfield& chf,
 					if (cset.nconts >= maxContours)
 					{
 						// Allocate more contours.
-						// This can happen when there are tiny holes in the heighfield.
+						// This can happen when there are tiny holes in the heightfield.
 						const int oldMax = maxContours;
 						maxContours *= 2;
-						rcContour* newConts = new rcContour[maxContours];
+						rcContour* newConts = (rcContour*)rcAlloc(sizeof(rcContour)*maxContours, RC_ALLOC_PERM);
 						for (int j = 0; j < cset.nconts; ++j)
 						{
 							newConts[j] = cset.conts[j];
@@ -703,22 +722,51 @@ bool rcBuildContours(rcCompactHeightfield& chf,
 							cset.conts[j].verts = 0;
 							cset.conts[j].rverts = 0;
 						}
-						delete [] cset.conts;
+						rcFree(cset.conts);
 						cset.conts = newConts;
 					
-						if (rcGetLog())
-							rcGetLog()->log(RC_LOG_WARNING, "rcBuildContours: Expanding max contours from %d to %d.", oldMax, maxContours);
+						ctx->log(RC_LOG_WARNING, "rcBuildContours: Expanding max contours from %d to %d.", oldMax, maxContours);
 					}
 						
 					rcContour* cont = &cset.conts[cset.nconts++];
 					
 					cont->nverts = simplified.size()/4;
-					cont->verts = new int[cont->nverts*4];
+					cont->verts = (int*)rcAlloc(sizeof(int)*cont->nverts*4, RC_ALLOC_PERM);
+					if (!cont->verts)
+					{
+						ctx->log(RC_LOG_ERROR, "rcBuildContours: Out of memory 'verts' (%d).", cont->nverts);
+						return false;
+					}
 					memcpy(cont->verts, &simplified[0], sizeof(int)*cont->nverts*4);
+					if (borderSize > 0)
+					{
+						// If the heightfield was build with bordersize, remove the offset.
+						for (int i = 0; i < cont->nverts; ++i)
+						{
+							int* v = &cont->verts[i*4];
+							v[0] -= borderSize;
+							v[2] -= borderSize;
+						}
+					}
 					
 					cont->nrverts = verts.size()/4;
-					cont->rverts = new int[cont->nrverts*4];
+					cont->rverts = (int*)rcAlloc(sizeof(int)*cont->nrverts*4, RC_ALLOC_PERM);
+					if (!cont->rverts)
+					{
+						ctx->log(RC_LOG_ERROR, "rcBuildContours: Out of memory 'rverts' (%d).", cont->nrverts);
+						return false;
+					}
 					memcpy(cont->rverts, &verts[0], sizeof(int)*cont->nrverts*4);
+					if (borderSize > 0)
+					{
+						// If the heightfield was build with bordersize, remove the offset.
+						for (int i = 0; i < cont->nrverts; ++i)
+						{
+							int* v = &cont->rverts[i*4];
+							v[0] -= borderSize;
+							v[2] -= borderSize;
+						}
+					}
 					
 /*					cont->cx = cont->cy = cont->cz = 0;
 					for (int i = 0; i < cont->nverts; ++i)
@@ -739,7 +787,7 @@ bool rcBuildContours(rcCompactHeightfield& chf,
 	}
 	
 	// Check and merge droppings.
-	// Sometimes the previous algorithms can fail and create several countours
+	// Sometimes the previous algorithms can fail and create several contours
 	// per area. This pass will try to merge the holes into the main region.
 	for (int i = 0; i < cset.nconts; ++i)
 	{
@@ -764,8 +812,7 @@ bool rcBuildContours(rcCompactHeightfield& chf,
 			}
 			if (mergeIdx == -1)
 			{
-				if (rcGetLog())
-					rcGetLog()->log(RC_LOG_WARNING, "rcBuildContours: Could not find merge target for bad contour %d.", i);
+				ctx->log(RC_LOG_WARNING, "rcBuildContours: Could not find merge target for bad contour %d.", i);
 			}
 			else
 			{
@@ -775,37 +822,19 @@ bool rcBuildContours(rcCompactHeightfield& chf,
 				getClosestIndices(mcont.verts, mcont.nverts, cont.verts, cont.nverts, ia, ib);
 				if (ia == -1 || ib == -1)
 				{
-					if (rcGetLog())
-						rcGetLog()->log(RC_LOG_WARNING, "rcBuildContours: Failed to find merge points for %d and %d.", i, mergeIdx);
+					ctx->log(RC_LOG_WARNING, "rcBuildContours: Failed to find merge points for %d and %d.", i, mergeIdx);
 					continue;
 				}
 				if (!mergeContours(mcont, cont, ia, ib))
 				{
-					if (rcGetLog())
-						rcGetLog()->log(RC_LOG_WARNING, "rcBuildContours: Failed to merge contours %d and %d.", i, mergeIdx);
+					ctx->log(RC_LOG_WARNING, "rcBuildContours: Failed to merge contours %d and %d.", i, mergeIdx);
 					continue;
 				}
 			}
 		}
 	}
 	
-	rcTimeVal simplifyEndTime = rcGetPerformanceTimer();
-	
-	rcTimeVal endTime = rcGetPerformanceTimer();
-	
-//	if (rcGetLog())
-//	{
-//		rcGetLog()->log(RC_LOG_PROGRESS, "Create contours: %.3f ms", rcGetDeltaTimeUsec(startTime, endTime)/1000.0f);
-//		rcGetLog()->log(RC_LOG_PROGRESS, " - boundary: %.3f ms", rcGetDeltaTimeUsec(boundaryStartTime, boundaryEndTime)/1000.0f);
-//		rcGetLog()->log(RC_LOG_PROGRESS, " - contour: %.3f ms", rcGetDeltaTimeUsec(contourStartTime, contourEndTime)/1000.0f);
-//	}
-
-	if (rcGetBuildTimes())
-	{
-		rcGetBuildTimes()->buildContours += rcGetDeltaTimeUsec(startTime, endTime);
-		rcGetBuildTimes()->buildContoursTrace += rcGetDeltaTimeUsec(traceStartTime, traceEndTime);
-		rcGetBuildTimes()->buildContoursSimplify += rcGetDeltaTimeUsec(simplifyStartTime, simplifyEndTime);
-	}
+	ctx->stopTimer(RC_TIMER_BUILD_CONTOURS);
 	
 	return true;
 }

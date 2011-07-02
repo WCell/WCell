@@ -22,6 +22,9 @@
 #include "SDL.h"
 #include "SDL_opengl.h"
 
+// Some math headers don't have PI defined.
+static const float PI = 3.14159265f;
+
 void imguifree(void* ptr, void* userptr);
 void* imguimalloc(size_t size, void* userptr);
 
@@ -131,10 +134,10 @@ static void drawRect(float x, float y, float w, float h, float fth, unsigned int
 {
 	float verts[4*2] =
 	{
-		x, y,
-		x+w, y,
-		x+w, y+h,
-		x, y+h,
+		x+0.5f, y+0.5f,
+		x+w-0.5f, y+0.5f,
+		x+w-0.5f, y+h-0.5f,
+		x+0.5f, y+h-0.5f,
 	};
 	drawPolygon(verts, 4, fth, col);
 }
@@ -192,7 +195,7 @@ static void drawRoundedRect(float x, float y, float w, float h, float r, float f
 	drawPolygon(verts, (n+1)*4, fth, col);
 }
 
-/*
+
 static void drawLine(float x0, float y0, float x1, float y1, float r, float fth, unsigned int col)
 {
 	float dx = x1-x0;
@@ -204,37 +207,38 @@ static void drawLine(float x0, float y0, float x1, float y1, float r, float fth,
 		dx *= d;
 		dy *= d;
 	}
-	float t = dx;
-	dx = dy;
-	dy = -t;
+	float nx = dy;
+	float ny = -dx;
 	float verts[4*2];
 	r -= fth;
 	r *= 0.5f;
 	if (r < 0.01f) r = 0.01f;
 	dx *= r;
 	dy *= r;
+	nx *= r;
+	ny *= r;
 	
-	verts[0] = x0-dx;
-	verts[1] = y0-dy;
+	verts[0] = x0-dx-nx;
+	verts[1] = y0-dy-ny;
 	
-	verts[2] = x0+dx;
-	verts[3] = y0+dy;
+	verts[2] = x0-dx+nx;
+	verts[3] = y0-dy+ny;
 	
-	verts[4] = x1+dx;
-	verts[5] = y1+dy;
+	verts[4] = x1+dx+nx;
+	verts[5] = y1+dy+ny;
 	
-	verts[6] = x1-dx;
-	verts[7] = y1-dy;
+	verts[6] = x1+dx-nx;
+	verts[7] = y1+dy-ny;
 	
 	drawPolygon(verts, 4, fth, col);
 }
-*/
+
 
 bool imguiRenderGLInit(const char* fontpath)
 {
 	for (int i = 0; i < CIRCLE_VERTS; ++i)
 	{
-		float a = (float)i/(float)CIRCLE_VERTS * (float)M_PI*2;
+		float a = (float)i/(float)CIRCLE_VERTS * PI*2;
 		g_circleVerts[i*2+0] = cosf(a);
 		g_circleVerts[i*2+1] = sinf(a);
 	}
@@ -308,6 +312,8 @@ static void getBakedQuad(stbtt_bakedchar *chardata, int pw, int ph, int char_ind
 	*xpos += b->xadvance;
 }
 
+static const float g_tabStops[4] = {150, 210, 270, 330};
+
 static float getTextLength(stbtt_bakedchar *chardata, const char* text)
 {
 	float xpos = 0;
@@ -315,7 +321,18 @@ static float getTextLength(stbtt_bakedchar *chardata, const char* text)
 	while (*text)
 	{
 		int c = (unsigned char)*text;
-		if (c >= 32 && c < 128)
+		if (c == '\t')
+		{
+			for (int i = 0; i < 4; ++i)
+			{
+				if (xpos < g_tabStops[i])
+				{
+					xpos = g_tabStops[i];
+					break;
+				}
+			}
+		}
+		else if (c >= 32 && c < 128)
 		{
 			stbtt_bakedchar *b = chardata + c-32;
 			int round_x = STBTT_ifloor((xpos + b->xoff) + 0.5);
@@ -346,10 +363,23 @@ static void drawText(float x, float y, const char *text, int align, unsigned int
 	
 	glBegin(GL_TRIANGLES);
 	
+	const float ox = x;
+	
 	while (*text)
 	{
 		int c = (unsigned char)*text;
-		if (c >= 32 && c < 128)
+		if (c == '\t')
+		{
+			for (int i = 0; i < 4; ++i)
+			{
+				if (x < g_tabStops[i]+ox)
+				{
+					x = g_tabStops[i]+ox;
+					break;
+				}
+			}
+		}
+		else if (c >= 32 && c < 128)
 		{			
 			stbtt_aligned_quad q;
 			getBakedQuad(g_cdata, 512,512, c-32, &x,&y,&q);
@@ -381,6 +411,8 @@ void imguiRenderGLDraw()
 	const imguiGfxCmd* q = imguiGetRenderQueue();
 	int nq = imguiGetRenderQueueSize();
 
+	const float s = 1.0f/8.0f;
+
 	glDisable(GL_SCISSOR_TEST);
 	for (int i = 0; i < nq; ++i)
 	{
@@ -389,16 +421,20 @@ void imguiRenderGLDraw()
 		{
 			if (cmd.rect.r == 0)
 			{
-				drawRect((float)cmd.rect.x+0.5f, (float)cmd.rect.y+0.5f,
-						 (float)cmd.rect.w-1, (float)cmd.rect.h-1,
+				drawRect((float)cmd.rect.x*s+0.5f, (float)cmd.rect.y*s+0.5f,
+						 (float)cmd.rect.w*s-1, (float)cmd.rect.h*s-1,
 						 1.0f, cmd.col);
 			}
 			else
 			{
-				drawRoundedRect((float)cmd.rect.x+0.5f, (float)cmd.rect.y+0.5f,
-								(float)cmd.rect.w-1, (float)cmd.rect.h-1,
-								(float)cmd.rect.r, 1.0f, cmd.col);
+				drawRoundedRect((float)cmd.rect.x*s+0.5f, (float)cmd.rect.y*s+0.5f,
+								(float)cmd.rect.w*s-1, (float)cmd.rect.h*s-1,
+								(float)cmd.rect.r*s, 1.0f, cmd.col);
 			}
+		}
+		else if (cmd.type == IMGUI_GFXCMD_LINE)
+		{
+			drawLine(cmd.line.x0*s, cmd.line.y0*s, cmd.line.x1*s, cmd.line.y1*s, cmd.line.r*s, 1.0f, cmd.col);
 		}
 		else if (cmd.type == IMGUI_GFXCMD_TRIANGLE)
 		{
@@ -406,9 +442,9 @@ void imguiRenderGLDraw()
 			{
 				const float verts[3*2] =
 				{
-					(float)cmd.rect.x+0.5f, (float)cmd.rect.y+0.5f,
-					(float)cmd.rect.x+0.5f+(float)cmd.rect.w-1, (float)cmd.rect.y+0.5f+(float)cmd.rect.h/2-0.5f,
-					(float)cmd.rect.x+0.5f, (float)cmd.rect.y+0.5f+(float)cmd.rect.h-1,
+					(float)cmd.rect.x*s+0.5f, (float)cmd.rect.y*s+0.5f,
+					(float)cmd.rect.x*s+0.5f+(float)cmd.rect.w*s-1, (float)cmd.rect.y*s+0.5f+(float)cmd.rect.h*s/2-0.5f,
+					(float)cmd.rect.x*s+0.5f, (float)cmd.rect.y*s+0.5f+(float)cmd.rect.h*s-1,
 				};
 				drawPolygon(verts, 3, 1.0f, cmd.col);
 			}
@@ -416,9 +452,9 @@ void imguiRenderGLDraw()
 			{
 				const float verts[3*2] =
 				{
-					(float)cmd.rect.x+0.5f, (float)cmd.rect.y+(float)cmd.rect.h-1,
-					(float)cmd.rect.x+0.5f+(float)cmd.rect.w/2-0.5f, (float)cmd.rect.y+0.5f,
-					(float)cmd.rect.x+0.5f+(float)cmd.rect.w-1, (float)cmd.rect.y+0.5f+(float)cmd.rect.h-1,
+					(float)cmd.rect.x*s+0.5f, (float)cmd.rect.y*s+0.5f+(float)cmd.rect.h*s-1,
+					(float)cmd.rect.x*s+0.5f+(float)cmd.rect.w*s/2-0.5f, (float)cmd.rect.y*s+0.5f,
+					(float)cmd.rect.x*s+0.5f+(float)cmd.rect.w*s-1, (float)cmd.rect.y*s+0.5f+(float)cmd.rect.h*s-1,
 				};
 				drawPolygon(verts, 3, 1.0f, cmd.col);
 			}

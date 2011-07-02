@@ -22,14 +22,14 @@
 #include "Sample.h"
 #include "DetourNavMesh.h"
 #include "Recast.h"
-#include "RecastLog.h"
 
-// Sample used for random debugging.
+/// Sample used for random debugging.
 class Sample_Debug : public Sample
 {
 protected:
 	rcCompactHeightfield* m_chf;
 	rcContourSet* m_cset;
+	rcPolyMesh* m_pmesh;
 
 	float m_ext[3];
 	float m_center[3];
@@ -43,8 +43,8 @@ public:
 	virtual void handleSettings();
 	virtual void handleTools();
 	virtual void handleDebugMode();
-	virtual void handleClick(const float* p, bool shift);
-	virtual void handleStep();
+	virtual void handleClick(const float* s, const float* p, bool shift);
+	virtual void handleToggle();
 	virtual void handleRender();
 	virtual void handleRenderOverlay(double* proj, double* model, int* view);
 	virtual void handleMeshChanged(class InputGeom* geom);

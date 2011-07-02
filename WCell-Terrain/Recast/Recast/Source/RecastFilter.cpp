@@ -20,13 +20,15 @@
 #include <math.h>
 #include <stdio.h>
 #include "Recast.h"
-#include "RecastLog.h"
-#include "RecastTimer.h"
+#include "RecastAssert.h"
 
 
-// TODO: Missuses ledge flag, must be called before rcFilterLedgeSpans!
-void rcFilterLowHangingWalkableObstacles(const int walkableClimb, rcHeightfield& solid)
+void rcFilterLowHangingWalkableObstacles(rcContext* ctx, const int walkableClimb, rcHeightfield& solid)
 {
+	rcAssert(ctx);
+
+	ctx->startTimer(RC_TIMER_FILTER_LOW_OBSTACLES);
+	
 	const int w = solid.width;
 	const int h = solid.height;
 	
@@ -35,36 +37,34 @@ void rcFilterLowHangingWalkableObstacles(const int walkableClimb, rcHeightfield&
 		for (int x = 0; x < w; ++x)
 		{
 			rcSpan* ps = 0;
+			bool previousWalkable = false;
+			
 			for (rcSpan* s = solid.spans[x + y*w]; s; ps = s, s = s->next)
 			{
-				const bool walkable = (s->flags & RC_WALKABLE) != 0;
-				const bool previousWalkable = ps && (ps->flags & RC_WALKABLE) != 0;
+				const bool walkable = s->area != RC_NULL_AREA;
 				// If current span is not walkable, but there is walkable
 				// span just below it, mark the span above it walkable too.
-				// Missuse the edge flag so that walkable flag cannot propagate
-				// past multiple non-walkable objects.
 				if (!walkable && previousWalkable)
 				{
 					if (rcAbs((int)s->smax - (int)ps->smax) <= walkableClimb)
-						s->flags |= RC_LEDGE;
+						s->area = RC_NULL_AREA;
 				}
-			}
-			// Transfer "fake ledges" to walkables.
-			for (rcSpan* s = solid.spans[x + y*w]; s; ps = s, s = s->next)
-			{
-				if (s->flags & RC_LEDGE)
-					s->flags |= RC_WALKABLE;
-				s->flags &= ~RC_LEDGE;
+				// Copy walkable flag so that it cannot propagate
+				// past multiple non-walkable objects.
+				previousWalkable = walkable;
 			}
 		}
 	}
+
+	ctx->stopTimer(RC_TIMER_FILTER_LOW_OBSTACLES);
 }
 	
-void rcFilterLedgeSpans(const int walkableHeight,
-						const int walkableClimb,
+void rcFilterLedgeSpans(rcContext* ctx, const int walkableHeight, const int walkableClimb,
 						rcHeightfield& solid)
 {
-	rcTimeVal startTime = rcGetPerformanceTimer();
+	rcAssert(ctx);
+	
+	ctx->startTimer(RC_TIMER_FILTER_BORDER);
 
 	const int w = solid.width;
 	const int h = solid.height;
@@ -78,7 +78,7 @@ void rcFilterLedgeSpans(const int walkableHeight,
 			for (rcSpan* s = solid.spans[x + y*w]; s; s = s->next)
 			{
 				// Skip non walkable spans.
-				if ((s->flags & RC_WALKABLE) == 0)
+				if (s->area == RC_NULL_AREA)
 					continue;
 				
 				const int bot = (int)(s->smax);
@@ -134,29 +134,26 @@ void rcFilterLedgeSpans(const int walkableHeight,
 				// The current span is close to a ledge if the drop to any
 				// neighbour span is less than the walkableClimb.
 				if (minh < -walkableClimb)
-					s->flags |= RC_LEDGE;
+					s->area = RC_NULL_AREA;
 					
 				// If the difference between all neighbours is too large,
 				// we are at steep slope, mark the span as ledge.
 				if ((asmax - asmin) > walkableClimb)
 				{
-					s->flags |= RC_LEDGE;
+					s->area = RC_NULL_AREA;
 				}
 			}
 		}
 	}
 	
-	rcTimeVal endTime = rcGetPerformanceTimer();
-//	if (rcGetLog())
-//		rcGetLog()->log(RC_LOG_PROGRESS, "Filter border: %.3f ms", rcGetDeltaTimeUsec(startTime, endTime)/1000.0f);
-	if (rcGetBuildTimes())
-		rcGetBuildTimes()->filterBorder += rcGetDeltaTimeUsec(startTime, endTime);
+	ctx->stopTimer(RC_TIMER_FILTER_BORDER);
 }	
 
-void rcFilterWalkableLowHeightSpans(int walkableHeight,
-									rcHeightfield& solid)
+void rcFilterWalkableLowHeightSpans(rcContext* ctx, int walkableHeight, rcHeightfield& solid)
 {
-	rcTimeVal startTime = rcGetPerformanceTimer();
+	rcAssert(ctx);
+	
+	ctx->startTimer(RC_TIMER_FILTER_WALKABLE);
 	
 	const int w = solid.width;
 	const int h = solid.height;
@@ -173,15 +170,10 @@ void rcFilterWalkableLowHeightSpans(int walkableHeight,
 				const int bot = (int)(s->smax);
 				const int top = s->next ? (int)(s->next->smin) : MAX_HEIGHT;
 				if ((top - bot) <= walkableHeight)
-					s->flags &= ~RC_WALKABLE;
+					s->area = RC_NULL_AREA;
 			}
 		}
 	}
 	
-	rcTimeVal endTime = rcGetPerformanceTimer();
-
-//	if (rcGetLog())
-//		rcGetLog()->log(RC_LOG_PROGRESS, "Filter walkable: %.3f ms", rcGetDeltaTimeUsec(startTime, endTime)/1000.0f);
-	if (rcGetBuildTimes())
-		rcGetBuildTimes()->filterWalkable += rcGetDeltaTimeUsec(startTime, endTime);
+	ctx->stopTimer(RC_TIMER_FILTER_WALKABLE);
 }

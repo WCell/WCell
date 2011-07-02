@@ -16,10 +16,6 @@
 // 3. This notice may not be removed or altered from any source distribution.
 //
 
-
-// beautiful C code! (in a C++ project?)
-
-
 #include "Filelist.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -30,9 +26,7 @@
 #	include <dirent.h>
 #endif
 
-#include <InputGeom.h>
-
-void fileListAdd(FileList& list, const char* path)
+static void fileListAdd(FileList& list, const char* path)
 {
 	if (list.size >= FileList::MAX_FILES)
 		return;
@@ -67,8 +61,6 @@ static int cmp(const void* a, const void* b)
 void scanDirectory(const char* path, const char* ext, FileList& list)
 {
 	fileListClear(list);
-
-	meshGenAddToList(list);
 	
 #ifdef WIN32
 	_finddata_t dir;

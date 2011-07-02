@@ -137,40 +137,8 @@ static int parseFace(char* row, int* data, int n, int vcnt)
 	return j;
 }
 
-void rcMeshLoaderObj::calcNormals() {
-	// Calculate normals.
-	m_normals = new float[m_triCount*3];
-	for (int i = 0; i < m_triCount*3; i += 3)
-	{
-		const float* v0 = &m_verts[m_tris[i]*3];
-		const float* v1 = &m_verts[m_tris[i+1]*3];
-		const float* v2 = &m_verts[m_tris[i+2]*3];
-		float e0[3], e1[3];
-		for (int j = 0; j < 3; ++j)
-		{
-			e0[j] = v1[j] - v0[j];
-			e1[j] = v2[j] - v0[j];
-		}
-		float* n = &m_normals[i];
-		n[0] = e0[1]*e1[2] - e0[2]*e1[1];
-		n[1] = e0[2]*e1[0] - e0[0]*e1[2];
-		n[2] = e0[0]*e1[1] - e0[1]*e1[0];
-		float d = sqrtf(n[0]*n[0] + n[1]*n[1] + n[2]*n[2]);
-		if (d > 0)
-		{
-			d = 1.0f/d;
-			n[0] *= d;
-			n[1] *= d;
-			n[2] *= d;
-		}
-	}
-}
-
 bool rcMeshLoaderObj::load(const char* filename)
 {
-	strncpy(m_srcName, filename, sizeof(m_srcName));
-	m_srcName[sizeof(m_srcName)-1] = '\0';
-
 	char* buf = 0;
 	FILE* fp = fopen(filename, "rb");
 	if (!fp)
@@ -227,35 +195,35 @@ bool rcMeshLoaderObj::load(const char* filename)
 
 	delete [] buf;
 
-	calcNormals();
-	
-	return true;
-}
-
-
-bool rcMeshLoaderObj::init(float *vertices, int vcount, int *triangles, int tcount, const char* name)
-{
-	strncpy(m_srcName, name, sizeof(m_srcName));
-	m_srcName[sizeof(m_srcName)-1] = '\0';
-
-	int vcap = 0;
-	int tcap = 0;
-
-	int idx = 0;
-	for (int i = 0; i < vcount; i++)
+	// Calculate normals.
+	m_normals = new float[m_triCount*3];
+	for (int i = 0; i < m_triCount*3; i += 3)
 	{
-		addVertex(vertices[idx], vertices[idx+1], vertices[idx+2], vcap);
-		idx += 3;
+		const float* v0 = &m_verts[m_tris[i]*3];
+		const float* v1 = &m_verts[m_tris[i+1]*3];
+		const float* v2 = &m_verts[m_tris[i+2]*3];
+		float e0[3], e1[3];
+		for (int j = 0; j < 3; ++j)
+		{
+			e0[j] = v1[j] - v0[j];
+			e1[j] = v2[j] - v0[j];
+		}
+		float* n = &m_normals[i];
+		n[0] = e0[1]*e1[2] - e0[2]*e1[1];
+		n[1] = e0[2]*e1[0] - e0[0]*e1[2];
+		n[2] = e0[0]*e1[1] - e0[1]*e1[0];
+		float d = sqrtf(n[0]*n[0] + n[1]*n[1] + n[2]*n[2]);
+		if (d > 0)
+		{
+			d = 1.0f/d;
+			n[0] *= d;
+			n[1] *= d;
+			n[2] *= d;
+		}
 	}
 	
-	idx = 0;
-	for (int i = 0; i < tcount; i++)
-	{
-		addTriangle(triangles[idx], triangles[idx+1], triangles[idx+2], tcap);
-		idx += 3;
-	}
-
-	calcNormals();
+	strncpy(m_filename, filename, sizeof(m_filename));
+	m_filename[sizeof(m_filename)-1] = '\0';
 	
 	return true;
 }

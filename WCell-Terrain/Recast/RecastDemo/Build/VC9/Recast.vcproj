@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\Contrib\SDL\include;..\..\Include;..\..\..\Detour\Include;..\..\..\DebugUtils\Include;..\..\..\Recast\Include;..\..\Contrib;$(NOINHERIT)"
+				AdditionalIncludeDirectories="..\..\Contrib\fastlz;..\..\Contrib\SDL\include;..\..\Include;..\..\..\DetourCrowd\Include;..\..\..\Detour\Include;..\..\..\DebugUtils\Include;..\..\..\Recast\Include;..\..\Contrib;..\..\..\DetourTileCache\Include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -62,11 +62,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="opengl32.lib glu32.lib sdlmain.lib sdl.lib"
-				LinkIncremental="1"
+				LinkIncremental="0"
 				AdditionalLibraryDirectories="..\..\Contrib\SDL\lib"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
+				CLRThreadAttribute="0"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -117,7 +118,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="..\..\..\DebugUtils\Include;..\..\Contrib\SDL\include;..\..\Include;..\..\..\Detour\Include;..\..\..\Recast\Include;..\..\Contrib"
+				AdditionalIncludeDirectories="..\..\Contrib\fastlz;..\..\Contrib\SDL\include;..\..\Include;..\..\..\DetourCrowd\Include;..\..\..\Detour\Include;..\..\..\DebugUtils\Include;..\..\..\Recast\Include;..\..\Contrib;..\..\..\DetourTileCache\Include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -137,7 +138,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="opengl32.lib glu32.lib sdlmain.lib sdl.lib"
-				LinkIncremental="1"
+				LinkIncremental="0"
 				AdditionalLibraryDirectories="..\..\Contrib\SDL\lib"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -188,11 +189,11 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\Recast\Include\RecastLog.h"
+					RelativePath="..\..\..\Recast\Include\RecastAlloc.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\Recast\Include\RecastTimer.h"
+					RelativePath="..\..\..\Recast\Include\RecastAssert.h"
 					>
 				</File>
 			</Filter>
@@ -201,6 +202,10 @@
 				>
 				<File
 					RelativePath="..\..\..\Recast\Source\Recast.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\Recast\Source\RecastAlloc.cpp"
 					>
 				</File>
 				<File
@@ -216,7 +221,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\Recast\Source\RecastLog.cpp"
+					RelativePath="..\..\..\Recast\Source\RecastLayers.cpp"
 					>
 				</File>
 				<File
@@ -235,10 +240,6 @@
 					RelativePath="..\..\..\Recast\Source\RecastRegion.cpp"
 					>
 				</File>
-				<File
-					RelativePath="..\..\..\Recast\Source\RecastTimer.cpp"
-					>
-				</File>
 			</Filter>
 		</Filter>
 		<Filter
@@ -247,6 +248,14 @@
 			<Filter
 				Name="Include"
 				>
+				<File
+					RelativePath="..\..\..\Detour\Include\DetourAlloc.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\Detour\Include\DetourAssert.h"
+					>
+				</File>
 				<File
 					RelativePath="..\..\..\Detour\Include\DetourCommon.h"
 					>
@@ -260,6 +269,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\..\Detour\Include\DetourNavMeshQuery.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\..\Detour\Include\DetourNode.h"
 					>
 				</File>
@@ -267,6 +280,10 @@
 			<Filter
 				Name="Source"
 				>
+				<File
+					RelativePath="..\..\..\Detour\Source\DetourAlloc.cpp"
+					>
+				</File>
 				<File
 					RelativePath="..\..\..\Detour\Source\DetourCommon.cpp"
 					>
@@ -277,6 +294,10 @@
 				</File>
 				<File
 					RelativePath="..\..\..\Detour\Source\DetourNavMeshBuilder.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\Detour\Source\DetourNavMeshQuery.cpp"
 					>
 				</File>
 				<File
@@ -297,6 +318,10 @@
 				</File>
 				<File
 					RelativePath="..\..\Include\ConvexVolumeTool.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Include\CrowdTool.h"
 					>
 				</File>
 				<File
@@ -328,6 +353,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\Include\PerfTimer.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\Include\Sample.h"
 					>
 				</File>
@@ -336,15 +365,19 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\Include\Sample_SoloMeshSimple.h"
+					RelativePath="..\..\Include\Sample_SoloMesh.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\Include\Sample_SoloMeshTiled.h"
+					RelativePath="..\..\Include\Sample_TempObstacles.h"
 					>
 				</File>
 				<File
 					RelativePath="..\..\Include\Sample_TileMesh.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Include\SampleInterfaces.h"
 					>
 				</File>
 				<File
@@ -363,6 +396,10 @@
 					RelativePath="..\..\Include\TestCase.h"
 					>
 				</File>
+				<File
+					RelativePath="..\..\Include\ValueHistory.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Source"
@@ -373,6 +410,10 @@
 				</File>
 				<File
 					RelativePath="..\..\Source\ConvexVolumeTool.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Source\CrowdTool.cpp"
 					>
 				</File>
 				<File
@@ -408,6 +449,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\Source\PerfTimer.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\Source\Sample.cpp"
 					>
 				</File>
@@ -416,15 +461,19 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\Source\Sample_SoloMeshSimple.cpp"
+					RelativePath="..\..\Source\Sample_SoloMesh.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\Source\Sample_SoloMeshTiled.cpp"
+					RelativePath="..\..\Source\Sample_TempObstacles.cpp"
 					>
 				</File>
 				<File
 					RelativePath="..\..\Source\Sample_TileMesh.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Source\SampleInterfaces.cpp"
 					>
 				</File>
 				<File
@@ -433,6 +482,10 @@
 				</File>
 				<File
 					RelativePath="..\..\Source\TestCase.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Source\ValueHistory.cpp"
 					>
 				</File>
 			</Filter>
@@ -477,6 +530,106 @@
 				</File>
 				<File
 					RelativePath="..\..\..\DebugUtils\Source\RecastDump.cpp"
+					>
+				</File>
+			</Filter>
+		</Filter>
+		<Filter
+			Name="DetourCrowd"
+			>
+			<Filter
+				Name="Include"
+				>
+				<File
+					RelativePath="..\..\..\DetourCrowd\Include\DetourCrowd.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\DetourCrowd\Include\DetourLocalBoundary.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\DetourCrowd\Include\DetourObstacleAvoidance.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\DetourCrowd\Include\DetourPathCorridor.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\DetourCrowd\Include\DetourPathQueue.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\DetourCrowd\Include\DetourProximityGrid.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Source"
+				>
+				<File
+					RelativePath="..\..\..\DetourCrowd\Source\DetourCrowd.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\DetourCrowd\Source\DetourLocalBoundary.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\DetourCrowd\Source\DetourObstacleAvoidance.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\DetourCrowd\Source\DetourPathCorridor.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\DetourCrowd\Source\DetourPathQueue.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\DetourCrowd\Source\DetourProximityGrid.cpp"
+					>
+				</File>
+			</Filter>
+		</Filter>
+		<Filter
+			Name="Contrib"
+			>
+			<File
+				RelativePath="..\..\Contrib\fastlz\fastlz.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Contrib\fastlz\fastlz.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="DetourTileCache"
+			>
+			<Filter
+				Name="Include"
+				>
+				<File
+					RelativePath="..\..\..\DetourTileCache\Include\DetourTileCache.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\DetourTileCache\Include\DetourTileCacheBuilder.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Source"
+				>
+				<File
+					RelativePath="..\..\..\DetourTileCache\Source\DetourTileCache.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\DetourTileCache\Source\DetourTileCacheBuilder.cpp"
 					>
 				</File>
 			</Filter>

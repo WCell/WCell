@@ -16,66 +16,33 @@
 // 3. This notice may not be removed or altered from any source distribution.
 //
 
-#ifndef RECASTSAMPLESOLOMESHTILED_H
-#define RECASTSAMPLESOLOMESHTILED_H
+#ifndef RECASTSAMPLESOLOMESH_H
+#define RECASTSAMPLESOLOMESH_H
 
 #include "Sample.h"
 #include "DetourNavMesh.h"
 #include "Recast.h"
-#include "RecastLog.h"
-#include "ChunkyTriMesh.h"
 
-class Sample_SoloMeshTiled : public Sample
+class Sample_SoloMesh : public Sample
 {
 protected:
-	struct Tile
-	{
-		inline Tile() : chf(0), solid(0), cset(0), pmesh(0), dmesh(0), buildTime(0) {}
-		inline ~Tile() { delete chf; delete cset; delete solid; delete pmesh; delete dmesh; }
-		int x, y;
-		rcCompactHeightfield* chf;
-		rcHeightfield* solid;
-		rcContourSet* cset;
-		rcPolyMesh* pmesh;
-		rcPolyMeshDetail* dmesh;
-		int buildTime;
-	};
-	
-	struct TileSet
-	{
-		inline TileSet() : width(0), height(0), tiles(0) {}
-		inline ~TileSet() { delete [] tiles; }
-		int width, height;
-		float bmin[3], bmax[3];
-		float cs, ch;
-		Tile* tiles;
-	};
-	
-	bool m_measurePerTileTimings;
 	bool m_keepInterResults;
-	float m_tileSize;
-	rcBuildTimes m_buildTimes; 
 	float m_totalBuildTimeMs;
-	
-	rcPolyMesh* m_pmesh;
-	rcPolyMeshDetail* m_dmesh;
-	rcConfig m_cfg;	
-	TileSet* m_tileSet;
 
-	static const int MAX_STAT_BUCKETS = 1000;
-	//static const int MAX_STAT_BUCKETS = 4096;
-	int m_statPolysPerTile[MAX_STAT_BUCKETS];
-	int m_statPolysPerTileSamples;
-	int m_statTimePerTile[MAX_STAT_BUCKETS];
-	int m_statTimePerTileSamples;
-	
-	int m_highLightedTileX, m_highLightedTileY;
+	unsigned char* m_triareas;
+	rcHeightfield* m_solid;
+	rcCompactHeightfield* m_chf;
+	rcContourSet* m_cset;
+	rcPolyMesh* m_pmesh;
+	rcConfig m_cfg;	
+	rcPolyMeshDetail* m_dmesh;
 	
 	enum DrawMode
 	{
 		DRAWMODE_NAVMESH,
 		DRAWMODE_NAVMESH_TRANS,
 		DRAWMODE_NAVMESH_BVTREE,
+		DRAWMODE_NAVMESH_NODES,
 		DRAWMODE_NAVMESH_INVIS,
 		DRAWMODE_MESH,
 		DRAWMODE_VOXELS,
@@ -95,11 +62,10 @@ protected:
 	DrawMode m_drawMode;
 	
 	void cleanup();
-	bool canDrawTile(int x, int y);
-	
+		
 public:
-	Sample_SoloMeshTiled();
-	virtual ~Sample_SoloMeshTiled();
+	Sample_SoloMesh();
+	virtual ~Sample_SoloMesh();
 	
 	virtual void handleSettings();
 	virtual void handleTools();
@@ -109,11 +75,7 @@ public:
 	virtual void handleRenderOverlay(double* proj, double* model, int* view);
 	virtual void handleMeshChanged(class InputGeom* geom);
 	virtual bool handleBuild();
-	
-	void setHighlightedTile(const float* pos);
-	inline int getHilightedTileX() const { return m_highLightedTileX; }
-	inline int getHilightedTileY() const { return m_highLightedTileY; }
 };
 
 
-#endif // RECASTSAMPLESOLOMESHTILED_H
+#endif // RECASTSAMPLESOLOMESHSIMPLE_H
