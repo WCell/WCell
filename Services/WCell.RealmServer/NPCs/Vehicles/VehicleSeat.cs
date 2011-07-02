@@ -52,6 +52,8 @@ namespace WCell.RealmServer.NPCs.Vehicles
 			Vehicle.m_passengerCount++;
             Vehicle.MovementFlags2 |= MovementFlags2.PreventJumping;
 
+			if (!(passenger is Character)) return;
+
 			if (IsDriverSeat)
 			{
 				Vehicle.Charmer = passenger;
@@ -59,25 +61,20 @@ namespace WCell.RealmServer.NPCs.Vehicles
 				Vehicle.UnitFlags |= UnitFlags.Possessed;
 			}
 
-			if (passenger is Character)
-			{
-				var chr = (Character)passenger;
-				var pos = Vehicle.Position;
+			var chr = (Character)passenger;
+			var pos = Vehicle.Position;
 
-				VehicleHandler.Send_SMSG_ON_CANCEL_EXPECTED_RIDE_VEHICLE_AURA(chr);
-				VehicleHandler.SendBreakTarget(chr, Vehicle);
+			VehicleHandler.Send_SMSG_ON_CANCEL_EXPECTED_RIDE_VEHICLE_AURA(chr);
+			VehicleHandler.SendBreakTarget(chr, Vehicle);
 
-                chr.IncMechanicCount(SpellMechanic.Rooted);
-				MovementHandler.SendEnterTransport(chr);
-				MiscHandler.SendCancelAutoRepeat(chr, Vehicle);
-				MovementHandler.SendMoveToPacket(Vehicle, ref pos, 0, 0, MonsterMoveFlags.Walk);
-				PetHandler.SendVehicleSpells(chr, Vehicle);
+			chr.IncMechanicCount(SpellMechanic.Rooted);
+			MovementHandler.SendEnterTransport(chr);
+			MiscHandler.SendCancelAutoRepeat(chr, Vehicle);
+			MovementHandler.SendMoveToPacket(Vehicle, ref pos, 0, 0, MonsterMoveFlags.Walk);
+			PetHandler.SendVehicleSpells(chr, Vehicle);
 
-				chr.SetMover(Vehicle, IsDriverSeat);
-				chr.FarSight = Vehicle.EntityId;
-			}
-
-			// TODO: Character is now inside the Vehicle but cant move
+			chr.SetMover(Vehicle, IsDriverSeat);
+			chr.FarSight = Vehicle.EntityId;
 		}
 
 		/// <summary>

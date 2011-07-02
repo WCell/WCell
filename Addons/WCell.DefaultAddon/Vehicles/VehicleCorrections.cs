@@ -31,38 +31,31 @@ namespace WCell.Addons.Default.Vehicles
             foreach (var data in dataCollection.VehicleDataList)
             {
                 var npcEntry = NPCMgr.GetEntry(data.NPCId);
-                if (npcEntry != null)
-                {
-                    npcEntry.VehicleId = data.VehicleId;
-                    if (data.PassengerNPCId != 0)
-                    {
-                        if (data.Seat > npcEntry.VehicleEntry.Seats.Length)
-                            Array.Resize(ref npcEntry.VehicleEntry.Seats, (int) data.Seat);
+            	if (npcEntry == null) continue;
 
-                        if (npcEntry.VehicleEntry.Seats[data.Seat] == null)
-                        {
-                            var seatEntry = NPCMgr.GetVehicleSeatEntry(data.Seat);
-                            if (seatEntry != null)
-                            {
-                            	npcEntry.VehicleEntry.Seats[data.Seat] = seatEntry;
+            	npcEntry.VehicleId = data.VehicleId;
+            	if (data.PassengerNPCId != 0)
+            	{
+            		if (data.Seat > npcEntry.VehicleEntry.Seats.Length)
+            			Array.Resize(ref npcEntry.VehicleEntry.Seats, (int) data.Seat);
 
-								var npc = NPCMgr.GetEntry(data.PassengerNPCId);
-								if (npc != null)
-								{
-									seatEntry.PassengerNPCId = data.PassengerNPCId;
-								}
-                            }
-                        }
-                    }
+            		if (npcEntry.VehicleEntry.Seats[data.Seat] != null)
+            		{
+            			var npc = NPCMgr.GetEntry(data.PassengerNPCId);
+            			if (npc != null)
+            			{
+            				npcEntry.VehicleEntry.Seats[data.Seat].PassengerNPCId = data.PassengerNPCId;
+            			}
+            		}
+            	}
 
-                    if (data.VehicleAimAdjustment != 0)
-                    {
-                        npcEntry.VehicleAimAdjustment = data.VehicleAimAdjustment;
-                    }
+            	if (data.VehicleAimAdjustment != 0)
+            	{
+            		npcEntry.VehicleAimAdjustment = data.VehicleAimAdjustment;
+            	}
 
-                    npcEntry.VehicleEntry.IsMinion = data.IsMinion;
-                    count++;
-                }
+            	npcEntry.VehicleEntry.IsMinion = data.IsMinion;
+            	count++;
             }
 
             Log.Info("Loaded {0} corrections from VehicleData.xml", count);

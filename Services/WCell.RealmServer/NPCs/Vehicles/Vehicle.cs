@@ -51,11 +51,24 @@ namespace WCell.RealmServer.NPCs.Vehicles
 			for (var i = 0; i < entries.Length; i++)
 			{
 				var entry = entries[i];
-				if (entry != null)
-				{
-					m_Seats[i] = new VehicleSeat(this, entry, (byte)i, driver);
-					driver = false;
-				}
+				if (entry == null) continue;
+
+				m_Seats[i] = new VehicleSeat(this, entry, (byte)i, driver);
+				driver = false;
+				if (m_Seats[i].Entry.PassengerNPCId == 0) continue;
+
+				//copy locally (access to modified closure)
+				var seat = i;
+				AddMessage(() =>
+				           	{
+				           		var npcEntry = NPCMgr.GetEntry(entry.PassengerNPCId);
+				           		if (npcEntry == null)
+				           			return;
+
+				           		var newNpc = npcEntry.SpawnAt(this);
+				           		newNpc.Brain.EnterDefaultState();
+				           		m_Seats[seat].Enter(newNpc);
+				           	});
 			}
 		}
 
