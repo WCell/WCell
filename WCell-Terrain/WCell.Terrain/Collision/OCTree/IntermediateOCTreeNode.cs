@@ -3,7 +3,7 @@ using WCell.Terrain.GUI.Util;
 using WCell.Util;
 using WCell.Util.Graphics;
 
-namespace WCell.Terrain.GUI.Collision.OCTree
+namespace WCell.Terrain.Collision.OCTree
 {
     public class IntermediateOCTreeNode
     {

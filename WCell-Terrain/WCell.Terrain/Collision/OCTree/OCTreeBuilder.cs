@@ -4,7 +4,7 @@ using WCell.Terrain.GUI.Util;
 using WCell.Util;
 using WCell.Util.Graphics;
 
-namespace WCell.Terrain.GUI.Collision.OCTree
+namespace WCell.Terrain.Collision.OCTree
 {
     public class OCTreeBuilder
     {
@@ -197,10 +197,10 @@ namespace WCell.Terrain.GUI.Collision.OCTree
                     }
                     if (((num7 <= 0f) && (num6 > 0f)) || ((num7 >= 0f) && (num6 < 0f)))
                     {
-                        var zero = Vector3.Zero;
-                        if (Intersection.LineSegmentIntersectsPlane(vector2, vector3, p, ref zero))
+						Vector3 point;
+                        if (Intersection.LineSegmentIntersectsPlane(vector2, vector3, p, out point))
                         {
-                            vectorArray[num4++] = zero;
+                            vectorArray[num4++] = point;
                         }
                     }
                 }

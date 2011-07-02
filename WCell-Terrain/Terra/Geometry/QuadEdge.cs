@@ -79,7 +79,7 @@ namespace Terra.Geometry
             get { return Sym.data; }
         }
 
-        public LinkedTriangle LFace { get; set; }
+        public LinkedListTriangle LFace { get; set; }
 
         public void SetEndPoints(Vector2 orig, Vector2 dest)
         {

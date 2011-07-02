@@ -90,22 +90,22 @@ namespace WCell.Terrain.GUI.Renderers
 
             // The WoW X-axis drawn in XNA coords
             tempVertices.Add(new VertexPositionNormalColored(baseAxisVec, Color.Red, Vector3.Up));
-            tempIndices.Add(0);
-            tempVertices.Add(new VertexPositionNormalColored(new Vector3(baseAxisVec.X, baseAxisVec.Y, endAxisVec.Z), Color.Red, Vector3.Up));
+			tempVertices.Add(new VertexPositionNormalColored(new Vector3(baseAxisVec.X, baseAxisVec.Y, endAxisVec.Z), Color.Red, Vector3.Up));
+			tempIndices.Add(0);
             tempIndices.Add(1);
             tempIndices.Add(0);
 
             // The WoW Y-axis drawn in XNA coords
             tempVertices.Add(new VertexPositionNormalColored(baseAxisVec, Color.White, Vector3.Up));
-            tempIndices.Add(2);
-            tempVertices.Add(new VertexPositionNormalColored(new Vector3(endAxisVec.X, baseAxisVec.Y, baseAxisVec.Z), Color.White, Vector3.Up));
+			tempVertices.Add(new VertexPositionNormalColored(new Vector3(endAxisVec.X, baseAxisVec.Y, baseAxisVec.Z), Color.White, Vector3.Up));
+			tempIndices.Add(2);
             tempIndices.Add(3);
             tempIndices.Add(2);
 
             // The WoW Z-axis
             tempVertices.Add(new VertexPositionNormalColored(baseAxisVec, Color.Blue, Vector3.Up));
-            tempIndices.Add(4);
-            tempVertices.Add(new VertexPositionNormalColored(new Vector3(baseAxisVec.X, endAxisVec.Y, baseAxisVec.Z), Color.Blue, Vector3.Up));
+			tempVertices.Add(new VertexPositionNormalColored(new Vector3(baseAxisVec.X, endAxisVec.Y, baseAxisVec.Z), Color.Blue, Vector3.Up));
+			tempIndices.Add(4);
             tempIndices.Add(5);
             tempIndices.Add(4);
 

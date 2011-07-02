@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using Terra;
 using WCell.Constants;
 using WCell.Terrain.Collision;
-using WCell.Terrain.GUI.Util;
-using WCell.Terrain.MPQ;
 using WCell.Util;
 using WCell.Util.Graphics;
 
 namespace WCell.Terrain
 {
+	/// <summary>
+	/// Represents a tile within one map
+	/// TODO: In the future, one Tile will only be represented by single indices into the map's array of vertices, indices and neighbors (plus the same for liquids and some other things)
+	/// </summary>
 	public class TerrainTile
 	{
 		// TODO: Change from list to Array
@@ -17,6 +19,11 @@ namespace WCell.Terrain
 		public List<Vector3> LiquidVertices;
 		public int[] TerrainIndices;
 		public Vector3[] TerrainVertices;
+
+		/// <summary>
+		/// Each triangle has 3 neighbors
+		/// </summary>
+		public int[,] TerrainTriangleNeighbors;
 
 		/// <summary>
 		/// 
@@ -78,11 +85,129 @@ namespace WCell.Terrain
 			}
 		}
 
+		/// <summary>
+		/// Any triangle that shares 2 vertices with the given triangle is a neighbor
+		/// </summary>
+		public int[] GetNeighborsOf(int triIndex)
+		{
+			var a = TerrainIndices[triIndex++];
+			var b = TerrainIndices[triIndex++];
+			var c = TerrainIndices[triIndex];
+
+			var neighbors = new int[WCellTerrainConstants.NeighborsPerTriangle];
+
+			// fill with "invalid index"
+			for (var i = 0; i < WCellTerrainConstants.NeighborsPerTriangle; i++)
+			{
+				neighbors[i] = -1;
+			}
+
+			// TODO: Use a datastructure to cut down this search
+			for (var i = 0; i < TerrainIndices.Length; i += 3)
+			{
+				if (i != triIndex)	// don't return itself
+				{
+					var a2 = TerrainIndices[i];
+					var b2 = TerrainIndices[i + 1];
+					var c2 = TerrainIndices[i + 2];
+
+					var nCount = 0;
+					var mask = 0;
+					if (a == a2 || a == b2 || a == c2)
+					{
+						// some vertex matches the first vertex of the triangle
+						nCount++;
+						mask |= WCellTerrainConstants.TrianglePointA;
+					}
+					if (b == a2 || b == b2 || b == c2)
+					{
+						// some vertex matches the second vertex of the triangle
+						nCount++;
+						mask |= WCellTerrainConstants.TrianglePointB;
+					}
+					if (c == a2 || c == b2 || c == c2)
+					{
+						// some vertex matches the third vertex of the triangle
+						nCount++;
+						mask |= WCellTerrainConstants.TrianglePointC;
+					}
+
+					if (nCount == 2)
+					{
+						// we have a neighbor
+						switch (mask)
+						{
+							case WCellTerrainConstants.ABEdgeMask:
+								// neighbor shares a and b
+								neighbors[WCellTerrainConstants.ABEdgeIndex] = i;
+								break;
+							case WCellTerrainConstants.ACEdgeMask:
+								// second shares a and c
+								neighbors[WCellTerrainConstants.ACEdgeIndex] = i;
+								break;
+							case WCellTerrainConstants.BCEdgeMask:
+								// neighbor shares b and c
+								neighbors[WCellTerrainConstants.BCEdgeIndex] = i;
+								break;
+
+						}
+					}
+				}
+			}
+
+			return neighbors;
+		}
+
+		public void GetTriangle(int triIndex, out Triangle triangle)
+		{
+			triangle = new Triangle
+			{
+				Point1 = TerrainVertices[TerrainIndices[triIndex++]],
+				Point2 = TerrainVertices[TerrainIndices[triIndex++]],
+				Point3 = TerrainVertices[TerrainIndices[triIndex]]
+			};
+		}
+
 		#region Terrain Queries
 		/// <summary>
-		/// Intersects the given ray with the tile and sets triangle to the first one that got hit
+		/// Returns the first triangle that is directly underneath the given position.
+		/// The value is -1, if none was found.
 		/// </summary>
-		public bool FindFirstHit(Ray selectRay, out Triangle triangle)
+		/// <param name="pos"></param>
+		/// <returns></returns>
+		public int FindFirstTriangleUnderneath(Vector3 pos)
+		{
+			// shoot a ray straight down
+			pos.Z += 0.001f;						// make sure, it is slightly above the surface
+			var ray = new Ray(pos, Vector3.Down);
+			return FindFirstHitTriangle(ray);
+		}
+
+		public Vector3 IntersectFirstTriangle(Ray selectRay)
+		{
+			float distance;
+			FindFirstHitTriangle(selectRay, out distance);
+			
+			return selectRay.Position + selectRay.Direction * distance;
+		}
+
+		/// <summary>
+		/// Returns the first triangle that is directly underneath the given position.
+		/// The value is -1, if none was found.
+		/// </summary>
+		/// <returns></returns>
+		public int FindFirstHitTriangle(Ray selectRay)
+		{
+			// shoot a ray straight down
+			float distance;
+			return FindFirstHitTriangle(selectRay, out distance);
+		}
+
+		/// <summary>
+		/// Intersects the given ray with the tile and sets triangle to the first one that got hit
+		/// <param name="distance">The distance from Ray origin to, where it hits the returned triangle</param>
+		/// </summary>
+		public int FindFirstHitTriangle(Ray selectRay, out float distance)
 		{
 			var pos3D = selectRay.Position;
 			var dir3D = selectRay.Direction;
@@ -92,35 +217,25 @@ namespace WCell.Terrain
 			var dir2D = new Vector2(dir3D.X, dir3D.Y).NormalizedCopy();
 			var ray2D = new Ray2D(pos2D, dir2D);
 
-			var closestTime = float.MaxValue;
+			distance = float.MaxValue;
 
-			triangle = new Triangle();
+			var triangle = -1;
 
 			foreach (var tri in GetPotentialColliders(ray2D))
 			{
-				var vec0 = TerrainVertices[tri.Index0];
-				var vec1 = TerrainVertices[tri.Index1];
-				var vec2 = TerrainVertices[tri.Index2];
+				var vec0 = TerrainVertices[TerrainIndices[tri]];
+				var vec1 = TerrainVertices[TerrainIndices[tri+1]];
+				var vec2 = TerrainVertices[TerrainIndices[tri+2]];
 
 				float time;
 				if (!Intersection.RayTriangleIntersect(ray3D, vec0, vec1, vec2, out time)) continue;
-				if (time > closestTime) continue;
+				if (time > distance) continue;
 
-				closestTime = time;
-				triangle = new Triangle
-				{
-					Point1 = vec0,
-					Point2 = vec1,
-					Point3 = vec2
-				};
+				distance = time;
+				triangle = tri;
 			}
 
-			if (closestTime == float.MaxValue)
-			{
-				return false;
-			}
-
-			return true;
+			return triangle;
 		}
 
 		public float GetInterpolatedHeight(Point2D chunkCoord, Point2D unitCoord, HeightMapFraction heightMapFraction)
@@ -695,18 +810,13 @@ namespace WCell.Terrain
 		}
 
 
-		public IEnumerable<Index3> GetPotentialColliders(Ray2D ray2D)
+		public IEnumerable<int> GetPotentialColliders(Ray2D ray2D)
 		{
 			// TODO: Get colliding triangles (more efficiently)
 
-			for (var i = 0; i < TerrainIndices.Length; )
+			for (var i = 0; i < TerrainIndices.Length; i += 3)
 			{
-				yield return new Index3
-				{
-					Index0 = (short)TerrainIndices[i++],
-					Index1 = (short)TerrainIndices[i++],
-					Index2 = (short)TerrainIndices[i++]
-				}; ;
+				yield return i;
 			}
 		}
 		#endregion

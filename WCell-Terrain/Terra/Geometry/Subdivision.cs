@@ -10,13 +10,13 @@ namespace Terra
     internal class Subdivision
     {
         internal delegate void EdgeCallback(Edge edge, object closure);
-        internal delegate void FaceCallback(LinkedTriangle tri, object closure);
+        internal delegate void FaceCallback(LinkedListTriangle tri, object closure);
         
         private const float EPS = 1e-6f;
         private static int timeStamp = 0;
         private Random rand = new Random();
         private Edge startingEdge;
-        private LinkedTriangle firstFace;
+        private LinkedListTriangle firstFace;
 
         
         protected Subdivision()
@@ -37,7 +37,7 @@ namespace Terra
 
         public Edge Spoke(Vector2 point, Edge edge)
         {
-            var newFaces = new LinkedTriangle[4];
+            var newFaces = new LinkedListTriangle[4];
             var faceIdx = 0;
 
             // Note e is the edge returned by Locate(point)
@@ -272,7 +272,7 @@ namespace Terra
             return Insert(point, null);
         }
 
-        public Edge Insert(Vector2 point, LinkedTriangle tri)
+        public Edge Insert(Vector2 point, LinkedListTriangle tri)
         {
             var edge = (tri != null) ? Locate(point, tri.Anchor) : Locate(point);
             var startSpoke = Spoke(point, edge);
@@ -285,7 +285,7 @@ namespace Terra
             return startSpoke;
         }
 
-        public Edge Insert(float x, float y, LinkedTriangle tri)
+        public Edge Insert(float x, float y, LinkedListTriangle tri)
         {
             var newVec = new Vector2(x, y);
             return Insert(newVec, tri);
@@ -382,12 +382,12 @@ namespace Terra
             return edge;
         }
 
-        protected virtual LinkedTriangle AllocFace(Edge edge)
+        protected virtual LinkedListTriangle AllocFace(Edge edge)
         {
-            return new LinkedTriangle(edge);
+            return new LinkedListTriangle(edge);
         }
 
-        protected LinkedTriangle MakeFace(Edge edge)
+        protected LinkedListTriangle MakeFace(Edge edge)
         {
             var tri = AllocFace(edge);
 

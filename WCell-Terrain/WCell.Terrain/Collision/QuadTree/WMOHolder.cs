@@ -7,7 +7,7 @@ using WCell.Terrain.Collision.QuadTree;
 using WCell.Terrain.MPQ;
 using WCell.Util.Graphics;
 
-namespace WCell.Terrain.GUI.Collision.QuadTree
+namespace WCell.Terrain.Collision.QuadTree
 {
     public class WMOHolder : IQuadObject, ICollidable
     {

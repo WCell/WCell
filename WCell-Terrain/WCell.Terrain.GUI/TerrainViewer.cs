@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using WCell.Terrain.GUI.Util;
 using WCell.Terrain.GUI.Renderers;
+using WCell.Terrain.Pathfinding;
 using WCell.Util;
 using WCell.Util.Graphics;
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
@@ -58,6 +60,8 @@ namespace WCell.Terrain.GUI
 
 		SpriteBatch _spriteBatch;
 		SpriteFont _spriteFont;
+		
+		private Pathfinder pathfinder;
 
 		/// <summary>
 		/// Constructor for the game.
@@ -65,12 +69,14 @@ namespace WCell.Terrain.GUI
 		/// </summary>
 		public TerrainViewer(Vector3 avatarPosition, TerrainTile tile)
 		{
-			Tile = tile;
 			TerrainViewer.avatarPosition = avatarPosition;
 			_graphics = new GraphicsDeviceManager(this);
 			Content.RootDirectory = "Content";
 
 			avatarYaw = 90;
+
+			Tile = tile;
+			pathfinder = new Pathfinder(Tile);
 		}
 
 		public TerrainTile Tile
@@ -88,7 +94,7 @@ namespace WCell.Terrain.GUI
 			private set;
 		}
 
-		public SelectedTriangleRender TriangleSelector
+		public GenericRenderer TriangleSelector
 		{
 			get;
 			private set;
@@ -143,7 +149,7 @@ namespace WCell.Terrain.GUI
 			//Components.Add(new RecastSolidRenderer(this, _graphics, TerrainProgram.TerrainManager.MeshLoader));
 			Components.Add(new AxisRenderer(this));
 			Components.Add(new TileRenderer(this, Tile));
-			Components.Add(TriangleSelector = new SelectedTriangleRender(this));
+			Components.Add(TriangleSelector = new GenericRenderer(this));
 			
 			base.Initialize();
 		}
@@ -382,33 +388,19 @@ namespace WCell.Terrain.GUI
 				// select polygon
 		        mouseLeftButtonDown = true;
 
-		        var width = _graphics.GraphicsDevice.Viewport.Width;
-		        var height = _graphics.GraphicsDevice.Viewport.Height;
-                var x = mouseState.X;
-		        var y = mouseState.Y;
+		    	//SelectPolygon();
 
-                if (x < 0 || y < 0 || x > width || y > height) return;
-                
-                var add = (keyboardState.IsKeyDown(Keys.LeftShift) || keyboardState.IsKeyDown(Keys.RightShift));
-
-		        var startPos = new Vector3(x, y, 0);
-		        var endPos = new Vector3(x, y, 1);
-
-		        var near = _graphics.GraphicsDevice.Viewport.Unproject(startPos, _proj, _view, Matrix.Identity).ToWCell();
-		        var far = _graphics.GraphicsDevice.Viewport.Unproject(endPos, _proj, _view, Matrix.Identity).ToWCell();
-
-		        var dir = (far - near).NormalizedCopy();
-
-				XNAUtil.TransformXnaCoordsToWoWCoords(ref near);
-				XNAUtil.TransformXnaCoordsToWoWCoords(ref dir);
-
-				var ray = new Ray(near, dir);
-
-		    	Triangle triangle;
-		        if (Tile.FindFirstHit(ray, out triangle))
-		        {
-		        	TriangleSelector.Select(ref triangle, add);
-		        }
+				if (selectedPoints.Count >= 2)
+				{
+					// clear
+					selectedPoints.Clear();
+					TriangleSelector.Clear();
+				}
+				else
+				{
+					// select
+					SelectOnPath();
+				}
 		    }
 
 		    if (mouseState.LeftButton == ButtonState.Released && mouseLeftButtonDown)
@@ -416,6 +408,113 @@ namespace WCell.Terrain.GUI
 		        mouseLeftButtonDown = false;
 		    }
 		}
+
+		#region Mouse selection
+		private readonly List<WCell.Util.Graphics.Vector3> selectedPoints = new List<WCell.Util.Graphics.Vector3>();
+
+		private void SelectOnPath()
+		{
+			Ray ray;
+			if (!GetRayToCursor(out ray))
+			{
+				// Outside of current map
+				return;
+			}
+			selectedPoints.Add(Tile.IntersectFirstTriangle(ray));
+
+			if (selectedPoints.Count > 1)
+			{
+				var visited = new HashSet<int>();
+				var current = pathfinder.FindPath(1, selectedPoints[0], selectedPoints[1], out visited);
+
+				foreach (var tri in visited)
+				{
+					SelectTriangle(tri, true, Color.Red);
+				}
+
+				while (!current.IsNull)
+				{
+					//var tri = Tile.FindFirstTriangleUnderneath(curren);
+					SelectTriangle(current.Triangle, true);
+
+					var p1 = current.EnterPos;
+					var p2 = current.Previous.IsNull ? selectedPoints[0] : current.Previous.EnterPos;
+					TriangleSelector.SelectLine(p1, p2, Color.Green);
+					current = current.Previous;
+				}
+			}
+		}
+
+		private void SelectPolygon()
+		{
+			var keyboardState = Keyboard.GetState();
+			var add = (keyboardState.IsKeyDown(Keys.LeftShift) || keyboardState.IsKeyDown(Keys.RightShift));
+			Ray ray;
+			if (!GetRayToCursor(out ray))
+			{
+				// Outside of current map
+				return;
+			}
+
+			var index = Tile.FindFirstHitTriangle(ray);
+			if (index != -1)
+			{
+				// mark the selected triangle
+				SelectTriangle(index, add);
+
+				// also mark it's neighbors
+				var neighbors = Tile.GetNeighborsOf(index);
+				foreach (var neighbor in neighbors)
+				{
+					SelectTriangle(neighbor, true);
+				}
+			}
+		}
+
+		private void SelectTriangle(int index, bool add)
+		{
+			SelectTriangle(index, add, Color.Yellow);
+		}
+
+		void SelectTriangle(int index, bool add, Color color)
+		{
+			if (index == -1) return;
+
+			Triangle triangle;
+			Tile.GetTriangle(index, out triangle);
+			TriangleSelector.Select(ref triangle, add, color);
+		}
+
+		bool GetRayToCursor(out Ray ray)
+		{
+			var mouseState = Mouse.GetState();
+
+			var width = _graphics.GraphicsDevice.Viewport.Width;
+			var height = _graphics.GraphicsDevice.Viewport.Height;
+			var x = mouseState.X;
+			var y = mouseState.Y;
+
+			if (x < 0 || y < 0 || x > width || y > height)
+			{
+				ray = default(Ray);
+				return false;
+			}
+
+			var startPos = new Vector3(x, y, 0);
+			var endPos = new Vector3(x, y, 1);
+
+			var near = _graphics.GraphicsDevice.Viewport.Unproject(startPos, _proj, _view, Matrix.Identity).ToWCell();
+			var far = _graphics.GraphicsDevice.Viewport.Unproject(endPos, _proj, _view, Matrix.Identity).ToWCell();
+
+			var dir = (far - near).NormalizedCopy();
+
+			XNAUtil.TransformXnaCoordsToWoWCoords(ref near);
+			XNAUtil.TransformXnaCoordsToWoWCoords(ref dir);
+
+			ray = new Ray(near, dir);
+			return true;
+		}
+		#endregion
 
 		void UpdateCameraThirdPerson()
 		{
@@ -433,7 +532,6 @@ namespace WCell.Terrain.GUI
 			var aspectRatio = viewport.Width/(float)viewport.Height;
 			_proj = Matrix.CreatePerspectiveFieldOfView(ViewAngle, aspectRatio, NearClip, FarClip);
 		}
-
 
 		#region DrawBoundingBox
 		//private static void DrawBoundingBox(BoundingBox boundingBox, Color color, WMORoot currentWMO)

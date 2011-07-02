@@ -14,6 +14,7 @@ namespace WCell.Terrain
 {
     ///<summary>
     /// TODO: Read GO collision data, using GameobjectDisplayInfo.dbc
+    /// TODO: Global list of vertices, indices & neighbors
 	///</summary>
 	public abstract class Terrain : ITerrain
 	{
@@ -132,7 +133,7 @@ namespace WCell.Terrain
 				var newHeight = QueryTerrainHeight(newPos);
 
 				var heightDiff = position.Z - newHeight;
-				if (heightDiff >= ignorableHeightDiff)
+				if (heightDiff <= ignorableHeightDiff)
 				{
 					newPos.Z = newHeight;
 					wayPoints.Add(newPos);

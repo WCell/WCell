@@ -62,7 +62,7 @@ namespace Terra.Greedy
             return Select(subX, subY, null);
         }
 
-        public Edge Select(int subX, int subY, LinkedTriangle tri)
+        public Edge Select(int subX, int subY, LinkedListTriangle tri)
         {
             if (PointStates[subX, subY] == PointState.Used)
             {
@@ -187,14 +187,14 @@ namespace Terra.Greedy
             return zPlane[x, y];
         }
 
-        protected override LinkedTriangle AllocFace(Edge edge)
+        protected override LinkedListTriangle AllocFace(Edge edge)
         {
             var tri = new TrackedTriangle(edge);
             heap.Insert(tri, -1.0f);
             return tri;
         }
 
-        protected void ComputePlane(Plane plane, LinkedTriangle tri, Map map)
+        protected void ComputePlane(Plane plane, LinkedListTriangle tri, Map map)
         {
             var point1 = tri.Point1;
             var point2 = tri.Point2;

@@ -91,6 +91,8 @@
     <Compile Include="Collision\QuadTree\QuadTree.cs" />
     <Compile Include="Collision\QuadTree\TerrainTriangleHolder.cs" />
     <Compile Include="Collision\QuadTree\WMOHolder.cs" />
+    <Compile Include="Pathfinding\Pathfinder.cs" />
+    <Compile Include="Pathfinding\SearchItem.cs" />
     <Compile Include="Tools\MapBoundaryUtil.cs" />
     <Compile Include="Tools\MapBoundaryWriter.cs" />
     <Compile Include="Tools\ZoneGridWriter.cs" />
@@ -172,6 +174,7 @@
     <Compile Include="Serialization\WorldObjectWriter.cs" />
     <Compile Include="Terrain.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="WCellTerrainConstants.cs" />
     <Compile Include="WCellTerrainSettings.cs" />
     <Compile Include="TileIdentifier.cs" />
     <Compile Include="Utils\MathHelpers.cs" />
@@ -185,6 +188,10 @@
     <ProjectReference Include="..\..\Core\WCell.Core\WCell.Core.csproj">
       <Project>{EEA9DEB6-8EA6-46F1-B1B7-AB38D8BBCA6C}</Project>
       <Name>WCell.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Utilities\C5\C5\C5.csproj">
+      <Project>{D02E0664-C56C-4C3F-98E5-C8EC881A8439}</Project>
+      <Name>C5</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Utilities\WCell.MPQTool\WCell.MPQTool.csproj">
       <Project>{5F96293A-1276-4515-8048-EBC49CD81D71}</Project>

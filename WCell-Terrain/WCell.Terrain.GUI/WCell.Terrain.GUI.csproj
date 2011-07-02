@@ -117,7 +117,7 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="RecastRunner.cs" />
     <Compile Include="Renderers\AxisRenderer.cs" />
-    <Compile Include="Renderers\SelectedTriangleRender.cs" />
+    <Compile Include="Renderers\GenericRenderer.cs" />
     <Compile Include="TerrainGUIConfig.cs" />
     <Compile Include="Console\KeyBindings.cs" />
     <Compile Include="Console\MpqConsole.cs" />

@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using WCell.Util.Graphics;
 
-namespace WCell.Terrain.GUI.Collision.OCTree
+namespace WCell.Terrain.Collision.OCTree
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct OCTreeIntersection : IComparable<OCTreeIntersection>

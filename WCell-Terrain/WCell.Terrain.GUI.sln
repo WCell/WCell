@@ -7,7 +7,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Recast", "Recast\RecastDemo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.Constants", "..\Core\WCell.Constants\WCell.Constants.csproj", "{42F497A4-0347-491D-8FA8-50E4D8AD19EB}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WCell", "WCell", "{7B540487-37B6-47D6-A391-AA2F5AEC01FA}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{7B540487-37B6-47D6-A391-AA2F5AEC01FA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.MPQTool", "..\Utilities\WCell.MPQTool\WCell.MPQTool.csproj", "{5F96293A-1276-4515-8048-EBC49CD81D71}"
 EndProject
@@ -26,6 +26,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.Terrain.Extractor", "WCell.Terrain.Extractor\WCell.Terrain.Extractor.csproj", "{B02815C5-A0CB-443F-A005-8AC8F8F2D3EB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.Terrain.GUI", "WCell.Terrain.GUI\WCell.Terrain.GUI.csproj", "{B59C21AA-8AB5-439B-AABA-FEB03EFF251A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.Addons.Terrain", "..\Addons\WCell.Addons.Terrain\WCell.Addons.Terrain.csproj", "{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "C5", "..\Utilities\C5\C5\C5.csproj", "{D02E0664-C56C-4C3F-98E5-C8EC881A8439}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -255,6 +259,44 @@ Global
 		{B59C21AA-8AB5-439B-AABA-FEB03EFF251A}.Release|x64.ActiveCfg = Release|x86
 		{B59C21AA-8AB5-439B-AABA-FEB03EFF251A}.Release|x86.ActiveCfg = Release|x86
 		{B59C21AA-8AB5-439B-AABA-FEB03EFF251A}.Release|x86.Build.0 = Release|x86
+		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}.Debug|Itanium.ActiveCfg = Debug|Itanium
+		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}.Debug|Itanium.Build.0 = Debug|Itanium
+		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}.Debug|Win32.ActiveCfg = Debug|Itanium
+		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}.Debug|x64.ActiveCfg = Debug|x64
+		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}.Debug|x64.Build.0 = Debug|x64
+		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}.Debug|x86.ActiveCfg = Debug|x86
+		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}.Debug|x86.Build.0 = Debug|x86
+		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}.Release|Itanium.ActiveCfg = Release|Itanium
+		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}.Release|Itanium.Build.0 = Release|Itanium
+		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}.Release|Mixed Platforms.ActiveCfg = Release|Itanium
+		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}.Release|Mixed Platforms.Build.0 = Release|Itanium
+		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}.Release|Win32.ActiveCfg = Release|Itanium
+		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}.Release|x64.ActiveCfg = Release|x64
+		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}.Release|x64.Build.0 = Release|x64
+		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}.Release|x86.ActiveCfg = Release|x86
+		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}.Release|x86.Build.0 = Release|x86
+		{D02E0664-C56C-4C3F-98E5-C8EC881A8439}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D02E0664-C56C-4C3F-98E5-C8EC881A8439}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D02E0664-C56C-4C3F-98E5-C8EC881A8439}.Debug|Itanium.ActiveCfg = Debug|Any CPU
+		{D02E0664-C56C-4C3F-98E5-C8EC881A8439}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{D02E0664-C56C-4C3F-98E5-C8EC881A8439}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{D02E0664-C56C-4C3F-98E5-C8EC881A8439}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{D02E0664-C56C-4C3F-98E5-C8EC881A8439}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D02E0664-C56C-4C3F-98E5-C8EC881A8439}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D02E0664-C56C-4C3F-98E5-C8EC881A8439}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D02E0664-C56C-4C3F-98E5-C8EC881A8439}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D02E0664-C56C-4C3F-98E5-C8EC881A8439}.Release|Itanium.ActiveCfg = Release|Any CPU
+		{D02E0664-C56C-4C3F-98E5-C8EC881A8439}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{D02E0664-C56C-4C3F-98E5-C8EC881A8439}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{D02E0664-C56C-4C3F-98E5-C8EC881A8439}.Release|Win32.ActiveCfg = Release|Any CPU
+		{D02E0664-C56C-4C3F-98E5-C8EC881A8439}.Release|x64.ActiveCfg = Release|Any CPU
+		{D02E0664-C56C-4C3F-98E5-C8EC881A8439}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -267,5 +309,6 @@ Global
 		{F753AF28-A251-4C12-9335-07E8236184F2} = {7B540487-37B6-47D6-A391-AA2F5AEC01FA}
 		{EEA9DEB6-8EA6-46F1-B1B7-AB38D8BBCA6C} = {7B540487-37B6-47D6-A391-AA2F5AEC01FA}
 		{A38FAA6D-86B5-4429-85D0-BC93EB5E2C56} = {7B540487-37B6-47D6-A391-AA2F5AEC01FA}
+		{D02E0664-C56C-4C3F-98E5-C8EC881A8439} = {7B540487-37B6-47D6-A391-AA2F5AEC01FA}
 	EndGlobalSection
 EndGlobal

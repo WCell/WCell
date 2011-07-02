@@ -1,5 +1,5 @@
 ﻿using System;
-using WCell.Terrain.GUI.Collision;
+using WCell.Terrain.Collision;
 using WCell.Terrain.MPQ;
 using WCell.Util.Graphics;
 
