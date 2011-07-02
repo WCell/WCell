@@ -133,7 +133,8 @@ namespace WCell.RealmServer.Entities
 			// set charges to max
 			if (m_template.UseSpell != null && m_template.UseSpell.HasCharges)
 			{
-				SpellCharges = (int)m_template.UseSpell.Charges;
+				m_record.Charges = m_template.UseSpell.Charges;
+				SetSpellCharges(m_template.UseSpell.Index, m_template.UseSpell.Charges);
 			}
 
 			var randomEnchants = m_template.RandomPrefixes;
