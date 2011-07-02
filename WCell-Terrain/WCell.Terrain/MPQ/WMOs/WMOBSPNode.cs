@@ -5,13 +5,13 @@ using WCell.Util.Graphics;
 
 namespace WCell.Terrain.MPQ.WMOs
 {
-    public class BSPTree
+    public class WMOBSPTree
     {
         public short rootId;
-        public List<BSPNode> nodes;
+        public List<WMOBSPNode> nodes;
         private BoundingBox bounds;
 
-        public BSPTree(List<BSPNode> nodes)
+        public WMOBSPTree(List<WMOBSPNode> nodes)
         {
             var id = FindRootNodeId(nodes);
             if (id == short.MinValue)
@@ -27,7 +27,7 @@ namespace WCell.Terrain.MPQ.WMOs
             //bounds = new BoundingBox(Min, Max);
         }
 
-        public BSPTree(List<BSPNode> nodes, short rootId)
+        public WMOBSPTree(List<WMOBSPNode> nodes, short rootId)
         {
             this.rootId = rootId;
             this.nodes = nodes;
@@ -96,7 +96,7 @@ namespace WCell.Terrain.MPQ.WMOs
         //    return minDist;
         //}
 
-        private static short FindRootNodeId(IList<BSPNode> nodes)
+        private static short FindRootNodeId(IList<WMOBSPNode> nodes)
         {
             for(var i = 0; i < nodes.Count; i++)
             {
@@ -121,7 +121,7 @@ namespace WCell.Terrain.MPQ.WMOs
             return short.MinValue;
         }
 
-        private static void VisitNodes(BSPNode node, Ray ray, float tMax, Action<BSPNode> callback)
+        private static void VisitNodes(WMOBSPNode node, Ray ray, float tMax, Action<WMOBSPNode> callback)
         {
             if (node == null) return;
             if ((node.flags & BSPNodeFlags.Flag_Leaf) != 0)
@@ -150,8 +150,8 @@ namespace WCell.Terrain.MPQ.WMOs
             }
             
 
-            BSPNode first;
-            BSPNode last;
+            WMOBSPNode first;
+            WMOBSPNode last;
             if (startVal > node.planeDist)
             {
                 first = node.Positive;
@@ -183,7 +183,7 @@ namespace WCell.Terrain.MPQ.WMOs
         }
     }
 
-    public class BSPNode
+    public class WMOBSPNode
     {
         public BSPNodeFlags flags;
         public short negChild;
@@ -198,8 +198,8 @@ namespace WCell.Terrain.MPQ.WMOs
         public uint faceStart;
         public float planeDist;
 
-        public BSPNode Positive;
-        public BSPNode Negative;
+        public WMOBSPNode Positive;
+        public WMOBSPNode Negative;
         public List<Index3> TriIndices;
 
 

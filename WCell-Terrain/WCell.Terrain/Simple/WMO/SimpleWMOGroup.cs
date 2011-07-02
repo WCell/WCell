@@ -23,6 +23,6 @@ namespace WCell.Terrain.Simple.WMO
 
         public List<Vector3> WmoVertices;
         public List<Vector3> LiquidVertices;
-        public BSPTree Tree;
+        public WMOBSPTree Tree;
     }
 }

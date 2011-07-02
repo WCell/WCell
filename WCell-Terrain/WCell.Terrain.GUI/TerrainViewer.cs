@@ -27,11 +27,19 @@ namespace WCell.Terrain.GUI
 		const float ViewAngle = MathHelper.PiOver4;
 		const float NearClip = 1.0f;
 		const float FarClip = 2000.0f;
-
+		/// <summary>
+		/// Can't get closer than this to any object.
+		/// Must be > ForwardSpeed
+		/// </summary>
+		private const float CollisionDistance = 2;
 		/// <summary>
 		/// Default sensitivity for most games is 3
 		/// </summary>
 		public static float MouseSensitivity = 3;
+
+		//float ForwardSpeed = 50f / 60f;
+		float ForwardSpeed = 1.2f;
+
 
 		// XNA uses this variable for graphics information
 		private readonly GraphicsDeviceManager _graphics;
@@ -41,9 +49,7 @@ namespace WCell.Terrain.GUI
 		private Matrix _view;
 		private Matrix _proj;
 
-		BasicEffect _basicEffect;
-		//float ForwardSpeed = 50f / 60f;
-		float ForwardSpeed = 1.2f;
+		BasicEffect effect;
 		
 		//private readonly ADTManager _manager;
 		/// <summary>
@@ -156,11 +162,10 @@ namespace WCell.Terrain.GUI
 
 		private void InitializeEffect()
 		{
-			_basicEffect = new BasicEffect(_graphics.GraphicsDevice, null)
+			effect = new BasicEffect(_graphics.GraphicsDevice, null)
 			{
 				VertexColorEnabled = true,
-				View = _view,
-				Projection = _proj
+				LightingEnabled = true
 			};
 
 			_vertexDeclaration = new VertexDeclaration(_graphics.GraphicsDevice, VertexPositionNormalColored.VertexElements);
@@ -229,45 +234,44 @@ namespace WCell.Terrain.GUI
 			// Update our camera
 			UpdateCameraThirdPerson();
 
-			_basicEffect.Begin();
-			_basicEffect.Projection = _proj;
-			_basicEffect.View = _view;
 
-			_basicEffect.Alpha = 1.0f;
-			_basicEffect.DiffuseColor = new Vector3(.95f, .95f, .95f);
-			_basicEffect.SpecularColor = new Vector3(0.05f, 0.05f, 0.05f);
-			_basicEffect.SpecularPower = 5.0f;
+			effect.Begin();
+			effect.Projection = _proj;
+			effect.View = _view;
 
-			_basicEffect.AmbientLightColor = new Vector3(0.75f, 0.75f, 0.75f);
-			_basicEffect.DirectionalLight0.Enabled = true;
-			_basicEffect.DirectionalLight0.DiffuseColor = Vector3.One;
-			_basicEffect.DirectionalLight0.Direction = Vector3.Normalize(new Vector3(1.0f, -1.0f, 0.0f));
-			_basicEffect.DirectionalLight0.SpecularColor = Vector3.One;
+			effect.Alpha = 1.0f;
+			effect.DiffuseColor = new Vector3(.95f, .95f, .95f);
+			effect.SpecularColor = new Vector3(0.05f, 0.05f, 0.05f);
+			effect.AmbientLightColor = new Vector3(0.75f, 0.75f, 0.75f);
+			effect.SpecularPower = 5.0f;
 
-			_basicEffect.DirectionalLight1.Enabled = true;
-			_basicEffect.DirectionalLight1.DiffuseColor = new Vector3(0.1f, 0.1f, 0.1f);
-			_basicEffect.DirectionalLight1.Direction = Vector3.Normalize(new Vector3(-1.0f, -1.0f, 1.0f));
+			effect.DirectionalLight0.Enabled = true;
+			effect.DirectionalLight0.DiffuseColor = Vector3.One;
+			effect.DirectionalLight0.Direction = Vector3.Normalize(new Vector3(1.0f, -1.0f, 0.0f));
+			effect.DirectionalLight0.SpecularColor = Vector3.One;
 
-			_basicEffect.LightingEnabled = true;
+			effect.DirectionalLight1.Enabled = true;
+			effect.DirectionalLight1.DiffuseColor = new Vector3(0.1f, 0.1f, 0.1f);
+			effect.DirectionalLight1.Direction = Vector3.Normalize(new Vector3(-1.0f, -1.0f, 1.0f));
 			
-			foreach (var pass in _basicEffect.CurrentTechnique.Passes)
+			foreach (var pass in effect.CurrentTechnique.Passes)
 			{
 				pass.Begin();
-				_graphics.GraphicsDevice.RenderState.CullMode = CullMode.None;
-				_graphics.GraphicsDevice.RenderState.FillMode = FillMode.WireFrame;
-				_graphics.GraphicsDevice.RenderState.AlphaBlendEnable = true;
+				//_graphics.GraphicsDevice.RenderState.CullMode = CullMode.None;
+				//_graphics.GraphicsDevice.RenderState.FillMode = FillMode.WireFrame;
+				//_graphics.GraphicsDevice.RenderState.AlphaBlendEnable = true;
 				
 				// Make the renderers draw their stuff
 				base.Draw(gameTime);
-				
-				_graphics.GraphicsDevice.RenderState.FillMode = FillMode.Solid;
-				_graphics.GraphicsDevice.RenderState.CullMode = CullMode.CullClockwiseFace;
-				_graphics.GraphicsDevice.RenderState.AlphaBlendEnable = false;
+
+				//_graphics.GraphicsDevice.RenderState.CullMode = CullMode.CullClockwiseFace;
+				//_graphics.GraphicsDevice.RenderState.FillMode = FillMode.Solid;
+				//_graphics.GraphicsDevice.RenderState.AlphaBlendEnable = false;
 				pass.End();
 			}
 
 			
-			_basicEffect.End();
+			effect.End();
 
 			DrawCameraState();
 			//_spriteBatch.Begin();
@@ -341,7 +345,24 @@ namespace WCell.Terrain.GUI
 				var vertical = -avatarPitch.Sin();
 				var v = new Vector3(avatarYaw.Sin() * horizontal, vertical, avatarYaw.Cos() * horizontal);
 				v.Normalize();
-				avatarPosition += v * ForwardSpeed;
+
+				var newPos = avatarPosition + v * ForwardSpeed;
+				Ray ray;
+				var canMove = true;
+				if (GetRayToCursor(out ray))
+				{
+					// something is in front of us
+					float dist;
+					if (Tile.FindFirstHitTriangle(ray, out dist) != -1)
+					{
+						// don't keep moving, if too close
+						canMove = dist > CollisionDistance;
+					}
+				}
+				if (canMove)
+				{
+					avatarPosition = newPos;
+				}
 			}
 
 			if (keyboardState.IsKeyDown(Keys.S) || (currentState.DPad.Down == ButtonState.Pressed))

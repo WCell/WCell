@@ -9,7 +9,7 @@ using WCell.Util.Graphics;
 namespace WCell.Terrain.Pathfinding
 {
 	/// <summary>
-	/// TODO: Cull unwalkable nodes (ceiling too low; too close to wall)
+	/// TODO: Cull unwalkable nodes (ceiling too low; too close to wall etc)
 	/// </summary>
 	public class Pathfinder
 	{

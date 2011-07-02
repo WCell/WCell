@@ -466,7 +466,7 @@ namespace WCell.Terrain.Serialization
 
 		private static void WriteBSPTree(BinaryWriter writer, WMOGroup group)
 		{
-			var tree = new BSPTree(group.BSPNodes);
+			var tree = new WMOBSPTree(group.BSPNodes);
 
 			writer.Write(tree.rootId);
 
@@ -477,7 +477,7 @@ namespace WCell.Terrain.Serialization
 			}
 		}
 
-		private static void WriteBSPNode(BinaryWriter writer, BSPNode node)
+		private static void WriteBSPNode(BinaryWriter writer, WMOBSPNode node)
 		{
 			writer.Write((byte)node.flags);
 			writer.Write(node.negChild);

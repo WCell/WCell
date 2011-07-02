@@ -39,7 +39,7 @@ namespace WCell.Terrain.MPQ
         /// </summary>
         public readonly List<Triangle> Triangles = new List<Triangle>();
 
-        public List<BSPNode> BSPNodes;
+        public List<WMOBSPNode> BSPNodes;
         public ushort[] MOBR;
 
         public uint TriangleCount;

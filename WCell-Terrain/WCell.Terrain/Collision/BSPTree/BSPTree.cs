@@ -11,15 +11,15 @@ namespace WCell.Terrain.Collision.BSPTree
 {
     public class BSPTree
     {
-        internal readonly short rootId;
+        internal readonly int rootId;
         internal readonly BSPNode[] nodes;
 
-        internal BSPNode Root
+		public BSPNode Root
         {
             get { return nodes[rootId]; }
         }
 
-        internal BSPTree(IList<BSPNode> nodes)
+		public BSPTree(IList<BSPNode> nodes)
         {
             this.nodes = nodes.ToArray();
             rootId = FindRootNode(nodes);
@@ -30,13 +30,13 @@ namespace WCell.Terrain.Collision.BSPTree
             }
         }
 
-        internal BSPTree(short rootId, BSPNode[] nodes)
+		public BSPTree(short rootId, BSPNode[] nodes)
         {
             this.rootId = rootId;
             this.nodes = nodes;
         }
 
-        internal bool FirstPointOfIntersection(ref Ray ray, ref float tMax, Vector3[] vertices, out Vector3 pointOfIntersection)
+		public bool FirstPointOfIntersection(ref Ray ray, ref float tMax, Vector3[] vertices, out Vector3 pointOfIntersection)
         {
             var rayCopy = ray;
 
@@ -73,7 +73,7 @@ namespace WCell.Terrain.Collision.BSPTree
             return false;
         }
 
-        internal bool IntersectsWith(ref Ray ray, ref float tMax, Vector3[] vertices)
+		public bool IntersectsWith(ref Ray ray, ref float tMax, Vector3[] vertices)
         {
             var rayCopy = ray;
 
@@ -102,7 +102,7 @@ namespace WCell.Terrain.Collision.BSPTree
             return (dist < tMax);
         }
 
-        private static short FindRootNode(IList<BSPNode> nodes)
+		public static short FindRootNode(IList<BSPNode> nodes)
         {
             for (short rootId = 0; rootId < nodes.Count; rootId++)
             {
@@ -129,7 +129,7 @@ namespace WCell.Terrain.Collision.BSPTree
             return short.MinValue;
         }
 
-        private void VisitNodes(short nodeId, ref Ray ray, ref float tMax, Action<BSPNode> callback)
+		public void VisitNodes(int nodeId, ref Ray ray, ref float tMax, Action<BSPNode> callback)
         {
             if (nodeId >= nodes.Length || nodeId < 0) return;
 
@@ -227,7 +227,7 @@ namespace WCell.Terrain.Collision.BSPTree
             file.Close();
         }
 
-        public void DumpNodes(short nodeId, Vector3[] vectors, TextWriter file)
+		public void DumpNodes(int nodeId, Vector3[] vectors, TextWriter file)
         {
             if (nodeId < 0 || nodeId > nodes.Length) return;
             var node = nodes[nodeId];
@@ -284,7 +284,7 @@ namespace WCell.Terrain.Collision.BSPTree
             file.WriteLine(file.NewLine);
         }
 
-        private void GetBranchContents(short nodeId, IList<Vector3> vectors, ICollection<Vector3> vertices)
+		public void GetBranchContents(short nodeId, IList<Vector3> vectors, ICollection<Vector3> vertices)
         {
             if (nodeId < 0 || nodeId > nodes.Length) return;
             var node = nodes[nodeId];
@@ -305,7 +305,7 @@ namespace WCell.Terrain.Collision.BSPTree
         }
     }
 
-    internal class BSPNode
+    public class BSPNode
     {
         internal BSPNodeFlags flags;
         internal short negChild;

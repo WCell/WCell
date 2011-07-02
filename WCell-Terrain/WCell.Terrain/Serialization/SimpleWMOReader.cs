@@ -132,10 +132,10 @@ namespace WCell.Terrain.Serialization
 		{
 			var rootId = br.ReadInt16();
 			var nodeCount = br.ReadInt32();
-			var nodeList = new List<BSPNode>(nodeCount);
+			var nodeList = new List<WMOBSPNode>(nodeCount);
 			for (var i = 0; i < nodeCount; i++)
 			{
-				var node = new BSPNode
+				var node = new WMOBSPNode
 				{
 					flags = (BSPNodeFlags)br.ReadByte(),
 					negChild = br.ReadInt16(),
@@ -147,7 +147,7 @@ namespace WCell.Terrain.Serialization
 				nodeList.Add(node);
 			}
 
-			group.Tree = new BSPTree(nodeList, rootId);
+			group.Tree = new WMOBSPTree(nodeList, rootId);
 		}
 	}
 }

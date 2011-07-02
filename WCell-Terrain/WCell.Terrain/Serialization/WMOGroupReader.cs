@@ -559,10 +559,10 @@ namespace WCell.Terrain.Serialization
         {
             var count = size/0x10;
 
-            group.BSPNodes = new List<BSPNode>((int)count);
+            group.BSPNodes = new List<WMOBSPNode>((int)count);
             for (var i=0;i<count;i++)
             {
-                var node = new BSPNode
+                var node = new WMOBSPNode
                                {
                                    flags = (BSPNodeFlags) file.ReadUInt16(),
                                    negChild = file.ReadInt16(),

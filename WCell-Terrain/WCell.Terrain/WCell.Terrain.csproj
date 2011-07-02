@@ -137,7 +137,7 @@
     <Compile Include="MPQ\VertexSpan.cs" />
     <Compile Include="MPQ\ContinentType.cs" />
     <Compile Include="Serialization\WDTReader.cs" />
-    <Compile Include="MPQ\WMOs\BSPNode.cs" />
+    <Compile Include="MPQ\WMOs\WMOBSPNode.cs" />
     <Compile Include="MPQ\WMOs\DoodadDefinition.cs" />
     <Compile Include="MPQ\WMOs\DoodadSet.cs" />
     <Compile Include="MPQ\WMOs\Fog.cs" />
