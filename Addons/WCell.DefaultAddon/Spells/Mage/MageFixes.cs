@@ -21,6 +21,8 @@ namespace WCell.Addons.Default.Spells.Mage
 		[Initialization(InitializationPass.Second)]
 		public static void FixMage()
 		{
+			FixMageGlyphs();
+
 			// The improved counterspell aura should apply to Counterspell only
 			SpellLineId.MageArcaneImprovedCounterspell.Apply(spell =>
 			{
@@ -85,6 +87,28 @@ namespace WCell.Addons.Default.Spells.Mage
 				efct.TriggerSpellId = (SpellId)efct.CalcEffectValue();
 			}, SpellLineId.MageConjureManaGem);
 
+
+		}
+
+		private static void FixMageGlyphs()
+		{
+			// Glyph of Ice Block
+			SpellHandler.Apply(
+				spell =>
+				spell.AddEffect((cast, effect) => new ClearSpellCooldownHandler(cast, effect), ImplicitSpellTargetType.Self),
+				SpellLineId.MageIceBlock);
+
+			// Glyph of Invisibility
+			SpellHandler.Apply(spell => spell.Effects[0].AddAffectingSpells(SpellLineId.MageInvisibility), SpellId.GlyphOfInvisibility);
+
+			// Glyph of Mana Gem
+			SpellHandler.Apply(
+				spell =>
+				spell.Effects[0].AddAffectingSpells(SpellId.ReplenishManaRank1, SpellId.ReplenishManaRank2,
+				                                    SpellId.ReplenishManaRank3, SpellId.ReplenishManaRank4,
+				                                    SpellId.ReplenishManaRank5, SpellId.ReplenishManaRank6,
+				                                    SpellId.ReplenishManaRank7), SpellId.GlyphOfManaGem);
+
 		}
 
 		public class TriggerSpellAfterAuraRemovedHandler : AuraEffectHandler
@@ -104,6 +128,26 @@ namespace WCell.Addons.Default.Spells.Mage
 				}
 
 				base.Remove(cancelled);
+			}
+		}
+
+		public class ClearSpellCooldownHandler : SpellEffectHandler
+		{
+			public ClearSpellCooldownHandler(SpellCast cast, SpellEffect effect) : base(cast, effect)
+			{
+			}
+
+			public override void Apply()
+			{
+				var chr = m_cast.CasterChar;
+				if(chr != null)
+				{
+					if(chr.Auras.Contains(SpellId.GlyphOfIceBlock))
+					{
+						chr.Spells.ClearCooldown(SpellLineId.MageFrostNova);
+					}
+				}
+				base.Apply();
 			}
 		}
 	}

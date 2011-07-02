@@ -345,6 +345,18 @@ namespace WCell.RealmServer.Spells
 			ClearCooldown(spell, alsoClearCategory);
 		}
 
+		public void ClearCooldown(SpellLineId id, bool alsoClearCategory = true)
+		{
+			var line = id.GetLine();
+			if (line != null)
+			{
+				foreach (var spell in line)
+				{
+					ClearCooldown(spell, alsoClearCategory);
+				}
+			}
+		}
+
 		public abstract void ClearCooldown(Spell cooldownSpell, bool alsoClearCategory = true);
 
 		#region Special Spell Casting behavior
