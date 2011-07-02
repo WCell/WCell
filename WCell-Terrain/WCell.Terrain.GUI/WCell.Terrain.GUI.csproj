@@ -104,6 +104,12 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Libraries\Binaries\Release\NLog\NLog.dll</HintPath>
     </Reference>
+    <Reference Include="Nuclex.Input">
+      <HintPath>..\Lib\Nuclex.Input.dll</HintPath>
+    </Reference>
+    <Reference Include="Nuclex.UserInterface">
+      <HintPath>..\Lib\Nuclex.UserInterface.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Windows.Forms" />

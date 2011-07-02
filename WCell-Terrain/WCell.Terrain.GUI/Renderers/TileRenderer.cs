@@ -99,6 +99,11 @@ namespace WCell.Terrain.GUI.Renderers
 		}
 
 		#region Build polygons
+		void AddRenderVertex(VertexPositionNormalColored vertex)
+		{
+			
+		}
+
 		private void BuildVerticiesAndIndicies()
 		{
 			// Cycle through each ADT
@@ -109,15 +114,36 @@ namespace WCell.Terrain.GUI.Renderers
 			// Handle the ADTs
 			for (var v = 0; v < Tile.TerrainVertices.Length; v++)
 			{
-				var vertex = Tile.TerrainVertices[v];
-				var vertexPosNmlCol = new VertexPositionNormalColored(vertex.ToXna(),
+				var vertex1 = Tile.TerrainVertices[v];
+
+				var vertexPosNmlCol1 = new VertexPositionNormalColored(vertex1.ToXna(),
 																		TerrainColor,
-																		Vector3.Down);
-				tempVertices.Add(vertexPosNmlCol);
+																		Vector3.Up);
+				tempVertices.Add(vertexPosNmlCol1);
 			}
-			for (var i = 0; i < Tile.TerrainIndices.Length; i++)
+
+			for (var i = 0; i < Tile.TerrainIndices.Length; i += 3)
 			{
-				tempIndicies.Add(Tile.TerrainIndices[i] + offset);
+				var index1 = Tile.TerrainIndices[i];
+				var index2 = Tile.TerrainIndices[i+1];
+				var index3 = Tile.TerrainIndices[i+2];
+				tempIndicies.Add(index1);
+				tempIndicies.Add(index2);
+				tempIndicies.Add(index3);
+
+				var vertex1 = tempVertices[index1];
+				var vertex2 = tempVertices[index2];
+				var vertex3 = tempVertices[index3];
+
+				var normal = Vector3.Cross(vertex2.Position - vertex1.Position, vertex3.Position - vertex1.Position);
+
+				vertex1.Normal += normal;
+				vertex2.Normal += normal;
+				vertex3.Normal += normal;
+
+				tempVertices[index1] = vertex1;
+				tempVertices[index2] = vertex2;
+				tempVertices[index3] = vertex3;
 			}
 			offset = tempVertices.Count;
 
@@ -144,6 +170,7 @@ namespace WCell.Terrain.GUI.Renderers
 			for (var i = 0; i < _cachedVertices.Length; i++)
 			{
 				XNAUtil.TransformWoWCoordsToXNACoords(ref _cachedVertices[i]);
+				_cachedVertices[i].Normal.Normalize();
 			}
 		}
 		#endregion

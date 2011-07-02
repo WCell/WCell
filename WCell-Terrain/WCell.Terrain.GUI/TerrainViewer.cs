@@ -17,6 +17,10 @@ using Matrix = Microsoft.Xna.Framework.Matrix;
 using Ray = WCell.Util.Graphics.Ray;
 using Vector3 = Microsoft.Xna.Framework.Vector3;
 
+using Menu = System.Windows.Forms.Menu;
+using MenuItem = System.Windows.Forms.MenuItem;
+using ToolStripMenuItem = System.Windows.Forms.ToolStripMenuItem;
+
 namespace WCell.Terrain.GUI
 {
 	/// <summary>
@@ -50,7 +54,7 @@ namespace WCell.Terrain.GUI
 		private Matrix _proj;
 
 		BasicEffect effect;
-		
+
 		//private readonly ADTManager _manager;
 		/// <summary>
 		/// Console used to execute commands while the game is running.
@@ -60,13 +64,13 @@ namespace WCell.Terrain.GUI
 		// Camera Stuff
 		float avatarYaw, avatarPitch;
 		Vector3 _thirdPersonReference = new Vector3(0, 20, -20);
-		private bool mouseLeftButtonDown;
+		private bool mouseLeftButtonDown, escapeDown;
 
 		public static Vector3 avatarPosition = new Vector3(-100, 100, -100);
 
 		SpriteBatch _spriteBatch;
 		SpriteFont _spriteFont;
-		
+
 		private Pathfinder pathfinder;
 
 		/// <summary>
@@ -87,7 +91,7 @@ namespace WCell.Terrain.GUI
 
 		public TerrainTile Tile
 		{
-			get; 
+			get;
 			private set;
 		}
 
@@ -142,8 +146,9 @@ namespace WCell.Terrain.GUI
 		/// </summary>
 		protected override void Initialize()
 		{
-			Form = (Form)Form.FromHandle(Window.Handle);
-		    IsMouseVisible = true;
+			InitGUI();
+
+			IsMouseVisible = true;
 			_graphics.PreferredBackBufferWidth = 1024;
 			_graphics.PreferredBackBufferHeight = 768;
 			_graphics.IsFullScreen = false;
@@ -156,7 +161,7 @@ namespace WCell.Terrain.GUI
 			Components.Add(new AxisRenderer(this));
 			Components.Add(new TileRenderer(this, Tile));
 			Components.Add(TriangleSelector = new GenericRenderer(this));
-			
+
 			base.Initialize();
 		}
 
@@ -165,8 +170,24 @@ namespace WCell.Terrain.GUI
 			effect = new BasicEffect(_graphics.GraphicsDevice, null)
 			{
 				VertexColorEnabled = true,
-				LightingEnabled = true
+				LightingEnabled = true,
+
+				Alpha = 1.0f,
+				DiffuseColor = new Vector3(.95f, .95f, .95f),
+				SpecularColor = new Vector3(0.05f, 0.05f, 0.05f),
+				AmbientLightColor = new Vector3(0.35f, 0.35f, 0.35f),
+				SpecularPower = 5.0f,
 			};
+
+			effect.DirectionalLight0.Enabled = true;
+			effect.DirectionalLight0.DiffuseColor = Vector3.One;
+			effect.DirectionalLight0.Direction = Vector3.Normalize(new Vector3(1.0f, -1.0f, 0.0f));
+			effect.DirectionalLight0.SpecularColor = Vector3.One;
+
+			effect.DirectionalLight1.Enabled = true;
+			effect.DirectionalLight1.DiffuseColor = new Vector3(0.1f, 0.1f, 0.1f);
+			effect.DirectionalLight1.Direction = Vector3.Normalize(new Vector3(-1.0f, -1.0f, 1.0f));
+
 
 			_vertexDeclaration = new VertexDeclaration(_graphics.GraphicsDevice, VertexPositionNormalColored.VertexElements);
 		}
@@ -194,13 +215,13 @@ namespace WCell.Terrain.GUI
 			var w = Form.Width;
 			var h = Form.Height;
 
-			if (w != 0 && h != 0 && Form.ActiveForm == Form)
+			if (w != 0 && h != 0 && Form.ActiveForm == Form && !IsMenuVisible)
 			{
 				var x = Mouse.GetState().X;
 				var y = Mouse.GetState().Y;
 
-				var cx = w/2;
-				var cy = h/2;
+				var cx = w / 2;
+				var cy = h / 2;
 
 				avatarPitch += (y - cy) * (MouseSensitivity / 1000);
 				avatarYaw += (cx - x) * (MouseSensitivity / 1000);
@@ -239,38 +260,21 @@ namespace WCell.Terrain.GUI
 			effect.Projection = _proj;
 			effect.View = _view;
 
-			effect.Alpha = 1.0f;
-			effect.DiffuseColor = new Vector3(.95f, .95f, .95f);
-			effect.SpecularColor = new Vector3(0.05f, 0.05f, 0.05f);
-			effect.AmbientLightColor = new Vector3(0.75f, 0.75f, 0.75f);
-			effect.SpecularPower = 5.0f;
-
-			effect.DirectionalLight0.Enabled = true;
-			effect.DirectionalLight0.DiffuseColor = Vector3.One;
-			effect.DirectionalLight0.Direction = Vector3.Normalize(new Vector3(1.0f, -1.0f, 0.0f));
-			effect.DirectionalLight0.SpecularColor = Vector3.One;
-
-			effect.DirectionalLight1.Enabled = true;
-			effect.DirectionalLight1.DiffuseColor = new Vector3(0.1f, 0.1f, 0.1f);
-			effect.DirectionalLight1.Direction = Vector3.Normalize(new Vector3(-1.0f, -1.0f, 1.0f));
-			
 			foreach (var pass in effect.CurrentTechnique.Passes)
 			{
 				pass.Begin();
 				//_graphics.GraphicsDevice.RenderState.CullMode = CullMode.None;
 				//_graphics.GraphicsDevice.RenderState.FillMode = FillMode.WireFrame;
 				//_graphics.GraphicsDevice.RenderState.AlphaBlendEnable = true;
-				
+
 				// Make the renderers draw their stuff
 				base.Draw(gameTime);
 
-				//_graphics.GraphicsDevice.RenderState.CullMode = CullMode.CullClockwiseFace;
-				//_graphics.GraphicsDevice.RenderState.FillMode = FillMode.Solid;
 				//_graphics.GraphicsDevice.RenderState.AlphaBlendEnable = false;
 				pass.End();
 			}
 
-			
+
 			effect.End();
 
 			DrawCameraState();
@@ -307,7 +311,7 @@ namespace WCell.Terrain.GUI
 
 			//if (Console.IsOpen()) return;
 
-			if(keyboardState.IsKeyDown(Keys.P))
+			if (keyboardState.IsKeyDown(Keys.P))
 			{
 				System.Console.WriteLine("Open!");
 			}
@@ -355,7 +359,7 @@ namespace WCell.Terrain.GUI
 					float dist;
 					if (Tile.FindFirstHitTriangle(ray, out dist) != -1)
 					{
-						// don't keep moving, if too close
+						// stop moving, if too close
 						canMove = dist > CollisionDistance;
 					}
 				}
@@ -403,13 +407,26 @@ namespace WCell.Terrain.GUI
 				ForwardSpeed = Math.Max(ForwardSpeed - 0.1f, 0.1f);
 			}
 
+			if (keyboardState.IsKeyDown(Keys.Escape))
+			{
+				if (!escapeDown)
+				{
+					escapeDown = true;
+					IsMenuVisible = !IsMenuVisible;
+				}
+			}
+			else if (escapeDown)
+			{
+				escapeDown = false;
+			}
 
-		    if (mouseState.LeftButton == ButtonState.Pressed && !mouseLeftButtonDown)
-		    {
+
+			if (mouseState.LeftButton == ButtonState.Pressed && !mouseLeftButtonDown)
+			{
 				// select polygon
-		        mouseLeftButtonDown = true;
+				mouseLeftButtonDown = true;
 
-		    	//SelectPolygon();
+				//SelectPolygon();
 
 				if (selectedPoints.Count >= 2)
 				{
@@ -422,12 +439,12 @@ namespace WCell.Terrain.GUI
 					// select
 					SelectOnPath();
 				}
-		    }
+			}
 
-		    if (mouseState.LeftButton == ButtonState.Released && mouseLeftButtonDown)
-		    {
-		        mouseLeftButtonDown = false;
-		    }
+			if (mouseState.LeftButton == ButtonState.Released && mouseLeftButtonDown)
+			{
+				mouseLeftButtonDown = false;
+			}
 		}
 
 		#region Mouse selection
@@ -523,16 +540,17 @@ namespace WCell.Terrain.GUI
 				return false;
 			}
 
-			var startPos = new Vector3(x, y, 0);
+			//var startPos = new Vector3(x, y, 0);
 			var endPos = new Vector3(x, y, 1);
 
-			var near = _graphics.GraphicsDevice.Viewport.Unproject(startPos, _proj, _view, Matrix.Identity).ToWCell();
+			//var near = _graphics.GraphicsDevice.Viewport.Unproject(startPos, _proj, _view, Matrix.Identity).ToWCell();
+			var near = avatarPosition.ToWCell();
 			var far = _graphics.GraphicsDevice.Viewport.Unproject(endPos, _proj, _view, Matrix.Identity).ToWCell();
 
-			var dir = (far - near).NormalizedCopy();
-
 			XNAUtil.TransformXnaCoordsToWoWCoords(ref near);
-			XNAUtil.TransformXnaCoordsToWoWCoords(ref dir);
+			XNAUtil.TransformXnaCoordsToWoWCoords(ref far);
+
+			var dir = (far - near).NormalizedCopy();
 
 			ray = new Ray(near, dir);
 			return true;
@@ -552,9 +570,70 @@ namespace WCell.Terrain.GUI
 			_view = Matrix.CreateLookAt(avatarPosition, target, new Vector3(0.0f, 1.0f, 0.0f));
 
 			var viewport = _graphics.GraphicsDevice.Viewport;
-			var aspectRatio = viewport.Width/(float)viewport.Height;
+			var aspectRatio = viewport.Width / (float)viewport.Height;
 			_proj = Matrix.CreatePerspectiveFieldOfView(ViewAngle, aspectRatio, NearClip, FarClip);
 		}
+
+		#region GUI
+		private MainMenu menu;
+		private MenuItem renderingModeSwitch;
+		private bool solidRenderingMode;
+
+		/// <summary>
+		/// Add some basic GUI controls
+		/// </summary>
+		void InitGUI()
+		{
+			Form = (Form)Form.FromHandle(Window.Handle);
+
+			menu = new MainMenu();
+			renderingModeSwitch = new MenuItem();
+			renderingModeSwitch.Click += ClickedRenderingModeSwitch;
+
+			ClickedRenderingModeSwitch(null, null);
+
+			menu.MenuItems.Add(renderingModeSwitch);
+
+			Console.WriteLine("");
+			Console.WriteLine("Help:");
+			Console.WriteLine("  Press ESCAPE to enter the menu");
+		}
+
+		private void ClickedRenderingModeSwitch(object sender, EventArgs e)
+		{
+			if (solidRenderingMode = !solidRenderingMode)			// flip
+			{
+				renderingModeSwitch.Text = "Solid Mesh";
+				_graphics.GraphicsDevice.RenderState.CullMode = CullMode.CullClockwiseFace;
+				_graphics.GraphicsDevice.RenderState.FillMode = FillMode.Solid;
+			}
+			else
+			{
+				renderingModeSwitch.Text = "Wireframe Mesh";
+				_graphics.GraphicsDevice.RenderState.CullMode = CullMode.None;
+				_graphics.GraphicsDevice.RenderState.FillMode = FillMode.WireFrame;
+			}
+		}
+
+		bool IsMenuVisible
+		{
+			get
+			{
+				return Form.Menu != null;
+			}
+			set
+			{
+				if (value)
+				{
+					Form.Menu = menu;
+				}
+				else
+				{
+					Form.Menu = null;
+				}
+			}
+		}
+		#endregion
 
 		#region DrawBoundingBox
 		//private static void DrawBoundingBox(BoundingBox boundingBox, Color color, WMORoot currentWMO)
