@@ -1289,11 +1289,9 @@ namespace WCell.RealmServer.Entities
 			if (m_template.UseSpell != null)
 			{
 				// consume a charge
-				if (m_template.Class == ItemClass.Consumable || m_template.Class == ItemClass.Miscellaneous
-					|| m_template.Class == ItemClass.Glyph || m_template.Class == ItemClass.Recipe
-					|| m_template.Class == ItemClass.TradeGoods)
+				if (m_template.UseSpell.HasCharges)
 				{
-					SpellCharges = SpellCharges < 0 ? SpellCharges++ : SpellCharges--;
+					SpellCharges = SpellCharges < 0 ? SpellCharges+1 : SpellCharges-1;
 				}
 			}
 

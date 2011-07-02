@@ -192,9 +192,9 @@ namespace WCell.RealmServer.Entities
 			}
 			set
 			{
-				if (!m_template.UseSpell.HasCharges || ((m_template.UseSpell.HasCharges) && (m_record.Charges < 0) && (value == 0)))
+				if (value == 0)
 				{
-					Amount--;
+					Destroy();
 					return;
 				}
 				m_record.Charges = (short)value;
