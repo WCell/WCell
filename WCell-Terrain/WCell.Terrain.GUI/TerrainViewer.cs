@@ -427,6 +427,8 @@ namespace WCell.Terrain.GUI
 				var visited = new HashSet<int>();
 				var current = pathfinder.FindPath(1, selectedPoints[0], selectedPoints[1], out visited);
 
+				if (current.IsNull) return;
+
 				foreach (var tri in visited)
 				{
 					SelectTriangle(tri, true, Color.Red);

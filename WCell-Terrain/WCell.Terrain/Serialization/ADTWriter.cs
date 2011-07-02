@@ -213,7 +213,7 @@ namespace WCell.Terrain.Serialization
 
 	        if (!WorldObjectWriter.LoadedWMORoots.ContainsKey(def.FilePath))
 	        {
-	            var root = WMORootParser.ReadWMO(finder, def.FilePath);
+	            var root = WMOReader.ReadWMO(finder, def.FilePath);
 	            WorldObjectWriter.LoadedWMORoots.Add(def.FilePath, root);
 	        }
 

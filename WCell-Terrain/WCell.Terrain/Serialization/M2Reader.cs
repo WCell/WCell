@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using WCell.Constants;
 using WCell.MPQTool;
 using WCell.Terrain.MPQ;
+using WCell.Terrain.MPQ.ADTs;
 using WCell.Terrain.MPQ.M2s;
+using WCell.Terrain.MPQ.WMOs;
 using WCell.Util;
 using WCell.Util.Graphics;
 
@@ -272,5 +276,81 @@ namespace WCell.Terrain.Serialization
         static void ReadOptionalSection(BinaryReader br, M2Model model)
         {
         }
+
+		public static M2 ReadM2(MPQFinder finder, MapDoodadDefinition doodadDefinition)
+		{
+			var filePath = doodadDefinition.FilePath;
+			var ext = Path.GetExtension(filePath);
+
+			if (ext.Equals(".mdx") ||
+				ext.Equals(".mdl"))
+			{
+				filePath = Path.ChangeExtension(filePath, ".m2");
+			}
+
+			var model = M2Reader.ReadM2(finder, doodadDefinition.FilePath);
+
+			var tempIndices = new List<int>();
+			foreach (var tri in model.BoundingTriangles)
+			{
+				tempIndices.Add(tri.Index2);
+				tempIndices.Add(tri.Index1);
+				tempIndices.Add(tri.Index0);
+			}
+
+			var currentM2 = TransformM2(model, tempIndices, doodadDefinition);
+			var tempVertices = currentM2.Vertices;
+			var bounds = new BoundingBox(tempVertices.ToArray());
+			currentM2.Bounds = bounds;
+
+			return currentM2;
+		}
+
+		static M2 TransformM2(M2Model model, IEnumerable<int> indicies, MapDoodadDefinition mddf)
+		{
+			var currentM2 = new M2();
+			currentM2.Vertices.Clear();
+			currentM2.Indices.Clear();
+
+			var posX = (mddf.Position.X - TerrainConstants.CenterPoint) * -1;
+			var posY = (mddf.Position.Y - TerrainConstants.CenterPoint) * -1;
+			var origin = new Vector3(posX, posY, mddf.Position.Z);
+
+			// Create the scale matrix used in the following loop.
+			Matrix scaleMatrix;
+			Matrix.CreateScale(mddf.Scale, out scaleMatrix);
+
+			// Creation the rotations
+			var rotateZ = Matrix.CreateRotationZ(MathHelper.ToRadians(mddf.OrientationB + 180));
+			var rotateY = Matrix.CreateRotationY(MathHelper.ToRadians(mddf.OrientationA));
+			var rotateX = Matrix.CreateRotationX(MathHelper.ToRadians(mddf.OrientationC));
+
+			var worldMatrix = Matrix.Multiply(scaleMatrix, rotateZ);
+			worldMatrix = Matrix.Multiply(worldMatrix, rotateX);
+			worldMatrix = Matrix.Multiply(worldMatrix, rotateY);
+
+			for (var i = 0; i < model.BoundingVertices.Length; i++)
+			{
+				var position = model.BoundingVertices[i];
+				var normal = model.BoundingNormals[i];
+
+				// Scale and Rotate
+				Vector3 rotatedPosition;
+				Vector3.Transform(ref position, ref worldMatrix, out rotatedPosition);
+
+				Vector3 rotatedNormal;
+				Vector3.Transform(ref normal, ref worldMatrix, out rotatedNormal);
+				rotatedNormal.Normalize();
+
+				// Translate
+				Vector3 finalVector;
+				Vector3.Add(ref rotatedPosition, ref origin, out finalVector);
+
+				currentM2.Vertices.Add(finalVector);
+			}
+
+			currentM2.Indices.AddRange(indicies);
+			return currentM2;
+		}
     }
 }

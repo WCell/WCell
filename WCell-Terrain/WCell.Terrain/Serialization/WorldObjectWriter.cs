@@ -164,7 +164,7 @@ namespace WCell.Terrain.Serialization
 				WMORoot root;
 				if (!LoadedWMORoots.TryGetValue(def.FilePath, out root))
 				{
-					root = WMORootParser.ReadWMO(WDTWriter.MpqFinder, def.FilePath);
+					root = WMOReader.ReadWMO(WDTWriter.MpqFinder, def.FilePath);
 					LoadedWMORoots.Add(def.FilePath, root);
 				}
 

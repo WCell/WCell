@@ -10,7 +10,7 @@ namespace WCell.Terrain.MPQ
     /// <summary>
     /// Class for the WMO Group File
     /// </summary>
-    class WMO
+    public class WMO
     {
         /// <summary>
         /// AABB For the WMO

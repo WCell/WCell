@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using NLog;
 using WCell.Constants;
@@ -6,6 +7,7 @@ using WCell.Constants.World;
 using WCell.MPQTool;
 using WCell.Terrain.MPQ;
 using WCell.Terrain.MPQ.ADTs;
+using WCell.Terrain.MPQ.WMOs;
 using WCell.Util;
 using WCell.Util.Graphics;
 
@@ -21,7 +23,7 @@ namespace WCell.Terrain.Serialization
 		public const string Extension = ".adt";
 
 
-		public static ADT ReadADT(MPQFinder mpqFinder, Terrain terrain, Point2D coords)
+		public static ADT ReadADT(MPQFinder mpqFinder, WDT terrain, Point2D coords)
 		{
 			var map = terrain.MapId;
 			var name = TileIdentifier.GetName(map);
@@ -100,6 +102,22 @@ namespace WCell.Terrain.Serialization
 				ReadMCNK(fileReader, adt);
 			}
 
+			// add WMOs & M2s
+			adt.WMOs = new WMORoot[adt.ObjectDefinitions.Count];
+			for (var i = 0; i < adt.ObjectDefinitions.Count; i++)
+			{
+				var def = adt.ObjectDefinitions[i];
+				var wmo = terrain.GetOrReadWMO(def);
+				adt.WMOs[i] = wmo;
+			}
+
+			adt.M2s = new M2[adt.DoodadDefinitions.Count];
+			for (var i = 0; i < adt.DoodadDefinitions.Count; i++)
+			{
+				var def = adt.DoodadDefinitions[i];
+				var m2 = terrain.GetOrReadM2(def);
+				adt.M2s[i] = m2;
+			}
 
 
 			return adt;
@@ -308,6 +326,7 @@ namespace WCell.Terrain.Serialization
 			}
 		}
 
+		#region Liquids
 		private struct MH20Header
 		{
 			public uint ofsData1;
@@ -414,5 +433,8 @@ namespace WCell.Terrain.Serialization
 
 			return water;
 		}
+		#endregion
+
+
 	}
 }

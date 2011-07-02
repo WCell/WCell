@@ -157,7 +157,7 @@
     <Compile Include="MPQ\WMOGroup.cs" />
     <Compile Include="Serialization\WMOGroupReader.cs" />
     <Compile Include="MPQ\WMORoot.cs" />
-    <Compile Include="Serialization\WMORootParser.cs" />
+    <Compile Include="Serialization\WMOReader.cs" />
     <Compile Include="PositionUtil.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Recast\NavMesh\NavMesh.cs" />
