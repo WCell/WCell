@@ -2,14 +2,19 @@
 #define WCELLRECAST_CPP
 
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include "SampleInterfaces.h"
 #include "InputGeom.h"
 #include "Sample_TileMesh.h"
 
-void buildMesh(int vertCount, const float* verts, float minh, float maxh) 
+
+Sample_TileMesh sampler;
+dtNavMesh* mesh;
+dtNavMeshQuery* navMeshQuery;
+
+void buildMesh(void* buildArg, int vertCount, const float* verts, float minh, float maxh) 
 {
-	Sample_TileMesh mesh;
 	InputGeom geom;
 	BuildContext ctx;
 
@@ -18,10 +23,15 @@ void buildMesh(int vertCount, const float* verts, float minh, float maxh)
 	geom.addConvexVolume(verts, vertCount, minh, maxh, 100);
 
 	// set input mesh
-	mesh.handleMeshChanged(&geom);
+	sampler.handleMeshChanged(&geom);
 
 	// build nav-mesh
-	mesh.handleBuild();
+	sampler.handleBuild();
+
+	mesh = sampler.getNavMesh();
+	navMeshQuery = sampler.getNavMeshQuery();
+
+	navMeshQuery->
 }
 
 #endif
