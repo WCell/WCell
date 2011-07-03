@@ -14,6 +14,7 @@
  *
  *************************************************************************/
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using WCell.Constants.Factions;
@@ -118,9 +119,10 @@ namespace WCell.RealmServer.Factions
 
 				if (IsPlayer && faction.Template.FriendGroup != 0)
 				{
-					faction.Enemies.Add(this);
+					faction.Friends.Add(this);
 				}
 			}
+
 
 			var friends = Template.FriendlyFactions;
 			foreach (var factionId in friends)
@@ -159,7 +161,12 @@ namespace WCell.RealmServer.Factions
 				if (enemy == null)
 					continue;
 
-				Enemies.Add(enemy);
+				if (!Template.Flags.HasAnyFlag(FactionTemplateFlags.Flagx400))
+				{
+					Enemies.Add(enemy);
+				}
+
+				
 				enemy.Enemies.Add(this);
 			}
 
