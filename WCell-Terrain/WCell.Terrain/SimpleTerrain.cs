@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using WCell.Constants.World;
+using WCell.Terrain.Serialization;
 using WCell.Util.Graphics;
 
 namespace WCell.Terrain
@@ -12,7 +13,7 @@ namespace WCell.Terrain
 	/// </summary>
 	public class SimpleTerrain : Terrain
 	{
-		private bool m_IsWmoOnly;
+		internal bool m_IsWmoOnly;
 
 		public SimpleTerrain(MapId mapId) : base(mapId)
 		{
@@ -25,8 +26,17 @@ namespace WCell.Terrain
 
 		protected override TerrainTile LoadTile(Point2D tileCoord)
 		{
-			// TODO: Load tile
-			throw new NotImplementedException();
+			return SimpleADTReader.ReadTile(this, tileCoord);
+		}
+
+		/// <summary>
+		/// Creates a dummy Terrain and loads the given tile into it
+		/// </summary>
+		public static TerrainTile LoadTile(MapId map, Point2D coords)
+		{
+			var terrain = new SimpleTerrain(map);
+			terrain.TileProfile[coords.X, coords.Y] = true;
+			return terrain.LoadTile(coords);
 		}
 	}
 }

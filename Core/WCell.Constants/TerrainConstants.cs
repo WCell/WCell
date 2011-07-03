@@ -54,10 +54,15 @@ namespace WCell.Constants
 		public const float MaxPlain = (TilesPerMapSide / 2f) * TileSize;
 
 		public const string MapFileExtension = "map";
-		public const string MapFilenameFormat = "{0:00}_{1:00}." + MapFileExtension;
+		public const string MapFilenameFormat = "{0:00}_{1:00}";
+		public static string GetTileName(int tileX, int tileY)
+		{
+			return string.Format(MapFilenameFormat, tileX, tileY);
+		}
+
 		public static string GetMapFilename(int tileX, int tileY)
 		{
-			return string.Format(MapFilenameFormat, tileY, tileX);
+			return GetTileName(tileY, tileX) + MapFileExtension;
 		}
 
 		public const string WMOFileExtension = "wmo";

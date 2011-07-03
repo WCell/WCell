@@ -8,10 +8,6 @@ namespace WCell.Terrain.Simple.ADT
 {
     public class SimpleADT : TerrainTile
     {
-        public bool IsWMOOnly;
-        public List<SimpleWMODefinition> WMODefs;
-        public List<SimpleMapM2Definition> M2Defs;
-        public QuadTree<SimpleTerrainChunk> QuadTree;
         //public TileChunk[,] Chunks;
 
 		public SimpleADT(int tileX, int tileY, Terrain terrain) :

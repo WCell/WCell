@@ -43,7 +43,6 @@ namespace WCell.Terrain
 				DBCDir = ContentDir + "dbc3.3.5/";
 				MapDir = ContentDir + "Maps/";
 
-				RawMapDir = MapDir + "Raw/";
 				SimpleMapDir = MapDir + "Simple/";
 
 				RecastInputMeshFolder = MapDir + "RecastInput/";

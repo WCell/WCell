@@ -11,7 +11,7 @@ namespace WCell.Terrain.Recast.NavMesh
 	{
 		public static string GenerateTileName(TerrainTile tile)
 		{
-			return string.Format("tile_{0}_{1}", tile.TileX, tile.TileY);
+			return string.Format("tile_{0}", TerrainConstants.GetTileName(tile.TileX, tile.TileY));
 		}
 
 		public static int GenerateTileId(TerrainTile tile)
@@ -51,6 +51,36 @@ namespace WCell.Terrain.Recast.NavMesh
 			}
 		}
 
+		public void ExportRecastInputMesh(TerrainTile tile, string filename)
+		{
+			if (File.Exists(filename)) return;			// skip existing files
+
+			var verts = tile.TerrainVertices;
+			var indices = tile.TerrainIndices;
+
+			var start = DateTime.Now;
+			Console.Write("Writing file {0}...", filename);
+
+			using (var file = new StreamWriter(filename))
+			{
+				foreach (var vertex in verts)
+				{
+					var v = vertex;
+					RecastUtil.TransformWoWCoordsToRecastCoords(ref v);
+					file.WriteLine("v {0} {1} {2}", v.X, v.Y, v.Z);
+				}
+
+				// write faces
+				for (var i = 0; i < indices.Length; i += 3)
+				{
+					//file.WriteLine("f {0} {1} {2}", indices[i] + 1, indices[i + 1] + 1, indices[i + 2] + 1);
+					file.WriteLine("f {0} {1} {2}", indices[i + 2] + 1, indices[i + 1] + 1, indices[i] + 1);
+				}
+			}
+			Console.WriteLine("Done. - Exported {0} triangles in: {1:0.000}s",
+									indices.Length / 3, (DateTime.Now - start).TotalSeconds);
+		}
+
 		/// <summary>
 		/// Builds the mesh for a single tile.
 		/// NOTE: This overrides the Terrain's NavMesh property.
@@ -85,36 +115,6 @@ namespace WCell.Terrain.Recast.NavMesh
 			{
 				Console.WriteLine("Done in {0:0.000}s", (DateTime.Now - start).TotalSeconds);
 			}
-		}
-
-		public void ExportRecastInputMesh(TerrainTile tile, string filename)
-		{
-			if (File.Exists(filename)) return;			// skip existing files
-			
-			var verts = tile.TerrainVertices;
-			var indices = tile.TerrainIndices;
-
-			var start = DateTime.Now;
-			Console.Write("Writing file {0}...", filename);
-
-			using (var file = new StreamWriter(filename))
-			{
-				foreach (var vertex in verts)
-				{
-					var v = vertex;
-					RecastUtil.TransformWoWCoordsToRecastCoords(ref v);
-					file.WriteLine("v {0} {1} {2}", v.X, v.Y, v.Z);
-				}
-
-				// write faces
-				for (var i = 0; i < indices.Length; i += 3)
-				{
-					//file.WriteLine("f {0} {1} {2}", indices[i] + 1, indices[i + 1] + 1, indices[i + 2] + 1);
-					file.WriteLine("f {0} {1} {2}", indices[i + 2] + 1, indices[i + 1] + 1, indices[i] + 1);
-				}
-			}
-			Console.WriteLine("Done. - Exported {0} triangles in: {1:0.000}s",
-									indices.Length / 3, (DateTime.Now - start).TotalSeconds);
 		}
 
 		/// <summary>

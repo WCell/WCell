@@ -148,17 +148,20 @@ namespace WCell.Terrain.GUI.Renderers
 			offset = tempVertices.Count;
 
 			//if (!DrawLiquids) continue;
-			for (var v = 0; v < Tile.LiquidVertices.Count; v++)
+			if (Tile.LiquidVertices != null)
 			{
-				var vertex = Tile.LiquidVertices[v];
-				var vertexPosNmlCol = new VertexPositionNormalColored(vertex.ToXna(),
-																		WaterColor,
-																		Vector3.Down);
-				tempVertices.Add(vertexPosNmlCol);
-			}
-			for (var i = 0; i < Tile.LiquidIndices.Count; i++)
-			{
-				tempIndicies.Add(Tile.LiquidIndices[i] + offset);
+				for (var v = 0; v < Tile.LiquidVertices.Count; v++)
+				{
+					var vertex = Tile.LiquidVertices[v];
+					var vertexPosNmlCol = new VertexPositionNormalColored(vertex.ToXna(),
+					                                                      WaterColor,
+					                                                      Vector3.Down);
+					tempVertices.Add(vertexPosNmlCol);
+				}
+				for (var i = 0; i < Tile.LiquidIndices.Count; i++)
+				{
+					tempIndicies.Add(Tile.LiquidIndices[i] + offset);
+				}
 			}
 			offset = tempVertices.Count;
 

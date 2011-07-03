@@ -45,45 +45,56 @@ namespace WCell.Terrain.GUI
 			WCellTerrainSettings.Config = TerrainGUIConfig.Instance;
 
 			// initialize StormLib
-            NativeMethods.StormLibFolder = WCellTerrainSettings.LibDir;
-		    NativeMethods.InitAPI();
+			NativeMethods.StormLibFolder = WCellTerrainSettings.LibDir;
+			NativeMethods.InitAPI();
 
-            var defaultTileId = TileIdentifier.DefaultTileIdentifier;
+			var defaultTileId = TileIdentifier.DefaultTileIdentifier;
 			var useExtractedData = TerrainGUIConfig.UseExtractedData;
 
 
 			var start = DateTime.Now;
-			Terrain terrain;
-			TerrainTile tile;
 
-			Console.Write("Loading default tile...");
-			if (useExtractedData)
-			{
-				throw new NotImplementedException("Extracted data reader is currently under re-construction");
-			}
-			else
-			{
-				tile = WDT.LoadTile(defaultTileId.MapId, defaultTileId);
-			}
-			Console.WriteLine("Done - Loading time: {0:0.000}s", (DateTime.Now - start).TotalSeconds);
+			Console.Write("Trying to load simple tile... ");
+			var tile = SimpleTerrain.LoadTile(defaultTileId.MapId, defaultTileId);
 
 			if (tile == null)
 			{
-				throw new ArgumentException(string.Format(
-								"Could not read tile information - Map: {0} at ({1}, {2}) " +
-									defaultTileId.MapId,
-									defaultTileId.X,
-									defaultTileId.Y));
-			}
-			terrain = tile.Terrain;
+				// load it the slow way
+				Console.WriteLine();
+				Console.Write("Tile could not be found - Decompressing...");
+				tile = WDT.LoadTile(defaultTileId.MapId, defaultTileId);
+				if (tile == null)
+				{
+					throw new ArgumentException(string.Format(
+						"Could not read tile (Map: {0} at ({1}, {2})" +
+						defaultTileId.MapId,
+						defaultTileId.X,
+						defaultTileId.Y));
+				}
 
-			var navMesh = terrain.GetOrCreateNavMesh(tile);
+				Console.WriteLine("Done - Loading time: {0:0.000}s", (DateTime.Now - start).TotalSeconds);
+
+				// write it back
+				Console.Write("Saving decompressed tile... ");
+				SimpleADTWriter.WriteADT((ADT)tile);
+				Console.WriteLine("Done");
+			}
+			else
+			{
+				Console.WriteLine("Done.");
+			}
+
+			var terrain = tile.Terrain;
+			terrain.GetOrCreateNavMesh(tile);
 
 			AvatarPosition = new Vector3(TerrainConstants.CenterPoint - (defaultTileId.X + 1)*TerrainConstants.TileSize,
-										  TerrainConstants.CenterPoint - (defaultTileId.Y)*TerrainConstants.TileSize,
-										  100.0f);
-			
+			                             TerrainConstants.CenterPoint - (defaultTileId.Y)*TerrainConstants.TileSize,
+			                             100.0f);
+
 			XNAUtil.TransformWoWCoordsToXNACoords(ref AvatarPosition);
+
+
+			Console.WriteLine("All data has been loaded - Starting GUI...");
 
 			//new RecastRunner(TerrainManager).Start();
 			StartDefaultViewer(tile);

@@ -80,7 +80,7 @@ namespace WCell.Terrain.MPQ
 		}
 
 		/// <summary>
-		/// Creates a dummy WDT and loads the given tile
+		/// Creates a dummy WDT and loads the given tile into it
 		/// </summary>
 		public static TerrainTile LoadTile(MapId map, Point2D coords)
 		{

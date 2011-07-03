@@ -109,13 +109,11 @@
     <Compile Include="MPQ\ADTChunk.cs" />
     <Compile Include="Serialization\SimpleADTReader.cs" />
     <Compile Include="Simple\M2\SimpleM2.cs" />
-    <Compile Include="Serialization\SimpleM2Reader.cs" />
     <Compile Include="Simple\M2\SimpleMapM2Definition.cs" />
     <Compile Include="Simple\WMO\SimpleWMO.cs" />
     <Compile Include="Simple\WMO\SimpleWMODefinition.cs" />
     <Compile Include="Simple\WMO\SimpleWMOGroup.cs" />
     <Compile Include="Simple\WMO\SimpleWMOM2Definition.cs" />
-    <Compile Include="Serialization\SimpleWMOReader.cs" />
     <Compile Include="MPQ\ADT.cs" />
     <Compile Include="TerrainChunk.cs" />
     <Compile Include="TerrainTile.cs" />
@@ -169,9 +167,7 @@
     <Compile Include="Recast\NavMesh\NavMeshPolygon.cs" />
     <Compile Include="Recast\NavMesh\NavOffMeshConnection.cs" />
     <Compile Include="Recast\RecastAPI.cs" />
-    <Compile Include="Serialization\ADTWriter.cs" />
-    <Compile Include="Serialization\WDTWriter.cs" />
-    <Compile Include="Serialization\WorldObjectWriter.cs" />
+    <Compile Include="Serialization\SimpleADTWriter.cs" />
     <Compile Include="Terrain.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="WCellTerrainConstants.cs" />

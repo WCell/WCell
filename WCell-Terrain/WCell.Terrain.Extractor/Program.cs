@@ -19,7 +19,8 @@ namespace WCell.Terrain.Extractor
             NativeMethods.StormLibFolder = WCellTerrainSettings.LibDir;
             NativeMethods.InitAPI();
 
-            WDTWriter.WriteAllWDTs();
+			// TODO: Load tiles one by one and write them to disk
+            //SimpleADTWriter.WriteAllWDTs();
         }
 
         static Program()

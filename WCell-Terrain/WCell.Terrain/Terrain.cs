@@ -19,12 +19,10 @@ namespace WCell.Terrain
 	///</summary>
 	public abstract class Terrain : ITerrain
 	{
-		private const float ignorableHeightDiff = 0.1f;
-
 		public static bool DoesMapExist(MapId mapId)
 		{
-			var mapPath = Path.Combine(WCellTerrainSettings.RawMapDir, ((uint)mapId).ToString());
-			return Directory.Exists(mapPath);
+			// TODO: Fix DoesMapExist
+			throw new NotImplementedException();
 		}
 
 
@@ -38,7 +36,6 @@ namespace WCell.Terrain
 
 		protected Terrain(MapId mapId)
 		{
-			// TODO: Read TileProfile from WDT file
 			MapId = mapId;
 		}
 
