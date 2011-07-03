@@ -83,6 +83,7 @@ namespace WCell.Constants.Factions
 		Flagx20 = 0x20,
 		Flagx40 = 0x40,
 		Flagx80= 0x80,
+		Flagx100 = 0x100,
 		Flagx200 = 0x200,
 		Flagx400 = 0x400,
 
