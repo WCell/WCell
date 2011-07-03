@@ -60,6 +60,10 @@ static SampleItem g_samples[] =
 };
 static const int g_nsamples = sizeof(g_samples)/sizeof(SampleItem); 
 
+// Domi edit: Export a function to run main()
+extern "C" __declspec( dllexport ) void runit() {
+	main(0, 0);
+}
 
 int main(int /*argc*/, char** /*argv*/)
 {

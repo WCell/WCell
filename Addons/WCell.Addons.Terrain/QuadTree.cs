@@ -6,7 +6,7 @@ using System.Text;
 using WCell.Constants;
 using WCell.Util.Graphics;
 
-namespace WCell.Addons.Collision
+namespace WCell.Addons.Terrain
 {
     public class zzQuadTree<T> where T : IBounded
     {

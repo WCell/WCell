@@ -40,7 +40,7 @@ namespace WCell.RealmServer.Waypoints
 				var direction = Utility.Random(0, MathUtil.TwoPI);
 				var dist = Utility.Random(minDist, maxDist);
 				lastPos.GetPointYX(direction, dist, out lastPos);
-				lastPos.Z = terrain.QueryWorldHeight(lastPos);
+				lastPos.Z = terrain.QueryHeightUnderneath(lastPos);
 				wps[i] = lastPos;
 			}
 			return wps;

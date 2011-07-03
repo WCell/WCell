@@ -2,7 +2,7 @@ using System.Globalization;
 using WCell.Core.Addons;
 using WCell.Core.Initialization;
 
-namespace WCell.Addons.Collision
+namespace WCell.Addons.Terrain
 {
 	public class CollisionAddon : WCellAddonBase
 	{

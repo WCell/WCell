@@ -25,59 +25,14 @@ namespace WCell.RealmServer.Global
 	        return true;
 	    }
 
-	    public float QueryWorldHeight(Vector3 worldPos)
-	    {
-	        return worldPos.Z;
-	    }
-
 	    public void QueryDirectPathAsync(PathQuery query)
 		{
 			query.Reply(new Path(query.To));
 		}
 
-	    public float QueryTerrainHeight(Vector3 worldPos)
-	    {
-	        return worldPos.Z;
-	    }
-
-		public float GetEvironmentHeight(float x, float y)
+		public float QueryHeightUnderneath(Vector3 worldPos)
 		{
-			return 0;
+			return worldPos.Z;
 		}
-
-		public bool HasTerrainLOS(Vector3 startPos, Vector3 endPos)
-	    {
-	        return true;
-	    }
-
-	    public float? QueryWMOCollision(Vector3 startPos, Vector3 endPos)
-	    {
-	        return null;
-	    }
-
-	    public bool HasWMOLOS(Vector3 startPos, Vector3 endPos)
-	    {
-	        return true;
-	    }
-
-	    public float? QueryWMOHeight(Vector3 worldPos)
-	    {
-	        return worldPos.Z;
-	    }
-
-	    public float? QueryModelCollision(Vector3 startPos, Vector3 endPos)
-	    {
-	        return null;
-	    }
-
-	    public bool HasModelLOS(Vector3 startPos, Vector3 endPos)
-	    {
-	        return true;
-	    }
-
-	    public float? QueryModelHeight(Vector3 worldPos)
-	    {
-	        return worldPos.Z;
-	    }
 	}
 }

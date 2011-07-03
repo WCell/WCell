@@ -9,35 +9,35 @@ using namespace std;
 
 void ErrorExit(LPTSTR lpszFunction) 
 { 
-    // Retrieve the system error message for the last-error code
+	// Retrieve the system error message for the last-error code
 
-    LPVOID lpMsgBuf;
-    LPVOID lpDisplayBuf;
-    DWORD dw = GetLastError(); 
+	LPVOID lpMsgBuf;
+	LPVOID lpDisplayBuf;
+	DWORD dw = GetLastError(); 
 
-    FormatMessage(
-        FORMAT_MESSAGE_ALLOCATE_BUFFER | 
-        FORMAT_MESSAGE_FROM_SYSTEM |
-        FORMAT_MESSAGE_IGNORE_INSERTS,
-        NULL,
-        dw,
-        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-        (LPTSTR) &lpMsgBuf,
-        0, NULL );
+	FormatMessage(
+		FORMAT_MESSAGE_ALLOCATE_BUFFER | 
+		FORMAT_MESSAGE_FROM_SYSTEM |
+		FORMAT_MESSAGE_IGNORE_INSERTS,
+		NULL,
+		dw,
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		(LPTSTR) &lpMsgBuf,
+		0, NULL );
 
-    // Display the error message and exit the process
+	// Display the error message and exit the process
 
-    lpDisplayBuf = (LPVOID)LocalAlloc(LMEM_ZEROINIT, 
-        (lstrlen((LPCTSTR)lpMsgBuf) + lstrlen((LPCTSTR)lpszFunction) + 40) * sizeof(TCHAR)); 
-    StringCchPrintf((LPTSTR)lpDisplayBuf, 
-        LocalSize(lpDisplayBuf) / sizeof(TCHAR),
+	lpDisplayBuf = (LPVOID)LocalAlloc(LMEM_ZEROINIT, 
+		(lstrlen((LPCTSTR)lpMsgBuf) + lstrlen((LPCTSTR)lpszFunction) + 40) * sizeof(TCHAR)); 
+	StringCchPrintf((LPTSTR)lpDisplayBuf, 
+		LocalSize(lpDisplayBuf) / sizeof(TCHAR),
 		TEXT("%s (#%d): %s"), 
-        lpszFunction, dw, lpMsgBuf); 
-    MessageBox(NULL, (LPCTSTR)lpDisplayBuf, TEXT("Error"), MB_OK); 
+		lpszFunction, dw, lpMsgBuf); 
+	MessageBox(NULL, (LPCTSTR)lpDisplayBuf, TEXT("Error"), MB_OK); 
 
-    LocalFree(lpMsgBuf);
-    LocalFree(lpDisplayBuf);
-    ExitProcess(dw); 
+	LocalFree(lpMsgBuf);
+	LocalFree(lpDisplayBuf);
+	ExitProcess(dw); 
 }
 
 // Functor types
@@ -74,8 +74,8 @@ FARPROC getProc(LPCSTR name) {
 #define CallExtern(name) EmptyVoidCallback(getProc(name))
 
 /**
- * Some test data
- */
+* Some test data
+*/
 const int vcount = 10;
 const int tcount = 7;
 float verts[] = {
@@ -105,7 +105,44 @@ void __stdcall stubGen(void * geom) {
 }
 
 void _init() {
-	meshGenAddCallback(getProc("meshGenAdd"))("[Test]", stubGen);
+	//meshGenAddCallback(getProc("meshGenAdd"))("[Test]", stubGen);
+}
+
+extern "C" {
+	typedef void (*BuildMeshCallback)(
+		int userId, 
+		int vertComponentCount, 
+		int polyCount, 
+		float* verts, 
+
+		int totalPolyIndexCount,				// count of all vertex indices in all polys
+		unsigned char* polyIndexCounts,
+		unsigned int* polyVerts,
+		unsigned int* polyNeighbors,
+		unsigned short* polyFlags,
+		unsigned char* polyAreasAndTypes);
+
+
+	typedef unsigned char (*buildMeshFromFileCb)(
+			int userId,
+			const char* inputFilename, 
+			const char* navmeshFilename, 
+			BuildMeshCallback callback);
+
+	void onMesh(
+		int userId, 
+		int vertComponentCount, 
+		int polyCount, 
+		float* verts, 
+
+		int totalPolyIndexCount,				// count of all vertex indices in all polys
+		unsigned char* polyIndexCounts,
+		unsigned int* polyVerts,
+		unsigned int* polyNeighbors,
+		unsigned short* polyFlags,
+		unsigned char* polyAreasAndTypes);
+
+	typedef void (*mainFunc)(int argc, char** args);
 }
 
 int main(int argc, char** argv) {
@@ -116,9 +153,30 @@ int main(int argc, char** argv) {
 
 	_init();
 
-	CallExtern("startrecast")();
+	// void buildMeshFromFile(int userId, const char* inputFilename, const char* navmeshFilename, BuildMeshCallback callback) 
+	buildMeshFromFileCb cb = (buildMeshFromFileCb)getProc("buildMeshFromFile");
+	cb(123, "../../../Run/Content/Maps/RecastInput/EasternKingdoms_tile_49_36.obj", "../../../Run/Content/Maps/RecastNavMeshes/EasternKingdoms_tile_49_36.nav", onMesh);
+
+	mainFunc runit = (mainFunc)getProc("runit");
+	runit(0, 0);
 
 	FreeLibrary(dllHandle);
 
 	return 0;
+}
+void onMesh(
+	int userId, 
+	int vertComponentCount, 
+	int polyCount, 
+	float* verts, 
+
+	int totalPolyIndexCount,				// count of all vertex indices in all polys
+	unsigned char* polyIndexCounts,
+	unsigned int* polyVerts,
+	unsigned int* polyNeighbors,
+	unsigned short* polyFlags,
+	unsigned char* polyAreasAndTypes) {
+		float vertts[15];
+
+		memcpy(vertts, verts, sizeof(float) * 15);
 }

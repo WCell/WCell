@@ -74,15 +74,19 @@ namespace WCell.Terrain.GUI.Renderers
 			XNAUtil.TransformWoWCoordsToXNACoords(ref tri.Point1);
 			XNAUtil.TransformWoWCoordsToXNACoords(ref tri.Point2);
 			XNAUtil.TransformWoWCoordsToXNACoords(ref tri.Point3);
+
+			var normal = WCell.Util.Graphics.Vector3.Cross(tri.Point2 - tri.Point1, tri.Point3 - tri.Point2).ToXna();
+			normal.Normalize();
+
 			_cachedVertices[v] = new VertexPositionNormalColored(tri.Point1.ToXna(),
 																	color,
-																	Vector3.Up);
+																	normal);
 			_cachedVertices[v+1] = new VertexPositionNormalColored(tri.Point2.ToXna(),
 																	color,
-																	Vector3.Up);
+																	normal);
 			_cachedVertices[v+2] = new VertexPositionNormalColored(tri.Point3.ToXna(),
 																	color,
-																	Vector3.Up);
+																	normal);
 
 
 			// add indices

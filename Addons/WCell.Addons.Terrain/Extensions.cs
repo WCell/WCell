@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using WCell.Util.Graphics;
 
-namespace WCell.Addons.Collision
+namespace WCell.Addons.Terrain
 {
     internal static class Extensions
     {

@@ -1,39 +1,76 @@
-﻿using WCell.Terrain.GUI.Recast;
+﻿using System.Collections.Generic;
 using WCell.Util.Graphics;
 
 namespace WCell.Terrain.Recast.NavMesh
 {
-    public class NavMesh
-    {
-        public const ushort ExternalLinkId = 0x8000;
+	public class NavMesh
+	{
+		public const ushort ExternalLinkId = 0x8000;
 
-    	public readonly long Id;
-		public readonly Vector3 Origin;
-    	public readonly float TileWidth, TileHeight;
-    	public readonly int MaxTileCount;
+		public readonly Terrain Terrain;
 
-    	public readonly int Width, Height;
-		public readonly NavMeshTile[,] Tiles;
-
-		public NavMesh(long id, int w, int h, Vector3 origin, float tilew, float tileh, int maxTiles)
+		public NavMesh(Terrain terrain, NavMeshPolygon[] polys, Vector3[] vertices)
 		{
-			Id = id;
-			Tiles = new NavMeshTile[Width = w, Height = h];
-			Origin = origin;
-			TileWidth = tilew;
-			TileHeight = tileh;
-			MaxTileCount = maxTiles;
+			Terrain = terrain;
+			Polygons = polys;
+			Vertices = vertices;
 		}
 
-    	public bool Initialized
-    	{
-    		get;
-			internal set;
-    	}
-
-		public override string ToString()
+		public NavMeshPolygon[] Polygons
 		{
-			return string.Format("NavMesh #{0} ({1} x {2})", Id, Width, Height);
+			get;
+			private set;
 		}
-    }
+
+		public Vector3[] Vertices
+		{
+			get; 
+			private set;
+		}
+
+		#region Not Implemented Yet
+		/// <summary>
+		/// Some people might refer to these as "portals": They allow agents to jump between disconnected tiles.
+		/// See: http://digestingduck.blogspot.com/2010/01/off-mesh-connection-progress-pt-3.html
+		/// </summary>
+		public NavOffMeshConnection[] OffMeshConnections;
+
+		/// <summary>
+		/// Indexes the DetailedVertices and DetailedTriangles by the Tile's Polygons
+		/// </summary>
+		public NavMeshPolyDetail[] DetailPolygons;
+
+		///// <summary>
+		///// Eye candy (colored version of the original polygons?)
+		///// </summary>
+		public NavMeshDetailTriIndex[] DetailedTriangles;
+		#endregion
+
+		/// <summary>
+		/// Build triangles for rendering purposes
+		/// 
+		/// Imagine a hexagon with vertices 0 through 5
+		/// Then this method adds 4 (n - 2) triangles for it:
+		///  0, 1, 2
+		///  0, 2, 3
+		///  0, 3, 4
+		///  0, 4, 5
+		/// </summary>
+		public void GetTriangles(out List<int> indices)
+		{
+			indices = new List<int>();
+
+			var i = 0;
+			foreach (var poly in Polygons)
+			{
+				// build indices
+				for (var j = 2; j < poly.Indices.Length; j++)
+				{
+					indices.Add(poly.Indices[0]);
+					indices.Add(poly.Indices[j - 1]);
+					indices.Add(poly.Indices[j]);
+				}
+			}
+		}
+	}
 }

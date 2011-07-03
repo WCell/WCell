@@ -7,7 +7,7 @@ using WCell.Terrain;
 using WCell.Util.Graphics;
 using WCell.RealmServer;
 
-namespace WCell.Addons.Collision
+namespace WCell.Addons.Terrain
 {
 	public class WorldMap
 	{

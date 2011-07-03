@@ -46,6 +46,7 @@
     <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
     <CodeAnalysisRuleDirectories>;D:\progs\vs 2010\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
     <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>bin\x86\Release\</OutputPath>
@@ -93,6 +94,8 @@
     <Compile Include="Collision\QuadTree\WMOHolder.cs" />
     <Compile Include="Pathfinding\Pathfinder.cs" />
     <Compile Include="Pathfinding\SearchItem.cs" />
+    <Compile Include="Recast\NavMesh\NavMeshBuilder.cs" />
+    <Compile Include="Recast\RecastUtil.cs" />
     <Compile Include="Tools\MapBoundaryUtil.cs" />
     <Compile Include="Tools\MapBoundaryWriter.cs" />
     <Compile Include="Tools\ZoneGridWriter.cs" />
@@ -162,11 +165,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Recast\NavMesh\NavMesh.cs" />
     <Compile Include="Recast\NavMesh\NavMeshDetailTriIndex.cs" />
-    <Compile Include="Recast\NavMesh\NavMeshLoader.cs" />
     <Compile Include="Recast\NavMesh\NavMeshPolyDetail.cs" />
     <Compile Include="Recast\NavMesh\NavMeshPolygon.cs" />
-    <Compile Include="Recast\NavMesh\NavMeshPolyLink.cs" />
-    <Compile Include="Recast\NavMesh\NavMeshTile.cs" />
     <Compile Include="Recast\NavMesh\NavOffMeshConnection.cs" />
     <Compile Include="Recast\RecastAPI.cs" />
     <Compile Include="Serialization\ADTWriter.cs" />

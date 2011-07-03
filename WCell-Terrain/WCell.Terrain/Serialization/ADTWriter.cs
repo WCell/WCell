@@ -36,7 +36,7 @@ namespace WCell.Terrain.Serialization
 		{
             // Map data should only be stored per map
 		    ClearObjectData();
-			var path = Path.Combine(WCellTerrainSettings.MapDir, wdt.Entry.Id.ToString());
+			var path = Path.Combine(WCellTerrainSettings.RawMapDir, wdt.Entry.Id.ToString());
 			int count;
 
 			if (wdt.IsWMOOnly)

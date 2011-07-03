@@ -7,6 +7,7 @@ using WCell.Constants;
 using WCell.Constants.World;
 using WCell.Core.Paths;
 using WCell.Core.Terrain;
+using WCell.Terrain.Recast.NavMesh;
 using WCell.Util.Graphics;
 using Path = System.IO.Path;
 
@@ -22,7 +23,7 @@ namespace WCell.Terrain
 
 		public static bool DoesMapExist(MapId mapId)
 		{
-			var mapPath = Path.Combine(WCellTerrainSettings.MapDir, ((uint)mapId).ToString());
+			var mapPath = Path.Combine(WCellTerrainSettings.RawMapDir, ((uint)mapId).ToString());
 			return Directory.Exists(mapPath);
 		}
 
@@ -49,182 +50,90 @@ namespace WCell.Terrain
 			private set;
 		}
 
-		#region Terrain Queries
-		public bool HasTerrainLOS(Vector3 startPos, Vector3 endPos)
+    	public NavMesh NavMesh
+    	{
+    		get;
+			set;
+    	}
+
+		/// <summary>
+		/// Currently we cannot generate global nav meshes yet (would take more than a day to do that for one continent anyway).
+		/// We can only generate the mesh of one tile.
+		/// </summary>
+		public NavMesh GetOrCreateNavMesh(TerrainTile tile)
 		{
-			float tMax;
-			var ray = CollisionUtil.CreateRay(startPos, endPos, out tMax);
-			var intTMax = (int)(tMax + 0.5f);
-
-			for (var t = 0; t < intTMax; t++)
+			if (NavMesh == null)
 			{
-				var currentPos = ray.Position + ray.Direction * t;
-
-				Point2D tileCoord;
-				Point2D chunkCoord;
-				Point2D unitCoord;
-				var currentHeightMapFraction = PositionUtil.GetHeightMapFraction(currentPos,
-																				out tileCoord,
-																				out chunkCoord,
-																				out unitCoord);
-
-				var currentTile = GetTile(tileCoord);
-				if (currentTile == null)
-				{
-					// Can't check non-existant tiles.
-					return false;
-				}
-
-				var terrainHeight = currentTile.GetInterpolatedHeight(chunkCoord, unitCoord, currentHeightMapFraction);
-
-				if (terrainHeight < currentPos.Z) continue;
-				return false;
+				var builder = new NavMeshBuilder(this);
+				builder.BuildMesh(tile);
 			}
+			return NavMesh;
+		}
+
+		#region Terrain Queries
+		public bool HasLOS(Vector3 startPos, Vector3 endPos)
+		{
+			//float tMax;
+			//var ray = CollisionUtil.CreateRay(startPos, endPos, out tMax);
+			//var intTMax = (int)(tMax + 0.5f);
+
+			//for (var t = 0; t < intTMax; t++)
+			//{
+			//    var currentPos = ray.Position + ray.Direction * t;
+
+			//    Point2D tileCoord;
+			//    Point2D chunkCoord;
+			//    Point2D unitCoord;
+			//    var currentHeightMapFraction = PositionUtil.GetHeightMapFraction(currentPos,
+			//                                                                    out tileCoord,
+			//                                                                    out chunkCoord,
+			//                                                                    out unitCoord);
+
+			//    var currentTile = GetTile(tileCoord);
+			//    if (currentTile == null)
+			//    {
+			//        // Can't check non-existant tiles.
+			//        return false;
+			//    }
+
+			//    var terrainHeight = currentTile.GetInterpolatedHeight(chunkCoord, unitCoord, currentHeightMapFraction);
+
+			//    if (terrainHeight < currentPos.Z) continue;
+			//    return false;
+			//}
 
 			return true;
 		}
 
-		public float QueryTerrainHeight(Vector3 worldPos)
+		public float QueryHeightUnderneath(Vector3 worldPos)
 		{
-			float liquidHeight;
-			var terrainHeight = QueryTerrainHeight(worldPos, out liquidHeight, false);
-			return terrainHeight;
-		}
-
-		public float QueryTerrainHeight(Vector3 worldPos, out bool submerged)
-		{
-			float liquidHeight;
-			var terrainHeight = QueryTerrainHeight(worldPos, out liquidHeight, true);
-			submerged = terrainHeight < liquidHeight;
-			return terrainHeight;
-		}
-
-		public float QueryTerrainHeight(Vector3 worldPos, out float liquidHeight, bool seekLiquid)
-		{
-			liquidHeight = float.NaN;
-
-			Point2D tileCoord;
-			Point2D chunkCoord;
-			Point2D point2D;
-			var heightMapFraction = PositionUtil.GetHeightMapFraction(worldPos, out tileCoord, out chunkCoord, out point2D);
-
-			var tile = GetTile(tileCoord);
-			if (tile == null) return float.NaN;
-
-			if (seekLiquid)
-			{
-				liquidHeight = tile.GetLiquidHeight(chunkCoord, point2D);	// TODO: Interpolate?
-			}
-
-			return tile.GetInterpolatedHeight(chunkCoord, point2D, heightMapFraction);
+			// TODO: Use simple ray casting
+			// PositionUtil.GetHeightMapFraction(worldPos, out tileCoord, out chunkCoord, out point2D);
+			return 0;
 		}
 
 		public Vector3[] GetDirectPath(Vector3 from, Vector3 to)
 		{
-			var position = from;
-			var direction = (to - from);
-			var dir = direction.NormalizedCopy();
-			var maxTime = (int)from.GetDistance(to);
-
-			var wayPoints = new List<Vector3>();
-			for (var t = 1; t < maxTime; t++)
-			{
-				var newPos = position + dir;
-				var newHeight = QueryTerrainHeight(newPos);
-
-				var heightDiff = position.Z - newHeight;
-				if (heightDiff <= ignorableHeightDiff)
-				{
-					newPos.Z = newHeight;
-					wayPoints.Add(newPos);
-				}
-				
-				position = newPos;
-			}
-
-			return wayPoints.ToArray();
+			
+			// TODO: Use pathfinder/recast
+			return null;
 		}
 
-		public FluidType GetFluidTypeAtPoint(Vector3 worldPos)
-		{
-			Point2D tileCoord;
-			var chunkCoord = PositionUtil.GetXYForPos(worldPos, out tileCoord);
+		//public FluidType GetFluidTypeAtPoint(Vector3 worldPos)
+		//{
+		//    Point2D tileCoord;
+		//    var chunkCoord = PositionUtil.GetXYForPos(worldPos, out tileCoord);
 
-			var tile = GetTile(tileCoord);
-			if (tile == null) return FluidType.None;
+		//    var tile = GetTile(tileCoord);
+		//    if (tile == null) return FluidType.None;
 
-			return tile.GetFluidType(chunkCoord);
-		}
-
-        public bool HasLOS(Vector3 startPos, Vector3 endPos)
-        {
-            return HasModelLOS(startPos, endPos) ||
-                   HasWMOLOS(startPos, endPos) ||
-                   HasTerrainLOS(startPos, endPos);
-		}
-
-		public float GetEvironmentHeight(float x, float y)
-		{
-			// TODO: Improve
-			return QueryWorldHeight(new Vector3(x, y));
-		}
-
-        public float QueryWorldHeight(Vector3 worldPos)
-        {
-            var modelHeight = QueryModelHeight(worldPos);
-            var wmoHeight = QueryWMOHeight(worldPos);
-            var terrainHeight = QueryTerrainHeight(worldPos);
-            if (modelHeight == null)
-            {
-                return wmoHeight == null ? terrainHeight : Math.Max(wmoHeight.Value, terrainHeight);
-            }
-			if (wmoHeight == null)
-			{
-				return Math.Max(modelHeight.Value, terrainHeight);
-			}
-			return Math.Max(Math.Max(modelHeight.Value, wmoHeight.Value), terrainHeight);
-        }
+		//    return tile.GetFluidType(chunkCoord);
+		//}
 
         public void QueryDirectPathAsync(PathQuery query)
         {
             var wayPoints = GetDirectPath(query.From, query.To);
             query.Reply(new Core.Paths.Path(wayPoints));
-        }
-
-        public bool HasWMOLOS(Vector3 startPos, Vector3 endPos)
-        {
-			return false;
-			// TODO: MapObjectCollection.HasLOS(startPos, endPos);
-        }
-
-        public float? QueryWMOHeight(Vector3 worldPos)
-		{
-			return null;
-			// TODO: return MapObjectCollection.GetWMOHeight(MapId, worldPos);
-        }
-
-		public float? QueryWMOCollision(Vector3 startPos, Vector3 endPos)
-		{
-			return null;
-			// TODO: return MapObjectCollection.CheckCollision(MapId, startPos, endPos);
-		}
-
-        public float? QueryModelCollision(Vector3 startPos, Vector3 endPos)
-        {
-			return null;
-			// TODO: Models != null ? Models.GetCollisionDistance(startPos, endPos) : null;
-        }
-
-        public bool HasModelLOS(Vector3 startPos, Vector3 endPos)
-        {
-			return false;
-			// TODO: Models != null ? Models.HasLOS(startPos, endPos) : true;
-        }
-
-        public float? QueryModelHeight(Vector3 worldPos)
-        {
-			return null;
-			// TODO:return Models != null ? Models.GetModelHeight(worldPos) : null;
         }
 		#endregion
 

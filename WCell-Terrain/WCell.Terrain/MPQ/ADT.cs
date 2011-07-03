@@ -45,6 +45,14 @@ namespace WCell.Terrain.MPQ
         public readonly List<string> ObjectFiles = new List<string>();
         public readonly List<int> ObjectFileOffsets = new List<int>();
 
+
+		public M2[] M2s;
+		public WMORoot[] WMOs;
+
+		/// <summary>
+		/// Array of MCNK chunks which give the ADT vertex information for this ADT
+		/// </summary>
+		public readonly ADTChunk[,] Chunks = new ADTChunk[TerrainConstants.ChunksPerTileSide, TerrainConstants.ChunksPerTileSide];
         #endregion
 
 
@@ -414,5 +422,176 @@ namespace WCell.Terrain.MPQ
 		}
 
 		#endregion
+
+
+		public float GetInterpolatedHeight(Point2D chunkCoord, Point2D unitCoord, HeightMapFraction heightMapFraction)
+		{
+			// Height stored as: h5 - its v8 grid, h1-h4 - its v9 grid
+			// +--------------> X
+			// | h1--------h2   Coordinates are:
+			// | |    |    |     h1 0,0
+			// | |  1 |  2 |     h2 0,1
+			// | |----h5---|     h3 1,0
+			// | |  3 |  4 |     h4 1,1
+			// | |    |    |     h5 1/2,1/2
+			// | h3--------h4
+			// V Y
+			if (Chunks == null) return float.NaN;
+
+			var chunk = Chunks[chunkCoord.X, chunkCoord.Y];
+			if (chunk == null) return float.NaN;
+
+			var medianHeight = chunk.MedianHeight;
+			if (chunk.IsFlat) return medianHeight;
+
+
+			// TODO: Fix interpolated height
+			return medianHeight;
+
+			//// Fixme:  Indexing is backwards.
+			//var heightX = (unitCoord.Y == TerrainConstants.UnitsPerChunkSide)
+			//                  ? (TerrainConstants.UnitsPerChunkSide - 1)
+			//                  : unitCoord.Y;
+
+			//var heightY = (unitCoord.X == TerrainConstants.UnitsPerChunkSide)
+			//                  ? (TerrainConstants.UnitsPerChunkSide - 1)
+			//                  : unitCoord.X;
+
+
+			//// Determine what quad we're in
+			//var xf = heightMapFraction.FractionX;
+			//var yf = heightMapFraction.FractionY;
+
+			//float topLeft, topRight, bottomLeft, bottomRight;
+			//if (xf < 0.5f)
+			//{
+			//    if (yf < 0.5)
+			//    {
+			//        // Calc the #1 quad
+			//        // +--------------> X
+			//        // | h1--------h2    Coordinates are:
+			//        // | |    |    |      h1 0,0
+			//        // | |  1 |    |      h2 0,1
+			//        // | |----h5---|      h3 1,0
+			//        // | |    |    |      h4 1,1
+			//        // | |    |    |      h5 1/2,1/2
+			//        // | h3--------h4
+			//        // V Y
+			//        var h1 = chunk.OuterHeightDiff[heightX, heightY];
+			//        var h2 = chunk.OuterHeightDiff[heightX, heightY + 1];
+			//        var h3 = chunk.OuterHeightDiff[heightX + 1, heightY];
+			//        var h5 = chunk.InnerHeightDiff[heightX, heightY];
+
+			//        topLeft = h1;
+			//        topRight = (h1 + h2) / 2.0f;
+			//        bottomLeft = (h1 + h3) / 2.0f;
+			//        bottomRight = h5;
+			//    }
+			//    else
+			//    {
+			//        // Calc the #3 quad
+			//        // +--------------> X
+			//        // | h1--------h2    Coordinates are:
+			//        // | |    |    |      h1 0,0
+			//        // | |    |    |      h2 0,1
+			//        // | |----h5---|      h3 1,0
+			//        // | |  3 |    |      h4 1,1
+			//        // | |    |    |      h5 1/2,1/2
+			//        // | h3--------h4
+			//        // V Y
+			//        var h1 = chunk.OuterHeightDiff[heightX, heightY];
+			//        var h3 = chunk.OuterHeightDiff[heightX + 1, heightY];
+			//        var h4 = chunk.OuterHeightDiff[heightX + 1, heightY + 1];
+			//        var h5 = chunk.InnerHeightDiff[heightX, heightY];
+
+			//        topLeft = (h1 + h3) / 2.0f;
+			//        topRight = h5;
+			//        bottomLeft = h3;
+			//        bottomRight = (h3 + h4) / 2.0f;
+
+			//        yf -= 0.5f;
+			//    }
+			//}
+			//else
+			//{
+			//    if (yf < 0.5)
+			//    {
+			//        // Calc the #2 quad
+			//        // +--------------> X
+			//        // | h1--------h2    Coordinates are:
+			//        // | |    |    |      h1 0,0
+			//        // | |    |  2 |      h2 0,1
+			//        // | |----h5---|      h3 1,0
+			//        // | |    |    |      h4 1,1
+			//        // | |    |    |      h5 1/2,1/2
+			//        // | h3--------h4
+			//        // V Y
+			//        var h1 = chunk.OuterHeightDiff[heightX, heightY];
+			//        var h2 = chunk.OuterHeightDiff[heightX, heightY + 1];
+			//        var h4 = chunk.OuterHeightDiff[heightX + 1, heightY + 1];
+			//        var h5 = chunk.InnerHeightDiff[heightX, heightY];
+
+			//        topLeft = (h1 + h2) / 2.0f;
+			//        topRight = h2;
+			//        bottomLeft = h5;
+			//        bottomRight = (h2 + h4) / 2.0f;
+
+			//        xf -= 0.5f;
+			//    }
+			//    else
+			//    {
+			//        // Calc the #4 quad
+			//        // +--------------> X
+			//        // | h1--------h2    Coordinates are:
+			//        // | |    |    |      h1 0,0
+			//        // | |    |    |      h2 0,1
+			//        // | |----h5---|      h3 1,0
+			//        // | |    |  4 |      h4 1,1
+			//        // | |    |    |      h5 1/2,1/2
+			//        // | h3--------h4
+			//        // V Y
+			//        var h2 = chunk.OuterHeightDiff[heightX, heightY + 1];
+			//        var h3 = chunk.OuterHeightDiff[heightX + 1, heightY];
+			//        var h4 = chunk.OuterHeightDiff[heightX + 1, heightY + 1];
+			//        var h5 = chunk.InnerHeightDiff[heightX, heightY];
+
+			//        topLeft = h5;
+			//        topRight = (h2 + h4) / 2.0f;
+			//        bottomLeft = (h3 + h4) / 2.0f;
+			//        bottomRight = h4;
+
+			//        xf -= 0.5f;
+			//        yf -= 0.5f;
+			//    }
+			//}
+
+			////var heightDiff = InterpolateTriangle(ref vec1, ref vec2, ref vec3, heightMapFraction);
+			//var heightDiff = BilinearInterpolate(ref topLeft, ref topRight, ref bottomLeft, ref bottomRight, ref xf,
+			//                                     ref yf);
+			//return medianHeight + heightDiff;
+		}
+
+		public float GetLiquidHeight(Point2D chunkCoord, Point2D unitCoord)
+		{
+			var chunk = Chunks[chunkCoord.X, chunkCoord.Y];
+			if (!chunk.IsLiquid)
+				return float.MinValue;
+
+
+			var liquidHeights = chunk.LiquidHeights;
+
+			return (liquidHeights == null) ? float.MinValue
+											: liquidHeights[unitCoord.X, unitCoord.Y];
+		}
+
+		public FluidType GetFluidType(Point2D chunkCoord)
+		{
+			var chunk = Chunks[chunkCoord.X, chunkCoord.Y];
+
+			if (!chunk.IsLiquid)
+				return chunk.LiquidType;
+
+			return chunk.LiquidType;
+		}
     }
 }

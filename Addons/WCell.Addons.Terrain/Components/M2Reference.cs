@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using WCell.Util.Graphics;
 
-namespace WCell.Addons.Collision.Components
+namespace WCell.Addons.Terrain.Components
 {
     public class M2Reference : ReferenceBase
     {

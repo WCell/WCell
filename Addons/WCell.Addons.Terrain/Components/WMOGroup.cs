@@ -1,6 +1,6 @@
 using WCell.Util.Graphics;
 
-namespace WCell.Addons.Collision
+namespace WCell.Addons.Terrain
 {
     public class WMOGroup
     {

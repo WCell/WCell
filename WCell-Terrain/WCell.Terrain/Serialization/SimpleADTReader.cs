@@ -13,6 +13,8 @@ namespace WCell.Terrain.Serialization
     {
         public static SimpleADT ReadTile(string filePath, Terrain terrain, int tileX, int tileY)
         {
+			// TODO: Fix SimpleADTReader
+
             if (!File.Exists(filePath))
             {
                 throw new FileNotFoundException("ADT file does not exist: {0}", filePath);
@@ -39,7 +41,6 @@ namespace WCell.Terrain.Serialization
 
 
 				adt = new SimpleADT(tileX, tileY, terrain);
-				ReadADTChunks(br, adt);
 
                 adt.IsWMOOnly = br.ReadBoolean();
                 ReadWMODefs(br, adt);
@@ -58,7 +59,6 @@ namespace WCell.Terrain.Serialization
                 br.Close();
             }
 
-            LoadQuadTree(adt);
 
             return adt;
         }
@@ -107,91 +107,5 @@ namespace WCell.Terrain.Serialization
             adt.QuadTree = QuadTree<SimpleTerrainChunk>.LoadFromFile(br);
         }
 
-        private static void ReadADTChunks(BinaryReader br, TerrainTile tile)
-        {
-            for (var x = 0; x < TerrainConstants.ChunksPerTileSide; x++)
-            {
-                for (var y = 0; y < TerrainConstants.ChunksPerTileSide; y++)
-                {
-					tile.Chunks[y, x] = ReadADTChunk(br);
-                }
-            }
-        }
-
-        private static SimpleTerrainChunk ReadADTChunk(BinaryReader br)
-        {
-			// TODO: Read chunk
-			return null;
-			//var chunk = new SimpleTerrainChunk
-			//{
-			//    NodeId = br.ReadInt32(),
-			//    IsFlat = br.ReadBoolean(),
-			//    MedianHeight = br.ReadSingle(),
-			//    M2References = br.ReadInt32List(),
-			//    WMOReferences = br.ReadInt32List(),
-			//    TerrainTris = br.ReadIndex3List(),
-			//    IsLiquidFlat = br.ReadBoolean(),
-			//    HolesMask = br.ReadUInt16()
-			//};
-
-			//if (chunk.HasHoles)
-			//{
-			//    ReadChunkHolesMap(br, chunk);
-			//}
-
-			//if (!chunk.IsFlat)
-			//{
-			//    ReadChunkHeightMap(br, chunk);
-			//}
-
-			//if (!chunk.HasLiquid) return chunk;
-
-			//chunk.LiquidFlags = (MH2OFlags) br.ReadUInt16();
-			//chunk.LiquidType = (FluidType) br.ReadUInt16();
-			//chunk.IsLiquidFlat = br.ReadBoolean();
-			//chunk.MedianLiquidHeight1 = br.ReadSingle();
-			//chunk.MedianLiquidHeight2 = br.ReadSingle();
-
-			//if (chunk.LiquidFlags.HasFlag(MH2OFlags.Ocean)) return chunk;
-			//ReadChunkLiquidMap(br, chunk);
-
-			//if (chunk.IsLiquidFlat) return chunk;
-			//ReadChunkLiquidHeights(br, chunk);
-
-			//return chunk;
-        }
-
-        private static void ReadChunkLiquidMap(BinaryReader br, SimpleTerrainChunk chunk)
-        {
-            var liquidMap = new bool[TerrainConstants.UnitsPerChunkSide, TerrainConstants.UnitsPerChunkSide];
-            for (var x = 0; x < TerrainConstants.UnitsPerChunkSide; x++)
-            {
-                for (var y = 0; y < TerrainConstants.UnitsPerChunkSide; y++)
-                {
-					chunk.LiquidMap[y, x] = br.ReadBoolean();
-                }
-            }
-        }
-
-        private static void ReadChunkLiquidHeights(BinaryReader br, SimpleTerrainChunk chunk)
-        {
-            var liquidHeights = new float[TerrainConstants.UnitsPerChunkSide + 1, TerrainConstants.UnitsPerChunkSide + 1];
-            for (var x = 0; x <= TerrainConstants.UnitsPerChunkSide + 1; x++)
-            {
-                for (var y = 0; y <= TerrainConstants.UnitsPerChunkSide + 1; y++)
-                {
-					chunk.LiquidHeights[y, x] = br.ReadSingle();
-                }
-            }
-        }
-
-        private static void LoadQuadTree(SimpleADT adt)
-        {
-			//foreach (var chunk in adt.Chunks)
-			//{
-			//    adt.QuadTree.Insert(chunk);
-			//    chunk.Bounds = adt.QuadTree.Nodes[chunk.NodeId].Bounds;
-			//}
-        }
     }
 }

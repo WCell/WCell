@@ -41,7 +41,7 @@ namespace WCell.Terrain.Serialization
         {
 			foreach (var wdt in WDTReader.ReadAllWDTs())
             {   
-                var path = Path.Combine(WCellTerrainSettings.MapDir, wdt.Entry.Id.ToString());
+                var path = Path.Combine(WCellTerrainSettings.RawMapDir, wdt.Entry.Id.ToString());
                 if (!Directory.Exists(path))
                 {
                     Directory.CreateDirectory(path);

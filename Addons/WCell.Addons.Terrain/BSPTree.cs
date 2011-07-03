@@ -8,7 +8,7 @@ using WCell.Terrain;
 using WCell.Util;
 using WCell.Util.Graphics;
 
-namespace WCell.Addons.Collision
+namespace WCell.Addons.Terrain
 {
     public class BSPTree
     {

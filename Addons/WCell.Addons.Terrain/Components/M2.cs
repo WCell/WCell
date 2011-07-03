@@ -2,7 +2,7 @@ using System;
 using WCell.Terrain;
 using WCell.Util.Graphics;
 
-namespace WCell.Addons.Collision.Components
+namespace WCell.Addons.Terrain.Components
 {
     public class M2 : IBounded
     {

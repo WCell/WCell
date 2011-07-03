@@ -101,7 +101,7 @@ namespace WCell.Terrain.Pathfinding
 				// get the vertices and neighbors of the current triangle
 				Triangle triangle;
 				Tile.GetTriangle(current.Triangle, out triangle);
-				var neighbors = Tile.GetNeighborsOf(current.Triangle);
+				var neighbors = Tile.GetEdgeNeighborsOf(current.Triangle);
 
 				// iterate over all neighbors
 				for (var i = 0; i < WCellTerrainConstants.NeighborsPerTriangle; i++)

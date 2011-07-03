@@ -97,7 +97,7 @@ namespace WCell.Util
 						if (type.IsValueType)
 						{
 							TypeMap[type.FullName] = type;
-							if (type.IsEnum)
+							if (type.IsEnum && !type.IsNested)
 							{
 								var values = Enum.GetValues(type);
 								//if (values.Length >= 100)

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Windows.Forms;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -7,6 +8,7 @@ using Microsoft.Xna.Framework.Input;
 using WCell.Terrain.GUI.Util;
 using WCell.Terrain.GUI.Renderers;
 using WCell.Terrain.Pathfinding;
+using WCell.Terrain.Recast;
 using WCell.Util;
 using WCell.Util.Graphics;
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
@@ -72,6 +74,7 @@ namespace WCell.Terrain.GUI
 		SpriteFont _spriteFont;
 
 		private Pathfinder pathfinder;
+		private float globalIlluminationLevel;
 
 		/// <summary>
 		/// Constructor for the game.
@@ -87,6 +90,19 @@ namespace WCell.Terrain.GUI
 
 			Tile = tile;
 			pathfinder = new Pathfinder(Tile);
+		}
+
+		public float GlobalIlluminationLevel
+		{
+			get { return globalIlluminationLevel; }
+			set
+			{
+				globalIlluminationLevel = value;
+
+				effect.DiffuseColor = new Vector3(.95f, .95f, .95f) * value;
+				effect.SpecularColor = new Vector3(0.05f, 0.05f, 0.05f) * value;
+				effect.AmbientLightColor = new Vector3(0.35f, 0.35f, 0.35f) * value;
+			}
 		}
 
 		public TerrainTile Tile
@@ -108,6 +124,28 @@ namespace WCell.Terrain.GUI
 		{
 			get;
 			private set;
+		}
+
+		public bool IsMenuVisible
+		{
+			get
+			{
+				return Form.Menu != null;
+			}
+			set
+			{
+				if (value)
+				{
+					Form.Menu = menu;
+					GlobalIlluminationLevel -= 0.5f;		// dampen the light
+				}
+				else
+				{
+					Form.Menu = null;
+					GlobalIlluminationLevel += 0.5f;		// back to original illumination
+					RecenterMouse();
+				}
+			}
 		}
 
 		/// <summary>
@@ -148,6 +186,8 @@ namespace WCell.Terrain.GUI
 		{
 			InitGUI();
 
+			Form.Activated += (sender, args) => RecenterMouse();
+
 			IsMouseVisible = true;
 			_graphics.PreferredBackBufferWidth = 1024;
 			_graphics.PreferredBackBufferHeight = 768;
@@ -156,10 +196,9 @@ namespace WCell.Terrain.GUI
 			InitializeEffect();
 
 
-			//Components.Add(new RecastFrameRenderer(this, _graphics, TerrainProgram.TerrainManager.MeshLoader));
-			//Components.Add(new RecastSolidRenderer(this, _graphics, TerrainProgram.TerrainManager.MeshLoader));
 			Components.Add(new AxisRenderer(this));
 			Components.Add(new TileRenderer(this, Tile));
+			Components.Add(new RecastSolidRenderer(this, _graphics, Tile.Terrain.NavMesh));
 			Components.Add(TriangleSelector = new GenericRenderer(this));
 
 			base.Initialize();
@@ -173,10 +212,7 @@ namespace WCell.Terrain.GUI
 				LightingEnabled = true,
 
 				Alpha = 1.0f,
-				DiffuseColor = new Vector3(.95f, .95f, .95f),
-				SpecularColor = new Vector3(0.05f, 0.05f, 0.05f),
-				AmbientLightColor = new Vector3(0.35f, 0.35f, 0.35f),
-				SpecularPower = 5.0f,
+				SpecularPower = 5.0f
 			};
 
 			effect.DirectionalLight0.Enabled = true;
@@ -187,6 +223,8 @@ namespace WCell.Terrain.GUI
 			effect.DirectionalLight1.Enabled = true;
 			effect.DirectionalLight1.DiffuseColor = new Vector3(0.1f, 0.1f, 0.1f);
 			effect.DirectionalLight1.Direction = Vector3.Normalize(new Vector3(-1.0f, -1.0f, 1.0f));
+
+			GlobalIlluminationLevel = 2;
 
 
 			_vertexDeclaration = new VertexDeclaration(_graphics.GraphicsDevice, VertexPositionNormalColored.VertexElements);
@@ -201,6 +239,7 @@ namespace WCell.Terrain.GUI
 			// TODO: Unload any non ContentManager content here
 		}
 
+		#region Update & Draw
 		/// <summary>
 		/// Allows the game to run logic such as updating the world,
 		/// checking for collisions, gathering input, and playing audio.
@@ -226,7 +265,7 @@ namespace WCell.Terrain.GUI
 				avatarPitch += (y - cy) * (MouseSensitivity / 1000);
 				avatarYaw += (cx - x) * (MouseSensitivity / 1000);
 
-				Mouse.SetPosition(cx, cy); // move back to center
+				RecenterMouse();
 			}
 
 
@@ -240,6 +279,15 @@ namespace WCell.Terrain.GUI
 			//    break;
 			//}
 			base.Update(gameTime);
+		}
+
+		private void RecenterMouse()
+		{
+			var w = Form.Width;
+			var h = Form.Height;
+			var cx = w / 2;
+			var cy = h / 2;
+			Mouse.SetPosition(cx, cy); // move back to center
 		}
 
 		/// <summary>
@@ -293,6 +341,23 @@ namespace WCell.Terrain.GUI
 			_graphics.GraphicsDevice.RenderState.DepthBufferEnable = true;
 		}
 
+		void UpdateCameraThirdPerson()
+		{
+			// Create a vector pointing the direction the camera is facing.
+			//var transformedReference = Vector3.Transform(, Matrix.CreateRotationY(avatarYaw));
+			//transformedReference = Vector3.Transform(transformedReference, Matrix.CreateRotationX(avatarPitch));
+
+			// Calculate the position the camera is looking from
+			var target = avatarPosition + Vector3.Transform(Vector3.UnitZ, Matrix.CreateFromYawPitchRoll(avatarYaw, avatarPitch, 0));
+
+			// Set up the view matrix and projection matrix
+			_view = Matrix.CreateLookAt(avatarPosition, target, new Vector3(0.0f, 1.0f, 0.0f));
+
+			var viewport = _graphics.GraphicsDevice.Viewport;
+			var aspectRatio = viewport.Width / (float)viewport.Height;
+			_proj = Matrix.CreatePerspectiveFieldOfView(ViewAngle, aspectRatio, NearClip, FarClip);
+		}
+
 		/// <summary>
 		/// This is the method that is called to move our avatar 
 		/// </summary>
@@ -306,7 +371,7 @@ namespace WCell.Terrain.GUI
 		void UpdateAvatarPosition()
 		{
 			var keyboardState = Keyboard.GetState();
-			var currentState = GamePad.GetState(PlayerIndex.One);
+			var gamePadState = GamePad.GetState(PlayerIndex.One);
 			var mouseState = Mouse.GetState();
 
 			//if (Console.IsOpen()) return;
@@ -316,7 +381,7 @@ namespace WCell.Terrain.GUI
 				System.Console.WriteLine("Open!");
 			}
 
-			if (keyboardState.IsKeyDown(Keys.A) || (currentState.DPad.Left == ButtonState.Pressed))
+			if (keyboardState.IsKeyDown(Keys.A) || (gamePadState.DPad.Left == ButtonState.Pressed))
 			{
 				// move left
 				//avatarYaw += RotationSpeed;
@@ -328,7 +393,7 @@ namespace WCell.Terrain.GUI
 				avatarPosition.Z += v.Z;
 			}
 
-			if (keyboardState.IsKeyDown(Keys.D) || (currentState.DPad.Right == ButtonState.Pressed))
+			if (keyboardState.IsKeyDown(Keys.D) || (gamePadState.DPad.Right == ButtonState.Pressed))
 			{
 				// move right
 				//avatarYaw -= RotationSpeed;
@@ -338,7 +403,7 @@ namespace WCell.Terrain.GUI
 				avatarPosition -= Vector3.Transform(v, forwardMovement);
 			}
 
-			if (keyboardState.IsKeyDown(Keys.W) || (currentState.DPad.Up == ButtonState.Pressed))
+			if (keyboardState.IsKeyDown(Keys.W) || (gamePadState.DPad.Up == ButtonState.Pressed))
 			{
 				//var forwardMovement = Matrix.CreateRotationY(avatarYaw);
 				//var v = new Vector3(0, 0, ForwardSpeed);
@@ -369,7 +434,7 @@ namespace WCell.Terrain.GUI
 				}
 			}
 
-			if (keyboardState.IsKeyDown(Keys.S) || (currentState.DPad.Down == ButtonState.Pressed))
+			if (keyboardState.IsKeyDown(Keys.S) || (gamePadState.DPad.Down == ButtonState.Pressed))
 			{
 				var horizontal = avatarPitch.Cos();
 				var vertical = -avatarPitch.Sin();
@@ -446,6 +511,7 @@ namespace WCell.Terrain.GUI
 				mouseLeftButtonDown = false;
 			}
 		}
+		#endregion
 
 		#region Mouse selection
 		private readonly List<WCell.Util.Graphics.Vector3> selectedPoints = new List<WCell.Util.Graphics.Vector3>();
@@ -485,6 +551,9 @@ namespace WCell.Terrain.GUI
 			}
 		}
 
+		/// <summary>
+		/// Selects the polygon under the cursor and all it's neighbors
+		/// </summary>
 		private void SelectPolygon()
 		{
 			var keyboardState = Keyboard.GetState();
@@ -503,7 +572,7 @@ namespace WCell.Terrain.GUI
 				SelectTriangle(index, add);
 
 				// also mark it's neighbors
-				var neighbors = Tile.GetNeighborsOf(index);
+				var neighbors = Tile.GetEdgeNeighborsOf(index);
 				foreach (var neighbor in neighbors)
 				{
 					SelectTriangle(neighbor, true);
@@ -522,9 +591,18 @@ namespace WCell.Terrain.GUI
 
 			Triangle triangle;
 			Tile.GetTriangle(index, out triangle);
+
+			// elevate them just a tiny bit, so they do not collide with the original triangle
+			triangle.Point1.Z += 0.0001f;
+			triangle.Point2.Z += 0.0001f;
+			triangle.Point3.Z += 0.0001f;
+
 			TriangleSelector.Select(ref triangle, add, color);
 		}
 
+		/// <summary>
+		/// Computes a ray from the current viewer's location to the mouse cursor
+		/// </summary>
 		bool GetRayToCursor(out Ray ray)
 		{
 			var mouseState = Mouse.GetState();
@@ -557,27 +635,25 @@ namespace WCell.Terrain.GUI
 		}
 		#endregion
 
-		void UpdateCameraThirdPerson()
+
+		private void ToggleSolidRenderingMode()
 		{
-			// Create a vector pointing the direction the camera is facing.
-			//var transformedReference = Vector3.Transform(, Matrix.CreateRotationY(avatarYaw));
-			//transformedReference = Vector3.Transform(transformedReference, Matrix.CreateRotationX(avatarPitch));
-
-			// Calculate the position the camera is looking from
-			var target = avatarPosition + Vector3.Transform(Vector3.UnitZ, Matrix.CreateFromYawPitchRoll(avatarYaw, avatarPitch, 0));
-
-			// Set up the view matrix and projection matrix
-			_view = Matrix.CreateLookAt(avatarPosition, target, new Vector3(0.0f, 1.0f, 0.0f));
-
-			var viewport = _graphics.GraphicsDevice.Viewport;
-			var aspectRatio = viewport.Width / (float)viewport.Height;
-			_proj = Matrix.CreatePerspectiveFieldOfView(ViewAngle, aspectRatio, NearClip, FarClip);
+			if (solidRenderingMode)
+			{
+				_graphics.GraphicsDevice.RenderState.CullMode = CullMode.CullClockwiseFace;
+				_graphics.GraphicsDevice.RenderState.FillMode = FillMode.Solid;
+			}
+			else
+			{
+				_graphics.GraphicsDevice.RenderState.CullMode = CullMode.None;
+				_graphics.GraphicsDevice.RenderState.FillMode = FillMode.WireFrame;
+			}
 		}
 
 		#region GUI
 		private MainMenu menu;
-		private MenuItem renderingModeSwitch;
-		private bool solidRenderingMode;
+		private MenuItem renderingModeButton;
+		private bool solidRenderingMode = true;
 
 		/// <summary>
 		/// Add some basic GUI controls
@@ -591,47 +667,35 @@ namespace WCell.Terrain.GUI
 			Form = (Form)Form.FromHandle(Window.Handle);
 
 			menu = new MainMenu();
-			renderingModeSwitch = new MenuItem();
-			renderingModeSwitch.Click += ClickedRenderingModeSwitch;
 
-			ClickedRenderingModeSwitch(null, null);
+			renderingModeButton = new MenuItem();
+			renderingModeButton.Click += ClickedRenderingModeButton;
+			ClickedRenderingModeButton(null, null);
 
-			menu.MenuItems.Add(renderingModeSwitch);
+			var exportRecastMeshButton = new MenuItem("Export Tile mesh");
+			exportRecastMeshButton.Click += ExportRecastMesh;
+
+			menu.MenuItems.Add(renderingModeButton);
+			menu.MenuItems.Add(exportRecastMeshButton);
 		}
 
-		private void ClickedRenderingModeSwitch(object sender, EventArgs e)
+		private void ClickedRenderingModeButton(object sender, EventArgs e)
 		{
-			if (solidRenderingMode = !solidRenderingMode)			// flip
+			ToggleSolidRenderingMode();
+			solidRenderingMode = !solidRenderingMode;			// flip
+			if (solidRenderingMode)
 			{
-				renderingModeSwitch.Text = "Solid Mesh";
-				_graphics.GraphicsDevice.RenderState.CullMode = CullMode.CullClockwiseFace;
-				_graphics.GraphicsDevice.RenderState.FillMode = FillMode.Solid;
+				renderingModeButton.Text = "Solid Mesh";
 			}
 			else
 			{
-				renderingModeSwitch.Text = "Wireframe Mesh";
-				_graphics.GraphicsDevice.RenderState.CullMode = CullMode.None;
-				_graphics.GraphicsDevice.RenderState.FillMode = FillMode.WireFrame;
+				renderingModeButton.Text = "Wireframe Mesh";
 			}
 		}
 
-		bool IsMenuVisible
+		private void ExportRecastMesh(object sender, EventArgs e)
 		{
-			get
-			{
-				return Form.Menu != null;
-			}
-			set
-			{
-				if (value)
-				{
-					Form.Menu = menu;
-				}
-				else
-				{
-					Form.Menu = null;
-				}
-			}
+			
 		}
 		#endregion
 

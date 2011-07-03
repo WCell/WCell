@@ -201,10 +201,13 @@ bool rcErodeWalkableArea(rcContext* ctx, int radius, rcCompactHeightfield& chf)
 		}
 	}
 	
+	// Domi edit: Do not filter any triangles
+#ifndef DOMI_EDIT
 	const unsigned char thr = (unsigned char)(radius*2);
 	for (int i = 0; i < chf.spanCount; ++i)
 		if (dist[i] < thr)
 			chf.areas[i] = RC_NULL_AREA;
+#endif
 	
 	rcFree(dist);
 	

@@ -85,6 +85,9 @@ protected:
 public:
 	Sample_TileMesh();
 	virtual ~Sample_TileMesh();
+
+	// Domi edit: Expose config
+	rcConfig& getConfig() { return m_cfg; }
 	
 	virtual void handleSettings();
 	virtual void handleTools();

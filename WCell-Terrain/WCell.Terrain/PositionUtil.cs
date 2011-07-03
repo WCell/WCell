@@ -14,22 +14,6 @@ namespace WCell.Terrain
 	{
 		private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-		public static void TransformWoWCoordsToRecastCoords(ref Vector3 vertex)
-		{
-			var temp = vertex.X;
-			vertex.X = vertex.Y * -1;
-			vertex.Y = vertex.Z;
-			vertex.Z = temp;
-		}
-
-		public static void TransformRecastCoordsToWoWCoords(ref Vector3 vertex)
-		{
-			var temp = vertex.Z;
-			vertex.Z = vertex.Y;
-			vertex.Y = temp * -1;
-			//vertex.X = temp;
-		}
-
 		/// <summary>
 		/// Calculates which Tile the given position belongs to on a Map.
 		/// </summary>

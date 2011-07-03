@@ -4,6 +4,7 @@ using WCell.Constants;
 using WCell.Terrain.GUI.Util;
 using WCell.MPQTool.StormLibWrapper;
 using WCell.Terrain.MPQ;
+using WCell.Terrain.Recast;
 using WCell.Terrain.Serialization;
 using WCell.Util.Graphics;
 using WCell.Util.NLog;
@@ -56,7 +57,6 @@ namespace WCell.Terrain.GUI
 			TerrainTile tile;
 
 			Console.Write("Loading default tile...");
-
 			if (useExtractedData)
 			{
 				throw new NotImplementedException("Extracted data reader is currently under re-construction");
@@ -64,17 +64,20 @@ namespace WCell.Terrain.GUI
 			else
 			{
 				tile = WDT.LoadTile(defaultTileId.MapId, defaultTileId);
-				if (tile == null)
-				{
-					throw new ArgumentException(string.Format(
-									"Could not read tile information - Map: {0} at ({1}, {2}) " + 
-										defaultTileId.MapId,
-										defaultTileId.X,
-										defaultTileId.Y));
-				}
 			}
-
 			Console.WriteLine("Done - Loading time: {0:0.000}s", (DateTime.Now - start).TotalSeconds);
+
+			if (tile == null)
+			{
+				throw new ArgumentException(string.Format(
+								"Could not read tile information - Map: {0} at ({1}, {2}) " +
+									defaultTileId.MapId,
+									defaultTileId.X,
+									defaultTileId.Y));
+			}
+			terrain = tile.Terrain;
+
+			var navMesh = terrain.GetOrCreateNavMesh(tile);
 
 			AvatarPosition = new Vector3(TerrainConstants.CenterPoint - (defaultTileId.X + 1)*TerrainConstants.TileSize,
 										  TerrainConstants.CenterPoint - (defaultTileId.Y)*TerrainConstants.TileSize,

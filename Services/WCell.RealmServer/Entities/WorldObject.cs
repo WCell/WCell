@@ -517,7 +517,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public float TerrainHeight
 		{
-			get { return Map.Terrain.QueryTerrainHeight(m_position); }
+			get { return Map.Terrain.QueryHeightUnderneath(m_position); }
 		}
 
 		/// <summary>

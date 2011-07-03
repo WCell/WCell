@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using WCell.Addons.Collision;
+using WCell.Addons.Terrain;
 using WCell.Constants.World;
 using WCell.Core.Paths;
 using WCell.Core.Terrain.Paths;
@@ -8,15 +8,17 @@ using WCell.RealmServer.Global;
 using WCell.Terrain;
 using WCell.Util.Graphics;
 using WCell.Core.Terrain;
-using Path = WCell.Core.Paths.Path;
 
-namespace WCell.Addons.Collision
+
+namespace WCell.Addons.Terrain
 {
+	using Terrain = WCell.Terrain.Terrain;
+
     public class FullTerrainProvider : ITerrainProvider
     {
         public ITerrain CreateTerrain(MapId id)
         {
-            if (!Terrain.Terrain.DoesMapExist(id))
+            if (!Terrain.DoesMapExist(id))
             {
                 return new EmptyTerrain();
             }

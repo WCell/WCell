@@ -1,13 +1,11 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using WCell.Terrain.GUI.Recast;
 using WCell.Terrain.Recast.NavMesh;
 
 namespace WCell.Terrain.GUI.Renderers
 {
     public abstract class RecastRendererBase : DrawableGameComponent
     {
-        protected NavMeshLoader loader;
         private static int _cachedCount;
         /// <summary>
         /// Boolean variable representing if all the rendering data has been cached.
@@ -31,17 +29,17 @@ namespace WCell.Terrain.GUI.Renderers
         protected VertexPositionNormalColored[] _cachedPolyVertices;
         protected int[] _cachedPolyIndices;
 
-        public RecastRendererBase(Game game, NavMeshLoader loader)
+        public RecastRendererBase(Game game, NavMesh mesh)
             : base(game)
         {
-            this.loader = loader;
+			Mesh = mesh;
         }
 
-        public RecastRendererBase(Game game, GraphicsDeviceManager graphics, NavMeshLoader loader)
-            : this(game, loader)
-        {
-            _graphics = graphics;
-        }
+    	public NavMesh Mesh
+    	{
+    		get;
+			private set;
+    	}
 
         public void RefreshRenderData()
         {

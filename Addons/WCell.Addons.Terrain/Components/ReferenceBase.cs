@@ -1,6 +1,6 @@
 using WCell.Util.Graphics;
 
-namespace WCell.Addons.Collision.Components
+namespace WCell.Addons.Terrain.Components
 {
     public class ReferenceBase
     {

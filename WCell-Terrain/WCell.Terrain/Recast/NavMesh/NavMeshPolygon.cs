@@ -1,25 +1,24 @@
-﻿namespace WCell.Terrain.Recast.NavMesh
+﻿using System;
+using System.Runtime.InteropServices;
+
+namespace WCell.Terrain.Recast.NavMesh
 {
-	/// <summary>
-	/// Managed version of dtPoly
-	/// </summary>
+
 	public class NavMeshPolygon
 	{
-		public static readonly int VERTS_PER_POLYGON = 6;
-	    
+		public const int VERTS_PER_POLYGON = 6;
 
-		public uint FirstLink;												// Index to first link in linked list.
-	    public ushort VertCount;
-        public ushort[] Vertices;											// Indices to vertices of the poly.
-		public ushort[] Neighbors;											// Refs to neighbours of the poly.
-		public ushort Flags;												// Flags (see dtPolyFlags).
-		public byte Area;   												// Area ID of the polygon.
-		public NavMeshPolyTypes Type;   									// Polygon type, see dtPolyTypes
+		public int[] Indices;								// Indices to vertices of the poly
+		public NavMeshPolygon[] Neighbors;					// neighbors of this poly
+
+		public ushort Flags;								// Flags (see dtPolyFlags)
+		public byte Area;
+		public NavMeshPolygonTypes Type;
 	}
 
-    public enum NavMeshPolyTypes : byte
-    {
-        Ground = 0,
-        OffMeshConnection = 1,
-    }
+	public enum NavMeshPolygonTypes : byte
+	{
+		Ground = 0,
+		OffMeshConnection = 1,
+	}
 }

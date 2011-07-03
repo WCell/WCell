@@ -32,18 +32,10 @@ namespace WCell.Terrain.GUI.Util
             vertex.Z = temp * -1;
         }
 
-        public static void TransformWoWCoordsToRecastCoords(ref Microsoft.Xna.Framework.Vector3 vertex)
-        {
-            var temp = vertex.X;
-            vertex.X = vertex.Y * -1;
-            vertex.Y = vertex.Z;
-            vertex.Z = temp;
-		}
-
 		public static void TransformWoWCoordsToXNACoords(ref Vector3 vertex)
 		{
 			var temp = vertex.X;
-			vertex.X = vertex.Y * -1;
+			vertex.X = -vertex.Y;
 			vertex.Y = vertex.Z;
 			vertex.Z = temp * -1;
 		}

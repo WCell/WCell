@@ -14,19 +14,15 @@ namespace WCell.Terrain.GUI
         private static readonly Logger log = LogManager.GetCurrentClassLogger();
         public static readonly string ConfigFileName = "TerrainDisplay.Config.xml";
 
-        public static string WdtPath = "WORLD\\MAPS\\";
-        public static string TerrainDisplayRoot = "../../";
+        public static readonly string WCellRoot = "../../../";
 
     	public override string RootFolder
     	{
-    		get { return TerrainDisplayRoot;  }
+    		get { return WCellRoot;  }
     	}
 
 
         public static bool UseExtractedData = false;
-        public static string MpqPath = @"D:\Games\MPQFiles";
-
-		public static string OutputDir = Path.GetFullPath(TerrainDisplayRoot + "output/");
 
         public TerrainGUIConfig()
         {

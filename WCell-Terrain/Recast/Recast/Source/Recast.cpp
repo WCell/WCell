@@ -231,7 +231,11 @@ void rcMarkWalkableTriangles(rcContext* /*ctx*/, const float walkableSlopeAngle,
 		const int* tri = &tris[i*3];
 		calcTriNormal(&verts[tri[0]*3], &verts[tri[1]*3], &verts[tri[2]*3], norm);
 		// Check if the face is walkable.
+
+		// Domi edit: Mark all areas as walkable
+#ifndef DOMI_EDIT
 		if (norm[1] > walkableThr)
+#endif
 			areas[i] = RC_WALKABLE_AREA;
 	}
 }
@@ -243,7 +247,8 @@ void rcClearUnwalkableTriangles(rcContext* /*ctx*/, const float walkableSlopeAng
 {
 	// TODO: VC complains about unref formal variable, figure out a way to handle this better.
 //	rcAssert(ctx);
-	
+		// Domi edit: Do not clear any triangle as unwalkable
+	return;
 	const float walkableThr = cosf(walkableSlopeAngle/180.0f*RC_PI);
 	
 	float norm[3];
@@ -388,6 +393,7 @@ bool rcBuildCompactHeightfield(rcContext* ctx, const int walkableHeight, const i
 
 						// Check that the gap between the spans is walkable,
 						// and that the climb height between the gaps is not too high.
+						
 						if ((top - bot) >= walkableHeight && rcAbs((int)ns.y - (int)s.y) <= walkableClimb)
 						{
 							// Mark direction as walkable.
