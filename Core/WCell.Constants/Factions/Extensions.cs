@@ -8,6 +8,16 @@ namespace WCell.Constants.Factions
 		{
 			return (flags & otherFlags) != 0;
 		}
+
+		public static bool HasAnyFlag(this FactionTemplateFlags flags, FactionTemplateFlags otherFlags)
+		{
+			return (flags & otherFlags) != 0;
+		}
+
+		public static bool HasAnyFlag(this FactionFlags flags, FactionFlags otherFlags)
+		{
+			return (flags & otherFlags) != 0;
+		}
 		#endregion
 	}
 }

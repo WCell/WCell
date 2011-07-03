@@ -128,11 +128,11 @@ namespace WCell.RealmServer.NPCs.Vehicles
 		/// </summary>
 		public VehicleSeat GetSeatFor(Unit unit)
 		{
-			if (CanEnter(unit))
+			if (!CanEnter(unit))
 			{
-				return GetFirstFreeSeat();
+				return null;
 			}
-			return null;
+			return GetFirstFreeSeat();
 		}
 
 		public void ClearAllSeats()

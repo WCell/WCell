@@ -14,10 +14,10 @@
  *
  *************************************************************************/
 
+using System;
 using System.Collections.Generic;
-using WCell.Constants;
+using System.Linq;
 using WCell.Constants.Factions;
-using WCell.Core;
 using WCell.Util.Data;
 
 namespace WCell.RealmServer.Factions
@@ -105,49 +105,52 @@ namespace WCell.RealmServer.Factions
 			}
 
 			// friends 
-			for (var i = 0; i < FactionMgr.ByTemplateId.Length; i++)
+			foreach (var faction in FactionMgr.ByTemplateId.Where(faction => faction != null))
 			{
-				var faction = FactionMgr.ByTemplateId[i];
-				if (faction != null)
+				if (IsPlayer && faction.Template.FriendGroup.HasAnyFlag(FactionGroupMask.Player))
 				{
-					if (Template.FriendGroup.HasAnyFlag(faction.Template.FactionGroup))
-                    {
-                        Friends.Add(faction);
-                        if (IsPlayer && faction.Template.EnemyGroup != 0)
-                        {
-                            faction.Friends.Add(this);
-                        }
-                    }
+					Friends.Add(faction);
+				}
+
+				if (!Template.FriendGroup.HasAnyFlag(faction.Template.FactionGroup))
+					continue;
+
+				Friends.Add(faction);
+
+				if (IsPlayer && faction.Template.FriendGroup != 0)
+				{
+					faction.Friends.Add(this);
 				}
 			}
 
+
 			var friends = Template.FriendlyFactions;
-			for (var j = 0; j < friends.Length; j++)
+			foreach (var factionId in friends)
 			{
-				var friend = FactionMgr.Get(friends[j]);
-				if (friend != null)
-				{
-					Friends.Add(friend);
-					friend.Friends.Add(this);
-				}
+				var friend = FactionMgr.Get(factionId);
+				if (friend == null) continue;
+				Friends.Add(friend);
+				friend.Friends.Add(this);
 			}
 
 			// we are friends with ourselves
 			Friends.Add(this);
 
 			// enemies
-			foreach (var faction in FactionMgr.ByTemplateId)
+			foreach (var faction in FactionMgr.ByTemplateId.Where(faction => faction != null))
 			{
-				if (faction != null)
+				if (IsPlayer && faction.Template.EnemyGroup.HasAnyFlag(FactionGroupMask.Player))
 				{
-                    if (Template.EnemyGroup.HasAnyFlag(faction.Template.FactionGroup))
-					{
-						Enemies.Add(faction);
-						if (IsPlayer && faction.Template.EnemyGroup != 0)
-						{
-							faction.Enemies.Add(this);
-						}
-					}
+					Enemies.Add(faction);
+				}
+
+				if (!Template.EnemyGroup.HasAnyFlag(faction.Template.FactionGroup)) continue;
+
+				Enemies.Add(faction);
+
+				if (IsPlayer && faction.Template.EnemyGroup != 0)
+				{
+					faction.Enemies.Add(this);
 				}
 			}
 
@@ -155,20 +158,23 @@ namespace WCell.RealmServer.Factions
 			for (var j = 0; j < friends.Length; j++)
 			{
 				var enemy = FactionMgr.Get(enemies[j]);
-				if (enemy != null)
+				if (enemy == null)
+					continue;
+
+				if (!Template.Flags.HasAnyFlag(FactionTemplateFlags.Flagx400))
 				{
 					Enemies.Add(enemy);
-					enemy.Enemies.Add(this);
 				}
+
+				
+				enemy.Enemies.Add(this);
 			}
 
 			// neutrals 
-			foreach (var faction in FactionMgr.ByTemplateId)
+			foreach (var faction in FactionMgr.ByTemplateId.Where(faction => faction != null))
 			{
-				if (faction != null && !Friends.Contains(faction) && !Enemies.Contains(faction))
-				{
+				if( !Friends.Contains(faction) && !Enemies.Contains(faction))
 					Neutrals.Add(faction);
-				}
 			}
 
 			if (Id == FactionId.Prey)
