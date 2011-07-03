@@ -1130,7 +1130,7 @@ namespace WCell.RealmServer.Entities
 		{
 			if (HasMaster)
 			{
-				if (m_master == opponent) return true;
+				if (ReferenceEquals(m_master, opponent)) return true;
 				return Master.IsFriendlyWith(opponent);
 			}
 			if ((opponent is WorldObject && ((WorldObject)opponent).HasMaster))
@@ -1186,7 +1186,7 @@ namespace WCell.RealmServer.Entities
 		{
 			if (HasMaster)
 			{
-				if (m_master == opponent) return false;
+				if (ReferenceEquals(m_master, opponent)) return false;
 				return Master.IsHostileWith(opponent);
 			}
 			if ((opponent is WorldObject && ((WorldObject)opponent).HasMaster))
@@ -1220,7 +1220,7 @@ namespace WCell.RealmServer.Entities
 		{
 			if (HasMaster)
 			{
-				if (m_master == opponent) return false;
+				if (ReferenceEquals(m_master, opponent)) return false;
 				return Master.MayAttack(opponent);
 			}
 			if ((opponent is WorldObject && ((WorldObject)opponent).HasMaster))
@@ -1258,7 +1258,7 @@ namespace WCell.RealmServer.Entities
 		{
 			if (HasMaster)
 			{
-				if (m_master == opponent) return true;
+				if (ReferenceEquals(m_master, opponent)) return true;
 				return Master.IsAlliedWith(opponent);
 			}
 			if ((opponent is WorldObject && ((WorldObject)opponent).HasMaster))
