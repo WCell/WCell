@@ -21,7 +21,7 @@ namespace WCell.Terrain.Tools
 
 		public static void WriteZoneTileSets(string outputFileName)
 		{
-			tileSets = ZoneTileSetReader.ExportTileSets();
+			tileSets = ZoneBoundaryWriter.ExportTileSets();
 			using (writer = new CodeFileWriter(outputFileName, "WCell.Constants.World", "ZoneBoundaries", "static class", "",
 				"WCell.Util.Graphics"))
 			{

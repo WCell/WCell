@@ -51,6 +51,10 @@ namespace WCell.Terrain.MPQ
 		protected override TerrainTile LoadTile(Point2D tileCoord)
 		{
 			var adt = ADTReader.ReadADT(Finder, this, tileCoord);
+			if (adt == null)
+			{
+				return null;
+			}
 
 			adt.GenerateHeightVertexAndIndices();
 			adt.GenerateLiquidVertexAndIndices();

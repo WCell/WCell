@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using WCell.Terrain.GUI.Util;
@@ -23,70 +24,53 @@ namespace WCell.Terrain.GUI.Renderers
 
 		public override void Draw(GameTime gameTime)
 		{
-			if (!RenderPolyCached ||
-				_cachedPolyVertices.IsNullOrEmpty() ||
-				_cachedPolyIndices.IsNullOrEmpty())
-			{
-				if (!BuildPolyVerticiesAndIndicies())
-				{
-					base.Draw(gameTime);
-					return;
-				}
-			}
-
 			var depthBias = _graphics.GraphicsDevice.RenderState.DepthBias;
 			var fillMode = _graphics.GraphicsDevice.RenderState.FillMode;
 
 			if (_graphics != null)
 			{
-				//_graphics.GraphicsDevice.RenderState.DepthBias = 16;
-				//_graphics.GraphicsDevice.RenderState.FillMode = FillMode.Solid;
+				_graphics.GraphicsDevice.RenderState.DepthBias = 16;
+				_graphics.GraphicsDevice.RenderState.FillMode = FillMode.Solid;
 			}
 
-			GraphicsDevice.VertexDeclaration = _vertexDeclaration;
-			GraphicsDevice.DrawUserIndexedPrimitives(PrimitiveType.TriangleList,
-													 _cachedPolyVertices, 0, _cachedPolyVertices.Length,
-													 _cachedPolyIndices, 0, _cachedPolyIndices.Length / 3);
+			base.Draw(gameTime);
 
 			if (_graphics != null)
 			{
 				_graphics.GraphicsDevice.RenderState.DepthBias = depthBias;
 				_graphics.GraphicsDevice.RenderState.FillMode = fillMode;
 			}
-
-			base.Draw(gameTime);
 		}
 
-		protected override bool BuildPolyVerticiesAndIndicies()
+		protected override void BuildVerticiesAndIndicies()
 		{
 			var vertices = Mesh.Vertices;
 			List<int> indices;
 
 			Mesh.GetTriangles(out indices);
 
-			if (vertices.Length == 0 || indices.Count == 0) return false;
+			if (vertices.Length == 0 || indices.Count == 0) return;
 
 
 			// TODO: Interpolate normals
 
-			_cachedPolyVertices = new VertexPositionNormalColored[vertices.Length];
+			_cachedVertices = new VertexPositionNormalColored[vertices.Length];
 			for (var i = 0; i < vertices.Length; i++)
 			{
 				var vertex = vertices[i];
 				XNAUtil.TransformWoWCoordsToXNACoords(ref vertex);
-				_cachedPolyVertices[i] = new VertexPositionNormalColored(vertex.ToXna(),
+				_cachedVertices[i] = new VertexPositionNormalColored(vertex.ToXna(),
 																		MeshPolyColor,
 																		Vector3.Up.ToXna());
 			}
 
-			_cachedPolyIndices = new int[indices.Count];
+			_cachedIndices = new int[indices.Count];
 			for (int i = 0; i < indices.Count; i++)
 			{
-				_cachedPolyIndices[i] = indices[i];
+				_cachedIndices[i] = indices[i];
 			}
 
-			RenderPolyCached = true;
-			return true;
+			_renderCached = true;
 		}
 	}
 }

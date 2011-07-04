@@ -42,9 +42,7 @@ namespace WCell.Terrain
 			try
 			{
 				InternalMapNames = new Dictionary<MapId, string>((int) MapId.End);
-				var dbcPath = Path.GetFullPath(Path.Combine(WCellTerrainSettings.DBCDir, mapDBCName));
-				var dbcMapReader = new MappedDBCReader<MapInfo, DBCMapEntryConverter>(dbcPath);
-				foreach (var mapInfo in dbcMapReader.Entries.Select(entry => entry.Value))
+				foreach (var mapInfo in MapInfo.GetMapEntries())
 				{
 					InternalMapNames.Add(mapInfo.Id, mapInfo.InternalName);
 				}

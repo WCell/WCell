@@ -5,12 +5,17 @@ using System.Windows.Forms;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using WCell.Constants.World;
+using WCell.MPQTool;
+using WCell.Terrain.GUI.UI;
 using WCell.Terrain.GUI.Util;
 using WCell.Terrain.GUI.Renderers;
+using WCell.Terrain.MPQ.DBC;
 using WCell.Terrain.Pathfinding;
-using WCell.Terrain.Recast;
+using WCell.Terrain.Serialization;
 using WCell.Util;
 using WCell.Util.Graphics;
+
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 using Color = Microsoft.Xna.Framework.Graphics.Color;
 using Keys = Microsoft.Xna.Framework.Input.Keys;
@@ -18,10 +23,7 @@ using MathHelper = Microsoft.Xna.Framework.MathHelper;
 using Matrix = Microsoft.Xna.Framework.Matrix;
 using Ray = WCell.Util.Graphics.Ray;
 using Vector3 = Microsoft.Xna.Framework.Vector3;
-
-using Menu = System.Windows.Forms.Menu;
 using MenuItem = System.Windows.Forms.MenuItem;
-using ToolStripMenuItem = System.Windows.Forms.ToolStripMenuItem;
 
 namespace WCell.Terrain.GUI
 {
@@ -92,6 +94,7 @@ namespace WCell.Terrain.GUI
 			pathfinder = new Pathfinder(Tile);
 		}
 
+		#region Properties
 		public float GlobalIlluminationLevel
 		{
 			get { return globalIlluminationLevel; }
@@ -125,29 +128,9 @@ namespace WCell.Terrain.GUI
 			get;
 			private set;
 		}
+		#endregion
 
-		public bool IsMenuVisible
-		{
-			get
-			{
-				return Form.Menu != null;
-			}
-			set
-			{
-				if (value)
-				{
-					Form.Menu = menu;
-					GlobalIlluminationLevel -= 0.5f;		// dampen the light
-				}
-				else
-				{
-					Form.Menu = null;
-					GlobalIlluminationLevel += 0.5f;		// back to original illumination
-					RecenterMouse();
-				}
-			}
-		}
-
+		#region Initialization
 		/// <summary>
 		/// Executes a console command.
 		/// </summary>
@@ -197,8 +180,11 @@ namespace WCell.Terrain.GUI
 
 
 			Components.Add(new AxisRenderer(this));
-			Components.Add(new TileRenderer(this, Tile));
-			Components.Add(new RecastSolidRenderer(this, _graphics, Tile.Terrain.NavMesh));
+			Components.Add(new TileRenderer(this));
+			if (Tile.Terrain.NavMesh != null)
+			{
+				Components.Add(new RecastSolidRenderer(this, _graphics, Tile.Terrain.NavMesh));
+			}
 			Components.Add(TriangleSelector = new GenericRenderer(this));
 
 			base.Initialize();
@@ -224,11 +210,12 @@ namespace WCell.Terrain.GUI
 			effect.DirectionalLight1.DiffuseColor = new Vector3(0.1f, 0.1f, 0.1f);
 			effect.DirectionalLight1.Direction = Vector3.Normalize(new Vector3(-1.0f, -1.0f, 1.0f));
 
-			GlobalIlluminationLevel = 2;
+			GlobalIlluminationLevel = 1.5f;
 
 
 			_vertexDeclaration = new VertexDeclaration(_graphics.GraphicsDevice, VertexPositionNormalColored.VertexElements);
 		}
+		#endregion
 
 		/// <summary>
 		/// UnloadContent will be called once per game and is the place to unload
@@ -236,7 +223,6 @@ namespace WCell.Terrain.GUI
 		/// </summary>
 		protected override void UnloadContent()
 		{
-			// TODO: Unload any non ContentManager content here
 		}
 
 		#region Update & Draw
@@ -296,7 +282,7 @@ namespace WCell.Terrain.GUI
 		/// <param name="gameTime">Provides a snapshot of timing values.</param>
 		protected override void Draw(GameTime gameTime)
 		{
-			_graphics.GraphicsDevice.Clear(Color.Black);
+			_graphics.GraphicsDevice.Clear(Color.DeepSkyBlue);
 			//tree.Draw();
 			_graphics.GraphicsDevice.VertexDeclaration = _vertexDeclaration;
 
@@ -635,7 +621,6 @@ namespace WCell.Terrain.GUI
 		}
 		#endregion
 
-
 		private void ToggleSolidRenderingMode()
 		{
 			if (solidRenderingMode)
@@ -654,6 +639,32 @@ namespace WCell.Terrain.GUI
 		private MainMenu menu;
 		private MenuItem renderingModeButton;
 		private bool solidRenderingMode = true;
+		private TreeView treeView;
+
+		public bool IsMenuVisible
+		{
+			get
+			{
+				return Form.Menu != null;
+			}
+			set
+			{
+				if (value == IsMenuVisible) return;
+
+				treeView.Visible = value;
+				if (value)
+				{
+					Form.Menu = menu;
+					GlobalIlluminationLevel -= 0.5f;		// dampen the light
+				}
+				else
+				{
+					Form.Menu = null;
+					GlobalIlluminationLevel += 0.5f;		// back to original illumination
+					RecenterMouse();
+				}
+			}
+		}
 
 		/// <summary>
 		/// Add some basic GUI controls
@@ -670,13 +681,72 @@ namespace WCell.Terrain.GUI
 
 			renderingModeButton = new MenuItem();
 			renderingModeButton.Click += ClickedRenderingModeButton;
+			menu.MenuItems.Add(renderingModeButton);
 			ClickedRenderingModeButton(null, null);
 
-			var exportRecastMeshButton = new MenuItem("Export Tile mesh");
-			exportRecastMeshButton.Click += ExportRecastMesh;
+			//var exportRecastMeshButton = new MenuItem("Export Tile mesh");
+			//exportRecastMeshButton.Click += ExportRecastMesh;
+			//menu.MenuItems.Add(exportRecastMeshButton);
 
-			menu.MenuItems.Add(renderingModeButton);
-			menu.MenuItems.Add(exportRecastMeshButton);
+
+			treeView = new TreeView();
+			treeView.Dock = DockStyle.Left;
+			treeView.DoubleClick += ClickedTreeView;
+			treeView.Width = 200;
+			treeView.Visible = IsMenuVisible;
+
+			// build list of zones
+			var zoneTileSets = ZoneBoundaries.GetZoneTileSets();
+			var zoneNodes = new Tuple<ZoneId, List<Point2D>>[(int)ZoneId.End];
+			for (var map = 0; map < zoneTileSets.Length; map++)
+			{
+				var tileSet = zoneTileSets[map];
+				if (tileSet == null || MapInfo.GetMapInfo((MapId) map) == null) continue;	// map does not exist
+
+				var children = new List<Tuple<ZoneId, List<Point2D>>>();
+				for (var x = 0; x < tileSet.ZoneGrids.GetUpperBound(0); x++)
+				{
+					for (var y = 0; y < tileSet.ZoneGrids.GetUpperBound(1); y++)
+					{
+						var grid = tileSet.ZoneGrids[x, y];
+						if (grid != null)
+						{
+							foreach (var zone in grid.GetAllZoneIds())
+							{
+								var node = zoneNodes[(int) zone];
+								var coords = new Point2D(x, y);
+								if (!WCellTerrainSettings.GetDefaultMPQFinder().FileExists(ADTReader.GetFilename((MapId) map, coords)))
+								{
+									// tile does not exist
+									continue;
+								}
+
+								if (node == null)
+								{
+									// Only add Zone node if it has at least one tile
+									children.Add(zoneNodes[(int) zone] = node = new Tuple<ZoneId, List<Point2D>>(zone, new List<Point2D>()));
+								}
+								node.Item2.Add(coords);
+							}
+						}
+					}
+				}
+
+
+				if (children.Count == 1 && ((MapId)map).ToString() == children[0].Item1.ToString())
+				{
+					// map is only a single zone: Ommit the map node
+					var tuple = children[0];
+					treeView.Nodes.Add(new ZoneTreeNode((MapId)map, tuple.Item1, tuple.Item2));
+				}
+				else
+				{
+					treeView.Nodes.Add(new MapTreeNode((MapId)map, children.ToArray().TransformArray(tuple =>
+							new ZoneTreeNode((MapId)map, tuple.Item1, tuple.Item2))));
+				}
+			}
+
+			Form.Controls.Add(treeView);
 		}
 
 		private void ClickedRenderingModeButton(object sender, EventArgs e)
@@ -693,9 +763,61 @@ namespace WCell.Terrain.GUI
 			}
 		}
 
-		private void ExportRecastMesh(object sender, EventArgs e)
+		private TextBox waitingBox;
+
+		private void ClickedTreeView(object sender, EventArgs e)
 		{
-			
+			var node = treeView.SelectedNode;
+			if (node is TileTreeNode)
+			{
+				var tnode = ((TileTreeNode)node);
+
+				// GUI stuff
+				IsMenuVisible = false;
+				if (waitingBox == null)
+				{
+					waitingBox = new TextBox();
+					waitingBox.Text = "Loading Tile - Please wait...";
+					waitingBox.Dock = DockStyle.Fill;
+					waitingBox.ForeColor = System.Drawing.Color.DarkGreen;
+					waitingBox.BackColor = System.Drawing.Color.Black;
+					waitingBox.Margin = new Padding(0, 0, 0, 0);
+					waitingBox.BorderStyle = BorderStyle.None;
+					waitingBox.TextAlign = HorizontalAlignment.Center;
+					Form.Controls.Add(waitingBox);
+				}
+				else
+				{
+					waitingBox.Visible = true;
+				}
+
+				// load new tile
+				Tile = TerrainViewerProgram.GetOrCreateTile(tnode.Map, tnode.Coords);
+
+				// reset renderers
+				foreach (var component in Components)
+				{
+					if (component is RendererBase)
+					{
+						((RendererBase)component).Clear();
+					}
+				}
+
+				// update node
+				tnode.BackColor = System.Drawing.Color.White;
+
+				// reset GUI
+				waitingBox.Visible = false;
+
+				// update avatar
+				var topRight = Tile.Bounds.TopRight;
+				var bottomLeft = Tile.Bounds.BottomLeft;
+				avatarPosition = new Vector3(topRight.X, topRight.Y, 200);
+				XNAUtil.TransformWoWCoordsToXNACoords(ref avatarPosition);
+
+
+				avatarYaw = 45;
+			}
 		}
 		#endregion
 

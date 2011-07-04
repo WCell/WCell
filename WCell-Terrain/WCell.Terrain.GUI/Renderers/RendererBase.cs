@@ -14,13 +14,14 @@ namespace WCell.Terrain.GUI.Renderers
 
         protected VertexPositionNormalColored[] _cachedVertices;
         protected int[] _cachedIndices;
+    	protected VertexDeclaration _vertexDeclaration;
 
         public RendererBase(Game game)
             : base(game)
         {
         }
 
-        private VertexPositionNormalColored[] RenderingVerticies
+        public VertexPositionNormalColored[] RenderingVerticies
         {
             get
             {
@@ -33,7 +34,7 @@ namespace WCell.Terrain.GUI.Renderers
             }
         }
 
-        private int[] RenderingIndices
+		public int[] RenderingIndices
         {
             get
             {
@@ -69,6 +70,19 @@ namespace WCell.Terrain.GUI.Renderers
             base.Draw(gameTime);
         }
 
-        protected abstract void BuildVerticiesAndIndicies();
+
+		public override void Initialize()
+		{
+			base.Initialize();
+
+			_vertexDeclaration = new VertexDeclaration(GraphicsDevice, VertexPositionNormalColored.VertexElements);
+		}
+
+		public virtual void Clear()
+		{
+			_renderCached = false;
+		}
+
+		protected abstract void BuildVerticiesAndIndicies();
     }
 }

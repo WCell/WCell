@@ -1,6 +1,7 @@
 //test
 using System;
 using WCell.Constants;
+using WCell.Constants.World;
 using WCell.Terrain.GUI.Util;
 using WCell.MPQTool.StormLibWrapper;
 using WCell.Terrain.MPQ;
@@ -49,27 +50,43 @@ namespace WCell.Terrain.GUI
 			NativeMethods.InitAPI();
 
 			var defaultTileId = TileIdentifier.DefaultTileIdentifier;
-			var useExtractedData = TerrainGUIConfig.UseExtractedData;
+
+			var tile = GetOrCreateTile(defaultTileId.MapId, defaultTileId);
+			
+
+			AvatarPosition = new Vector3(TerrainConstants.CenterPoint - (defaultTileId.X + 1)*TerrainConstants.TileSize,
+			                             TerrainConstants.CenterPoint - (defaultTileId.Y)*TerrainConstants.TileSize,
+			                             100.0f);
+
+			XNAUtil.TransformWoWCoordsToXNACoords(ref AvatarPosition);
 
 
-			var start = DateTime.Now;
+			Console.WriteLine("All data has been loaded - Starting GUI...");
 
+			//new RecastRunner(TerrainManager).Start();
+			StartDefaultViewer(tile);
+		}
+
+		public static TerrainTile GetOrCreateTile(MapId map, Point2D coords)
+		{
 			Console.Write("Trying to load simple tile... ");
-			var tile = SimpleTerrain.LoadTile(defaultTileId.MapId, defaultTileId);
+			var tile = SimpleTerrain.LoadTile(map, coords);
 
 			if (tile == null)
 			{
 				// load it the slow way
+
+				var start = DateTime.Now;
 				Console.WriteLine();
 				Console.Write("Tile could not be found - Decompressing...");
-				tile = WDT.LoadTile(defaultTileId.MapId, defaultTileId);
+				tile = WDT.LoadTile(map, coords);
 				if (tile == null)
 				{
 					throw new ArgumentException(string.Format(
 						"Could not read tile (Map: {0} at ({1}, {2})" +
-						defaultTileId.MapId,
-						defaultTileId.X,
-						defaultTileId.Y));
+						map,
+						coords.X,
+						coords.Y));
 				}
 
 				Console.WriteLine("Done - Loading time: {0:0.000}s", (DateTime.Now - start).TotalSeconds);
@@ -85,19 +102,9 @@ namespace WCell.Terrain.GUI
 			}
 
 			var terrain = tile.Terrain;
-			terrain.GetOrCreateNavMesh(tile);
+			//terrain.GetOrCreateNavMesh(tile);
 
-			AvatarPosition = new Vector3(TerrainConstants.CenterPoint - (defaultTileId.X + 1)*TerrainConstants.TileSize,
-			                             TerrainConstants.CenterPoint - (defaultTileId.Y)*TerrainConstants.TileSize,
-			                             100.0f);
-
-			XNAUtil.TransformWoWCoordsToXNACoords(ref AvatarPosition);
-
-
-			Console.WriteLine("All data has been loaded - Starting GUI...");
-
-			//new RecastRunner(TerrainManager).Start();
-			StartDefaultViewer(tile);
+			return tile;
 		}
 
 		private static void StartDefaultViewer(TerrainTile tile)

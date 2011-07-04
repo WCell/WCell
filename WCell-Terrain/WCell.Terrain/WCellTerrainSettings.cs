@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using WCell.Constants;
+using WCell.MPQTool;
 using WCell.Terrain.Recast;
 using WCell.Util.Variables;
 
@@ -27,6 +28,11 @@ namespace WCell.Terrain
 	public static class WCellTerrainSettings
 	{
 		private static ITerrainConfiguration config;
+
+		public static MPQFinder GetDefaultMPQFinder()
+		{
+			return MPQFinder.GetDefaultFinder(WoWPath);
+		}
 
 		public static ITerrainConfiguration Config
 		{

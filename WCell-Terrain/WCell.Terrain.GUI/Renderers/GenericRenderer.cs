@@ -95,8 +95,10 @@ namespace WCell.Terrain.GUI.Renderers
 			_cachedIndices[i+2] = v+2;
 		}
 
-		public void Clear()
+		public override void Clear()
 		{
+			base.Clear();
+
 			Array.Resize(ref _cachedVertices, 0);
 			Array.Resize(ref _cachedIndices, 0);
 		}

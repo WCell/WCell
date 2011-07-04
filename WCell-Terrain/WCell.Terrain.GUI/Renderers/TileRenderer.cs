@@ -1,18 +1,13 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using WCell.Terrain.Collision;
 using WCell.Terrain.GUI.Util;
-using WCell.Terrain.MPQ;
-using WCell.Util.Graphics;
 using Color = Microsoft.Xna.Framework.Graphics.Color;
-using Ray = Microsoft.Xna.Framework.Ray;
-using Vector2 = Microsoft.Xna.Framework.Vector2;
 using Vector3 = Microsoft.Xna.Framework.Vector3;
 
 namespace WCell.Terrain.GUI.Renderers
 {
-	class TileRenderer : DrawableGameComponent
+	class TileRenderer : RendererBase
 	{
 		private const bool DrawLiquids = false;
 		private static Color TerrainColor
@@ -27,21 +22,10 @@ namespace WCell.Terrain.GUI.Renderers
 			get { return Color.Blue; }
 		}
 
-		/// <summary>
-		/// Boolean variable representing if all the rendering data has been cached.
-		/// </summary>
-		private bool _renderCached;
 
-		private VertexPositionNormalColored[] _cachedVertices;
-		private int[] _cachedIndices;
-
-		private VertexDeclaration _vertexDeclaration;
-
-
-		public TileRenderer(Game game, TerrainTile tile)
+		public TileRenderer(Game game)
 			: base(game)
 		{
-			Tile = tile;
 		}
 
 		public TerrainTile Tile
@@ -50,63 +34,13 @@ namespace WCell.Terrain.GUI.Renderers
 			private set;
 		}
 
-		public override void Initialize()
-		{
-			base.Initialize();
-
-			_vertexDeclaration = new VertexDeclaration(GraphicsDevice, VertexPositionNormalColored.VertexElements);
-		}
-
-		public override void Draw(GameTime gameTime)
-		{
-			var vertices = GetRenderingVerticies();
-			var indices = GetRenderingIndices();
-
-			GraphicsDevice.VertexDeclaration = _vertexDeclaration;
-			GraphicsDevice.DrawUserIndexedPrimitives(
-				PrimitiveType.TriangleList,
-				vertices,
-				0, // vertex buffer offset to add to each element of the index buffer
-				vertices.Length, // number of vertices to draw
-				indices,
-				0, // first index element to read
-				indices.Length / 3 // number of primitives to draw
-				);
-
-			base.Draw(gameTime);
-		}
-
-		private VertexPositionNormalColored[] GetRenderingVerticies()
-		{
-			if (_renderCached)
-			{
-				return _cachedVertices;
-			}
-
-			BuildVerticiesAndIndicies();
-			return _cachedVertices;
-		}
-
-		private int[] GetRenderingIndices()
-		{
-			if (_renderCached)
-			{
-				return _cachedIndices;
-			}
-
-			BuildVerticiesAndIndicies();
-			return _cachedIndices;
-		}
-
 		#region Build polygons
-		void AddRenderVertex(VertexPositionNormalColored vertex)
-		{
-			
-		}
-
-		private void BuildVerticiesAndIndicies()
+		protected override void BuildVerticiesAndIndicies()
 		{
 			// Cycle through each ADT
+			var viewer = (TerrainViewer) Game;
+			Tile = viewer.Tile;
+
 			var tempVertices = new List<VertexPositionNormalColored>();
 			var tempIndicies = new List<int>();
 			var offset = 0;

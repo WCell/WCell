@@ -99,7 +99,7 @@
     <Compile Include="Tools\MapBoundaryUtil.cs" />
     <Compile Include="Tools\MapBoundaryWriter.cs" />
     <Compile Include="Tools\ZoneGridWriter.cs" />
-    <Compile Include="Tools\ZoneTileSetReader.cs" />
+    <Compile Include="Tools\ZoneBoundaryWriter.cs" />
     <Compile Include="MPQ\DBC\MapDBCEntry.cs" />
     <Compile Include="MPQ\WDT.cs" />
     <Compile Include="MPQ\WDTHeader.cs" />

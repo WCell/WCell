@@ -10,7 +10,8 @@ namespace WCell.MPQTool
     public class MPQFinder
     {
     	private static MPQFinder defaultFinder;
-		public static MPQFinder GetDefaultFinder(string wowPath)
+
+    	public static MPQFinder GetDefaultFinder(string wowPath)
 		{
 			if (defaultFinder == null)
 			{
