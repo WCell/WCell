@@ -197,18 +197,17 @@ dtNavMesh* buildMesh(InputGeom* geom, BuildContext* ctx)
 
 	memset(&cfg, 0, sizeof(rcConfig));
 	
-	//cfg.cs = 0.6;							// cell size is a sort of resolution -> the bigger the faster
-	cfg.cs = 0.7f;
+	cfg.cs = 0.3;							// cell size is a sort of resolution -> the bigger the faster
 	cfg.ch = 0.27f;							// cell height -> distance from mesh to ground, if too low, recast will not build essential parts of the mesh for some reason
 	cfg.walkableSlopeAngle = 50;			// this does not magically add anything, if set very high
 	cfg.walkableClimb = 1.5f;				// how high the agent can climb in one step
-	cfg.walkableHeight = 0.5f;				// minimum space to ceiling
-	cfg.walkableRadius = 0.5f;				// minimum distance to objects
-	cfg.tileSize = (1600/3.0f) / 8;			// 8x8 navmesh tiles per actual tile
-	cfg.maxEdgeLen = 20.0f / cfg.cs;
+	cfg.walkableHeight = 1.0f;				// minimum space to ceiling
+	cfg.walkableRadius = 1.0f;				// minimum distance to objects
+	cfg.tileSize = 256;
+	cfg.maxEdgeLen = 12.0f / cfg.cs;
 	cfg.maxSimplificationError = 1.3f;
 	cfg.minRegionArea = (int)rcSqr(8);		// Note: area = size*size
-	cfg.mergeRegionArea = (int)rcSqr(8);	// Note: area = size*size
+	cfg.mergeRegionArea = (int)rcSqr(20);	// Note: area = size*size
 	cfg.maxVertsPerPoly = 6;
 	cfg.detailSampleDist = cfg.cs * 9;
 	cfg.detailSampleMaxError = cfg.ch * 1.0f;
@@ -263,7 +262,24 @@ dtNavMesh* buildMesh(InputGeom* geom, BuildContext* ctx)
 	const float tcs = cfg.tileSize*cfg.cs;
 
 	ctx->startTimer(RC_TIMER_TEMP);
+	
+		
+	// fix some configuration values
+	cfg.walkableHeight = (int)ceilf(cfg.walkableHeight / cfg.ch);
+	cfg.walkableClimb = (int)floorf(cfg.walkableClimb / cfg.ch);
+	cfg.walkableRadius = (int)ceilf(cfg.walkableRadius / cfg.cs);
+	cfg.borderSize = cfg.walkableRadius + 3;				// Reserve enough padding.
+	cfg.width = cfg.tileSize + cfg.borderSize*2;
+	cfg.height = cfg.tileSize + cfg.borderSize*2;
+	
+	rcVcopy(cfg.bmin, bmin);
+	rcVcopy(cfg.bmax, bmax);
+	cfg.bmin[0] -= cfg.borderSize*cfg.cs;
+	cfg.bmin[2] -= cfg.borderSize*cfg.cs;
+	cfg.bmax[0] += cfg.borderSize*cfg.cs;
+	cfg.bmax[2] += cfg.borderSize*cfg.cs;
 
+	// start building individual tiles
 	for (int y = 0; y < th; ++y)
 	{
 		for (int x = 0; x < tw; ++x)
@@ -318,21 +334,6 @@ unsigned char* buildTileMesh(const int tx, const int ty,
 	const int nverts = geom->getMesh()->getVertCount();
 	const int ntris = geom->getMesh()->getTriCount();
 	const rcChunkyTriMesh* chunkyMesh = geom->getChunkyMesh();
-		
-	// fix some configuration values
-	cfg.walkableHeight = (int)ceilf(cfg.walkableHeight / cfg.ch);
-	cfg.walkableClimb = (int)floorf(cfg.walkableClimb / cfg.ch);
-	cfg.walkableRadius = (int)ceilf(cfg.walkableRadius / cfg.cs);
-	cfg.borderSize = cfg.walkableRadius + 3;				// Reserve enough padding.
-	cfg.width = cfg.tileSize + cfg.borderSize*2;
-	cfg.height = cfg.tileSize + cfg.borderSize*2;
-	
-	rcVcopy(cfg.bmin, bmin);
-	rcVcopy(cfg.bmax, bmax);
-	cfg.bmin[0] -= cfg.borderSize*cfg.cs;
-	cfg.bmin[2] -= cfg.borderSize*cfg.cs;
-	cfg.bmax[0] += cfg.borderSize*cfg.cs;
-	cfg.bmax[2] += cfg.borderSize*cfg.cs;
 	
 	// Reset build times gathering.
 	ctx->resetTimers();
@@ -657,6 +658,8 @@ void saveMesh(const char* path, const dtNavMesh* mesh)
 
 	fclose(fp);
 }
+
+
 
 dtNavMesh* loadMesh(const char* path)
 {

@@ -130,6 +130,7 @@ namespace WCell.Terrain.GUI
 		}
 		#endregion
 
+
 		#region Initialization
 		/// <summary>
 		/// Executes a console command.

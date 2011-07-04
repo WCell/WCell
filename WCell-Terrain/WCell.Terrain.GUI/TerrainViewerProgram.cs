@@ -102,7 +102,7 @@ namespace WCell.Terrain.GUI
 			}
 
 			var terrain = tile.Terrain;
-			//terrain.GetOrCreateNavMesh(tile);
+			terrain.GetOrCreateNavMesh(tile);
 
 			return tile;
 		}

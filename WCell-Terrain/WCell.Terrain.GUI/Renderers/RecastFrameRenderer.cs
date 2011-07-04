@@ -29,7 +29,7 @@ namespace WCell.Terrain.GUI.Renderers
 
 			if (_graphics != null)
 			{
-				_graphics.GraphicsDevice.RenderState.DepthBias = 16;
+				_graphics.GraphicsDevice.RenderState.DepthBias = 5;
 				_graphics.GraphicsDevice.RenderState.FillMode = FillMode.Solid;
 			}
 
