@@ -1181,7 +1181,7 @@ namespace WCell.RealmServer.Entities
 			{
 				actions[btnIndex] = (byte)(action & 0x0000FF);
 				actions[btnIndex + 1] = (byte)((action & 0x00FF00) >> 8);
-				actions[btnIndex + 2] = (byte)((action & 0xFF000) >> 16);
+				actions[btnIndex + 2] = (byte)((action & 0xFF0000) >> 16);
 				actions[btnIndex + 3] = type;
 			}
 
@@ -1189,6 +1189,23 @@ namespace WCell.RealmServer.Entities
 			{
 				CharacterHandler.SendActionButtons(this);
 			}
+		}
+
+		public uint GetActionFromActionButton(int buttonIndex)
+		{
+			var actions = CurrentSpecProfile.ActionButtons;
+			buttonIndex = buttonIndex * 4;
+
+			var action = BitConverter.ToUInt32(actions, buttonIndex);
+			action = action & 0x00FFFFFF;
+
+			return action;
+		}
+
+		public byte GetTypeFromActionButton(int buttonIndex)
+		{
+			buttonIndex = buttonIndex * 4;
+			return CurrentSpecProfile.ActionButtons[buttonIndex + 3];
 		}
 
 		/// <summary>

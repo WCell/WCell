@@ -723,6 +723,39 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
+		public void RemoveSummonedEntourage()
+		{
+			if (Minions != null)
+			{
+				foreach (var minion in Minions.Where(minion => minion != null))
+				{
+					if (minion.Summon != EntityId.Zero)
+					{
+						var summon = Map.GetObject(minion.Summon);
+						if (summon != null)
+							summon.Delete();
+						minion.Summon = EntityId.Zero;
+					}
+					minion.RemoveFromMap();
+					minion.Delete();
+				}
+			}
+
+			if (Totems == null) return;
+
+			foreach (var totem in Totems.Where(totem => totem != null))
+			{
+				if(totem.Summon != EntityId.Zero)
+				{
+					var summon = Map.GetObject(totem.Summon);
+					if(summon != null)
+						summon.Delete();
+					totem.Summon = EntityId.Zero;
+				}
+				totem.Delete();
+			}
+		}
+
 		#region GOs
 		public bool OwnsGo(GOEntryId goId)
 		{

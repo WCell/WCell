@@ -252,6 +252,7 @@
     <Compile Include="Spells\Auras\Misc\MirrorImageHandler.cs" />
     <Compile Include="Spells\Effects\PlayMusic.cs" />
     <Compile Include="Spells\Effects\ScriptEffect.cs" />
+    <Compile Include="Spells\Effects\SummonAllTotems.cs" />
     <Compile Include="Spells\Effects\TeachFlightPath.cs" />
     <Compile Include="Spells\Effects\WMOChange.cs" />
     <Compile Include="Spells\Effects\WMODamage.cs" />

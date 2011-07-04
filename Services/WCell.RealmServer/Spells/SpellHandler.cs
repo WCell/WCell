@@ -503,6 +503,7 @@ namespace WCell.RealmServer.Spells
 			SpellEffectCreators[(int)SpellEffectType.SelfResurrect] = (cast, effect) => new SelfResurrectEffectHandler(cast, effect);							// 94
 			SpellEffectCreators[(int)SpellEffectType.Skinning] = (cast, effect) => new SkinningEffectHandler(cast, effect);										// 95
 			SpellEffectCreators[(int)SpellEffectType.Charge] = (cast, effect) => new ChargeEffectHandler(cast, effect);											// 96
+			SpellEffectCreators[(int)SpellEffectType.SummonAllTotems] = (cast, effect) => new SummonAllTotemsHandler(cast, effect);								// 97
 			SpellEffectCreators[(int)SpellEffectType.KnockBack] = (cast, effect) => new KnockBackEffectHandler(cast, effect);									// 98
 			SpellEffectCreators[(int)SpellEffectType.Disenchant] = (cast, effect) => new DisenchantEffectHandler(cast, effect);									// 99
 			SpellEffectCreators[(int)SpellEffectType.Inebriate] = (cast, effect) => new Inebriate(cast, effect);												// 100
