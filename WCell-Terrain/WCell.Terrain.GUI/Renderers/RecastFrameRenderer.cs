@@ -14,7 +14,7 @@ namespace WCell.Terrain.GUI.Renderers
 	/// </summary>
 	public class RecastSolidRenderer : RecastRendererBase
 	{
-		private static Color MeshPolyColor { get { return Color.WhiteSmoke; } }
+		private static Color MeshPolyColor { get { return new Color(65, 50, 50); } }
 
 		public RecastSolidRenderer(Game game, GraphicsDeviceManager graphics, NavMesh mesh)
 			: base(game, mesh)

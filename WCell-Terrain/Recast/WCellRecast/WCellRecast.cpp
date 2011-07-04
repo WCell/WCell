@@ -97,6 +97,8 @@ int __cdecl buildMeshFromFile(int userId, const char* inputFilename, const char*
 
 		memcpy(&allVerts[v], tile->verts, tile->header->vertCount * sizeof(float) * 3);
 
+		int vc = v/3;
+
 		// iterate polygons
 		for (int j = 0; j < tile->header->polyCount; j++) {
 			int absolutePolyIndex = p+j;
@@ -108,9 +110,7 @@ int __cdecl buildMeshFromFile(int userId, const char* inputFilename, const char*
 			for (int k = 0; k < poly.vertCount; k++) {
 				int absolutePolyVertIndex = polyIndexOffset + k;
 
-				polyVerts[absolutePolyVertIndex] = p + poly.verts[k];
-
-				assert(p == tilePolyIndexOffsets[i]);
+				polyVerts[absolutePolyVertIndex] = vc + poly.verts[k];
 
 				// find absolute index of neighbor poly
 				unsigned short neiRef = poly.neis[k];
@@ -148,6 +148,8 @@ int __cdecl buildMeshFromFile(int userId, const char* inputFilename, const char*
 		v += tile->header->vertCount * 3;
 		p += tile->header->polyCount;
 	}
+	
+	assert(v/3 == vertCount);
 
 
 	callback(
@@ -199,14 +201,14 @@ dtNavMesh* buildMesh(InputGeom* geom, BuildContext* ctx)
 
 	memset(&cfg, 0, sizeof(rcConfig));
 	
-	cfg.cs = 0.5;							// cell size is a sort of resolution -> the bigger the faster
+	cfg.cs = 0.4;							// cell size is a sort of resolution -> the bigger the faster
 	cfg.ch = 0.27f;							// cell height -> distance from mesh to ground, if too low, recast will not build essential parts of the mesh for some reason
-	cfg.walkableSlopeAngle = 50;			// this does not magically add anything, if set very high
-	cfg.walkableClimb = 1.5f;				// how high the agent can climb in one step
+	cfg.walkableSlopeAngle = 60;			// this does not magically add anything, if set very high
+	cfg.walkableClimb = 3.0f;				// how high the agent can climb in one step
 	cfg.walkableHeight = 1.0f;				// minimum space to ceiling
 	cfg.walkableRadius = 1.0f;				// minimum distance to objects
-	cfg.tileSize = 256;
-	cfg.maxEdgeLen = 12.0f / cfg.cs;
+	cfg.tileSize = 192;
+	cfg.maxEdgeLen = 16.0f / cfg.cs;
 	cfg.maxSimplificationError = 1.3f;
 	cfg.minRegionArea = (int)rcSqr(8);		// Note: area = size*size
 	cfg.mergeRegionArea = (int)rcSqr(20);	// Note: area = size*size
