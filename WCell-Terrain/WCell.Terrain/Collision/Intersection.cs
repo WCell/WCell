@@ -761,35 +761,90 @@ namespace WCell.Terrain.Collision
 			return (((vector.Y >= 0f) && (vector.Z >= 0f)) && ((vector.Y + vector.Z) <= 1f));
 		}
 
-		public static bool RayTriangleIntersect(Ray r, Vector3 vert0, Vector3 vert1, Vector3 vert2, out float distance)
+		/// <summary>
+		/// Checks whether the given ray *hits the front face* of the given triangle 
+		/// </summary>
+		public static bool RayTriangleIntersect(Ray r, Vector3 t1, Vector3 t2, Vector3 t3, out float distance)
 		{
 			distance = 0f;
-			var vector = vert1 - vert0;
-			var vector2 = vert2 - vert0;
-			var vector4 = Vector3.Cross(r.Direction, vector2);
-			var num = Vector3.Dot(vector, vector4);
-			if (num > -1E-05f)
+			var s1 = t2 - t1;
+			var s2 = t3 - t1;
+			var vector4 = Vector3.Cross(r.Direction, s2);
+			var num = Vector3.Dot(s1, vector4);
+			if (num > -1E-05f)		// check that ray is above s2 segment
 			{
 				return false;
 			}
 			var num2 = 1f / num;
-			var vector3 = r.Position - vert0;
+			var vector3 = r.Position - t1;
 			var num3 = Vector3.Dot(vector3, vector4) * num2;
 			if ((num3 < -0.001f) || (num3 > 1.001f))
 			{
 				return false;
 			}
-			var vector5 = Vector3.Cross(vector3, vector);
+			var vector5 = Vector3.Cross(vector3, s1);
 			var num4 = Vector3.Dot(r.Direction, vector5) * num2;
 			if ((num4 < -0.001f) || ((num3 + num4) > 1.001f))
 			{
 				return false;
 			}
-			distance = Vector3.Dot(vector2, vector5) * num2;
+			distance = Vector3.Dot(s2, vector5) * num2;
 			if (distance <= 0f)
 			{
 				return false;
 			}
+			return true;
+		}
+
+		/// <summary>
+		/// Intersects a ray with the given triangle
+		/// I think it does not currently work?
+		/// </summary>
+		/// <param name="dist">The distance of the given point</param>
+		public static bool RayTriangleIntersect2(Ray ray, Triangle tri, out float dist)
+		{
+			// See http://www.cs.princeton.edu/courses/archive/fall00/cs426/lectures/raycast/sld017.htm
+			var normal = tri.CalcNormalizedNormal();
+			var d = Vector3.Dot(normal, tri.Point1);
+			dist = -(Vector3.Dot(ray.Position, normal) + d) / (Vector3.Dot(ray.Direction, normal));
+
+			if (float.IsNaN(dist) || dist < 0)
+			{
+				// no intersection
+				return false;
+			}
+
+			// intersection point
+			var p = ray.Position + ray.Direction * dist;
+
+			// See http://www.cs.princeton.edu/courses/archive/fall00/cs426/lectures/raycast/sld018.htm
+
+			var n1 = Vector3.Cross(tri.Point1 - ray.Position, tri.Point2 - ray.Position);
+			n1.Normalize();
+			var d1 = -Vector3.Dot(ray.Position, n1);
+			if (Vector3.Dot(p, n1) + d1 < 0)
+			{
+				return false;
+			}
+
+			var n2 = Vector3.Cross(tri.Point2 - ray.Position, tri.Point3 - ray.Position);
+			n2.Normalize();
+			var d2 = -Vector3.Dot(ray.Position, n2);
+			if (Vector3.Dot(p, n2) + d2 < 0)
+			{
+				return false;
+			}
+
+			var n3 = Vector3.Cross(tri.Point3 - ray.Position, tri.Point1 - ray.Position);
+			n3.Normalize();
+			var d3 = -Vector3.Dot(ray.Position, n3);
+			if (Vector3.Dot(p, n3) + d3 < 0)
+			{
+				return false;
+			}
+			
+
+
 			return true;
 		}
 
@@ -1022,7 +1077,7 @@ namespace WCell.Terrain.Collision
 			// clamp
 			if (t < 0.0f) t = 0.0f;
 			else if (t > 1.0f) t = 1.0f;
-			
+
 			return segmentA + (AB * t);
 		}
 	}

@@ -195,12 +195,16 @@ namespace WCell.Terrain.Recast.NavMesh
 			{
 			    var poly = polys[i] = new NavMeshPolygon();
 			    var polyIndexCount = pIndexCounts[i];
-			    poly.Indices = new int[polyIndexCount];
+				poly.Indices = new int[polyIndexCount];
+
+				Debug.Assert(3 == polyIndexCount);
+
 			    for (var j = 0; j < polyIndexCount; j++)
 			    {
 			    	var idx = (int) pIndices[polyEdgeIndex + j];
 					indices[p++] = idx;
 			        poly.Indices[j] = idx;
+
 			        Debug.Assert(poly.Indices[j] >= 0 && poly.Indices[j] < vertCount);
 			    }
 
@@ -213,13 +217,66 @@ namespace WCell.Terrain.Recast.NavMesh
 			{
 			    var poly = polys[i];
 			    var polyIndexCount = pIndexCounts[i];
-			    poly.Neighbors = new NavMeshPolygon[polyIndexCount];
+				poly.Neighbors = new int[polyIndexCount];
+				var a = poly.Indices[0];
+				var b = poly.Indices[1];
+				var c = poly.Indices[2];
+
 			    for (var j = 0; j < polyIndexCount; j++)
 			    {
 			        var neighbor = (int)pNeighbors[polyEdgeIndex + j];
 			        if (neighbor == -1) continue;
 
-			        poly.Neighbors[j] = polys[neighbor];
+			        var neighborPoly = polys[neighbor];
+					
+					// sort the neighbor poly into the array of neighbors, correctly
+					var a2 = neighborPoly.Indices[0];
+					var b2 = neighborPoly.Indices[1];
+					var c2 = neighborPoly.Indices[2];
+
+					var nCount = 0;
+					var mask = 0;
+					if (a == a2 || a == b2 || a == c2)
+					{
+						// some vertex matches the first vertex of the triangle
+						nCount++;
+						mask |= WCellTerrainConstants.TrianglePointA;
+					}
+					if (b == a2 || b == b2 || b == c2)
+					{
+						// some vertex matches the second vertex of the triangle
+						nCount++;
+						mask |= WCellTerrainConstants.TrianglePointB;
+					}
+					if (c == a2 || c == b2 || c == c2)
+					{
+						// some vertex matches the third vertex of the triangle
+						nCount++;
+						mask |= WCellTerrainConstants.TrianglePointC;
+					}
+
+					if (nCount == 2)
+					{
+						// we have a neighbor
+						switch (mask)
+						{
+							case WCellTerrainConstants.ABEdgeMask:
+								// neighbor shares a and b
+								poly.Neighbors[WCellTerrainConstants.ABEdgeIndex] = neighbor;
+								break;
+							case WCellTerrainConstants.ACEdgeMask:
+								// second shares a and c
+								poly.Neighbors[WCellTerrainConstants.ACEdgeIndex] = neighbor;
+								break;
+							case WCellTerrainConstants.BCEdgeMask:
+								// neighbor shares b and c
+								poly.Neighbors[WCellTerrainConstants.BCEdgeIndex] = neighbor;
+								break;
+							default:
+								throw new Exception("Two neighboring polygons don't share an edge");
+
+						}
+					}
 			    }
 
 			    polyEdgeIndex += polyIndexCount;

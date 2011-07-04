@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Windows.Forms;
 using Microsoft.Xna.Framework;
@@ -121,13 +122,15 @@ namespace WCell.Terrain.GUI
 			private set
 			{
 				m_Tile = value;
-				Form.Text = string.Format("TerrainViewer - {0} (Tile X={1}, Y={2})", value.Terrain.MapId, value.TileX, value.TileY);
+				Form.Invoke(new Action(() =>
+					Form.Text = string.Format("TerrainViewer - {0} (Tile X={1}, Y={2})", 
+									value.Terrain.MapId, value.TileX, value.TileY)));
 			}
 		}
 
 		public IShape Shape
 		{
-			get { return Terrain.NavMesh;  }
+			get { return Terrain.NavMesh; }
 		}
 
 		/// <summary>
@@ -384,6 +387,7 @@ namespace WCell.Terrain.GUI
 				System.Console.WriteLine("Open!");
 			}
 
+			// movement
 			if (keyboardState.IsKeyDown(Keys.A) || (gamePadState.DPad.Left == ButtonState.Pressed))
 			{
 				// move left
@@ -419,18 +423,18 @@ namespace WCell.Terrain.GUI
 				v.Normalize();
 
 				var newPos = avatarPosition + v * ForwardSpeed;
-				Ray ray;
 				var canMove = true;
-				if (GetRayToCursor(out ray))
-				{
-					// something is in front of us
-					float dist;
-					if (Tile.FindFirstHitTriangle(ray, out dist) != -1)
-					{
-						// stop moving, if too close
-						canMove = dist > CollisionDistance;
-					}
-				}
+				//Ray ray;
+				//if (GetRayToCursor(out ray))
+				//{
+				//    // collision test
+				//    float dist;
+				//    if (Tile.FindFirstHitTriangle(ray, out dist) != -1)
+				//    {
+				//        // stop moving, if we run against something
+				//        canMove = dist > CollisionDistance;
+				//    }
+				//}
 				if (canMove)
 				{
 					avatarPosition = newPos;
@@ -456,14 +460,6 @@ namespace WCell.Terrain.GUI
 				avatarPosition.Y = avatarPosition.Y + 1;
 			}
 
-			if (keyboardState.IsKeyDown(Keys.T))
-			{
-				_thirdPersonReference.Y = _thirdPersonReference.Y - 0.25f;
-			}
-			if (keyboardState.IsKeyDown(Keys.G))
-			{
-				_thirdPersonReference.Y = _thirdPersonReference.Y + 0.25f;
-			}
 
 			// adjust speed
 			if (keyboardState.IsKeyDown(Keys.OemPlus))
@@ -475,6 +471,7 @@ namespace WCell.Terrain.GUI
 				ForwardSpeed = Math.Max(ForwardSpeed - 0.1f, 0.1f);
 			}
 
+			// menu
 			if (keyboardState.IsKeyDown(Keys.Escape))
 			{
 				if (!escapeDown)
@@ -489,6 +486,44 @@ namespace WCell.Terrain.GUI
 			}
 
 
+			// highlight
+			if (keyboardState.IsKeyDown(Keys.H))
+			{
+				HighlightSurroundings(100);
+			}
+
+			if (keyboardState.IsKeyDown(Keys.T) && TriangleSelector.RenderingVerticies.Length > 2)
+			{
+				// test intersection with the first selected triangle
+				var t = new Triangle(TriangleSelector.RenderingVerticies[0].Position.ToWCell(),
+									 TriangleSelector.RenderingVerticies[1].Position.ToWCell(),
+									 TriangleSelector.RenderingVerticies[2].Position.ToWCell());
+
+				XNAUtil.TransformXnaCoordsToWoWCoords(ref t.Point1);
+				XNAUtil.TransformXnaCoordsToWoWCoords(ref t.Point2);
+				XNAUtil.TransformXnaCoordsToWoWCoords(ref t.Point3);
+
+				Ray ray;
+				GetRayToCursor(out ray);
+				float distance;
+				if (Intersection.RayTriangleIntersect(ray, t.Point1, t.Point2, t.Point3, out distance))
+				{
+					Console.WriteLine("Hit - Distance: " + distance);
+				}
+				else
+				{
+					Console.WriteLine("No hit");
+				}
+			}
+
+			// clear
+			if (keyboardState.IsKeyDown(Keys.C))
+			{
+				ClearSelection();
+			}
+
+
+			// mouse
 			if (mouseState.LeftButton == ButtonState.Pressed && !mouseLeftButtonDown)
 			{
 				// select polygon
@@ -503,12 +538,11 @@ namespace WCell.Terrain.GUI
 					if (selectedPoints.Count >= 2)
 					{
 						// clear
-						selectedPoints.Clear();
-						TriangleSelector.Clear();
+						ClearSelection();
 					}
 					else
 					{
-						// select
+						// select a path
 						SelectOnPath();
 					}
 				}
@@ -519,6 +553,36 @@ namespace WCell.Terrain.GUI
 				mouseLeftButtonDown = false;
 			}
 		}
+
+		/// <summary>
+		/// Clears all currently selected triangles
+		/// </summary>
+		private void ClearSelection()
+		{
+			selectedPoints.Clear();
+			TriangleSelector.Clear();
+		}
+
+		private void HighlightSurroundings(float distance)
+		{
+			Ray ray;
+			if (GetRayToCursor(out ray))
+			{
+				foreach (var trii in Shape.GetPotentialColliders(ray))
+				{
+					var tri = Shape.GetTriangle(trii);
+					foreach (var vert in tri.Vertices)
+					{
+						var pos = ray.Position;
+						if (vert.GetDistance(pos) < distance)
+						{
+							SelectTriangle(trii, true);
+						}
+					}
+				}
+			}
+		}
+
 		#endregion
 
 		#region Mouse selection
@@ -583,14 +647,14 @@ namespace WCell.Terrain.GUI
 			}
 
 			//var index = shape.FindFirstHitTriangle(ray);
-			var index = Utility.Random(Shape.Indices.Length/3);
+			var index = Utility.Random(Shape.Indices.Length / 3);
 			if (index != -1)
 			{
 				// mark the selected triangle
 				SelectTriangle(index, add);
 
 				// also mark it's neighbors
-				var neighbors = Shape.GetEdgeNeighborsOf(index);
+				var neighbors = Shape.GetNeighborsOf(index);
 				foreach (var neighbor in neighbors)
 				{
 					SelectTriangle(neighbor, true);
@@ -672,6 +736,8 @@ namespace WCell.Terrain.GUI
 		private MenuItem renderingModeButton;
 		private bool solidRenderingMode = true;
 		private TreeView treeView;
+		private TextBox waitingBox;
+		readonly BackgroundWorker worker = new BackgroundWorker();
 
 		public bool IsMenuVisible
 		{
@@ -683,7 +749,7 @@ namespace WCell.Terrain.GUI
 			{
 				if (value == IsMenuVisible) return;
 
-				treeView.Visible = value;
+				SetTreeViewVisible(value);
 				if (value)
 				{
 					Form.Menu = menu;
@@ -696,6 +762,18 @@ namespace WCell.Terrain.GUI
 					RecenterMouse();
 				}
 			}
+		}
+
+		private void SetTreeViewVisible(bool value)
+		{
+			if (treeView.Parent == null)
+			{
+				// did not add treeview yet
+				if (worker.IsBusy) return;		// did not finish treeview yet
+
+				Form.Controls.Add(treeView);
+			}
+			treeView.Visible = value;
 		}
 
 		/// <summary>
@@ -718,14 +796,22 @@ namespace WCell.Terrain.GUI
 			//exportRecastMeshButton.Click += ExportRecastMesh;
 			//menu.MenuItems.Add(exportRecastMeshButton);
 
-
+			// build treeview asynchronously
 			treeView = new TreeView();
 			treeView.Dock = DockStyle.Left;
 			treeView.DoubleClick += ClickedTreeView;
 			treeView.Width = 200;
-			treeView.Visible = IsMenuVisible;
 
-			// build list of zones
+			GetOrCreateWaitingBox("Loading zone list...").Visible = true;
+			worker.DoWork += DoBuildTreeView;
+			worker.RunWorkerCompleted += OnTreeViewBuilt;
+
+			worker.RunWorkerAsync();
+		}
+
+		void DoBuildTreeView(object sender, DoWorkEventArgs e)
+		{
+			// build list of maps, zones & tiles
 			var zoneTileSets = ZoneBoundaries.GetZoneTileSets();
 			var zoneNodes = new Tuple<ZoneId, List<Point2D>>[(int)ZoneId.End];
 			for (var map = 0; map < zoneTileSets.Length; map++)
@@ -775,8 +861,21 @@ namespace WCell.Terrain.GUI
 							new ZoneTreeNode((MapId)map, tuple.Item1, tuple.Item2))));
 				}
 			}
+		}
 
-			Form.Controls.Add(treeView);
+		void OnTreeViewBuilt(object sender, EventArgs args)
+		{
+			// fix visibility
+			waitingBox.Visible = false;
+			treeView.Visible = IsMenuVisible;
+			if (IsMenuVisible)
+			{
+				Form.Controls.Add(treeView);
+			}
+
+			// remove events
+			worker.DoWork -= DoBuildTreeView;
+			worker.RunWorkerCompleted -= OnTreeViewBuilt;
 		}
 
 		private void ClickedRenderingModeButton(object sender, EventArgs e)
@@ -793,62 +892,81 @@ namespace WCell.Terrain.GUI
 			}
 		}
 
-		private TextBox waitingBox;
+
+		private Control GetOrCreateWaitingBox(string text)
+		{
+			if (waitingBox == null)
+			{
+				waitingBox = new TextBox();
+				waitingBox.Dock = DockStyle.Bottom;
+				waitingBox.ForeColor = System.Drawing.Color.DarkGreen;
+				waitingBox.BackColor = System.Drawing.Color.Black;
+
+				waitingBox.Margin = new Padding(0, 0, 0, 0);
+				waitingBox.BorderStyle = BorderStyle.None;
+				waitingBox.TextAlign = HorizontalAlignment.Center;
+				waitingBox.HideSelection = true;
+				waitingBox.Enabled = false;
+				waitingBox.GotFocus += (a, b) => waitingBox.Select(0, 0);
+				waitingBox.LostFocus += (a, b) => waitingBox.Select(0, 0);
+				waitingBox.Leave += (a, b) => waitingBox.Select(0, 0);
+				waitingBox.Click += (a, b) => waitingBox.Select(0, 0);
+
+				Form.Controls.Add(waitingBox);
+			}
+
+			waitingBox.Text = text;
+			return waitingBox;
+		}
 
 		private void ClickedTreeView(object sender, EventArgs e)
 		{
 			var node = treeView.SelectedNode;
-			if (node is TileTreeNode)
+			if (node is TileTreeNode && !worker.IsBusy)
 			{
 				var tnode = ((TileTreeNode)node);
 
 				// GUI stuff
 				IsMenuVisible = false;
-				if (waitingBox == null)
-				{
-					waitingBox = new TextBox();
-					waitingBox.Text = "Loading Tile - Please wait...";
-					waitingBox.Dock = DockStyle.Fill;
-					waitingBox.ForeColor = System.Drawing.Color.DarkGreen;
-					waitingBox.BackColor = System.Drawing.Color.Black;
-					waitingBox.Margin = new Padding(0, 0, 0, 0);
-					waitingBox.BorderStyle = BorderStyle.None;
-					waitingBox.TextAlign = HorizontalAlignment.Center;
-					Form.Controls.Add(waitingBox);
-				}
-				else
-				{
-					waitingBox.Visible = true;
-				}
 
-				// load new tile
-				Tile = TerrainViewerProgram.GetOrCreateTile(tnode.Map, tnode.Coords);
-
-				// reset renderers
-				foreach (var component in Components)
-				{
-					if (component is RendererBase)
+				GetOrCreateWaitingBox("Loading tile - Please wait...").Visible = true;
+				worker.DoWork += (send0r, args) =>
 					{
-						((RendererBase)component).Clear();
-					}
-				}
 
-				// update node
-				tnode.BackColor = System.Drawing.Color.White;
+						// load new tile
+						Tile = TerrainViewerProgram.GetOrCreateTile(tnode.Map, tnode.Coords);
+					};
 
-				// reset GUI
-				waitingBox.Visible = false;
+				worker.RunWorkerCompleted += (a, b) =>
+					{
+						// update node
+						tnode.BackColor = System.Drawing.Color.White;
 
-				// update avatar
-				var topRight = Tile.Bounds.TopRight;
-				var bottomLeft = Tile.Bounds.BottomLeft;
-				avatarPosition = new Vector3(topRight.X, topRight.Y, 200);
-				XNAUtil.TransformWoWCoordsToXNACoords(ref avatarPosition);
+						// reset renderers
+						foreach (var component in Components)
+						{
+							if (component is RendererBase)
+							{
+								((RendererBase)component).Clear();
+							}
+						}
 
+						// reset GUI
+						waitingBox.Visible = false;
 
-				avatarYaw = 45;
+						// update avatar
+						var topRight = Tile.Bounds.TopRight;
+						var bottomLeft = Tile.Bounds.BottomLeft;
+						avatarPosition = new Vector3(topRight.X, topRight.Y, 200);
+						XNAUtil.TransformWoWCoordsToXNACoords(ref avatarPosition);
+
+						avatarYaw = 45;
+					};
+
+				worker.RunWorkerAsync();
 			}
 		}
+
 		#endregion
 
 		#region DrawBoundingBox

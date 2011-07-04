@@ -345,6 +345,15 @@ namespace WCell.Util.Graphics
 			return vector;
 		}
 
+		public static Vector3 operator -(Vector3 a, float scalar)
+		{
+			a.X = a.X - scalar;
+			a.Y = a.Y - scalar;
+			a.Z = a.Z - scalar;
+
+			return a;
+		}
+
 		public static Vector3 operator +(Vector3 a, Vector3 b)
 		{
 			Vector3 vector;
@@ -353,6 +362,15 @@ namespace WCell.Util.Graphics
 			vector.Z = a.Z + b.Z;
 
 			return vector;
+		}
+
+		public static Vector3 operator +(Vector3 a, float scalar)
+		{
+			a.X = a.X + scalar;
+			a.Y = a.Y + scalar;
+			a.Z = a.Z + scalar;
+
+			return a;
 		}
 
 		public static Vector3 operator *(Vector3 a, Vector3 b)

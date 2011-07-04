@@ -36,5 +36,32 @@ namespace WCell.Util.Graphics
 			}
 		}
 
+		public IEnumerable<Vector3> Vertices
+		{
+			get
+			{
+				yield return Point1;
+				yield return Point2;
+				yield return Point3;
+			}
+		}
+
+		/// <summary>
+		/// Computes the normal of this triangle *without normalizing it*
+		/// </summary>
+		public Vector3 CalcNormal()
+		{
+			return Vector3.Cross(Point3 - Point1, Point2 - Point1);
+		}
+
+		/// <summary>
+		/// Computes the normalized normal of this triangle
+		/// </summary>
+		public Vector3 CalcNormalizedNormal()
+		{
+			var normal = Vector3.Cross(Point3 - Point1, Point2 - Point1);
+			normal.Normalize();
+			return normal;
+		}
 	}
 }

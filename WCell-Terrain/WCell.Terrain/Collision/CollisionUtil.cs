@@ -66,99 +66,19 @@ namespace WCell.Terrain.Collision
 
 			var triangle = -1;
 
-			var verts = shape.Vertices;
-			var indices = shape.Indices;
-			foreach (var tri in shape.GetPotentialColliders(selectRay))
+			foreach (var trii in shape.GetPotentialColliders(selectRay))
 			{
-				// we are assuming that each shape only stores triangles which are 3 consecutive indices
-				var vec0 = verts[indices[tri]];
-				var vec1 = verts[indices[tri + 1]];
-				var vec2 = verts[indices[tri + 2]];
+				var tri = shape.GetTriangle(trii);
 
-				float time;
-				if (!Intersection.RayTriangleIntersect(selectRay, vec0, vec1, vec2, out time)) continue;
-				if (time > distance) continue;
+				float newDist;
+				if (!Intersection.RayTriangleIntersect(selectRay, tri.Point1, tri.Point2, tri.Point3, out newDist)) continue;
+				if (newDist > distance) continue;
 
-				distance = time;
-				triangle = tri;
+				distance = newDist;
+				triangle = trii;
 			}
 
 			return triangle;
-		}
-
-
-		/// <summary>
-		/// Any triangle that shares 2 vertices with the given triangle is a neighbor
-		/// </summary>
-		public static int[] GetEdgeNeighborsOf(this IShape shape, int triIndex)
-		{
-			var indices = shape.Indices;
-			var a = indices[triIndex++];
-			var b = indices[triIndex++];
-			var c = indices[triIndex];
-
-			var neighbors = new int[WCellTerrainConstants.NeighborsPerTriangle];
-
-			// fill with "invalid index"
-			for (var i = 0; i < WCellTerrainConstants.NeighborsPerTriangle; i++)
-			{
-				neighbors[i] = -1;
-			}
-
-			// TODO: Use a datastructure to cut down this search
-			for (var i = 0; i < indices.Length; i += 3)
-			{
-				if (i != triIndex)	// don't return itself
-				{
-					var a2 = indices[i];
-					var b2 = indices[i + 1];
-					var c2 = indices[i + 2];
-
-					var nCount = 0;
-					var mask = 0;
-					if (a == a2 || a == b2 || a == c2)
-					{
-						// some vertex matches the first vertex of the triangle
-						nCount++;
-						mask |= WCellTerrainConstants.TrianglePointA;
-					}
-					if (b == a2 || b == b2 || b == c2)
-					{
-						// some vertex matches the second vertex of the triangle
-						nCount++;
-						mask |= WCellTerrainConstants.TrianglePointB;
-					}
-					if (c == a2 || c == b2 || c == c2)
-					{
-						// some vertex matches the third vertex of the triangle
-						nCount++;
-						mask |= WCellTerrainConstants.TrianglePointC;
-					}
-
-					if (nCount == 2)
-					{
-						// we have a neighbor
-						switch (mask)
-						{
-							case WCellTerrainConstants.ABEdgeMask:
-								// neighbor shares a and b
-								neighbors[WCellTerrainConstants.ABEdgeIndex] = i;
-								break;
-							case WCellTerrainConstants.ACEdgeMask:
-								// second shares a and c
-								neighbors[WCellTerrainConstants.ACEdgeIndex] = i;
-								break;
-							case WCellTerrainConstants.BCEdgeMask:
-								// neighbor shares b and c
-								neighbors[WCellTerrainConstants.BCEdgeIndex] = i;
-								break;
-
-						}
-					}
-				}
-			}
-
-			return neighbors;
 		}
 	}
 
