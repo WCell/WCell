@@ -76,6 +76,7 @@
     <Compile Include="CollisionUtil.cs" />
     <Compile Include="Collision\AABB.cs" />
     <Compile Include="Collision\BSPTree\BSPTree.cs" />
+    <Compile Include="Collision\CollisionUtil.cs" />
     <Compile Include="Collision\ICollidable.cs" />
     <Compile Include="Collision\Intersection.cs" />
     <Compile Include="Collision\IShape.cs" />

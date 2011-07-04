@@ -14,7 +14,7 @@ namespace WCell.Terrain.Collision
         /// <summary>
         /// The List of Vectors that lie on the corners of this Shape.
         /// </summary>
-        List<Vector3> Vertices
+        Vector3[] Vertices
         {
             get;
         }
@@ -22,40 +22,16 @@ namespace WCell.Terrain.Collision
         /// <summary>
         /// The order in which the vertices should be rendered.
         /// </summary>
-        List<int> Indices
+		int[] Indices
         {
             get;
         }
 
-        /// <summary>
-        /// The normalized Normal vector to the surface of this shape
-        /// </summary>
-        Vector3 UnitNormal
-        {
-            get;
-        }
-
-        /// <summary>
-        /// The Vector that contains the minimum values of the vertices.
-        /// </summary>
-        Vector3 Min
-        {
-            get;
-        }
-
-        /// <summary>
-        /// The Vector that contains the maximum values of the vertices.
-        /// </summary>
-        Vector3 Max
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Does a Ray intersect with this Shape?
-        /// </summary>
-        /// <param name="ray">The Ray in question.</param>
-        /// <returns>True if they intersect.</returns>
-        float? IntersectsWith(Ray ray);
+		/// <summary>
+		/// A set of all indices of vertices that *could* get hit by the given ray.
+		/// It must not ommit any such vertex.
+		/// The returned set is desirable to be small however, to provide a better speed.
+		/// </summary>
+    	IEnumerable<int> GetPotentialColliders(Ray ray);
     }
 }

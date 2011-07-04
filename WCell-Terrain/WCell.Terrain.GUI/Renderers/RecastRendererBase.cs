@@ -8,16 +8,9 @@ namespace WCell.Terrain.GUI.Renderers
     {
         protected GraphicsDeviceManager _graphics;
 
-        public RecastRendererBase(Game game, NavMesh mesh)
+        public RecastRendererBase(Game game)
             : base(game)
         {
-			Mesh = mesh;
         }
-
-    	public NavMesh Mesh
-    	{
-    		get;
-			private set;
-    	}
     }
 }

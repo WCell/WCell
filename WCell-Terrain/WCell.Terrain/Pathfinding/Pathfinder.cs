@@ -15,11 +15,10 @@ namespace WCell.Terrain.Pathfinding
 	{
 		static readonly IComparer<SearchItem> comparer = new SearchItemComparer();
 
-		public readonly TerrainTile Tile;
+		public IShape Shape;
 
-		public Pathfinder(TerrainTile tile)
+		public Pathfinder()
 		{
-			Tile = tile;
 		}
 
 		public Vector3[] FindPathUnflavored(float actorHeight, Vector3 start, Vector3 destination)
@@ -58,17 +57,14 @@ namespace WCell.Terrain.Pathfinding
 
 		/// <summary>
 		/// TODO: Destination of local shortest path is the vertex before the next turn, not necessarily the final vertex
-		/// TODO: Find connections between triangles from different sets (i.e. heightmap and WMOs/M2s)
-		/// TODO: Only consider walkable tiles
 		/// TODO: Consider jumping
-		/// TODO: Ignore triangles with too low ceiling
 		/// TODO: Actor requirements on liquid (can actor only walk on ground or also in certain types of liquid?)
 		/// </summary>
 		public SearchItem FindPath(float actorHeight, Vector3 start, Vector3 destination,
 			out System.Collections.Generic.HashSet<int> visited)
 		{
-			var triStart = Tile.FindFirstTriangleUnderneath(start);
-			var triEnd = Tile.FindFirstTriangleUnderneath(destination);
+			var triStart = Shape.FindFirstTriangleUnderneath(start);
+			var triEnd = Shape.FindFirstTriangleUnderneath(destination);
 
 			if (triStart == -1 || triEnd == -1)
 			{
@@ -99,9 +95,8 @@ namespace WCell.Terrain.Pathfinding
 				current = fringe.DeleteMin();
 				
 				// get the vertices and neighbors of the current triangle
-				Triangle triangle;
-				Tile.GetTriangle(current.Triangle, out triangle);
-				var neighbors = Tile.GetEdgeNeighborsOf(current.Triangle);
+				Triangle triangle = Shape.GetTriangle(current.Triangle);
+				var neighbors = Shape.GetEdgeNeighborsOf(current.Triangle);
 
 				// iterate over all neighbors
 				for (var i = 0; i < WCellTerrainConstants.NeighborsPerTriangle; i++)

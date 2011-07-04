@@ -16,8 +16,8 @@ namespace WCell.Terrain.GUI.Renderers
 	{
 		private static Color MeshPolyColor { get { return new Color(65, 50, 50); } }
 
-		public RecastSolidRenderer(Game game, GraphicsDeviceManager graphics, NavMesh mesh)
-			: base(game, mesh)
+		public RecastSolidRenderer(Game game, GraphicsDeviceManager graphics)
+			: base(game)
 		{
 			_graphics = graphics;
 		}
@@ -44,10 +44,11 @@ namespace WCell.Terrain.GUI.Renderers
 
 		protected override void BuildVerticiesAndIndicies()
 		{
-			var vertices = Mesh.Vertices;
+			var mesh = ((TerrainViewer)Game).Terrain.NavMesh;
+			var vertices = mesh.Vertices;
 			List<int> indices;
 
-			Mesh.GetTriangles(out indices);
+			mesh.GetTriangles(out indices);
 
 			if (vertices.Length == 0 || indices.Count == 0) return;
 

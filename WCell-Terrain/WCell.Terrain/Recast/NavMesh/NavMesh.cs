@@ -1,19 +1,22 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using WCell.Terrain.Collision;
 using WCell.Util.Graphics;
 
 namespace WCell.Terrain.Recast.NavMesh
 {
-	public class NavMesh
+	public class NavMesh : IShape
 	{
 		public const ushort ExternalLinkId = 0x8000;
 
 		public readonly Terrain Terrain;
 
-		public NavMesh(Terrain terrain, NavMeshPolygon[] polys, Vector3[] vertices)
+		public NavMesh(Terrain terrain, NavMeshPolygon[] polys, Vector3[] vertices, int[] indices)
 		{
 			Terrain = terrain;
 			Polygons = polys;
 			Vertices = vertices;
+			Indices = indices;
 		}
 
 		public NavMeshPolygon[] Polygons
@@ -24,8 +27,22 @@ namespace WCell.Terrain.Recast.NavMesh
 
 		public Vector3[] Vertices
 		{
-			get; 
+			get;
 			private set;
+		}
+
+		public int[] Indices
+		{
+			get;
+			private set;
+		}
+
+		public IEnumerable<int> GetPotentialColliders(Ray ray)
+		{
+			for (var i = 0; i < Indices.Length; i += 3)
+			{
+				yield return i;
+			}
 		}
 
 		#region Not Implemented Yet

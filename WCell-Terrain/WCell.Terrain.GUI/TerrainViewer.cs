@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using WCell.Constants.World;
 using WCell.MPQTool;
+using WCell.Terrain.Collision;
 using WCell.Terrain.GUI.UI;
 using WCell.Terrain.GUI.Util;
 using WCell.Terrain.GUI.Renderers;
@@ -77,6 +78,7 @@ namespace WCell.Terrain.GUI
 
 		private Pathfinder pathfinder;
 		private float globalIlluminationLevel;
+		private TerrainTile m_Tile;
 
 		/// <summary>
 		/// Constructor for the game.
@@ -91,7 +93,6 @@ namespace WCell.Terrain.GUI
 			avatarYaw = 90;
 
 			Tile = tile;
-			pathfinder = new Pathfinder(Tile);
 		}
 
 		#region Properties
@@ -108,10 +109,19 @@ namespace WCell.Terrain.GUI
 			}
 		}
 
+		public Terrain Terrain
+		{
+			get { return Tile.Terrain; }
+		}
+
 		public TerrainTile Tile
 		{
-			get;
-			private set;
+			get { return m_Tile; }
+			private set
+			{
+				m_Tile = value;
+				Form.Text = string.Format("TerrainViewer - {0} (Tile X={1}, Y={2})", Terrain.MapId, Tile.TileX, Tile.TileY);
+			}
 		}
 
 		/// <summary>
@@ -184,7 +194,7 @@ namespace WCell.Terrain.GUI
 			Components.Add(new TileRenderer(this));
 			if (Tile.Terrain.NavMesh != null)
 			{
-				Components.Add(new RecastSolidRenderer(this, _graphics, Tile.Terrain.NavMesh));
+				Components.Add(new RecastSolidRenderer(this, _graphics));
 			}
 			Components.Add(TriangleSelector = new GenericRenderer(this));
 
@@ -511,11 +521,21 @@ namespace WCell.Terrain.GUI
 				// Outside of current map
 				return;
 			}
-			selectedPoints.Add(Tile.IntersectFirstTriangle(ray));
+
+			var shape = Terrain.NavMesh;
+			WCell.Util.Graphics.Vector3 v;
+			if (shape.IntersectFirstTriangle(ray, out v) == -1) return;
+
+			selectedPoints.Add(v);
 
 			if (selectedPoints.Count > 1)
 			{
 				var visited = new HashSet<int>();
+				if (pathfinder == null)
+				{
+					pathfinder = new Pathfinder();
+				}
+				pathfinder.Shape = shape;
 				var current = pathfinder.FindPath(1, selectedPoints[0], selectedPoints[1], out visited);
 
 				if (current.IsNull) return;
@@ -703,7 +723,7 @@ namespace WCell.Terrain.GUI
 			for (var map = 0; map < zoneTileSets.Length; map++)
 			{
 				var tileSet = zoneTileSets[map];
-				if (tileSet == null || MapInfo.GetMapInfo((MapId) map) == null) continue;	// map does not exist
+				if (tileSet == null || MapInfo.GetMapInfo((MapId)map) == null) continue;	// map does not exist
 
 				var children = new List<Tuple<ZoneId, List<Point2D>>>();
 				for (var x = 0; x < tileSet.ZoneGrids.GetUpperBound(0); x++)
@@ -715,9 +735,9 @@ namespace WCell.Terrain.GUI
 						{
 							foreach (var zone in grid.GetAllZoneIds())
 							{
-								var node = zoneNodes[(int) zone];
+								var node = zoneNodes[(int)zone];
 								var coords = new Point2D(x, y);
-								if (!WCellTerrainSettings.GetDefaultMPQFinder().FileExists(ADTReader.GetFilename((MapId) map, coords)))
+								if (!WCellTerrainSettings.GetDefaultMPQFinder().FileExists(ADTReader.GetFilename((MapId)map, coords)))
 								{
 									// tile does not exist
 									continue;
@@ -726,7 +746,7 @@ namespace WCell.Terrain.GUI
 								if (node == null)
 								{
 									// Only add Zone node if it has at least one tile
-									children.Add(zoneNodes[(int) zone] = node = new Tuple<ZoneId, List<Point2D>>(zone, new List<Point2D>()));
+									children.Add(zoneNodes[(int)zone] = node = new Tuple<ZoneId, List<Point2D>>(zone, new List<Point2D>()));
 								}
 								node.Item2.Add(coords);
 							}

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.InteropServices;
 using WCell.Constants;
 using WCell.Util.Graphics;
+using WCell.Terrain.Collision;
 
 namespace WCell.Terrain.Recast.NavMesh
 {
@@ -83,7 +83,7 @@ namespace WCell.Terrain.Recast.NavMesh
 
 		/// <summary>
 		/// Builds the mesh for a single tile.
-		/// NOTE: This overrides the Terrain's NavMesh property.
+		/// NOTE: This sets the Terrain's NavMesh property.
 		/// In order to move between tiles, we need to generate one mesh for the entire map
 		/// </summary>
 		public void BuildMesh(TerrainTile tile)
@@ -95,7 +95,8 @@ namespace WCell.Terrain.Recast.NavMesh
 			ExportRecastInputMesh(tile, inputMeshFile);
 
 			// let recast to build the navmesh and then call our callback
-			if (!File.Exists(navMeshFile))
+			var isNew = !File.Exists(navMeshFile);
+			if (isNew)
 			{
 				Console.Write("Building new NavMesh - This will take a while...");
 			}
@@ -110,12 +111,37 @@ namespace WCell.Terrain.Recast.NavMesh
 			{
 				throw new Exception("Could not build mesh for tile " + tileName + " in map " + Terrain.MapId);
 			}
-			
-			if (!File.Exists(navMeshFile))
+
+			if (isNew)
 			{
 				Console.WriteLine("Done in {0:0.000}s", (DateTime.Now - start).TotalSeconds);
 			}
-		}
+
+			//// move all vertices above the surface
+			//var mesh = tile.Terrain.NavMesh;
+			//for (var i = 0; i < mesh.Vertices.Length; i++)
+			//{
+			//    var vert = mesh.Vertices[i];
+			//    vert.Z += 0.001f;
+			//    var ray = new Ray(vert, Vector3.Down);	// see if vertex is above surface
+			//    var hit = tile.FindFirstHitTriangle(ray);
+			//    if (hit == -1)
+			//    {
+			//        vert.Z -= 0.001f;
+
+			//        // vertex is below surface
+			//        ray = new Ray(vert, Vector3.Up);	// find surface right above mesh
+			//        hit = tile.FindFirstHitTriangle(ray);
+			//        if (hit != -1)
+			//        {
+			//            // set vertex height equal to terrain
+			//            var tri = tile.GetTriangle(hit);
+			//            var plane = new Plane(tri.Point1, tri.Point2, tri.Point3);
+			//            Intersection.LineSegmentIntersectsPlane(ray.Position, ray.Direction, plane, out mesh.Vertices[i]);
+			//        }
+			//    }
+			//}
+		} 
 
 		/// <summary>
 		/// Put it all together
@@ -152,6 +178,7 @@ namespace WCell.Terrain.Recast.NavMesh
 
 
 			// create vertices array
+			var indices = new int[totalPolyIndexCount];
 			var vertCount = vertComponentCount / 3;
 			var vertices = new Vector3[vertCount];
 			for (int i = 0, v = 0; i < vertCount; i++, v += 3)
@@ -163,6 +190,7 @@ namespace WCell.Terrain.Recast.NavMesh
 			// polygon first pass -> Create polygons
 			var polys = new NavMeshPolygon[polyCount];
 			var polyEdgeIndex = 0;
+			var p = 0;
 			for (var i = 0; i < polyCount; i++)
 			{
 			    var poly = polys[i] = new NavMeshPolygon();
@@ -170,7 +198,9 @@ namespace WCell.Terrain.Recast.NavMesh
 			    poly.Indices = new int[polyIndexCount];
 			    for (var j = 0; j < polyIndexCount; j++)
 			    {
-			        poly.Indices[j] = (int) pIndices[polyEdgeIndex + j];
+			    	var idx = (int) pIndices[polyEdgeIndex + j];
+					indices[p++] = idx;
+			        poly.Indices[j] = idx;
 			        Debug.Assert(poly.Indices[j] >= 0 && poly.Indices[j] < vertCount);
 			    }
 
@@ -196,7 +226,7 @@ namespace WCell.Terrain.Recast.NavMesh
 			}
 
 			// create new NavMesh object
-			Terrain.NavMesh = new NavMesh(Terrain, polys, vertices);
+			Terrain.NavMesh = new NavMesh(Terrain, polys, vertices, indices);
 		}
 	}
 }

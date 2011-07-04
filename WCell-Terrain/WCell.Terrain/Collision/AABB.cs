@@ -38,17 +38,6 @@ namespace WCell.Terrain.Collision
         /// Constructor
         ///</summary>
         ///<param name="shape">The IShape to place in this bounding box.</param>
-        public AABB(IShape shape, int id)
-        {
-            ContainedShape = shape;
-            Bounds = new BoundingBox(shape.Min, shape.Max);
-            Id = id;
-        }
-
-        public AABB(IShape shape) :this(shape, 0)
-        {
-        }
-
         public AABB(Vector3 min, Vector3 max)
         {
             Bounds = new BoundingBox(min, max);
