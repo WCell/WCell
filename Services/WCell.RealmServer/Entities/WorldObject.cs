@@ -415,12 +415,12 @@ namespace WCell.RealmServer.Entities
 			m_orientation = GetAngleTowards(pos);
 		}
 
-		public bool SetPosition(Vector3 pt)
+		public virtual bool SetPosition(Vector3 pt)
 		{
 			return m_Map.MoveObject(this, ref pt);
 		}
 
-		public bool SetPosition(Vector3 pt, float orientation)
+		public virtual bool SetPosition(Vector3 pt, float orientation)
 		{
 			if (m_Map.MoveObject(this, ref pt))
 			{

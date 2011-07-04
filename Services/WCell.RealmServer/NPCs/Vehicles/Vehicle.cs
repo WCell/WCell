@@ -9,6 +9,7 @@ using WCell.Constants.NPCs;
 using WCell.Constants.Updates;
 using WCell.Core;
 using WCell.RealmServer.NPCs.Spawns;
+using WCell.Util.Graphics;
 
 
 namespace WCell.RealmServer.NPCs.Vehicles
@@ -103,6 +104,32 @@ namespace WCell.RealmServer.NPCs.Vehicles
 		public Unit Driver
 		{
 			get { return m_Seats[0].Passenger; }
+		}
+
+		public override bool SetPosition(Vector3 pt)
+		{
+			var res = m_Map.MoveObject(this, ref pt);
+			foreach(var seat in m_Seats.Where(seat => seat != null && seat.Passenger != null))
+			{
+				res = seat.Passenger.SetPosition(pt);
+			}
+			return res;
+		}
+
+		public override bool SetPosition(Vector3 pt, float orientation)
+		{
+			if (m_Map.MoveObject(this, ref pt))
+			{
+				m_orientation = orientation;
+				var res = true;
+				foreach (var seat in m_Seats.Where(seat => seat != null && seat.Passenger != null))
+				{
+					res = seat.Passenger.SetPosition(pt);
+					seat.Passenger.Orientation = orientation;
+				}
+				return res;
+			}
+			return false;
 		}
 
 		public bool CanEnter(Unit unit)
