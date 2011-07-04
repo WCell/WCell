@@ -1,3 +1,4 @@
+using WCell.Constants.Factions;
 using WCell.Constants.Spells;
 using WCell.Core.Initialization;
 using WCell.RealmServer.NPCs;
@@ -18,6 +19,26 @@ namespace WCell.Addons.Default.NPCs
 		[DependentInitialization(typeof(NPCMgr))]
 		public static void FixNPCs()
 		{
+			var warhorseEntry = NPCMgr.GetEntry(NPCId.ArgentWarhorse_6);
+			var battleworgEntry = NPCMgr.GetEntry(NPCId.ArgentBattleworg_2);
+
+			battleworgEntry.HordeFactionId = warhorseEntry.AllianceFactionId = FactionTemplateId.Friendly;
+			warhorseEntry.HordeFactionId = battleworgEntry.AllianceFactionId = FactionTemplateId.Monster;
+
+			var battleworg = NPCMgr.GetEntry(NPCId.ArgentBattleworg);
+			if(battleworg != null)
+			{
+				battleworg.AllianceFactionId = FactionTemplateId.Monster;
+				battleworg.HordeFactionId = FactionTemplateId.Friendly;
+			}
+
+			var warhorse = NPCMgr.GetEntry(NPCId.ArgentWarhorse_5);
+			if (warhorse != null)
+			{
+				warhorse.AllianceFactionId = FactionTemplateId.Friendly;
+				warhorse.HordeFactionId = FactionTemplateId.Monster;
+			}
+
 			var tank = NPCMgr.GetEntry(NPCId.ReedsSteamTank);
 			if (tank != null)
 			{

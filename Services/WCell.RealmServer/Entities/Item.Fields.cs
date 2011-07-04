@@ -192,7 +192,7 @@ namespace WCell.RealmServer.Entities
 			}
 			set
 			{
-				if (value == 0)
+				if (value == 0 && m_record.Charges < 0)
 				{
 					Destroy();
 					return;

@@ -81,7 +81,7 @@ namespace WCell.RealmServer.NPCs
             id = GetInt32(rawData, 0);
             var vehicle = new VehicleEntry {
                 Id = GetUInt32(rawData,0),
-                Flags = GetUInt32(rawData,1),
+                Flags = (VehicleFlags)GetUInt32(rawData,1),
                 TurnSpeed = GetFloat(rawData,2),
                 PitchSpeed = GetFloat(rawData,3),
                 PitchMin = GetFloat(rawData,4),
@@ -118,7 +118,7 @@ namespace WCell.RealmServer.NPCs
             id = GetInt32(rawData, 0);
             var seat = new VehicleSeatEntry {
 				Id = GetUInt32(rawData, 0),
-                Flags = GetUInt32(rawData,1),
+                Flags = (VehicleSeatFlags)GetUInt32(rawData,1),
                 AttachmentId = GetInt32(rawData,2),
                 AttachmentOffset = new Vector3(
 					GetFloat(rawData,3),
@@ -150,7 +150,8 @@ namespace WCell.RealmServer.NPCs
                 PassengerYaw = GetFloat(rawData,29),
                 PassengerPitch = GetFloat(rawData,30),
                 PassengerRoll = GetFloat(rawData,31),
-                PassengerAttachmentId = GetInt32(rawData,32)
+                PassengerAttachmentId = GetInt32(rawData,32),
+				FlagsB = (VehicleSeatFlagsB)GetUInt32(rawData, 45)
             };
             return seat;
         }

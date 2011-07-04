@@ -17,7 +17,7 @@ namespace WCell.RealmServer.NPCs
 		/// <summary>
 		/// flag, position 1
 		/// </summary>
-		public uint Flags;
+		public VehicleFlags Flags;
 
 		/// <summary>
 		/// turn speed, position 2
@@ -78,7 +78,7 @@ namespace WCell.RealmServer.NPCs
 	{
 		public uint Id; //0
 
-		public uint Flags; //1
+		public VehicleSeatFlags Flags; //1
 
 		public int AttachmentId; //2
 
@@ -162,7 +162,7 @@ namespace WCell.RealmServer.NPCs
 
 		public int SkinId; //44
 
-		public uint FlagB; //45
+		public VehicleSeatFlagsB FlagsB; //45
 
         // custom
 

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using WCell.Constants;
 using WCell.Constants.Pets;
 using WCell.RealmServer.Entities;
 using WCell.Core.Network;
@@ -31,9 +32,12 @@ namespace WCell.RealmServer.NPCs.Vehicles
 		protected internal override void SetupNPC(NPCEntry entry, NPCSpawnPoint spawnPoint)
 		{
 			base.SetupNPC(entry, spawnPoint);
+			Entry.IsIdle = true;
 
 			NPCFlags = NPCFlags.SpellClick;
 			SetupSeats();
+
+			SetupMoveFlags();
 
 			AddMessage(() =>
 			{
@@ -43,19 +47,42 @@ namespace WCell.RealmServer.NPCs.Vehicles
 			});
 		}
 
+		private void SetupMoveFlags()
+		{
+			var flags = Entry.VehicleEntry.Flags;
+			if(flags.HasAnyFlag(VehicleFlags.PreventJumping))
+			{
+				MovementFlags2 |= MovementFlags2.PreventJumping;
+			}
+			if (flags.HasAnyFlag(VehicleFlags.PreventStrafe))
+			{
+				MovementFlags2 |= MovementFlags2.PreventStrafe;
+			}
+			if (flags.HasAnyFlag(VehicleFlags.FullSpeedTurning))
+			{
+				MovementFlags2 |= MovementFlags2.FullSpeedTurning;
+			}
+			if (flags.HasAnyFlag(VehicleFlags.AlwaysAllowPitching))
+			{
+				MovementFlags2 |= MovementFlags2.AlwaysAllowPitching;
+			}
+			if (flags.HasAnyFlag(VehicleFlags.FullSpeedPitching))
+			{
+				MovementFlags2 |= MovementFlags2.FullSpeedPitching;
+			}
+		}
+
 		private void SetupSeats()
 		{
 			var entries = m_entry.VehicleEntry.Seats;
 			m_Seats = new VehicleSeat[entries.Length];
 
-			var driver = true;
 			for (var i = 0; i < entries.Length; i++)
 			{
 				var entry = entries[i];
 				if (entry == null) continue;
 
-				m_Seats[i] = new VehicleSeat(this, entry, (byte)i, driver);
-				driver = false;
+				m_Seats[i] = new VehicleSeat(this, entry, (byte)i);
 				if (m_Seats[i].Entry.PassengerNPCId == 0) continue;
 
 				//copy locally (access to modified closure)
@@ -137,12 +164,15 @@ namespace WCell.RealmServer.NPCs.Vehicles
             return IsAtLeastNeutralWith(unit) && !IsFull;
 		}
 
-		public VehicleSeat GetFirstFreeSeat()
+		public VehicleSeat GetFirstFreeSeat(bool isCharacter)
 		{
 			for (var i = 0; i < m_Seats.Length; i++)
 			{
 				var seat = m_Seats[i];
-				if (seat != null && !seat.IsOccupied)
+				if(seat == null || (isCharacter && !seat.CharacterCanEnterOrExit))
+					continue;
+
+				if (!seat.IsOccupied)
 				{
 					return seat;
 				}
@@ -159,7 +189,7 @@ namespace WCell.RealmServer.NPCs.Vehicles
 			{
 				return null;
 			}
-			return GetFirstFreeSeat();
+			return GetFirstFreeSeat(unit is Character);
 		}
 
 		public void ClearAllSeats()
