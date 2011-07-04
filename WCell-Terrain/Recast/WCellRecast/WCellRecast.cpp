@@ -57,7 +57,9 @@ int __cdecl buildMeshFromFile(int userId, const char* inputFilename, const char*
 	// count sizes and offsets
 	unsigned int* tilePolyIndexOffsets = new unsigned int[mesh->getMaxTiles()];
 
-	for (int i = 0; i < mesh->getMaxTiles(); ++i)
+	int maxTiles = mesh->getMaxTiles();
+	//int maxTiles = 1;
+	for (int i = 0; i < maxTiles; ++i)
 	{
 		const dtMeshTile* tile = ((const dtNavMesh*)mesh)->getTile(i);
 		if (!tile || !tile->header || !tile->dataSize) continue;
@@ -88,7 +90,7 @@ int __cdecl buildMeshFromFile(int userId, const char* inputFilename, const char*
 
 	// copy data
 	// iterate tiles
-	for (int i = 0; i < mesh->getMaxTiles(); ++i)
+	for (int i = 0; i < maxTiles; ++i)
 	{
 		const dtMeshTile* tile = ((const dtNavMesh*)mesh)->getTile(i);
 		if (!tile || !tile->header || !tile->dataSize) continue;
@@ -197,7 +199,7 @@ dtNavMesh* buildMesh(InputGeom* geom, BuildContext* ctx)
 
 	memset(&cfg, 0, sizeof(rcConfig));
 	
-	cfg.cs = 0.3;							// cell size is a sort of resolution -> the bigger the faster
+	cfg.cs = 0.5;							// cell size is a sort of resolution -> the bigger the faster
 	cfg.ch = 0.27f;							// cell height -> distance from mesh to ground, if too low, recast will not build essential parts of the mesh for some reason
 	cfg.walkableSlopeAngle = 50;			// this does not magically add anything, if set very high
 	cfg.walkableClimb = 1.5f;				// how high the agent can climb in one step
@@ -208,7 +210,8 @@ dtNavMesh* buildMesh(InputGeom* geom, BuildContext* ctx)
 	cfg.maxSimplificationError = 1.3f;
 	cfg.minRegionArea = (int)rcSqr(8);		// Note: area = size*size
 	cfg.mergeRegionArea = (int)rcSqr(20);	// Note: area = size*size
-	cfg.maxVertsPerPoly = 6;
+	//cfg.maxVertsPerPoly = 6;
+	cfg.maxVertsPerPoly = 3;
 	cfg.detailSampleDist = cfg.cs * 9;
 	cfg.detailSampleMaxError = cfg.ch * 1.0f;
 
@@ -272,13 +275,6 @@ dtNavMesh* buildMesh(InputGeom* geom, BuildContext* ctx)
 	cfg.width = cfg.tileSize + cfg.borderSize*2;
 	cfg.height = cfg.tileSize + cfg.borderSize*2;
 	
-	rcVcopy(cfg.bmin, bmin);
-	rcVcopy(cfg.bmax, bmax);
-	cfg.bmin[0] -= cfg.borderSize*cfg.cs;
-	cfg.bmin[2] -= cfg.borderSize*cfg.cs;
-	cfg.bmax[0] += cfg.borderSize*cfg.cs;
-	cfg.bmax[2] += cfg.borderSize*cfg.cs;
-
 	// start building individual tiles
 	for (int y = 0; y < th; ++y)
 	{
@@ -334,6 +330,13 @@ unsigned char* buildTileMesh(const int tx, const int ty,
 	const int nverts = geom->getMesh()->getVertCount();
 	const int ntris = geom->getMesh()->getTriCount();
 	const rcChunkyTriMesh* chunkyMesh = geom->getChunkyMesh();
+
+	rcVcopy(cfg.bmin, bmin);
+	rcVcopy(cfg.bmax, bmax);
+	cfg.bmin[0] -= cfg.borderSize*cfg.cs;
+	cfg.bmin[2] -= cfg.borderSize*cfg.cs;
+	cfg.bmax[0] += cfg.borderSize*cfg.cs;
+	cfg.bmax[2] += cfg.borderSize*cfg.cs;
 	
 	// Reset build times gathering.
 	ctx->resetTimers();

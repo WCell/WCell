@@ -64,20 +64,6 @@ namespace WCell.Terrain.GUI.Renderers
 				tempIndicies.Add(index1);
 				tempIndicies.Add(index2);
 				tempIndicies.Add(index3);
-
-				var vertex1 = tempVertices[index1];
-				var vertex2 = tempVertices[index2];
-				var vertex3 = tempVertices[index3];
-
-				var normal = Vector3.Cross(vertex2.Position - vertex1.Position, vertex3.Position - vertex1.Position);
-
-				vertex1.Normal += normal;
-				vertex2.Normal += normal;
-				vertex3.Normal += normal;
-
-				tempVertices[index1] = vertex1;
-				tempVertices[index2] = vertex2;
-				tempVertices[index3] = vertex3;
 			}
 			offset = tempVertices.Count;
 

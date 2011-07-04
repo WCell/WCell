@@ -27,7 +27,7 @@ namespace WCell.Terrain.GUI.Renderers
             {
                 if (!_renderCached)
 				{
-					BuildVerticiesAndIndicies();
+					DoBuildVerticesAndIndices();
                 }
 
                 return _cachedVertices;
@@ -38,12 +38,6 @@ namespace WCell.Terrain.GUI.Renderers
         {
             get
             {
-                if (_renderCached)
-                {
-                    return _cachedIndices;
-                }
-
-                BuildVerticiesAndIndicies();
                 return _cachedIndices;
             }
         }
@@ -83,6 +77,32 @@ namespace WCell.Terrain.GUI.Renderers
 			_renderCached = false;
 		}
 
+		void DoBuildVerticesAndIndices()
+		{
+			BuildVerticiesAndIndicies();
+
+			// interpolate normals
+			for (var i = 0; i < _cachedIndices.Length; i += 3)
+			{
+				var index1 = _cachedIndices[i];
+				var index2 = _cachedIndices[i + 1];
+				var index3 = _cachedIndices[i + 2];
+
+				var vertex1 = _cachedVertices[index1];
+				var vertex2 = _cachedVertices[index2];
+				var vertex3 = _cachedVertices[index3];
+
+				var normal = Vector3.Cross(vertex2.Position - vertex1.Position, vertex3.Position - vertex1.Position);
+
+				vertex1.Normal += normal;
+				vertex2.Normal += normal;
+				vertex3.Normal += normal;
+
+				_cachedVertices[index1] = vertex1;
+				_cachedVertices[index2] = vertex2;
+				_cachedVertices[index3] = vertex3;
+			}
+		}
 		protected abstract void BuildVerticiesAndIndicies();
     }
 }

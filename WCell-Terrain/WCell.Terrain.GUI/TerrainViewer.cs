@@ -626,7 +626,8 @@ namespace WCell.Terrain.GUI
 		{
 			if (solidRenderingMode)
 			{
-				_graphics.GraphicsDevice.RenderState.CullMode = CullMode.CullClockwiseFace;
+				//_graphics.GraphicsDevice.RenderState.CullMode = CullMode.CullClockwiseFace;
+				_graphics.GraphicsDevice.RenderState.CullMode = CullMode.None;
 				_graphics.GraphicsDevice.RenderState.FillMode = FillMode.Solid;
 			}
 			else
