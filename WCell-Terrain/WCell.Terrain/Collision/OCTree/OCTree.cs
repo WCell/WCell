@@ -3,6 +3,11 @@ using WCell.Util.Graphics;
 
 namespace WCell.Terrain.Collision.OCTree
 {
+	/// <summary>
+	/// I don't know where this class comes from, but it seems like it was decompiled from somewhere.
+	/// Also, it takes forever to build even the simplest octree with only a few thousand triangles.
+	/// All in all: Useless?
+	/// </summary>
     public class OCTree
     {
         // Fields

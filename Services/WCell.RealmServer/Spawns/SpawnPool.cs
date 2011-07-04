@@ -94,7 +94,7 @@ namespace WCell.RealmServer.Spawns
 					}
 					else
 					{
-						// stop all spawning but don't remove spwaned NPCs from pool
+						// stop all spawning but don't remove spawned NPCs from pool
 						foreach (var spawn in m_spawnPoints)
 						{
 							spawn.StopTimer();

@@ -88,6 +88,8 @@ namespace WCell.Terrain.Recast.NavMesh
 					indices.Add(poly.Indices[j]);
 				}
 			}
+
+			Indices = indices.ToArray();
 		}
 	}
 }

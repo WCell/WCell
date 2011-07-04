@@ -736,7 +736,6 @@ namespace WCell.RealmServer.Entities
 							summon.Delete();
 						minion.Summon = EntityId.Zero;
 					}
-					minion.RemoveFromMap();
 					minion.Delete();
 				}
 			}

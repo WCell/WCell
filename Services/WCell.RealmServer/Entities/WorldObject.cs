@@ -437,7 +437,14 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public Unit Master
 		{
-			get { return m_master != null && m_master.IsInWorld ? m_master : this as Unit; }
+			get
+			{
+				if (!m_master.IsInWorld)
+				{
+					m_master = null;
+				}
+				return m_master;
+			}
 			protected internal set
 			{
 				if (value != m_master)
@@ -475,7 +482,7 @@ namespace WCell.RealmServer.Entities
 
 		public bool HasMaster
 		{
-			get { return m_master != null && m_master != this; }
+			get { return Master != null && m_master != this; }
 		}
 
 		/// <summary>

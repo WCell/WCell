@@ -19,7 +19,12 @@ namespace WCell.Terrain.Collision.OCTree
         private readonly float WeldDelta;
 
         // Methods
-        public OCTreeBuilder(int maxPolygonsPerNode, int maxSubdivisions, bool makeSquare, float weldDelta, float expandBoundsFactor)
+    	public OCTreeBuilder(int maxPolygonsPerNode = 5000, int maxSubdivisions = 3, bool makeSquare = false, float expandBoundsFactor = 0.05f) : 
+			this(maxPolygonsPerNode, maxSubdivisions, makeSquare, 0.0001f, expandBoundsFactor)
+    	{
+    	}
+
+    	public OCTreeBuilder(int maxPolygonsPerNode, int maxSubdivisions, bool makeSquare, float weldDelta, float expandBoundsFactor)
         {
             var vectorArray = new[] { (Vector3.Up + Vector3.Forward) + Vector3.Left, (Vector3.Up + Vector3.Forward) + Vector3.Right, (Vector3.Up + Vector3.Backward) + Vector3.Left, (Vector3.Up + Vector3.Backward) + Vector3.Right, (Vector3.Down + Vector3.Forward) + Vector3.Left, (Vector3.Down + Vector3.Forward) + Vector3.Right, (Vector3.Down + Vector3.Backward) + Vector3.Left, (Vector3.Down + Vector3.Backward) + Vector3.Right };
             nodeOffsets = vectorArray;

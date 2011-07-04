@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Terra;
 using WCell.Constants;
 using WCell.Terrain.Collision;
+using WCell.Terrain.Collision.OCTree;
 using WCell.Terrain.MPQ;
 using WCell.Util;
 using WCell.Util.Graphics;
@@ -25,6 +26,7 @@ namespace WCell.Terrain
 		/// 
 		/// </summary>
 		private readonly Point2D coordinates;
+
 
 		public TerrainTile(Point2D coords, Terrain terrain)
 		{
@@ -88,7 +90,7 @@ namespace WCell.Terrain
 
 		public IEnumerable<int> GetPotentialColliders(Ray ray)
 		{
-			// TODO: Get colliding triangles (more efficiently)
+			// TODO: Get colliding triangles more efficiently
 
 			for (var i = 0; i < TerrainIndices.Length; i += 3)
 			{

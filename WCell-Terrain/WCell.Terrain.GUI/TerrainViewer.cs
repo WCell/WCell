@@ -92,6 +92,7 @@ namespace WCell.Terrain.GUI
 
 			avatarYaw = 90;
 
+			Form = (Form)Form.FromHandle(Window.Handle);
 			Tile = tile;
 		}
 
@@ -120,8 +121,13 @@ namespace WCell.Terrain.GUI
 			private set
 			{
 				m_Tile = value;
-				Form.Text = string.Format("TerrainViewer - {0} (Tile X={1}, Y={2})", Terrain.MapId, Tile.TileX, Tile.TileY);
+				Form.Text = string.Format("TerrainViewer - {0} (Tile X={1}, Y={2})", value.Terrain.MapId, value.TileX, value.TileY);
 			}
+		}
+
+		public IShape Shape
+		{
+			get { return Terrain.NavMesh;  }
 		}
 
 		/// <summary>
@@ -488,18 +494,23 @@ namespace WCell.Terrain.GUI
 				// select polygon
 				mouseLeftButtonDown = true;
 
-				//SelectPolygon();
-
-				if (selectedPoints.Count >= 2)
+				if (keyboardState.IsKeyDown(Keys.LeftControl))
 				{
-					// clear
-					selectedPoints.Clear();
-					TriangleSelector.Clear();
+					SelectPolygon();
 				}
 				else
 				{
-					// select
-					SelectOnPath();
+					if (selectedPoints.Count >= 2)
+					{
+						// clear
+						selectedPoints.Clear();
+						TriangleSelector.Clear();
+					}
+					else
+					{
+						// select
+						SelectOnPath();
+					}
 				}
 			}
 
@@ -522,9 +533,8 @@ namespace WCell.Terrain.GUI
 				return;
 			}
 
-			var shape = Terrain.NavMesh;
 			WCell.Util.Graphics.Vector3 v;
-			if (shape.IntersectFirstTriangle(ray, out v) == -1) return;
+			if (Shape.IntersectFirstTriangle(ray, out v) == -1) return;
 
 			selectedPoints.Add(v);
 
@@ -535,7 +545,7 @@ namespace WCell.Terrain.GUI
 				{
 					pathfinder = new Pathfinder();
 				}
-				pathfinder.Shape = shape;
+				pathfinder.Shape = Shape;
 				var current = pathfinder.FindPath(1, selectedPoints[0], selectedPoints[1], out visited);
 
 				if (current.IsNull) return;
@@ -572,14 +582,15 @@ namespace WCell.Terrain.GUI
 				return;
 			}
 
-			var index = Tile.FindFirstHitTriangle(ray);
+			//var index = shape.FindFirstHitTriangle(ray);
+			var index = Utility.Random(Shape.Indices.Length/3);
 			if (index != -1)
 			{
 				// mark the selected triangle
 				SelectTriangle(index, add);
 
 				// also mark it's neighbors
-				var neighbors = Tile.GetEdgeNeighborsOf(index);
+				var neighbors = Shape.GetEdgeNeighborsOf(index);
 				foreach (var neighbor in neighbors)
 				{
 					SelectTriangle(neighbor, true);
@@ -596,8 +607,7 @@ namespace WCell.Terrain.GUI
 		{
 			if (index == -1) return;
 
-			Triangle triangle;
-			Tile.GetTriangle(index, out triangle);
+			var triangle = Shape.GetTriangle(index);
 
 			// elevate them just a tiny bit, so they do not collide with the original triangle
 			triangle.Point1.Z += 0.0001f;
@@ -696,8 +706,6 @@ namespace WCell.Terrain.GUI
 			Console.WriteLine("");
 			Console.WriteLine("Help:");
 			Console.WriteLine("  Press ESCAPE to enter the menu");
-
-			Form = (Form)Form.FromHandle(Window.Handle);
 
 			menu = new MainMenu();
 

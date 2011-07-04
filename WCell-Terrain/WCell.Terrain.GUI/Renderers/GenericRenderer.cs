@@ -66,6 +66,7 @@ namespace WCell.Terrain.GUI.Renderers
 			}
 			else
 			{
+				v = i = 0;
 				_cachedVertices = new VertexPositionNormalColored[3];
 				_cachedIndices = new int[3];
 			}
