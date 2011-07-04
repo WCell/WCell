@@ -1182,8 +1182,11 @@ namespace WCell.RealmServer.Entities
 			// set to false so it can't be cancelled anymore
 			m_isLoggingOut = false;
 
-			// get rid of any totems and their summons
+			// get rid of any minions, totems and their summons
 			RemoveSummonedEntourage();
+
+			// jump out of vehicle
+			DetatchFromVechicle();
 
 			// remove from the channels they're in
 			for (var i = ChatChannels.Count - 1; i >= 0; i--)
