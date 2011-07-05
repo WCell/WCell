@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using C5;
 using WCell.Terrain.Collision;
+using WCell.Terrain.Recast.NavMesh;
 using WCell.Util.Graphics;
 
 namespace WCell.Terrain.Pathfinding
@@ -95,13 +96,17 @@ namespace WCell.Terrain.Pathfinding
 				// get the vertices and neighbors of the current triangle
 				Triangle triangle = Shape.GetTriangle(current.Triangle);
 				var neighbors = Shape.GetNeighborsOf(current.Triangle);
+				var poly = ((NavMesh)Shape).Polygons[current.Triangle / 3];
 
 				// iterate over all neighbors
 				for (var i = 0; i < WCellTerrainConstants.NeighborsPerTriangle; i++)
 				{
-					var neighbor = neighbors[i];
+					var neighbor = neighbors[i]*3;
 
-					if (neighbor == -1 || visited.Contains(neighbor)) continue;
+					if (neighbor < 0 || visited.Contains(neighbor)) continue;
+
+					var npoly = ((NavMesh) Shape).Polygons[neighbor/3];
+					var ntri = Shape.GetTriangle(neighbor);
 
 					visited.Add(neighbor);
 

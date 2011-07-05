@@ -7,7 +7,7 @@ namespace WCell.Util.Graphics
 	/// Defines a vector with three components.
 	/// </summary>
 	[StructLayout(LayoutKind.Explicit, Size = 12)]
-	public struct Vector3 : IEquatable<Vector3>
+	public struct Vector3 : IEquatable<Vector3>, IComparable<Vector3>
 	{
 		public static readonly Vector3 Zero = new Vector3(0f, 0f, 0f);
         public static readonly Vector3 One = new Vector3(1.0f, 1.0f, 1.0f);
@@ -622,7 +622,13 @@ namespace WCell.Util.Graphics
 		/// <returns>true if both vectors are equal; false otherwise</returns>
 		public bool Equals(Vector3 other)
 		{
-			return ((X == other.X) && (Y == other.Y) && (Z == other.Z));
+			var dx = Math.Abs(X - other.X);
+			var dy = Math.Abs(Y - other.Y);
+			var dz = Math.Abs(Z - other.Z);
+
+			return (dx < MathUtil.Epsilonf && 
+					dy < MathUtil.Epsilonf &&
+					dz < MathUtil.Epsilonf);
 		}
 
 		/// <summary>
@@ -637,7 +643,24 @@ namespace WCell.Util.Graphics
 
 		public override int GetHashCode()
 		{
-			return (X.GetHashCode() + Y.GetHashCode() + Y.GetHashCode());
+			return (int)(Length() * 1000);
+		}
+
+		public int CompareTo(Vector3 other)
+		{
+			if (Equals(other))
+			{
+				return 0;
+			}
+
+			var rel = other.Length() - Length();
+
+			// need to make sure that the absolute comparative value has a minimum of 1
+			if (rel > 0)
+			{
+				return 1;
+			}
+			return -1;
 		}
 
 		public override string ToString()

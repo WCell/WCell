@@ -9,6 +9,7 @@ using WCell.RealmServer.Global;
 using WCell.RealmServer.Handlers;
 using NLog;
 using WCell.RealmServer.Chat;
+using WCell.Util.ObjectPools;
 
 namespace WCell.RealmServer.Instances
 {

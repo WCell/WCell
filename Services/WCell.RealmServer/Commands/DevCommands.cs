@@ -16,6 +16,7 @@ using WCell.Util.Commands;
 using WCell.Intercommunication.DataTypes;
 using WCell.RealmServer.Debugging;
 using WCell.RealmServer.Global;
+using WCell.Util.ObjectPools;
 using WCell.Util.Threading;
 using WCell.Constants.World;
 using WCell.RealmServer.Misc;

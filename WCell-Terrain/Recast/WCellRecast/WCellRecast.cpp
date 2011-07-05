@@ -129,13 +129,17 @@ int __cdecl buildMeshFromFile(int userId, const char* inputFilename, const char*
 
 							// absolute poly index
 							idx = tilePolyIndexOffsets[neigTile] + neiPoly;
+
+							//const dtMeshTile* t = ((const dtNavMesh*)mesh)->getTile(neigTile);
+							assert(neigTile < maxTiles-1 && idx < tilePolyIndexOffsets[neigTile+1]);
+							//idx = (unsigned int)-1;
 						}
 					}
 				}
 				else if (neiRef)
 				{
 					// Tile-internal edge
-					idx = (unsigned int)(neiRef - 1);
+					idx = tilePolyIndexOffsets[i] + (unsigned int)(neiRef - 1);
 				}
 
 				assert((int)idx == -1 || idx < polyCount);
@@ -177,6 +181,8 @@ int __cdecl buildMeshFromFile(int userId, const char* inputFilename, const char*
 	return 1;
 }
 
+float walkableRadius = 1;
+
 dtNavMesh* buildMesh(InputGeom* geom, BuildContext* ctx)
 {
 	dtNavMesh* mesh;
@@ -201,14 +207,14 @@ dtNavMesh* buildMesh(InputGeom* geom, BuildContext* ctx)
 
 	memset(&cfg, 0, sizeof(rcConfig));
 	
-	cfg.cs = 0.4;							// cell size is a sort of resolution -> the bigger the faster
+	cfg.cs = 0.3;							// cell size is a sort of resolution -> the bigger the faster
 	cfg.ch = 0.27f;							// cell height -> distance from mesh to ground, if too low, recast will not build essential parts of the mesh for some reason
-	cfg.walkableSlopeAngle = 60;			// this does not magically add anything, if set very high
-	cfg.walkableClimb = 3.0f;				// how high the agent can climb in one step
-	cfg.walkableHeight = 1.0f;				// minimum space to ceiling
-	cfg.walkableRadius = 1.0f;				// minimum distance to objects
+	cfg.walkableSlopeAngle = 60;			// max climbable slope, bigger values won't make much of a change
+	cfg.walkableClimb = 1.5f;				// how high the agent can climb in one step
+	cfg.walkableHeight = 0.5f;				// minimum space to ceiling
+	walkableRadius = 0.7f;					// minimum distance to objects
 	cfg.tileSize = 192;
-	cfg.maxEdgeLen = 16.0f / cfg.cs;
+	cfg.maxEdgeLen = 20.0f / cfg.cs;
 	cfg.maxSimplificationError = 1.3f;
 	cfg.minRegionArea = (int)rcSqr(8);		// Note: area = size*size
 	cfg.mergeRegionArea = (int)rcSqr(20);	// Note: area = size*size
@@ -268,11 +274,11 @@ dtNavMesh* buildMesh(InputGeom* geom, BuildContext* ctx)
 
 	ctx->startTimer(RC_TIMER_TEMP);
 	
-		
 	// fix some configuration values
 	cfg.walkableHeight = (int)ceilf(cfg.walkableHeight / cfg.ch);
 	cfg.walkableClimb = (int)floorf(cfg.walkableClimb / cfg.ch);
-	cfg.walkableRadius = (int)ceilf(cfg.walkableRadius / cfg.cs);
+	cfg.walkableRadius = (int)ceilf(walkableRadius / cfg.cs);
+
 	cfg.borderSize = cfg.walkableRadius + 3;				// Reserve enough padding.
 	cfg.width = cfg.tileSize + cfg.borderSize*2;
 	cfg.height = cfg.tileSize + cfg.borderSize*2;

@@ -646,8 +646,8 @@ namespace WCell.Terrain.GUI
 				return;
 			}
 
-			//var index = shape.FindFirstHitTriangle(ray);
-			var index = Utility.Random(Shape.Indices.Length / 3);
+			var index = Shape.FindFirstHitTriangle(ray);
+			//var index = Utility.Random(Shape.Indices.Length-2);
 			if (index != -1)
 			{
 				// mark the selected triangle
@@ -657,7 +657,10 @@ namespace WCell.Terrain.GUI
 				var neighbors = Shape.GetNeighborsOf(index);
 				foreach (var neighbor in neighbors)
 				{
-					SelectTriangle(neighbor, true);
+					if (neighbor > 0)
+					{
+						SelectTriangle(neighbor*3, true, Color.Red);
+					}
 				}
 			}
 		}

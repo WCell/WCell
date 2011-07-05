@@ -27,6 +27,7 @@ using WCell.RealmServer.Misc;
 using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Spells.Auras.Handlers;
 using WCell.Util.NLog;
+using WCell.Util.ObjectPools;
 using WCell.Util.Threading;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;

@@ -1,27 +1,10 @@
-/*************************************************************************
- *
- *   file		: ObjectPool.cs
- *   copyright		: (C) The WCell Team
- *   email		: info@wcell.org
- *   last changed	: $LastChangedDate: 2010-04-21 16:29:23 +0200 (on, 21 apr 2010) $
- *   last author	: $LastChangedBy: XTZGZoReX $
- *   revision		: $Rev: 1281 $
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *************************************************************************/
-
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using WCell.Util.Collections;
 
 #pragma warning disable 0420
 
-namespace Cell.Core
+namespace WCell.Util.ObjectPools
 {
 	/// <summary>
 	/// A structure that contains information about an object pool.
@@ -293,6 +276,30 @@ namespace Cell.Core
 		public override string ToString()
 		{
 			return GetType().Name + " for " + typeof(T).FullName;
+		}
+
+		public IDisposable Borrow(out T o)
+		{
+			o = Obtain();
+			var grant = new TempPoolGrant(this, o);
+			return grant;
+		}
+
+		struct TempPoolGrant : IDisposable
+		{
+			public ObjectPool<T> Pool;
+			public T O;
+
+			public TempPoolGrant(ObjectPool<T> pool, T o)
+			{
+				Pool = pool;
+				O = o;
+			}
+
+			public void Dispose()
+			{
+				Pool.Recycle(O);
+			}
 		}
 	}
 }

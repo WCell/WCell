@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		    : info@wcell.org
  *   last changed	: $LastChangedDate: 2010-02-25 12:57:15 +0100 (to, 25 feb 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+ 
  *   revision		: $Rev: 1260 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -24,6 +24,7 @@ using WCell.Constants.Pets;
 using WCell.Constants.Spells;
 using WCell.Constants.World;
 using WCell.Util.Graphics;
+using WCell.Util.ObjectPools;
 using WCell.Util.Threading;
 using WCell.Core.Timers;
 using WCell.RealmServer.Entities;
