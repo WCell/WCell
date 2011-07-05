@@ -439,7 +439,7 @@ namespace WCell.RealmServer.Entities
 		{
 			get
 			{
-				if (!m_master.IsInWorld)
+				if (m_master != null && !m_master.IsInWorld)
 				{
 					m_master = null;
 				}
