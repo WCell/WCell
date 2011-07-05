@@ -31,16 +31,9 @@ namespace WCell.Terrain.MPQ
 		public readonly Dictionary<string, M2> M2s = new Dictionary<string, M2>();
 		public readonly Dictionary<string, WMORoot> WMOs = new Dictionary<string, WMORoot>();
 
-		public WDT(MPQFinder finder, MapId mapId)
+		public WDT(MapId mapId)
 			: base(mapId)
 		{
-			Finder = finder;
-		}
-
-		public MPQFinder Finder
-		{
-			get;
-			private set;
 		}
 
 		public override bool IsWMOOnly
@@ -55,7 +48,7 @@ namespace WCell.Terrain.MPQ
 
 		protected override TerrainTile LoadTile(int x, int y)
 		{
-			var adt = ADTReader.ReadADT(Finder, this, x, y);
+			var adt = ADTReader.ReadADT(this, x, y);
 			if (adt == null)
 			{
 				return null;
@@ -72,7 +65,7 @@ namespace WCell.Terrain.MPQ
 			WMORoot wmo;
 			if (!WMOs.TryGetValue(definition.FilePath, out wmo))
 			{
-				WMOs.Add(definition.FilePath, wmo = WMOReader.ReadWMO(Finder, definition));
+				WMOs.Add(definition.FilePath, wmo = WMOReader.ReadWMO(WCellTerrainSettings.GetDefaultMPQFinder(), definition));
 			}
 			return wmo;
 		}
@@ -82,7 +75,7 @@ namespace WCell.Terrain.MPQ
 			M2 wmo;
 			if (!M2s.TryGetValue(definition.FilePath, out wmo))
 			{
-				M2s.Add(definition.FilePath, wmo = M2Reader.ReadM2(Finder, definition));
+				M2s.Add(definition.FilePath, wmo = M2Reader.ReadM2(WCellTerrainSettings.GetDefaultMPQFinder(), definition));
 			}
 			return wmo;
 		}
@@ -90,11 +83,11 @@ namespace WCell.Terrain.MPQ
 		/// <summary>
 		/// Creates a dummy WDT and loads the given tile into it
 		/// </summary>
-		public static TerrainTile LoadTile(MapId map, int x, int y)
+		public static ADT LoadTile(MapId map, int x, int y)
 		{
-			var wdt = new WDT(MPQFinder.GetDefaultFinder(WCellTerrainSettings.WoWPath), map);
+			var wdt = new WDT(map);
 			wdt.TileProfile[x, y] = true;
-			return wdt.LoadTile(x, y);
+			return (ADT)wdt.LoadTile(x, y);
 		}
 
 		//public void LoadZone(int zoneId)

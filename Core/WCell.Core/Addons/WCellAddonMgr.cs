@@ -168,7 +168,18 @@ namespace WCell.Core.Addons
 			// debugger won't attach in that case
 			//var bytes = File.ReadAllBytes(path);
 			//var asm = Assembly.Load(bytes);
-			var asm = Assembly.LoadFrom(path);
+			Assembly asm;
+			try
+			{
+				asm = Assembly.LoadFrom(path);
+			}
+			catch (BadImageFormatException e)
+			{
+				LogManager.GetCurrentClassLogger().Error("Failed to load Assembly \"{0}\" because it has the wrong format - Make sure that you only load .NET assemblies that are compiled for the correct target platform: {1}", 
+						file.Name,
+						Environment.Is64BitProcess ? "xx64" : "x86");
+				return null;
+			}
 			var context = new WCellAddonContext(file, asm);
 
 			Contexts.Add(context);
@@ -210,7 +221,10 @@ namespace WCell.Core.Addons
 		public WCellAddonContext LoadAndInitAddon(FileInfo file)
 		{
 			var context = LoadAddon(file);
-			context.InitAddon();
+			if (context != null)
+			{
+				context.InitAddon();
+			}
 			return context;
 		}
 		#endregion

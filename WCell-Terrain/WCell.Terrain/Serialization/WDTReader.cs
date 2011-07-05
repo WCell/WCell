@@ -17,15 +17,11 @@ namespace WCell.Terrain.Serialization
 		private const string baseDir = "WORLD\\MAPS\\";
 		public const string Extension = ".wdt";
 
+
 		public static IEnumerable<WDT> ReadAllWDTs()
 		{
-			return ReadAllWDTs(MPQFinder.GetDefaultFinder(WCellTerrainSettings.WoWPath));
-		}
-
-		public static IEnumerable<WDT> ReadAllWDTs(MPQFinder finder)
-		{
 			var entries = MapInfo.GetMapEntries();
-			return entries.Select(mapEntry => ReadWDT(finder, mapEntry));
+			return entries.Select(mapEntry => ReadWDT(mapEntry));
 		}
 
 		public static WDT ReadWDT(MapId mapId)
@@ -36,19 +32,20 @@ namespace WCell.Terrain.Serialization
 				return null;
 			}
 
-			return ReadWDT(MPQFinder.GetDefaultFinder(WCellTerrainSettings.WoWPath), map);
+			return ReadWDT(map);
 		}
 
-		public static WDT ReadWDT(MPQFinder finder, MapInfo entry)
+		public static WDT ReadWDT(MapInfo entry)
 		{
 			var dir = entry.InternalName;
 			var wdtDir = Path.Combine(baseDir, dir);
 			var wdtName = dir;
 			var wdtFilePath = Path.Combine(wdtDir, wdtName + Extension);
+			var finder = WCellTerrainSettings.GetDefaultMPQFinder();
 
 			if (!finder.FileExists(wdtFilePath)) return null;
 
-			var wdt = new WDT(finder, entry.Id)
+			var wdt = new WDT(entry.Id)
 			{
 				Entry = entry,
 				Name = wdtName,

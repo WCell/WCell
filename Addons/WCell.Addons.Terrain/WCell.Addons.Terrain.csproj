@@ -144,6 +144,7 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="Commands\CollisionCommands.cs" />
+    <Compile Include="Commands\TerrainCommands.cs" />
     <Compile Include="FullTerrainProvider.cs" />
     <Compile Include="CollisionAddon.cs" />
     <Compile Include="Extensions.cs" />
@@ -151,6 +152,11 @@
     <Compile Include="TerrainAddonConfiguration.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Core\Cell.Core\Cell.Core.csproj">
+      <Project>{71AB07AD-4D94-4693-8560-47862E5B6E61}</Project>
+      <Name>Cell.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\Core\WCell.Constants\WCell.Constants.csproj">
       <Project>{42F497A4-0347-491D-8FA8-50E4D8AD19EB}</Project>
       <Name>WCell.Constants</Name>

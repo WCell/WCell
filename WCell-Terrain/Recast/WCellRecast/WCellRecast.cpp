@@ -155,6 +155,7 @@ int __cdecl buildMeshFromFile(int userId, const char* inputFilename, const char*
 	
 	assert(v/3 == vertCount);
 
+	printf("Preparing navmesh with %d vertices...\n", vertCount);
 
 	callback(
 		userId, 

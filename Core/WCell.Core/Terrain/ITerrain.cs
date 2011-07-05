@@ -32,5 +32,10 @@ namespace WCell.Core.Terrain
         /// Returns float.NaN if it could not reliably determine the height.
         /// </summary>
         float GetHeightUnderneath(Vector3 worldPos);
+
+		/// <summary>
+		/// Forces loading of tile. This must be used as it is a long process and will use a lot of resources.
+		/// </summary>
+		bool ForceLoadTile(int x, int y);
 	}
 }

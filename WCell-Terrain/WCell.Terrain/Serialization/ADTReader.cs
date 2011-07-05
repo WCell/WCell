@@ -34,8 +34,9 @@ namespace WCell.Terrain.Serialization
 			return Path.Combine(baseDir, fileName);
 		}
 
-		public static ADT ReadADT(MPQFinder mpqFinder, WDT terrain, int x, int y)
+		public static ADT ReadADT(WDT terrain, int x, int y)
 		{
+			var mpqFinder = WCellTerrainSettings.GetDefaultMPQFinder();
 			var filePath = GetFilename(terrain.MapId, x, y);
 			var adt = new ADT(x, y, terrain);
 

@@ -67,7 +67,7 @@ namespace WCell.RealmServer.Commands
 					var context = RealmAddonMgr.Instance.TryLoadAddon(path);
 					if (context == null)
 					{
-						trigger.Reply("File does not exist: " + path);
+						trigger.Reply("File does not exist or has invalid format: " + path);
 					}
 					else
 					{

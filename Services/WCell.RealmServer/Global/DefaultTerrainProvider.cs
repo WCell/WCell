@@ -39,5 +39,10 @@ namespace WCell.RealmServer.Global
 		{
 			return worldPos.Z;
 		}
+
+		public bool ForceLoadTile(int x, int y)
+		{
+			return true;
+		}
 	}
 }

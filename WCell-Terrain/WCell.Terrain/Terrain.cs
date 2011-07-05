@@ -54,7 +54,7 @@ namespace WCell.Terrain
 
     	public bool IsAvailable(int tileX, int tileY)
     	{
-			if (PositionUtil.VerifyPoint2D(tileX, tileY))
+			if (PositionUtil.VerifyTileCoords(tileX, tileY))
 			{
 				return TileProfile[tileX, tileY];
 			}
@@ -115,7 +115,18 @@ namespace WCell.Terrain
 			return float.NaN;								// Could not reliably lookup the value
 		}
 
-		public void FindPath(PathQuery query)
+    	public bool ForceLoadTile(int x, int y)
+    	{
+    		TileProfile[x, y] = true;
+    		var tile = GetOrLoadTile(x, y);
+			if (tile != null)
+			{
+				tile.EnsureNavMeshLoaded();
+			}
+			return tile != null;
+    	}
+
+    	public void FindPath(PathQuery query)
 		{
 			var wayPoints = FindPath(query.From, query.To);
 			query.Reply(wayPoints);
@@ -180,6 +191,7 @@ namespace WCell.Terrain
 			// if it exists, try to load it from disk
 			tile = LoadTile(x, y);
 			TileProfile[x, y] = tile != null;
+			Tiles[x, y] = tile;
 			
 			return tile;
 		}

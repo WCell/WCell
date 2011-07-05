@@ -73,7 +73,7 @@ namespace WCell.Terrain.Recast.NavMesh
 			var indices = tile.TerrainIndices;
 
 			var start = DateTime.Now;
-			Console.Write("Writing file {0}...", filename);
+			Console.Write("Writing input file {0}...", filename);
 
 			using (var file = new StreamWriter(filename))
 			{
@@ -111,10 +111,10 @@ namespace WCell.Terrain.Recast.NavMesh
 			{
 				Directory.CreateDirectory(new FileInfo(inputFile).Directory.FullName);
 				Directory.CreateDirectory(new FileInfo(navMeshFile).Directory.FullName);
-				Console.WriteLine("Building new NavMesh...");
-
 				// export input mesh to file
 				ExportRecastInputMesh(tile, inputFile);
+
+				Console.WriteLine("Building new NavMesh...");
 			}
 
 			var start = DateTime.Now;

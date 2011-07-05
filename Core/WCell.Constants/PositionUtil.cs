@@ -18,7 +18,7 @@ namespace WCell.Constants
 			tileX = (int)GetTileFraction(worldPos.Y);
 			tileY = (int)GetTileFraction(worldPos.X);
 
-			return VerifyPoint2D(tileX, tileY);
+			return VerifyTileCoords(tileX, tileY);
 		}
 
 		public static void GetChunkXYForPos(Vector3 worldPos, out int chunkX, out int chunkY)
@@ -50,7 +50,7 @@ namespace WCell.Constants
 			return (tileFraction - (int)tileFraction) * TerrainConstants.ChunksPerTileSide;
 		}
 
-		public static bool VerifyPoint2D(int tileX, int tileY)
+		public static bool VerifyTileCoords(int tileX, int tileY)
 		{
 			var result = true;
 			if (tileX < 0)
@@ -81,7 +81,7 @@ namespace WCell.Constants
 			var tileX = (int)GetTileFraction(worldPos.Y);
 			var tileY = (int)GetTileFraction(worldPos.X);
 
-			VerifyPoint2D(tileX, tileY);
+			VerifyTileCoords(tileX, tileY);
 
 			return new Point2D
 			{
@@ -97,7 +97,7 @@ namespace WCell.Constants
 			var tileX = (int)tileXFraction;
 			var tileY = (int)tileYFraction;
 
-			VerifyPoint2D(tileX, tileY);
+			VerifyTileCoords(tileX, tileY);
 
 			tileCoord = new Point2D
 			{
@@ -124,7 +124,7 @@ namespace WCell.Constants
 			var tileX = (int)tileXFraction;
 			var tileY = (int)tileYFraction;
 
-			VerifyPoint2D(tileX, tileY);
+			VerifyTileCoords(tileX, tileY);
 
 			tileCoord = new Point2D
 			{
@@ -166,7 +166,7 @@ namespace WCell.Constants
 			var tileX = (int)tileXFraction;
 			var tileY = (int)tileYFraction;
 
-			VerifyPoint2D(tileX, tileY);
+			VerifyTileCoords(tileX, tileY);
 
 			tileCoord = new Point2D
 			{

@@ -183,6 +183,13 @@ namespace WCell.RealmServer.Entities
 		/// <returns>Whether already arrived</returns>
 		public bool MoveTo(Vector3 destination, bool findPath = true)
 		{
+			if (!m_owner.IsInWorld)
+			{
+				// something's wrong here
+				m_owner.DeleteNow();
+				return false;
+			}
+
 			m_destination = destination;
 			if (IsAtDestination)
 			{
@@ -191,9 +198,11 @@ namespace WCell.RealmServer.Entities
 
 			if (findPath)
 			{
-				m_currentQuery = new PathQuery(m_owner.Position, ref destination, m_owner.ContextHandler, OnPathQueryReply);
-
 				// TODO: Consider flying units & liquid levels
+				var pos = m_owner.Position;
+				pos.Z += 5;
+				m_currentQuery = new PathQuery(pos, ref destination, m_owner.ContextHandler, OnPathQueryReply);
+
 				m_owner.Map.Terrain.FindPath(m_currentQuery);
 			}
 			else if (m_owner.CanMove)
