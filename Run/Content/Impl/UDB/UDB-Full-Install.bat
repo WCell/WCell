@@ -39,6 +39,7 @@ ECHO.
 ECHO		 e = Extract UDB
 ECHO		 i = Install UDB
 ECHO		 c = Install all Changesets (394, 395, 396, 397, 398, 399, 400, 401)
+ECHO             v = Install Vehicle data patch
 ECHO.
 ECHO		 394 = Install Changeset 394
 ECHO		 395 = Install Changeset 395
@@ -60,6 +61,8 @@ if %l%==E GOTO extract
 if %l%==e GOTO extract
 if %l%==c GOTO changesets
 if %l%==C GOTO changesets
+if %l%==v GOTO vehicles
+if %l%==V GOTO vehicles
 if %l%==x GOTO quit
 if %l%==X GOTO quit
 if "%l%"=="394" GOTO changeset394
@@ -79,6 +82,19 @@ ECHO.
 ECHO [Importing] Started...
 ECHO [Importing] Main UDB database ...
 mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Full_DB\%udb-main%.sql
+mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < .\Data\vehicle_patch.sql
+ECHO [Importing] Finished
+ECHO.
+PAUSE    
+GOTO menu
+
+:vehicles
+CLS
+ECHO.
+ECHO.
+ECHO [Importing] Started...
+ECHO [Importing] Vehicle data patch ...
+mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < .\Data\vehicle_patch.sql
 ECHO [Importing] Finished
 ECHO.
 PAUSE    

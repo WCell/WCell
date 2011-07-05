@@ -29,6 +29,12 @@ namespace WCell.RealmServer.NPCs.Vehicles
 			get { return HighId.Vehicle; }
 		}
 
+		public bool HasUnitAttachment
+		{
+			get;
+			set;
+		}
+
 		protected internal override void SetupNPC(NPCEntry entry, NPCSpawnPoint spawnPoint)
 		{
 			base.SetupNPC(entry, spawnPoint);
@@ -84,6 +90,7 @@ namespace WCell.RealmServer.NPCs.Vehicles
 
 				m_Seats[i] = new VehicleSeat(this, entry, (byte)i);
 				if (m_Seats[i].Entry.PassengerNPCId == 0) continue;
+				HasUnitAttachment = true;
 
 				//copy locally (access to modified closure)
 				var seat = i;
@@ -192,27 +199,27 @@ namespace WCell.RealmServer.NPCs.Vehicles
 			return GetFirstFreeSeat(unit is Character);
 		}
 
-		public void ClearAllSeats()
+		public void ClearAllSeats(bool onlyClearUsableSeats = false)
 		{
 			foreach (var seat in m_Seats)
 			{
-				if (seat != null)
+				if (seat != null && (!onlyClearUsableSeats || seat.CharacterCanEnterOrExit))
 				{
 					seat.ClearSeat();
 				}
 			}
 
-            if (Entry.VehicleEntry.IsMinion)
-                Dismiss();
-            else
-            {
-                //TODO: Return to spawn point, without causing exceptions!
-            }
+            Dismiss();
 		}
 
         public void Dismiss()
         {
-            RemoveFromMap();
+			if (Entry.VehicleEntry.IsMinion)
+				Delete();
+			else
+			{
+				//TODO: Return to spawn point, without causing exceptions!
+			}
         }
 
         public uint[] BuildVehicleActionBar()
@@ -279,7 +286,17 @@ namespace WCell.RealmServer.NPCs.Vehicles
 
 		protected internal override void DeleteNow()
 		{
+			if (Vehicle.HasUnitAttachment)
+			{
+				foreach (var seat in Seats.Where(seat => seat != null))
+				{
+					if (seat.HasUnitAttachment)
+						seat.Passenger.Delete();
+				}
+			}
+
 			ClearAllSeats();
+
 			base.DeleteNow();
 		}
 

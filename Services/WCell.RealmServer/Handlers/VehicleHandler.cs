@@ -9,7 +9,7 @@ namespace WCell.RealmServer.Handlers {
         [PacketHandler(RealmServerOpCode.CMSG_DISMISS_CONTROLLED_VEHICLE)]
         public static void HandleDismissControlledVehicle(IRealmClient client, RealmPacketIn packet)
         {
-            client.ActiveCharacter.Vehicle.ClearAllSeats();
+            client.ActiveCharacter.Vehicle.ClearAllSeats(true);
             MovementHandler.HandleMovement(client, packet);
         }
 

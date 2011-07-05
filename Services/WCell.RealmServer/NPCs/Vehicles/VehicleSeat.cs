@@ -16,6 +16,8 @@ namespace WCell.RealmServer.NPCs.Vehicles
 		public readonly Vehicle Vehicle;
 		public readonly VehicleSeatEntry Entry;
 		public readonly byte Index;
+		private Unit _passenger;
+
 		public bool IsDriverSeat
 		{
 			get { return Entry.Flags.HasAnyFlag(VehicleSeatFlags.VehicleControlSeat); }
@@ -26,7 +28,10 @@ namespace WCell.RealmServer.NPCs.Vehicles
 			get { return Entry.Flags.HasAnyFlag(VehicleSeatFlags.CanEnterorExit); }
 		}
 
-		private Unit _passenger;
+		public bool HasUnitAttachment
+		{
+			get { return Entry.PassengerNPCId != 0; }
+		}
 
 		public VehicleSeat(Vehicle vehicle, VehicleSeatEntry entry, byte index)
 		{
@@ -59,6 +64,8 @@ namespace WCell.RealmServer.NPCs.Vehicles
 			passenger.TransportOrientation = Entry.PassengerYaw;
 			Vehicle.m_passengerCount++;
 
+			passenger.IncMechanicCount(SpellMechanic.Rooted);
+
 			if (!(passenger is Character)) return;
 
 			if (IsDriverSeat)
@@ -74,7 +81,6 @@ namespace WCell.RealmServer.NPCs.Vehicles
 			VehicleHandler.Send_SMSG_ON_CANCEL_EXPECTED_RIDE_VEHICLE_AURA(chr);
 			VehicleHandler.SendBreakTarget(chr, Vehicle);
 
-			chr.IncMechanicCount(SpellMechanic.Rooted);
 			MovementHandler.SendEnterTransport(chr);
 			MiscHandler.SendCancelAutoRepeat(chr, Vehicle);
 			MovementHandler.SendMoveToPacket(Vehicle, ref pos, 0, 0, MonsterMoveFlags.Walk);
@@ -98,6 +104,7 @@ namespace WCell.RealmServer.NPCs.Vehicles
 			{
 				Vehicle.Charmer = null;
 				_passenger.Charm = null;
+				Vehicle.UnitFlags &= ~UnitFlags.Possessed;
 			}
 
 			Vehicle.m_passengerCount--;
