@@ -14,37 +14,31 @@ namespace WCell.Terrain.GUI.Renderers
 	/// </summary>
 	public class RecastSolidRenderer : RecastRendererBase
 	{
-		private static Color MeshPolyColor { get { return new Color(65, 50, 50); } }
+		private static Color MeshPolyColor { get { return new Color(65, 50, 50, 100); } }
 
-		public RecastSolidRenderer(Game game, GraphicsDeviceManager graphics)
+		public RecastSolidRenderer(Game game)
 			: base(game)
 		{
-			_graphics = graphics;
 		}
 
 		public override void Draw(GameTime gameTime)
 		{
-			var depthBias = _graphics.GraphicsDevice.RenderState.DepthBias;
-			var fillMode = _graphics.GraphicsDevice.RenderState.FillMode;
+			var graphics = Game.GraphicsDevice;
+			var depthBias = graphics.RenderState.DepthBias;
+			var fillMode = graphics.RenderState.FillMode;
 
-			if (_graphics != null)
-			{
-				//_graphics.GraphicsDevice.RenderState.DepthBias = 5;
-				_graphics.GraphicsDevice.RenderState.FillMode = FillMode.Solid;
-			}
+			graphics.RenderState.DepthBias = 5e-7f;
+			graphics.RenderState.FillMode = FillMode.Solid;
 
 			base.Draw(gameTime);
-
-			if (_graphics != null)
-			{
-				_graphics.GraphicsDevice.RenderState.DepthBias = depthBias;
-				_graphics.GraphicsDevice.RenderState.FillMode = fillMode;
-			}
+			
+			graphics.RenderState.DepthBias = depthBias;
+			graphics.RenderState.FillMode = fillMode;
 		}
 
 		protected override void BuildVerticiesAndIndicies()
 		{
-			var mesh = ((TerrainViewer)Game).Terrain.NavMesh;
+			var mesh = ((TerrainViewer)Game).Tile.NavMesh;
 			var vertices = mesh.Vertices;
 			List<int> indices;
 

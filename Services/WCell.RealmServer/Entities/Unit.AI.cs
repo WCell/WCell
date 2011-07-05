@@ -73,19 +73,10 @@ namespace WCell.RealmServer.Entities
 		/// <remarks>Requires Brain</remarks>
 		public void MoveToThenExecute(Vector3 pos, UnitActionCallback actionCallback)
 		{
-			MoveToThenExecute(pos, true, actionCallback);
-		}
-
-		/// <summary>
-		/// Moves towards the given target and then executes the given action
-		/// </summary>
-		/// <remarks>Requires Brain</remarks>
-		public void MoveToThenExecute(Vector3 pos, bool findPath, UnitActionCallback actionCallback)
-		{
 			if (CheckBrain())
 			{
 				//m_brain.StopCurrentAction();
-				m_Movement.MoveTo(pos, findPath);
+				m_Movement.MoveTo(pos);
 				m_brain.CurrentAction = new AIMoveThenExecAction(this, actionCallback);
 			}
 		}

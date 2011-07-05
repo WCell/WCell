@@ -48,9 +48,14 @@ namespace WCell.Terrain.MPQ
 			get { return Header.IsWMOMap; }
 		}
 
-		protected override TerrainTile LoadTile(Point2D tileCoord)
+		public override void FillTileProfile()
 		{
-			var adt = ADTReader.ReadADT(Finder, this, tileCoord);
+			// TODO: Fill tile profile based on raw MPQ information?
+		}
+
+		protected override TerrainTile LoadTile(int x, int y)
+		{
+			var adt = ADTReader.ReadADT(Finder, this, x, y);
 			if (adt == null)
 			{
 				return null;
@@ -58,7 +63,6 @@ namespace WCell.Terrain.MPQ
 
 			adt.GenerateHeightVertexAndIndices();
 			adt.GenerateLiquidVertexAndIndices();
-			adt.BuildQuadTree();
 
 			return adt;
 		}
@@ -86,11 +90,11 @@ namespace WCell.Terrain.MPQ
 		/// <summary>
 		/// Creates a dummy WDT and loads the given tile into it
 		/// </summary>
-		public static TerrainTile LoadTile(MapId map, Point2D coords)
+		public static TerrainTile LoadTile(MapId map, int x, int y)
 		{
 			var wdt = new WDT(MPQFinder.GetDefaultFinder(WCellTerrainSettings.WoWPath), map);
-			wdt.TileProfile[coords.X, coords.Y] = true;
-			return wdt.LoadTile(coords);
+			wdt.TileProfile[x, y] = true;
+			return wdt.LoadTile(x, y);
 		}
 
 		//public void LoadZone(int zoneId)

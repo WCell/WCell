@@ -13,7 +13,7 @@ namespace WCell.Terrain.Recast
 	public static class RecastAPI
 	{
 		#region Misc & Init
-		public const string RecastDllName = "Recast.dll";
+		public const string RecastDllName = "RecastRaw.dll";
 
 		public const string RecastFolder = "../../Recast/Bin/";
 		public const string InputMeshExtension = ".obj";

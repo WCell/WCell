@@ -5,6 +5,8 @@ using WCell.Constants;
 using WCell.Terrain.Collision;
 using WCell.Terrain.Collision.OCTree;
 using WCell.Terrain.MPQ;
+using WCell.Terrain.Pathfinding;
+using WCell.Terrain.Recast.NavMesh;
 using WCell.Util;
 using WCell.Util.Graphics;
 
@@ -14,7 +16,7 @@ namespace WCell.Terrain
 	/// Represents the triangle mesh of terrain&objects of one tile within a map
 	/// TODO: In the future, one Tile will only be represented by single indices into the map's array of vertices, indices and neighbors (plus the same for liquids and some other things)
 	/// </summary>
-	public class TerrainTile : IShape
+	public abstract class TerrainTile : IShape
 	{
 		// TODO: Change from list to Array
 		public List<int> LiquidIndices;
@@ -22,23 +24,38 @@ namespace WCell.Terrain
 		public int[] TerrainIndices;
 		public Vector3[] TerrainVertices;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		private readonly Point2D coordinates;
 
+		protected TerrainTile(int x, int y, Terrain terrain)
+			: this(x, y, terrain, null)
+		{
+			Pathfinder = new Pathfinder(this);
+		}
 
-		public TerrainTile(Point2D coords, Terrain terrain)
+		protected TerrainTile(int x, int y, Terrain terrain, Pathfinder pathfinder)
 		{
 			// MapChunks = new TerrainChunk[TerrainConstants.ChunksPerTileSide, TerrainConstants.ChunksPerTileSide];
-			coordinates = coords;
+			TileX = x;
+			TileY = y;
 			Terrain = terrain;
+			Pathfinder = pathfinder;
 		}
 
 		public Terrain Terrain
 		{
 			get;
 			private set;
+		}
+
+		public Pathfinder Pathfinder
+		{
+			get;
+			set;
+		}
+
+		public NavMesh NavMesh
+		{
+			get;
+			set;
 		}
 
 		public Vector3[] Vertices
@@ -65,7 +82,8 @@ namespace WCell.Terrain
 		/// </summary>
 		public int TileX
 		{
-			get { return coordinates.X; }
+			get;
+			private set;
 		}
 
 		/// <summary>
@@ -73,7 +91,8 @@ namespace WCell.Terrain
 		/// </summary>
 		public int TileY
 		{
-			get { return coordinates.Y; }
+			get;
+			private set;
 		}
 
 		public Rect Bounds
@@ -86,6 +105,13 @@ namespace WCell.Terrain
 				var botRightY = topLeftY - TerrainConstants.TileSize;
 				return new Rect(new Point(topLeftX, topLeftY), new Point(botRightX, botRightY));
 			}
+		}
+
+		public NavMesh EnsureNavMeshLoaded()
+		{
+			var builder = new NavMeshBuilder(this);
+			builder.BuildMesh(this);
+			return NavMesh;
 		}
 
 		public IEnumerable<int> GetPotentialColliders(Ray ray)

@@ -40,10 +40,8 @@ namespace WCell.Terrain.GUI
 			}
 
 			// initialize config & logging
-			new TerrainGUIConfig();
 			TerrainGUIConfig.Initialize();
 			LogUtil.SetupConsoleLogging();
-			WCellTerrainSettings.Config = TerrainGUIConfig.Instance;
 
 			// initialize StormLib
 			NativeMethods.StormLibFolder = WCellTerrainSettings.LibDir;
@@ -51,7 +49,7 @@ namespace WCell.Terrain.GUI
 
 			var defaultTileId = TileIdentifier.DefaultTileIdentifier;
 
-			var tile = GetOrCreateTile(defaultTileId.MapId, defaultTileId);
+			var tile = GetOrCreateTile(defaultTileId.MapId, defaultTileId.X, defaultTileId.Y);
 			
 
 			AvatarPosition = new Vector3(TerrainConstants.CenterPoint - (defaultTileId.X + 1)*TerrainConstants.TileSize,
@@ -67,10 +65,10 @@ namespace WCell.Terrain.GUI
 			StartDefaultViewer(tile);
 		}
 
-		public static TerrainTile GetOrCreateTile(MapId map, Point2D coords)
+		public static TerrainTile GetOrCreateTile(MapId map, int x, int y)
 		{
 			Console.Write("Trying to load simple tile... ");
-			var tile = SimpleTerrain.LoadTile(map, coords);
+			var tile = SimpleTerrain.LoadTile(map, x, y);
 
 			if (tile == null)
 			{
@@ -79,14 +77,14 @@ namespace WCell.Terrain.GUI
 				var start = DateTime.Now;
 				Console.WriteLine();
 				Console.Write("Tile could not be found - Decompressing...");
-				tile = WDT.LoadTile(map, coords);
+				tile = WDT.LoadTile(map, x, y);
 				if (tile == null)
 				{
 					throw new ArgumentException(string.Format(
 						"Could not read tile (Map: {0} at ({1}, {2})" +
 						map,
-						coords.X,
-						coords.Y));
+						x,
+						y));
 				}
 
 				Console.WriteLine("Done - Loading time: {0:0.000}s", (DateTime.Now - start).TotalSeconds);
@@ -101,8 +99,7 @@ namespace WCell.Terrain.GUI
 				Console.WriteLine("Done.");
 			}
 
-			var terrain = tile.Terrain;
-			terrain.GetOrCreateNavMesh(tile);
+			tile.EnsureNavMeshLoaded();
 
 			return tile;
 		}

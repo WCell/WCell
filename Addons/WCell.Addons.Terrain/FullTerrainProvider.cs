@@ -1,31 +1,45 @@
-using System;
-using System.IO;
-using WCell.Addons.Terrain;
 using WCell.Constants.World;
-using WCell.Core.Paths;
-using WCell.Core.Terrain.Paths;
+using WCell.Core.Initialization;
+using WCell.Core.Terrain;
 using WCell.RealmServer.Global;
 using WCell.Terrain;
-using WCell.Util.Graphics;
-using WCell.Core.Terrain;
+using WCell.Terrain.Recast.NavMesh;
+using WCell.Terrain.Serialization;
 
 
 namespace WCell.Addons.Terrain
 {
-	using Terrain = WCell.Terrain.Terrain;
-
-    public class FullTerrainProvider : ITerrainProvider
+	public class FullTerrainProvider : ITerrainProvider
     {
-        public ITerrain CreateTerrain(MapId id)
-        {
-            if (!Terrain.DoesMapExist(id))
-            {
-                return new EmptyTerrain();
-            }
+		
+		[Initialization(InitializationPass.Second)]
+		public static void InitializeTerrain()
+		{
+			// World initializes TerrainMgr in the third pass and this must happen before that
+			TerrainMgr.Provider = new FullTerrainProvider();
+		}
 
-			// TODO: Use configuration to determine which reader to use (Simple or MPQ)
-            //return new Terrain.Terrain(id);
-			return new EmptyTerrain();
+		public static TerrainTile LoadTile(SimpleTerrain terrain, int x, int y)
+		{
+			var tile = SimpleADTReader.ReadTile(terrain, x, y);
+
+			if (tile != null)
+			{
+				// do not generate navmesh on the fly (use command instead)
+				if (NavMeshBuilder.DoesNavMeshExist(terrain.MapId, x, y))
+				{
+					tile.EnsureNavMeshLoaded();
+				}
+			}
+
+			return tile;
+		}
+
+		public ITerrain CreateTerrain(MapId id)
+        {
+        	var terrain = new SimpleTerrain(id, LoadTile);
+			terrain.FillTileProfile();
+			return terrain;
         }
     }
 }

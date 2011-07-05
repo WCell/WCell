@@ -42,7 +42,7 @@ namespace WCell.Terrain.Tools
 					{
 						if (!wdt.TileProfile[y, x]) continue;
 						++count;
-						var adt = ADTReader.ReadADT(wdt.Finder, wdt, new Point2D(x, y));
+						var adt = ADTReader.ReadADT(wdt.Finder, wdt, x, y);
 						if (adt == null) continue;
 
 						tileSet.ZoneGrids[y, x] = grid = new ZoneGrid(new uint[TerrainConstants.ChunksPerTileSide, TerrainConstants.ChunksPerTileSide]);

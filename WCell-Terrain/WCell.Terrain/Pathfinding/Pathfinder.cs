@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using C5;
 using WCell.Terrain.Collision;
 using WCell.Terrain.Recast.NavMesh;
@@ -10,21 +8,30 @@ using WCell.Util.Graphics;
 namespace WCell.Terrain.Pathfinding
 {
 	/// <summary>
-	/// TODO: Cull unwalkable nodes (ceiling too low; too close to wall etc)
+	/// TODO: Destination of local shortest path is the vertex before the next turn, not necessarily the final vertex
+	/// TODO: Consider jumping
+	/// TODO: Actor requirements on liquid (can actor only walk on ground or also in certain types of liquid?)
 	/// </summary>
 	public class Pathfinder
 	{
 		static readonly IComparer<SearchItem> comparer = new SearchItemComparer();
 
-		public IShape Shape;
+		public readonly TerrainTile Tile;
 
-		public Pathfinder()
+		public Pathfinder(TerrainTile tile)
 		{
+			Tile = tile;
 		}
 
-		public Vector3[] FindPathUnflavored(float actorHeight, Vector3 start, Vector3 destination)
+		public NavMesh NavMesh
 		{
-			var winner = FindPath(actorHeight, start, destination);
+			get { return Tile.NavMesh; }
+		}
+
+		public Vector3[] FindPathUnflavored(//float actorHeight, 
+			Vector3 start, Vector3 destination)
+		{
+			var winner = FindPath(start, destination);
 
 			if (winner.IsNull)
 			{
@@ -50,22 +57,19 @@ namespace WCell.Terrain.Pathfinding
 		/// <summary>
 		/// 
 		/// </summary>
-		public SearchItem FindPath(float actorHeight, Vector3 start, Vector3 destination)
+		public SearchItem FindPath(Vector3 start, Vector3 destination)
 		{
 			System.Collections.Generic.HashSet<int> visited;
-			return FindPath(actorHeight, start, destination, out visited);
+			return FindPath(start, destination, out visited);
 		}
 
-		/// <summary>
-		/// TODO: Destination of local shortest path is the vertex before the next turn, not necessarily the final vertex
-		/// TODO: Consider jumping
-		/// TODO: Actor requirements on liquid (can actor only walk on ground or also in certain types of liquid?)
-		/// </summary>
-		public SearchItem FindPath(float actorHeight, Vector3 start, Vector3 destination,
+		public SearchItem FindPath(Vector3 start, Vector3 destination,
 			out System.Collections.Generic.HashSet<int> visited)
 		{
-			var triStart = Shape.FindFirstTriangleUnderneath(start);
-			var triEnd = Shape.FindFirstTriangleUnderneath(destination);
+			var mesh = NavMesh;
+
+			var triStart = mesh.FindFirstTriangleUnderneath(start);
+			var triEnd = mesh.FindFirstTriangleUnderneath(destination);
 
 			if (triStart == -1 || triEnd == -1)
 			{
@@ -94,9 +98,9 @@ namespace WCell.Terrain.Pathfinding
 				current = fringe.DeleteMin();
 				
 				// get the vertices and neighbors of the current triangle
-				Triangle triangle = Shape.GetTriangle(current.Triangle);
-				var neighbors = Shape.GetNeighborsOf(current.Triangle);
-				var poly = ((NavMesh)Shape).Polygons[current.Triangle / 3];
+				var triangle = mesh.GetTriangle(current.Triangle);
+				var neighbors = mesh.GetNeighborsOf(current.Triangle);
+				//var poly = ((NavMesh)Mesh).Polygons[current.Triangle / 3];
 
 				// iterate over all neighbors
 				for (var i = 0; i < WCellTerrainConstants.NeighborsPerTriangle; i++)
@@ -105,12 +109,11 @@ namespace WCell.Terrain.Pathfinding
 
 					if (neighbor < 0 || visited.Contains(neighbor)) continue;
 
-					var npoly = ((NavMesh) Shape).Polygons[neighbor/3];
-					var ntri = Shape.GetTriangle(neighbor);
+					//var npoly = ((NavMesh)Mesh).Polygons[neighbor / 3];
+					//var ntri = Mesh.GetTriangle(neighbor);
 
 					visited.Add(neighbor);
 
-					// TODO: If the highest vertex is the one that is not shared between the two neighbors, we cannot walk on it from this direction
 
 					// determine the edge that we want to traverse
 					Vector3 edgeP1, edgeP2;
@@ -135,7 +138,9 @@ namespace WCell.Terrain.Pathfinding
 					
 					//var newPoint = Intersection.FindClosestPointInSegment(edgeP1, edgeP2, destination);
 
-					// To find the next point, we greedily span a vertical plane through the line between the last and the next point
+					// TODO: Fix local path decision by employing iterative method
+
+					// To find the next point, we greedily (and inaccurately) span a vertical plane through the line between the last and the next point
 					// This is far from optimal, will have to employ a better method for non-linear paths
 					var s = current.EnterPos;
 					var plane = new Plane(s, destination, new Vector3(s.X, s.Y, s.Z + 10));

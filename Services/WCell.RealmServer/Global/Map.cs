@@ -1833,13 +1833,6 @@ namespace WCell.RealmServer.Global
 		}
 		#endregion
 
-		#region Terrain Management
-		public void QueryDirectPath(PathQuery query)
-		{
-			m_Terrain.QueryDirectPathAsync(query);
-		}
-		#endregion
-
 		#region Object Management
 		/// <summary>
 		/// Removes an entity from the zone.

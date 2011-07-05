@@ -230,6 +230,7 @@
     <Compile Include="Pets\PetMood.cs" />
     <Compile Include="Pets\PetNameInvalidReason.cs" />
     <Compile Include="Pets\TameFailReason.cs" />
+    <Compile Include="PositionUtil.cs" />
     <Compile Include="Quests\QuestConstants.cs" />
     <Compile Include="Quests\QuestEnums.cs" />
     <Compile Include="Quests\QuestGiverRelationType.cs" />

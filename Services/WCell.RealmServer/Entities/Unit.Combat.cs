@@ -767,7 +767,7 @@ namespace WCell.RealmServer.Entities
 					}
 
 					// Pet entered combat, so will it's master.
-					if (Master != this)
+					if (HasMaster)
 					{
 						Master.IsInCombat = true;
 					}

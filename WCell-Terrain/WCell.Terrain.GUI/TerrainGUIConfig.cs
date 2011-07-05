@@ -44,8 +44,9 @@ namespace WCell.Terrain.GUI
         public static bool Initialize()
 		{
             if (!Loaded)
-            {
-                Loaded = true;
+			{
+				Loaded = true;
+				WCellTerrainSettings.Config = new TerrainGUIConfig();
                 Instance.AddVariablesOfAsm<VariableAttribute>(typeof(TerrainGUIConfig).Assembly);
                 
                 try

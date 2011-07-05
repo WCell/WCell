@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using WCell.Constants;
+using WCell.Constants.World;
 using WCell.Util;
 using WCell.Util.Graphics;
 using WCell.Terrain.Collision;
@@ -11,11 +12,6 @@ namespace WCell.Terrain.Recast.NavMesh
 {
 	public class NavMeshBuilder
 	{
-		public static string GenerateTileName(TerrainTile tile)
-		{
-			return string.Format("tile_{0}", TerrainConstants.GetTileName(tile.TileX, tile.TileY));
-		}
-
 		public static int GenerateTileId(TerrainTile tile)
 		{
 			return tile.TileX + tile.TileY * TerrainConstants.TilesPerMapSide;
@@ -26,13 +22,35 @@ namespace WCell.Terrain.Recast.NavMesh
 			return new Point2D(tileId % TerrainConstants.TilesPerMapSide, tileId / TerrainConstants.TilesPerMapSide);
 		}
 
-		public readonly Terrain Terrain;
+		public static bool DoesNavMeshExist(MapId map, int tileX, int tileY)
+		{
+			return File.Exists(GetNavMeshFile(map, tileX, tileY));
+		}
+
+		public static string GetNavMeshFile(MapId map, int tileX, int tileY)
+		{
+			var tileName = TerrainConstants.GetTileName(tileX, tileY);
+			return WCellTerrainSettings.RecastNavMeshFolder + (int)map + "/" + tileName + RecastAPI.NavMeshExtension;
+		}
+
+		public static string GetInputMeshFile(MapId map, int tileX, int tileY)
+		{
+			var tileName = TerrainConstants.GetTileName(tileX, tileY);
+			return WCellTerrainSettings.RecastInputMeshFolder + (int)map + "/" + tileName + RecastAPI.InputMeshExtension;
+		}
+
+		public readonly TerrainTile Tile;
 		private readonly RecastAPI.BuildMeshCallback SmashMeshDlgt;
 
-		public NavMeshBuilder(Terrain terrain)
+		public NavMeshBuilder(TerrainTile tile)
 		{
-			Terrain = terrain;
 			SmashMeshDlgt = SmashMesh;
+			Tile = tile;
+		}
+
+		public Terrain Terrain
+		{
+			get { return Tile.Terrain; }
 		}
 
 		public Vector3 Min
@@ -45,24 +63,6 @@ namespace WCell.Terrain.Recast.NavMesh
 		{
 			get;
 			private set;
-		}
-
-		public string InputMeshPrefix
-		{
-			get
-			{
-				Directory.CreateDirectory(WCellTerrainSettings.RecastInputMeshFolder);
-				return WCellTerrainSettings.RecastInputMeshFolder + Terrain.MapId;
-			}
-		}
-
-		public string NavMeshPrefix
-		{
-			get
-			{
-				Directory.CreateDirectory(WCellTerrainSettings.RecastNavMeshFolder);
-				return WCellTerrainSettings.RecastNavMeshFolder + Terrain.MapId;
-			}
 		}
 
 		public void ExportRecastInputMesh(TerrainTile tile, string filename)
@@ -102,31 +102,34 @@ namespace WCell.Terrain.Recast.NavMesh
 		/// </summary>
 		public void BuildMesh(TerrainTile tile)
 		{
-			// export to file
-			var tileName = GenerateTileName(tile);
-			var inputMeshFile = InputMeshPrefix + "_" + tileName + RecastAPI.InputMeshExtension;
-			var navMeshFile = NavMeshPrefix + "_" + tileName + RecastAPI.NavMeshExtension;
-			ExportRecastInputMesh(tile, inputMeshFile);
+			// let recast build the navmesh and then call our callback
+			var inputFile = GetInputMeshFile(tile.Terrain.MapId, tile.TileX, tile.TileY);
+			var navMeshFile = GetNavMeshFile(tile.Terrain.MapId, tile.TileX, tile.TileY);
+			var exists = DoesNavMeshExist(tile.Terrain.MapId, tile.TileX, tile.TileY);
 
-			// let recast to build the navmesh and then call our callback
-			var isNew = !File.Exists(navMeshFile);
-			if (isNew)
+			if (!exists)
 			{
-				Console.Write("Building new NavMesh - This will take a while...");
+				Directory.CreateDirectory(new FileInfo(inputFile).Directory.FullName);
+				Directory.CreateDirectory(new FileInfo(navMeshFile).Directory.FullName);
+				Console.WriteLine("Building new NavMesh...");
+
+				// export input mesh to file
+				ExportRecastInputMesh(tile, inputFile);
 			}
+
 			var start = DateTime.Now;
 			var result = RecastAPI.BuildMesh(
 				GenerateTileId(tile),
-				inputMeshFile,
+				inputFile,
 				navMeshFile,
 				SmashMeshDlgt);
 
 			if (result == 0)
 			{
-				throw new Exception("Could not build mesh for tile " + tileName + " in map " + Terrain.MapId);
+				throw new Exception("Could not build mesh for tile " + TerrainConstants.GetTileName(tile.TileX, tile.TileY) + " in map " + Terrain.MapId);
 			}
 
-			if (isNew)
+			if (!exists)
 			{
 				Console.WriteLine("Done in {0:0.000}s", (DateTime.Now - start).TotalSeconds);
 			}
@@ -373,7 +376,7 @@ namespace WCell.Terrain.Recast.NavMesh
 				//}
 
 				// create new NavMesh object
-				Terrain.NavMesh = new NavMesh(Terrain, polys, vertices, indices);
+				Tile.NavMesh = new NavMesh(Tile, polys, vertices, indices);
 			}
 		}
 

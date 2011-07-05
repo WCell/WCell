@@ -29,6 +29,14 @@ namespace WCell.Terrain.Collision
 			return shape.FindFirstHitTriangle(ray);
 		}
 
+		public static int FindFirstTriangleUnderneath(this IShape shape, Vector3 pos, out float dist)
+		{
+			// shoot a ray straight down
+			pos.Z += 0.001f;						// make sure, it is slightly above the surface
+			var ray = new Ray(pos, Vector3.Down);
+			return shape.FindFirstHitTriangle(ray, out dist);
+		}
+
 		public static int IntersectFirstTriangle(this IShape shape, Ray selectRay, out Vector3 v)
 		{
 			float distance;

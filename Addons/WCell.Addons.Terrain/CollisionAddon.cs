@@ -1,17 +1,18 @@
 using System.Globalization;
 using WCell.Core.Addons;
 using WCell.Core.Initialization;
+using WCell.Terrain;
 
 namespace WCell.Addons.Terrain
 {
-	public class CollisionAddon : WCellAddonBase
+	public class CollisionAddon : WCellAddonBase<CollisionAddon>
 	{
 		/// <summary>
 		/// The culture-invariant name of this Addon
 		/// </summary>
 		public override string Name
 		{
-			get { return "Terrain Provider"; }
+			get { return "Terrain Addon"; }
 		}
 
 		/// <summary>
@@ -28,7 +29,7 @@ namespace WCell.Addons.Terrain
 		/// </summary>
 		public override string Author
 		{
-			get { return "fubeca"; }
+			get { return "The WCell Team"; }
 		}
 
 		/// <summary>
@@ -52,14 +53,21 @@ namespace WCell.Addons.Terrain
 
 		}
 
+		public override bool UseConfig
+		{
+			get { return true; }
+		}
+
+		public override Util.Variables.IConfiguration CreateConfig()
+		{
+			var cfg = TerrainAddonConfiguration.Instance;
+			WCellTerrainSettings.Config = cfg;
+			return cfg;
+		}
+
 		[Initialization(InitializationPass.First, "Initialize Terrain Addon")]
 		public static void Init()
 		{
-			// TODO: Stream is read beyond end; memory inflation
-            // TODO: Above is because map file format changed in terrain project, update wcell to use new structure
-            // See TileExtractor.cs WriteChunkInfo line 500++
-            // vs WorlMapTile.cs ReadHeightMap line 296++
-			// TerrainMgr.Provider = new FullTerrainProvider();
 		}
 	}
 }

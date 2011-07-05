@@ -9,11 +9,11 @@ namespace WCell.Terrain.Recast.NavMesh
 	{
 		public const ushort ExternalLinkId = 0x8000;
 
-		public readonly Terrain Terrain;
+		public readonly TerrainTile Tile;
 
-		public NavMesh(Terrain terrain, NavMeshPolygon[] polys, Vector3[] vertices, int[] indices)
+		public NavMesh(TerrainTile tile, NavMeshPolygon[] polys, Vector3[] vertices, int[] indices)
 		{
-			Terrain = terrain;
+			Tile = tile;
 			Polygons = polys;
 			Vertices = vertices;
 			Indices = indices;

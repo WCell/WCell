@@ -34,6 +34,11 @@ namespace WCell.Constants
 		public const float MaxHeight = 2048;
 
 		/// <summary>
+		/// The lowest possible Z component on a Map
+		/// </summary>
+		public const float MinHeight = 2048;
+
+		/// <summary>
 		/// The length of a side of the 64x64 map
 		/// </summary>
 		public const float MapLength = ((TilesPerMapSide * ChunksPerTileSide) * ((150.0f / 36.0f) * UnitsPerChunkSide));
@@ -95,6 +100,7 @@ namespace WCell.Constants
 			TilePositionToWorldPosition(ref tileExtents.Min);
 			TilePositionToWorldPosition(ref tileExtents.Max);
 		}
+
 	}
      
 	public enum FluidType : byte

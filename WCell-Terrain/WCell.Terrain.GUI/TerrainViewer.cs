@@ -77,7 +77,6 @@ namespace WCell.Terrain.GUI
 		SpriteBatch _spriteBatch;
 		SpriteFont _spriteFont;
 
-		private Pathfinder pathfinder;
 		private float globalIlluminationLevel;
 		private TerrainTile m_Tile;
 
@@ -130,7 +129,7 @@ namespace WCell.Terrain.GUI
 
 		public IShape Shape
 		{
-			get { return Terrain.NavMesh; }
+			get { return Tile.NavMesh; }
 		}
 
 		/// <summary>
@@ -201,9 +200,9 @@ namespace WCell.Terrain.GUI
 
 			Components.Add(new AxisRenderer(this));
 			Components.Add(new TileRenderer(this));
-			if (Tile.Terrain.NavMesh != null)
+			if (Tile.NavMesh != null)
 			{
-				Components.Add(new RecastSolidRenderer(this, _graphics));
+				Components.Add(new RecastSolidRenderer(this));
 			}
 			Components.Add(TriangleSelector = new GenericRenderer(this));
 
@@ -605,18 +604,14 @@ namespace WCell.Terrain.GUI
 			if (selectedPoints.Count > 1)
 			{
 				var visited = new HashSet<int>();
-				if (pathfinder == null)
-				{
-					pathfinder = new Pathfinder();
-				}
-				pathfinder.Shape = Shape;
-				var current = pathfinder.FindPath(1, selectedPoints[0], selectedPoints[1], out visited);
+
+				var current = Tile.Pathfinder.FindPath(selectedPoints[0], selectedPoints[1], out visited);
 
 				if (current.IsNull) return;
 
 				foreach (var tri in visited)
 				{
-					SelectTriangle(tri, true, Color.Red);
+					SelectTriangle(tri, true, new Color(120, 10, 10));
 				}
 
 				while (!current.IsNull)
@@ -667,7 +662,7 @@ namespace WCell.Terrain.GUI
 
 		private void SelectTriangle(int index, bool add)
 		{
-			SelectTriangle(index, add, Color.Yellow);
+			SelectTriangle(index, add, new Color(120, 120, 20));
 		}
 
 		void SelectTriangle(int index, bool add, Color color)
@@ -834,7 +829,7 @@ namespace WCell.Terrain.GUI
 							{
 								var node = zoneNodes[(int)zone];
 								var coords = new Point2D(x, y);
-								if (!WCellTerrainSettings.GetDefaultMPQFinder().FileExists(ADTReader.GetFilename((MapId)map, coords)))
+								if (!WCellTerrainSettings.GetDefaultMPQFinder().FileExists(ADTReader.GetFilename((MapId)map, coords.X, coords.Y)))
 								{
 									// tile does not exist
 									continue;
@@ -937,7 +932,7 @@ namespace WCell.Terrain.GUI
 					{
 
 						// load new tile
-						Tile = TerrainViewerProgram.GetOrCreateTile(tnode.Map, tnode.Coords);
+						Tile = TerrainViewerProgram.GetOrCreateTile(tnode.Map, tnode.Coords.X, tnode.Coords.Y);
 					};
 
 				worker.RunWorkerCompleted += (a, b) =>

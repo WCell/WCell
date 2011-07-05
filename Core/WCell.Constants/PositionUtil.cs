@@ -1,19 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using NLog;
-using WCell.Terrain.GUI;
-using WCell.Constants;
 using WCell.Util.Graphics;
 
-namespace WCell.Terrain
+namespace WCell.Constants
 {
 	public static class PositionUtil
 	{
-		private static readonly Logger log = LogManager.GetCurrentClassLogger();
-
 		/// <summary>
 		/// Calculates which Tile the given position belongs to on a Map.
 		/// </summary>
@@ -26,10 +18,10 @@ namespace WCell.Terrain
 			tileX = (int)GetTileFraction(worldPos.Y);
 			tileY = (int)GetTileFraction(worldPos.X);
 
-			return VerifyPoint2D(worldPos, tileX, tileY);
+			return VerifyPoint2D(tileX, tileY);
 		}
 
-		public static void GetXYForPos(Vector3 worldPos, out int chunkX, out int chunkY)
+		public static void GetChunkXYForPos(Vector3 worldPos, out int chunkX, out int chunkY)
 		{
 			var tileFractionX = GetTileFraction(worldPos.X);
 			var tileFractionY = GetTileFraction(worldPos.Y);
@@ -38,10 +30,8 @@ namespace WCell.Terrain
 			chunkY = (int)GetChunkFraction(tileFractionY);
 		}
 
-		public static Rect GetTileBoundingRect(TileIdentifier tileId)
+		public static Rect GetTileBoundingRect(int tileX, int tileY)
 		{
-			var tileX = tileId.X;
-			var tileY = tileId.Y;
 			var x = TerrainConstants.CenterPoint - (tileX * TerrainConstants.TileSize);
 			var botX = x - TerrainConstants.TileSize;
 			var y = TerrainConstants.CenterPoint - (tileY * TerrainConstants.TileSize);
@@ -60,29 +50,27 @@ namespace WCell.Terrain
 			return (tileFraction - (int)tileFraction) * TerrainConstants.ChunksPerTileSide;
 		}
 
-		private static bool VerifyPoint2D(Vector3 worldPos, int tileX, int tileY)
+		public static bool VerifyPoint2D(int tileX, int tileY)
 		{
 			var result = true;
 			if (tileX < 0)
 			{
-				log.Error(String.Format("WorldPos: {0} is off the map. tileX < 0.", worldPos));
+				//log.Error(String.Format("WorldPos: {0} is off the map. tileX < 0.", worldPos));
 				result = false;
 			}
 			if (tileX >= TerrainConstants.TilesPerMapSide)
 			{
-				log.Error(String.Format("WorldPos: {0} is off the map. tileX >= {1}.", worldPos,
-										TerrainConstants.TilesPerMapSide));
+				//log.Error(String.Format("WorldPos: {0} is off the map. tileX >= {1}.", worldPos, TerrainConstants.TilesPerMapSide));
 				result = false;
 			}
 			if (tileY < 0)
 			{
-				log.Error(String.Format("WorldPos: {0} is off the map. tileY < 0.", worldPos));
+				//log.Error(String.Format("WorldPos: {0} is off the map. tileY < 0.", worldPos));
 				result = false;
 			}
 			if (tileX >= TerrainConstants.TilesPerMapSide)
 			{
-				log.Error(String.Format("WorldPos: {0} is off the map. tileX >= {1}.", worldPos,
-										TerrainConstants.TilesPerMapSide));
+				//log.Error(String.Format("WorldPos: {0} is off the map. tileX >= {1}.", worldPos, TerrainConstants.TilesPerMapSide));
 				result = false;
 			}
 			return result;
@@ -93,7 +81,7 @@ namespace WCell.Terrain
 			var tileX = (int)GetTileFraction(worldPos.Y);
 			var tileY = (int)GetTileFraction(worldPos.X);
 
-			VerifyPoint2D(worldPos, tileX, tileY);
+			VerifyPoint2D(tileX, tileY);
 
 			return new Point2D
 			{
@@ -109,7 +97,7 @@ namespace WCell.Terrain
 			var tileX = (int)tileXFraction;
 			var tileY = (int)tileYFraction;
 
-			VerifyPoint2D(worldPos, tileX, tileY);
+			VerifyPoint2D(tileX, tileY);
 
 			tileCoord = new Point2D
 			{
@@ -136,7 +124,7 @@ namespace WCell.Terrain
 			var tileX = (int)tileXFraction;
 			var tileY = (int)tileYFraction;
 
-			VerifyPoint2D(worldPos, tileX, tileY);
+			VerifyPoint2D(tileX, tileY);
 
 			tileCoord = new Point2D
 			{
@@ -178,7 +166,7 @@ namespace WCell.Terrain
 			var tileX = (int)tileXFraction;
 			var tileY = (int)tileYFraction;
 
-			VerifyPoint2D(worldPos, tileX, tileY);
+			VerifyPoint2D(tileX, tileY);
 
 			tileCoord = new Point2D
 			{
@@ -225,7 +213,7 @@ namespace WCell.Terrain
 			return ((chunkLocFraction - ((int)chunkLocFraction)) * TerrainConstants.UnitsPerChunkSide);
 		}
 
-		private static void VerifyPoint2D(Vector3 worldPos, int tileX, int tileY, int chunkX, int chunkY)
+		public static void VerifyPoint2D(Vector3 worldPos, int tileX, int tileY, int chunkX, int chunkY)
 		{
 			if (chunkX < 0)
 				throw new InvalidDataException(
@@ -245,7 +233,7 @@ namespace WCell.Terrain
 								  worldPos, tileX, tileY, TerrainConstants.ChunksPerTileSide));
 		}
 
-		private static void VerifyHeightMapCoord(Vector3 worldPos, int tileX, int tileY, int chunkX, int chunkY, int heightMapX, int heightMapY)
+		public static void VerifyHeightMapCoord(Vector3 worldPos, int tileX, int tileY, int chunkX, int chunkY, int heightMapX, int heightMapY)
 		{
 			if (heightMapX < 0)
 				throw new InvalidDataException(

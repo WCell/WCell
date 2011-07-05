@@ -20,17 +20,22 @@ namespace WCell.RealmServer.Global
 
 	public class EmptyTerrain : ITerrain
 	{
-	    public bool HasLOS(Vector3 startPos, Vector3 endPos)
-	    {
-	        return true;
-	    }
-
-	    public void QueryDirectPathAsync(PathQuery query)
+		public bool IsAvailable(int tileX, int tileY)
 		{
-			query.Reply(new Path(query.To));
+			return false;
 		}
 
-		public float QueryHeightUnderneath(Vector3 worldPos)
+		public bool HasLOS(Vector3 startPos, Vector3 endPos)
+		{
+			return true;
+		}
+
+		public void FindPath(PathQuery query)
+		{
+			query.Reply(new[] { query.To });
+		}
+
+		public float GetHeightUnderneath(Vector3 worldPos)
 		{
 			return worldPos.Z;
 		}

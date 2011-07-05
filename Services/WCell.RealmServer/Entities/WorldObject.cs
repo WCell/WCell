@@ -440,7 +440,7 @@ namespace WCell.RealmServer.Entities
 		{
 			get
 			{
-				if (!m_master.IsInWorld)
+				if (m_master != null && !m_master.IsInWorld)
 				{
 					m_master = null;
 				}
@@ -521,11 +521,15 @@ namespace WCell.RealmServer.Entities
 
 		#region Positions & Distances
 		/// <summary>
-		/// The Terrain height at this object's current location
+		/// The Terrain underneath this object's current location
 		/// </summary>
 		public float TerrainHeight
 		{
-			get { return Map.Terrain.QueryHeightUnderneath(m_position); }
+			get
+			{
+				// use some rough guestimate for the object's head's position
+				return Map.Terrain.GetHeightUnderneath(m_position + ScaleX);
+			}
 		}
 
 		/// <summary>

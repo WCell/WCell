@@ -33,6 +33,9 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		protected Vector3 m_destination;
 
+		protected Vector3[] _currentPath;
+		protected int _currentPathIndex;
+
 		/// <summary>
 		/// The movement type (walking, running or flying)
 		/// </summary>
@@ -143,8 +146,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Remaining movement time to current Destination (in millis)
 		/// </summary>
-		/// <returns>projected movement time</returns>
-		public virtual uint RemainingTime
+		public uint RemainingTime
 		{
 			get
 			{
@@ -175,22 +177,11 @@ namespace WCell.RealmServer.Entities
 		#endregion
 
 		#region MoveTo / Update / Stop
-
 		/// <summary>
 		/// Starts the MovementAI
 		/// </summary>
 		/// <returns>Whether already arrived</returns>
-		public bool MoveTo(Vector3 destination)
-		{
-			// TODO: Figure out when to send a query
-			return MoveTo(destination, false);
-		}
-
-		/// <summary>
-		/// Starts the MovementAI
-		/// </summary>
-		/// <returns>Whether already arrived</returns>
-		public bool MoveTo(Vector3 destination, bool findPath)
+		public bool MoveTo(Vector3 destination, bool findPath = true)
 		{
 			m_destination = destination;
 			if (IsAtDestination)
@@ -201,7 +192,9 @@ namespace WCell.RealmServer.Entities
 			if (findPath)
 			{
 				m_currentQuery = new PathQuery(m_owner.Position, ref destination, m_owner.ContextHandler, OnPathQueryReply);
-				m_owner.Map.QueryDirectPath(m_currentQuery);
+
+				// TODO: Consider flying units & liquid levels
+				m_owner.Map.Terrain.FindPath(m_currentQuery);
 			}
 			else if (m_owner.CanMove)
 			{
@@ -281,7 +274,13 @@ namespace WCell.RealmServer.Entities
 			}
 			m_currentQuery = null;
 
-			// TODO: Support paths
+			if (query.Path != null)
+			{
+				_currentPathIndex = 0;
+				_currentPath = query.Path;
+
+				m_destination = _currentPath[_currentPathIndex];
+			}
 			MoveToDestination();
 		}
 
@@ -301,8 +300,25 @@ namespace WCell.RealmServer.Entities
 			{
 				// move target directly to the destination
 				m_owner.Map.MoveObject(m_owner, ref m_destination);
-				m_moving = false;
-				return true;
+				if (_currentPath != null)
+				{
+					if (++_currentPathIndex < _currentPath.Length - 1)
+					{
+						// go to next destination
+						m_destination = _currentPath[_currentPathIndex];
+						MoveToDestination();
+					}
+					else
+					{
+						_currentPath = null;
+					}
+					return false;
+				}
+				else
+				{
+					m_moving = false;
+					return true;
+				}
 			}
 
 			// otherwise we've passed delta part of the path

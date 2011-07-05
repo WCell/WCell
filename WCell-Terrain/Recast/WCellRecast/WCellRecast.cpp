@@ -11,7 +11,7 @@
 
 int __cdecl buildMeshFromFile(int userId, const char* inputFilename, const char* navmeshFilename, BuildMeshCallback callback) 
 {
-	BuildContext ctx;
+	WCellBuildContext ctx;
 	dtNavMesh* mesh = NULL;
 
 	if (navmeshFilename) {
@@ -183,7 +183,7 @@ int __cdecl buildMeshFromFile(int userId, const char* inputFilename, const char*
 
 float walkableRadius = 1;
 
-dtNavMesh* buildMesh(InputGeom* geom, BuildContext* ctx)
+dtNavMesh* buildMesh(InputGeom* geom, WCellBuildContext* ctx)
 {
 	dtNavMesh* mesh;
 
@@ -557,7 +557,7 @@ unsigned char* buildTileMesh(const int tx, const int ty,
 		}
 		
 		// Update poly flags from areas.
-		for (int i = 0; i < m_pmesh->npolys; ++i)
+		/*for (int i = 0; i < m_pmesh->npolys; ++i)
 		{
 			if (m_pmesh->areas[i] == RC_WALKABLE_AREA)
 				m_pmesh->areas[i] = SAMPLE_POLYAREA_GROUND;
@@ -576,7 +576,7 @@ unsigned char* buildTileMesh(const int tx, const int ty,
 			{
 				m_pmesh->flags[i] = SAMPLE_POLYFLAGS_WALK | SAMPLE_POLYFLAGS_DOOR;
 			}
-		}
+		}*/
 		
 		dtNavMeshCreateParams params;
 		memset(&params, 0, sizeof(params));
@@ -621,7 +621,6 @@ unsigned char* buildTileMesh(const int tx, const int ty,
 	ctx->stopTimer(RC_TIMER_TOTAL);
 	
 	// Show performance stats.
-	duLogBuildTimes(*ctx, ctx->getAccumulatedTime(RC_TIMER_TOTAL));
 	ctx->log(RC_LOG_PROGRESS, ">> Polymesh: %d vertices  %d polygons", m_pmesh->nverts, m_pmesh->npolys);
 
 	dataSize = navDataSize;
@@ -728,7 +727,7 @@ dtNavMesh* loadMesh(const char* path)
 //void buildMesh(void* buildArg, int vertCount, const float* verts, float minh, float maxh, BuildMeshCallback* callback) 
 //{
 //	//InputGeom geom;
-//	//BuildContext ctx;
+//	//WCellBuildContext ctx;
 //
 //	//// Create input mesh
 //	// ..

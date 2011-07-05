@@ -1,13 +1,10 @@
-﻿using System.Collections.Generic;
-using WCell.Constants;
-using WCell.Terrain.Collision.QuadTree;
-using WCell.Terrain.MPQ;
+﻿using WCell.Constants;
 using WCell.Terrain.MPQ.ADTs;
 using WCell.Util.Graphics;
 
 namespace WCell.Terrain
 {
-	public abstract class TerrainChunk : IQuadObject
+	public abstract class TerrainChunk
 	{
 		/// <summary>
 		/// MCTV Chunk (Height values for the MCNK)

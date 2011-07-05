@@ -49,7 +49,7 @@ namespace WCell.Terrain.GUI.Renderers
 			for (var v = 0; v < Tile.TerrainVertices.Length; v++)
 			{
 				var vertex1 = Tile.TerrainVertices[v];
-
+				XNAUtil.TransformWoWCoordsToXNACoords(ref vertex1);
 				var vertexPosNmlCol1 = new VertexPositionNormalColored(vertex1.ToXna(),
 																		TerrainColor,
 																		Vector3.Up);
@@ -89,12 +89,6 @@ namespace WCell.Terrain.GUI.Renderers
 			_cachedVertices = tempVertices.ToArray();
 
 			_renderCached = true;
-
-			for (var i = 0; i < _cachedVertices.Length; i++)
-			{
-				XNAUtil.TransformWoWCoordsToXNACoords(ref _cachedVertices[i]);
-				_cachedVertices[i].Normal.Normalize();
-			}
 		}
 		#endregion
 	}

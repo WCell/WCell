@@ -102,6 +102,11 @@ namespace WCell.Terrain.GUI.Renderers
 				_cachedVertices[index2] = vertex2;
 				_cachedVertices[index3] = vertex3;
 			}
+
+			for (int i = 0; i < _cachedVertices.Length; i++)
+			{
+				_cachedVertices[i].Normal.Normalize();
+			}
 		}
 		protected abstract void BuildVerticiesAndIndicies();
     }

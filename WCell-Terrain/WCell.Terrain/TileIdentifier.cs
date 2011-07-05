@@ -5,6 +5,7 @@ using System.Linq;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using WCell.Constants;
 using WCell.Core.DBC;
 using WCell.Constants.World;
 using WCell.Terrain.MPQ.DBC;

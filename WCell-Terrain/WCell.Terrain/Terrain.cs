@@ -7,6 +7,7 @@ using WCell.Constants;
 using WCell.Constants.World;
 using WCell.Core.Paths;
 using WCell.Core.Terrain;
+using WCell.Terrain.Collision;
 using WCell.Terrain.Recast.NavMesh;
 using WCell.Util.Graphics;
 using Path = System.IO.Path;
@@ -19,13 +20,6 @@ namespace WCell.Terrain
 	///</summary>
 	public abstract class Terrain : ITerrain
 	{
-		public static bool DoesMapExist(MapId mapId)
-		{
-			// TODO: Fix DoesMapExist
-			throw new NotImplementedException();
-		}
-
-
 		///<summary>
 		/// A profile of the tiles in this map
 		/// Contains true if Tile [y, x] exists
@@ -34,12 +28,15 @@ namespace WCell.Terrain
 
 		public readonly TerrainTile[,] Tiles = new TerrainTile[TerrainConstants.TilesPerMapSide, TerrainConstants.TilesPerMapSide];
 
-		protected Terrain(MapId mapId)
+		protected Terrain(MapId mapId, bool loadOnDemand = true)
 		{
 			MapId = mapId;
+			LoadOnDemand = loadOnDemand;
 		}
 
 		public abstract bool IsWMOOnly { get; }
+
+    	public abstract void FillTileProfile();
 
 		public MapId MapId
 		{
@@ -47,28 +44,24 @@ namespace WCell.Terrain
 			private set;
 		}
 
-    	public NavMesh NavMesh
+    	public bool LoadOnDemand
     	{
     		get;
 			set;
     	}
 
-		/// <summary>
-		/// Currently we cannot generate global nav meshes yet (would take more than a day to do that for one continent anyway).
-		/// We can only generate the mesh of one tile.
-		/// </summary>
-		public NavMesh GetOrCreateNavMesh(TerrainTile tile)
-		{
-			if (NavMesh == null)
-			{
-				var builder = new NavMeshBuilder(this);
-				builder.BuildMesh(tile);
-			}
-			return NavMesh;
-		}
-
 		#region Terrain Queries
-		public bool HasLOS(Vector3 startPos, Vector3 endPos)
+
+    	public bool IsAvailable(int tileX, int tileY)
+    	{
+			if (PositionUtil.VerifyPoint2D(tileX, tileY))
+			{
+				return TileProfile[tileX, tileY];
+			}
+			return false;
+    	}
+
+    	public bool HasLOS(Vector3 startPos, Vector3 endPos)
 		{
 			//float tMax;
 			//var ray = CollisionUtil.CreateRay(startPos, endPos, out tMax);
@@ -102,18 +95,65 @@ namespace WCell.Terrain
 			return true;
 		}
 
-		public float QueryHeightUnderneath(Vector3 worldPos)
+		public float GetHeightUnderneath(Vector3 worldPos)
 		{
-			// TODO: Use simple ray casting
-			// PositionUtil.GetHeightMapFraction(worldPos, out tileCoord, out chunkCoord, out point2D);
-			return 0;
+			int tileX, tileY;
+			if (PositionUtil.GetTileXYForPos(worldPos, out tileX, out tileY))
+			{
+				// shoot a ray straight down
+				var tile = GetOrLoadTile(tileX, tileY);
+				if (tile != null)
+				{
+					float dist;
+					if (tile.FindFirstTriangleUnderneath(worldPos, out dist) != -1)
+					{
+						return worldPos.Z - dist;
+					}
+					return TerrainConstants.MinHeight;		// TODO: Minimal z value
+				}
+			}
+			return float.NaN;								// Could not reliably lookup the value
 		}
 
-		public Vector3[] GetDirectPath(Vector3 from, Vector3 to)
+		public void FindPath(PathQuery query)
 		{
-			
-			// TODO: Use pathfinder/recast
-			return null;
+			var wayPoints = FindPath(query.From, query.To);
+			query.Reply(wayPoints);
+		}
+
+		/// <summary>
+		/// TODO: Connect meshes between different tiles
+		/// </summary>
+		public Vector3[] FindPath(Vector3 from, Vector3 to)
+		{
+			int fromX, fromY, toX, toY;
+			if (!PositionUtil.GetTileXYForPos(from, out fromX, out fromY)) return null;
+			if (!PositionUtil.GetTileXYForPos(to, out toX, out toY)) return null;
+
+			if (toX != fromX || toY != fromY)
+			{
+				return null;
+			}
+
+			TerrainTile tile1, tile2;
+			if (LoadOnDemand)
+			{
+				tile1 = GetOrLoadTile(fromX, fromY);
+				//tile2 = GetOrLoadTile(toX, toY);
+			}
+			else
+			{
+				tile1 = Tiles[fromX, fromY];
+				//tile2 = Tiles[toX, toY];
+			}
+
+			// cannot traverse tiles yet
+			if (tile1 == null)
+			{
+				return null;
+			}
+
+			return tile1.Pathfinder.FindPathUnflavored(from, to);
 		}
 
 		//public FluidType GetFluidTypeAtPoint(Vector3 worldPos)
@@ -126,31 +166,98 @@ namespace WCell.Terrain
 
 		//    return tile.GetFluidType(chunkCoord);
 		//}
-
-        public void QueryDirectPathAsync(PathQuery query)
-        {
-            var wayPoints = GetDirectPath(query.From, query.To);
-            query.Reply(new Core.Paths.Path(wayPoints));
-        }
 		#endregion
 
-		public TerrainTile GetTile(Point2D tileCoord)
+		public TerrainTile GetOrLoadTile(int x, int y)
 		{
 			// get loaded tile
-			var tile = Tiles[tileCoord.X, tileCoord.Y];
+			var tile = Tiles[x, y];
 			if (tile != null) return tile;
 
 			// check whether the tile exists
-			if (!TileProfile[tileCoord.X, tileCoord.Y]) return null;
+			if (!TileProfile[x, y]) return null;
 
 			// if it exists, try to load it from disk
-			tile = LoadTile(tileCoord);
-			TileProfile[tileCoord.X, tileCoord.Y] = tile != null;
+			tile = LoadTile(x, y);
+			TileProfile[x, y] = tile != null;
 			
 			return tile;
 		}
 
-    	protected abstract TerrainTile LoadTile(Point2D tileCoord);
+		public bool EnsureGroupLoaded(int x, int y)
+		{
+			var result = true;
+
+			result = GetOrLoadTile(x, y) != null;
+
+			var origX = x;
+			var origY = y;
+			
+			/* 
+			 * The given coordinates represent the center tile T and we want to make sure
+			 * that all X's are loaded as well.
+			 * 
+			 * x x x
+			 * x T x
+			 * x x x
+			 */
+
+			x = origX - 1;
+			FixCoordsXMin(ref x);
+			result = result && GetOrLoadTile(x, y) != null;
+
+			y = origY - 1;
+			FixCoordsYMin(ref y);
+			result = result && GetOrLoadTile(x, y) != null;
+
+			y = origY + 1;
+			FixCoordsYMax(ref y);
+			result = result && GetOrLoadTile(x, y) != null;
+
+
+			x = origX + 1;
+			FixCoordsXMax(ref x);
+			result = result && GetOrLoadTile(x, y) != null;
+
+			y = origY - 1;
+			FixCoordsYMin(ref y);
+			result = result && GetOrLoadTile(x, y) != null;
+
+			y = origY + 1;
+			FixCoordsYMax(ref y);
+			result = result && GetOrLoadTile(x, y) != null;
+
+
+			x = origX;
+			y = origY - 1;
+			FixCoordsYMin(ref y);
+			result = result && GetOrLoadTile(x, y) != null;
+
+			y = origY + 1;
+			FixCoordsYMax(ref y);
+			result = result && GetOrLoadTile(x, y) != null;
+
+			return result;
+		}
+
+		static void FixCoordsXMin(ref int x)
+		{
+			x = Math.Max(x, 0);
+		}
+		static void FixCoordsXMax(ref int x)
+		{
+			x = Math.Min(x, TerrainConstants.TilesPerMapSide);
+		}
+		static void FixCoordsYMin(ref int y)
+		{
+			y = Math.Max(y, 0);
+		}
+		static void FixCoordsYMax(ref int y)
+		{
+			y = Math.Min(y, TerrainConstants.TilesPerMapSide);
+		}
+
+    	protected abstract TerrainTile LoadTile(int x, int y);
 
     	//public void DumpMapTileChunk(Vector3 worldPos)
     	//{
@@ -162,187 +269,5 @@ namespace WCell.Terrain
 
     	//    tile.DumpChunk(chunkCoord);
     	//}
-
-		#region Recast
-		// TODO: Change it to become generic and add recast-specific changes in a recast-related class
-		//public void GetRecastTriangleMesh(out Vector3[] vertices, out int[] indices)
-		//{
-		//    int vecCount;
-		//    int idxCount;
-		//    CalcArraySizes(out vecCount, out idxCount);
-
-		//    vertices = new Vector3[vecCount];
-		//    indices = new int[idxCount];
-
-		//    var vecOffset = 0;
-		//    var idxOffset = 0;
-
-		//    // Get the ADT triangles
-		//    foreach (var tile in m_TileLoader.MapTiles)
-		//    {
-		//        if (tile == null) continue;
-
-		//        // The heightmap information
-		//        idxOffset = CopyIndicesToRecastArray(tile.Indices, indices, idxOffset, vecOffset);
-		//        vecOffset = CopyVectorsToRecastArray(tile.TerrainVertices, vertices, vecOffset);
-
-		//        // The liquid information
-		//        //idxOffset = CopyIndicesToRecastArray(tile.LiquidIndices, indices, idxOffset, vecOffset);
-		//        //vecOffset = CopyVectorsToRecastArray(tile.LiquidVertices, vertices, vecOffset);
-		//    }
-
-		//    // Get the WMO triangles
-		//    idxOffset = CopyIndicesToRecastArray(m_WMOLoader.WmoIndices, indices, idxOffset, vecOffset);
-		//    vecOffset = CopyVectorsToRecastArray(m_WMOLoader.WmoVertices, vertices, vecOffset);
-
-		//    // Get the M2 triangles
-		//    idxOffset = CopyIndicesToRecastArray(m_M2Loader.RenderIndices, indices, idxOffset, vecOffset);
-		//    vecOffset = CopyVectorsToRecastArray(m_M2Loader.RenderVertices, vertices, vecOffset);
-		//}
-
-		//private void CalcArraySizes(out int vecCount, out int idxCount)
-		//{
-		//    vecCount = CalcVecArraySize(true, false, true, true);
-		//    idxCount = CalcIntArraySize(true, false, true, true);
-		//}
-
-		//private static int CopyIndicesToRecastArray(IList<int> renderIndices, IList<int> indices, int idxOffset, int vecOffset)
-		//{
-		//    if (renderIndices != null)
-		//    {
-		//        const int second = 2;
-		//        const int third = 1;
-
-		//        var length = renderIndices.Count / 3;
-		//        for (var i = 0; i < length; i++)
-		//        {
-		//            var idx = i * 3;
-		//            var index = renderIndices[idx + 0];
-		//            indices[idxOffset + idx + 0] = (index + vecOffset);
-
-		//            // reverse winding for recast
-		//            index = renderIndices[idx + second];
-		//            indices[idxOffset + idx + 1] = (index + vecOffset);
-
-		//            index = renderIndices[idx + third];
-		//            indices[idxOffset + idx + 2] = (index + vecOffset);
-		//        }
-		//        idxOffset += renderIndices.Count;
-		//    }
-		//    return idxOffset;
-		//}
-
-		//private static int CopyVectorsToRecastArray(IList<Vector3> renderVertices, IList<Vector3> vertices, int vecOffset)
-		//{
-		//    if (renderVertices != null)
-		//    {
-		//        var length = renderVertices.Count;
-		//        for (var i = 0; i < length; i++)
-		//        {
-		//            var vertex = renderVertices[i];
-		//            PositionUtil.TransformWoWCoordsToRecastCoords(ref vertex);
-		//            vertices[vecOffset + i] = vertex;
-		//        }
-		//        vecOffset += renderVertices.Count;
-		//    }
-		//    return vecOffset;
-		//}
-
-		//private int CalcIntArraySize(bool includeTerrain, bool includeLiquid, bool includeWMO, bool includeM2)
-		//{
-		//    var count = 0;
-		//    List<int> renderIndices;
-		//    for (var t = 0; t < m_TileLoader.MapTiles.Count; t++)
-		//    {
-		//        var tile = m_TileLoader.MapTiles[t];
-		//        if (includeTerrain)
-		//        {
-		//            renderIndices = tile.Indices;
-		//            if (renderIndices != null)
-		//            {
-		//                count += renderIndices.Count;
-		//            }
-		//        }
-
-		//        if (includeLiquid)
-		//        {
-		//            renderIndices = tile.LiquidIndices;
-		//            if (renderIndices == null) continue;
-		//            count += renderIndices.Count;
-		//        }
-		//    }
-
-		//    // Get the WMO triangles
-		//    if (includeWMO)
-		//    {
-
-		//        renderIndices = m_WMOLoader.WmoIndices;
-		//        if (renderIndices != null)
-		//        {
-		//            count += renderIndices.Count;
-		//        }
-		//    }
-
-		//    // Get the M2 triangles
-		//    if (includeM2)
-		//    {
-		//        renderIndices = m_M2Loader.RenderIndices;
-		//        if (renderIndices != null)
-		//        {
-		//            count += renderIndices.Count;
-		//        }
-		//    }
-
-		//    return count;
-		//}
-
-		//private int CalcVecArraySize(bool includeTerrain, bool includeLiquid, bool includeWMO, bool includeM2)
-		//{
-		//    var count = 0;
-		//    List<Vector3> renderVertices;
-		//    foreach (var tile in m_TileLoader.MapTiles)
-		//    {
-		//        if (tile == null) continue;
-
-		//        if (includeTerrain)
-		//        {
-		//            renderVertices = tile.TerrainVertices;
-		//            if (renderVertices != null)
-		//            {
-		//                count += renderVertices.Count;
-		//            }
-		//        }
-
-		//        if (includeLiquid)
-		//        {
-		//            renderVertices = tile.LiquidVertices;
-		//            if (renderVertices == null) continue;
-		//            count += renderVertices.Count;
-		//        }
-		//    }
-
-		//    // Get the WMO triangles
-		//    if (includeWMO)
-		//    {
-		//        renderVertices = m_WMOLoader.WmoVertices;
-		//        if (renderVertices != null)
-		//        {
-		//            count += renderVertices.Count;
-		//        }
-		//    }
-
-		//    // Get the M2 triangles
-		//    if (includeM2)
-		//    {
-		//        renderVertices = m_M2Loader.RenderVertices;
-		//        if (renderVertices != null)
-		//        {
-		//            count += renderVertices.Count;
-		//        }
-		//    }
-
-		//    return count;
-		//}
-		#endregion
 	}
 }

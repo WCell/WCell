@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using NLog;
 using WCell.Constants;
@@ -8,6 +9,7 @@ using WCell.MPQTool;
 using WCell.Terrain.MPQ.ADTs;
 using WCell.Util;
 using WCell.Util.Graphics;
+using WCell.Util.Strings;
 
 namespace WCell.Terrain.Serialization
 {
@@ -25,16 +27,23 @@ namespace WCell.Terrain.Serialization
 		public const string FileTypeId = "sadt";
 		public const string FileExtension = "." + FileTypeId;
 
-		private static readonly Logger log = LogManager.GetCurrentClassLogger();
+		public static string GetMapDirectory(MapId map)
+		{
+			return Path.Combine(WCellTerrainSettings.SimpleMapDir, ((int)map).ToString());
+		}
 
 		public static string GetFileName(MapId map, int tileX, int tileY)
 		{
-			var path = Path.Combine(WCellTerrainSettings.SimpleMapDir, map.ToString());
-			if (!Directory.Exists(path))
-			{
-				Directory.CreateDirectory(path);
-			}
+			var path = GetMapDirectory(map);
 			return Path.Combine(path, TerrainConstants.GetTileName(tileX, tileY) + FileExtension);
+		}
+
+		public static bool GetTileCoordsFromFileName(string file, out int x, out int y)
+		{
+			var ss = new StringStream(file);
+			x = ss.NextInt(-1, "_");
+			y = ss.NextInt(-1, ".");
+			return x >= 0 && y >= 0;
 		}
 
 		/// <summary>
@@ -44,6 +53,11 @@ namespace WCell.Terrain.Serialization
 		public static void WriteADT(ADT adt)
 		{
 			// Map data should only be stored per map
+			var path = GetMapDirectory(adt.Terrain.MapId);
+			if (!Directory.Exists(path))
+			{
+				Directory.CreateDirectory(path);
+			}
 			using (var file = File.Create(GetFileName(adt.Terrain.MapId, adt.TileX, adt.TileY)))
 			{
 				using (var writer = new BinaryWriter(file))

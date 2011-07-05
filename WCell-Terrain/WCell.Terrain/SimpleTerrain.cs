@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using WCell.Constants.World;
@@ -13,10 +14,36 @@ namespace WCell.Terrain
 	/// </summary>
 	public class SimpleTerrain : Terrain
 	{
+		public delegate TerrainTile TerrainLoader(SimpleTerrain terrain, int x, int y);
+
+		/// <summary>
+		/// Creates a dummy Terrain and loads the given tile into it
+		/// </summary>
+		public static TerrainTile LoadTile(MapId map, int x, int y)
+		{
+			var terrain = new SimpleTerrain(map);
+			terrain.TileProfile[x, y] = true;
+			return terrain.LoadTile(x, y);
+		}
+
+
 		internal bool m_IsWmoOnly;
 
-		public SimpleTerrain(MapId mapId) : base(mapId)
+		public SimpleTerrain(MapId mapId, bool loadOnDemand = true)
+			: this(mapId, SimpleADTReader.ReadTile, loadOnDemand)
 		{
+		}
+
+		public SimpleTerrain(MapId mapId, TerrainLoader loader, bool loadOnDemand = true)
+			: base(mapId, loadOnDemand)
+		{
+			Loader = loader;
+		}
+
+		public TerrainLoader Loader
+		{
+			get;
+			set;
 		}
 
 		public override bool IsWMOOnly
@@ -24,19 +51,24 @@ namespace WCell.Terrain
 			get { return m_IsWmoOnly; }
 		}
 
-		protected override TerrainTile LoadTile(Point2D tileCoord)
+		public override void FillTileProfile()
 		{
-			return SimpleADTReader.ReadTile(this, tileCoord);
+			var dir = new DirectoryInfo(SimpleADTWriter.GetMapDirectory(MapId));
+			if (!dir.Exists) return;
+
+			foreach (var file in dir.EnumerateFiles())
+			{
+				int tileX, tileY;
+				if (SimpleADTWriter.GetTileCoordsFromFileName(file.Name, out tileX, out tileY))
+				{
+					TileProfile[tileX, tileY] = true;
+				}
+			}
 		}
 
-		/// <summary>
-		/// Creates a dummy Terrain and loads the given tile into it
-		/// </summary>
-		public static TerrainTile LoadTile(MapId map, Point2D coords)
+		protected override TerrainTile LoadTile(int x, int y)
 		{
-			var terrain = new SimpleTerrain(map);
-			terrain.TileProfile[coords.X, coords.Y] = true;
-			return terrain.LoadTile(coords);
+			return Loader(this, x, y);
 		}
 	}
 }

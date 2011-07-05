@@ -6,11 +6,13 @@ namespace WCell.Core.Paths
 {
 	public class PathQuery
 	{
+		public delegate void PathQueryCallback(PathQuery query);
+
 		private Vector3 from, to;
 		private readonly IContextHandler m_ContextHandler;
-		private Action<PathQuery> callback;
+		private PathQueryCallback callback;
 
-		public PathQuery(Vector3 from, ref Vector3 to, IContextHandler contextHandler, Action<PathQuery> callback)
+		public PathQuery(Vector3 from, ref Vector3 to, IContextHandler contextHandler, PathQueryCallback callback)
 		{
 			this.from = from;
 			this.to = to;
@@ -18,7 +20,7 @@ namespace WCell.Core.Paths
 			this.callback = callback;
 		}
 
-		public PathQuery(Vector3 from, Vector3 to, IContextHandler contextHandler, Action<PathQuery> callback)
+		public PathQuery(Vector3 from, Vector3 to, IContextHandler contextHandler, PathQueryCallback callback)
 		{
 			this.from = from;
 			this.to = to;
@@ -41,18 +43,18 @@ namespace WCell.Core.Paths
 			get { return m_ContextHandler; }
 		}
 
-		public Action<PathQuery> Callback
+		public PathQueryCallback Callback
 		{
 			get { return callback; }
 		}
 
-		public Path Path
+		public Vector3[] Path
 		{
 			get;
 			private set;
 		}
 
-		public void Reply(Path path)
+		public void Reply(Vector3[] path)
 		{
 		    Path = path;
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using WCell.Terrain.GUI.Util;
 using WCell.Util.Graphics;
 using Color = Microsoft.Xna.Framework.Graphics.Color;
@@ -9,7 +10,7 @@ namespace WCell.Terrain.GUI.Renderers
 {
 	public class GenericRenderer : RendererBase
 	{
-		public static Color SelectedTriangleColor = Color.Yellow;
+		public static Color SelectedTriangleColor = new Color(50, 90, 90);
 
 		public GenericRenderer(Game game)
 			: base(game)
@@ -20,33 +21,21 @@ namespace WCell.Terrain.GUI.Renderers
 
 		public void SelectLine(WCell.Util.Graphics.Vector3 p1, WCell.Util.Graphics.Vector3 p2, Color color, bool doNotReplace = true)
 		{
-			var v = _cachedVertices.Length;
-			var i = _cachedIndices.Length;
-			if (doNotReplace)
-			{
-				Array.Resize(ref _cachedVertices, _cachedVertices.Length + 2);
-				Array.Resize(ref _cachedIndices, _cachedIndices.Length + 3);
-			}
-			else
-			{
-				_cachedVertices = new VertexPositionNormalColored[2];
-				_cachedIndices = new int[3];
-			}
+			const float halfLineWidth = 0.8f;
+			
+			var s1 = p1 - halfLineWidth;
+			var s2 = p1 + halfLineWidth;
 
-			XNAUtil.TransformWoWCoordsToXNACoords(ref p1);
-			XNAUtil.TransformWoWCoordsToXNACoords(ref p2);
+			var t1 = p2 - halfLineWidth;
+			var t2 = p2 + halfLineWidth;
 
-			_cachedVertices[v] = new VertexPositionNormalColored(p1.ToXna(),
-																	color,
-																	Vector3.Up);
-			_cachedVertices[v+1] = new VertexPositionNormalColored(p2.ToXna(),
-																	color,
-																	Vector3.Up);
+			s1.Z = s2.Z = Math.Max(s1.Z, s2.Z);
+			t1.Z = t2.Z = Math.Max(t1.Z, t2.Z);
+			var tri1 = new Triangle(s1, s2, t2);
+			var tri2 = new Triangle(t2, t1, s1);
 
-			// add indices
-			_cachedIndices[i] = v;
-			_cachedIndices[i+1] = v+1;
-			_cachedIndices[i+2] = v;
+			Select(ref tri1, doNotReplace, color);
+			Select(ref tri2, true, color);
 		}
 
 		public void Select(ref Triangle tri, bool doNotReplace =  true)
@@ -107,6 +96,21 @@ namespace WCell.Terrain.GUI.Renderers
 		protected override void BuildVerticiesAndIndicies()
 		{
 			// do nothing
+		}
+
+		public override void Draw(GameTime gameTime)
+		{
+			var graphics = Game.GraphicsDevice;
+			var bias = graphics.RenderState.DepthBias;
+			var fillMode = graphics.RenderState.FillMode;
+
+			//graphics.RenderState.DepthBias = 6e-7f;
+			graphics.RenderState.FillMode = FillMode.Solid;
+
+			base.Draw(gameTime);
+
+			graphics.RenderState.DepthBias = bias;
+			graphics.RenderState.FillMode = fillMode;
 		}
 	}
 }

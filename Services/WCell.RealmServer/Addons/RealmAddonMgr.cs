@@ -76,7 +76,7 @@ namespace WCell.RealmServer.Addons
 				// init config
 				if (addon is WCellAddonBase)
 				{
-					((WCellAddonBase)addon).InitConfig(context);
+					((WCellAddonBase)addon).InitAddon(context);
 				}
 			}
 		}

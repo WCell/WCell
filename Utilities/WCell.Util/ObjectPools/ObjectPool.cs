@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Threading;
 using WCell.Util.Collections;
 
@@ -145,6 +147,10 @@ namespace WCell.Util.ObjectPools
 			if (obj is IPooledObject)
 			{
 				((IPooledObject)obj).Cleanup();
+			}
+			if (obj is IList)
+			{
+				((IList) obj).Clear();
 			}
 
 			if (_hardReferences >= _minSize)

@@ -22,7 +22,7 @@ namespace WCell.Terrain.Serialization
 		private const string baseDir = "WORLD\\MAPS\\";
 		public const string Extension = ".adt";
 
-		public static string GetFilename(MapId map, Point2D coords)
+		public static string GetFilename(MapId map, int x, int y)
 		{
 			var name = TileIdentifier.GetName(map);
 
@@ -30,14 +30,14 @@ namespace WCell.Terrain.Serialization
 			{
 				throw new ArgumentException("Map does not exist: " + map);
 			}
-			var fileName = string.Format("{0}\\{0}_{1}_{2}{3}", name, coords.Y, coords.X, Extension);
+			var fileName = string.Format("{0}\\{0}_{1}_{2}{3}", name, x, y, Extension);
 			return Path.Combine(baseDir, fileName);
 		}
 
-		public static ADT ReadADT(MPQFinder mpqFinder, WDT terrain, Point2D coords)
+		public static ADT ReadADT(MPQFinder mpqFinder, WDT terrain, int x, int y)
 		{
-			var filePath = GetFilename(terrain.MapId, coords);
-			var adt = new ADT(coords, terrain);
+			var filePath = GetFilename(terrain.MapId, x, y);
+			var adt = new ADT(x, y, terrain);
 
 			if (!mpqFinder.FileExists(filePath))
 			{

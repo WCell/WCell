@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using WCell.Terrain.MPQ;
 using WCell.Util.Graphics;
 
 namespace WCell.Addons.Terrain
@@ -20,14 +21,14 @@ namespace WCell.Addons.Terrain
             return new Vector3(reader.ReadPackedFloat(), reader.ReadPackedFloat(), reader.ReadPackedFloat());
         }
 
-        internal static PackedVector3 ReadPackedVector3AsPacked(this BinaryReader reader)
-        {
-            return new PackedVector3 {
-                X = reader.ReadUInt16(),
-                Y = reader.ReadUInt16(),
-                Z = reader.ReadUInt16()
-            };
-        }
+		//internal static PackedVector3 ReadPackedVector3AsPacked(this BinaryReader reader)
+		//{
+		//    return new PackedVector3 {
+		//        X = reader.ReadUInt16(),
+		//        Y = reader.ReadUInt16(),
+		//        Z = reader.ReadUInt16()
+		//    };
+		//}
 
         internal static OBB ReadPackedOBB(this BinaryReader reader)
         {
