@@ -93,6 +93,7 @@
     <Compile Include="Collision\QuadTree\QuadTree.cs" />
     <Compile Include="Collision\QuadTree\TerrainTriangleHolder.cs" />
     <Compile Include="Collision\QuadTree\WMOHolder.cs" />
+    <Compile Include="LargeObjectPools.cs" />
     <Compile Include="Pathfinding\Pathfinder.cs" />
     <Compile Include="Pathfinding\SearchItem.cs" />
     <Compile Include="Recast\NavMesh\NavMeshBuilder.cs" />

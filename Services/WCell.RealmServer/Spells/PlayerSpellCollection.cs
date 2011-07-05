@@ -13,6 +13,7 @@ using WCell.RealmServer.Items;
 using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Spells.Auras.Misc;
 using WCell.RealmServer.Talents;
+using WCell.Util.ObjectPools;
 using WCell.Util.Threading;
 using WCell.RealmServer.Database;
 using WCell.Util;

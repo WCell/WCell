@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2010-02-17 05:08:19 +0100 (on, 17 feb 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+ 
  *   revision		: $Rev: 1256 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -36,6 +36,7 @@ using WCell.RealmServer.Spells.Auras;
 using WCell.Util;
 using WCell.Constants.World;
 using WCell.Util.Graphics;
+using WCell.Util.ObjectPools;
 using WCell.Util.Threading;
 using WCell.Constants.NPCs;
 using WCell.Constants.GameObjects;

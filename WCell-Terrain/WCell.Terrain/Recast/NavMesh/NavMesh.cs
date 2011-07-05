@@ -45,6 +45,11 @@ namespace WCell.Terrain.Recast.NavMesh
 			}
 		}
 
+		public int[] GetNeighborsOf(int triIndex)
+		{
+			return Polygons[triIndex/3].Neighbors;
+		}
+
 		#region Not Implemented Yet
 		/// <summary>
 		/// Some people might refer to these as "portals": They allow agents to jump between disconnected tiles.

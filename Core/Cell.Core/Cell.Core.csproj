@@ -133,8 +133,6 @@
     <Compile Include="Exceptions\NoAvailableInterfacesException.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="IClientBase.cs" />
-    <Compile Include="IObjectPool.cs" />
-    <Compile Include="IPooledObject.cs" />
     <Compile Include="Localization\Cell.Core.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -142,7 +140,6 @@
     </Compile>
     <Compile Include="Localization\Resources.cs" />
     <Compile Include="NetworkUtil.cs" />
-    <Compile Include="ObjectPool.cs" />
     <Compile Include="zzObjectPoolMgr.cs" />
     <Compile Include="SegmentStream.cs" />
     <Compile Include="ServerBase.cs" />

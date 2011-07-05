@@ -33,5 +33,7 @@ namespace WCell.Terrain.Collision
 		/// The returned set is desirable to be small however, to provide a better speed.
 		/// </summary>
     	IEnumerable<int> GetPotentialColliders(Ray ray);
+
+    	int[] GetNeighborsOf(int triIndex);
     }
 }

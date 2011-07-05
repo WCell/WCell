@@ -8,6 +8,7 @@ using WCell.RealmServer.Global;
 using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Spells;
 using NLog;
+using WCell.Util.ObjectPools;
 
 namespace WCell.RealmServer.Database
 {

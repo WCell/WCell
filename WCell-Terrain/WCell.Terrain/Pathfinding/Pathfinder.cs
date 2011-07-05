@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using C5;
 using WCell.Terrain.Collision;
+using WCell.Terrain.Recast.NavMesh;
 using WCell.Util.Graphics;
 
 namespace WCell.Terrain.Pathfinding
@@ -87,8 +88,6 @@ namespace WCell.Terrain.Pathfinding
 			SearchItem current;
 			var winner = SearchItem.Null;
 
-			// next waypoint is the intersection of:
-			// The direct line to the destination and The traversed edge between last and current triangle
 			do
 			{
 				// new round
@@ -96,14 +95,18 @@ namespace WCell.Terrain.Pathfinding
 				
 				// get the vertices and neighbors of the current triangle
 				Triangle triangle = Shape.GetTriangle(current.Triangle);
-				var neighbors = Shape.GetEdgeNeighborsOf(current.Triangle);
+				var neighbors = Shape.GetNeighborsOf(current.Triangle);
+				var poly = ((NavMesh)Shape).Polygons[current.Triangle / 3];
 
 				// iterate over all neighbors
 				for (var i = 0; i < WCellTerrainConstants.NeighborsPerTriangle; i++)
 				{
-					var neighbor = neighbors[i];
+					var neighbor = neighbors[i]*3;
 
-					if (neighbor == -1 || visited.Contains(neighbor)) continue;
+					if (neighbor < 0 || visited.Contains(neighbor)) continue;
+
+					var npoly = ((NavMesh) Shape).Polygons[neighbor/3];
+					var ntri = Shape.GetTriangle(neighbor);
 
 					visited.Add(neighbor);
 
@@ -131,7 +134,9 @@ namespace WCell.Terrain.Pathfinding
 
 					
 					//var newPoint = Intersection.FindClosestPointInSegment(edgeP1, edgeP2, destination);
-					// To find the next point, we span a vertical plane through the line between the last and the next point
+
+					// To find the next point, we greedily span a vertical plane through the line between the last and the next point
+					// This is far from optimal, will have to employ a better method for non-linear paths
 					var s = current.EnterPos;
 					var plane = new Plane(s, destination, new Vector3(s.X, s.Y, s.Z + 10));
 
@@ -139,7 +144,6 @@ namespace WCell.Terrain.Pathfinding
 					Vector3 newPoint;
 					if (!Intersection.LineSegmentIntersectsPlane(edgeP1, edgeP2, plane, out newPoint))
 					{
-						// this is not right
 						newPoint = edgeP1;
 					}
 

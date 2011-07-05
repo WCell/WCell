@@ -9,7 +9,7 @@ namespace WCell.Terrain.Recast.NavMesh
 		public const int VERTS_PER_POLYGON = 6;
 
 		public int[] Indices;								// Indices to vertices of the poly
-		public NavMeshPolygon[] Neighbors;					// neighbors of this poly
+		public int[] Neighbors;								// neighbors of this poly
 
 		public ushort Flags;								// Flags (see dtPolyFlags)
 		public byte Area;

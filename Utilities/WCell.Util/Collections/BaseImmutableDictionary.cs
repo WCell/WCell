@@ -3,7 +3,7 @@
  *   file		: BaseImmutableDictionary.cs
  *   copyright		: (C) 2008 Wilco Bauwer
  *   last changed	: $LastChangedDate: 2009-12-20 21:43:00 +0100 (sø, 20 dec 2009) $
- *   last author	: $LastChangedBy: dominikseifert $
+ 
  *   revision		: $Rev: 1148 $
  *
  *   Written by/rights held by Wilco Bauwer (wilcob.com)
