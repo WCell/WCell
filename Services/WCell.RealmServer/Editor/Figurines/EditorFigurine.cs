@@ -18,10 +18,8 @@ namespace WCell.RealmServer.Editor.Figurines
 	/// <summary>
 	/// These figurines represent the 3D GUI elements of the editor
 	/// </summary>
-	public abstract class EditorFigurine : Unit
+	public abstract class EditorFigurine : FigurineBase
 	{
-		private static AuraCollection _sharedAuras;
-		
 		/// <summary>
 		/// Whether to also spawn a DO to make this Figurine appear clearer
 		/// </summary>
@@ -30,46 +28,11 @@ namespace WCell.RealmServer.Editor.Figurines
 
 		protected readonly NPCSpawnPoint m_SpawnPoint;
 
-		protected EditorFigurine(MapEditor editor, NPCSpawnPoint spawnPoint)
+		protected EditorFigurine(MapEditor editor, NPCSpawnPoint spawnPoint) : 
+			base(spawnPoint.SpawnEntry.Entry.NPCId)
 		{
-			if (_sharedAuras == null)
-			{
-				_sharedAuras = new AuraCollection(this);
-			}
-
-			m_auras = _sharedAuras;
 			Editor = editor;
 			m_SpawnPoint = spawnPoint;
-
-			var entry = m_SpawnPoint.SpawnEntry.Entry;
-			GenerateId(entry.Id);
-
-			UnitFlags = UnitFlags.SelectableNotAttackable | UnitFlags.Possessed;
-			DynamicFlags = UnitDynamicFlags.TrackUnit;
-			EmoteState = EmoteType.StateDead;
-			NPCFlags |= NPCFlags.Gossip;
-			Model = entry.GetRandomModel();
-			EntryId = entry.Id;
-
-			// speed must be > 0
-			// because of the way the client works
-			const float speed = 1f;
-			m_runSpeed = speed;
-			m_swimSpeed = speed;
-			m_swimBackSpeed = speed;
-			m_walkSpeed = speed;
-			m_walkBackSpeed = speed;
-			m_flightSpeed = speed;
-			m_flightBackSpeed = speed;
-
-			SetInt32(UnitFields.MAXHEALTH, int.MaxValue);
-			SetInt32(UnitFields.BASE_HEALTH, int.MaxValue);
-			SetInt32(UnitFields.HEALTH, int.MaxValue);
-
-			// just make a smaller version of the creature to be spawned
-			SetFloat(ObjectFields.SCALE_X, entry.Scale * DefaultScale);
-
-			m_evades = true;
 		}
 
 		public MapEditor Editor
@@ -104,61 +67,5 @@ namespace WCell.RealmServer.Editor.Figurines
 			}
 			return VisibilityStatus.Invisible;
 		}
-
-
-		#region Default Overrides
-		public override LinkedList<WaypointEntry> Waypoints
-		{
-			get { return WaypointEntry.EmptyList; }
-		}
-
-		public override NPCSpawnPoint SpawnPoint
-		{
-			get { return null; }
-		}
-
-		public virtual float DefaultScale
-		{
-			get { return 1f; }
-		}
-
-		public override string Name
-		{
-			get { return m_SpawnPoint.SpawnEntry.Entry.DefaultName; }
-			set { /* cannot be set */ }
-		}
-
-		protected override bool OnBeforeDeath()
-		{
-			return true;
-		}
-
-		protected override void OnDeath()
-		{
-			Delete();
-		}
-
-		public override Faction Faction
-		{
-			get { return m_SpawnPoint.SpawnEntry.Entry.RandomFaction; }
-			set {/* cannot be set */}
-		}
-
-		public override Faction DefaultFaction
-		{
-			get { return m_SpawnPoint.SpawnEntry.Entry.RandomFaction; }
-		}
-
-		public override FactionId FactionId
-		{
-			get { return Faction != null ? Faction.Id : FactionId.None; }
-			set { }
-		}
-
-		public override void Dispose(bool disposing)
-		{
-			m_Map = null;
-		}
-		#endregion
 	}
 }

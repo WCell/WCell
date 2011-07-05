@@ -208,6 +208,7 @@
     <Compile Include="Editor\Figurines\EditorFigurine.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Editor\Figurines\FigurineBase.cs" />
     <Compile Include="Editor\Figurines\SpawnPointFigurine.cs">
       <SubType>Code</SubType>
     </Compile>

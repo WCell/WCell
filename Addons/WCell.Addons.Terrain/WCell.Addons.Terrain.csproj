@@ -144,6 +144,7 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="Commands\CollisionCommands.cs" />
+    <Compile Include="Commands\NavCommands.cs" />
     <Compile Include="Commands\TerrainCommands.cs" />
     <Compile Include="FullTerrainProvider.cs" />
     <Compile Include="CollisionAddon.cs" />

@@ -40,14 +40,14 @@ namespace WCell.Terrain.Pathfinding
 			}
 
 			var current = winner;
-			var path = new Vector3[winner.NodeCount + 1];
+			var path = new Vector3[winner.NodeCount];
 			// the destination is the final vertex
-			path[winner.NodeCount] = destination;
+			path[winner.NodeCount - 1] = destination;
 
 			// add all intermediate waypoints 
-			for (var i = winner.NodeCount - 1; i >= 0; i--)
+			for (var i = winner.NodeCount - 1; i > 0; i--)
 			{
-				path[i] = current.EnterPos;
+				path[i - 1] = current.EnterPos;
 				current = current.Previous;
 			}
 
