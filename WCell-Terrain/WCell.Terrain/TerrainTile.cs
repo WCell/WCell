@@ -146,10 +146,10 @@ namespace WCell.Terrain
 			var b = indices[triIndex++];
 			var c = indices[triIndex];
 
-			var neighbors = new int[WCellTerrainConstants.NeighborsPerTriangle];
+			var neighbors = new int[TerrainUtil.NeighborsPerTriangle];
 
 			// fill with "invalid index"
-			for (var i = 0; i < WCellTerrainConstants.NeighborsPerTriangle; i++)
+			for (var i = 0; i < TerrainUtil.NeighborsPerTriangle; i++)
 			{
 				neighbors[i] = -1;
 			}
@@ -169,19 +169,19 @@ namespace WCell.Terrain
 					{
 						// some vertex matches the first vertex of the triangle
 						nCount++;
-						mask |= WCellTerrainConstants.TrianglePointA;
+						mask |= TerrainUtil.TrianglePointA;
 					}
 					if (b == a2 || b == b2 || b == c2)
 					{
 						// some vertex matches the second vertex of the triangle
 						nCount++;
-						mask |= WCellTerrainConstants.TrianglePointB;
+						mask |= TerrainUtil.TrianglePointB;
 					}
 					if (c == a2 || c == b2 || c == c2)
 					{
 						// some vertex matches the third vertex of the triangle
 						nCount++;
-						mask |= WCellTerrainConstants.TrianglePointC;
+						mask |= TerrainUtil.TrianglePointC;
 					}
 
 					if (nCount == 2)
@@ -189,17 +189,17 @@ namespace WCell.Terrain
 						// we have a neighbor
 						switch (mask)
 						{
-							case WCellTerrainConstants.ABEdgeMask:
+							case TerrainUtil.ABEdgeMask:
 								// neighbor shares a and b
-								neighbors[WCellTerrainConstants.ABEdgeIndex] = i;
+								neighbors[TerrainUtil.ABEdgeIndex] = i;
 								break;
-							case WCellTerrainConstants.ACEdgeMask:
+							case TerrainUtil.ACEdgeMask:
 								// second shares a and c
-								neighbors[WCellTerrainConstants.ACEdgeIndex] = i;
+								neighbors[TerrainUtil.ACEdgeIndex] = i;
 								break;
-							case WCellTerrainConstants.BCEdgeMask:
+							case TerrainUtil.BCEdgeMask:
 								// neighbor shares b and c
-								neighbors[WCellTerrainConstants.BCEdgeIndex] = i;
+								neighbors[TerrainUtil.BCEdgeIndex] = i;
 								break;
 
 						}

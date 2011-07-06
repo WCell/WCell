@@ -103,7 +103,7 @@ namespace WCell.Terrain.Pathfinding
 				//var poly = ((NavMesh)Mesh).Polygons[current.Triangle / 3];
 
 				// iterate over all neighbors
-				for (var i = 0; i < WCellTerrainConstants.NeighborsPerTriangle; i++)
+				for (var i = 0; i < TerrainUtil.NeighborsPerTriangle; i++)
 				{
 					var neighbor = neighbors[i]*3;
 
@@ -119,15 +119,15 @@ namespace WCell.Terrain.Pathfinding
 					Vector3 edgeP1, edgeP2;
 					switch (i)
 					{
-						case WCellTerrainConstants.ABEdgeIndex:
+						case TerrainUtil.ABEdgeIndex:
 							edgeP1 = triangle.Point1;
 							edgeP2 = triangle.Point2;
 							break;
-						case WCellTerrainConstants.ACEdgeIndex:
+						case TerrainUtil.ACEdgeIndex:
 							edgeP1 = triangle.Point1;
 							edgeP2 = triangle.Point3;
 							break;
-						case WCellTerrainConstants.BCEdgeIndex:
+						case TerrainUtil.BCEdgeIndex:
 							edgeP1 = triangle.Point2;
 							edgeP2 = triangle.Point3;
 							break;

@@ -201,7 +201,7 @@
     <Compile Include="Serialization\SimpleADTWriter.cs" />
     <Compile Include="Terrain.cs" />
     <Compile Include="Extensions.cs" />
-    <Compile Include="WCellTerrainConstants.cs" />
+    <Compile Include="TerrainUtil.cs" />
     <Compile Include="WCellTerrainSettings.cs" />
     <Compile Include="TileIdentifier.cs" />
     <Compile Include="Utils\MathHelpers.cs" />

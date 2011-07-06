@@ -528,7 +528,7 @@ namespace WCell.RealmServer.Entities
 			get
 			{
 				// use some rough guestimate for the object's head's position
-				return Map.Terrain.GetHeightUnderneath(m_position + ScaleX);
+				return Map.Terrain.GetGroundHeightUnderneath(m_position + ScaleX);
 			}
 		}
 

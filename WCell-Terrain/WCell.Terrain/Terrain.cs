@@ -95,7 +95,7 @@ namespace WCell.Terrain
 			return true;
 		}
 
-		public float GetHeightUnderneath(Vector3 worldPos)
+		public float GetGroundHeightUnderneath(Vector3 worldPos)
 		{
 			int tileX, tileY;
 			if (PositionUtil.GetTileXYForPos(worldPos, out tileX, out tileY))
@@ -112,7 +112,7 @@ namespace WCell.Terrain
 					return TerrainConstants.MinHeight;		// TODO: Minimal z value
 				}
 			}
-			return float.NaN;								// Could not reliably lookup the value
+			return worldPos.Z;								// Could not reliably lookup the value
 		}
 
     	public bool ForceLoadTile(int x, int y)
