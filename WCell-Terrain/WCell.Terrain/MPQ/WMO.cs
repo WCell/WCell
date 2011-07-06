@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using WCell.Terrain.GUI;
-using WCell.Terrain.Collision;
+using WCell.Terrain.Legacy;
 using WCell.Util.Graphics;
 using OBB = WCell.Util.Graphics.OBB;
 

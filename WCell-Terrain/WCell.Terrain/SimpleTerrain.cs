@@ -23,14 +23,16 @@ namespace WCell.Terrain
 		{
 			var terrain = new SimpleTerrain(map);
 			terrain.TileProfile[x, y] = true;
-			return terrain.LoadTile(x, y);
+			var tile = terrain.LoadTile(x, y);
+			terrain.Tiles[x, y] = tile;
+			return tile;
 		}
 
 
 		internal bool m_IsWmoOnly;
 
 		public SimpleTerrain(MapId mapId, bool loadOnDemand = true)
-			: this(mapId, SimpleADTReader.ReadTile, loadOnDemand)
+			: this(mapId, SimpleTileReader.ReadTile, loadOnDemand)
 		{
 		}
 
@@ -53,13 +55,13 @@ namespace WCell.Terrain
 
 		public override void FillTileProfile()
 		{
-			var dir = new DirectoryInfo(SimpleADTWriter.GetMapDirectory(MapId));
+			var dir = new DirectoryInfo(SimpleTileWriter.GetMapDirectory(MapId));
 			if (!dir.Exists) return;
 
 			foreach (var file in dir.EnumerateFiles())
 			{
 				int tileX, tileY;
-				if (SimpleADTWriter.GetTileCoordsFromFileName(file.Name, out tileX, out tileY))
+				if (SimpleTileWriter.GetTileCoordsFromFileName(file.Name, out tileX, out tileY))
 				{
 					TileProfile[tileX, tileY] = true;
 				}

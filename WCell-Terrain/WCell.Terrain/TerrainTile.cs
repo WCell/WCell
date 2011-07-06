@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using Terra;
 using WCell.Constants;
-using WCell.Terrain.Collision;
-using WCell.Terrain.Collision.OCTree;
+using WCell.Terrain.Legacy;
+using WCell.Terrain.Legacy.OCTree;
 using WCell.Terrain.MPQ;
 using WCell.Terrain.Pathfinding;
 using WCell.Terrain.Recast.NavMesh;
@@ -16,22 +16,21 @@ namespace WCell.Terrain
 	/// Represents the triangle mesh of terrain&objects of one tile within a map
 	/// TODO: In the future, one Tile will only be represented by single indices into the map's array of vertices, indices and neighbors (plus the same for liquids and some other things)
 	/// </summary>
-	public abstract class TerrainTile : IShape
+	public class TerrainTile : IShape
 	{
-		// TODO: Change from list to Array
-		public List<int> LiquidIndices;
-		public List<Vector3> LiquidVertices;
 		public int[] TerrainIndices;
 		public Vector3[] TerrainVertices;
 
+		public TerrainLiquidChunk[,] LiquidChunks;
 
-		protected TerrainTile(int x, int y, Terrain terrain)
+
+		public TerrainTile(int x, int y, Terrain terrain)
 			: this(x, y, terrain, null)
 		{
 			Pathfinder = new Pathfinder(this);
 		}
 
-		protected TerrainTile(int x, int y, Terrain terrain, Pathfinder pathfinder)
+		public TerrainTile(int x, int y, Terrain terrain, Pathfinder pathfinder)
 		{
 			// MapChunks = new TerrainChunk[TerrainConstants.ChunksPerTileSide, TerrainConstants.ChunksPerTileSide];
 			TileX = x;
@@ -105,6 +104,11 @@ namespace WCell.Terrain
 				var botRightY = topLeftY - TerrainConstants.TileSize;
 				return new Rect(new Point(topLeftX, topLeftY), new Point(botRightX, botRightY));
 			}
+		}
+
+		public bool HasLiquid
+		{
+			get { return LiquidChunks != null; }
 		}
 
 		public NavMesh EnsureNavMeshLoaded()
@@ -213,7 +217,198 @@ namespace WCell.Terrain
 			return neighbors;
 		}
 
-		#region Terrain Queries
+
+
+		public virtual float GetLiquidHeight(Point2D chunkCoord, Point2D unitCoord)
+		{
+			if (HasLiquid)
+			{
+				var chunk = LiquidChunks[chunkCoord.X, chunkCoord.Y];
+				if (chunk != null && unitCoord.X >= chunk.OffsetX && unitCoord.Y >= chunk.OffsetY)
+				{
+					var x = unitCoord.X - chunk.OffsetX;
+					var y = unitCoord.Y - chunk.OffsetY;
+					if (x <= chunk.Width && y <= chunk.Height)
+						return chunk.Heights[x, y];
+				}
+			}
+
+			return float.MinValue;
+		}
+
+		public virtual LiquidType GetLiquidType(Point2D chunkCoord)
+		{
+			if (HasLiquid)
+			{
+				var chunk = LiquidChunks[chunkCoord.X, chunkCoord.Y];
+
+				if (chunk != null)
+				{
+					return chunk.Type;
+				}
+			}
+
+			return LiquidType.None;
+		}
+
+		#region Liquid Mesh
+		public void GenerateLiquidMesh(List<int> indices, List<Vector3> vertices)
+		{
+			if (!HasLiquid) return;
+
+			var vertexCounter = 0;
+			for (var indexX = 0; indexX < TerrainConstants.ChunksPerTileSide; indexX++)
+			{
+				for (var indexY = 0; indexY < TerrainConstants.ChunksPerTileSide; indexY++)
+				{
+					var tempVertexCounter = GenerateLiquidVertices(indexX, indexY, vertices);
+					GenerateLiquidIndices(indexX, indexY, vertexCounter, indices);
+					vertexCounter += tempVertexCounter;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Adds the rendering liquid vertices to the provided list for the MapChunk given by:
+		/// </summary>
+		/// <param name="indexY">The y index of the map chunk.</param>
+		/// <param name="indexX">The x index of the map chunk</param>
+		/// <param name="vertices">The Collection to add the vertices to.</param>
+		/// <returns>The number of vertices added.</returns>
+		public virtual int GenerateLiquidVertices(int indexX, int indexY, ICollection<Vector3> vertices)
+		{
+			//var clr = Color.Green;
+
+			//switch (mh2O.Header.Type)
+			//{
+			//    case FluidType.Water:
+			//        clr = Color.Blue;
+			//        break;
+			//    case FluidType.Lava:
+			//        clr = Color.Red;
+			//        break;
+			//    case FluidType.OceanWater:
+			//        clr = Color.Coral;
+			//        break;
+			//}
+
+			var count = 0;
+			var chunk = LiquidChunks[indexX, indexY];
+
+			if (chunk == null) return count;
+			var heights = chunk.Heights;
+			for (var xStep = chunk.OffsetX; xStep <= chunk.Width; xStep++)
+			{
+				for (var yStep = chunk.OffsetY; yStep <= chunk.Height; yStep++)
+				{
+					var xPos = TerrainConstants.CenterPoint - (TileX * TerrainConstants.TileSize) -
+							   (indexX * TerrainConstants.ChunkSize) - (xStep * TerrainConstants.UnitSize);
+					var yPos = TerrainConstants.CenterPoint - (TileY * TerrainConstants.TileSize) -
+							   (indexY * TerrainConstants.ChunkSize) - (yStep * TerrainConstants.UnitSize);
+
+					var zPos = heights[xStep - chunk.OffsetX, yStep - chunk.OffsetY];
+
+					var position = new Vector3(xPos, yPos, zPos);
+
+					vertices.Add(position);
+					count++;
+				}
+			}
+			return count;
+		}
+
+
+		/// <summary>
+		/// Adds the rendering liquid indices to the provided list for the MapChunk given by:
+		/// </summary>
+		/// <param name="indexY">The y index of the map chunk.</param>
+		/// <param name="indexX">The x index of the map chunk</param>
+		/// <param name="offset">The number to add to the indices so as to match the end of the Vertices list.</param>
+		/// <param name="indices">The Collection to add the indices to.</param>
+		public virtual void GenerateLiquidIndices(int indexX, int indexY, int offset, List<int> indices)
+		{
+			var chunk = LiquidChunks[indexX, indexY];
+
+			if (chunk == null) return;
+
+			for (var xStep = chunk.OffsetX; xStep < chunk.Width; xStep++)
+			{
+				var w = chunk.Width - chunk.OffsetX;
+				for (var yStep = chunk.OffsetY; yStep < chunk.Height; yStep++)
+				{
+					var row = xStep - chunk.OffsetX;
+					var col = yStep - chunk.OffsetY;
+					var h = chunk.Height - chunk.OffsetY;
+
+					// if (!renderMap[col, row] && ((h != 8) || (w != 8))) continue;
+
+					indices.Add(offset + ((row + 1) * (w + 1) + col));
+					indices.Add(offset + (row * (w + 1) + col));
+					indices.Add(offset + (row * (w + 1) + col + 1));
+
+					indices.Add(offset + ((row + 1) * (w + 1) + col + 1));
+					indices.Add(offset + ((row + 1) * (w + 1) + col));
+					indices.Add(offset + (row * (w + 1) + col + 1));
+				}
+			}
+		}
+		#endregion
+
+
+		#region Legacy Code
+		//private void SortTrisIntoChunks()
+		//{
+		//    //Triangulate the indices
+		//    for (var i = 0; i < TerrainIndices.Length; )
+		//    {
+		//        var triangle = new Index3
+		//            {
+		//                Index0 = (short) TerrainIndices[i++],
+		//                Index1 = (short) TerrainIndices[i++],
+		//                Index2 = (short) TerrainIndices[i++]
+		//            };
+
+		//        var vertex0 = TerrainVertices[triangle.Index0];
+		//        var vertex1 = TerrainVertices[triangle.Index1];
+		//        var vertex2 = TerrainVertices[triangle.Index2];
+
+		//        var min = Vector3.Min(Vector3.Min(vertex0, vertex1), vertex2);
+		//        var max = Vector3.Max(Vector3.Max(vertex0, vertex1), vertex2);
+		//        var triRect = new Rect(new Point(min.X, min.Y), new Point(max.X, max.Y));
+
+		//        int startX, startY;
+		//        PositionUtil.GetXYForPos(min, out startX, out startY);
+
+		//        int endX, endY;
+		//        PositionUtil.GetXYForPos(max, out endX, out endY);
+
+		//        if (startX > endX) MathHelpers.Swap(ref startX, ref endX);
+		//        if (startY > endY) MathHelpers.Swap(ref startY, ref endY);
+
+		//        var basePoint = Bounds.BottomRight;
+		//        for (var chunkX = startX; chunkX <= endX; chunkX++)
+		//        {
+		//            for (var chunkY = startY; chunkY <= endY; chunkY++)
+		//            {
+		//                var chunk = Chunks[chunkX, chunkY];
+		//                var chunkBaseX = basePoint.X - chunk.X * TerrainConstants.ChunkSize;
+		//                var chunkBaseY = basePoint.Y - chunk.Y * TerrainConstants.ChunkSize;
+		//                var chunkBottomX = chunkBaseX - TerrainConstants.ChunkSize;
+		//                var chunkBottomY = chunkBaseY - TerrainConstants.ChunkSize;
+		//                var chunkRect = new Rect(new Point(chunkBaseX, chunkBaseY),
+		//                                         new Point(chunkBottomX, chunkBottomY));
+
+		//                if (!chunkRect.IntersectsWith(triRect)) continue;
+
+		//                if (Intersect(chunkRect, ref vertex0, ref vertex1, ref vertex2))
+		//                {
+		//                    chunk.TerrainTris.Add(triangle);
+		//                }
+		//            }
+		//        }
+		//    }
+		//}
+
 
 		/*
 				private static float InterpolateTriangle(ref Vector3 point1, ref Vector3 point2, ref Vector3 point3, HeightMapFraction heightMapFraction)
@@ -291,62 +486,6 @@ namespace WCell.Terrain
 
 			return false;
 		}
-		#endregion
-
-
-		#region Legacy Code
-		//private void SortTrisIntoChunks()
-		//{
-		//    //Triangulate the indices
-		//    for (var i = 0; i < TerrainIndices.Length; )
-		//    {
-		//        var triangle = new Index3
-		//            {
-		//                Index0 = (short) TerrainIndices[i++],
-		//                Index1 = (short) TerrainIndices[i++],
-		//                Index2 = (short) TerrainIndices[i++]
-		//            };
-
-		//        var vertex0 = TerrainVertices[triangle.Index0];
-		//        var vertex1 = TerrainVertices[triangle.Index1];
-		//        var vertex2 = TerrainVertices[triangle.Index2];
-
-		//        var min = Vector3.Min(Vector3.Min(vertex0, vertex1), vertex2);
-		//        var max = Vector3.Max(Vector3.Max(vertex0, vertex1), vertex2);
-		//        var triRect = new Rect(new Point(min.X, min.Y), new Point(max.X, max.Y));
-
-		//        int startX, startY;
-		//        PositionUtil.GetXYForPos(min, out startX, out startY);
-
-		//        int endX, endY;
-		//        PositionUtil.GetXYForPos(max, out endX, out endY);
-
-		//        if (startX > endX) MathHelpers.Swap(ref startX, ref endX);
-		//        if (startY > endY) MathHelpers.Swap(ref startY, ref endY);
-
-		//        var basePoint = Bounds.BottomRight;
-		//        for (var chunkX = startX; chunkX <= endX; chunkX++)
-		//        {
-		//            for (var chunkY = startY; chunkY <= endY; chunkY++)
-		//            {
-		//                var chunk = Chunks[chunkX, chunkY];
-		//                var chunkBaseX = basePoint.X - chunk.X * TerrainConstants.ChunkSize;
-		//                var chunkBaseY = basePoint.Y - chunk.Y * TerrainConstants.ChunkSize;
-		//                var chunkBottomX = chunkBaseX - TerrainConstants.ChunkSize;
-		//                var chunkBottomY = chunkBaseY - TerrainConstants.ChunkSize;
-		//                var chunkRect = new Rect(new Point(chunkBaseX, chunkBaseY),
-		//                                         new Point(chunkBottomX, chunkBottomY));
-
-		//                if (!chunkRect.IntersectsWith(triRect)) continue;
-
-		//                if (Intersect(chunkRect, ref vertex0, ref vertex1, ref vertex2))
-		//                {
-		//                    chunk.TerrainTris.Add(triangle);
-		//                }
-		//            }
-		//        }
-		//    }
-		//}
 		#endregion
 	}
 }

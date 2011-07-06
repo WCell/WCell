@@ -29,9 +29,9 @@ namespace WCell.Terrain
 	{
 		private static ITerrainConfiguration config;
 
-		public static MPQFinder GetDefaultMPQFinder()
+		public static MpqLibrarian GetDefaultMPQFinder()
 		{
-			return MPQFinder.GetDefaultFinder(WoWPath);
+			return MpqLibrarian.GetDefaultFinder(WoWPath);
 		}
 
 		public static ITerrainConfiguration Config

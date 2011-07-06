@@ -20,6 +20,7 @@ namespace WCell.Constants
 
 		public const int TilesPerMapSide = 64;
 		public const int ChunksPerTileSide = 16;
+		public const int ChunksPerTile = ChunksPerTileSide * ChunksPerTileSide;
 		public const int UnitsPerChunkSide = 8;
 
 		/// <summary>
@@ -103,7 +104,7 @@ namespace WCell.Constants
 
 	}
      
-	public enum FluidType : byte
+	public enum LiquidType : byte
 	{
 		Water = 0x00,
 		Lava,

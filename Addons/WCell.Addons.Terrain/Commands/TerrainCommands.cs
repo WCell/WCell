@@ -68,8 +68,6 @@ namespace WCell.Addons.Terrain.Commands
 				trigger.Reply("Loading tile...");
 				RealmServer.RealmServer.IOQueue.AddMessage(() =>
 				{
-					// TODO: Fix context problem?
-
 					terrain.ForceLoadTile(tileX, tileY);
 
 					if (terrain.IsAvailable(tileX, tileY))
@@ -90,7 +88,7 @@ namespace WCell.Addons.Terrain.Commands
 							trigger.Reply("Writing to file...");
 
 							// export to file
-							SimpleADTWriter.WriteADT(adt);
+							SimpleTileWriter.WriteADT(adt);
 
 							// try loading again
 							trigger.Reply("Loading extracted tile and generating Navigation mesh...");

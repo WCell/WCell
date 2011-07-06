@@ -92,7 +92,7 @@ namespace WCell.Terrain.Pathfinding
 		}
 
 		/// <summary>
-		/// Travelled distance + direct distance to destination
+		/// Typical A*: Already traversed cost + Estimated remaining cost
 		/// </summary>
 		public float GetSearchValue()
 		{

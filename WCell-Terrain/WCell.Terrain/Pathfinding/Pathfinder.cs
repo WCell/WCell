@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using C5;
-using WCell.Terrain.Collision;
+using WCell.Terrain.Legacy;
 using WCell.Terrain.Recast.NavMesh;
 using WCell.Util.Graphics;
 
@@ -54,19 +54,21 @@ namespace WCell.Terrain.Pathfinding
 			return path;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
 		public SearchItem FindPath(Vector3 start, Vector3 destination)
 		{
 			System.Collections.Generic.HashSet<int> visited;
 			return FindPath(start, destination, out visited);
 		}
 
+		/// <summary>
+		/// Basic A* implementation that searches through the navmesh.
+		/// </summary>
 		public SearchItem FindPath(Vector3 start, Vector3 destination,
 			out System.Collections.Generic.HashSet<int> visited)
 		{
 			var mesh = NavMesh;
+			visited = null;
+			if (mesh == null) return SearchItem.Null;
 
 			var triStart = mesh.FindFirstTriangleUnderneath(start);
 			var triEnd = mesh.FindFirstTriangleUnderneath(destination);

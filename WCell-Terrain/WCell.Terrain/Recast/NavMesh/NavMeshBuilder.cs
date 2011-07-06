@@ -6,7 +6,7 @@ using WCell.Constants;
 using WCell.Constants.World;
 using WCell.Util;
 using WCell.Util.Graphics;
-using WCell.Terrain.Collision;
+using WCell.Terrain.Legacy;
 
 namespace WCell.Terrain.Recast.NavMesh
 {
@@ -85,8 +85,20 @@ namespace WCell.Terrain.Recast.NavMesh
 				}
 
 				// write faces
+				var terrain = tile.Terrain;
 				for (var i = 0; i < indices.Length; i += 3)
 				{
+					// ignore triangles that are completely submerged in a liquid
+					var v1 = verts[indices[i]];
+					var v2 = verts[indices[i+1]];
+					var v3 = verts[indices[i+2]];
+					if (terrain.GetLiquidType(v1) != LiquidType.None ||
+						terrain.GetLiquidType(v2) != LiquidType.None ||
+						terrain.GetLiquidType(v3) != LiquidType.None)
+					{
+						continue;
+					}
+
 					//file.WriteLine("f {0} {1} {2}", indices[i] + 1, indices[i + 1] + 1, indices[i + 2] + 1);
 					file.WriteLine("f {0} {1} {2}", indices[i + 2] + 1, indices[i + 1] + 1, indices[i] + 1);
 				}

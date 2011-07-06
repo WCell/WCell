@@ -19,19 +19,29 @@ namespace WCell.Terrain.MPQ
 		public List<int> DoodadRefs = new List<int>();
 		public List<int> ObjectRefs = new List<int>();
 
-		public override int X
+		public bool IsFlat;
+
+		private bool[,] holesMap;
+
+		public bool[,] HolesMap
 		{
-			get { return Header.IndexX; }
+			get
+			{
+				if (holesMap == null)
+				{
+					holesMap = new bool[4, 4];
+					for (var i = 0; i < 16; i++)
+					{
+						holesMap[i / 4, i % 4] = (((HolesMask >> (i)) & 1) == 1);
+					}
+				}
+				return holesMap;
+			}
 		}
 
-		public override int Y
+		public override bool HasLiquid
 		{
-			get { return Header.IndexY; }
-		}
-
-		public override bool IsLiquid
-		{
-			get { return WaterInfo != null && WaterInfo.Header.Used; }
+			get { return WaterInfo != null && WaterInfo.Header.Used && LiquidType != Constants.LiquidType.None; }
 		}
 
 		public override float[,] LiquidHeights
@@ -44,18 +54,12 @@ namespace WCell.Terrain.MPQ
 			get { return WaterInfo.GetRenderBitMapMatrix(); }
 		}
 
-		public override RectInt32 LiquidBounds
-		{
-			get { return new RectInt32(WaterInfo.Header.XOffset, WaterInfo.Header.YOffset, 
-									WaterInfo.Header.Width, WaterInfo.Header.Height); }
-		}
-
 		public override float MedianHeight
 		{
 			get { return Header.Z; }
 		}
 
-		public override FluidType LiquidType
+		public override LiquidType LiquidType
 		{
 			get { return WaterInfo.Header.Type; }
 		}

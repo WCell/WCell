@@ -88,7 +88,7 @@ namespace WCell.Addons.Terrain.Commands
 
 				int tileX, tileY;
 				PositionUtil.GetTileXYForPos(p, out tileX, out tileY);
-				var tile = terrain.GetOrLoadTile(tileX, tileY);
+				var tile = terrain.GetTile(tileX, tileY);
 				if (tile == null || tile.NavMesh == null)
 				{
 					trigger.Reply("No NavMesh present on Tile.");

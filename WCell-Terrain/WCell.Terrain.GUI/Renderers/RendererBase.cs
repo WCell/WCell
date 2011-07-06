@@ -1,6 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using WCell.Terrain.GUI.Util;
+
 using WCell.Util;
 
 namespace WCell.Terrain.GUI.Renderers
@@ -44,6 +44,8 @@ namespace WCell.Terrain.GUI.Renderers
 
         public override void Draw(GameTime gameTime)
         {
+			if (!Enabled) return;
+
             var vertices = RenderingVerticies;
             var indices = RenderingIndices;
 

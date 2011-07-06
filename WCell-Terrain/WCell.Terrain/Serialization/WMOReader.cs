@@ -17,16 +17,16 @@ namespace WCell.Terrain.Serialization
     {
         private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-        public static WMORoot ReadWMO(MPQFinder mpqFinder, string filePath)
+        public static WMORoot ReadWMO(MpqLibrarian mpqLibrarian, string filePath)
         {
             var root = new WMORoot(filePath);
 
-            if (!mpqFinder.FileExists(filePath))
+            if (!mpqLibrarian.FileExists(filePath))
             {
                 log.Error("WMO file does not exist: ", filePath);
             }
 
-            using (var stream = mpqFinder.OpenFile(filePath))
+            using (var stream = mpqLibrarian.OpenFile(filePath))
             using (var fileReader = new BinaryReader(stream))
             {
                 uint type = 0;
@@ -599,10 +599,10 @@ namespace WCell.Terrain.Serialization
 		/// <summary>
 		/// Adds a WMO to the manager
 		/// </summary>
-		public static WMORoot ReadWMO(MPQFinder finder, MapObjectDefinition currentMODF)
+		public static WMORoot ReadWMO(MpqLibrarian librarian, MapObjectDefinition currentMODF)
 		{
 			// Parse the WMORoot
-			var wmoRoot = WMOReader.ReadWMO(finder, currentMODF.FilePath);
+			var wmoRoot = WMOReader.ReadWMO(librarian, currentMODF.FilePath);
 
 			// Parse the WMOGroups
 			for (var wmoGroup = 0; wmoGroup < wmoRoot.Header.GroupCount; wmoGroup++)
@@ -610,7 +610,7 @@ namespace WCell.Terrain.Serialization
 				var newFile = wmoRoot.FilePath.Substring(0, wmoRoot.FilePath.LastIndexOf('.'));
 				var currentFilePath = String.Format("{0}_{1:000}.wmo", newFile, wmoGroup);
 
-				var group = WMOGroupReader.Process(finder, currentFilePath, wmoRoot, wmoGroup);
+				var group = WMOGroupReader.Process(librarian, currentFilePath, wmoRoot, wmoGroup);
 
 				wmoRoot.Groups[wmoGroup] = group;
 			}
@@ -631,7 +631,7 @@ namespace WCell.Terrain.Serialization
 				for (var i = doodadSetOffset; i < (doodadSetOffset + doodadSetCount); i++)
 				{
 					var curDoodadDef = wmoRoot.DoodadDefinitions[i];
-					var curM2 = M2Reader.ReadM2(finder, curDoodadDef.FilePath);
+					var curM2 = M2Reader.ReadM2(librarian, curDoodadDef.FilePath);
 
 					var tempIndices = new List<int>();
 					for (var j = 0; j < curM2.BoundingTriangles.Length; j++)

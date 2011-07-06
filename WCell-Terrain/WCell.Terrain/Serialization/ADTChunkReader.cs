@@ -7,7 +7,7 @@ namespace WCell.Terrain.Serialization
 {
     public static class ADTChunkReader
     {
-        public static ADTChunk Process(BinaryReader fileReader, uint mcnkOffset, ADT parent)
+        public static ADTChunk ReadChunk(BinaryReader fileReader, uint mcnkOffset, ADT parent)
         {
             var chunk = new ADTChunk();
 

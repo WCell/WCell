@@ -7,7 +7,7 @@ using WCell.Constants;
 using WCell.Constants.World;
 using WCell.Core.Paths;
 using WCell.Core.Terrain;
-using WCell.Terrain.Collision;
+using WCell.Terrain.Legacy;
 using WCell.Terrain.Recast.NavMesh;
 using WCell.Util.Graphics;
 using Path = System.IO.Path;
@@ -101,7 +101,7 @@ namespace WCell.Terrain
 			if (PositionUtil.GetTileXYForPos(worldPos, out tileX, out tileY))
 			{
 				// shoot a ray straight down
-				var tile = GetOrLoadTile(tileX, tileY);
+				var tile = GetTile(tileX, tileY);
 				if (tile != null)
 				{
 					float dist;
@@ -118,7 +118,7 @@ namespace WCell.Terrain
     	public bool ForceLoadTile(int x, int y)
     	{
     		TileProfile[x, y] = true;
-    		var tile = GetOrLoadTile(x, y);
+    		var tile = GetTile(x, y);
 			if (tile != null)
 			{
 				tile.EnsureNavMeshLoaded();
@@ -149,7 +149,7 @@ namespace WCell.Terrain
 			TerrainTile tile1, tile2;
 			if (LoadOnDemand)
 			{
-				tile1 = GetOrLoadTile(fromX, fromY);
+				tile1 = GetTile(fromX, fromY);
 				//tile2 = GetOrLoadTile(toX, toY);
 			}
 			else
@@ -167,19 +167,29 @@ namespace WCell.Terrain
 			return tile1.Pathfinder.FindPathUnflavored(from, to);
 		}
 
-		//public FluidType GetFluidTypeAtPoint(Vector3 worldPos)
-		//{
-		//    Point2D tileCoord;
-		//    var chunkCoord = PositionUtil.GetXYForPos(worldPos, out tileCoord);
+		public LiquidType GetLiquidType(Vector3 worldPos)
+		{
+			Point2D tileCoord;
+			Point2D chunkCoord;
+			var unitCoord = PositionUtil.GetHeightMapXYForPos(worldPos, out tileCoord, out chunkCoord);
 
-		//    var tile = GetTile(tileCoord);
-		//    if (tile == null) return FluidType.None;
+			var tile = GetTile(tileCoord.X, tileCoord.Y);
+			if (tile == null) return LiquidType.None;
 
-		//    return tile.GetFluidType(chunkCoord);
-		//}
+			var type = tile.GetLiquidType(chunkCoord);
+			if (type != LiquidType.None)
+			{
+				// check if below the liquid height level
+				if (tile.GetLiquidHeight(chunkCoord, unitCoord) > worldPos.Z)
+				{
+					return type;
+				}
+			}
+			return LiquidType.None;
+		}
 		#endregion
 
-		public TerrainTile GetOrLoadTile(int x, int y)
+		public TerrainTile GetTile(int x, int y)
 		{
 			// get loaded tile
 			var tile = Tiles[x, y];
@@ -200,7 +210,7 @@ namespace WCell.Terrain
 		{
 			var result = true;
 
-			result = GetOrLoadTile(x, y) != null;
+			result = GetTile(x, y) != null;
 
 			var origX = x;
 			var origY = y;
@@ -216,38 +226,38 @@ namespace WCell.Terrain
 
 			x = origX - 1;
 			FixCoordsXMin(ref x);
-			result = result && GetOrLoadTile(x, y) != null;
+			result = result && GetTile(x, y) != null;
 
 			y = origY - 1;
 			FixCoordsYMin(ref y);
-			result = result && GetOrLoadTile(x, y) != null;
+			result = result && GetTile(x, y) != null;
 
 			y = origY + 1;
 			FixCoordsYMax(ref y);
-			result = result && GetOrLoadTile(x, y) != null;
+			result = result && GetTile(x, y) != null;
 
 
 			x = origX + 1;
 			FixCoordsXMax(ref x);
-			result = result && GetOrLoadTile(x, y) != null;
+			result = result && GetTile(x, y) != null;
 
 			y = origY - 1;
 			FixCoordsYMin(ref y);
-			result = result && GetOrLoadTile(x, y) != null;
+			result = result && GetTile(x, y) != null;
 
 			y = origY + 1;
 			FixCoordsYMax(ref y);
-			result = result && GetOrLoadTile(x, y) != null;
+			result = result && GetTile(x, y) != null;
 
 
 			x = origX;
 			y = origY - 1;
 			FixCoordsYMin(ref y);
-			result = result && GetOrLoadTile(x, y) != null;
+			result = result && GetTile(x, y) != null;
 
 			y = origY + 1;
 			FixCoordsYMax(ref y);
-			result = result && GetOrLoadTile(x, y) != null;
+			result = result && GetTile(x, y) != null;
 
 			return result;
 		}

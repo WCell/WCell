@@ -14,12 +14,12 @@ namespace WCell.Terrain.Serialization
 {
     public class M2Reader
     {
-        public static M2Model ReadM2(MPQFinder finder, string filePath)
+        public static M2Model ReadM2(MpqLibrarian librarian, string filePath)
         {
-            if (!finder.FileExists(filePath))
+            if (!librarian.FileExists(filePath))
             {
                 var altFilePath = Path.ChangeExtension(filePath, ".m2");
-                if (!finder.FileExists(altFilePath))
+                if (!librarian.FileExists(altFilePath))
                 {
                     throw new Exception("File does not exist: " + filePath);
                 }
@@ -29,7 +29,7 @@ namespace WCell.Terrain.Serialization
 
             var model = new M2Model();
 
-            using (var stream = finder.OpenFile(filePath))
+            using (var stream = librarian.OpenFile(filePath))
             using (var br = new BinaryReader(stream))
             {
                 ReadHeader(br, model);
@@ -277,7 +277,7 @@ namespace WCell.Terrain.Serialization
         {
         }
 
-		public static M2 ReadM2(MPQFinder finder, MapDoodadDefinition doodadDefinition)
+		public static M2 ReadM2(MpqLibrarian librarian, MapDoodadDefinition doodadDefinition)
 		{
 			var filePath = doodadDefinition.FilePath;
 			var ext = Path.GetExtension(filePath);
@@ -288,7 +288,7 @@ namespace WCell.Terrain.Serialization
 				filePath = Path.ChangeExtension(filePath, ".m2");
 			}
 
-			var model = M2Reader.ReadM2(finder, doodadDefinition.FilePath);
+			var model = M2Reader.ReadM2(librarian, doodadDefinition.FilePath);
 
 			var tempIndices = new List<int>();
 			foreach (var tri in model.BoundingTriangles)
