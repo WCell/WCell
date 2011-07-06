@@ -1,16 +1,21 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using WCell.Terrain.GUI.Util;
 using WCell.Util.Graphics;
-using Color = Microsoft.Xna.Framework.Graphics.Color;
-using Vector3 = Microsoft.Xna.Framework.Vector3;
+using Color = Microsoft.Xna.Framework.Color;
 
 namespace WCell.Terrain.GUI.Renderers
 {
 	public class GenericRenderer : RendererBase
 	{
 		public static Color SelectedTriangleColor = new Color(50, 90, 90);
+
+		private RasterizerState rasterState = new RasterizerState()
+		{
+			CullMode = CullMode.None,
+			FillMode = FillMode.Solid,
+			DepthBias = 1e-6f,
+		};
 
 		public GenericRenderer(Game game)
 			: base(game)
@@ -61,19 +66,17 @@ namespace WCell.Terrain.GUI.Renderers
 			}
 
 			// add vertices
-			XNAUtil.TransformWoWCoordsToXNACoords(ref tri.Point1);
-			XNAUtil.TransformWoWCoordsToXNACoords(ref tri.Point2);
-			XNAUtil.TransformWoWCoordsToXNACoords(ref tri.Point3);
-
 			var normal = WCell.Util.Graphics.Vector3.Cross(tri.Point2 - tri.Point1, tri.Point3 - tri.Point2).ToXna();
 			normal.Normalize();
 
 			_cachedVertices[v] = new VertexPositionNormalColored(tri.Point1.ToXna(),
 																	color,
 																	normal);
+
 			_cachedVertices[v+1] = new VertexPositionNormalColored(tri.Point2.ToXna(),
 																	color,
 																	normal);
+
 			_cachedVertices[v+2] = new VertexPositionNormalColored(tri.Point3.ToXna(),
 																	color,
 																	normal);
@@ -101,16 +104,14 @@ namespace WCell.Terrain.GUI.Renderers
 		public override void Draw(GameTime gameTime)
 		{
 			var graphics = Game.GraphicsDevice;
-			var bias = graphics.RenderState.DepthBias;
-			var fillMode = graphics.RenderState.FillMode;
+			var oldRasterState = graphics.RasterizerState;
+			graphics.RasterizerState = rasterState;
 
-			//graphics.RenderState.DepthBias = 6e-7f;
-			graphics.RenderState.FillMode = FillMode.Solid;
+			graphics.DepthStencilState = Viewer.disabledDepthStencilState;
 
 			base.Draw(gameTime);
 
-			graphics.RenderState.DepthBias = bias;
-			graphics.RenderState.FillMode = fillMode;
+			graphics.RasterizerState = oldRasterState;
 		}
 	}
 }

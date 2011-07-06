@@ -11,6 +11,7 @@ namespace WCell.Terrain.Pathfinding
 	/// TODO: Destination of local shortest path is the vertex before the next turn, not necessarily the final vertex
 	/// TODO: Consider jumping
 	/// TODO: Actor requirements on liquid (can actor only walk on ground or also in certain types of liquid?)
+	/// TODO: Recycle Path and HashMap objects
 	/// </summary>
 	public class Pathfinder
 	{

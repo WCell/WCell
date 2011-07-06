@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using WCell.Terrain.GUI.Util;
-using Color = Microsoft.Xna.Framework.Graphics.Color;
 using Vector3 = Microsoft.Xna.Framework.Vector3;
 
 namespace WCell.Terrain.GUI.Renderers
@@ -24,8 +23,7 @@ namespace WCell.Terrain.GUI.Renderers
 		#region Build polygons
 		protected override void BuildVerticiesAndIndicies()
 		{
-			var viewer = (TerrainViewer) Game;
-			var tile = viewer.Tile;
+			var tile = Viewer.Tile;
 
 			var tempVertices = new List<VertexPositionNormalColored>();
 			var tempIndicies = new List<int>();
@@ -33,7 +31,6 @@ namespace WCell.Terrain.GUI.Renderers
 			for (var v = 0; v < tile.TerrainVertices.Length; v++)
 			{
 				var vertex1 = tile.TerrainVertices[v];
-				XNAUtil.TransformWoWCoordsToXNACoords(ref vertex1);
 				var vertexPosNmlCol1 = new VertexPositionNormalColored(vertex1.ToXna(),
 																		TerrainColor,
 																		Vector3.Zero);

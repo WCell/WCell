@@ -13,11 +13,29 @@ namespace WCell.Terrain.GUI.Renderers
 		private static Color WaterColor
 		{
 			//get { return Color.DarkSlateGray; }
-			get { return new Color(0, 0, 70, 100); }
+			get { return new Color(0, 0, 70, 50); }
 		}
+
+		readonly BlendState alphaBlendState = new BlendState()
+		{
+			AlphaBlendFunction = BlendFunction.Add,
+			AlphaSourceBlend = Blend.SourceAlpha,
+			ColorSourceBlend = Blend.SourceAlpha,
+			AlphaDestinationBlend = Blend.InverseSourceAlpha,
+			ColorDestinationBlend = Blend.InverseSourceAlpha
+		};
 
 		public LiquidRenderer(Game game) : base(game)
 		{
+		}
+
+		public override void Draw(GameTime gameTime)
+		{
+			var oldBlendState = Game.GraphicsDevice.BlendState;
+
+			Game.GraphicsDevice.BlendState = alphaBlendState;
+			base.Draw(gameTime);
+			Game.GraphicsDevice.BlendState = oldBlendState;
 		}
 
 		protected override void BuildVerticiesAndIndicies()
@@ -41,7 +59,6 @@ namespace WCell.Terrain.GUI.Renderers
 						for (var v = 0; v < vertices.Count; v++)
 						{
 							var vertex = vertices[v];
-							XNAUtil.TransformWoWCoordsToXNACoords(ref vertex);
 							var vertexPosNmlCol = new VertexPositionNormalColored(vertex.ToXna(),
 							                                                      WaterColor,
 							                                                      Vector3.Zero);

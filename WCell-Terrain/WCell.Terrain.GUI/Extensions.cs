@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using WCell.Terrain.GUI.Util;
 using WCell.Util.Graphics;
 
 namespace WCell.Terrain.GUI
@@ -10,6 +11,7 @@ namespace WCell.Terrain.GUI
 	{
 		public static Microsoft.Xna.Framework.Vector3 ToXna(this Vector3 vec)
 		{
+			XNAUtil.TransformWoWCoordsToXNACoords(ref vec);
 			return new Microsoft.Xna.Framework.Vector3()
 			{
 				X = vec.X,
@@ -20,6 +22,7 @@ namespace WCell.Terrain.GUI
 
 		public static Vector3 ToWCell(this Microsoft.Xna.Framework.Vector3 vec)
 		{
+			XNAUtil.TransformXnaCoordsToWoWCoords(ref vec);
 			return new Vector3(vec.X, vec.Y, vec.Z);
 		}
 	}

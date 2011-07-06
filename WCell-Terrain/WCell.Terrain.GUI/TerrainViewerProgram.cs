@@ -57,8 +57,6 @@ namespace WCell.Terrain.GUI
 			                             TerrainConstants.CenterPoint - (defaultTileId.Y)*TerrainConstants.TileSize,
 			                             100.0f);
 
-			XNAUtil.TransformWoWCoordsToXNACoords(ref AvatarPosition);
-
 
 			Console.WriteLine("All data has been loaded - Starting GUI...");
 

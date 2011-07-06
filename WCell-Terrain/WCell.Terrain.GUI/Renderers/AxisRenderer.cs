@@ -20,7 +20,7 @@ namespace WCell.Terrain.GUI.Renderers
         {
             base.Initialize();
 
-            _vertexDeclaration = new VertexDeclaration(GraphicsDevice, VertexPositionNormalColored.VertexElements);
+            _vertexDeclaration = new VertexDeclaration(VertexPositionNormalColored.VertexElements);
         }
 
         public override void Draw(GameTime gameTime)
@@ -28,7 +28,6 @@ namespace WCell.Terrain.GUI.Renderers
             var vertices = GetRenderingVerticies();
             var indices = GetRenderingIndices();
 
-            GraphicsDevice.VertexDeclaration = _vertexDeclaration;
             GraphicsDevice.DrawUserIndexedPrimitives(
                 PrimitiveType.TriangleList,
                 vertices,
@@ -36,8 +35,8 @@ namespace WCell.Terrain.GUI.Renderers
                 vertices.Length, // number of vertices to draw
                 indices,
                 0, // first index element to read
-                indices.Length / 3 // number of primitives to draw
-                );
+                indices.Length / 3, // number of primitives to draw
+				_vertexDeclaration);
 
             base.Draw(gameTime);
         }
