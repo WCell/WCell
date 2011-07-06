@@ -109,8 +109,11 @@ namespace WCell.Terrain
 
 		public NavMesh EnsureNavMeshLoaded()
 		{
-			var builder = new NavMeshBuilder(this);
-			builder.BuildMesh(this);
+			if (NavMesh == null)
+			{
+				var builder = new NavMeshBuilder(this);
+				builder.BuildMesh(this);
+			}
 			return NavMesh;
 		}
 

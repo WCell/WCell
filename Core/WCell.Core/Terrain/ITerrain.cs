@@ -29,7 +29,7 @@ namespace WCell.Core.Terrain
 
         /// <summary>
         /// Returns the height of the terrain right underneath the given worldPos.
-        /// Returns float.NaN if it could not reliably determine the height.
+        /// Returns worldPos.Z if it could not reliably determine the height.
         /// </summary>
         float GetGroundHeightUnderneath(Vector3 worldPos);
 

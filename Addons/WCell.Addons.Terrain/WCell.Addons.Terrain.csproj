@@ -149,8 +149,11 @@
     <Compile Include="FullTerrainProvider.cs" />
     <Compile Include="CollisionAddon.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="NavFigurine.cs" />
     <Compile Include="QuadTree.cs" />
+    <Compile Include="DebugSpells.cs" />
     <Compile Include="TerrainAddonConfiguration.cs" />
+    <Compile Include="TerrainVisualizations.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Core\Cell.Core\Cell.Core.csproj">
