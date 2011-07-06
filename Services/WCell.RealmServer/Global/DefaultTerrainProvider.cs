@@ -35,7 +35,7 @@ namespace WCell.RealmServer.Global
 			query.Reply(new[] { query.To });
 		}
 
-		public float GetHeightUnderneath(Vector3 worldPos)
+		public float GetGroundHeightUnderneath(Vector3 worldPos)
 		{
 			return worldPos.Z;
 		}

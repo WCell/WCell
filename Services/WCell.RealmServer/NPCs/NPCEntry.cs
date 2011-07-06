@@ -110,7 +110,7 @@ namespace WCell.RealmServer.NPCs
 
 		public InvisType InvisibilityType;
 
-		public InhabitType InhabitType = InhabitType.Anywhere;
+		public InhabitType InhabitType = InhabitType.Ground;
 
 		public bool Regenerates;
 
@@ -1011,24 +1011,38 @@ namespace WCell.RealmServer.NPCs
 			return npc;
 		}
 
-		public NPC SpawnAt(Map map, Vector3 pos)
+		public NPC SpawnAt(Map map, Vector3 pos, bool hugGround = false)
 		{
 			var npc = Create(map.DifficultyIndex);
+			if (hugGround && InhabitType == InhabitType.Ground)
+			{
+				pos.Z = map.Terrain.GetGroundHeightUnderneath(pos);
+			}
 			map.AddObject(npc, pos);
 			return npc;
 		}
 
-		public NPC SpawnAt(IWorldZoneLocation loc)
+		public NPC SpawnAt(IWorldZoneLocation loc, bool hugGround = false)
 		{
 			var npc = Create(loc.Map.DifficultyIndex);
 			npc.Zone = loc.GetZone();
-			loc.Map.AddObject(npc, loc.Position);
+			var pos = loc.Position;
+			if (hugGround && InhabitType == InhabitType.Ground)
+			{
+				pos.Z = loc.Map.Terrain.GetGroundHeightUnderneath(pos);
+			}
+			loc.Map.AddObject(npc, pos);
 			return npc;
 		}
 
-		public NPC SpawnAt(IWorldLocation loc)
+		public NPC SpawnAt(IWorldLocation loc, bool hugGround = false)
 		{
 			var npc = Create(loc.Map.DifficultyIndex);
+			var pos = loc.Position;
+			if (hugGround && InhabitType == InhabitType.Ground)
+			{
+				pos.Z = loc.Map.Terrain.GetGroundHeightUnderneath(pos);
+			}
 			loc.Map.AddObject(npc, loc.Position);
 			npc.Phase = loc.Phase;
 			return npc;

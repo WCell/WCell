@@ -30,7 +30,7 @@ namespace WCell.Terrain.Serialization
 			{
 				throw new ArgumentException("Map does not exist: " + map);
 			}
-			var fileName = string.Format("{0}\\{0}_{1}_{2}{3}", name, x, y, Extension);
+			var fileName = string.Format("{0}\\{0}_{1}_{2}{3}", name, y, x, Extension);
 			return Path.Combine(baseDir, fileName);
 		}
 
@@ -38,13 +38,13 @@ namespace WCell.Terrain.Serialization
 		{
 			var mpqFinder = WCellTerrainSettings.GetDefaultMPQFinder();
 			var filePath = GetFilename(terrain.MapId, x, y);
-			var adt = new ADT(x, y, terrain);
-
 			if (!mpqFinder.FileExists(filePath))
 			{
 				log.Error("ADT file does not exist: ", filePath);
 				return null;
 			}
+
+			var adt = new ADT(x, y, terrain);
 
 			using (var stream = mpqFinder.OpenFile(filePath))
 			using (var fileReader = new BinaryReader(stream))
@@ -324,10 +324,11 @@ namespace WCell.Terrain.Serialization
 
 		static void ReadMCNK(BinaryReader br, ADT adt)
 		{
-			for (var i = 0; i < 256; i++)
+			for (var i = 0; i < TerrainConstants.ChunksPerTile; i++)
 			{
-				var chunk = ADTChunkReader.Process(br, adt.MapChunkInfo[i].Offset, adt);
-				adt.Chunks[chunk.Header.IndexY, chunk.Header.IndexX] = chunk;
+				var chunk = ADTChunkReader.ReadChunk(br, adt.MapChunkInfo[i].Offset, adt);
+				adt.Chunks[chunk.Header.IndexX, chunk.Header.IndexY] = chunk;
+				chunk.WaterInfo = adt.LiquidInfo[chunk.Header.IndexX, chunk.Header.IndexY];
 			}
 		}
 
@@ -382,7 +383,7 @@ namespace WCell.Terrain.Serialization
 
 			water.Header.Flags = (MH2OFlags)fileReader.ReadUInt16();
 
-			water.Header.Type = (FluidType)fileReader.ReadUInt16();
+			water.Header.Type = (LiquidType)fileReader.ReadUInt16();
 			water.Header.HeightLevel1 = fileReader.ReadSingle();
 			water.Header.HeightLevel2 = fileReader.ReadSingle();
 			water.Header.YOffset = fileReader.ReadByte();

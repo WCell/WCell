@@ -21,7 +21,7 @@ namespace WCell.Addons.Terrain
 
 		public static TerrainTile LoadTile(SimpleTerrain terrain, int x, int y)
 		{
-			var tile = SimpleADTReader.ReadTile(terrain, x, y);
+			var tile = SimpleTileReader.ReadTile(terrain, x, y);
 
 			if (tile != null)
 			{

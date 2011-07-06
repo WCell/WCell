@@ -37,7 +37,7 @@ namespace WCell.Terrain.GUI.UI
 
 			foreach (TileTreeNode child in Nodes)
 			{
-				if (!File.Exists(SimpleADTWriter.GetFileName(map, child.Coords.X, child.Coords.Y)))
+				if (!File.Exists(SimpleTileWriter.GetFileName(map, child.Coords.X, child.Coords.Y)))
 				{
 					child.BackColor = Color.Gray;
 				}

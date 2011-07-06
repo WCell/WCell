@@ -55,7 +55,6 @@ namespace WCell.Terrain.MPQ
 			}
 
 			adt.GenerateHeightVertexAndIndices();
-			adt.GenerateLiquidVertexAndIndices();
 
 			return adt;
 		}

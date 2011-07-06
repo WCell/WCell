@@ -2,7 +2,7 @@
 using System.IO;
 using WCell.Terrain.MPQ.WMOs;
 using WCell.Util.Graphics;
-using WCell.Terrain.Collision;
+using WCell.Terrain.Legacy;
 
 namespace WCell.Terrain.MPQ
 {

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using WCell.Terrain.Collision;
+using WCell.Terrain.Legacy;
 using WCell.Util.Graphics;
-using OBB = WCell.Terrain.Collision.OBB;
+using OBB = WCell.Terrain.Legacy.OBB;
 
 namespace WCell.Terrain.MPQ
 {

@@ -16,59 +16,17 @@ namespace WCell.Terrain
 		/// </summary>
 		public MapNormals Normals = new MapNormals();
 
-		public bool IsFlat;
-
-		private Rect _bounds = Rect.Empty;
-		private int _nodeId = -1;
-
-		private bool[,] holesMap;
-
-		public bool[,] HolesMap
-		{
-			get
-			{
-				if (holesMap == null)
-				{
-					holesMap = new bool[4, 4];
-					for (var i = 0; i < 16; i++)
-					{
-						holesMap[i / 4, i % 4] = (((HolesMask >> (i)) & 1) == 1);
-					}
-				}
-				return holesMap;
-			}
-		}
-
 		public TerrainChunk()
 		{
 		}
 
-
-		public Rect Bounds
-		{
-			get { return _bounds; }
-			set { _bounds = value; }
-		}
-
-		public int NodeId
-		{
-			get { return _nodeId; }
-			set { _nodeId = value; }
-		}
-
-		public abstract int X { get; }
-
-		public abstract int Y { get; }
-
-		public abstract bool IsLiquid { get; }
+		public abstract bool HasLiquid { get; }
 
 		public abstract float[,] LiquidHeights { get; }
 
-		public abstract FluidType LiquidType { get; }
+		public abstract LiquidType LiquidType { get; }
 
 		public abstract bool[,] LiquidMap { get; }
-
-		public abstract RectInt32 LiquidBounds { get; }
 
 		public abstract float MedianHeight { get; }
 

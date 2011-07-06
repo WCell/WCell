@@ -73,8 +73,9 @@ namespace WCell.Terrain.MPQ
         #region Constructors
 		public ADT(int x, int y, Terrain terrain) :
 			base(x, y, terrain)
-        {
-        }
+		{
+			LiquidChunks = new TerrainLiquidChunk[TerrainConstants.ChunksPerTileSide, TerrainConstants.ChunksPerTileSide];
+		}
 
     	#endregion
 
@@ -99,7 +100,7 @@ namespace WCell.Terrain.MPQ
 			{
 				for (var y = 0; y < TerrainConstants.ChunksPerTileSide; y++)
 				{
-					var chunk = Chunks[y, x];
+					var chunk = Chunks[x, y];
 					var heights = chunk.Heights.GetLowResMapMatrix();
 					var holes = (chunk.HolesMask > 0) ? chunk.HolesMap : EmptyHolesArray;
 
@@ -212,23 +213,6 @@ namespace WCell.Terrain.MPQ
 			TerrainVertices = newVertices.ToArray();
 		}
 
-		public void GenerateLiquidVertexAndIndices()
-		{
-			LiquidVertices = new List<Vector3>();
-			LiquidIndices = new List<int>();
-
-			var vertexCounter = 0;
-			for (var indexX = 0; indexX < 16; indexX++)
-			{
-				for (var indexY = 0; indexY < 16; indexY++)
-				{
-					var tempVertexCounter = GenerateLiquidVertices(indexY, indexX, LiquidVertices);
-					GenerateLiquidIndices(indexY, indexX, vertexCounter, LiquidIndices);
-					vertexCounter += tempVertexCounter;
-				}
-			}
-		}
-
 		/// <summary>
 		/// Adds the rendering liquid vertices to the provided list for the MapChunk given by:
 		/// </summary>
@@ -236,13 +220,13 @@ namespace WCell.Terrain.MPQ
 		/// <param name="indexX">The x index of the map chunk</param>
 		/// <param name="vertices">The Collection to add the vertices to.</param>
 		/// <returns>The number of vertices added.</returns>
-		public int GenerateLiquidVertices(int indexY, int indexX, ICollection<Vector3> vertices)
+		public override int GenerateLiquidVertices(int indexX, int indexY, ICollection<Vector3> vertices)
 		{
 			var count = 0;
 			var chunk = Chunks[indexX, indexY];
 
 			if (chunk == null) return count;
-			if (!chunk.IsLiquid) return count;
+			if (!chunk.HasLiquid) return count;
 
 			//var clr = Color.Green;
 
@@ -260,7 +244,8 @@ namespace WCell.Terrain.MPQ
 			//}
 
 			var mh2OHeightMap = chunk.LiquidHeights;
-			var bounds = chunk.LiquidBounds;
+			var header = chunk.WaterInfo.Header;
+			var bounds = new RectInt32(header.XOffset, header.YOffset, header.Width, header.Height);
 			for (var xStep = 0; xStep <= TerrainConstants.UnitsPerChunkSide; xStep++)
 			{
 				for (var yStep = 0; yStep < 9; yStep++)
@@ -294,14 +279,15 @@ namespace WCell.Terrain.MPQ
 		/// <param name="indexX">The x index of the map chunk</param>
 		/// <param name="offset">The number to add to the indices so as to match the end of the Vertices list.</param>
 		/// <param name="indices">The Collection to add the indices to.</param>
-		public void GenerateLiquidIndices(int indexY, int indexX, int offset, List<int> indices)
+		public override void GenerateLiquidIndices(int indexX, int indexY, int offset, List<int> indices)
 		{
 			var chunk = Chunks[indexX, indexY];
 			if (chunk == null) return;
-			if (!chunk.IsLiquid) return;
+			if (!chunk.HasLiquid) return;
 
 			var renderMap = chunk.LiquidMap;
-			var bounds = chunk.LiquidBounds;
+			var header = chunk.WaterInfo.Header;
+			var bounds = new RectInt32(header.XOffset, header.YOffset, header.Width, header.Height);
 			for (int r = bounds.X; r < (bounds.X + bounds.Height); r++)
 			{
 				for (int c = bounds.Y; c < (bounds.Y + bounds.Width); c++)
@@ -545,10 +531,10 @@ namespace WCell.Terrain.MPQ
 			//return medianHeight + heightDiff;
 		}
 
-		public float GetLiquidHeight(Point2D chunkCoord, Point2D unitCoord)
+		public override float GetLiquidHeight(Point2D chunkCoord, Point2D unitCoord)
 		{
 			var chunk = Chunks[chunkCoord.X, chunkCoord.Y];
-			if (!chunk.IsLiquid)
+			if (!chunk.HasLiquid)
 				return float.MinValue;
 
 
@@ -558,11 +544,11 @@ namespace WCell.Terrain.MPQ
 											: liquidHeights[unitCoord.X, unitCoord.Y];
 		}
 
-		public FluidType GetFluidType(Point2D chunkCoord)
+		public override LiquidType GetLiquidType(Point2D chunkCoord)
 		{
 			var chunk = Chunks[chunkCoord.X, chunkCoord.Y];
 
-			if (!chunk.IsLiquid)
+			if (!chunk.HasLiquid)
 				return chunk.LiquidType;
 
 			return chunk.LiquidType;

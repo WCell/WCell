@@ -109,25 +109,26 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CollisionUtil.cs" />
-    <Compile Include="Collision\AABB.cs" />
-    <Compile Include="Collision\BSPTree\BSPTree.cs" />
-    <Compile Include="Collision\CollisionUtil.cs" />
-    <Compile Include="Collision\ICollidable.cs" />
-    <Compile Include="Collision\Intersection.cs" />
-    <Compile Include="Collision\IShape.cs" />
-    <Compile Include="Collision\OBB.cs" />
-    <Compile Include="Collision\OCTree\IntermediateOCTreeNode.cs" />
-    <Compile Include="Collision\OCTree\OCTPoly.cs" />
-    <Compile Include="Collision\OCTree\OCTree.cs" />
-    <Compile Include="Collision\OCTree\OCTreeBuilder.cs" />
-    <Compile Include="Collision\OCTree\OCTreeIntersection.cs" />
-    <Compile Include="Collision\OCTree\OCTreeIntersectionType.cs" />
-    <Compile Include="Collision\OCTree\OCTreeNode.cs" />
+    <Compile Include="Legacy\AABB.cs" />
+    <Compile Include="Legacy\BSPTree\BSPTree.cs" />
+    <Compile Include="Legacy\CollisionUtil.cs" />
+    <Compile Include="Legacy\ICollidable.cs" />
+    <Compile Include="Legacy\Intersection.cs" />
+    <Compile Include="IShape.cs" />
+    <Compile Include="Legacy\OBB.cs" />
+    <Compile Include="Legacy\OCTree\IntermediateOCTreeNode.cs" />
+    <Compile Include="Legacy\OCTree\OCTPoly.cs" />
+    <Compile Include="Legacy\OCTree\OCTree.cs" />
+    <Compile Include="Legacy\OCTree\OCTreeBuilder.cs" />
+    <Compile Include="Legacy\OCTree\OCTreeIntersection.cs" />
+    <Compile Include="Legacy\OCTree\OCTreeIntersectionType.cs" />
+    <Compile Include="Legacy\OCTree\OCTreeNode.cs" />
     <Compile Include="LargeObjectPools.cs" />
     <Compile Include="Pathfinding\Pathfinder.cs" />
     <Compile Include="Pathfinding\SearchItem.cs" />
     <Compile Include="Recast\NavMesh\NavMeshBuilder.cs" />
     <Compile Include="Recast\RecastUtil.cs" />
+    <Compile Include="TerrainLiquidChunk.cs" />
     <Compile Include="Tools\MapBoundaryUtil.cs" />
     <Compile Include="Tools\MapBoundaryWriter.cs" />
     <Compile Include="Tools\ZoneGridWriter.cs" />
@@ -136,16 +137,14 @@
     <Compile Include="MPQ\WDT.cs" />
     <Compile Include="MPQ\WDTHeader.cs" />
     <Compile Include="SimpleTerrain.cs" />
-    <Compile Include="Simple\ADT\SimpleADT.cs" />
-    <Compile Include="Simple\ADT\SimpleTerrainChunk.cs" />
     <Compile Include="MPQ\ADTChunk.cs" />
-    <Compile Include="Serialization\SimpleADTReader.cs" />
-    <Compile Include="Simple\M2\SimpleM2.cs" />
-    <Compile Include="Simple\M2\SimpleMapM2Definition.cs" />
-    <Compile Include="Simple\WMO\SimpleWMO.cs" />
-    <Compile Include="Simple\WMO\SimpleWMODefinition.cs" />
-    <Compile Include="Simple\WMO\SimpleWMOGroup.cs" />
-    <Compile Include="Simple\WMO\SimpleWMOM2Definition.cs" />
+    <Compile Include="Serialization\SimpleTileReader.cs" />
+    <Compile Include="Simple\SimpleM2.cs" />
+    <Compile Include="Simple\SimpleMapM2Definition.cs" />
+    <Compile Include="Simple\SimpleWMO.cs" />
+    <Compile Include="Simple\SimpleWMODefinition.cs" />
+    <Compile Include="Simple\SimpleWMOGroup.cs" />
+    <Compile Include="Simple\SimpleWMOM2Definition.cs" />
     <Compile Include="MPQ\ADT.cs" />
     <Compile Include="TerrainChunk.cs" />
     <Compile Include="TerrainTile.cs" />
@@ -198,13 +197,12 @@
     <Compile Include="Recast\NavMesh\NavMeshPolygon.cs" />
     <Compile Include="Recast\NavMesh\NavOffMeshConnection.cs" />
     <Compile Include="Recast\RecastAPI.cs" />
-    <Compile Include="Serialization\SimpleADTWriter.cs" />
+    <Compile Include="Serialization\SimpleTileWriter.cs" />
     <Compile Include="Terrain.cs" />
     <Compile Include="Extensions.cs" />
-    <Compile Include="WCellTerrainConstants.cs" />
+    <Compile Include="TerrainUtil.cs" />
     <Compile Include="WCellTerrainSettings.cs" />
     <Compile Include="TileIdentifier.cs" />
-    <Compile Include="Utils\MathHelpers.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

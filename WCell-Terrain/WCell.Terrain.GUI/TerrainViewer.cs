@@ -6,11 +6,13 @@ using System.Windows.Forms;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using WCell.Constants;
 using WCell.Constants.World;
 using WCell.MPQTool;
-using WCell.Terrain.Collision;
-using WCell.Terrain.GUI.UI;
 using WCell.Terrain.GUI.Util;
+using WCell.Terrain.Legacy;
+using WCell.Terrain.GUI.UI;
+
 using WCell.Terrain.GUI.Renderers;
 using WCell.Terrain.MPQ.DBC;
 using WCell.Terrain.Pathfinding;
@@ -19,13 +21,14 @@ using WCell.Util;
 using WCell.Util.Graphics;
 
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
-using Color = Microsoft.Xna.Framework.Graphics.Color;
+using Color = Microsoft.Xna.Framework.Color;
 using Keys = Microsoft.Xna.Framework.Input.Keys;
 using MathHelper = Microsoft.Xna.Framework.MathHelper;
 using Matrix = Microsoft.Xna.Framework.Matrix;
 using Ray = WCell.Util.Graphics.Ray;
 using Vector3 = Microsoft.Xna.Framework.Vector3;
 using MenuItem = System.Windows.Forms.MenuItem;
+using Vector2 = Microsoft.Xna.Framework.Vector2;
 
 namespace WCell.Terrain.GUI
 {
@@ -69,14 +72,26 @@ namespace WCell.Terrain.GUI
 
 		// Camera Stuff
 		float avatarYaw, avatarPitch;
-		Vector3 _thirdPersonReference = new Vector3(0, 20, -20);
 		private bool mouseLeftButtonDown, escapeDown;
 
 		public static Vector3 avatarPosition = new Vector3(-100, 100, -100);
 
-		SpriteBatch _spriteBatch;
-		SpriteFont _spriteFont;
+		//SpriteBatch spriteBatch;
+		//SpriteFont font;
 
+		public RasterizerState solidRasterizerState, frameRasterizerState;
+
+		public readonly DepthStencilState defaultStencilState = new DepthStencilState()
+		{
+			DepthBufferEnable = true
+		};
+
+		public readonly DepthStencilState disabledDepthStencilState = new DepthStencilState()
+		{
+			DepthBufferEnable = false
+		};
+
+		private LiquidRenderer LiquidRenderer;
 		private float globalIlluminationLevel;
 		private TerrainTile m_Tile;
 
@@ -88,6 +103,7 @@ namespace WCell.Terrain.GUI
 		{
 			TerrainViewer.avatarPosition = avatarPosition;
 			_graphics = new GraphicsDeviceManager(this);
+			_graphics.GraphicsProfile = GraphicsProfile.HiDef;
 			Content.RootDirectory = "Content";
 
 			avatarYaw = 90;
@@ -110,6 +126,7 @@ namespace WCell.Terrain.GUI
 			}
 		}
 
+
 		public Terrain Terrain
 		{
 			get { return Tile.Terrain; }
@@ -122,7 +139,7 @@ namespace WCell.Terrain.GUI
 			{
 				m_Tile = value;
 				Form.Invoke(new Action(() =>
-					Form.Text = string.Format("TerrainViewer - {0} (Tile X={1}, Y={2})", 
+					Form.Text = string.Format("TerrainViewer - {0} (Tile X={1}, Y={2})",
 									value.Terrain.MapId, value.TileX, value.TileY)));
 			}
 		}
@@ -141,7 +158,16 @@ namespace WCell.Terrain.GUI
 			private set;
 		}
 
-		public GenericRenderer TriangleSelector
+		public GenericRenderer TriangleSelectionRenderer
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Lines are always rendered above everything else
+		/// </summary>
+		public GenericRenderer LineSelectionRenderer
 		{
 			get;
 			private set;
@@ -151,31 +177,17 @@ namespace WCell.Terrain.GUI
 
 		#region Initialization
 		/// <summary>
-		/// Executes a console command.
-		/// </summary>
-		private void DoCommand()
-		{
-			//if (!Console.Command.commandCode.Equals(MpqConsole.ConsoleCommandStruct.CommandCode.Load)) return;
-
-			//var command = Console.Command.commandData.Split(' ');
-			//var mapX = int.Parse(command[0]);
-			//var mapY = int.Parse(command[1]);
-			//Console.WriteLine("Loading map:" + mapX + " " + mapY);
-			//_terrainManager.ADTManager.LoadTile(mapX, mapY);
-		}
-
-		/// <summary>
 		/// Loads the content needed for the game.
 		/// </summary>
 		protected override void LoadContent()
 		{
 			Keyboard.GetState();
-			//var thaFont = Content.Load<SpriteFont>("Courier New");
+			//font = Content.Load<SpriteFont>("mfont");
 			//_spriteFont = thaFont;
 			//Console = new MpqConsole(this, thaFont);            
 			//Console.MyEvent += DoCommand;
 
-			//_spriteBatch = new SpriteBatch(GraphicsDevice);
+			//spriteBatch = new SpriteBatch(GraphicsDevice);
 		}
 
 		/// <summary>
@@ -186,32 +198,63 @@ namespace WCell.Terrain.GUI
 		/// </summary>
 		protected override void Initialize()
 		{
-			InitGUI();
-
+			// reset mouse, so we don't suddenly pan off to the sides
 			Form.Activated += (sender, args) => RecenterMouse();
 
 			IsMouseVisible = true;
 			_graphics.PreferredBackBufferWidth = 1024;
 			_graphics.PreferredBackBufferHeight = 768;
 			_graphics.IsFullScreen = false;
+
+			var device = _graphics.GraphicsDevice;
+			device.RasterizerState = solidRasterizerState =
+				new RasterizerState()
+				{
+					CullMode = CullMode.None,
+					FillMode = FillMode.Solid
+				};
+
+			frameRasterizerState = new RasterizerState()
+				{
+					CullMode = CullMode.None,
+					FillMode = FillMode.WireFrame
+				};
+
+			device.DepthStencilState = defaultStencilState;
+
 			_graphics.ApplyChanges();
+
+			//_graphics.GraphicsDevice.RenderState.AlphaBlendEnable = true;
+			//_graphics.GraphicsDevice.RenderState.AlphaDestinationBlend = Blend.InverseSourceAlpha;
+			//_graphics.GraphicsDevice.RenderState.AlphaDestinationBlend = Blend.InverseSourceAlpha;
+
+			//_graphics.GraphicsDevice.RenderState.SourceBlend = Blend.One;
+			//_graphics.GraphicsDevice.RenderState.DestinationBlend = Blend.InverseSourceAlpha; 
+
 			InitializeEffect();
 
 
 			Components.Add(new AxisRenderer(this));
-			Components.Add(new TileRenderer(this));
+			Components.Add(new EnvironmentRenderer(this));
+
 			if (Tile.NavMesh != null)
 			{
-				Components.Add(new RecastSolidRenderer(this));
+				Components.Add(new WireframeNavMeshRenderer(this));
+				Components.Add(new SolidNavMeshRenderer(this));
 			}
-			Components.Add(TriangleSelector = new GenericRenderer(this));
+			Components.Add(LiquidRenderer = new LiquidRenderer(this));
+
+			Components.Add(TriangleSelectionRenderer = new GenericRenderer(this));
+			Components.Add(LineSelectionRenderer = new GenericRenderer(this));
+
+			InitGUI();
 
 			base.Initialize();
 		}
 
 		private void InitializeEffect()
 		{
-			effect = new BasicEffect(_graphics.GraphicsDevice, null)
+			effect = new BasicEffect(_graphics.GraphicsDevice)
 			{
 				VertexColorEnabled = true,
 				LightingEnabled = true,
@@ -232,7 +275,7 @@ namespace WCell.Terrain.GUI
 			GlobalIlluminationLevel = 1.5f;
 
 
-			_vertexDeclaration = new VertexDeclaration(_graphics.GraphicsDevice, VertexPositionNormalColored.VertexElements);
+			_vertexDeclaration = new VertexDeclaration(VertexPositionNormalColored.VertexElements);
 		}
 		#endregion
 
@@ -252,7 +295,7 @@ namespace WCell.Terrain.GUI
 		/// <param name="gameTime">Provides a snapshot of timing values.</param>
 		protected override void Update(GameTime gameTime)
 		{
-			UpdateAvatarPosition();
+			UpdateState();
 
 			// use mouse navigation
 
@@ -273,6 +316,7 @@ namespace WCell.Terrain.GUI
 				RecenterMouse();
 			}
 
+			UpdateTexts();
 
 			//var ray = new Ray(_avatarPosition, Vector3.Down);
 			//collider = new Triangle(Vector3.UnitX, Vector3.UnitY, Vector3.UnitZ);
@@ -302,51 +346,27 @@ namespace WCell.Terrain.GUI
 		protected override void Draw(GameTime gameTime)
 		{
 			_graphics.GraphicsDevice.Clear(Color.DeepSkyBlue);
-			//tree.Draw();
-			_graphics.GraphicsDevice.VertexDeclaration = _vertexDeclaration;
 
-			// Update our camera
-			UpdateCameraThirdPerson();
+			GraphicsDevice.DepthStencilState = defaultStencilState;
+			UpdateProjection();
 
 
-			effect.Begin();
 			effect.Projection = _proj;
 			effect.View = _view;
 
 			foreach (var pass in effect.CurrentTechnique.Passes)
 			{
-				pass.Begin();
-				//_graphics.GraphicsDevice.RenderState.CullMode = CullMode.None;
-				//_graphics.GraphicsDevice.RenderState.FillMode = FillMode.WireFrame;
-				//_graphics.GraphicsDevice.RenderState.AlphaBlendEnable = true;
-
-				// Make the renderers draw their stuff
+				pass.Apply();
 				base.Draw(gameTime);
-
-				//_graphics.GraphicsDevice.RenderState.AlphaBlendEnable = false;
-				pass.End();
 			}
-
-
-			effect.End();
-
-			DrawCameraState();
 			//_spriteBatch.Begin();
 			//_spriteBatch.DrawString(_spriteFont, "Esc: Opens the console.",
 			//                        new Vector2(10, _graphics.GraphicsDevice.Viewport.Height - 30), Color.White);
 			//_spriteBatch.End();
 
-			GraphicsDevice.RenderState.DepthBufferEnable = true;
-			GraphicsDevice.RenderState.AlphaBlendEnable = false;
 		}
 
-		private void DrawCameraState()
-		{
-			_graphics.GraphicsDevice.RenderState.CullMode = CullMode.None;
-			_graphics.GraphicsDevice.RenderState.DepthBufferEnable = true;
-		}
-
-		void UpdateCameraThirdPerson()
+		void UpdateProjection()
 		{
 			// Create a vector pointing the direction the camera is facing.
 			//var transformedReference = Vector3.Transform(, Matrix.CreateRotationY(avatarYaw));
@@ -373,7 +393,7 @@ namespace WCell.Terrain.GUI
 		/// ght.LoadXMLFromFile(
 		///      "E:\\Inetpub\\wwwroot\\GiveHelp\\GiveHelpDoc.xml");
 		/// </code>
-		void UpdateAvatarPosition()
+		void UpdateState()
 		{
 			var keyboardState = Keyboard.GetState();
 			var gamePadState = GamePad.GetState(PlayerIndex.One);
@@ -491,16 +511,12 @@ namespace WCell.Terrain.GUI
 				HighlightSurroundings(100);
 			}
 
-			if (keyboardState.IsKeyDown(Keys.T) && TriangleSelector.RenderingVerticies.Length > 2)
+			if (keyboardState.IsKeyDown(Keys.T) && TriangleSelectionRenderer.RenderingVerticies.Length > 2)
 			{
 				// test intersection with the first selected triangle
-				var t = new Triangle(TriangleSelector.RenderingVerticies[0].Position.ToWCell(),
-									 TriangleSelector.RenderingVerticies[1].Position.ToWCell(),
-									 TriangleSelector.RenderingVerticies[2].Position.ToWCell());
-
-				XNAUtil.TransformXnaCoordsToWoWCoords(ref t.Point1);
-				XNAUtil.TransformXnaCoordsToWoWCoords(ref t.Point2);
-				XNAUtil.TransformXnaCoordsToWoWCoords(ref t.Point3);
+				var t = new Triangle(TriangleSelectionRenderer.RenderingVerticies[0].Position.ToWCell(),
+									 TriangleSelectionRenderer.RenderingVerticies[1].Position.ToWCell(),
+									 TriangleSelectionRenderer.RenderingVerticies[2].Position.ToWCell());
 
 				Ray ray;
 				GetRayToCursor(out ray);
@@ -559,7 +575,8 @@ namespace WCell.Terrain.GUI
 		private void ClearSelection()
 		{
 			selectedPoints.Clear();
-			TriangleSelector.Clear();
+			TriangleSelectionRenderer.Clear();
+			LineSelectionRenderer.Clear();
 		}
 
 		private void HighlightSurroundings(float distance)
@@ -621,7 +638,7 @@ namespace WCell.Terrain.GUI
 
 					var p1 = current.EnterPos;
 					var p2 = current.Previous.IsNull ? selectedPoints[0] : current.Previous.EnterPos;
-					TriangleSelector.SelectLine(p1, p2, Color.Green);
+					LineSelectionRenderer.SelectLine(p1, p2, Color.Green);
 					current = current.Previous;
 				}
 			}
@@ -654,7 +671,7 @@ namespace WCell.Terrain.GUI
 				{
 					if (neighbor > 0)
 					{
-						SelectTriangle(neighbor*3, true, Color.Red);
+						SelectTriangle(neighbor * 3, true, Color.Red);
 					}
 				}
 			}
@@ -676,7 +693,7 @@ namespace WCell.Terrain.GUI
 			triangle.Point2.Z += 0.0001f;
 			triangle.Point3.Z += 0.0001f;
 
-			TriangleSelector.Select(ref triangle, add, color);
+			TriangleSelectionRenderer.Select(ref triangle, add, color);
 		}
 
 		/// <summary>
@@ -704,9 +721,6 @@ namespace WCell.Terrain.GUI
 			var near = avatarPosition.ToWCell();
 			var far = _graphics.GraphicsDevice.Viewport.Unproject(endPos, _proj, _view, Matrix.Identity).ToWCell();
 
-			XNAUtil.TransformXnaCoordsToWoWCoords(ref near);
-			XNAUtil.TransformXnaCoordsToWoWCoords(ref far);
-
 			var dir = (far - near).NormalizedCopy();
 
 			ray = new Ray(near, dir);
@@ -718,14 +732,11 @@ namespace WCell.Terrain.GUI
 		{
 			if (solidRenderingMode)
 			{
-				//_graphics.GraphicsDevice.RenderState.CullMode = CullMode.CullClockwiseFace;
-				_graphics.GraphicsDevice.RenderState.CullMode = CullMode.None;
-				_graphics.GraphicsDevice.RenderState.FillMode = FillMode.Solid;
+				_graphics.GraphicsDevice.RasterizerState = solidRasterizerState;
 			}
 			else
 			{
-				_graphics.GraphicsDevice.RenderState.CullMode = CullMode.None;
-				_graphics.GraphicsDevice.RenderState.FillMode = FillMode.WireFrame;
+				_graphics.GraphicsDevice.RasterizerState = frameRasterizerState;
 			}
 		}
 
@@ -736,6 +747,8 @@ namespace WCell.Terrain.GUI
 		private TreeView treeView;
 		private TextBox waitingBox;
 		readonly BackgroundWorker worker = new BackgroundWorker();
+
+		private TextBox LiquidBox;
 
 		public bool IsMenuVisible
 		{
@@ -783,12 +796,24 @@ namespace WCell.Terrain.GUI
 			Console.WriteLine("Help:");
 			Console.WriteLine("  Press ESCAPE to enter the menu");
 
+			LiquidBox = new TransparentTextBox();
+			LiquidBox.Dock = DockStyle.None;
+			LiquidBox.BackColor = System.Drawing.Color.Transparent;
+			LiquidBox.Location = new System.Drawing.Point(Form.Width - 60, 20);
+			LiquidBox.Width = 50;
+			TextBoxUtil.DisableDecoration(LiquidBox);
+			Form.Controls.Add(LiquidBox);
+
 			menu = new MainMenu();
 
 			renderingModeButton = new MenuItem();
 			renderingModeButton.Click += ClickedRenderingModeButton;
 			menu.MenuItems.Add(renderingModeButton);
 			ClickedRenderingModeButton(null, null);
+
+			var toggleWaterButton = new MenuItem("Toggle Water");
+			toggleWaterButton.Click += (a, b) => LiquidRenderer.Enabled = !LiquidRenderer.Enabled;
+			menu.MenuItems.Add(toggleWaterButton);
 
 			//var exportRecastMeshButton = new MenuItem("Export Tile mesh");
 			//exportRecastMeshButton.Click += ExportRecastMesh;
@@ -899,16 +924,7 @@ namespace WCell.Terrain.GUI
 				waitingBox.Dock = DockStyle.Bottom;
 				waitingBox.ForeColor = System.Drawing.Color.DarkGreen;
 				waitingBox.BackColor = System.Drawing.Color.Black;
-
-				waitingBox.Margin = new Padding(0, 0, 0, 0);
-				waitingBox.BorderStyle = BorderStyle.None;
-				waitingBox.TextAlign = HorizontalAlignment.Center;
-				waitingBox.HideSelection = true;
-				waitingBox.Enabled = false;
-				waitingBox.GotFocus += (a, b) => waitingBox.Select(0, 0);
-				waitingBox.LostFocus += (a, b) => waitingBox.Select(0, 0);
-				waitingBox.Leave += (a, b) => waitingBox.Select(0, 0);
-				waitingBox.Click += (a, b) => waitingBox.Select(0, 0);
+				TextBoxUtil.DisableDecoration(waitingBox);
 
 				Form.Controls.Add(waitingBox);
 			}
@@ -965,6 +981,59 @@ namespace WCell.Terrain.GUI
 			}
 		}
 
+		class TransparentTextBox : TextBox
+		{
+			public TransparentTextBox()
+			{
+				SetStyle(ControlStyles.SupportsTransparentBackColor, true);
+			}
+		}
+
+		public static class TextBoxUtil
+		{
+			public static void DisableDecoration(TextBox box)
+			{
+				box.Margin = new Padding(0, 0, 0, 0);
+				box.BorderStyle = BorderStyle.None;
+				box.TextAlign = HorizontalAlignment.Center;
+				box.Enabled = false;
+				box.HideSelection = true;
+				box.GotFocus += (a, b) => box.Select(0, 0);
+				box.LostFocus += (a, b) => box.Select(0, 0);
+				box.Leave += (a, b) => box.Select(0, 0);
+				box.Click += (a, b) => box.Select(0, 0);
+			}
+		}
+
+		void UpdateTexts()
+		{
+			var actualPos = avatarPosition.ToWCell();
+			var fluid = Tile.Terrain.GetLiquidType(actualPos);
+			if (fluid != LiquidType.None)
+			{
+				LiquidBox.Text = "In " + fluid;
+				switch (fluid)
+				{
+					case LiquidType.Lava:
+						LiquidBox.ForeColor = System.Drawing.Color.Orange;
+						break;
+					case LiquidType.Water:
+						LiquidBox.ForeColor = System.Drawing.Color.LightBlue;
+						break;
+					case LiquidType.OceanWater:
+						LiquidBox.ForeColor = System.Drawing.Color.DarkBlue;
+						break;
+				}
+
+				//spriteBatch.Begin();
+				//spriteBatch.DrawString(font, , new Vector2(Window.ClientBounds.Width - 100, 45), Color.White);
+				//spriteBatch.End();
+			}
+			else
+			{
+				LiquidBox.Text = "";
+			}
+		}
 		#endregion
 
 		#region DrawBoundingBox

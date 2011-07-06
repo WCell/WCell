@@ -84,6 +84,10 @@ namespace WCell.RealmServer.Entities
 			}
 			go.Phase = where.Phase;
 			var pos = where.Position;
+			if (spawnPoint == null)
+			{
+				pos.Z = where.Map.Terrain.GetGroundHeightUnderneath(pos);
+			}
 			where.Map.AddObject(go, ref pos);
 
 			go.MarkUpdate(GameObjectFields.DYNAMIC);

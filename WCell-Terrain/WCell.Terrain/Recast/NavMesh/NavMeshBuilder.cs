@@ -6,7 +6,7 @@ using WCell.Constants;
 using WCell.Constants.World;
 using WCell.Util;
 using WCell.Util.Graphics;
-using WCell.Terrain.Collision;
+using WCell.Terrain.Legacy;
 
 namespace WCell.Terrain.Recast.NavMesh
 {
@@ -85,8 +85,20 @@ namespace WCell.Terrain.Recast.NavMesh
 				}
 
 				// write faces
+				var terrain = tile.Terrain;
 				for (var i = 0; i < indices.Length; i += 3)
 				{
+					// ignore triangles that are completely submerged in a liquid
+					var v1 = verts[indices[i]];
+					var v2 = verts[indices[i+1]];
+					var v3 = verts[indices[i+2]];
+					if (terrain.GetLiquidType(v1) != LiquidType.None ||
+						terrain.GetLiquidType(v2) != LiquidType.None ||
+						terrain.GetLiquidType(v3) != LiquidType.None)
+					{
+						continue;
+					}
+
 					//file.WriteLine("f {0} {1} {2}", indices[i] + 1, indices[i + 1] + 1, indices[i + 2] + 1);
 					file.WriteLine("f {0} {1} {2}", indices[i + 2] + 1, indices[i + 1] + 1, indices[i] + 1);
 				}
@@ -287,19 +299,19 @@ namespace WCell.Terrain.Recast.NavMesh
 						{
 							// some vertex matches the first vertex of the triangle
 							nCount++;
-							mask |= WCellTerrainConstants.TrianglePointA;
+							mask |= TerrainUtil.TrianglePointA;
 						}
 						if (b == a2 || b == b2 || b == c2)
 						{
 							// some vertex matches the second vertex of the triangle
 							nCount++;
-							mask |= WCellTerrainConstants.TrianglePointB;
+							mask |= TerrainUtil.TrianglePointB;
 						}
 						if (c == a2 || c == b2 || c == c2)
 						{
 							// some vertex matches the third vertex of the triangle
 							nCount++;
-							mask |= WCellTerrainConstants.TrianglePointC;
+							mask |= TerrainUtil.TrianglePointC;
 						}
 
 
@@ -334,46 +346,43 @@ namespace WCell.Terrain.Recast.NavMesh
 							undecidedNeighborRelations.Add(Tuple.Create(i, neighbor));
 						}
 
-						var edge = 0;
-						switch (mask)
+						var edge = TerrainUtil.GetEdge(mask);
+						if (edge != -1)
 						{
-							case WCellTerrainConstants.ABEdgeMask:
-								// neighbor shares a and b
-								edge = WCellTerrainConstants.ABEdgeIndex;
-								break;
-							case WCellTerrainConstants.ACEdgeMask:
-								// second shares a and c
-								edge = WCellTerrainConstants.ACEdgeIndex;
-								break;
-							case WCellTerrainConstants.BCEdgeMask:
-								// neighbor shares b and c
-								edge = WCellTerrainConstants.BCEdgeIndex;
-								break;
-							default:
-								continue;
+							poly.Neighbors[edge] = neighbor;
 						}
-
-						poly.Neighbors[edge] = neighbor;
 					}
 
 					polyEdgeIndex += polyIndexCount;
 				}
 
-				//// just sort the not quite connected neighbor into a free slot (and hope its correct)
-				//foreach (var rel in undecidedNeighborRelations)
-				//{
-				//    var poly = polys[rel.Item1];
+				// these relations are incorrect for some reason
+				// the actual neighbor that is to replace the undecided neighbor is also in this set, though
+				for (var i = 0; i < undecidedNeighborRelations.Count; i++)
+				{
+					var rel = undecidedNeighborRelations[i];
 
-				//    for (var i = 0; i < poly.Neighbors.Length; i++)
-				//    {
-				//        var neigh = poly.Neighbors[i];
-				//        if (neigh == -1)
-				//        {
-				//            poly.Neighbors[i] = rel.Item2;
-				//            break;
-				//        }
-				//    }
-				//}
+					var poly = polys[rel.Item1];
+					var tri = poly.GetTriangle(vertices);
+
+					for (var j = 0; j < undecidedNeighborRelations.Count; j++)
+					{
+						if (i == j) continue;
+
+						var index2 = undecidedNeighborRelations[j].Item1;
+						var poly2 = polys[index2];
+						var tri2 = poly2.GetTriangle(vertices);
+
+						var sharedMask = tri.GetSharedEdgeMask(tri2);
+						var edge = TerrainUtil.GetEdge(sharedMask);
+						if (edge != -1)
+						{
+							// the two share an edge
+							poly.Neighbors[edge] = index2;
+							break;
+						}
+					}
+				}
 
 				// create new NavMesh object
 				Tile.NavMesh = new NavMesh(Tile, polys, vertices, indices);

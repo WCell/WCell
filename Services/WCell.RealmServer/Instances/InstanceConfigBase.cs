@@ -54,7 +54,10 @@ namespace WCell.RealmServer.Instances
 			return settings;
 		}
 
+		[XmlIgnore]
 		private Dictionary<E, InstanceConfigEntry<E>> m_Settings = new Dictionary<E, InstanceConfigEntry<E>>();
+
+		[XmlIgnore]
 		private InstanceConfigEntry<E>[] m_entries;
 
 		public InstanceConfigBase()

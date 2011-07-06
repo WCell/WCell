@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using WCell.Terrain.Collision;
+using WCell.Terrain.Legacy;
 using WCell.Util.Graphics;
 
 namespace WCell.Terrain.Recast.NavMesh

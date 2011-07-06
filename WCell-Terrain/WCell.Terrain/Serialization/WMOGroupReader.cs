@@ -17,21 +17,21 @@ namespace WCell.Terrain.Serialization
         /// <summary>
         /// Gets a WMOGroup from the WMO Group file
         /// </summary>
-        /// <param name="finder"></param>
+        /// <param name="librarian"></param>
         /// <param name="filePath">File path to the WMOGroup</param>
         /// <param name="root"></param>
         /// <param name="groupIndex">Current index in the WMO Group</param>
         /// <returns>A WMOGroup from the WMO Group file</returns>
-        public static WMOGroup Process(MPQFinder finder, string filePath, WMORoot root, int groupIndex)
+        public static WMOGroup Process(MpqLibrarian librarian, string filePath, WMORoot root, int groupIndex)
         {
-            if (!finder.FileExists(filePath))
+            if (!librarian.FileExists(filePath))
             {
                 log.Error("WMOGroup file does not exist: ", filePath);
             }
 
             var currentWMOGroup = new WMOGroup(root, groupIndex);
 
-            using (var stream = finder.OpenFile(filePath))
+            using (var stream = librarian.OpenFile(filePath))
             using (var br = new BinaryReader(stream))
             {
                 ReadRequiredChunks(br, currentWMOGroup);

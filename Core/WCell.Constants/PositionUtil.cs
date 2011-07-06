@@ -78,8 +78,8 @@ namespace WCell.Constants
 
 		public static Point2D GetTileXYForPos(Vector3 worldPos)
 		{
-			var tileX = (int)GetTileFraction(worldPos.Y);
-			var tileY = (int)GetTileFraction(worldPos.X);
+			var tileX = (int)GetTileFraction(worldPos.X);
+			var tileY = (int)GetTileFraction(worldPos.Y);
 
 			VerifyTileCoords(tileX, tileY);
 
@@ -92,8 +92,8 @@ namespace WCell.Constants
 
 		public static Point2D GetXYForPos(Vector3 worldPos, out Point2D tileCoord)
 		{
-			var tileXFraction = GetTileFraction(worldPos.Y);
-			var tileYFraction = GetTileFraction(worldPos.X);
+			var tileXFraction = GetTileFraction(worldPos.X);
+			var tileYFraction = GetTileFraction(worldPos.Y);
 			var tileX = (int)tileXFraction;
 			var tileY = (int)tileYFraction;
 
@@ -119,8 +119,8 @@ namespace WCell.Constants
 
 		public static Point2D GetHeightMapXYForPos(Vector3 worldPos, out Point2D tileCoord, out Point2D chunkCoord)
 		{
-			var tileXFraction = GetTileFraction(worldPos.Y);
-			var tileYFraction = GetTileFraction(worldPos.X);
+			var tileXFraction = GetTileFraction(worldPos.X);
+			var tileYFraction = GetTileFraction(worldPos.Y);
 			var tileX = (int)tileXFraction;
 			var tileY = (int)tileYFraction;
 
@@ -148,8 +148,11 @@ namespace WCell.Constants
 			var heightMapX = (int)GetHeightMapFraction(chunkXFraction);
 			var heightMapY = (int)GetHeightMapFraction(chunkYFraction);
 
-			VerifyHeightMapCoord(worldPos, (int)tileXFraction, (int)tileYFraction, (int)chunkXFraction,
-								 (int)chunkYFraction, heightMapX, heightMapY);
+			//if (!VerifyHeightMapCoord(worldPos, (int)tileXFraction, (int)tileYFraction, (int)chunkXFraction,
+			//                     (int)chunkYFraction, heightMapX, heightMapY))
+			//{
+			//    return;
+			//}
 
 			return new Point2D
 			{
@@ -161,8 +164,8 @@ namespace WCell.Constants
 		public static HeightMapFraction GetHeightMapFraction(Vector3 worldPos, 
 			out Point2D tileCoord, out Point2D chunkCoord, out Point2D unitCoord)
 		{
-			var tileXFraction = GetTileFraction(worldPos.Y);
-			var tileYFraction = GetTileFraction(worldPos.X);
+			var tileXFraction = GetTileFraction(worldPos.X);
+			var tileYFraction = GetTileFraction(worldPos.Y);
 			var tileX = (int)tileXFraction;
 			var tileY = (int)tileYFraction;
 
@@ -233,24 +236,17 @@ namespace WCell.Constants
 								  worldPos, tileX, tileY, TerrainConstants.ChunksPerTileSide));
 		}
 
-		public static void VerifyHeightMapCoord(Vector3 worldPos, int tileX, int tileY, int chunkX, int chunkY, int heightMapX, int heightMapY)
+		public static bool VerifyHeightMapCoord(Vector3 worldPos, int tileX, int tileY, int chunkX, int chunkY, int heightMapX, int heightMapY)
 		{
 			if (heightMapX < 0)
-				throw new InvalidDataException(
-					String.Format("WorldPos: {0} does not correspond to a valid chunk in Tile:[{1}, {2}], Chunk:[{3}, {4}]. heightMapX < 0.",
-								  worldPos, tileX, tileY, chunkX, chunkY));
+				return false;
 			if (heightMapX > TerrainConstants.UnitsPerChunkSide)
-				throw new InvalidDataException(
-					String.Format("WorldPos: {0} does not correspond to a valid chunk in Tile:[{1}, {2}], Chunk:[{3}, {4}]. chunkX >= {5}.",
-								  worldPos, tileX, tileY, chunkX, chunkY, TerrainConstants.UnitsPerChunkSide));
+				return false;
 			if (heightMapY < 0)
-				throw new InvalidDataException(
-					String.Format("WorldPos: {0} does not correspond to a valid chunk in Tile:[{1}, {2}], Chunk:[{3}, {4}]. chunkY < 0.",
-								  worldPos, tileX, tileY, chunkX, chunkY));
+				return false;
 			if (heightMapY > TerrainConstants.UnitsPerChunkSide)
-				throw new InvalidDataException(
-					String.Format("WorldPos: {0} does not correspond to a valid chunk in Tile:[{1}, {2}], Chunk:[{3}, {4}]. chunkY >= {5}.",
-								  worldPos, tileX, tileY, chunkX, chunkY, TerrainConstants.ChunksPerTileSide));
+				return false;
+			return true;
 		}
 	}
 

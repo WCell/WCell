@@ -2,8 +2,9 @@
 using System;
 using WCell.Constants;
 using WCell.Constants.World;
-using WCell.Terrain.GUI.Util;
+
 using WCell.MPQTool.StormLibWrapper;
+using WCell.Terrain.GUI.Util;
 using WCell.Terrain.MPQ;
 using WCell.Terrain.Recast;
 using WCell.Terrain.Serialization;
@@ -56,8 +57,6 @@ namespace WCell.Terrain.GUI
 			                             TerrainConstants.CenterPoint - (defaultTileId.Y)*TerrainConstants.TileSize,
 			                             100.0f);
 
-			XNAUtil.TransformWoWCoordsToXNACoords(ref AvatarPosition);
-
 
 			Console.WriteLine("All data has been loaded - Starting GUI...");
 
@@ -70,6 +69,8 @@ namespace WCell.Terrain.GUI
 			Console.Write("Trying to load simple tile... ");
 			var tile = SimpleTerrain.LoadTile(map, x, y);
 
+
+
 			if (tile == null)
 			{
 				// load it the slow way
@@ -81,7 +82,7 @@ namespace WCell.Terrain.GUI
 				if (tile == null)
 				{
 					throw new ArgumentException(string.Format(
-						"Could not read tile (Map: {0} at ({1}, {2})" +
+						"Could not read tile (Map: {0} at ({1}, {2})",
 						map,
 						x,
 						y));
@@ -91,7 +92,7 @@ namespace WCell.Terrain.GUI
 
 				// write it back
 				Console.Write("Saving decompressed tile... ");
-				SimpleADTWriter.WriteADT((ADT)tile);
+				SimpleTileWriter.WriteADT((ADT)tile);
 				Console.WriteLine("Done");
 			}
 			else

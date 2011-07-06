@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using C5;
-using WCell.Terrain.Collision;
+using WCell.Terrain.Legacy;
 using WCell.Terrain.Recast.NavMesh;
 using WCell.Util.Graphics;
 
@@ -11,6 +11,7 @@ namespace WCell.Terrain.Pathfinding
 	/// TODO: Destination of local shortest path is the vertex before the next turn, not necessarily the final vertex
 	/// TODO: Consider jumping
 	/// TODO: Actor requirements on liquid (can actor only walk on ground or also in certain types of liquid?)
+	/// TODO: Recycle Path and HashMap objects
 	/// </summary>
 	public class Pathfinder
 	{
@@ -54,19 +55,21 @@ namespace WCell.Terrain.Pathfinding
 			return path;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
 		public SearchItem FindPath(Vector3 start, Vector3 destination)
 		{
 			System.Collections.Generic.HashSet<int> visited;
 			return FindPath(start, destination, out visited);
 		}
 
+		/// <summary>
+		/// Basic A* implementation that searches through the navmesh.
+		/// </summary>
 		public SearchItem FindPath(Vector3 start, Vector3 destination,
 			out System.Collections.Generic.HashSet<int> visited)
 		{
 			var mesh = NavMesh;
+			visited = null;
+			if (mesh == null) return SearchItem.Null;
 
 			var triStart = mesh.FindFirstTriangleUnderneath(start);
 			var triEnd = mesh.FindFirstTriangleUnderneath(destination);
@@ -103,7 +106,7 @@ namespace WCell.Terrain.Pathfinding
 				//var poly = ((NavMesh)Mesh).Polygons[current.Triangle / 3];
 
 				// iterate over all neighbors
-				for (var i = 0; i < WCellTerrainConstants.NeighborsPerTriangle; i++)
+				for (var i = 0; i < TerrainUtil.NeighborsPerTriangle; i++)
 				{
 					var neighbor = neighbors[i]*3;
 
@@ -119,15 +122,15 @@ namespace WCell.Terrain.Pathfinding
 					Vector3 edgeP1, edgeP2;
 					switch (i)
 					{
-						case WCellTerrainConstants.ABEdgeIndex:
+						case TerrainUtil.ABEdgeIndex:
 							edgeP1 = triangle.Point1;
 							edgeP2 = triangle.Point2;
 							break;
-						case WCellTerrainConstants.ACEdgeIndex:
+						case TerrainUtil.ACEdgeIndex:
 							edgeP1 = triangle.Point1;
 							edgeP2 = triangle.Point3;
 							break;
-						case WCellTerrainConstants.BCEdgeIndex:
+						case TerrainUtil.BCEdgeIndex:
 							edgeP1 = triangle.Point2;
 							edgeP2 = triangle.Point3;
 							break;
