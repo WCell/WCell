@@ -91,6 +91,7 @@ namespace WCell.RealmServer.NPCs.Vehicles
 				m_Seats[i] = new VehicleSeat(this, entry, (byte)i);
 				if (m_Seats[i].Entry.PassengerNPCId == 0) continue;
 				HasUnitAttachment = true;
+				m_Seats[i].CharacterCanEnterOrExit = false;
 
 				//copy locally (access to modified closure)
 				var seat = i;
@@ -145,7 +146,7 @@ namespace WCell.RealmServer.NPCs.Vehicles
 			var res = m_Map.MoveObject(this, ref pt);
 			foreach(var seat in m_Seats.Where(seat => seat != null && seat.Passenger != null))
 			{
-				res = seat.Passenger.SetPosition(pt);
+				res = seat.Passenger.SetPosition(pt + seat.Entry.AttachmentOffset);
 			}
 			return res;
 		}
@@ -158,8 +159,8 @@ namespace WCell.RealmServer.NPCs.Vehicles
 				var res = true;
 				foreach (var seat in m_Seats.Where(seat => seat != null && seat.Passenger != null))
 				{
-					res = seat.Passenger.SetPosition(pt);
-					seat.Passenger.Orientation = orientation;
+					res = seat.Passenger.SetPosition(pt + seat.Entry.AttachmentOffset);
+					seat.Passenger.Orientation = orientation + seat.Entry.PassengerYaw;
 				}
 				return res;
 			}
@@ -286,11 +287,11 @@ namespace WCell.RealmServer.NPCs.Vehicles
 
 		protected internal override void DeleteNow()
 		{
-			if (Vehicle.HasUnitAttachment)
+			if (HasUnitAttachment)
 			{
 				foreach (var seat in Seats.Where(seat => seat != null))
 				{
-					if (seat.HasUnitAttachment)
+					if (seat.Passenger != null && seat.HasUnitAttachment)
 						seat.Passenger.Delete();
 				}
 			}

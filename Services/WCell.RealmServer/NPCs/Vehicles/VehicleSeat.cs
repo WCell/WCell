@@ -5,6 +5,7 @@ using System.Text;
 using WCell.Constants;
 using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
+using WCell.RealmServer.AI;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
 using WCell.Core;
@@ -26,6 +27,13 @@ namespace WCell.RealmServer.NPCs.Vehicles
 		public bool CharacterCanEnterOrExit
 		{
 			get { return Entry.Flags.HasAnyFlag(VehicleSeatFlags.CanEnterorExit); }
+			internal set
+			{ 
+				if(!value)
+					Entry.Flags &= ~VehicleSeatFlags.CanEnterorExit;
+				else
+					Entry.Flags |= VehicleSeatFlags.CanEnterorExit;
+			}
 		}
 
 		public bool HasUnitAttachment
@@ -73,6 +81,9 @@ namespace WCell.RealmServer.NPCs.Vehicles
 				Vehicle.Charmer = passenger;
 				passenger.Charm = Vehicle;
 				Vehicle.UnitFlags |= UnitFlags.Possessed;
+				//Force idle so the vehicle doesn't start trying to
+				//attack while we are in control
+				Vehicle.Brain.State = BrainState.Idle;
 			}
 
 			var chr = (Character)passenger;

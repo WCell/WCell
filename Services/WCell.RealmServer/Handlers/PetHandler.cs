@@ -15,6 +15,7 @@ using WCell.RealmServer.NPCs;
 using WCell.RealmServer.AI;
 using WCell.RealmServer.NPCs.Vehicles;
 using WCell.RealmServer.NPCs.Pets;
+using WCell.RealmServer.Spells;
 
 namespace WCell.RealmServer.Handlers
 {
@@ -192,6 +193,40 @@ namespace WCell.RealmServer.Handlers
 			else
 			{
 				chr.SendSystemMessage("You sent CMSG_PET_SPELL_AUTOCAST for a pet that does not exist in the same Map.");
+			}
+#endif
+		}
+
+		[PacketHandler(RealmServerOpCode.CMSG_PET_CAST_SPELL)]
+		public static void HandlePetCastSpell(IRealmClient client, RealmPacketIn packet)
+		{
+			var petId = packet.ReadEntityId();
+			var chr = client.ActiveCharacter;
+			var pet = chr.Map.GetObject(petId) as NPC;
+
+			if (pet != null)
+			{
+				//TODO: Add (pet as Vehicle).GetDriver() == chr;
+				if (pet == chr.ActivePet || pet is Vehicle || chr.GodMode)
+				{
+					var castCount = packet.ReadByte();
+					var spellId = packet.ReadUInt32();
+					var unkFlags = packet.ReadByte();
+
+					//TODO: Fix this
+					//var spell = pet.Spells[spellId];
+					var spell = SpellHandler.Get(spellId);
+					if (spell != null)
+					{
+						var cast = client.ActiveCharacter.SpellCast;
+						cast.Start(spell, packet, castCount, unkFlags);
+					}
+				}
+			}
+#if DEBUG
+			else
+			{
+				chr.SendSystemMessage("You sent CMSG_PET_CAST_SPELL for a pet that does not exist in the same Map.");
 			}
 #endif
 		}
