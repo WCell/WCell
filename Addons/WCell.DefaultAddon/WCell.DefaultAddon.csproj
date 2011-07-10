@@ -311,6 +311,7 @@
     <Compile Include="Spells\Priest\PriestShadowFixes.cs" />
     <Compile Include="Spells\Rogue\RogueCombatFixes.cs" />
     <Compile Include="Spells\Rogue\RogueSubtletyFixes.cs" />
+    <Compile Include="Spells\VehicleSpells.cs" />
     <Compile Include="Spells\Warrior\WarriorArmsFixes.cs" />
     <Compile Include="Spells\Warrior\WarriorFuryFixes.cs" />
     <Compile Include="Spells\Warrior\WarriorProtectionFixes.cs" />

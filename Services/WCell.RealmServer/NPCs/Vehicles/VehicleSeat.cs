@@ -70,35 +70,45 @@ namespace WCell.RealmServer.NPCs.Vehicles
 			passenger.MovementFlags |= MovementFlags.OnTransport;
 			passenger.TransportPosition = Entry.AttachmentOffset;
 			passenger.TransportOrientation = Entry.PassengerYaw;
-			Vehicle.m_passengerCount++;
-
-			passenger.IncMechanicCount(SpellMechanic.Rooted);
-
-			if (!(passenger is Character)) return;
+			Vehicle._passengerCount++;
 
 			if (IsDriverSeat)
 			{
 				Vehicle.Charmer = passenger;
 				passenger.Charm = Vehicle;
 				Vehicle.UnitFlags |= UnitFlags.Possessed;
-				//Force idle so the vehicle doesn't start trying to
-				//attack while we are in control
-				Vehicle.Brain.State = BrainState.Idle;
 			}
 
-			var chr = (Character)passenger;
+			var chr = passenger as Character;
 			var pos = Vehicle.Position;
 
-			VehicleHandler.Send_SMSG_ON_CANCEL_EXPECTED_RIDE_VEHICLE_AURA(chr);
-			VehicleHandler.SendBreakTarget(chr, Vehicle);
+			// this will be null if its not a character
+			if (chr != null)
+			{
+				VehicleHandler.Send_SMSG_ON_CANCEL_EXPECTED_RIDE_VEHICLE_AURA(chr);
+				VehicleHandler.SendBreakTarget(chr, Vehicle);
+			}
 
-			MovementHandler.SendEnterTransport(chr);
-			MiscHandler.SendCancelAutoRepeat(chr, Vehicle);
-			MovementHandler.SendMoveToPacket(Vehicle, ref pos, 0, 0, MonsterMoveFlags.Walk);
-			PetHandler.SendVehicleSpells(chr, Vehicle);
+			MovementHandler.SendEnterTransport(passenger);
 
-			chr.SetMover(Vehicle, IsDriverSeat);
-			chr.FarSight = Vehicle.EntityId;
+			if (chr != null)
+			{
+				MiscHandler.SendCancelAutoRepeat(chr, Vehicle);
+				//var orientation = Vehicle.m_vehicleSeat != null ? Vehicle.m_vehicleSeat.Entry.PassengerYaw : 0;
+				//var moveflags = Vehicle.m_vehicleSeat != null ? MonsterMoveFlags.Flag_0x1000000 : MonsterMoveFlags.Walk;
+				//MovementHandler.SendMoveToPacket(Vehicle, ref pos, orientation, 0, moveflags);
+				PetHandler.SendVehicleSpells(chr, Vehicle);
+			}
+
+			passenger.IncMechanicCount(SpellMechanic.Rooted, true);
+			passenger.HasPermissionToMove = false;
+			passenger.MovementFlags |= MovementFlags.Root;
+
+			if (chr != null)
+			{
+				chr.SetMover(Vehicle, IsDriverSeat);
+				chr.FarSight = Vehicle.EntityId;
+			}
 		}
 
 		/// <summary>
@@ -118,7 +128,7 @@ namespace WCell.RealmServer.NPCs.Vehicles
 				Vehicle.UnitFlags &= ~UnitFlags.Possessed;
 			}
 
-			Vehicle.m_passengerCount--;
+			Vehicle._passengerCount--;
             if (_passenger.MovementFlags.HasFlag(MovementFlags.Flying))
             {
                 var cast = Vehicle.SpellCast;
@@ -143,7 +153,9 @@ namespace WCell.RealmServer.NPCs.Vehicles
 			}
             _passenger.m_vehicleSeat = null;
 		    MovementHandler.SendHeartbeat(_passenger, _passenger.Position, _passenger.Orientation);
-            _passenger.DecMechanicCount(SpellMechanic.Rooted);
+            _passenger.DecMechanicCount(SpellMechanic.Rooted, true);
+			_passenger.HasPermissionToMove = true;
+			_passenger.MovementFlags &= ~MovementFlags.Root;
 			_passenger = null;
 		}
 	}

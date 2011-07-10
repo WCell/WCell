@@ -67,17 +67,48 @@ namespace WCell.Addons.Default.Vehicles
         {
             #region Frosthound
             var npcEntry = NPCMgr.GetEntry(NPCId.Frosthound);
-            if (npcEntry == null) return;
+			if (npcEntry != null)
+			{
+				var spell = SpellHandler.Get(SpellId.IceSlick);
+				if (spell != null)
+					npcEntry.AddSpell(spell);
 
-            var spell = SpellHandler.Get(SpellId.IceSlick);
-            if (spell != null)
-                npcEntry.AddSpell(spell);
+				spell = SpellHandler.Get(SpellId.CastNet_2);
+				if (spell != null)
+					npcEntry.AddSpell(spell);
+			}
 
-            spell = SpellHandler.Get(SpellId.CastNet_2);
-            if (spell != null)
-                npcEntry.AddSpell(spell);
-            #endregion
-        }
+        	#endregion
+
+			#region Wintergrasp Siege Engine
+			npcEntry = NPCMgr.GetEntry(NPCId.WintergraspSiegeEngine);
+			var ramSpell = SpellHandler.Get(SpellId.Ram_2);
+			if (npcEntry != null && ramSpell != null)
+			{
+				npcEntry.AddSpell(ramSpell);
+			}
+
+			npcEntry = NPCMgr.GetEntry(NPCId.WintergraspSiegeEngine_2);
+			if (npcEntry != null && ramSpell != null)
+			{
+				npcEntry.AddSpell(ramSpell);
+			}
+
+			npcEntry = NPCMgr.GetEntry(NPCId.WintergraspSiegeTurret);
+			var cannonSpell = SpellHandler.Get(SpellId.FireCannon_10); 
+			if (npcEntry != null && cannonSpell != null)
+			{
+				npcEntry.AddSpell(cannonSpell);
+			}
+
+			npcEntry = NPCMgr.GetEntry(NPCId.WintergraspSiegeTurret_2);
+			if (npcEntry != null && cannonSpell != null)
+			{
+				npcEntry.AddSpell(cannonSpell);
+			}
+
+        	#endregion
+		}
     }
 }
 

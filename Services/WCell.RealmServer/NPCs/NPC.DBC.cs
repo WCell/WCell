@@ -89,17 +89,16 @@ namespace WCell.RealmServer.NPCs
             };
 
         	var lastSeatId = 0;
-        	int count = 0;
-			for (int i = 0; i < vehicle.Seats.Length; i++)
+        	var count = 0;
+			for (var i = 0; i < vehicle.Seats.Length; i++)
 			{
 				var seatId = GetUInt32(rawData, 6 + i);
-				if (seatId > 0)
-				{
-					var seatEntry = NPCMgr.GetVehicleSeatEntry(seatId);
-					vehicle.Seats[i] = seatEntry;
-					count++;
-					lastSeatId = i;
-				}
+				if (seatId <= 0) continue;
+
+				var seatEntry = NPCMgr.GetVehicleSeatEntry(seatId);
+				vehicle.Seats[i] = seatEntry;
+				count++;
+				lastSeatId = i;
 			}
 
 			vehicle.SeatCount = count;
@@ -107,6 +106,8 @@ namespace WCell.RealmServer.NPCs
 			{
 				Array.Resize(ref vehicle.Seats, (int)lastSeatId + 1);
 			}
+
+        	vehicle.PowerType = (VehiclePowerType)GetInt32(rawData, 37);
 
         	return vehicle;
         }

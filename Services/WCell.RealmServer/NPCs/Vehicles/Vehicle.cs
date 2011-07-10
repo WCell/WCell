@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using WCell.Constants;
 using WCell.Constants.Pets;
 using WCell.RealmServer.Entities;
@@ -17,8 +14,8 @@ namespace WCell.RealmServer.NPCs.Vehicles
 {
 	public class Vehicle : NPC, ITransportInfo
 	{
-		private VehicleSeat[] m_Seats;
-		protected internal int m_passengerCount;
+		private VehicleSeat[] _seats;
+		protected internal int _passengerCount;
 
 		public Vehicle()
 		{
@@ -38,7 +35,6 @@ namespace WCell.RealmServer.NPCs.Vehicles
 		protected internal override void SetupNPC(NPCEntry entry, NPCSpawnPoint spawnPoint)
 		{
 			base.SetupNPC(entry, spawnPoint);
-			Entry.IsIdle = true;
 
 			NPCFlags = NPCFlags.SpellClick;
 			SetupSeats();
@@ -50,6 +46,11 @@ namespace WCell.RealmServer.NPCs.Vehicles
 				// Set Level/Scale ingame:
 				var level = entry.GetRandomLevel();
 				Level = level;
+				PowerType = PowerType.Energy;
+				MaxPower = entry.VehicleEntry.PowerType == VehiclePowerType.Pyrite ? 50 : 100;
+				Power = MaxPower;
+				if (entry.Spells.Count == 0)
+					PowerType = PowerType.End;
 			});
 		}
 
@@ -81,17 +82,17 @@ namespace WCell.RealmServer.NPCs.Vehicles
 		private void SetupSeats()
 		{
 			var entries = m_entry.VehicleEntry.Seats;
-			m_Seats = new VehicleSeat[entries.Length];
+			_seats = new VehicleSeat[entries.Length];
 
 			for (var i = 0; i < entries.Length; i++)
 			{
 				var entry = entries[i];
 				if (entry == null) continue;
 
-				m_Seats[i] = new VehicleSeat(this, entry, (byte)i);
-				if (m_Seats[i].Entry.PassengerNPCId == 0) continue;
+				_seats[i] = new VehicleSeat(this, entry, (byte)i);
+				if (_seats[i].Entry.PassengerNPCId == 0) continue;
 				HasUnitAttachment = true;
-				m_Seats[i].CharacterCanEnterOrExit = false;
+				_seats[i].CharacterCanEnterOrExit = false;
 
 				//copy locally (access to modified closure)
 				var seat = i;
@@ -103,14 +104,14 @@ namespace WCell.RealmServer.NPCs.Vehicles
 
 				           		var newNpc = npcEntry.SpawnAt(this);
 				           		newNpc.Brain.EnterDefaultState();
-				           		m_Seats[seat].Enter(newNpc);
+				           		_seats[seat].Enter(newNpc);
 				           	});
 			}
 		}
 
 		public int PassengerCount
 		{
-			get { return m_passengerCount; }
+			get { return _passengerCount; }
 		}
 
 		public int SeatCount
@@ -120,7 +121,7 @@ namespace WCell.RealmServer.NPCs.Vehicles
 
 		public int FreeSeats
 		{
-			get { return m_entry.VehicleEntry.SeatCount - m_passengerCount; }
+			get { return m_entry.VehicleEntry.SeatCount - _passengerCount; }
 		}
 
 		public bool IsFull
@@ -133,18 +134,18 @@ namespace WCell.RealmServer.NPCs.Vehicles
 
 		public VehicleSeat[] Seats
 		{
-			get { return m_Seats; }
+			get { return _seats; }
 		}
 
 		public Unit Driver
 		{
-			get { return m_Seats[0].Passenger; }
+			get { return _seats[0].Passenger; }
 		}
 
 		public override bool SetPosition(Vector3 pt)
 		{
 			var res = m_Map.MoveObject(this, ref pt);
-			foreach(var seat in m_Seats.Where(seat => seat != null && seat.Passenger != null))
+			foreach(var seat in _seats.Where(seat => seat != null && seat.Passenger != null))
 			{
 				res = seat.Passenger.SetPosition(pt + seat.Entry.AttachmentOffset);
 			}
@@ -157,7 +158,7 @@ namespace WCell.RealmServer.NPCs.Vehicles
 			{
 				m_orientation = orientation;
 				var res = true;
-				foreach (var seat in m_Seats.Where(seat => seat != null && seat.Passenger != null))
+				foreach (var seat in _seats.Where(seat => seat != null && seat.Passenger != null))
 				{
 					res = seat.Passenger.SetPosition(pt + seat.Entry.AttachmentOffset);
 					seat.Passenger.Orientation = orientation + seat.Entry.PassengerYaw;
@@ -174,9 +175,9 @@ namespace WCell.RealmServer.NPCs.Vehicles
 
 		public VehicleSeat GetFirstFreeSeat(bool isCharacter)
 		{
-			for (var i = 0; i < m_Seats.Length; i++)
+			for (var i = 0; i < _seats.Length; i++)
 			{
-				var seat = m_Seats[i];
+				var seat = _seats[i];
 				if(seat == null || (isCharacter && !seat.CharacterCanEnterOrExit))
 					continue;
 
@@ -202,7 +203,7 @@ namespace WCell.RealmServer.NPCs.Vehicles
 
 		public void ClearAllSeats(bool onlyClearUsableSeats = false)
 		{
-			foreach (var seat in m_Seats)
+			foreach (var seat in _seats)
 			{
 				if (seat != null && (!onlyClearUsableSeats || seat.CharacterCanEnterOrExit))
 				{
@@ -213,7 +214,7 @@ namespace WCell.RealmServer.NPCs.Vehicles
             Dismiss();
 		}
 
-        public void Dismiss()
+		public void Dismiss()
         {
 			if (Entry.VehicleEntry.IsMinion)
 				Delete();
@@ -223,12 +224,28 @@ namespace WCell.RealmServer.NPCs.Vehicles
 			}
         }
 
+		/// <summary>
+		/// Returns null if the passenger could not be found
+		/// </summary>
+		public VehicleSeat FindSeatOccupiedBy(EntityId entityId)
+		{
+			return Seats.Where(vehicleSeat => vehicleSeat != null && vehicleSeat.Passenger != null && vehicleSeat.Passenger.EntityId == entityId).FirstOrDefault();
+		}
+
+		/// <summary>
+		/// Returns null if the unit could not be found
+		/// </summary>
+		public VehicleSeat FindSeatOccupiedBy(Unit passenger)
+		{
+			return Seats.Where(vehicleSeat => vehicleSeat != null && vehicleSeat.Passenger != null && vehicleSeat.Passenger == passenger).FirstOrDefault();
+		}
+
         public uint[] BuildVehicleActionBar()
         {
             var bar = new uint[PetConstants.PetActionCount];
             var i = 0;
 
-            byte j = 0;
+            byte j;
             if (Entry.Spells != null)
             {
                 var spells = Entry.Spells.GetEnumerator();

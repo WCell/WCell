@@ -844,7 +844,7 @@ namespace WCell.RealmServer.NPCs
 			DefaultDecayDelayMillis = _DefaultDecayDelayMillis;
 			Family = NPCMgr.GetFamily(FamilyId);
 
-			if (Type == CreatureType.NotSpecified)
+			if (Type == CreatureType.NotSpecified || VehicleEntry != null)
 			{
 				IsIdle = true;
 			}
