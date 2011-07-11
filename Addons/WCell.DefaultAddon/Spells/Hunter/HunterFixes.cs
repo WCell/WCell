@@ -12,9 +12,9 @@ namespace WCell.Addons.Default.Spells.Hunter
 		{
 			// taming has an invalid target
 			SpellHandler.Apply(spell =>
-			{
-				spell.GetEffect(AuraType.PeriodicTriggerSpell).ImplicitTargetA = ImplicitSpellTargetType.SingleEnemy;
-			}, SpellId.ClassSkillTameBeast);
+			    {
+				    spell.GetEffect(AuraType.PeriodicTriggerSpell).ImplicitTargetA = ImplicitSpellTargetType.SingleEnemy;
+			    }, SpellId.ClassSkillTameBeast);
 
 			// Only one Aspect can be active at a time
 			AuraHandler.AddAuraGroup(SpellLineId.HunterAspectOfTheBeast, SpellLineId.HunterAspectOfTheCheetah,
@@ -27,15 +27,27 @@ namespace WCell.Addons.Default.Spells.Hunter
 			AuraHandler.AddAuraGroup(SpellLineId.HunterSurvivalWyvernSting, SpellLineId.HunterSerpentSting,
 									 SpellLineId.HunterScorpidSting, SpellLineId.HunterViperSting, SpellLineId.HunterSerpentSting);
 
+            // Sealed cooldowns
             SpellLineId.HunterScorpidSting.Apply(spell =>
-            {
-                spell.CooldownTime = 0;
-            });
+                {
+                    spell.CooldownTime = 0;
+                });
 
             SpellLineId.HunterConcussiveShot.Apply(spell =>
                 {
                     spell.CooldownTime = 12000;
                 });
+
+            SpellLineId.HunterSerpentSting.Apply(spell =>
+                {
+                    spell.CooldownTime = 0;
+                });
+
+            SpellLineId.HunterViperSting.Apply(spell =>
+                {
+                    spell.CooldownTime = 15000;
+                });
+
 
 			// Expose Weakness aura applied on the target  - Seems the spell has changed
 			//SpellHandler.Apply(spell => spell.Effects[0].ImplicitTargetA = ImplicitTargetType.SingleEnemy,
