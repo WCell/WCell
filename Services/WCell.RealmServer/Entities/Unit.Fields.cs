@@ -1481,6 +1481,19 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
+		/// Current amount of power in percent
+		/// </summary>
+		public int PowerPct
+		{
+			get
+			{
+				var max = MaxPower;
+				return (100 * Power + (max >> 1)) / max;
+			}
+			set { Power = ((value * MaxPower) + 50) / 100; }
+		}
+
+		/// <summary>
 		/// </summary>
 		protected void UpdateHealthAuraState()
 		{
