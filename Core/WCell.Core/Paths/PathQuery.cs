@@ -18,6 +18,7 @@ namespace WCell.Core.Paths
 			this.to = to;
 			m_ContextHandler = contextHandler;
 			this.callback = callback;
+			Path = new Path();
 		}
 
 		public PathQuery(Vector3 from, Vector3 to, IContextHandler contextHandler, PathQueryCallback callback)
@@ -26,6 +27,7 @@ namespace WCell.Core.Paths
 			this.to = to;
 			m_ContextHandler = contextHandler;
 			this.callback = callback;
+			Path = new Path();
 		}
 
 		public Vector3 From

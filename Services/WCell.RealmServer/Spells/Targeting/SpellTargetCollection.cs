@@ -93,6 +93,15 @@ namespace WCell.RealmServer.Spells
 			for (var j = 0; j < forcedTargets.Length; j++)
 			{
 				var target = forcedTargets[j];
+				if(target == null)
+				{
+					LogManager.GetCurrentClassLogger().Warn(
+						"{0} tried to cast spell \"{1}\" with forced target which is null",
+						Cast.CasterObject, Cast.Spell);
+
+					continue;
+				}
+
 				if (target.IsInContext)
 				{
 					var err = ValidateTargetForHandlers(target);
