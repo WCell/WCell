@@ -51,7 +51,9 @@ namespace WCell.RealmServer.Commands
 		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 		{
 			var unit = trigger.Args.Target;
-			unit.Level = trigger.Text.NextInt(unit.Level);
+            var level = trigger.Text.NextInt(unit.Level);
+            if (level <= unit.MaxLevel)
+                unit.Level = level;
 		}
 
 		public override ObjectTypeCustom TargetTypes
