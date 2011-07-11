@@ -2,7 +2,6 @@
 using WCell.Constants;
 using WCell.Core;
 using WCell.Core.DBC;
-using NLog;
 
 namespace WCell.RealmServer.Talents
 {
