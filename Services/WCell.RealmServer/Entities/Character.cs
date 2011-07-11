@@ -1048,13 +1048,33 @@ namespace WCell.RealmServer.Entities
 			}
 
 			var opFaction = opponent.Faction;
-			return m_faction.Enemies.Contains(opFaction) || (!m_faction.Friends.Contains(opFaction) && m_reputations.CanAttack(opFaction));
+			
+
+			if(m_faction.Enemies.Contains(opFaction) || !m_faction.Friends.Contains(opFaction))
+			{
+				if (opponent is NPC && opFaction.Neutrals.Contains(m_faction))
+				{
+					return ((NPC)opponent).ThreatCollection.HasAggressor(this);
+				}
+				return true;
+			}
+			return false;
 		}
 
 		public override bool MayAttack(IFactionMember opponent)
 		{
-			// TODO: Sometimes we are hostile with someone but cannot attack
-			return IsHostileWith(opponent);
+			if (ReferenceEquals(opponent, this) || (opponent is Unit && ((Unit)opponent).Master == this))
+			{
+				return false;
+			}
+
+			if (opponent is Character)
+			{
+				return CanPvP((Character)opponent);
+			}
+
+			var opFaction = opponent.Faction;
+			return m_faction.Enemies.Contains(opFaction) || (!m_faction.Friends.Contains(opFaction) && m_reputations.CanAttack(opFaction));
 		}
 
 		public bool CanPvP(Character chr)

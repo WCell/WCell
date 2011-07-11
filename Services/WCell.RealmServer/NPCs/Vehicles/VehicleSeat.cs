@@ -146,6 +146,7 @@ namespace WCell.RealmServer.NPCs.Vehicles
                 //SendTeleportAck
                 MovementHandler.SendMoved(chr);
 				MiscHandler.SendCancelAutoRepeat(chr, Vehicle);
+				PetHandler.SendEmptySpells(chr);
 				chr.ResetMover();
 				chr.FarSight = EntityId.Zero;
 

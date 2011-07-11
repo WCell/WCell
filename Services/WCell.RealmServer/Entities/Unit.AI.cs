@@ -35,7 +35,7 @@ namespace WCell.RealmServer.Entities
 		public bool CanBeAggroedBy(Unit target)
 		{
 			return target.CanGenerateThreat &&
-				   MayAttack(target) &&
+				   IsHostileWith(target) &&
 				   CanSee(target);
 		}
 

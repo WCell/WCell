@@ -196,6 +196,11 @@ namespace WCell.RealmServer.AI
 		}
 
 		#region Getters
+		public bool HasAggressor(Unit unit)
+		{
+			return this[unit] >= 0;
+		}
+
 		public AggressorPair GetThreat(Unit unit)
 		{
 			foreach (var aggressor in AggressorPairs)
