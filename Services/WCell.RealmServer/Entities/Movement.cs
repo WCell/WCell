@@ -33,8 +33,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		protected Vector3 m_destination;
 
-		protected Vector3[] _currentPath;
-		protected int _currentPathIndex;
+		protected Path _currentPath;
 
 		/// <summary>
 		/// The movement type (walking, running or flying)
@@ -285,10 +284,9 @@ namespace WCell.RealmServer.Entities
 
 			if (query.Path != null)
 			{
-				_currentPathIndex = 0;
 				_currentPath = query.Path;
 
-				m_destination = _currentPath[_currentPathIndex];
+				m_destination = _currentPath.Next();
 			}
 			MoveToDestination();
 		}
@@ -311,10 +309,10 @@ namespace WCell.RealmServer.Entities
 				m_owner.Map.MoveObject(m_owner, ref m_destination);
 				if (_currentPath != null)
 				{
-					if (++_currentPathIndex < _currentPath.Length - 1)
+					if (_currentPath.HasNext())
 					{
 						// go to next destination
-						m_destination = _currentPath[_currentPathIndex];
+						m_destination = _currentPath.Next();
 						MoveToDestination();
 					}
 					else

@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
 using System.Windows.Forms;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using WCell.Constants;
 using WCell.Constants.World;
+using WCell.Core.Paths;
 using WCell.MPQTool;
 using WCell.Terrain.GUI.Util;
 using WCell.Terrain.Legacy;
@@ -26,7 +26,10 @@ using Keys = Microsoft.Xna.Framework.Input.Keys;
 using MathHelper = Microsoft.Xna.Framework.MathHelper;
 using Matrix = Microsoft.Xna.Framework.Matrix;
 using Ray = WCell.Util.Graphics.Ray;
-using Vector3 = Microsoft.Xna.Framework.Vector3;
+
+using XVector3 = Microsoft.Xna.Framework.Vector3;
+using WVector3 = WCell.Util.Graphics.Vector3;
+
 using MenuItem = System.Windows.Forms.MenuItem;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 
@@ -74,7 +77,7 @@ namespace WCell.Terrain.GUI
 		float avatarYaw, avatarPitch;
 		private bool mouseLeftButtonDown, escapeDown;
 
-		public static Vector3 avatarPosition = new Vector3(-100, 100, -100);
+		public static XVector3 avatarPosition = new XVector3(-100, 100, -100);
 
 		//SpriteBatch spriteBatch;
 		//SpriteFont font;
@@ -99,7 +102,7 @@ namespace WCell.Terrain.GUI
 		/// Constructor for the game.
 		/// <param name="tile">The tile to be displayed</param>
 		/// </summary>
-		public TerrainViewer(Vector3 avatarPosition, TerrainTile tile)
+		public TerrainViewer(XVector3 avatarPosition, TerrainTile tile)
 		{
 			TerrainViewer.avatarPosition = avatarPosition;
 			_graphics = new GraphicsDeviceManager(this);
@@ -120,9 +123,9 @@ namespace WCell.Terrain.GUI
 			{
 				globalIlluminationLevel = value;
 
-				effect.DiffuseColor = new Vector3(.95f, .95f, .95f) * value;
-				effect.SpecularColor = new Vector3(0.05f, 0.05f, 0.05f) * value;
-				effect.AmbientLightColor = new Vector3(0.35f, 0.35f, 0.35f) * value;
+				effect.DiffuseColor = new XVector3(.95f, .95f, .95f) * value;
+				effect.SpecularColor = new XVector3(0.05f, 0.05f, 0.05f) * value;
+				effect.AmbientLightColor = new XVector3(0.35f, 0.35f, 0.35f) * value;
 			}
 		}
 
@@ -264,13 +267,13 @@ namespace WCell.Terrain.GUI
 			};
 
 			effect.DirectionalLight0.Enabled = true;
-			effect.DirectionalLight0.DiffuseColor = Vector3.One;
-			effect.DirectionalLight0.Direction = Vector3.Normalize(new Vector3(1.0f, -1.0f, 0.0f));
-			effect.DirectionalLight0.SpecularColor = Vector3.One;
+			effect.DirectionalLight0.DiffuseColor = XVector3.One;
+			effect.DirectionalLight0.Direction = XVector3.Normalize(new XVector3(1.0f, -1.0f, 0.0f));
+			effect.DirectionalLight0.SpecularColor = XVector3.One;
 
 			effect.DirectionalLight1.Enabled = true;
-			effect.DirectionalLight1.DiffuseColor = new Vector3(0.1f, 0.1f, 0.1f);
-			effect.DirectionalLight1.Direction = Vector3.Normalize(new Vector3(-1.0f, -1.0f, 1.0f));
+			effect.DirectionalLight1.DiffuseColor = new XVector3(0.1f, 0.1f, 0.1f);
+			effect.DirectionalLight1.Direction = XVector3.Normalize(new XVector3(-1.0f, -1.0f, 1.0f));
 
 			GlobalIlluminationLevel = 1.5f;
 
@@ -373,10 +376,10 @@ namespace WCell.Terrain.GUI
 			//transformedReference = Vector3.Transform(transformedReference, Matrix.CreateRotationX(avatarPitch));
 
 			// Calculate the position the camera is looking from
-			var target = avatarPosition + Vector3.Transform(Vector3.UnitZ, Matrix.CreateFromYawPitchRoll(avatarYaw, avatarPitch, 0));
+			var target = avatarPosition + XVector3.Transform(XVector3.UnitZ, Matrix.CreateFromYawPitchRoll(avatarYaw, avatarPitch, 0));
 
 			// Set up the view matrix and projection matrix
-			_view = Matrix.CreateLookAt(avatarPosition, target, new Vector3(0.0f, 1.0f, 0.0f));
+			_view = Matrix.CreateLookAt(avatarPosition, target, new XVector3(0.0f, 1.0f, 0.0f));
 
 			var viewport = _graphics.GraphicsDevice.Viewport;
 			var aspectRatio = viewport.Width / (float)viewport.Height;
@@ -412,8 +415,8 @@ namespace WCell.Terrain.GUI
 				// move left
 				//avatarYaw += RotationSpeed;
 				var forwardMovement = Matrix.CreateRotationY(avatarYaw);
-				var v = new Vector3(1, 0, 0);
-				v = Vector3.Transform(v, forwardMovement);
+				var v = new XVector3(1, 0, 0);
+				v = XVector3.Transform(v, forwardMovement);
 				avatarPosition.X += v.X;
 				avatarPosition.Y += v.Y;
 				avatarPosition.Z += v.Z;
@@ -425,8 +428,8 @@ namespace WCell.Terrain.GUI
 				//avatarYaw -= RotationSpeed;
 
 				var forwardMovement = Matrix.CreateRotationY(avatarYaw);
-				var v = new Vector3(1, 0, 0);
-				avatarPosition -= Vector3.Transform(v, forwardMovement);
+				var v = new XVector3(1, 0, 0);
+				avatarPosition -= XVector3.Transform(v, forwardMovement);
 			}
 
 			if (keyboardState.IsKeyDown(Keys.W) || (gamePadState.DPad.Up == ButtonState.Pressed))
@@ -438,7 +441,7 @@ namespace WCell.Terrain.GUI
 				//avatarPosition.X += v.X;
 				var horizontal = avatarPitch.Cos();
 				var vertical = -avatarPitch.Sin();
-				var v = new Vector3(avatarYaw.Sin() * horizontal, vertical, avatarYaw.Cos() * horizontal);
+				var v = new XVector3(avatarYaw.Sin() * horizontal, vertical, avatarYaw.Cos() * horizontal);
 				v.Normalize();
 
 				var newPos = avatarPosition + v * ForwardSpeed;
@@ -464,7 +467,7 @@ namespace WCell.Terrain.GUI
 			{
 				var horizontal = avatarPitch.Cos();
 				var vertical = -avatarPitch.Sin();
-				var v = new Vector3(avatarYaw.Sin() * horizontal, vertical, avatarYaw.Cos() * horizontal);
+				var v = new XVector3(avatarYaw.Sin() * horizontal, vertical, avatarYaw.Cos() * horizontal);
 				v.Normalize();
 				avatarPosition -= v * ForwardSpeed;
 			}
@@ -620,25 +623,54 @@ namespace WCell.Terrain.GUI
 
 			if (selectedPoints.Count > 1)
 			{
+				// highlight corridor and visited fringe
+				var start = selectedPoints[0];
+				var dest = selectedPoints[1];
 				var visited = new HashSet<int>();
+				var path = new Path();
+				var corridor = Tile.Pathfinder.FindCorridor(start, dest, out visited);
 
-				var current = Tile.Pathfinder.FindPath(selectedPoints[0], selectedPoints[1], out visited);
+				if (corridor.IsNull) return;
 
-				if (current.IsNull) return;
-
+				// highlight fringe
 				foreach (var tri in visited)
 				{
 					SelectTriangle(tri, true, new Color(120, 10, 10));
 				}
 
+				// highlight corridor
+				var current = corridor;
 				while (!current.IsNull)
 				{
-					//var tri = Tile.FindFirstTriangleUnderneath(curren);
+					//var tri = Tile.NavMesh.FindFirstTriangleUnderneath(curren);
+					SelectTriangle(current.Triangle, true);
+					current = current.Previous;
+				}
+
+				// draw line to along the path
+				Tile.Pathfinder.FindPath(dest, corridor, path);
+				var last = start;
+				while (path.HasNext())
+				{
+					var p = path.Next();
+					LineSelectionRenderer.SelectLine(last, p, Color.Green);
+					last = p;
+				}
+
+				// highlight corners
+				current = corridor;
+				while (!current.IsNull)
+				{
+					//var tri = Tile.NavMesh.FindFirstTriangleUnderneath(curren);
 					SelectTriangle(current.Triangle, true);
 
-					var p1 = current.EnterPos;
-					var p2 = current.Previous.IsNull ? selectedPoints[0] : current.Previous.EnterPos;
-					LineSelectionRenderer.SelectLine(p1, p2, Color.Green);
+					if (current.Edge != -1 && current.Previous != null)
+					{
+						WVector3 left, right;
+						Tile.NavMesh.GetEdgePoints(current.Previous.Triangle, current.Edge, out left, out right);
+						LineSelectionRenderer.SelectPoint(left, Color.Purple);
+						LineSelectionRenderer.SelectPoint(right, Color.Blue);
+					}
 					current = current.Previous;
 				}
 			}
@@ -715,7 +747,7 @@ namespace WCell.Terrain.GUI
 			}
 
 			//var startPos = new Vector3(x, y, 0);
-			var endPos = new Vector3(x, y, 1);
+			var endPos = new XVector3(x, y, 1);
 
 			//var near = _graphics.GraphicsDevice.Viewport.Unproject(startPos, _proj, _view, Matrix.Identity).ToWCell();
 			var near = avatarPosition.ToWCell();
@@ -971,7 +1003,7 @@ namespace WCell.Terrain.GUI
 						// update avatar
 						var topRight = Tile.Bounds.TopRight;
 						var bottomLeft = Tile.Bounds.BottomLeft;
-						avatarPosition = new Vector3(topRight.X, topRight.Y, 200);
+						avatarPosition = new XVector3(topRight.X, topRight.Y, 200);
 						XNAUtil.TransformWoWCoordsToXNACoords(ref avatarPosition);
 
 						avatarYaw = 45;

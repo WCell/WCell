@@ -128,22 +128,22 @@ namespace WCell.Terrain
 
     	public void FindPath(PathQuery query)
 		{
-			var wayPoints = FindPath(query.From, query.To);
-			query.Reply(wayPoints);
+			FindPath(query.From, query.To, query.Path);
+			query.Reply();
 		}
 
 		/// <summary>
 		/// TODO: Connect meshes between different tiles
 		/// </summary>
-		public Vector3[] FindPath(Vector3 from, Vector3 to)
+		public void FindPath(Vector3 from, Vector3 to, Core.Paths.Path path)
 		{
 			int fromX, fromY, toX, toY;
-			if (!PositionUtil.GetTileXYForPos(from, out fromX, out fromY)) return null;
-			if (!PositionUtil.GetTileXYForPos(to, out toX, out toY)) return null;
+			if (!PositionUtil.GetTileXYForPos(from, out fromX, out fromY)) return;
+			if (!PositionUtil.GetTileXYForPos(to, out toX, out toY)) return;
 
 			if (toX != fromX || toY != fromY)
 			{
-				return null;
+				return;
 			}
 
 			TerrainTile tile1, tile2;
@@ -161,10 +161,10 @@ namespace WCell.Terrain
 			// cannot traverse tiles yet
 			if (tile1 == null)
 			{
-				return null;
+				return;
 			}
 
-			return tile1.Pathfinder.FindPathUnflavored(from, to);
+			tile1.Pathfinder.FindPath(from, to, path);
 		}
 
 		public LiquidType GetLiquidType(Vector3 worldPos)

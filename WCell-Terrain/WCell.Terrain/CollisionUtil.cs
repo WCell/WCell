@@ -6,13 +6,6 @@ namespace WCell.Terrain
 {
     public class CollisionUtil
     {
-        public static Ray CreateRay(Vector3 startPos, Vector3 endPos, out float tMax)
-        {
-            var direction = endPos - startPos;
-            tMax = direction.NormalizeReturnLength();
-            return new Ray(startPos, direction);
-        }
-
         /// <summary>
         /// Point of intersection = (1 - u - v)*vert0 + u*vert1 + v*vert2.
         /// t is the distance from ray.Position to the point of intersection.

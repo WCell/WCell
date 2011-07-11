@@ -384,6 +384,43 @@ namespace WCell.Terrain.Recast.NavMesh
 					}
 				}
 
+				// make sure, the neighbor relation is symmetric
+				for (var i = 0; i < polys.Length; i++)
+				{
+					var poly = polys[i];
+					for (int j = 0; j < poly.Neighbors.Length; j++)
+					{
+						var neighbor = poly.Neighbors[j];
+						if (neighbor == -1) continue;
+
+						var neighborPoly = polys[neighbor];
+						var found = false;
+						for (var k = 0; k < neighborPoly.Neighbors.Length; k++)
+						{
+							var neighneigh = neighborPoly.Neighbors[k];
+							if (neighneigh == i)
+							{
+								found = true;
+								break;
+							}
+						}
+
+						if (!found)
+						{
+							// neighbor of poly does not have poly as neighor
+							// find the edge and insert the neighbor
+							var tri = poly.GetTriangle(vertices);
+							var tri2 = neighborPoly.GetTriangle(vertices);
+							var sharedMask = tri2.GetSharedEdgeMask(tri);
+							var edge = TerrainUtil.GetEdge(sharedMask);
+							Debug.Assert(neighborPoly.Neighbors[edge] == -1);
+
+							neighborPoly.Neighbors[edge] = i;
+							break;
+						}
+					}
+				}
+
 				// create new NavMesh object
 				Tile.NavMesh = new NavMesh(Tile, polys, vertices, indices);
 			}

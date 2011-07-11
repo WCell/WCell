@@ -26,8 +26,8 @@ namespace WCell.Terrain.GUI.Renderers
 
 		public void SelectLine(WCell.Util.Graphics.Vector3 p1, WCell.Util.Graphics.Vector3 p2, Color color, bool doNotReplace = true)
 		{
-			const float halfLineWidth = 0.8f;
-			
+			const float halfLineWidth = 0.5f;
+
 			var s1 = p1 - halfLineWidth;
 			var s2 = p1 + halfLineWidth;
 
@@ -41,6 +41,27 @@ namespace WCell.Terrain.GUI.Renderers
 
 			Select(ref tri1, doNotReplace, color);
 			Select(ref tri2, true, color);
+		}
+
+		public void SelectPoint(WCell.Util.Graphics.Vector3 p, Color color, bool doNotReplace = true)
+		{
+			const float sideDist = 0.5f;
+
+			var p1 = p;
+			var p2 = p;
+			var p3 = p;
+
+			p1.X += sideDist;
+
+			p2.X -= sideDist;
+			p2.Y -= sideDist;
+
+			p3.X -= sideDist;
+			p3.Y += sideDist;
+
+			var tri1 = new Triangle(p1, p2, p3);
+
+			Select(ref tri1, doNotReplace, color);
 		}
 
 		public void Select(ref Triangle tri, bool doNotReplace =  true)
@@ -66,7 +87,7 @@ namespace WCell.Terrain.GUI.Renderers
 			}
 
 			// add vertices
-			var normal = WCell.Util.Graphics.Vector3.Cross(tri.Point2 - tri.Point1, tri.Point3 - tri.Point2).ToXna();
+			var normal = WCell.Util.Graphics.Vector3.Cross(tri.Point3 - tri.Point1, tri.Point2 - tri.Point1).ToXna();
 			normal.Normalize();
 
 			_cachedVertices[v] = new VertexPositionNormalColored(tri.Point1.ToXna(),

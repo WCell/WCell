@@ -11,9 +11,9 @@ namespace WCell.Terrain.Pathfinding
 		public static SearchItem Null = new SearchItem(-1);
 
 		private int triangle;
+		private int edge;
 		private float distFromStart;
 		private float directDistToDest;
-		private Vector3 enterPos;
 		private readonly SearchItem previous;
 
 		/// <summary>
@@ -26,7 +26,6 @@ namespace WCell.Terrain.Pathfinding
 		/// </summary>
 		private SearchItem(int tri)
 		{
-			enterPos = Vector3.Zero;
 			triangle = tri;
 			directDistToDest = 0;
 			previous = null;
@@ -35,14 +34,27 @@ namespace WCell.Terrain.Pathfinding
 			nodeCount = 0;
 		}
 
-		public SearchItem(int triangle, float directDistToDest, Vector3 enterPos, SearchItem previous)
+		public SearchItem(int triangle, int edge, float directDistToDest, ref Vector3 pointOfReference)
 		{
-			this.enterPos = enterPos;
 			this.triangle = triangle;
+			this.edge = edge;
+			this.directDistToDest = directDistToDest;
+			this.previous = Null;
+			this.PointOfReference = pointOfReference;
+
+			distFromStart = 0;
+			nodeCount = previous.nodeCount + 1;
+		}
+
+		public SearchItem(int triangle, int edge, float directDistToDest, ref Vector3 pointOfReference, SearchItem previous)
+		{
+			this.triangle = triangle;
+			this.edge = edge;
 			this.directDistToDest = directDistToDest;
 			this.previous = previous;
+			this.PointOfReference = pointOfReference;
 
-			distFromStart = previous.distFromStart + Vector3.Distance(previous.EnterPos, enterPos);
+			distFromStart = previous.distFromStart + Vector3.Distance(previous.PointOfReference, pointOfReference);
 			nodeCount = previous.nodeCount + 1;
 		}
 
@@ -50,6 +62,15 @@ namespace WCell.Terrain.Pathfinding
 		{
 			get { return triangle; }
 			set { triangle = value; }
+		}
+
+		/// <summary>
+		/// The edge of the previous Triangle that was traversed to get to this (0, 1 or 2)
+		/// </summary>
+		public int Edge
+		{
+			get { return edge; }
+			set { edge = value; }
 		}
 
 		public float DistFromStart
@@ -67,10 +88,10 @@ namespace WCell.Terrain.Pathfinding
 		/// <summary>
 		/// The position where we enter this triangle
 		/// </summary>
-		public Vector3 EnterPos
+		public Vector3 PointOfReference
 		{
-			get { return enterPos; }
-			set { enterPos = value; }
+			get;
+			set;
 		}
 
 		public SearchItem Previous

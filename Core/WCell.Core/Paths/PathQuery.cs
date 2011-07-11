@@ -48,16 +48,14 @@ namespace WCell.Core.Paths
 			get { return callback; }
 		}
 
-		public Vector3[] Path
+		public Path Path
 		{
 			get;
 			private set;
 		}
 
-		public void Reply(Vector3[] path)
+		public void Reply()
 		{
-		    Path = path;
-
 			if (m_ContextHandler != null)
 			{
 				m_ContextHandler.ExecuteInContext(() => callback(this));

@@ -668,6 +668,9 @@ void NavMeshTesterTool::recalc()
 						m_nsmoothPath++;
 					}
 				}
+
+				// Domi edit: printf
+				printf("Found smooth path in %d iterations.\n", m_nsmoothPath);
 			}
 
 		}

@@ -148,6 +148,7 @@ namespace WCell.Util.ObjectPools
 			{
 				((IPooledObject)obj).Cleanup();
 			}
+
 			if (obj is IList)
 			{
 				((IList) obj).Clear();

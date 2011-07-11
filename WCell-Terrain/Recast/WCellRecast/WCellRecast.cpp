@@ -211,10 +211,10 @@ dtNavMesh* buildMesh(InputGeom* geom, WCellBuildContext* ctx)
 	cfg.cs = 0.3;							// cell size is a sort of resolution -> the bigger the faster
 	cfg.ch = 0.27f;							// cell height -> distance from mesh to ground, if too low, recast will not build essential parts of the mesh for some reason
 	cfg.walkableSlopeAngle = 60;			// max climbable slope, bigger values won't make much of a change
-	cfg.walkableClimb = 1.5f;				// how high the agent can climb in one step
-	cfg.walkableHeight = 0.5f;				// minimum space to ceiling
+	cfg.walkableClimb = 2.0f;				// how high the agent can climb in one step
+	cfg.walkableHeight = 1.0f;				// minimum space to ceiling
 	walkableRadius = 0.7f;					// minimum distance to objects
-	cfg.tileSize = 192;
+	cfg.tileSize = 256;
 	cfg.maxEdgeLen = 20.0f / cfg.cs;
 	cfg.maxSimplificationError = 1.3f;
 	cfg.minRegionArea = (int)rcSqr(8);		// Note: area = size*size

@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using WCell.Util;
 using WCell.Util.Graphics;
 
 namespace WCell.Terrain.Legacy
@@ -93,6 +94,38 @@ namespace WCell.Terrain.Legacy
 				t = 1f;
 			}
 			d = a + (t * vector);
+		}
+
+		/// <summary>
+		/// See http://paulbourke.net/geometry/pointline/
+		/// Finds p = the closest point to c on the line from a to b.
+		/// Also finds t = the distance from a to that point on the line.
+		/// </summary>
+		public static void ClosestPointOnLine(Vector3 c, Vector3 a, Vector3 b, out float t, out Vector3 p)
+		{
+			var direction = b - a;
+			t = Vector3.Dot(c - a, direction) / Vector3.Dot(direction, direction);
+			p = a + (t * direction);
+		}
+
+		/// <summary>
+		/// Finds p = the closest point to c on the line from a to b.
+		/// Also finds t = the distance from a to that point on the line.
+		/// </summary>
+		public static void ClosestPointOnLine(Vector2 c, Vector2 a, Vector2 b, out float t, out Vector2 p)
+		{
+			var direction = b - a;
+			t = Vector2.Dot(c - a, direction) / Vector2.Dot(direction, direction);
+			p = a + (t * direction);
+		}
+
+		/// <summary>
+		/// Finds the direction from a to the closest point to c on the line from a to b.
+		/// </summary>
+		public static float DirectionToPoint(Vector2 c, Vector2 a, Vector2 b)
+		{
+			var direction = b - a;
+			return Vector2.Dot(c - a, direction) / Vector2.Dot(direction, direction);
 		}
 
 		public static void ClosestPtPointAABB(Vector4 p, BoundingBox b, ref Vector3 q)
@@ -1044,16 +1077,39 @@ namespace WCell.Terrain.Legacy
 			return num;
 		}
 
+		/// <summary>
+		/// Determines the intersection of a line segment between v1 and v2 and the given plane.
+		/// Returns false if the plane is outside the line segment or parallel to it.
+		/// </summary>
 		public static bool LineSegmentIntersectsPlane(Vector3 v1, Vector3 v2, Plane plane, out Vector3 pos)
 		{
 			var vector = v2 - v1;
-			var num = vector.Length();
 			var direction = Vector3.Normalize(vector);
 			var ray = new Ray(v1, direction);
-			var nullable = ray.Intersects(plane);
-			if (nullable.HasValue && (nullable.Value < num))
+			var dist = ray.Intersect(plane);
+			if (!float.IsNaN(dist) && dist * dist < vector.LengthSquared())
 			{
-				pos = ray.Position + (ray.Direction * nullable.Value);
+				pos = ray.Position + (ray.Direction * dist);
+				return true;
+			}
+			pos = Vector3.Zero;
+			return false;
+		}
+
+		/// <summary>
+		/// Determines the closest point on the ray from v1 to v2 and the given plane.
+		/// Returns false if the plane is parallel to the line.
+		/// </summary>
+		public static bool ClosestPointToPlane(Vector3 v1, Vector3 v2, Plane plane, out Vector3 pos)
+		{
+			var direction = v2 - v1;
+			var ray = new Ray(v1, direction);
+			var dist = ray.Intersect(plane);
+			if (!float.IsNaN(dist))
+			{
+				// clamp between 0 and 1
+				dist = MathUtil.ClampMinMax(dist, 0, 1);
+				pos = ray.Position + (direction * dist);
 				return true;
 			}
 			pos = Vector3.Zero;

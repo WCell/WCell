@@ -80,6 +80,11 @@ namespace WCell.Util.Graphics
 			get { return this != Zero; }
 		}
 
+		public Vector2 XY
+		{
+			get { return new Vector2(X, Y); }
+		}
+
 		#region Distances
 		/// <summary>
 		/// Calculates the distance from this vector to another.
