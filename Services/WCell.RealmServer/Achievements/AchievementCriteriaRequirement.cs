@@ -136,6 +136,13 @@ namespace WCell.RealmServer.Achievements
         {
             if (target == null)
                 return false;
+            var charTarget = target as Character;
+            if (charTarget != null)
+            {
+                if (charTarget.Class == ClassId.DeathKnight)
+                    if (Value1 < 55)
+                        return false; // Do not reward achievement for death knights when level < 55
+            }
             return target.Level >= Value1;
         }
     }
