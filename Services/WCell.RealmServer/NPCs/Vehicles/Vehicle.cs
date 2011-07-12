@@ -49,7 +49,7 @@ namespace WCell.RealmServer.NPCs.Vehicles
 				PowerType = PowerType.Energy;
 				MaxPower = entry.VehicleEntry.PowerType == VehiclePowerType.Pyrite ? 50 : 100;
 				Power = MaxPower;
-				if (entry.Spells.Count == 0)
+				if (entry.Spells == null)
 					PowerType = PowerType.End;
 			});
 		}
