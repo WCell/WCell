@@ -343,15 +343,6 @@ namespace WCell.Addons.Default.Spells.Druid
 					spell.AttributesExB = SpellAttributesExB.None;
 				});
 
-            SpellHandler.Apply(spell =>
-            {
-                var effect = spell.AddAuraEffect(AuraType.Dummy);
-                if (effect != null)
-                {
-                    effect.AuraEffectHandlerCreator = () => new DruidFaerieFireHandler();
-                }
-            }, SpellLineId.DruidFaerieFire, SpellLineId.DruidFaerieFireFeral);
-
 			FixBloodFrenzy();
 		}
 
@@ -515,32 +506,4 @@ namespace WCell.Addons.Default.Spells.Druid
 		}
 	}
 	#endregion
-
-    #region DruidFaerieFire
-    public class DruidFaerieFireHandler : AuraEffectHandler
-    {
-        protected override void Apply()
-        {
-            Owner.CanStealth = false;
-            Owner.Stealthed = 0; // deactivate stealth
-            base.Apply();
-        }
-
-        protected override void Remove(bool cancelled)
-        {
-            // If the player has another aura preventing stealth, do not enable stealth
-            foreach (var aura in Owner.Auras)
-            {
-                var handler = aura.Handlers.First(handlr => handlr is DruidFaerieFireHandler);
-                if (handler != null)
-                {
-                    base.Remove(cancelled);
-                    return;
-                }
-            }
-            Owner.CanStealth = true;
-            base.Remove(cancelled);
-        }
-    }
-    #endregion
 }

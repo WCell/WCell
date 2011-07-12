@@ -76,7 +76,6 @@ namespace WCell.RealmServer.Entities
 		protected int m_comboPoints;
 		protected Unit m_comboTarget;
 		protected ulong m_auraUpdateMask;
-        protected bool m_canStealth;
 
 		/// <summary>
 		/// Indicates whether regeneration of Health and Power is currently activated
@@ -115,7 +114,6 @@ namespace WCell.RealmServer.Entities
 			// combat
 			m_isInCombat = false;
 			m_attackTimer = new TimerEntry(CombatTick);
-            m_canStealth = true;
 
 			CastSpeedFactor = 1f;
 
@@ -1230,11 +1228,6 @@ namespace WCell.RealmServer.Entities
 			}
 			return true;
 		}
-        public bool CanStealth
-        {
-            get { return m_canStealth; }
-            set { m_canStealth = value; }
-        }
 		#endregion
 
 		#region Misc
