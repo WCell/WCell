@@ -1498,11 +1498,14 @@ namespace WCell.RealmServer.Entities
 					}
 					else if (m_stealthed <= 0 && value > 0)
 					{
-						// activated stealth
-						StateFlags |= StateFlag.Sneaking;
+                        if (m_canStealth)
+                        {
+                            // activated stealth
+                            StateFlags |= StateFlag.Sneaking;
 
-						// some auras don't live through Stealth
-						Auras.RemoveByFlag(AuraInterruptFlags.OnStealth);
+                            // some auras don't live through Stealth
+                            Auras.RemoveByFlag(AuraInterruptFlags.OnStealth);
+                        }
 					}
 					m_stealthed = value;
 				}
