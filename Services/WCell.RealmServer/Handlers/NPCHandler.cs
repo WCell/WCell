@@ -730,23 +730,33 @@ namespace WCell.RealmServer.Handlers
 		/// <param name="itemsForSale">An array of items to send to the client.</param>
 		public static void SendVendorInventoryList(Character buyer, NPC vendor, List<VendorItemEntry> itemsForSale)
 		{
-			var numItems = (itemsForSale.Count <= 0xFF) ? itemsForSale.Count : 0xFF;
-
-			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_LIST_INVENTORY, 10 + (28 * numItems)))
+			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_LIST_INVENTORY, 10 + (28 * itemsForSale.Count())))
 			{
 				packet.Write(vendor.EntityId);
-				int countPos = (int) packet.Position;
-				packet.Write(0);
-
-				for (var i = 0; i < numItems; ++i)
+				var countPos = packet.Position;
+				packet.WriteByte(0);
+				var count = 0;
+				foreach(var item in itemsForSale.Where(item => item != null))
 				{
-					// TODO: Exclude items that the buyer may never purchase
+					
+					// Exclude items that the buyer may never purchase
+					if(!buyer.GodMode)
+					{
+						if(!item.Template.RequiredClassMask.HasAnyFlag(buyer.Class) &&  item.Template.BondType == ItemBondType.OnPickup)
+							continue;
+						if (item.Template.Flags2.HasAnyFlag(ItemFlags2.HordeOnly) && buyer.Faction.IsAlliance)
+							continue;
 
-					numItems++;
+						if (item.Template.Flags2.HasAnyFlag(ItemFlags2.AllianceOnly) && buyer.Faction.IsHorde)
+							continue;
+					}
+
+					count++;
+					if (count > 0xFF)
+						break;
 					// Write in the item number (1 - 256)
-					packet.Write(i + 1);
+					packet.Write(count);
 
-					var item = itemsForSale[i];
 					var price = buyer.Reputations.GetDiscountedCost(vendor.Faction.ReputationIndex, item.Template.BuyPrice);
 
 					packet.Write(item.Template.Id);
@@ -759,8 +769,8 @@ namespace WCell.RealmServer.Handlers
 				}
 
 				packet.Position = countPos;
-				packet.Write((byte) numItems);
-				if (numItems == 0)
+				packet.WriteByte(count);
+				if (count == 0)
 				{
 					packet.Write((byte) VendorInventoryError.NoInventory);
 				}
