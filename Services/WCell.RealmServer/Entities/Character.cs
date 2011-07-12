@@ -1048,17 +1048,16 @@ namespace WCell.RealmServer.Entities
 			}
 
 			var opFaction = opponent.Faction;
-			
 
-			if(m_faction.Enemies.Contains(opFaction) || !m_faction.Friends.Contains(opFaction))
+			if (opponent is NPC && opFaction.Neutrals.Contains(m_faction))
 			{
-				if (opponent is NPC && opFaction.Neutrals.Contains(m_faction))
-				{
-					return ((NPC)opponent).ThreatCollection.HasAggressor(this);
-				}
-				return true;
+				return ((NPC)opponent).ThreatCollection.HasAggressor(this);
 			}
-			return false;
+
+			if(m_faction.Friends.Contains(opFaction))
+				return false;
+
+			return m_faction.Enemies.Contains(opFaction) && m_reputations.CanAttack(opFaction);
 		}
 
 		public override bool MayAttack(IFactionMember opponent)

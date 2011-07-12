@@ -110,17 +110,13 @@ namespace WCell.RealmServer.Factions
 				if (IsPlayer && faction.Template.FriendGroup.HasAnyFlag(FactionGroupMask.Player))
 				{
 					Friends.Add(faction);
+					faction.Friends.Add(this);
 				}
 
 				if (!Template.FriendGroup.HasAnyFlag(faction.Template.FactionGroup))
 					continue;
 
 				Friends.Add(faction);
-
-				if (IsPlayer && faction.Template.FriendGroup != 0)
-				{
-					faction.Friends.Add(this);
-				}
 			}
 
 
@@ -142,20 +138,16 @@ namespace WCell.RealmServer.Factions
 				if (IsPlayer && faction.Template.EnemyGroup.HasAnyFlag(FactionGroupMask.Player))
 				{
 					Enemies.Add(faction);
+					faction.Enemies.Add(this);
 				}
 
 				if (!Template.EnemyGroup.HasAnyFlag(faction.Template.FactionGroup)) continue;
 
 				Enemies.Add(faction);
-
-				if (IsPlayer && faction.Template.EnemyGroup != 0)
-				{
-					faction.Enemies.Add(this);
-				}
 			}
 
 			var enemies = Template.EnemyFactions;
-			for (var j = 0; j < friends.Length; j++)
+			for (var j = 0; j < enemies.Length; j++)
 			{
 				var enemy = FactionMgr.Get(enemies[j]);
 				if (enemy == null)
