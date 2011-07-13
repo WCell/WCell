@@ -14,6 +14,8 @@
  *
  *************************************************************************/
 
+using WCell.Constants;
+using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Entities;
@@ -31,7 +33,11 @@ namespace WCell.RealmServer.Spells.Effects
 
 		public override void Initialize(ref SpellFailedReason failReason)
 		{
-			if (!Effect.Spell.IsHearthStoneSpell &&
+			var casterUnit = Cast.CasterUnit as NPC;
+			if(casterUnit != null && casterUnit.Entry.IsEventTrigger)
+			{
+			}
+			else if (!Effect.Spell.IsHearthStoneSpell &&
 				(m_cast.TargetLoc.X == 0 || m_cast.TargetLoc.Y == 0))
 			{
 				failReason = SpellFailedReason.BadTargets;

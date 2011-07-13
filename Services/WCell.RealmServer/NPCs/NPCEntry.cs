@@ -101,6 +101,17 @@ namespace WCell.RealmServer.NPCs
 		/// </summary>
 		public bool IsIdle;
 
+		/// <summary>
+		/// Whether an NPC is a special event trigger like the little
+		/// elementals used to cast spells or trigger concerts
+		/// </summary>
+		[NotPersistent]
+		public bool IsEventTrigger
+		{
+			get;
+			private set;
+		}
+
 		public uint EquipmentId;
 
 		[NotPersistent]
@@ -847,6 +858,13 @@ namespace WCell.RealmServer.NPCs
 			if (Type == CreatureType.NotSpecified || VehicleEntry != null)
 			{
 				IsIdle = true;
+			}
+			
+			if (Type == CreatureType.NotSpecified && UnitFlags.HasFlag((UnitFlags.Passive | UnitFlags.NotSelectable)))
+			{
+				IsEventTrigger = true;
+				IsIdle = false;
+				MovesRandomly = false;
 			}
 
 			if (Resistances == null)

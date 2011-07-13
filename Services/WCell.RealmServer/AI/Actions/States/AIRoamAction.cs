@@ -12,13 +12,20 @@ namespace WCell.RealmServer.AI.Actions.States
 	/// </summary>
 	public class AIRoamAction : AIWaypointMoveAction, IAIStateAction
 	{
-		public static int MinRoamSpellCastDelay = 60000;
+		public static int DefaultRoamSpellCastDelay = 60000;
+
+		public int MinimumRoamSpellCastDelay
+		{
+			get;
+			set;
+		}
 
 		private DateTime lastSpellCast;
 
 		public AIRoamAction(Unit owner) :
 			base(owner, AIMovementType.ForwardThenBack, owner.Waypoints)
 		{
+			MinimumRoamSpellCastDelay = DefaultRoamSpellCastDelay;
 			var spawn = owner.SpawnPoint;
 			if (spawn != null)
 			{
@@ -43,7 +50,7 @@ namespace WCell.RealmServer.AI.Actions.States
 		{
 			if (!m_owner.Brain.CheckCombat())
 			{
-				if (UsesSpells && HasSpellReady && m_owner.CanCastSpells && lastSpellCast + TimeSpan.FromMilliseconds(MinRoamSpellCastDelay) < DateTime.Now)
+				if (UsesSpells && HasSpellReady && m_owner.CanCastSpells && lastSpellCast + TimeSpan.FromMilliseconds(MinimumRoamSpellCastDelay) < DateTime.Now)
 				{
 					if (TryCastSpell())
 					{
