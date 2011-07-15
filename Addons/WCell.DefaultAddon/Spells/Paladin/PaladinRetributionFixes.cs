@@ -133,7 +133,8 @@ namespace WCell.Addons.Default.Spells.Paladin
                     }
                     for (int i = 0; i < 3 && i < scrambledGroup.Count(); i++)
                     {
-                        chr.SpellCast.Start(SpellId.DivineStorm_2, true, scrambledGroup[i]);
+                        if (scrambledGroup[i] != chr)
+                            chr.SpellCast.Start(SpellId.DivineStorm_2, true, scrambledGroup[i]);
                     }            
                 }
             }
