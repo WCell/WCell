@@ -105,18 +105,21 @@ namespace WCell.Addons.Default.Spells.Paladin
             // Divine Storm Heal Effect
             SpellLineId.PaladinRetributionDivineStorm.Apply(spell =>
             {
-                var effect = spell.Effects[1]; // Second dummy effect
-                effect.AuraEffectHandlerCreator = () => new DivineStormHealHandler();
+                spell.GetEffect(SpellEffectType.WeaponPercentDamage).SpellEffectHandlerCreator =
+                    (cast, eff) => new DivineStormHealHandler(cast, eff);
+      
             });
 		}
 	}
 
-    // Divine Storm Heal Effect
-    public class DivineStormHealHandler : AuraEffectHandler
+    public class DivineStormHealHandler : WeaponDamageEffectHandler
     {
-        protected override void Apply()
+        public DivineStormHealHandler(SpellCast cast, SpellEffect eff)
+            : base(cast, eff) { }
+
+        public override void OnHit(DamageAction action)
         {
-            var chr = Owner as Character;
+            var chr = action.Attacker as Character;
             if (chr != null)
             {
                 if (chr.Group != null)
@@ -125,21 +128,23 @@ namespace WCell.Addons.Default.Spells.Paladin
                     List<Character> scrambledGroup = new List<Character>();
 
                     Random randNum = new Random();
-                    while (origGroup.Count > 0)
+                    int i = -1;
+                    foreach (Character groupMember in origGroup)
                     {
-                        int val = randNum.Next(0, origGroup.Count - 1);
-                        scrambledGroup.Add(origGroup[val]);
-                        scrambledGroup.RemoveAt(val);
+                        i++;
+                        if (groupMember == chr)
+                            continue;
+                        if (randNum.NextDouble() < (3 - scrambledGroup.Count / origGroup.Count - i))
+                            scrambledGroup.Add(groupMember);
                     }
-                    for (int i = 0; i < 3 && i < scrambledGroup.Count(); i++)
-                    {
-                        if (scrambledGroup[i] != chr)
-                            chr.SpellCast.Start(SpellId.DivineStorm_2, true, scrambledGroup[i]);
-                    }            
+                    var effect = SpellHandler.Get(SpellId.DivineStorm_2).GetEffect(SpellEffectType.Heal);
+                    foreach (Character target in scrambledGroup)
+                        target.Heal(action.GetDamagePercent(25), chr, effect);
                 }
             }
-            base.Apply();
+            base.OnHit(action);
         }
+
     }
 	/// <summary>
 	/// Reflects damage, but caps at 50% of wearer's max health
