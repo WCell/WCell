@@ -10,6 +10,7 @@ using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Spells.Auras.Handlers;
 using WCell.RealmServer.Spells.Auras.Misc;
 using WCell.RealmServer.Spells.Effects;
+using WCell.RealmServer.Entities;
 
 namespace WCell.Addons.Default.Spells.Paladin
 {
@@ -100,9 +101,45 @@ namespace WCell.Addons.Default.Spells.Paladin
 				dmgEffect.APValueFactor = 0.15f;
 				dmgEffect.SpellPowerValuePct = 15;
 			});
+
+            // Divine Storm Heal Effect
+            SpellLineId.PaladinRetributionDivineStorm.Apply(spell =>
+            {
+                var effect = spell.Effects[1]; // Second dummy effect
+                effect.AuraEffectHandlerCreator = () => new DivineStormHealHandler();
+            });
 		}
 	}
 
+    // Divine Storm Heal Effect
+    public class DivineStormHealHandler : AuraEffectHandler
+    {
+        protected override void Apply()
+        {
+            var chr = Owner as Character;
+            if (chr != null)
+            {
+                if (chr.Group != null)
+                {
+                    List<Character> origGroup = new List<Character>(chr.Group.GetAllCharacters());
+                    List<Character> scrambledGroup = new List<Character>();
+
+                    Random randNum = new Random();
+                    while (origGroup.Count > 0)
+                    {
+                        int val = randNum.Next(0, origGroup.Count - 1);
+                        scrambledGroup.Add(origGroup[val]);
+                        scrambledGroup.RemoveAt(val);
+                    }
+                    for (int i = 0; i < 3 && i < scrambledGroup.Count(); i++)
+                    {
+                        chr.SpellCast.Start(SpellId.DivineStorm_2, true, scrambledGroup[i]);
+                    }            
+                }
+            }
+            base.Apply();
+        }
+    }
 	/// <summary>
 	/// Reflects damage, but caps at 50% of wearer's max health
 	/// </summary>
