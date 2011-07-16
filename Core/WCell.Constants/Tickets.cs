@@ -7,17 +7,19 @@ namespace WCell.Constants.Tickets
 {
 	public enum TicketType : uint
 	{
-		Stuck = 1,
-		Harassment = 2,
-		Guild = 3,
-		Item = 4,
-		Environmental = 5,
-		NonQuestNPC = 6,
-		QuestNpc = 7,
-		Technical = 8,
-		AccountBilling = 9,
-		Character = 10,
-	};
+		ReportProblem = 1,
+		TalkToGm = 17
+	}
+
+	public enum TicketReportLagType : uint
+	{
+		Loot = 0,
+		AuctionHouse = 1,
+		Mail = 2,
+		Chat = 3,
+		Movement = 4,
+		Spell = 5
+	}
 
 	public enum TicketInfoResponse : uint
 	{

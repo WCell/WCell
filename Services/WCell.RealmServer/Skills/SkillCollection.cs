@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2010-01-28 16:34:36 +0100 (to, 28 jan 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 1231 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -178,6 +178,10 @@ namespace WCell.RealmServer.Skills
 			if (skill.CanLearnTier(tier))
 			{
 				skill.MaxValue = (ushort)skill.SkillLine.Tiers.GetMaxValue(tier);
+				if (id == SkillId.Riding)
+				{
+					skill.CurrentValue = skill.MaxValue;
+				}
 			}
 			return true;
 		}
@@ -202,7 +206,8 @@ namespace WCell.RealmServer.Skills
 			{
 				return false;
 			}
-			else if (amount > 0 && skill.ActualValue < amount)
+			
+            if (amount > 0 && skill.ActualValue < amount)
 			{
 				return false;
 			}
@@ -395,7 +400,7 @@ namespace WCell.RealmServer.Skills
 			}
 			else if (skill.SkillLine.Category == SkillCategory.WeaponProficiency)
 			{
-				CharacterHandler.SendProfiency(m_owner, ItemClass.Armor, WeaponProficiency);
+				CharacterHandler.SendProfiency(m_owner, ItemClass.Weapon, WeaponProficiency);
 			}
 
 			if (isNew)

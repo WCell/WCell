@@ -28,7 +28,7 @@ using WCell.Util.Graphics;
 
 namespace WCell.Addons.Default.Instances
 {
-	public class UtgardeKeep : DungeonInstance
+	public class UtgardeKeep : BaseInstance
 	{
 		#region Static Settings
 		private static NPCEntry princeKelesethEntry;

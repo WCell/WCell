@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2009-02-26 21:35:40 +0800 (Thu, 26 Feb 2009) $
- *   last author	: $LastChangedBy: dominikseifert $
+ 
  *   revision		: $Rev: 770 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -114,7 +114,7 @@ namespace WCell.RealmServer.Commands
 					{
 						object error = null;
 						long value = 0;
-						if (!Utility.Eval(exprType, ref value, expr, ref error, false))
+						if (!StringParser.Eval(exprType, ref value, expr, ref error, false))
 						{
 							trigger.Reply("Invalid expression: " + error);
 							return;
@@ -123,7 +123,7 @@ namespace WCell.RealmServer.Commands
 					}
 					else
 					{
-						if (!Utility.Parse(expr, exprType, ref actualValue))
+						if (!StringParser.Parse(expr, exprType, ref actualValue))
 						{
 							trigger.Reply("Could not change value \"{0}\" to Type: {1}", expr, exprType);
 							return;
@@ -299,7 +299,7 @@ namespace WCell.RealmServer.Commands
 						object error = null;
 						var value = Convert.ToInt64(prop.GetUnindexedValue(propHolder));
 
-						if (!Utility.Eval(exprType, ref value, expr, ref error, true))
+						if (!StringParser.Eval(exprType, ref value, expr, ref error, true))
 						{
 							trigger.Reply("Invalid expression: " + error);
 						}

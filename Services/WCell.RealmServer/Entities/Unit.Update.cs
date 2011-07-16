@@ -77,7 +77,7 @@ namespace WCell.RealmServer.Entities
 			#endregion
 
 			#region Spline Info
-            if (MovementFlags.HasFlag(MovementFlags.SplinePath))
+            if (MovementFlags.HasFlag(MovementFlags.SplineEnabled))
 			{
 				// TODO: Write spline flags
 				//var splineFlags = SplineFlags.None;
@@ -175,7 +175,7 @@ namespace WCell.RealmServer.Entities
 				packet.Write(1f);
 			}
 
-			if (moveFlags.HasAnyFlag(MovementFlags.Spline))
+			if (moveFlags.HasAnyFlag(MovementFlags.SplineElevation))
 			{
 				packet.Write(0.0f);
 			}

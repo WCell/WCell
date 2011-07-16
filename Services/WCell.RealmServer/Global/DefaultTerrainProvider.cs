@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using WCell.Core.Paths;
-using WCell.Core.TerrainAnalysis;
+using WCell.Core.Terrain.Paths;
 using WCell.Constants.World;
 using WCell.Util.Graphics;
+using WCell.Core.Terrain;
 
 namespace WCell.RealmServer.Global
 {
@@ -19,64 +20,31 @@ namespace WCell.RealmServer.Global
 
 	public class EmptyTerrain : ITerrain
 	{
-	    public bool HasLOS(Vector3 startPos, Vector3 endPos)
-	    {
-	        return true;
-	    }
-
-	    public float QueryWorldHeight(Vector3 worldPos)
-	    {
-	        return worldPos.Z;
-	    }
-
-	    public void QueryDirectPath(PathQuery query)
+		public bool IsAvailable(int tileX, int tileY)
 		{
-			query.Reply(new Path(query.To));
+			return false;
 		}
 
-	    public float QueryTerrainHeight(Vector3 worldPos)
-	    {
-	        return worldPos.Z;
-	    }
-
-		public float GetEvironmentHeight(float x, float y)
+		public bool HasLOS(Vector3 startPos, Vector3 endPos)
 		{
-			return 0;
+			return true;
 		}
 
-		public bool HasTerrainLOS(Vector3 startPos, Vector3 endPos)
-	    {
-	        return true;
-	    }
+		public void FindPath(PathQuery query)
+		{
+			query.Path.Reset(1);
+			query.Path.Add(query.To);
+			query.Reply();
+		}
 
-	    public float? QueryWMOCollision(Vector3 startPos, Vector3 endPos)
-	    {
-	        return null;
-	    }
+		public float GetGroundHeightUnderneath(Vector3 worldPos)
+		{
+			return worldPos.Z;
+		}
 
-	    public bool HasWMOLOS(Vector3 startPos, Vector3 endPos)
-	    {
-	        return true;
-	    }
-
-	    public float? QueryWMOHeight(Vector3 worldPos)
-	    {
-	        return worldPos.Z;
-	    }
-
-	    public float? QueryModelCollision(Vector3 startPos, Vector3 endPos)
-	    {
-	        return null;
-	    }
-
-	    public bool HasModelLOS(Vector3 startPos, Vector3 endPos)
-	    {
-	        return true;
-	    }
-
-	    public float? QueryModelHeight(Vector3 worldPos)
-	    {
-	        return worldPos.Z;
-	    }
+		public bool ForceLoadTile(int x, int y)
+		{
+			return true;
+		}
 	}
 }

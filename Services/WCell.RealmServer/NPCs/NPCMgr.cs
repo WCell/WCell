@@ -478,12 +478,12 @@ namespace WCell.RealmServer.NPCs
 			});
 		}
 
-		public static void LoadAll()
+		public static void LoadAll(bool force = false)
 		{
 			if (!Loaded)
 			{
 				InitDefault();
-				LoadNPCDefs();
+				LoadNPCDefs(force);
 			}
 		}
 
@@ -565,99 +565,125 @@ namespace WCell.RealmServer.NPCs
 
 		private static bool entriesLoaded, spawnsLoaded;
 
-		public static void LoadNPCDefs()
+		public static bool Loading
 		{
-			LoadEntries();
-			LoadSpawns();
+			get;
+			private set;
 		}
 
-		public static void LoadEntries()
+		public static void LoadNPCDefs(bool force = false)
 		{
-			if (entriesLoaded)
+			LoadEntries(force);
+			LoadSpawns(force);
+		}
+
+		public static void LoadEntries(bool force)
+		{
+			if (!force && entriesLoaded)
 			{
 				return;
 			}
-			FactionMgr.Initialize();
 
-			ContentMgr.Load<NPCEquipmentEntry>();
-			ContentMgr.Load<NPCEntry>();
+			try
+			{
+				Loading = true;
+				FactionMgr.Initialize();
 
-			//foreach (var entry in Entries)
-			//{
-			//    if (entry != null && entry.Template == null)
-			//    {
-			//        ContentHandler.OnInvalidData("NPCEntry had no corresponding NPCTemplate: " + entry.NPCId);
-			//    }
-			//}
+				ContentMgr.Load<NPCEquipmentEntry>(force);
+				//Dont move this into LoadTrainers, the templates must
+				//be loaded before NPC Entries
+				ContentMgr.Load<TrainerSpellTemplate>(force);
+				ContentMgr.Load<NPCEntry>(force);
 
-			LoadTrainers();
+				//foreach (var entry in Entries)
+				//{
+				//    if (entry != null && entry.Template == null)
+				//    {
+				//        ContentHandler.OnInvalidData("NPCEntry had no corresponding NPCTemplate: " + entry.NPCId);
+				//    }
+				//}
 
-			// mount-entries
-			//foreach (var spell in SpellHandler.ById)
-			//{
-			//    if (spell != null && spell.IsMount)
-			//    {
-			//        var id = (MountId)spell.Effects[0].MiscValue;
-			//        if ((int)id >= Entries.Length)
-			//        {
-			//            log.Warn("Invalid Mount Id: " + id);
-			//            spell.Effects[0].EffectType = SpellEffectType.Dummy;		// reach-around fix for the time being
-			//            continue;
-			//        }
-			//        var entry = Entries[(int)id];
-			//        if (entry != null)
-			//        {
-			//            Mounts[id] = entry;
-			//        }
-			//    }
-			//}
+				LoadTrainers(force);
 
-			EntriesLoaded = true;
+				// mount-entries
+				//foreach (var spell in SpellHandler.ById)
+				//{
+				//    if (spell != null && spell.IsMount)
+				//    {
+				//        var id = (MountId)spell.Effects[0].MiscValue;
+				//        if ((int)id >= Entries.Length)
+				//        {
+				//            log.Warn("Invalid Mount Id: " + id);
+				//            spell.Effects[0].EffectType = SpellEffectType.Dummy;		// reach-around fix for the time being
+				//            continue;
+				//        }
+				//        var entry = Entries[(int)id];
+				//        if (entry != null)
+				//        {
+				//            Mounts[id] = entry;
+				//        }
+				//    }
+				//}
+
+				EntriesLoaded = true;
+			}
+			finally
+			{
+				Loading = false;
+			}
 		}
 
-		public static void LoadSpawns()
+		public static void LoadSpawns(bool force)
 		{
-			OnlyLoadSpawns();
-			LoadWaypoints();
-			GossipMgr.LoadNPCRelations();
-
-			if (!RealmServer.Instance.IsRunning) return;
-
-			// spawn immediately
-			for (MapId mapId = 0; mapId < MapId.End; mapId++)
+			Loading = true;
+			try
 			{
-				var map = World.GetNonInstancedMap(mapId);
-				if (map != null && map.NPCsSpawned)
+				OnlyLoadSpawns(force);
+				LoadWaypoints(force);
+				GossipMgr.LoadNPCRelations();
+
+				if (!RealmServer.Instance.IsRunning) return;
+
+				// spawn immediately
+				for (MapId mapId = 0; mapId < MapId.End; mapId++)
 				{
-					var pools = GetSpawnPoolTemplatesByMap(mapId);
-					if (pools != null)
+					var map = World.GetNonInstancedMap(mapId);
+					if (map != null && map.NPCsSpawned)
 					{
-						foreach (var pool in pools)
+						var pools = GetSpawnPoolTemplatesByMap(mapId);
+						if (pools != null)
 						{
-							if (pool.AutoSpawns)
+							foreach (var pool in pools)
 							{
-								var p = pool;			// wrap closure
-								map.ExecuteInContext(() => map.AddNPCSpawnPoolNow(p));
+								if (pool.AutoSpawns)
+								{
+									var p = pool; // wrap closure
+									map.ExecuteInContext(() => map.AddNPCSpawnPoolNow(p));
+								}
 							}
 						}
 					}
 				}
 			}
+			finally
+			{
+				Loading = false;
+			}
 		}
 
-		public static void OnlyLoadSpawns()
+		public static void OnlyLoadSpawns(bool force)
 		{
 			if (spawnsLoaded)
 			{
 				return;
 			}
-			ContentMgr.Load<NPCSpawnEntry>();
+			ContentMgr.Load<NPCSpawnEntry>(force);
 			SpawnsLoaded = true;
 		}
 
-		public static void LoadWaypoints()
+		public static void LoadWaypoints(bool force)
 		{
-			ContentMgr.Load<WaypointEntry>();
+			ContentMgr.Load<WaypointEntry>(force);
 		}
 
 		[Initialization]
@@ -665,7 +691,7 @@ namespace WCell.RealmServer.NPCs
 		[DependentInitialization(typeof(NPCMgr))]
 		public static void EnsureNPCItemRelations()
 		{
-			LoadVendors();
+			LoadVendors(false);
 		}
 		#endregion
 
@@ -693,9 +719,15 @@ namespace WCell.RealmServer.NPCs
 		#endregion
 
 		#region Trainers
-		private static void LoadTrainers()
+
+		/// <summary>
+		/// Trainer spell entries by trainer spell template id
+		/// </summary>
+		public static Dictionary<uint, List<TrainerSpellEntry>> TrainerSpellTemplates = new Dictionary<uint, List<TrainerSpellEntry>>();
+
+		private static void LoadTrainers(bool force)
 		{
-			ContentMgr.Load<TrainerSpellEntry>();
+			ContentMgr.Load<TrainerSpellEntry>(force);
 		}
 
 		static void OnNewTrainer(NPC npc)
@@ -799,10 +831,10 @@ namespace WCell.RealmServer.NPCs
 		public static Dictionary<int, ItemExtendedCostEntry> ItemExtendedCostEntries;
 		public static Dictionary<uint, List<VendorItemEntry>> VendorLists = new Dictionary<uint, List<VendorItemEntry>>(5000);
 
-		static void LoadVendors()
+		static void LoadVendors(bool force)
 		{
 			LoadItemExtendedCostEntries();
-			ContentMgr.Load<VendorItemEntry>();
+			ContentMgr.Load<VendorItemEntry>(force);
 		}
 
 		static void LoadItemExtendedCostEntries()

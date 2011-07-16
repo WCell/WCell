@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Cell.Core;
 using WCell.Constants;
 using WCell.Constants.Spells;
+using WCell.Core;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.GameObjects;
 using WCell.RealmServer.Handlers;
@@ -15,6 +16,7 @@ using WCell.Util.Commands;
 using WCell.Intercommunication.DataTypes;
 using WCell.RealmServer.Debugging;
 using WCell.RealmServer.Global;
+using WCell.Util.ObjectPools;
 using WCell.Util.Threading;
 using WCell.Constants.World;
 using WCell.RealmServer.Misc;
@@ -122,7 +124,35 @@ namespace WCell.RealmServer.Commands
 		}
 		#endregion
 
-		public override ObjectTypeCustom TargetTypes
+        #region SendTotemCreated
+        public class SendTotemCreated : SubCommand
+        {
+            protected SendTotemCreated() { }
+
+            protected override void Initialize()
+            {
+                Init("TotemCreated", "TC");
+                EnglishParamInfo = "[<spellId>]";
+            }
+
+            public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+            {
+                var spellId = trigger.Text.NextEnum(SpellId.EarthElementalTotem);
+                var spell = SpellHandler.Get(spellId);
+                if(spell == null)
+                    trigger.Reply("Invalid spell id {0} supplied", spellId);
+                if(!TotemHandler.SendTotemCreated(trigger.Args.Character, spell, EntityId.Zero))
+                {
+                    trigger.Reply("Error sending packet");
+                    return;
+                }
+
+                trigger.Reply("Sent");
+            }
+        }
+        #endregion
+
+        public override ObjectTypeCustom TargetTypes
 		{
 			get { return ObjectTypeCustom.Player; }
 		}
@@ -363,7 +393,12 @@ namespace WCell.RealmServer.Commands
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
-				if (NPCMgr.Loaded)
+				Process(trigger, false);
+			}
+
+			public virtual void Process(CmdTrigger<RealmServerCmdArgs> trigger, bool force)
+			{
+				if (!force && NPCMgr.Loaded)
 				{
 					trigger.Reply("NPC definitions have already been loaded.");
 				}
@@ -371,25 +406,25 @@ namespace WCell.RealmServer.Commands
 				{
 					RealmServer.IOQueue.AddMessage(() =>
 					{
-						trigger.Reply("Loading NPCs...");
+						trigger.Reply("Loading NPCs{0}...", force ? " (FORCED) " : "");
 						if (!trigger.Text.HasNext)
 						{
-							NPCMgr.LoadNPCDefs();
+							NPCMgr.LoadNPCDefs(force);
 						}
 						else
 						{
 							var word = trigger.Text.NextWord();
 							if (word.Contains("e"))
 							{
-								NPCMgr.LoadEntries();
+								NPCMgr.LoadEntries(force);
 							}
 							if (word.Contains("s"))
 							{
-								NPCMgr.OnlyLoadSpawns();
+								NPCMgr.OnlyLoadSpawns(force);
 							}
 							if (word.Contains("w"))
 							{
-								NPCMgr.LoadWaypoints();
+								NPCMgr.LoadWaypoints(force);
 							}
 						}
 
@@ -477,15 +512,15 @@ namespace WCell.RealmServer.Commands
 			{
 				if (trigger.Text.NextModifiers() == "w")
 				{
-					LoadAll(trigger);
+					LoadAll(trigger, false);
 				}
 				else
 				{
-					RealmServer.IOQueue.AddMessage(() => LoadAll(trigger));
+					RealmServer.IOQueue.AddMessage(() => LoadAll(trigger, false));
 				}
 			}
 
-			void LoadAll(CmdTrigger<RealmServerCmdArgs> trigger)
+			public virtual void LoadAll(CmdTrigger<RealmServerCmdArgs> trigger, bool force)
 			{
 				var start = DateTime.Now;
 
@@ -516,7 +551,7 @@ namespace WCell.RealmServer.Commands
 					else
 					{
 						trigger.Reply("Loading NPCs...");
-						NPCMgr.LoadNPCDefs();
+						NPCMgr.LoadNPCDefs(force);
 						trigger.Reply("Done.");
 					}
 				}
@@ -586,6 +621,35 @@ namespace WCell.RealmServer.Commands
 				{
 					MapCommand.MapSpawnCommand.SpawnAllMaps(trigger);
 				}
+			}
+		}
+	}
+	#endregion
+
+	#region Reload
+	public class ReloadCommand : RealmServerCommand
+	{
+		protected ReloadCommand() { }
+
+		protected override void Initialize()
+		{
+			Init("Reload");
+			EnglishDescription = "Flushes the cache and reloads static data from DB.";
+		}
+
+
+		public class ReloadNPCsCommand : LoadCommand.LoadNPCsCommand
+		{
+			protected override void Initialize()
+			{
+				Init("NPCs");
+				EnglishParamInfo = "[esw]";
+				EnglishDescription = "Reloads all NPC definitions from files and/or DB. e: Load entries; s: Load Spawns; w: Load Waypoints (together with s)";
+			}
+
+			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+			{
+				Process(trigger, true);
 			}
 		}
 	}

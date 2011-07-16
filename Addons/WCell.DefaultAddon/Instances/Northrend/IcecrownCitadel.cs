@@ -19,7 +19,7 @@ using WCell.Util.Graphics;
 namespace WCell.Addons.Default.Instances
 {
 
-    public class IcecrownCitadel : RaidInstance
+    public class IcecrownCitadel : BaseInstance
     {
         #region Setup Content
         private static NPCEntry MarrowgarEntry;

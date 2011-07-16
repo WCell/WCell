@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2010-01-29 04:07:03 +0100 (fr, 29 jan 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 1232 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -70,6 +70,7 @@ namespace WCell.RealmServer.Commands
 			Init("spelladd", "addspell");
 			EnglishParamInfo = "";
 			EnglishDescription = "Deprecated - Use \"spell add\" instead.";
+			Enabled = false;
 		}
 
 		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
@@ -106,7 +107,7 @@ namespace WCell.RealmServer.Commands
 					SpellLineId lineid;
 					if (EnumUtil.TryParse(id, out lineid))
 					{
-						var line = SpellLines.GetLine(lineid);
+						var line = lineid.GetLine();
 						if (line != null)
 						{
 							spell = line.HighestRank;
@@ -198,7 +199,7 @@ namespace WCell.RealmServer.Commands
 
 				if (target == null) return;
 
-				if (mod.Length > 0)
+				if (mod.Length > 0 && !(mod.Length == 1 && mod.Contains("r")))
 				{
 					if (mod.Contains("c"))
 					{
@@ -416,7 +417,7 @@ namespace WCell.RealmServer.Commands
 		{
 			protected override void Initialize()
 			{
-				Init("Reset");
+				Init("Reset", "Clear", "C");
 				EnglishDescription = "Resets all talents for free";
 			}
 

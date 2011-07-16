@@ -83,9 +83,9 @@ namespace WCell.Constants.Spells
 		/// Modifies ProcChance
 		/// </summary>
 		ProcChance = 18,
+
 		/// <summary>
-		/// Only for: Improved Fire Totems
-		/// Lets the totems be activated faster
+		/// Reduces channel time
 		/// </summary>
 		ActivationTime = 19,
 

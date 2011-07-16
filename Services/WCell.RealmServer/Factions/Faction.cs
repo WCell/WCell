@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2009-12-23 20:07:17 +0100 (on, 23 dec 2009) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 1151 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -14,10 +14,10 @@
  *
  *************************************************************************/
 
+using System;
 using System.Collections.Generic;
-using WCell.Constants;
+using System.Linq;
 using WCell.Constants.Factions;
-using WCell.Core;
 using WCell.Util.Data;
 
 namespace WCell.RealmServer.Factions
@@ -105,70 +105,68 @@ namespace WCell.RealmServer.Factions
 			}
 
 			// friends 
-			for (var i = 0; i < FactionMgr.ByTemplateId.Length; i++)
+			foreach (var faction in FactionMgr.ByTemplateId.Where(faction => faction != null))
 			{
-				var faction = FactionMgr.ByTemplateId[i];
-				if (faction != null)
+				if (IsPlayer && faction.Template.FriendGroup.HasAnyFlag(FactionGroupMask.Player))
 				{
-					if (Template.FriendGroup.HasAnyFlag(faction.Template.FactionGroup))
-                    {
-                        Friends.Add(faction);
-                        if (IsPlayer && faction.Template.EnemyGroup != 0)
-                        {
-                            faction.Friends.Add(this);
-                        }
-                    }
+					Friends.Add(faction);
+					faction.Friends.Add(this);
 				}
+
+				if (!Template.FriendGroup.HasAnyFlag(faction.Template.FactionGroup))
+					continue;
+
+				Friends.Add(faction);
 			}
 
+
 			var friends = Template.FriendlyFactions;
-			for (var j = 0; j < friends.Length; j++)
+			foreach (var factionId in friends)
 			{
-				var friend = FactionMgr.Get(friends[j]);
-				if (friend != null)
-				{
-					Friends.Add(friend);
-					friend.Friends.Add(this);
-				}
+				var friend = FactionMgr.Get(factionId);
+				if (friend == null) continue;
+				Friends.Add(friend);
+				friend.Friends.Add(this);
 			}
 
 			// we are friends with ourselves
 			Friends.Add(this);
 
 			// enemies
-			foreach (var faction in FactionMgr.ByTemplateId)
+			foreach (var faction in FactionMgr.ByTemplateId.Where(faction => faction != null))
 			{
-				if (faction != null)
+				if (IsPlayer && faction.Template.EnemyGroup.HasAnyFlag(FactionGroupMask.Player))
 				{
-                    if (Template.EnemyGroup.HasAnyFlag(faction.Template.FactionGroup))
-					{
-						Enemies.Add(faction);
-						if (IsPlayer && faction.Template.EnemyGroup != 0)
-						{
-							faction.Enemies.Add(this);
-						}
-					}
+					Enemies.Add(faction);
+					faction.Enemies.Add(this);
 				}
+
+				if (!Template.EnemyGroup.HasAnyFlag(faction.Template.FactionGroup)) continue;
+
+				Enemies.Add(faction);
 			}
 
 			var enemies = Template.EnemyFactions;
-			for (var j = 0; j < friends.Length; j++)
+			for (var j = 0; j < enemies.Length; j++)
 			{
 				var enemy = FactionMgr.Get(enemies[j]);
-				if (enemy != null)
+				if (enemy == null)
+					continue;
+
+				if (!Template.Flags.HasAnyFlag(FactionTemplateFlags.Flagx400))
 				{
 					Enemies.Add(enemy);
-					enemy.Enemies.Add(this);
 				}
+
+				
+				enemy.Enemies.Add(this);
 			}
 
 			// neutrals 
-			foreach (var faction in FactionMgr.ByTemplateId)
+			foreach (var faction in FactionMgr.ByTemplateId.Where(faction => faction != null))
 			{
-				if (faction != null && !Friends.Contains(faction) && !Enemies.Contains(faction))
-				{
+				if( !Friends.Contains(faction) && !Enemies.Contains(faction))
 					Neutrals.Add(faction);
-				}
 			}
 
 			if (Id == FactionId.Prey)
@@ -201,8 +199,13 @@ namespace WCell.RealmServer.Factions
 		}
 
         public bool IsHostileTowards(Faction otherFaction)
-        {
-            // Start out with specific checks
+		{
+			if (Enemies.Contains(otherFaction))
+			{
+				return true;
+			}
+
+            // specific checks
             if (Template.EnemyFactions.Length > 0)
             {
                 for (int i = 0; i < Template.EnemyFactions.Length; i++)
@@ -221,9 +224,19 @@ namespace WCell.RealmServer.Factions
 			return Template.EnemyGroup.HasAnyFlag(otherFaction.Template.FactionGroup);
         }
 
+		public bool IsNeutralWith(Faction otherFaction)
+		{
+			return Neutrals.Contains(otherFaction);
+		}
+
         public bool IsFriendlyTowards(Faction otherFaction)
         {
-            // Start out with specific checks
+			if (Friends.Contains(otherFaction))
+			{
+				return true;
+			}
+
+            // specific checks
             if (Template.EnemyFactions.Length > 0)
             {
                 for (int i = 0; i < Template.FriendlyFactions.Length; i++)

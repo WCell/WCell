@@ -29,6 +29,7 @@
     <DocumentationFile>..\..\Run\Debug\WCell.Constants.xml</DocumentationFile>
     <NoWarn>1591,1587,1570,1573,1572</NoWarn>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -201,6 +202,7 @@
     <Compile Include="Misc\TitleId.cs" />
     <Compile Include="Movement.cs" />
     <Compile Include="NPCs\CreatureFamilyId.cs" />
+    <Compile Include="NPCs\Extensions.cs" />
     <Compile Include="NPCs\Misc.cs" />
     <Compile Include="NPCs\Vehicles.cs" />
     <Compile Include="Pets\PetExtensions.cs" />
@@ -228,6 +230,7 @@
     <Compile Include="Pets\PetMood.cs" />
     <Compile Include="Pets\PetNameInvalidReason.cs" />
     <Compile Include="Pets\TameFailReason.cs" />
+    <Compile Include="PositionUtil.cs" />
     <Compile Include="Quests\QuestConstants.cs" />
     <Compile Include="Quests\QuestEnums.cs" />
     <Compile Include="Quests\QuestGiverRelationType.cs" />

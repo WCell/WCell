@@ -7,6 +7,7 @@ using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Items;
+using WCell.Util;
 using WCell.Util.Collections;
 
 namespace WCell.RealmServer.Guilds
@@ -22,28 +23,36 @@ namespace WCell.RealmServer.Guilds
             50000000
         };
 
-		public GuildBank()
-		{
-            BankTabs = new SynchronizedList<GuildBankTab>(5);
-            var tab = new GuildBankTab(this)
-            {
-                BankSlot = 0,
-                Icon = "",
-                Name = "Slot 0",
-                Text = ""
-            };
-            BankTabs.Add(tab);
+		private GuildBankTab[] bankTabs;
 
-			BankLog = new GuildBankLog();
+		/// <summary>
+		/// 
+		/// </summary>
+		internal GuildBank(Guild guild, bool isNew)
+		{
+			Guild = guild;
+			BankLog = new GuildBankLog(this);
+			if (isNew)
+			{
+				bankTabs = new [] {
+					new GuildBankTab(this)
+					{
+						BankSlot = 0,
+						Icon = "",
+						Name = "Slot 0",
+						Text = ""
+					}
+				};
+			}
+			else
+			{
+				// load an existing guild bank
+				bankTabs = GuildBankTab.FindAllByProperty("_guildId", (int)guild.Id);
+				BankLog.LoadLogs();
+			}
 		}
 
 		public Guild Guild
-		{
-			get;
-			private set;
-		}
-
-		public IList<GuildBankTab> BankTabs
 		{
 			get;
 			private set;
@@ -57,35 +66,39 @@ namespace WCell.RealmServer.Guilds
 
 		public GuildBankTab this[int tabId]
 		{
-			get { return tabId < Guild.PurchasedBankTabCount ? BankTabs[tabId] : null; }
+			get
+			{
+				var tabs = bankTabs;
+				return tabId < tabs.Length ? tabs[tabId] : null;
+			}
 		}
 
-		public void DepositMoney(Character depositer, GameObject bank, uint deposit)
+		public void DepositMoney(Character depositer, GameObject bankObj, uint deposit)
 		{
+			if (!CheckBankObj(depositer, bankObj)) return;
+
 			if (deposit == 0) return;
-			if (!bank.CanBeUsedBy(depositer)) return;
-			if (depositer.Guild == null || depositer.GuildMember == null) return;
-			if (depositer.Guild != Guild) return;
 			if (depositer.Money < deposit) return;
 
 			Guild.Money += deposit;
 			depositer.Money -= deposit;
 
 			BankLog.LogEvent(GuildBankLogEntryType.DepositMoney, depositer, deposit, null, 0, null);
-			GuildHandler.SendGuildBankTabNames(depositer, bank);
-			GuildHandler.SendGuildBankTabContents(depositer, bank, 0);
-			GuildHandler.SendGuildBankMoneyUpdate(depositer, bank);
+			GuildHandler.SendGuildBankTabNames(depositer, bankObj);
+			GuildHandler.SendGuildBankTabContents(depositer, bankObj, 0);
+			GuildHandler.SendGuildBankMoneyUpdate(depositer, bankObj);
 		}
 
-		public void WithdrawMoney(Character withdrawer, GameObject bank, uint withdrawl)
+		public void WithdrawMoney(Character withdrawer, GameObject bankObj, uint withdrawl)
 		{
+			if (!CheckBankObj(withdrawer, bankObj)) return;
+
 			if (withdrawl == 0) return;
-			if (!bank.CanBeUsedBy(withdrawer)) return;
-			if (withdrawer.Guild == null || withdrawer.GuildMember == null) return;
-			if (withdrawer.Guild != Guild) return;
 			if (Guild.Money < withdrawl) return;
 
 			var member = withdrawer.GuildMember;
+			if (member == null) return;
+
 			if (!member.HasRight(GuildPrivileges.WITHDRAW_GOLD) ||
 				member.HasRight(GuildPrivileges.WITHDRAW_GOLD_LOCK))
 			{
@@ -103,14 +116,20 @@ namespace WCell.RealmServer.Guilds
 			BankLog.LogEvent(GuildBankLogEntryType.WithdrawMoney, withdrawer, withdrawl, null, 0, null);
 
 			GuildHandler.SendMemberRemainingDailyWithdrawlAllowance(withdrawer, member.BankMoneyWithdrawlAllowance);
-			GuildHandler.SendGuildBankTabNames(withdrawer, bank);
-			GuildHandler.SendGuildBankTabContents(withdrawer, bank, 0);
-			GuildHandler.SendGuildBankMoneyUpdate(withdrawer, bank);
+			GuildHandler.SendGuildBankTabNames(withdrawer, bankObj);
+			GuildHandler.SendGuildBankTabContents(withdrawer, bankObj, 0);
+			GuildHandler.SendGuildBankMoneyUpdate(withdrawer, bankObj);
 		}
 
-		public void SwapItemsManualBankToBank(Character chr, GameObject bank, byte fromBankTabId, byte fromTabSlot, byte toBankTabId, byte toTabSlot, uint itemEntryId, byte amount)
+		public void SwapItemsManualBankToBank(Character chr, GameObject bankObj, byte fromBankTabId, byte fromTabSlot, byte toBankTabId, byte toTabSlot, uint itemEntryId, byte amount)
 		{
-			if (!DoBankChecks(chr, bank)) return;
+			if (!CheckBankObj(chr, bankObj)) return;
+
+			var member = chr.GuildMember;
+			if (member == null) return;
+
+			var rank = member.Rank;
+			if (rank == null) return;
 
 			//check for valid tab / tab slot
 			var fromBankTab = this[fromBankTabId];
@@ -122,11 +141,11 @@ namespace WCell.RealmServer.Guilds
 			if (fromTabSlot >= GuildMgr.MAX_BANK_TAB_SLOTS) return;
 			if (toTabSlot >= GuildMgr.MAX_BANK_TAB_SLOTS) return;
 
-			var bankTabRights = chr.GuildMember.Rank.BankTabRights;
+			var bankTabRights = rank.BankTabRights;
 
 			if (!bankTabRights[fromBankTabId].Privileges.HasFlag(GuildBankTabPrivileges.ViewTab))
 				return;
-			if (!(bankTabRights[fromBankTabId].WithdrawlAllowance > 0))
+			if (bankTabRights[fromBankTabId].WithdrawlAllowance <= 0)
 				return;
 			if (!bankTabRights[toBankTabId].Privileges.HasFlag(GuildBankTabPrivileges.DepositItem))
 				return;
@@ -191,8 +210,8 @@ namespace WCell.RealmServer.Guilds
 						BankLog.LogEvent(GuildBankLogEntryType.MoveItem, chr, fromItem, amount, toBankTab);
 						BankLog.LogEvent(GuildBankLogEntryType.MoveItem, chr, retItem, fromBankTab);
 
-						chr.Guild.SendGuildBankTabContentUpdateToAll(fromBankTabId, fromTabSlot);
-						chr.Guild.SendGuildBankTabContentUpdateToAll(toBankTabId, toTabSlot);
+						Guild.SendGuildBankTabContentUpdateToAll(fromBankTabId, fromTabSlot);
+						Guild.SendGuildBankTabContentUpdateToAll(toBankTabId, toTabSlot);
 						return;
 					}
 				}
@@ -204,25 +223,25 @@ namespace WCell.RealmServer.Guilds
 			// Log the item move.
 			BankLog.LogEvent(GuildBankLogEntryType.MoveItem, chr, fromItem, amount, toBankTab);
 
-			chr.Guild.SendGuildBankTabContentUpdateToAll(fromBankTabId, fromTabSlot, isIntraTab ? toTabSlot : -1);
-
-			if (!isIntraTab)
-			{
-				chr.Guild.SendGuildBankTabContentUpdateToAll(toBankTabId, toTabSlot);
-			}
-
+			Guild.SendGuildBankTabContentUpdateToAll(fromBankTabId, fromTabSlot, isIntraTab ? toTabSlot : -1);
 		}
 
 		public void SwapItemsAutoStoreBankToChar(Character chr, GameObject bank, byte fromBankTabId, byte fromTabSlot, uint itemEntryId, byte autoStoreCount)
 		{
-			if (!DoBankChecks(chr, bank)) return;
+			if (!CheckBankObj(chr, bank)) return;
+
+			var member = chr.GuildMember;
+			if (member == null) return;
+
+			var rank = member.Rank;
+			if (rank == null) return;
 
 			var fromBankTab = this[fromBankTabId];
 			if (fromBankTab == null) return;
 
 			if (fromTabSlot >= GuildMgr.MAX_BANK_TAB_SLOTS) return;
 
-			var bankTabRights = chr.GuildMember.Rank.BankTabRights;
+			var bankTabRights = rank.BankTabRights;
 
 			if (!bankTabRights[fromBankTabId].Privileges.HasFlag(GuildBankTabPrivileges.ViewTab))
 				return;
@@ -262,12 +281,17 @@ namespace WCell.RealmServer.Guilds
 			bankTabRights[fromBankTabId].WithdrawlAllowance--;
 			BankLog.LogEvent(GuildBankLogEntryType.WithdrawItem, chr, fromItem, postAmt, fromBankTab);
 
-			chr.Guild.SendGuildBankTabContentUpdateToAll(fromBankTabId, fromTabSlot);
+			Guild.SendGuildBankTabContentUpdateToAll(fromBankTabId, fromTabSlot);
 		}
 
 		public void SwapItemsManualBankToChar(Character chr, GameObject bank, byte fromBankTabId, byte fromTabSlot, byte bagSlot, byte slot, uint itemEntryId, byte amount)
 		{
-			if (!DoBankChecks(chr, bank)) return;
+			if (!CheckBankObj(chr, bank)) return;
+			var member = chr.GuildMember;
+			if (member == null) return;
+
+			var rank = member.Rank;
+			if (rank == null) return;
 
 			//check for valid tab / tab slot
 			var fromBankTab = this[fromBankTabId];
@@ -275,7 +299,7 @@ namespace WCell.RealmServer.Guilds
 
 			if (fromTabSlot >= GuildMgr.MAX_BANK_TAB_SLOTS) return;
 
-			var bankTabRights = chr.GuildMember.Rank.BankTabRights;
+			var bankTabRights = rank.BankTabRights;
 
 			if (!bankTabRights[fromBankTabId].Privileges.HasFlag(GuildBankTabPrivileges.ViewTab))
 				return;
@@ -400,24 +424,29 @@ namespace WCell.RealmServer.Guilds
 					BankLog.LogEvent(GuildBankLogEntryType.WithdrawItem, chr, fromItem, amount, fromBankTab);
 					BankLog.LogEvent(GuildBankLogEntryType.DepositItem, chr, item.Record, fromBankTab);
 
-					chr.Guild.SendGuildBankTabContentUpdateToAll(fromBankTabId, fromTabSlot);
+					Guild.SendGuildBankTabContentUpdateToAll(fromBankTabId, fromTabSlot);
 					return;
 				}
 			}
 
 			BankLog.LogEvent(GuildBankLogEntryType.WithdrawItem, chr, fromItem, amount, fromBankTab);
-			chr.Guild.SendGuildBankTabContentUpdateToAll(fromBankTabId, fromTabSlot);
+			Guild.SendGuildBankTabContentUpdateToAll(fromBankTabId, fromTabSlot);
 		}
 
 		public void SwapItemsAutoStoreCharToBank(Character chr, GameObject bank, byte toBankTabId, byte bagSlot, byte slot, uint itemEntryId, byte autoStoreCount)
 		{
-			if (!DoBankChecks(chr, bank)) return;
+			if (!CheckBankObj(chr, bank)) return;
+			var member = chr.GuildMember;
+			if (member == null) return;
+
+			var rank = member.Rank;
+			if (rank == null) return;
 
 			//check for valid tab / tab slot
 			var toBankTab = this[toBankTabId];
 			if (toBankTab == null) return;
 
-			var bankTabRights = chr.GuildMember.Rank.BankTabRights;
+			var bankTabRights = rank.BankTabRights;
 
 			if (!bankTabRights[toBankTabId].Privileges.HasFlag(GuildBankTabPrivileges.DepositItem))
 				return;
@@ -450,12 +479,17 @@ namespace WCell.RealmServer.Guilds
 
 			BankLog.LogEvent(GuildBankLogEntryType.DepositItem, chr, bagItem.Record, toBankTab);
 
-			chr.Guild.SendGuildBankTabContentUpdateToAll(toBankTabId, freeSlot);
+			Guild.SendGuildBankTabContentUpdateToAll(toBankTabId, freeSlot);
 		}
 
 		public void SwapItemsManualCharToBank(Character chr, GameObject bank, byte bagSlot, byte slot, uint itemEntryId, byte toBankTabId, byte toTabSlot, byte amount)
 		{
-			if (!DoBankChecks(chr, bank)) return;
+			if (!CheckBankObj(chr, bank)) return;
+			var member = chr.GuildMember;
+			if (member == null) return;
+
+			var rank = member.Rank;
+			if (rank == null) return;
 
 			//check for valid tab / tab slot
 			var toBankTab = this[toBankTabId];
@@ -463,7 +497,7 @@ namespace WCell.RealmServer.Guilds
 
 			if (toTabSlot >= GuildMgr.MAX_BANK_TAB_SLOTS) return;
 
-			var bankTabRights = chr.GuildMember.Rank.BankTabRights;
+			var bankTabRights = rank.BankTabRights;
 
 			if (!bankTabRights[toBankTabId].Privileges.HasFlag(GuildBankTabPrivileges.DepositItem))
 				return;
@@ -490,7 +524,7 @@ namespace WCell.RealmServer.Guilds
 
 				toBankTab[toTabSlot] = bagItem.Record;
                 BankLog.LogEvent(GuildBankLogEntryType.DepositItem, chr, bagItem.Record, toBankTab);
-                chr.Guild.SendGuildBankTabContentUpdateToAll(toBankTabId, toTabSlot);
+                Guild.SendGuildBankTabContentUpdateToAll(toBankTabId, toTabSlot);
                 return;
 			}
 
@@ -501,6 +535,7 @@ namespace WCell.RealmServer.Guilds
                 // If the whole stack is merged, the bagItem.Amount goes to zero and the bagItem is destroyed
                 // If a partial stack is merged, the bagItem.Amount is automatically updated.
                 var retItem = toBankTab.StoreItemInSlot(bagItem.Record, amount, toTabSlot, true);
+				// TODO: What about the returned Item?
             }
             else
             {
@@ -540,18 +575,24 @@ namespace WCell.RealmServer.Guilds
                 BankLog.LogEvent(GuildBankLogEntryType.WithdrawItem, chr, toItem, amount, toBankTab);
                 BankLog.LogEvent(GuildBankLogEntryType.DepositItem, chr, item.Record, toBankTab);
 
-                chr.Guild.SendGuildBankTabContentUpdateToAll(toBankTabId, toTabSlot);
+                Guild.SendGuildBankTabContentUpdateToAll(toBankTabId, toTabSlot);
                 return;
             }
 
 			BankLog.LogEvent(GuildBankLogEntryType.WithdrawItem, chr, toItem, amount, toBankTab);
-			chr.Guild.SendGuildBankTabContentUpdateToAll(toBankTabId, toTabSlot);
+			Guild.SendGuildBankTabContentUpdateToAll(toBankTabId, toTabSlot);
 		}
 
 		public void BuyTab(Character chr, GameObject bank, byte tabId)
 		{
-			if (!DoBankChecks(chr, bank)) return;
-			if (chr.Guild.Leader.Character != chr) return;
+			if (!CheckBankObj(chr, bank)) return;
+			var member = chr.GuildMember;
+			if (member == null) return;
+
+			var rank = member.Rank;
+			if (rank == null) return;
+
+			if (!member.IsLeader) return;
 			if (tabId >= GuildMgr.MAX_BANK_TABS) return;
 			if (Guild.PurchasedBankTabCount >= GuildMgr.MAX_BANK_TABS) return;
 			if (tabId != Guild.PurchasedBankTabCount) return;
@@ -561,8 +602,8 @@ namespace WCell.RealmServer.Guilds
 
 			if (AddNewBankTab(tabId))
 			{
-			    chr.GuildMember.Rank.BankTabRights[tabId].Privileges = GuildBankTabPrivileges.Full;
-			    chr.GuildMember.Rank.BankTabRights[tabId].WithdrawlAllowance = 0xFFFFFFFF;
+			    rank.BankTabRights[tabId].Privileges = GuildBankTabPrivileges.Full;
+			    rank.BankTabRights[tabId].WithdrawlAllowance = 0xFFFFFFFF;
                 GuildHandler.SendGuildRosterToGuildMembers(Guild);
 				GuildHandler.SendGuildBankTabNames(chr, bank);
 			}
@@ -570,14 +611,15 @@ namespace WCell.RealmServer.Guilds
 
 		public void ModifyTabInfo(Character chr, GameObject bank, byte tabId, string newName, string newIcon)
 		{
-			if (!DoBankChecks(chr, bank)) return;
-			var guild = chr.Guild;
-			if (guild.Leader.Character != chr) return;
+			if (!CheckBankObj(chr, bank)) return;
+			var member = chr.GuildMember;
+			if (member == null) return;
+
+			if (!member.IsLeader) return;
 
 			if (tabId < 0 || tabId > Guild.PurchasedBankTabCount) return;
-            if (tabId > BankTabs.Count - 1) return;
 
-			var tab = BankTabs[tabId];
+			var tab = this[tabId];
 			if (tab == null) return;
 
 			tab.Name = newName;
@@ -593,9 +635,8 @@ namespace WCell.RealmServer.Guilds
 		{
             if (tabId < 0 || tabId >= GuildMgr.MAX_BANK_TABS) return;
             if (tabId > Guild.PurchasedBankTabCount) return;
-            if (tabId > BankTabs.Count - 1) return;
 
-			var tab = BankTabs[tabId];
+			var tab = this[tabId];
 			if (tab == null) return;
 
 			GuildHandler.SendGuildBankTabText(chr, tabId, tab.Text);
@@ -603,38 +644,44 @@ namespace WCell.RealmServer.Guilds
 
 		public void SetBankTabText(Character chr, byte tabId, string newText)
 		{
+			var member = chr.GuildMember;
+			if (member == null) return;
+
+			var rank = member.Rank;
+			if (rank == null) return;
+
 			if (tabId < 0 || tabId >= GuildMgr.MAX_BANK_TABS) return;
 			if (tabId > Guild.PurchasedBankTabCount) return;
 
-			var tab = BankTabs[tabId];
+			var tab = this[tabId];
 			if (tab == null) return;
 
-			if (!chr.GuildMember.Rank.BankTabRights[tabId].Privileges.HasFlag(GuildBankTabPrivileges.UpdateText))
+			if (!rank.BankTabRights[tabId].Privileges.HasFlag(GuildBankTabPrivileges.UpdateText))
 				return;
 
 			tab.Text = newText.Length < 501 ? newText : newText.Substring(0, 500);
 			tab.UpdateLater();
 
-			chr.Guild.Broadcast(GuildHandler.CreateBankTabTextPacket(tabId, newText));
+			Guild.Broadcast(GuildHandler.CreateBankTabTextPacket(tabId, newText));
 		}
 
 		public void QueryBankLog(Character chr, byte tabId)
 		{
 			if (tabId < 0 || tabId >= GuildMgr.MAX_BANK_TABS) return;
 			if (tabId > Guild.PurchasedBankTabCount) return;
-            if (tabId > BankTabs.Count - 1) return;
 
-			var tab = BankTabs[tabId];
+			var tab = this[tabId];
 			if (tab == null) return;
 
 			GuildHandler.SendGuildBankLog(chr, BankLog, tabId);
 		}
 
-		private bool DoBankChecks(Character chr, GameObject bank)
+		private static bool CheckBankObj(Character chr, GameObject bankObj)
 		{
-			if (chr == null) return false;
-			if (bank == null) return false;
-			if (!bank.CanBeUsedBy(chr)) return false;
+			chr.EnsureContext();
+			if (bankObj == null) return false;
+			bankObj.EnsureContext();
+			if (!bankObj.CanBeUsedBy(chr)) return false;
 
 			return true;
 		}
@@ -642,7 +689,9 @@ namespace WCell.RealmServer.Guilds
 		private bool AddNewBankTab(int tabId)
 		{
 			if (tabId < 0 || tabId >= GuildMgr.MAX_BANK_TABS) return false;
-			if (tabId < BankTabs.Count - 1 && BankTabs[tabId] != null) return false;
+
+			var bankTab = this[tabId];
+			if (bankTab != null) return false;
 
 			Guild.PurchasedBankTabCount++;
 			var tab = new GuildBankTab
@@ -653,37 +702,11 @@ namespace WCell.RealmServer.Guilds
                 Name = "Slot " + (tabId + 1),
                 Text = ""
 			};
-			BankTabs.Add(tab);
+			ArrayUtil.AddOnlyOne(ref bankTabs, tab);
 
 			tab.CreateLater();
 
 			return true;
-		}
-
-		public GuildBank(Guild guild, bool isNew)
-		{
-			Guild = guild;
-            BankLog = new GuildBankLog();
-			BankTabs = new SynchronizedList<GuildBankTab>(5);
-			if (isNew)
-			{
-				var tab = new GuildBankTab(this)
-				          	{
-				          		BankSlot = 0,
-				          		Icon = "",
-				          		Name = "Slot 0",
-				          		Text = ""
-				          	};
-				BankTabs.Add(tab);
-			}
-			else
-			{
-				var tabs = GuildBankTab.FindAllByProperty("_guildId", (int) guild.Id);
-				foreach (var tab in tabs)
-				{
-					BankTabs.Add(tab);
-				}
-			}
 		}
 	}
 }

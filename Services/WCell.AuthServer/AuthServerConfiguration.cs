@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2010-01-28 13:29:18 +0100 (to, 28 jan 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+ 
  *   revision		: $Rev: 1230 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -19,6 +19,7 @@ using System.IO;
 using System.Net;
 using System.Reflection;
 using WCell.Util.Logging;
+using WCell.AuthServer.Lang;
 using WCell.Core;
 using WCell.Constants;
 using WCell.Core.Addons;
@@ -44,10 +45,16 @@ namespace WCell.AuthServer
 			get { return s_instance; }
 		}
 
+		private static bool m_Loaded;
+
 		public static bool Loaded
 		{
-			get;
-			private set;
+			get { return m_Loaded; }
+			protected set
+			{
+				m_Loaded = value;
+				AuthenticationServer.Instance.SetTitle("{0} - {1} ...", AuthenticationServer.Instance, AuthLocalizer.Instance.Translate(DefaultLocale, AuthLangKey.Initializing));
+			}
 		}
 
 		public override string FilePath
@@ -75,8 +82,6 @@ namespace WCell.AuthServer
 		{
 			if (Loaded) return true;
 
-			Loaded = true;
-
 			s_instance.AddVariablesOfAsm<VariableAttribute>(typeof(AuthServerConfiguration).Assembly);
 			try
 			{
@@ -86,14 +91,6 @@ namespace WCell.AuthServer
 					log.Warn("Config-file \"{0}\" not found - Created new \"{0}\". Please take a little time to configure your server and then restart the Application.",Instance.FilePath);
 					return false;
 				}
-				else
-				{
-					if (s_instance.AutoSave)
-					{
-						s_instance.Save(true, true);
-					}
-					return true;
-				}
 			}
 			catch (Exception e)
 			{
@@ -101,6 +98,9 @@ namespace WCell.AuthServer
 				log.Error("Please correct the invalid values in your configuration file and restart the Applicaton.");
 				return false;
 			}
+
+			Loaded = true;
+			return true;
 		}
 
 		private string m_executablePath;
@@ -110,13 +110,22 @@ namespace WCell.AuthServer
 		/// Default constructor.
 		/// </summary>
 		/// <param name="executablePath">The path of the executable whose App-config to load</param>
-		public AuthServerConfiguration(string executablePath)
+		internal AuthServerConfiguration(string executablePath)
 			: base(OnError)
 		{
 			s_instance = this;
 			m_executablePath = executablePath;
 			m_cfg = new AppConfig(executablePath);
 			RealmIPs.Add("127.0.0.1");
+		}
+
+		[Initialization(InitializationPass.Last)]
+		public static void PerformAutoSave()
+		{
+			if (s_instance.AutoSave)
+			{
+				s_instance.Save(true, true);
+			}
 		}
 
 		/// <summary>
@@ -153,6 +162,7 @@ namespace WCell.AuthServer
 		/// <summary>
 		/// The connection string for the authentication server database.
 		/// </summary>
+		[Variable(IsFileOnly = true)]
 		public static string DBConnectionString = @"Server=127.0.0.1;Port=3306;Database=WCellAuthServer;CharSet=utf8;Uid=root;Pwd=;";
 
 		/// <summary>

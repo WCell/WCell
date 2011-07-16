@@ -516,7 +516,7 @@ namespace WCell.RealmServer.Entities
 		{
 			if (record is SummonedPetRecord)
 			{
-				SummonedPetRecords.Add((SummonedPetRecord) record);
+				SummonedPetRecords.Add((SummonedPetRecord)record);
 			}
 			else if (record is PermanentPetRecord)
 			{
@@ -723,6 +723,37 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
+		public void RemoveSummonedEntourage()
+		{
+			if (Minions != null)
+			{
+				foreach (var minion in Minions.Where(minion => minion != null))
+				{
+					DeleteMinion(minion);
+				}
+			}
+
+			if (Totems != null)
+			{
+				foreach (var totem in Totems.Where(totem => totem != null))
+				{
+					DeleteMinion(totem);
+				}
+			}
+		}
+
+		void DeleteMinion(NPC npc)
+		{
+			if (npc.Summon != EntityId.Zero)
+			{
+				var summon = Map.GetObject(npc.Summon);
+				if (summon != null)
+					summon.Delete();
+				npc.Summon = EntityId.Zero;
+			}
+			npc.Delete();
+		}
+
 		#region GOs
 		public bool OwnsGo(GOEntryId goId)
 		{
@@ -811,5 +842,14 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 		#endregion
+
+		void DetatchFromVechicle()
+		{
+			var seat = VehicleSeat;
+			if (seat != null)
+			{
+				seat.ClearSeat();
+			}
+		}
 	}
 }

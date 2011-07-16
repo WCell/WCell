@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2010-01-30 16:30:19 +0100 (lø, 30 jan 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+ 
  *   revision		: $Rev: 1235 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -23,6 +23,7 @@ using WCell.RealmServer.Spells.Targeting;
 using WCell.Util;
 using WCell.Util.Graphics;
 using Cell.Core;
+using WCell.Util.ObjectPools;
 
 namespace WCell.RealmServer.Spells
 {
@@ -92,6 +93,15 @@ namespace WCell.RealmServer.Spells
 			for (var j = 0; j < forcedTargets.Length; j++)
 			{
 				var target = forcedTargets[j];
+				if(target == null)
+				{
+					LogManager.GetCurrentClassLogger().Warn(
+						"{0} tried to cast spell \"{1}\" with forced target which is null",
+						Cast.CasterObject, Cast.Spell);
+
+					continue;
+				}
+
 				if (target.IsInContext)
 				{
 					var err = ValidateTargetForHandlers(target);
@@ -199,7 +209,7 @@ namespace WCell.RealmServer.Spells
 			if (TargetEvaluator != null)
 			{
 				log.Warn("Target Evaluator is not null, but only a single target adder was used - " +
-					"Consider using an \"AddArea*\" adder to add the best choice from any possible nearby target.");
+					"Consider using an \"AddArea*\" adder to add the best choice from any possible nearby target for spell: " + FirstHandler.Effect.Spell);
 			}
 			Add(target);
 		}

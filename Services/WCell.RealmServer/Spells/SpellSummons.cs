@@ -50,6 +50,12 @@ namespace WCell.RealmServer.Spells
 			}
 			minion.Summoner = caster;
 			minion.Creator = cast.CasterReference.EntityId;
+			if(caster != null)
+			{
+				caster.Summon = minion.EntityId;
+				if(caster.HasMaster)
+					minion.Master = caster.Master;
+			}
 
 			return minion;
 		}

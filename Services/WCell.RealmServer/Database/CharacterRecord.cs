@@ -38,7 +38,6 @@ namespace WCell.RealmServer.Database
 	{
 		#region Static
 		private static readonly Logger s_log = LogManager.GetCurrentClassLogger();
-		private static readonly Order CreatedOrder = new Order("Created", true);
 
 		public static readonly CharacterRecord[] EmptyArray = new CharacterRecord[] { };
 

@@ -7,7 +7,7 @@ using WCell.RealmServer.Instances;
 
 namespace WCell.Addons.Default.Instances
 {
-	public class SunkenTemple : RaidInstance
+	public class SunkenTemple : BaseInstance
 	{
 	}
 

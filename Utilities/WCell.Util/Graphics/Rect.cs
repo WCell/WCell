@@ -749,4 +749,9 @@ namespace WCell.Util.Graphics
         Left = 0x04,
         Right = 0x08
     }
+
+	public struct RectInt
+	{
+		
+	}
 }

@@ -74,6 +74,12 @@ namespace WCell.Addons.Default.Spells.Mage
 			{
 				spell.Effects[0].SpellEffectHandlerCreator = (cast, effect) => new IceLanceHandler(cast, effect);
 			});
+
+			// Summon Water Elemental is missing a spell trigger
+			SpellLineId.MageFrostSummonWaterElemental.Apply(spell =>
+			{
+				spell.AddTriggerSpellEffect(SpellId.SummonWaterElemental_6);
+			});
 		}
 
 		#region ColdSnap

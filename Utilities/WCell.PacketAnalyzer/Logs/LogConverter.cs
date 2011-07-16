@@ -38,6 +38,8 @@ namespace WCell.PacketAnalysis.Logs
 			AvailableParsers[(int)LogParserType.KSnifferSingleLine] = KSnifferLogConverter.ExtractSingleLine;
 			AvailableParsers[(int)LogParserType.Sniffitzt] = SniffitztLogConverter.Extract;
 		    AvailableParsers[(int)LogParserType.ZorSniffer] = ZorLogConverter.Extract;
+            AvailableParsers[(int)LogParserType.WlpSniffer] = WlpConverter.Extract;
+            AvailableParsers[(int)LogParserType.KSnifferZor] = KSnifferZorLogConverter.Extract;
 		}
 
 		public static LogParser GetParser(LogParserType type)
@@ -60,6 +62,8 @@ namespace WCell.PacketAnalysis.Logs
 		KSnifferSingleLine,
 		Sniffitzt,
 		ZorSniffer,
+        WlpSniffer,
+        KSnifferZor,
 		End
 	}
 }

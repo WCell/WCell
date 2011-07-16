@@ -269,6 +269,11 @@
     <PrimaryColumn Name="spell"/>
   </Table>
 
+  <Table Name="npc_trainer_template" MainDataHolder="TrainerSpellTemplate">
+    <PrimaryColumn Name="entry" />
+    <PrimaryColumn Name="spell"/>
+  </Table>
+  
   <Table Name="npc_vendor">
     <PrimaryColumn Name="entry" />
     <PrimaryColumn Name="item" />

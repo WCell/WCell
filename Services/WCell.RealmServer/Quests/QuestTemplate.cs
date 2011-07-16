@@ -284,6 +284,12 @@ namespace WCell.RealmServer.Quests
 		[Persistent(QuestConstants.MaxObjectInteractions)]
 		public QuestInteractionTemplate[] ObjectOrSpellInteractions = new QuestInteractionTemplate[QuestConstants.MaxObjectInteractions];
 
+        /// <summary>
+        /// Array of source items interactions containing ID and quantity.
+        /// </summary>
+        [Persistent(QuestConstants.MaxObjectInteractions)]
+        public ItemStackDescription[] CollectableSourceItems = new ItemStackDescription[QuestConstants.MaxObjectInteractions];
+
 		[NotPersistent]
 		public QuestInteractionTemplate[] GOInteractions;
 
@@ -413,7 +419,7 @@ namespace WCell.RealmServer.Quests
 		/// <summary>
 		/// Required class mask to check availability to player.
 		/// </summary>
-		public ClassId RequiredClass;
+		public ClassMask RequiredClass;
 
 		public int ReqSkillOrClass;
 
@@ -629,7 +635,7 @@ namespace WCell.RealmServer.Quests
 			{
 				return QuestInvalidReason.WrongRace;
 			}
-			if (RequiredClass != 0 && RequiredClass != chr.Class)
+            if (RequiredClass != 0 && !RequiredClass.HasAnyFlag(chr.ClassMask))
 			{
 				return QuestInvalidReason.WrongClass;
 			}
@@ -1078,6 +1084,11 @@ namespace WCell.RealmServer.Quests
 			{
 				receiver.SetTitle(RewardTitleId, false);
 			}
+
+			if(CastSpell != SpellId.None)
+			{
+				receiver.SpellCast.TriggerSelf(CastSpell);
+			}
 			return true;
 		}
 
@@ -1262,10 +1273,10 @@ namespace WCell.RealmServer.Quests
 				// skill
 				RequiredSkill = (SkillId)ReqSkillOrClass;
 			}
-			else
+            else if (ReqSkillOrClass < 0)
 			{
 				// class
-				RequiredClass = (ClassId)ReqSkillOrClass;
+				RequiredClass = (ClassMask)(-ReqSkillOrClass);
 			}
 
 			if (Category < 0)
@@ -1274,7 +1285,7 @@ namespace WCell.RealmServer.Quests
 				var clss = ((QuestSort)(-Category)).GetClassId();
 				if (clss != ClassId.End)
 				{
-					RequiredClass = clss;
+					RequiredClass = clss.ToMask();
 				}
 			}
 			else if (Category > 0)
@@ -1353,6 +1364,14 @@ namespace WCell.RealmServer.Quests
 				colItems.Add(item);
 			}
 			CollectableItems = colItems.ToArray();
+
+            for (var i = 0; i < CollectableSourceItems.Length; i++)
+            {
+                if (CollectableSourceItems[i].ItemId != ItemId.None && CollectableSourceItems[i].Amount == 0)
+                {
+                    CollectableSourceItems[i].Amount = 1;
+                }
+            }
 
 			if (goInteractions != null)
 			{

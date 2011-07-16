@@ -15,6 +15,7 @@
  *************************************************************************/
 
 using WCell.Util.Logging;
+using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Entities;
 
@@ -22,8 +23,6 @@ namespace WCell.RealmServer.Spells.Effects
 {
 	public class BindEffectHandler : SpellEffectHandler
 	{
-		private static Logger log = LogManager.GetCurrentClassLogger();
-
 		public BindEffectHandler(SpellCast cast, SpellEffect effect)
 			: base(cast, effect)
 		{
@@ -31,7 +30,17 @@ namespace WCell.RealmServer.Spells.Effects
 
 		protected override void Apply(WorldObject target)
 		{
-			//((Character)target).BindTo(target, );
+			WorldZoneLocation location;
+			if (Effect.ImplicitTargetA == ImplicitSpellTargetType.TeleportLocation
+				|| Effect.ImplicitTargetB == ImplicitSpellTargetType.TeleportLocation)
+			{
+				location = new WorldZoneLocation(m_cast.TargetMap, m_cast.TargetLoc, m_cast.TargetMap.GetZone(m_cast.TargetLoc.X, m_cast.TargetLoc.Y).Template);
+			}
+			else
+			{
+				location = new WorldZoneLocation(target.Map, target.Position, target.ZoneTemplate);
+			}
+			((Character)target).BindTo(target, location);
 		}
 
 		public override ObjectTypes TargetType

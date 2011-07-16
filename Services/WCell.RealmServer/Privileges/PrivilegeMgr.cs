@@ -1,10 +1,10 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: PrivilegeMgr.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2010-01-24 00:08:42 +0100 (sø, 24 jan 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 1212 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -128,17 +128,6 @@ namespace WCell.RealmServer.Privileges
 
 		#region Initialization/teardown
 
-		[Initialization(InitializationPass.Fourth, "Privilege manager")]
-		public static bool Initialize()
-		{
-			if (Instance.Start())
-			{
-				Instance.IsInitialized = true;
-				return true;
-			}
-			return false;
-		}
-
 		public void Setup()
 		{
 			var client = RealmServer.Instance.AuthClient;
@@ -153,15 +142,5 @@ namespace WCell.RealmServer.Privileges
 		}
 
 		#endregion
-
-		protected override bool InternalStart()
-		{
-			return true;
-		}
-
-		protected override bool InternalStop()
-		{
-			return true;
-		}
 	}
 }

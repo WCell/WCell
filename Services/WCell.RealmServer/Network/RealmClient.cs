@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2010-01-30 02:51:11 +0100 (lø, 30 jan 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 1233 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -208,7 +208,7 @@ namespace WCell.RealmServer.Network
 					var str = Encoding.UTF8.GetString(bytes);
 					if (str.Equals("GET HT", StringComparison.InvariantCultureIgnoreCase))
 					{
-						log.Warn("HTTP crawler bot connected from {0} and has been disconnected.", this);
+						log.Warn("HTTP crawler bot connected from {0} - requesting: {1}", this, str);
 					}
 					else
 					{

@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2010-02-03 04:37:17 +0100 (on, 03 feb 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+ 
  *   revision		: $Rev: 1243 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -1298,7 +1298,7 @@ namespace WCell.RealmServer.Spells.Auras
 		public override string ToString()
 		{
 			return "Aura " + m_spell + ": " + (IsBeneficial ? "Beneficial" : "Harmful") +
-				" [TimeLeft: " + TimeSpan.FromMilliseconds(TimeLeft) + "]" +
+				(HasTimeout ? " [TimeLeft: " + TimeSpan.FromMilliseconds(TimeLeft) + "]" : "") +
 				(m_controller != null ? (" Controlled by: " + m_controller) : "");
 		}
 

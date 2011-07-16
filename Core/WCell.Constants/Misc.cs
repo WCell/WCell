@@ -486,6 +486,7 @@ namespace WCell.Constants
 		TargetDodgesAttackChance,
 
 		CriticalHealValuePct,
+		ManaRegenInterruptPct,
 
 		Expertise
 	}

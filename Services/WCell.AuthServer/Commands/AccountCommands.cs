@@ -372,7 +372,7 @@ namespace WCell.AuthServer.Commands
 		{
 			public static int MaxListCount = 100;
 
-			public static int MaxListDetailsCount = 6;
+			public static int MaxListDetailsCount = 3;
 
 			protected override void Initialize()
 			{
@@ -390,37 +390,26 @@ namespace WCell.AuthServer.Commands
 			{
 				var match = trigger.Text.NextWord();
 
-				AccountMgr.Instance.Lock.EnterReadLock();
+				var tooMany = false;
+				var count = 0;
 
-				var accs = new List<Account>();
-				var more = false;
-
-				try
+				var accs = AccountMgr.Instance.GetAccounts(acc =>
 				{
-					foreach (var acc in AccountMgr.Instance.AccountsById.Values)
+					if (match.Length == 0 || acc.Name.ContainsIgnoreCase(match))
 					{
-						if (match.Length == 0 ||
-							acc.Name.IndexOf(match, StringComparison.InvariantCultureIgnoreCase) > -1)
+						if (++count >= MaxListCount)
 						{
-							if (accs.Count >= MaxListCount)
-							{
-								more = true;
-								break;
-							}
-							accs.Add(acc);
+							tooMany = true;
 						}
+						return true;
 					}
-				}
-				finally
-				{
-					AccountMgr.Instance.Lock.ExitReadLock();
-				}
+					return false;
+				});
 
-				trigger.Reply("Found {0} matching accounts:", accs.Count);
-				for (var i = 0; i < accs.Count; i++)
+				trigger.Reply("Found {0} matching accounts:", count);
+				foreach (var acc in accs)
 				{
-					var acc = accs[i];
-					if (accs.Count <= MaxListDetailsCount)
+					if (count <= MaxListDetailsCount)
 					{
 						trigger.Reply(acc.Details);
 					}
@@ -428,9 +417,14 @@ namespace WCell.AuthServer.Commands
 					{
 						trigger.Reply(acc.ToString());
 					}
+					
+					if (tooMany)
+					{
+						break;
+					}
 				}
 
-				if (more)
+				if (tooMany)
 				{
 					trigger.Reply("(more ...)");
 				}

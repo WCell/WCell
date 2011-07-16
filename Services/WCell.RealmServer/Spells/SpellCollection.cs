@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2010-01-29 04:07:03 +0100 (fr, 29 jan 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 1232 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -26,6 +26,7 @@ using WCell.RealmServer.Achievements;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Spells.Auras.Handlers;
+using WCell.Util.ObjectPools;
 using WCell.Util.Threading;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
@@ -342,6 +343,18 @@ namespace WCell.RealmServer.Spells
 				return;
 			}
 			ClearCooldown(spell, alsoClearCategory);
+		}
+
+		public void ClearCooldown(SpellLineId id, bool alsoClearCategory = true)
+		{
+			var line = id.GetLine();
+			if (line != null)
+			{
+				foreach (var spell in line)
+				{
+					ClearCooldown(spell, alsoClearCategory);
+				}
+			}
 		}
 
 		public abstract void ClearCooldown(Spell cooldownSpell, bool alsoClearCategory = true);

@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using WCell.Util.Logging;
 using resources = WCell.AuthServer.Res.WCell_AuthServer;
 using WCell.Core;
 using WCell.Core.Initialization;
@@ -56,15 +57,10 @@ namespace WCell.AuthServer.Privileges
 
 		public IDictionary<string, RoleGroupInfo> RoleGroups
 		{
-			get
-			{
-				return m_roleGroups;
-			}
+			get { return m_roleGroups; }
 		}
 
-		#region Methods
-
-		protected override bool InternalStart()
+		protected void LoadConfig()
 		{
 			LoadConfiguration();
 
@@ -73,20 +69,6 @@ namespace WCell.AuthServer.Privileges
 			{
 				throw new Exception("Default Role (Config: DefaultRole) does not exist: " + role);
 			}
-
-			return true;
-		}
-
-		protected override bool InternalStop()
-		{
-			return true;
-		}
-
-		protected override bool InternalRestart(bool forced)
-		{
-			InternalStart();
-
-			return true;
 		}
 
 		public void LoadConfiguration()
@@ -105,11 +87,11 @@ namespace WCell.AuthServer.Privileges
 			if ((e.ChangeType == WatcherChangeTypes.Changed) &&
 				e.Name == RoleGroupFile)
 			{
-				s_log.Info(resources.PrivilegeConfigChanged);
+				LogManager.GetCurrentClassLogger().Info(resources.PrivilegeConfigChanged);
 
 				try
 				{
-					Restart(true);
+					LoadConfig();
 				}
 				catch (Exception ex)
 				{
@@ -146,14 +128,13 @@ namespace WCell.AuthServer.Privileges
 
 			return null;
 		}
-		#endregion
 
 		#region Initialization/teardown
 
 		[Initialization(InitializationPass.Fourth, "Privilege manager")]
-		public static bool Initialize()
+		public static void Initialize()
 		{
-			return Instance.Start();
+			Instance.LoadConfig();
 		}
 
 		#endregion

@@ -33,6 +33,7 @@ using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Instances;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Network;
+using WCell.Util;
 using WCell.RealmServer.Looting;
 using WCell.Constants.Factions;
 using WCell.Constants.Looting;
@@ -58,10 +59,10 @@ namespace WCell.RealmServer.Groups
 		/// </summary>
 		public static float MaxKillRewardDistance = 100f;
 
-        /// <summary>
-        /// Minimun level to be invited in a raid
-        /// </summary>
-        public static int MinLevelToBeInvitedInRaid = 10;
+		/// <summary>
+		/// Minimun level to be invited in a raid
+		/// </summary>
+		public static int MinLevelToBeInvitedInRaid = 10;
 
 		protected const byte MinGroupMemberCount = 2;
 		protected const byte TargetIconCount = 8;
@@ -77,13 +78,13 @@ namespace WCell.RealmServer.Groups
 		protected GroupMember m_roundRobinMember;
 
 		internal protected GroupMember m_firstMember, m_lastMember;
-		internal protected ReaderWriterLockSlim m_syncLock;
+		internal protected ReaderWriterLockWrapper syncLock;
 
 		#region Constructors
 		protected Group(Character leader, byte maxGroupUnits)
 		{
 			// m_syncLock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
-			m_syncLock = new ReaderWriterLockSlim();
+			syncLock = new ReaderWriterLockWrapper();
 			m_subGroups = new SubGroup[maxGroupUnits];
 
 			for (byte i = 0; i < maxGroupUnits; i++)
@@ -309,43 +310,31 @@ namespace WCell.RealmServer.Groups
 		}
 
 		/// <summary>
-		/// WARNING: Does not ensure to execute within the Character's context
+		/// Executes the given callback in each character's current context
 		/// </summary>
 		public void ForeachCharacter(Action<Character> callback)
 		{
-			m_syncLock.EnterReadLock();
-
-			try
+			using (syncLock.EnterReadLock())
 			{
-				foreach (var chr in GetAllCharacters())
+				for (var i = 0; i < SubGroups.Length; i++)
 				{
-					callback(chr);
-				}
-			}
-			finally
-			{
-				m_syncLock.ExitReadLock();
-			}
-		}
-
-		/// <summary>
-		/// Executes the given callback for every online group member.
-		/// Callback is called immediately on everyone who is in the current context and delayed for everyone who is not.
-		/// Callback will only execute if character is still in group at the time of execution.
-		/// Execution is not guaranteed!
-		/// </summary>
-		public void CallOnAllInContext(Action<Character> callback)
-		{
-			foreach (var chr in GetAllCharacters())
-			{
-				var c = chr;
-				chr.ExecuteInContext(() =>
-				{
-					if (c.Group == this)
+					var subGroup = SubGroups[i];
+					foreach (var member in subGroup)
 					{
-						callback(c);
+						var chr = member.Character;
+						if (chr != null)
+						{
+							chr.ExecuteInContext(() =>
+							{
+								// character might have left group in the meantime
+								if (chr.Group == this)
+								{
+									callback(chr);
+								}
+							});
+						}
 					}
-				});
+				}
 			}
 		}
 
@@ -437,12 +426,9 @@ namespace WCell.RealmServer.Groups
 		/// <summary>
 		/// The SyncRoot against which to synchronize this group (when iterating over it or making certain changes)
 		/// </summary>
-		public ReaderWriterLockSlim SyncRoot
+		internal ReaderWriterLockWrapper SyncRoot
 		{
-			get
-			{
-				return m_syncLock;
-			}
+			get { return syncLock; }
 		}
 		#endregion
 
@@ -457,28 +443,25 @@ namespace WCell.RealmServer.Groups
 		{
 			GroupMember newMember = null;
 
-			m_syncLock.EnterWriteLock();
-
 			try
 			{
-				// look for the first SubGroup with space left
-				foreach (var groupUnit in m_subGroups)
+				using (syncLock.EnterReadLock())
 				{
-					if (!groupUnit.IsFull)
+					// look for the first SubGroup with space left
+					foreach (var groupUnit in m_subGroups)
 					{
-						newMember = new GroupMember(chr, GroupMemberFlags.Normal);
-						groupUnit.AddMember(newMember);
-						break;
+						if (!groupUnit.IsFull)
+						{
+							newMember = new GroupMember(chr, GroupMemberFlags.Normal);
+							groupUnit.AddMember(newMember);
+							break;
+						}
 					}
 				}
 			}
 			catch (Exception e)
 			{
 				LogUtil.ErrorException(e, string.Format("Could not add member {0} to group {1}", chr, this));
-			}
-			finally
-			{
-				m_syncLock.ExitWriteLock();
 			}
 
 			OnAddMember(newMember);
@@ -500,10 +483,9 @@ namespace WCell.RealmServer.Groups
 			}
 			else
 			{
-				m_syncLock.EnterWriteLock();
-
 				var leaderChanged = false;
-				try
+
+				using (syncLock.EnterReadLock())
 				{
 					var next = member.Next;
 					OnMemberRemoved(member);
@@ -567,10 +549,6 @@ namespace WCell.RealmServer.Groups
 						m_roundRobinMember = next;
 					}
 				}
-				finally
-				{
-					m_syncLock.ExitWriteLock();
-				}
 
 				if (leaderChanged)
 				{
@@ -584,14 +562,9 @@ namespace WCell.RealmServer.Groups
 
 		public GroupMember GetFirstOnlineMember()
 		{
-			m_syncLock.EnterReadLock();
-			try
+			using (syncLock.EnterReadLock())
 			{
 				return GetFirstOnlineMemberUnlocked();
-			}
-			finally
-			{
-				m_syncLock.ExitReadLock();
 			}
 		}
 
@@ -725,9 +698,7 @@ namespace WCell.RealmServer.Groups
 		/// </summary>
 		public virtual void Disband()
 		{
-			m_syncLock.EnterWriteLock();
-
-			try
+			using (syncLock.EnterReadLock())
 			{
 				foreach (var subGroup in m_subGroups)
 				{
@@ -745,18 +716,13 @@ namespace WCell.RealmServer.Groups
 					}
 				}
 			}
-			finally
-			{
-				m_syncLock.ExitWriteLock();
-			}
 		}
 
 		public GroupMember this[uint lowMemberId]
 		{
 			get
 			{
-				m_syncLock.EnterReadLock();
-				try
+				using (syncLock.EnterReadLock())
 				{
 					GroupMember member = null;
 
@@ -769,10 +735,6 @@ namespace WCell.RealmServer.Groups
 							return member;
 					}
 				}
-				finally
-				{
-					m_syncLock.ExitReadLock();
-				}
 				return null;
 			}
 		}
@@ -781,8 +743,7 @@ namespace WCell.RealmServer.Groups
 		{
 			get
 			{
-				m_syncLock.EnterReadLock();
-				try
+				using (syncLock.EnterReadLock())
 				{
 					GroupMember member = null;
 
@@ -793,10 +754,6 @@ namespace WCell.RealmServer.Groups
 						if (member != null)
 							return member;
 					}
-				}
-				finally
-				{
-					m_syncLock.ExitReadLock();
 				}
 				return null;
 			}
@@ -812,7 +769,7 @@ namespace WCell.RealmServer.Groups
 			GroupResult err;
 			var inviterMember = inviter.GroupMember;
 			var group = inviterMember != null ? inviterMember.Group : null;
-            Character targetChar = World.GetCharacter(targetName, true);
+			Character targetChar = World.GetCharacter(targetName, true);
 
 			if (group != null && group.IsFull)
 			{
@@ -826,13 +783,13 @@ namespace WCell.RealmServer.Groups
 				target = null;
 				err = GroupResult.DontHavePermission;
 			}
-            else if (group != null && group.Flags.HasFlag(GroupFlags.Raid) && targetChar != null && targetChar.IsAllowedLowLevelRaid && targetChar.Level < MinLevelToBeInvitedInRaid)
-            {
-                target = null;
-                err = GroupResult.RaidDisallowedByLevel;
-            }
-			else 
-            {
+			else if (group != null && group.Flags.HasFlag(GroupFlags.Raid) && targetChar != null && targetChar.IsAllowedLowLevelRaid && targetChar.Level < MinLevelToBeInvitedInRaid)
+			{
+				target = null;
+				err = GroupResult.RaidDisallowedByLevel;
+			}
+			else
+			{
 				target = World.GetCharacter(targetName, false);
 				if (target == null || inviter == target ||
 					(target.Role.IsStaff && !inviter.Role.IsStaff))	// cannot invite staff members without authorization
@@ -939,9 +896,7 @@ namespace WCell.RealmServer.Groups
 				return;
 			}
 
-			m_syncLock.EnterReadLock();
-
-			try
+			using (syncLock.EnterReadLock())
 			{
 				Character chr;
 
@@ -1014,10 +969,6 @@ namespace WCell.RealmServer.Groups
 						}
 					}
 				}
-			}
-			finally
-			{
-				m_syncLock.ExitReadLock();
 			}
 		}
 
@@ -1226,8 +1177,7 @@ namespace WCell.RealmServer.Groups
 		{
 			bool cleared = false;
 
-			m_syncLock.EnterReadLock();
-			try
+			using (syncLock.EnterReadLock())
 			{
 				if (targetId != EntityId.Zero)
 				{
@@ -1242,10 +1192,6 @@ namespace WCell.RealmServer.Groups
 						}
 					}
 				}
-			}
-			finally
-			{
-				m_syncLock.ExitReadLock();
 			}
 			return cleared;
 		}
@@ -1277,8 +1223,7 @@ namespace WCell.RealmServer.Groups
 
 		public void SendSystemMsg(string message)
 		{
-			m_syncLock.EnterReadLock();
-			try
+			using (syncLock.EnterReadLock())
 			{
 				foreach (SubGroup unit in SubGroups)
 				{
@@ -1291,10 +1236,6 @@ namespace WCell.RealmServer.Groups
 					}
 				}
 			}
-			finally
-			{
-				m_syncLock.ExitReadLock();
-			}
 		}
 
 		public void SendMessage(IChatter sender, ChatLanguage language, string message)
@@ -1304,8 +1245,7 @@ namespace WCell.RealmServer.Groups
 
 		public GroupMember GetMember(uint lowId)
 		{
-			m_syncLock.EnterReadLock();
-			try
+			using (syncLock.EnterReadLock())
 			{
 				foreach (var unit in SubGroups)
 				{
@@ -1318,10 +1258,6 @@ namespace WCell.RealmServer.Groups
 					}
 				}
 			}
-			finally
-			{
-				m_syncLock.ExitReadLock();
-			}
 			return null;
 		}
 
@@ -1332,27 +1268,11 @@ namespace WCell.RealmServer.Groups
 		public Character[] GetAllCharacters()
 		{
 			var chrs = new Character[m_Count];
-			var c = 0;
+			int c;
 
-			m_syncLock.EnterReadLock();
-			try
+			using (syncLock.EnterReadLock())
 			{
-				for (var i = 0; i < SubGroups.Length; i++)
-				{
-					var subGroup = SubGroups[i];
-					foreach (var member in subGroup)
-					{
-						if (member.Character != null)
-						{
-							chrs[c++] = member.Character;
-						}
-
-					}
-				}
-			}
-			finally
-			{
-				m_syncLock.ExitReadLock();
+				c = GetAllCharactersUnlocked(chrs);
 			}
 
 			if (chrs.Length > c)
@@ -1360,6 +1280,23 @@ namespace WCell.RealmServer.Groups
 				Array.Resize(ref chrs, c);
 			}
 			return chrs;
+		}
+
+		private int GetAllCharactersUnlocked(Character[] chrs)
+		{
+			int c = 0;
+			for (var i = 0; i < SubGroups.Length; i++)
+			{
+				var subGroup = SubGroups[i];
+				foreach (var member in subGroup)
+				{
+					if (member.Character != null)
+					{
+						chrs[c++] = member.Character;
+					}
+				}
+			}
+			return c;
 		}
 
 		/// <summary>
@@ -1370,8 +1307,7 @@ namespace WCell.RealmServer.Groups
 		{
 			var chrs = new SynchronizedCharacterList(m_Count, FactionGroup);
 
-			m_syncLock.EnterReadLock();
-			try
+			using (syncLock.EnterReadLock())
 			{
 				for (var i = 0; i < SubGroups.Length; i++)
 				{
@@ -1385,10 +1321,6 @@ namespace WCell.RealmServer.Groups
 
 					}
 				}
-			}
-			finally
-			{
-				m_syncLock.ExitReadLock();
 			}
 			return chrs;
 		}
@@ -1412,8 +1344,7 @@ namespace WCell.RealmServer.Groups
 		/// <returns>null if all members of this Group are offline.</returns>
 		public GroupMember GetNextRoundRobinMember()
 		{
-			m_syncLock.EnterWriteLock();
-			try
+			using (syncLock.EnterWriteLock())
 			{
 				if (m_roundRobinMember == null)
 				{
@@ -1431,10 +1362,6 @@ namespace WCell.RealmServer.Groups
 						return null;
 					}
 				}
-			}
-			finally
-			{
-				m_syncLock.ExitWriteLock();
 			}
 			return m_roundRobinMember;
 		}
@@ -1469,16 +1396,11 @@ namespace WCell.RealmServer.Groups
 		/// </summary>
 		public void SetLootMethod(LootMethod method, GroupMember masterLooter, ItemQuality lootThreshold)
 		{
-			m_syncLock.EnterWriteLock();
-			try
+			using (syncLock.EnterWriteLock())
 			{
 				LootMethod = method;
 				m_masterLooter = masterLooter;
 				LootThreshold = lootThreshold;
-			}
-			finally
-			{
-				m_syncLock.ExitWriteLock();
 			}
 
 			SendUpdate();
@@ -1530,34 +1452,6 @@ namespace WCell.RealmServer.Groups
 				{
 					yield return member;
 				}
-			}
-		}
-
-		public void LockRead(Action action)
-		{
-			m_syncLock.EnterReadLock();
-
-			try
-			{
-				action();
-			}
-			finally
-			{
-				m_syncLock.ExitReadLock();
-			}
-		}
-
-		public void LockWrite(Action action)
-		{
-			m_syncLock.EnterWriteLock();
-
-			try
-			{
-				action();
-			}
-			finally
-			{
-				m_syncLock.ExitWriteLock();
 			}
 		}
 
@@ -1657,14 +1551,13 @@ namespace WCell.RealmServer.Groups
 		}
 		#endregion
 
-		#region Staff Management
+		#region Staff Groups
 		/// <summary>
 		/// Kick every non-staff member
 		/// </summary>
 		public void EnsurePureStaffGroup()
 		{
-			m_syncLock.EnterReadLock();
-			try
+			using (syncLock.EnterReadLock())
 			{
 				foreach (var member in this.ToArray())
 				{
@@ -1678,10 +1571,6 @@ namespace WCell.RealmServer.Groups
 						}
 					}
 				}
-			}
-			finally
-			{
-				m_syncLock.ExitReadLock();
 			}
 		}
 		#endregion

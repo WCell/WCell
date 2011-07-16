@@ -7,7 +7,7 @@ using WCell.RealmServer.Instances;
 
 namespace WCell.Addons.Default.Instances
 {
-	public class WailingCaverns : RaidInstance
+	public class WailingCaverns : BaseInstance
 	{
 	}
 

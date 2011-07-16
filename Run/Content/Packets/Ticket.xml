@@ -42,10 +42,6 @@
 
   <RealmPacket OpCode="CMSG_GMTICKET_UPDATETEXT">
     <Simple>
-      <Name>Unknown</Name>
-      <Type>Byte</Type>
-    </Simple>
-    <Simple>
       <Name>Message</Name>
       <Type>CString</Type>
     </Simple>
@@ -67,5 +63,36 @@
       <Type>UInt</Type>
       <SegmentType>Tickets.TicketInfoResponse</SegmentType>
     </Simple>
+  </RealmPacket>
+  
+  <RealmPacket OpCode="CMSG_GM_REPORT_LAG">
+	<Simple>
+	   <Name>Type</Name>
+	   <Type>UInt</Type>
+	   <SegmentType>Tickets.TicketReportLagType</SegmentType>
+	</Simple>
+	<Simple>
+	   <Name>Unk0</Name>
+	   <Type>UInt</Type>
+	</Simple>
+    <Simple>
+      <Name>PosX</Name>
+      <Type>Float</Type>
+    </Simple>
+    <Simple>
+      <Name>PosY</Name>
+      <Type>Float</Type>
+    </Simple>
+    <Simple>
+      <Name>PosZ</Name>
+      <Type>Float</Type>
+    </Simple>
+  </RealmPacket>
+  
+  <RealmPacket OpCode="SMSG_GMTICKET_SYSTEMSTATUS">
+	<Simple>
+	  <Name>Status</Name>
+	  <Type>UInt</Type>
+	</Simple>
   </RealmPacket>
 </Definitions>

@@ -1,3 +1,4 @@
+using System;
 using WCell.RealmServer.Instances;
 
 ///
@@ -7,8 +8,11 @@ using WCell.RealmServer.Instances;
 
 namespace WCell.Addons.Default.Instances
 {
-	public class AuchindounAuchenaiCrypts : DungeonInstance
+	public class AuchindounAuchenaiCrypts : BaseInstance
 	{
+		protected override void PerformSave()
+		{
+		}
 	}
 
 }

@@ -3,9 +3,10 @@ using WCell.Constants;
 using WCell.Constants.ArenaTeams;
 using WCell.Core;
 using WCell.Core.Network;
+using WCell.RealmServer.Database;
 using WCell.RealmServer.Network;
 using WCell.Util;
-using WCell.RealmServer.ArenaTeams;
+using WCell.RealmServer.Battlegrounds.Arenas;
 using WCell.RealmServer.Global;
 using WCell.Util.Logging;
 
@@ -20,7 +21,7 @@ namespace WCell.RealmServer.Handlers
         public static void HandleArenaTeamQuery(IRealmClient client, RealmPacketIn packet)
         {
             var arenaTeamId = packet.ReadUInt32();
-            var team = ArenaTeamMgr.GetArenaTeam(arenaTeamId);
+            var team = ArenaMgr.GetArenaTeam(arenaTeamId);
             if (team != null)
             {
                 SendArenaTeamQueryResponse(client, team);
@@ -31,7 +32,7 @@ namespace WCell.RealmServer.Handlers
         public static void HandleArenaTeamRoster(IRealmClient client, RealmPacketIn packet)
         {
             var arenaTeamId = packet.ReadUInt32();
-            var team = ArenaTeamMgr.GetArenaTeam(arenaTeamId);
+            var team = ArenaMgr.GetArenaTeam(arenaTeamId);
             if (team != null)
             {
                 SendArenaTeamRosterResponse(client, team);
@@ -114,11 +115,11 @@ namespace WCell.RealmServer.Handlers
                 packet.WriteByte((team.Leader == member) ? 0 : 1);
                 packet.WriteByte((pl != null) ? pl.Level : 0);
                 packet.WriteUInt((uint)member.Class);
-                packet.WriteUInt(member.gamesWeek);
-                packet.WriteUInt(member.winsWeek);
-                packet.WriteUInt(member.gamesSeason);
-                packet.WriteUInt(member.winsSeason);
-                packet.WriteUInt(member.personalRating);
+                packet.WriteUInt(member.GamesWeek);
+                packet.WriteUInt(member.WinsWeek);
+                packet.WriteUInt(member.GamesSeason);
+                packet.WriteUInt(member.WinsSeason);
+                packet.WriteUInt(member.PersonalRating);
                 packet.WriteFloat(0.0f);
                 packet.WriteFloat(0.0f);
             }

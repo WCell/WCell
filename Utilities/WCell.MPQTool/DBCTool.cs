@@ -182,7 +182,7 @@ namespace WCell.MPQTool
 		/// <exception cref="Exception">If dir could not be found</exception>
 		public static string FindWowDir(string wowDir)
 		{
-			if (wowDir != null)
+			if (wowDir != null && Directory.Exists(wowDir))
 			{
 				return wowDir;
 			}
@@ -192,6 +192,16 @@ namespace WCell.MPQTool
 				return Path.GetFullPath(m_wowDir);
 			}
 			return null;
+		}
+
+		public static string FindWowDirOrThrow(string wowDir)
+		{
+			var dir = FindWowDir(wowDir);
+			if (dir == null)
+			{
+				throw new Exception("Could not find WoW directory - Did you install it?");
+			}
+			return dir;
 		}
 
 		public void Dump()

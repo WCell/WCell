@@ -6,6 +6,7 @@ obj
 *.vs10x
 *.bak
 
+changes
 Run/Content/dbc*
 Run/Content/Maps/*
 Run/Debug/*
@@ -15,3 +16,6 @@ Utilities/WCell.SolutionItems/bin/*
 Addons/.gitignore
 
 Addons/GossipMenus/bin
+wcelladdon/
+*.docstates
+TestResults/

@@ -142,6 +142,7 @@ namespace WCell.Constants.Items
 
 	public enum BuyItemError : byte
 	{
+		Ok = 0xFF,
 		CantFindItem = 0x00,
 		ItemAlreadySold = 0x01,
 		NotEnoughMoney = 0x02,

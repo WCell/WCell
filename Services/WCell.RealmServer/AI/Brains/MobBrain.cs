@@ -288,7 +288,7 @@ namespace WCell.RealmServer.AI.Brains
 				return;
 			}
 
-			if (m_owner is NPC && m_owner.CanBeAggroedBy(action.Attacker))
+			if (m_owner is NPC)
 			{
 				((NPC)m_owner).ThreatCollection[action.Attacker] += action.Attacker.GetGeneratedThreat(action);
 			}

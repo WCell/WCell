@@ -19,7 +19,7 @@ using System;
 
 namespace WCell.Addons.Default.Instances
 {
-	public class TheStockades : DungeonInstance
+	public class TheStockades : BaseInstance
 	{
 		#region Setup Content
 		private static NPCEntry kamdeepfuryEntry;

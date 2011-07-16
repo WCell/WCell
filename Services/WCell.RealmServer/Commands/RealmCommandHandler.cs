@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using WCell.Constants;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Chat;
@@ -458,13 +459,19 @@ namespace WCell.RealmServer.Commands
 
 		#region Autoexec
 		[Initialization(InitializationPass.Tenth)]
+		public static void OnStartup()
+		{
+			RealmServer.Started += AutoexecStartup;
+		}
+
 		public static void AutoexecStartup()
 		{
 			var args = new RealmServerCmdArgs(null, false, null);
 			var file = AutoExecDir + AutoExecStartupFile;
 			if (File.Exists(file))
 			{
-				Instance.ExecFile(file, args);
+				// execute auto exec on separate thread
+				ThreadPool.QueueUserWorkItem(stateInfo => Instance.ExecFile(file, args));
 			}
 		}
 
@@ -539,7 +546,7 @@ namespace WCell.RealmServer.Commands
 						var classStr = text.Remainder.Trim();
 						var val = 0L;
 						object err = null;
-						if (!Utility.Eval(typeof(ClassMask), ref val, classStr, ref err, false))
+						if (!StringParser.Eval(typeof(ClassMask), ref val, classStr, ref err, false))
 						{
 							log.Warn("Invalid Class restriction in file {0} (line {1}): {2}", file, line, err);
 						}

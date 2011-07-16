@@ -5,7 +5,7 @@ using System.Text;
 using WCell.Constants.World;
 using WCell.Util.Graphics;
 
-namespace WCell.Core.Paths
+namespace WCell.Core.Terrain.Paths
 {
 	public struct TransportPathVertex
 	{

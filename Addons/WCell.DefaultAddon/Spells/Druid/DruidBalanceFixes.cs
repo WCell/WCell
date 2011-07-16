@@ -126,6 +126,7 @@ namespace WCell.Addons.Default.Spells.Druid
 			{
 				spell.GetEffect(AuraType.PeriodicEnergize).AuraEffectHandlerCreator = () => new InnervateHandler();
 			});
+
 			//Glyph of Innervate: Innervate now grants the caster 45% of <his/her> base mana pool over 10 sec in addition to the normal effects of Innervate.
 			SpellHandler.Apply(spell =>
 			{

@@ -17,21 +17,15 @@ namespace WCell.RealmServer.Spells
 
 		public static SpellLine GetLine(this SpellLineId id)
 		{
-			return ById[(int)id];
+		    return (uint)id >= ById.Length ? null : ById[(int)id];
 		}
 
-		public static SpellLine[] GetLines(ClassId clss)
+	    public static SpellLine[] GetLines(ClassId clss)
 		{
-            if((int)clss >= SpellLinesByClass.Length)
-            {
-                log.Error("Class out of range of SpellLine array {1}:{0} SpellLinesByClass.Length {2}", clss, (int)clss,
-                              SpellLinesByClass.Length);
-                return null;
-            }
-			return SpellLinesByClass[(int)clss];
+		    return (int)clss >= SpellLinesByClass.Length ? null : SpellLinesByClass[(int)clss];
 		}
 
-		internal static void InitSpellLines()
+	    internal static void InitSpellLines()
 		{
 			SetupSpellLines();
 		}

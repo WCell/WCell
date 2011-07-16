@@ -138,7 +138,7 @@ namespace WCell.Util.ReflectionUtil
 			if (prop != null)
 			{
 				object val = null;
-				if (Utility.Parse(value, prop.GetVariableType(), ref val))
+				if (StringParser.Parse(value, prop.GetVariableType(), ref val))
 				{
 					prop.SetUnindexedValue(propHolder, val);
 					return prop;
@@ -147,7 +147,7 @@ namespace WCell.Util.ReflectionUtil
 			return null;
 		}
 
-		public MemberInfo ModPropValue<T>(U user, object obj, string name, Type type, string delta, Utility.OperatorHandler<T> oper,
+		public MemberInfo ModPropValue<T>(U user, object obj, string name, Type type, string delta, StringParser.OperatorHandler<T> oper,
 			ref T newValue)
 		{
 			object propHolder;
@@ -155,7 +155,7 @@ namespace WCell.Util.ReflectionUtil
 			if (prop != null)
 			{
 				object val = null;
-				if (Utility.Parse(delta, prop.GetVariableType(), ref val))
+				if (StringParser.Parse(delta, prop.GetVariableType(), ref val))
 				{
 					var oldVal = prop.GetUnindexedValue(obj);
 					prop.SetUnindexedValue(propHolder, newValue = oper((T)oldVal, (T)val));
@@ -231,7 +231,7 @@ namespace WCell.Util.ReflectionUtil
 							// rule out non-simple arugments and try parsing
 							var paramType = paras[i].ParameterType;
 
-							if (!paramType.IsSimpleType() || !Utility.Parse(args[i], paramType, ref arg))
+							if (!paramType.IsSimpleType() || !StringParser.Parse(args[i], paramType, ref arg))
 							{
 								// try the next overload
 								success = false;

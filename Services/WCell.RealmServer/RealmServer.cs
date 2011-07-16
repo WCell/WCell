@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2008-08-12 23:56:01 +0800 (Tue, 12 Aug 2008) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 590 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -32,7 +32,6 @@ using WCell.RealmServer.Chat;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Network;
 using WCell.RealmServer.Privileges;
-using WCell.RealmServer.Server;
 using WCell.Util;
 using WCell.Core.Initialization;
 using WCell.Util.Variables;
@@ -46,8 +45,10 @@ namespace WCell.RealmServer
 	/// authentication server 
 	/// </summary>
 	[VariableClassAttribute(true)]
-	public sealed partial class RealmServer : ServerApp<RealmServer>
+	public sealed class RealmServer : ServerApp<RealmServer>
 	{
+		public event Action<RealmStatus> StatusChanged;
+
 		static DateTime timeStart;
 		private static long timeStartTicks;
 

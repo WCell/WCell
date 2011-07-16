@@ -63,6 +63,12 @@ namespace WCell.Util.Variables
 			internal set { m_readOnly = value; }
 		}
 
+		public bool IsFileOnly
+		{
+			get;
+			internal set;
+		}
+
 		public MemberInfo Member
 		{
 			get { return m_Member; }
@@ -151,7 +157,7 @@ namespace WCell.Util.Variables
 		static object TryParse(string strValue, Type type)
 		{
 			object valueObj = null;
-			if (Utility.Parse(strValue, type, ref valueObj))
+			if (StringParser.Parse(strValue, type, ref valueObj))
 			{
 				return valueObj;
 			}

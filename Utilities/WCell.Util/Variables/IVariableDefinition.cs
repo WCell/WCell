@@ -18,6 +18,11 @@ namespace WCell.Util.Variables
 			get;
 		}
 
+		bool IsFileOnly
+		{
+			get;
+		}
+
 		string TypeName
 		{
 			get;
@@ -72,7 +77,7 @@ namespace WCell.Util.Variables
 				throw new Exception("Variable's StringValue was not set - Name: " + Name + "");
 			}
 			object obj = null;
-			if (!Utility.Parse(StringValue, type, ref obj))
+			if (!StringParser.Parse(StringValue, type, ref obj))
 			{
 				throw new Exception(string.Format("Unable to parse Variable Value \"{0}\" as Type \"{1}\"", StringValue, type.Name));
 			}

@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace WCell.Util.Strings
 {
@@ -28,6 +29,16 @@ namespace WCell.Util.Strings
 	/// </summary>
 	public class StringStream : ICloneable
 	{
+		public static bool[] Whitespaces = new bool[256];
+
+		static StringStream()
+		{
+			Whitespaces[' '] = true;
+			Whitespaces['\t'] = true;
+			Whitespaces['\r'] = true;
+			Whitespaces['\n'] = true;
+		}
+
 		readonly string str;
 		int pos;
 
@@ -349,17 +360,21 @@ namespace WCell.Util.Strings
 				return "";
 
 			int x;
-			while ((x = str.IndexOf(separator, pos)) == pos)
+			if ((x = str.IndexOf(separator, pos)) == pos)
 			{
+				// empty element
 				pos += separator.Length;
+				return "";
 			}
 
 			if (x < 0)
 			{
+				// end of string
 				if (pos == length)
 					return "";
 				x = length;
 			}
+
 			var word = str.Substring(pos, x - pos);
 
 			pos = x + separator.Length;
@@ -373,6 +388,75 @@ namespace WCell.Util.Strings
 		public string NextWords(int count)
 		{
 			return NextWords(count, " ");
+		}
+
+		/// <summary>
+		/// Read the next quoted string or a single word, separated by the given separator
+		/// </summary>
+		public bool NextString(out string result, string separator = ",")
+		{
+			SkipWhitespace();
+			switch (PeekChar())
+			{
+				case '"':
+					// quoted string
+					result = NextQuotedString();
+					
+					// skip over terminator
+					if (str.IndexOf(separator, pos) == pos)
+					{
+						pos += separator.Length;
+						return true;
+					}
+					return false;
+				default:
+					// not enclosed in quotation marks
+					result = NextWord(separator);
+					return true;
+			}
+		}
+
+		/// <summary>
+		/// Reads a quoted string.
+		/// Returns an empty string if the next character is not a quotation mark.
+		/// </summary>
+		public string NextQuotedString()
+		{
+			if (PeekChar() != '"')
+			{
+				return "";
+			}
+			
+			var result = new StringBuilder(5);
+			var lastEscape = false;
+			do
+			{
+				Position++;
+				var chr = PeekChar();
+				if (lastEscape)
+				{
+					// doesn't matter what the character is, just append it and go on
+					lastEscape = false;
+					result.Append(chr);
+					continue;
+				}
+
+				switch (chr)
+				{
+					case '\\':
+						lastEscape = true;
+						break;
+					case '"':
+						// end of string
+						Position++;
+						goto exit;
+					default:
+						result.Append(chr);
+						break;
+				}
+			} while (true);
+			exit:
+			return result.ToString();
 		}
 
 		/// <summary>
@@ -470,6 +554,15 @@ namespace WCell.Util.Strings
 		public void ConsumeSpace()
 		{
 			Consume(' ');
+		}
+
+		public void SkipWhitespace()
+		{
+			char chr;
+			while ((chr = PeekChar()) < 256 && Whitespaces[chr])
+			{
+				Position++;
+			}
 		}
 
 		/// <summary>

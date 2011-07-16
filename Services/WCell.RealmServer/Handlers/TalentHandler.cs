@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2009-12-27 15:48:42 +0100 (sø, 27 dec 2009) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 1159 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -54,19 +54,16 @@ namespace WCell.RealmServer.Handlers
 		{
 			var count = packet.ReadInt32();
 
-			var list = new List<SimpleTalentDescriptor>(count);
+		    var talents = client.ActiveCharacter.Talents;
 			for (var i = 0; i < count; i++)
 			{
-				list.Add(new SimpleTalentDescriptor()
-				{
-					TalentId = (TalentId)packet.ReadUInt32(),
-					Rank = packet.ReadInt32()
-				});
+			    var talentId = (TalentId) packet.ReadUInt32();
+			    var rank = packet.ReadInt32();
+
+			    talents.Learn(talentId, rank);
 			}
 
-			var chr = client.ActiveCharacter.CurrentSpecProfile;
-			// TODO: Set Talent Group
-			//chr.SpecProfile.LearnTalentGroupTalents(list);
+            SendTalentGroupList(talents);
 		}
 
 		[ClientPacketHandler(RealmServerOpCode.CMSG_REMOVE_GLYPH)]

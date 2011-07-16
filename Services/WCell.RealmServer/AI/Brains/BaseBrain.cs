@@ -395,6 +395,17 @@ namespace WCell.RealmServer.AI.Brains
 			return false;
 		}
 
+		public void ClearCombat(BrainState newState)
+		{
+			if ((m_owner is NPC))
+			{
+				((NPC)m_owner).ThreatCollection.Clear();
+			}
+			m_owner.IsInCombat = false;
+			m_owner.MarkUpdate(UnitFields.DYNAMIC_FLAGS);
+			State = newState;
+		}
+
 		public void OnGroupChange(AIGroup newGroup)
 		{
 			//if (newGroup != null)
@@ -451,15 +462,16 @@ namespace WCell.RealmServer.AI.Brains
 				if (unit.CanGenerateThreat &&
 					m_owner.IsHostileWith(unit) &&
 					m_owner.CanSee(unit) &&
-					unit.IsInRadiusSq(owner, owner.GetAggroRangeSq(unit)) &&
-
-					// add this constraint, so NPCs don't randomly attack weak neutrals
-					(!(unit is NPC) || ((NPC)unit).ThreatCollection.CurrentAggressor != null || unit.IsHostileWith(owner)))
+					unit.IsInRadiusSq(owner, owner.GetAggroRangeSq(unit)))
 				{
-					owner.ThreatCollection.AddNewIfNotExisted(unit);
-					if (owner.CanReachForCombat(unit))
+					// add this constraint, so NPCs don't randomly attack weak neutrals
+					if (!(unit is NPC) || ((NPC) unit).ThreatCollection.CurrentAggressor != null || unit.IsHostileWith(owner))
 					{
-						return false;
+						owner.ThreatCollection.AddNewIfNotExisted(unit);
+						if (owner.CanReachForCombat(unit))
+						{
+							return false;
+						}
 					}
 				}
 				return true;

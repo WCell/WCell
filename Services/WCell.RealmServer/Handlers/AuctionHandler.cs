@@ -104,7 +104,11 @@ namespace WCell.RealmServer.Handlers
 		{
 			var chr = client.ActiveCharacter;
 			var auctioneerId = packet.ReadEntityId();
-
+		    var outbiddedCount = packet.ReadUInt32();
+            for(var i = 0; i < outbiddedCount; i++)
+            {
+                //packet.ReadUInt32(); //auction id
+            }
 			var auctioneer = chr.Map.GetObject(auctioneerId) as NPC;
 			AuctionMgr.Instance.AuctionListBidderItems(chr, auctioneer);
 		}
@@ -261,7 +265,7 @@ namespace WCell.RealmServer.Handlers
 			packet.Write(auction.ItemLowId);
 			packet.Write(item.Template.Id);
 
-			for (var i = 0; i < ItemConstants.MaxEnchantsPerEntry; i++)
+			for (var i = 0; i < 7; i++)
 			{
 				if (item.EnchantIds != null)
 				{

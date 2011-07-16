@@ -5,7 +5,7 @@
  *   author email	: zeroflag@zeroflag.de
  *   copyright		: (C) 2006-2008  Thomas "zeroflag" Kraemer
  *   last changed	: $LastChangedDate: 2008-11-25 18:16:45 +0800 (Tue, 25 Nov 2008) $
- *   last author	: $LastChangedBy: dominikseifert $
+ 
  *   revision		: $Rev: 686 $
  *
  *   This library is free software; you can redistribute it and/or

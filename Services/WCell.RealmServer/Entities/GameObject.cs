@@ -85,6 +85,10 @@ namespace WCell.RealmServer.Entities
 			}
 			go.Phase = where.Phase;
 			var pos = where.Position;
+			if (spawnPoint == null)
+			{
+				pos.Z = where.Map.Terrain.GetGroundHeightUnderneath(pos);
+			}
 			where.Map.AddObject(go, ref pos);
 
 			go.MarkUpdate(GameObjectFields.DYNAMIC);
@@ -254,6 +258,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public bool CanBeUsedBy(Character chr)
 		{
+			// TODO: Check distance
 			if (IsEnabled)
 			{
 				return !Flags.HasFlag(GameObjectFlags.ConditionalInteraction) || chr.QuestLog.IsRequiredForAnyQuest(this);

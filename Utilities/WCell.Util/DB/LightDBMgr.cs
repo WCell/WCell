@@ -109,7 +109,7 @@ namespace WCell.Util.DB
 			object defaultValue;
 			if (!String.IsNullOrEmpty(fieldDef.DefaultStringValue))
 			{
-				defaultValue = Utility.Parse(fieldDef.DefaultStringValue, member.GetVariableType());
+				defaultValue = StringParser.Parse(fieldDef.DefaultStringValue, member.GetVariableType());
 			}
 			else
 			{

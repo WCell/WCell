@@ -57,8 +57,12 @@ namespace WCell.Constants.GameObjects
 
         GOFlag_0x80 = 0x80,
         GOFlag_0x100 = 0x100,
-        GOFlag_0x200 = 0x200,
-        GOFlag_0x400 = 0x400,
+		/// <summary>
+		/// Use for GO type 33
+		/// </summary>
+        Damaged = 0x200,
+        Destroyed = 0x400,
+
         GOFlag_0x800 = 0x800,
         GOFlag_0x1000 = 0x1000,
         GOFlag_0x2000 = 0x2000,

@@ -18,7 +18,7 @@ using WCell.Util.Graphics;
 
 namespace WCell.Addons.Default.Instances
 {
-	public class BlackfathomDeeps : RaidInstance
+	public class BlackfathomDeeps : BaseInstance
 	{
 		#region General (Content)
 		private static NPCEntry LadySarevessEntry;

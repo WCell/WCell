@@ -25,6 +25,11 @@ namespace WCell.RealmServer.Debugging
 		[Variable("DumpDirectory")]
 		public static string DumpDirName = "./Dumps/";
 
+		/// <summary>
+		/// Dump files will be overwritten when they already exceed this length
+		/// </summary>
+		public static int MaxDumpFileSize = 1024*1024;
+
 		public static string[] IgnoredOpcodeStrings = new[] { 
 			// ignore movement packets
 			"CMSG_PING", 
@@ -96,17 +101,8 @@ namespace WCell.RealmServer.Debugging
 				m_initialized = true;
 				DumpDir.Create();
 
-				LoginHandler.ClientDisconnected += OnDisconnect;
+				//LoginHandler.ClientDisconnected += OnDisconnect;
 			}
-		}
-
-		private static void OnDisconnect(IRealmClient client)
-		{
-			if (client.Account != null)
-			{
-				RemoveWriter(client.Account);
-			}
-				
 		}
 
 		public static void Init()
@@ -126,10 +122,10 @@ namespace WCell.RealmServer.Debugging
 					if (m_defaultWriter == null)
 					{
 						var file = Path.Combine(DumpDir.FullName, "_default.txt");
-                        m_defaultWriter = new IndentTextWriter(new StreamWriter(file))
-                        {
-                            AutoFlush = true
-                        };
+						m_defaultWriter = new IndentTextWriter(new StreamWriter(file))
+						{
+							AutoFlush = true
+						};
 					}
 				}
 				return m_defaultWriter;
@@ -173,10 +169,12 @@ namespace WCell.RealmServer.Debugging
 						try
 						{
 							var file = Path.Combine(DumpDir.FullName, account.Name + ".txt");
-							writer = new IndentTextWriter(new StreamWriter(file))
-							         	{
-							         		AutoFlush = true
-							         	};
+							var fileInfo = new FileInfo(file);
+							var append = fileInfo.Exists ? fileInfo.Length < MaxDumpFileSize : false;
+							writer = new IndentTextWriter(new StreamWriter(file, append))
+							{
+								AutoFlush = true
+							};
 							m_packetWriters.Add(account.Name, writer);
 						}
 						catch (Exception e)

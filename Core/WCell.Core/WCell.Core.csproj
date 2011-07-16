@@ -202,6 +202,7 @@
     <Compile Include="Initialization\IInitializationInfo.cs" />
     <Compile Include="Initialization\DependentInitializationStep.cs" />
     <Compile Include="Initialization\InitializationException.cs" />
+    <Compile Include="Manager.cs" />
     <Compile Include="Network\IOExtensions.cs" />
     <Compile Include="Network\NetworkStatistics.cs" />
     <Compile Include="Network\PacketInfo.cs" />
@@ -239,7 +240,6 @@
     <Compile Include="Initialization\InitializationPass.cs" />
     <Compile Include="Initialization\InitMgr.cs" />
     <Compile Include="Initialization\InitializationStep.cs" />
-    <Compile Include="Manager.cs" />
     <Compile Include="Network\AuthPacketIn.cs" />
     <Compile Include="Network\AuthPacketOut.cs" />
     <Compile Include="Network\DisposableRealmPacketIn.cs" />

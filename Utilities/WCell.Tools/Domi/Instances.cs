@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Database;
-using WCell.Tools.Code;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Instances;
 using WCell.Constants;
+using WCell.Util.Code;
 using WCell.Util.Toolshed;
 using System.IO;
 
@@ -28,7 +28,7 @@ namespace WCell.Tools.Domi
 			foreach (var instance in InstanceMgr.InstanceInfos)
 			{
 				var className = instance.Id.ToString();
-				var baseClass = instance.Type == MapType.Raid ? typeof(RaidInstance).Name : typeof(DungeonInstance).Name;
+				var baseClass = typeof(BaseInstance).Name;
 				var file = dir + className + ".cs";
 				if (!File.Exists(file))
 				{

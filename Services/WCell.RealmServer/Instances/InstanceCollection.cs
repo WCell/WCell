@@ -9,6 +9,7 @@ using WCell.RealmServer.Global;
 using WCell.RealmServer.Handlers;
 using WCell.Util.Logging;
 using WCell.RealmServer.Chat;
+using WCell.Util.ObjectPools;
 
 namespace WCell.RealmServer.Instances
 {
@@ -30,7 +31,7 @@ namespace WCell.RealmServer.Instances
 	/// </summary>
 	public class InstanceCollection
 	{
-		public readonly ObjectPool<List<InstanceBinding>> InstanceBindingListPool = new ObjectPool<List<InstanceBinding>>(() => new List<InstanceBinding>(4));
+		public static readonly ObjectPool<List<InstanceBinding>> InstanceBindingListPool = new ObjectPool<List<InstanceBinding>>(() => new List<InstanceBinding>(4));
 
 		private static readonly Logger log = LogManager.GetCurrentClassLogger();
 

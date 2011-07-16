@@ -15,8 +15,7 @@ namespace WCell.RealmServer.Spells.Auras
 
 		protected virtual int GetStatValue(StatType stat)
 		{
-			//return Owner.GetUnmodifiedBaseStatValue(stat);
-			return Owner.GetBaseStatValue(stat);
+			return Owner.GetUnmodifiedBaseStatValue(stat);
 		}
 
 		protected override void Apply()
@@ -28,16 +27,21 @@ namespace WCell.RealmServer.Spells.Auras
 				for (var stat = StatType.Strength; stat < StatType.End; stat++)
 				{
 					var val = GetStatValue(stat);
+					var modVal = GetModifiedValue(val);
+					Owner.AddStatMod(stat, modVal, m_aura.Spell.IsPassive);
+
 					m_vals[(int)stat] = val;
-					Owner.AddStatMod(stat, GetModifiedValue(val), false);
 				}
 			}
 			else
 			{
 				var stat = (StatType)SpellEffect.MiscValue;
 
-				m_singleVal = GetStatValue(stat);
-				Owner.AddStatMod(stat, GetModifiedValue(m_singleVal), false);
+				var val = GetStatValue(stat);
+				var modVal = GetModifiedValue(val);
+				Owner.AddStatMod(stat, modVal, m_aura.Spell.IsPassive);
+
+				m_singleVal = val;
 			}
 		}
 
@@ -67,7 +71,7 @@ namespace WCell.RealmServer.Spells.Auras
 				// all stats
 				for (var stat = StatType.Strength; stat <= StatType.Spirit; stat++)
 				{
-					if (GetStatValue(stat) != m_vals[(int)stat])
+					if ((GetStatValue(stat) != m_vals[(int)stat]))
 					{
 						// re-apply
 						Remove(false);

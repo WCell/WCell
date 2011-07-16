@@ -40,6 +40,12 @@ namespace WCell.Addons.Default.Spells.Hunter
                     spell.Effects[0].SpellEffectHandlerCreator =
                         (cast, effect) => new ReadinessHandler(cast, effect);
                 });
+
+            // Sealed cooldowns
+            SpellLineId.HunterMarksmanshipChimeraShot.Apply(spell =>
+                {
+                    spell.CooldownTime = 10000;
+                });
         }
     }
 

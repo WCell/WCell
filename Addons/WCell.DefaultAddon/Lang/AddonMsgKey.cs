@@ -122,6 +122,9 @@ namespace WCell.Addons.Default.Lang
         NPCCurgle1,
         NPCCurgle2,
         NPCTrenton,
+
+		NPCArelas1,
+		NPCArelas2,
 		End
 	}
 }

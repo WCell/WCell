@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2010-04-23 15:13:50 +0200 (fr, 23 apr 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+ 
  *   revision		: $Rev: 1282 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -26,6 +26,7 @@ using WCell.Constants.Realm;
 using WCell.Core;
 using WCell.Core.Initialization;
 using WCell.Core.Variables;
+using WCell.RealmServer.Lang;
 using WCell.RealmServer.Privileges;
 using WCell.RealmServer.Res;
 using WCell.Util;
@@ -33,6 +34,8 @@ using WCell.Util.Variables;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Addons;
+
+using RealmServ = WCell.RealmServer.RealmServer;
 
 namespace WCell.RealmServer
 {
@@ -75,10 +78,16 @@ namespace WCell.RealmServer
 			set;
 		}
 
+		private static bool m_Loaded;
+
 		public static bool Loaded
 		{
-			get;
-			private set;
+			get { return m_Loaded; }
+			protected set
+			{
+				m_Loaded = value;
+				RealmServ.Instance.SetTitle("{0} - {1} ...", RealmServ.Instance, RealmLocalizer.Instance.Translate(DefaultLocale, RealmLangKey.Initializing));
+			}
 		}
 
 		public static string LangDirName = "Lang";
@@ -120,13 +129,6 @@ namespace WCell.RealmServer
 						log.Warn("See http://wiki.wcell.org/index.php/Configuration for more information.");
 						return false;
 					}
-					else
-					{
-						if (s_instance.AutoSave)
-						{
-							s_instance.Save(true, true);
-						}
-					}
 				}
 				catch (Exception e)
 				{
@@ -135,6 +137,8 @@ namespace WCell.RealmServer
 					return false;
 				}
 			}
+
+			Loaded = true;
 			return true;
 		}
 
@@ -144,6 +148,15 @@ namespace WCell.RealmServer
 			foreach (var def in s_instance.Definitions.Values)
 			{
 				//def.Initialize();
+			}
+		}
+
+		[Initialization(InitializationPass.Last)]
+		public static void PerformAutoSave()
+		{
+			if (s_instance.AutoSave)
+			{
+				s_instance.Save(true, true);
 			}
 		}
 
@@ -202,10 +215,10 @@ namespace WCell.RealmServer
 			set
 			{
 				realmName = value;
-				if (RealmServer.Instance.IsRunning)
+				if (RealmServ.Instance.IsRunning)
 				{
-					RealmServer.Instance.SetTitle(RealmServer.Instance.ToString());
-					RealmServer.Instance.UpdateRealm();
+					RealmServ.Instance.SetTitle(RealmServ.Instance.ToString());
+					RealmServ.Instance.UpdateRealm();
 				}
 			}
 		}
@@ -228,9 +241,9 @@ namespace WCell.RealmServer
 				if (serverType != value)
 				{
 					serverType = value;
-					if (RealmServer.Instance.IsRunning)
+					if (RealmServ.Instance.IsRunning)
 					{
-						RealmServer.Instance.UpdateRealm();
+						RealmServ.Instance.UpdateRealm();
 					}
 				}
 			}
@@ -250,9 +263,9 @@ namespace WCell.RealmServer
 				{
 					var oldStatus = status;
 					status = value;
-					if (RealmServer.Instance.IsRunning)
+					if (RealmServ.Instance.IsRunning)
 					{
-						RealmServer.Instance.OnStatusChange(oldStatus);
+						RealmServ.Instance.OnStatusChange(oldStatus);
 					}
 				}
 			}
@@ -269,9 +282,9 @@ namespace WCell.RealmServer
 			set
 			{
 				category = value;
-				if (RealmServer.Instance.IsRunning)
+				if (RealmServ.Instance.IsRunning)
 				{
-					RealmServer.Instance.UpdateRealm();
+					RealmServ.Instance.UpdateRealm();
 				}
 			}
 		}
@@ -287,9 +300,9 @@ namespace WCell.RealmServer
 			set
 			{
 				flags = value;
-				if (RealmServer.Instance.IsRunning)
+				if (RealmServ.Instance.IsRunning)
 				{
-					RealmServer.Instance.UpdateRealm();
+					RealmServ.Instance.UpdateRealm();
 				}
 			}
 		}
@@ -323,9 +336,9 @@ namespace WCell.RealmServer
 			set
 			{
 				registerExternalAddress = value;
-				if (RealmServer.Instance.IsRunning)
+				if (RealmServ.Instance.IsRunning)
 				{
-					RealmServer.Instance.UpdateRealm();
+					RealmServ.Instance.UpdateRealm();
 				}
 			}
 		}
@@ -340,6 +353,7 @@ namespace WCell.RealmServer
 		/// <summary>
 		/// The connection string for the authentication server database.
 		/// </summary>
+		[Variable(IsFileOnly = true)]
 		public static string DBConnectionString
 		{
 			get { return dbConnectionString; }
@@ -400,10 +414,10 @@ namespace WCell.RealmServer
 					value = 60;
 				}
 
-				if (RealmServer.Instance.IsRunning)
+				if (RealmServ.Instance.IsRunning)
 				{
 					// make sure to reset before changing the speed
-					RealmServer.ResetTimeStart();
+					RealmServ.ResetTimeStart();
 					ingameMinutePerSecond = value;
 					foreach (var chr in World.GetAllCharacters())
 					{

@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2010-01-28 13:29:18 +0100 (to, 28 jan 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+ 
  *   revision		: $Rev: 1230 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using WCell.Core.Initialization;
 using WCell.RealmServer;
 using WCell.RealmServer.Addons;
 using WCell.RealmServer.Entities;
@@ -54,7 +55,10 @@ namespace WCell.Tools.Domi.Output
 		public static void Init()
 		{
 			RealmDBMgr.Initialize();
-			RealmAddonMgr.Initialize(RealmServer.RealmServer.InitMgr);
+		    var mgr = RealmServer.RealmServer.InitMgr;
+            RealmAddonMgr.Initialize(mgr);
+            mgr.PerformInitialization();
+			
 			ContentMgr.Initialize();
 
 			SpellHandler.LoadSpells();

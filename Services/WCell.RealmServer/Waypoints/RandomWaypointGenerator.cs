@@ -1,9 +1,9 @@
 using System;
 using WCell.Constants.World;
-using WCell.Core.TerrainAnalysis;
 using WCell.RealmServer.Global;
 using WCell.Util.Graphics;
 using WCell.Util;
+using WCell.Core.Terrain;
 
 namespace WCell.RealmServer.Waypoints
 {
@@ -40,7 +40,7 @@ namespace WCell.RealmServer.Waypoints
 				var direction = Utility.Random(0, MathUtil.TwoPI);
 				var dist = Utility.Random(minDist, maxDist);
 				lastPos.GetPointYX(direction, dist, out lastPos);
-				lastPos.Z = terrain.QueryWorldHeight(lastPos);
+				lastPos.Z = terrain.GetGroundHeightUnderneath(lastPos);
 				wps[i] = lastPos;
 			}
 			return wps;

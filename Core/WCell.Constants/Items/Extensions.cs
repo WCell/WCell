@@ -24,6 +24,14 @@ namespace WCell.Constants.Items
 		{
 			return (flags & otherFlags) != 0;
 		}
+		public static bool HasAnyFlag(this ItemFlags flags, ItemFlags otherFlags)
+		{
+			return (flags & otherFlags) != 0;
+		}
+		public static bool HasAnyFlag(this ItemFlags2 flags, ItemFlags2 otherFlags)
+		{
+			return (flags & otherFlags) != 0;
+		}
 		#endregion
 
 		public static InventorySlotTypeMask ToMask(this InventorySlotType type)

@@ -99,7 +99,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <NoWarn>1591,1587,1570,1573,1572</NoWarn>
     <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
     <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
     <ErrorReport>prompt</ErrorReport>
@@ -136,6 +136,15 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="ArrayExtensions.cs" />
+    <Compile Include="Code\CodeFileWriter.cs" />
+    <Compile Include="Graphics\RectInt32.cs" />
+    <Compile Include="Graphics\Triangle.cs" />
+    <Compile Include="IOExtensions.cs" />
+    <Compile Include="Graphics\Point2D.cs" />
+    <Compile Include="ObjectPools\IObjectPool.cs" />
+    <Compile Include="ObjectPools\IPooledObject.cs" />
+    <Compile Include="ObjectPools\ObjectPool.cs" />
+    <Compile Include="StaticCircularList.cs" />
     <Compile Include="Collections\BaseImmutableDictionary.cs" />
     <Compile Include="Collections\ImmutableDictionary.cs" />
     <Compile Include="Collections\ImmutableList.cs" />
@@ -212,6 +221,7 @@
     <Compile Include="Graphics\Ray2D.cs" />
     <Compile Include="Graphics\Rect.cs" />
     <Compile Include="Graphics\Size.cs" />
+    <Compile Include="Synchronization\ReaderWriterLockWrapper.cs" />
     <Compile Include="Logging\ExplicitFileLogger.cs" />
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Logging\Logger.cs" />
@@ -257,13 +267,17 @@
     <Compile Include="MathUtil.cs" />
     <Compile Include="Logging\LogUtil.cs" />
     <Compile Include="ReflectionUtils.cs" />
+    <Compile Include="Serialization\SerializerCollection.cs" />
+    <Compile Include="Serialization\VersionedSerializer.cs" />
     <Compile Include="SortedTopN.cs" />
+    <Compile Include="StringParser.cs" />
     <Compile Include="Strings\StringStream.cs" />
     <Compile Include="Strings\StringNode.cs" />
     <Compile Include="Strings\StringTree.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="StringUtils.cs" />
+    <Compile Include="Synchronization\SimpleLockWrapper.cs" />
     <Compile Include="Threading\ActorModel\Actor.cs" />
     <Compile Include="Threading\ActorModel\ActorException.cs" />
     <Compile Include="Threading\ActorModel\ActorStatus.cs" />

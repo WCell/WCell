@@ -1,3 +1,4 @@
+using System;
 using WCell.Constants.Items;
 using WCell.Constants.Skills;
 using WCell.Constants.Updates;
@@ -183,17 +184,17 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Charges of the <c>UseSpell</c> of this Item.
 		/// </summary>
-		public uint SpellCharges
+		public int SpellCharges
 		{
 			get
 			{
-				return (uint)m_record.Charges;
+				return (int)m_record.Charges;
 			}
 			set
 			{
-				if (!m_template.UseSpell.HasCharges || ((m_template.UseSpell.HasCharges) && (value <= 0)))
+				if (value == 0 && m_record.Charges < 0)
 				{
-					Amount--;
+					Destroy();
 					return;
 				}
 				m_record.Charges = (short)value;
@@ -214,9 +215,9 @@ namespace WCell.RealmServer.Entities
 			SetUInt32((int)ItemFields.SPELL_CHARGES + (int)index, (uint)(GetSpellCharges(index) + delta));
 		}
 
-		public void SetSpellCharges(uint index, uint value)
+		public void SetSpellCharges(uint index, int value)
 		{
-			SetUInt32((int)ItemFields.SPELL_CHARGES + (int)index, value);
+			SetUInt32((int)ItemFields.SPELL_CHARGES + (int)index, (uint)Math.Abs(value));
 		}
 
 		public ItemFlags Flags

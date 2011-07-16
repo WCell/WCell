@@ -331,6 +331,10 @@ namespace WCell.RealmServer.Content
 
 			if (force || !mapper.Fetched)
 			{
+				if (force && mapper.IsCached())
+				{
+					mapper.FlushCache();
+				}
 				Load(mapper);
 				return true;
 			}
@@ -497,10 +501,25 @@ namespace WCell.RealmServer.Content
 			}
 		}
 
-		private static bool LoadCache(this LightDBMapper mapper)
+		public static bool IsCached(this LightDBMapper mapper)
+		{
+			var file = GetCacheFilename(mapper);
+			return File.Exists(file);
+		}
+
+		public static void FlushCache(this LightDBMapper mapper)
 		{
 			var file = GetCacheFilename(mapper);
 			if (File.Exists(file))
+			{
+				File.Delete(file);
+			}
+		}
+
+		private static bool LoadCache(this LightDBMapper mapper)
+		{
+			var file = GetCacheFilename(mapper);
+			if (mapper.IsCached())
 			{
 				try
 				{
