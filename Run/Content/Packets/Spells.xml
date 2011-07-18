@@ -900,6 +900,17 @@
     </Simple>
   </RealmPacket>
 
+  <RealmPacket OpCode="MSG_CHANNEL_UPDATE">
+    <Simple>
+      <Name>Caster</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>Duration</Name>
+      <Type>Int</Type>
+    </Simple>
+  </RealmPacket>
+
   <!-- Auras Begin -->
   <RealmPacket OpCode="SMSG_AURA_UPDATE_ALL">
     <Simple>

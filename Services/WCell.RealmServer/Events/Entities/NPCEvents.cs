@@ -18,7 +18,7 @@ namespace WCell.RealmServer.NPCs
     	public event NPCHandler Deleted;
 
 		/// <summary>
-		/// Called when the given NPC is added to the world or when resurrected.
+		/// Called when any Character interacts with the given NPC such as quests, vendors, trainers, bankers, anything that causes a gossip.
 		/// </summary>
 		public event Action<Character, NPC> Interacting;
 

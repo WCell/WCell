@@ -1116,7 +1116,7 @@ namespace WCell.RealmServer.Items
 					}
 				}
 
-				if (found > amount)
+				if (found > amount && count > 0)
 				{
 					// we didn't delete the first item, instead we have to remove the remaining amount from it
 					var firstSlotId = slotIds[0];

@@ -335,7 +335,7 @@ namespace WCell.RealmServer.Handlers
 				randomPropid = 0;
 			}
 
-			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_ITEM_PUSH_RESULT, 44))
+			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_ITEM_PUSH_RESULT, 45))
 			{
 				packet.Write(owner.EntityId);
 				packet.Write((ulong)reception);

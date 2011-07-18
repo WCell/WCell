@@ -1,121 +1,137 @@
-//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Text;
-//using WCell.RealmServer.Entities;
-//using WCell.RealmServer.Spells;
-//using WCell.RealmServer.Spells.Auras;
+using System.Collections.Generic;
+using WCell.RealmServer.Entities;
+using WCell.RealmServer.Spells;
+using WCell.RealmServer.Spells.Auras;
 
-//namespace WCell.RealmServer.AI
-//{
-//    public class BossPhase : IAIEventsHandler
-//    {
-//        public BossPhase(IBrain owner)
-//        {
-//            m_owner = owner;
-//        }
+namespace WCell.RealmServer.AI.Brains
+{
+	public class BossPhase : IAIEventsHandler
+	{
+		public BossPhase(IBrain owner)
+		{
+			m_owner = owner;
+		}
 
-//        protected IBrain m_owner;
+		protected IBrain m_owner;
 
-//        public IBrain Owner
-//        {
-//            get { return m_owner; }
-//            set { m_owner = value; }
-//        }
+		public IBrain Owner
+		{
+			get { return m_owner; }
+			set { m_owner = value; }
+		}
 
-//        #region Events handlers
+		#region Events handlers
 
-//        public virtual void OnEnterCombat(Unit attackingUnit)
-//        {
-//        }
+		public virtual void OnEnterCombat()
+		{
+		}
 
-//        public virtual void OnDamageTaken(Unit attackingUnit, SpellCast cast, int damageAmt)
-//        {
-//        }
+		public virtual void OnDamageTaken(Misc.IDamageAction action)
+		{
+		}
 
-//        public virtual void OnDebuff(Unit attackingUnit, SpellCast cast, Aura debuff)
-//        {
-			
-//        }
+		public virtual void OnDebuff(Unit attackingUnit, SpellCast cast, Aura debuff)
+		{
 
-//        public virtual void OnDamageDealt(Unit victimUnit, SpellCast cast, int damageAmt)
-//        {
-//        }
+		}
 
-//        public virtual void OnLeaveCombat()
-//        {
-//        }
+		public virtual void OnDamageDealt(Misc.IDamageAction action)
+		{
+		}
 
-//        public virtual void OnKilled(Unit killerUnit, Unit victimUnit)
-//        {
-//        }
+		public virtual void OnLeaveCombat()
+		{
+		}
 
-//        public virtual void OnDeath(Unit killerUnit)
-//        {
-//        }
+		public virtual void OnKilled(Unit killerUnit, Unit victimUnit)
+		{
+		}
 
-//        public virtual void OnSpawn()
-//        {
-//        }
+		public virtual void OnDeath()
+		{
+		}
 
-//        public virtual void OnCombatTargetOutOfRange()
-//        {
-//        }
+		public virtual void OnSpawn()
+		{
+		}
 
-//        #endregion
-//    }
-	
-//    public class BossBrain : MobBrain
-//    {
-//        public BossBrain(NPC owner) : base(owner)
-//        {
-//        }
+		public virtual void OnCombatTargetOutOfRange()
+		{
+		}
 
-//        protected LinkedListNode<BossPhase> m_currentPhase;
-//        protected LinkedList<BossPhase> m_phases;
+		public virtual void OnHeal(Unit healer, Unit healed, int amtHealed)
+		{
+		}
 
-//        #region Events Handlers
+		#endregion
+	}
 
-//        public override void OnEnterCombat(Unit attackingUnit)
-//        {
-//            m_currentPhase.Value.OnEnterCombat(attackingUnit);
-//        }
+	public class BossBrain : MobBrain
+	{
+		public BossBrain(NPC owner)
+			: base(owner)
+		{
+		}
 
-//        public override void OnDamageTaken(Unit attackingUnit, SpellCast spell, int damageAmt)
-//        {
-//            m_currentPhase.Value.OnDamageTaken(attackingUnit, spell, damageAmt);
-//        }
+		protected LinkedListNode<BossPhase> CurrentPhase;
+		protected LinkedList<BossPhase> Phases;
 
-//        public override void OnDamageDealt(Unit victimUnit, SpellCast spell, int damageAmt)
-//        {
-//            m_currentPhase.Value.OnDamageDealt(victimUnit, spell, damageAmt);
-//        }
+		#region Events Handlers
 
-//        public override void OnLeaveCombat()
-//        {
-//            m_currentPhase.Value.OnLeaveCombat();
-//        }
+		public override void OnEnterCombat()
+		{
+			CurrentPhase.Value.OnEnterCombat();
+			base.OnEnterCombat();
+		}
 
-//        public override void OnKilled(Unit killerUnit, Unit victimUnit)
-//        {
-//            m_currentPhase.Value.OnKilled(killerUnit, victimUnit);
-//        }
+		public override void  OnDamageReceived(Misc.IDamageAction action)
+		{
+			CurrentPhase.Value.OnDamageTaken(action);
+			base.OnDamageReceived(action);
+		}
 
-//        public override void OnDeath(Unit killerUnit)
-//        {
-//            m_currentPhase.Value.OnDeath(killerUnit);
-//        }
+		public override void  OnDamageDealt(Misc.IDamageAction action)
+		{
+			CurrentPhase.Value.OnDamageDealt(action);
+			base.OnDamageDealt(action);
+		}
 
-//        public override void OnSpawn()
-//        {
-//            m_currentPhase.Value.OnSpawn();
-//        }
+		public override void OnLeaveCombat()
+		{
+			CurrentPhase.Value.OnLeaveCombat();
+			base.OnLeaveCombat();
+		}
 
-//        public override void OnCombatTargetOutOfRange()
-//        {
-//            m_currentPhase.Value.OnCombatTargetOutOfRange();
-//        }
+		public override void OnKilled(Unit killerUnit, Unit victimUnit)
+		{
+			CurrentPhase.Value.OnKilled(killerUnit, victimUnit);
+			base.OnKilled(killerUnit, victimUnit);
+		}
 
-//        #endregion
-//    }
-//}
+		public override void OnDeath()
+		{
+			CurrentPhase.Value.OnDeath();
+			base.OnDeath();
+		}
+
+		public override void OnActivate()
+		{
+			CurrentPhase.Value.OnSpawn();
+			base.OnActivate();
+		}
+
+		public override void OnCombatTargetOutOfRange()
+		{
+			CurrentPhase.Value.OnCombatTargetOutOfRange();
+			base.OnCombatTargetOutOfRange();
+		}
+
+		public override void OnHeal(Unit healer, Unit healed, int amtHealed)
+		{
+			CurrentPhase.Value.OnHeal(healer, healed, amtHealed);
+			base.OnHeal(healer, healed, amtHealed);
+		}
+
+		#endregion
+	}
+}
