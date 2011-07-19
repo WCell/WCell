@@ -1,4 +1,5 @@
-﻿using WCell.Constants;
+﻿using System.Linq;
+using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
@@ -13,9 +14,15 @@ using WCell.Util.Graphics;
 
 namespace WCell.Addons.Default.Quests
 {
-    public static class DeathKnightQuests
-    {
+	public static class DeathKnightQuests
+	{
+		#region EmblazonRuneBlade
+
 		private static SpellId _emblazonRunebladeId = SpellId.EmblazonRuneblade_3;
+		private static SpellId[] _emblazonRunebladeLearnSpellIds = { 
+																	   SpellId.ClassSkillRuneOfRazorice,
+																	   SpellId.ClassSkillRuneOfCinderglacier,
+																	   SpellId.ClassSkillRuneforging};
 
 		/// <summary>
 		/// 
@@ -46,9 +53,25 @@ namespace WCell.Addons.Default.Quests
         [DependentInitialization(typeof(QuestMgr))]
         public static void FixIt()
         {
+			//The Emblazoned Runeblade
+        	var quest = QuestMgr.GetTemplate(12619);
+        	quest.QuestFinished += EmblazonRuneBladeQuestFinished;
         }
 
-		[Initialization(InitializationPass.Second)]
+    	private static void EmblazonRuneBladeQuestFinished(Quest obj)
+    	{
+    		var chr = obj.Owner;
+			if(chr == null)
+				return;
+
+			foreach (var spell in _emblazonRunebladeLearnSpellIds.Select(SpellHandler.Get).Where(spell => spell != null))
+			{
+				chr.PlayerSpells.AddSpellRequirements(spell);
+				chr.Spells.AddSpell(spell);
+			}
+    	}
+
+    	[Initialization(InitializationPass.Second)]
 		public static void FixSpells()
 		{
 			var emblazonRuneblade = SpellHandler.Get(_emblazonRunebladeId);
@@ -68,8 +91,10 @@ namespace WCell.Addons.Default.Quests
 		public static void FixThem()
 		{
 		}
+		#endregion
     }
 
+	#region EmblazonRuneBladeAuraHandler
 	public class EmblazonRuneBladeAuraHandler : AuraEffectHandler
 	{
 		protected override void Apply()
@@ -81,11 +106,17 @@ namespace WCell.Addons.Default.Quests
 			var npc = chr.ChannelObject;
 			npc.SpellCast.TriggerSelf(SpellId.ShadowStorm_3);
 
-			//var runebladedSwordNPCEntry = NPCMgr.GetEntry(NPCId.RunebladedSword);
-			//var runebladedSwordNPC = runebladedSwordNPCEntry.SpawnAt(npc.Map, new Vector3(2510.638f, -5559.365f, 424.0391f));
-			//runebladedSwordNPC.MovementFlags |= MovementFlags.DisableGravity;
-			//runebladedSwordNPC.SpellCast.Trigger(SpellId.Rotate_2);
-			//runebladedSwordNPC.SpellCast.TriggerSelf(SpellId.ShadowStorm_3);
+			var runebladedSwordNPC = chr.GetNearbyNPC(NPCId.RunebladedSword);
+			if (runebladedSwordNPC != null)
+			{
+				runebladedSwordNPC.MovementFlags |= MovementFlags.DisableGravity;
+
+				var acherusDummy = chr.GetNearbyNPC(NPCId.AcherusDummy);
+				if(acherusDummy != null)
+					runebladedSwordNPC.SpellCast.Trigger(SpellId.Rotate_2, acherusDummy);
+
+				runebladedSwordNPC.SpellCast.TriggerSelf(SpellId.ShadowStorm_3);
+			}
 
 			base.Apply();
 		}
@@ -106,4 +137,5 @@ namespace WCell.Addons.Default.Quests
 		}
 
 	}
+	#endregion
 }

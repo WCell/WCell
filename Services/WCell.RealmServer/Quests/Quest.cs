@@ -38,6 +38,11 @@ namespace WCell.RealmServer.Quests
 
 		private readonly QuestRecord m_record;
 
+		public Character Owner
+		{
+			get { return m_Log.Owner; }
+		}
+
 		/// <summary>
 		/// Template on which is this quest based, we might actually somehow cache only used templates
 		/// in case someone would requested uncached template, we'd load it from DB/XML
