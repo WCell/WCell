@@ -127,7 +127,7 @@ namespace WCell.RealmServer.AI.Actions.Movement
 			get { return m_Angle; }
 		}
 
-		public override bool IsInRange(Unit target)
+		public override bool IsInRange(WorldObject target)
 		{
 			var angle = m_owner.GetAngleTowards(target);
 			if (angle >= m_Angle - ErrorMargin && angle <= m_Angle + ErrorMargin)
@@ -145,7 +145,90 @@ namespace WCell.RealmServer.AI.Actions.Movement
 			Vector3 pos;
 			target.GetPointXY(m_Angle, bodySize + DesiredDistance, out pos);
 
-			m_owner.Movement.MoveTo(pos);
+			m_owner.Movement.MoveToAngle(pos, m_Angle, m_owner.GetAngleTowards(target));
+		}
+	}
+
+	public class AIMoveToGameObjectIntoAngleThenExecAction : AIMoveToThenExecAction
+	{
+		private const float ErrorMargin = MathUtil.PI / 6;
+		private readonly float _angle;
+		private readonly GameObject _gameObject;
+
+		public AIMoveToGameObjectIntoAngleThenExecAction(Unit owner, GameObject go, float angle, UnitActionCallback actionCallback)
+			: base(owner, actionCallback)
+		{
+			_angle = angle;
+			_gameObject = go;
+		}
+
+		public float Angle
+		{
+			get { return _angle; }
+		}
+
+		public override void Start()
+		{
+			if (_gameObject == null)
+			{
+				log.Error("Started " + GetType().Name + " without Target set: " + m_owner);
+				m_owner.Brain.EnterDefaultState();
+				return;
+			}
+			Update();
+		}
+
+		public override bool IsInRange(WorldObject target)
+		{
+			var angleTowards = m_owner.GetAngleTowards(_gameObject);
+			if (angleTowards >= _angle - ErrorMargin && angleTowards <= _angle + ErrorMargin)
+			{
+				return base.IsInRange(target);
+			}
+			return false;
+		}
+
+		protected override void MoveToTargetPoint()
+		{
+			Vector3 pos;
+			_gameObject.GetPointXY(_angle, 2f, out pos);
+			pos.Z = _gameObject.Position.Z;
+			m_owner.Movement.MoveToAngle(pos, _angle, m_owner.GetAngleTowards(_gameObject));
+		}
+
+		public override void Update()
+		{
+			if (_gameObject == null || !_gameObject.IsInWorld)
+			{
+				// lost target
+				OnLostTarget();
+				if (_gameObject == null)
+				{
+					return;
+				}
+			}
+
+			if (!m_owner.Movement.Update() && !m_owner.CanMove)
+			{
+				return;
+			}
+
+			if (!m_owner.CanSee(_gameObject))
+			{
+				m_owner.Movement.Stop();
+			}
+
+			if (IsInRange(_gameObject))
+			{
+				//if (moved)
+				{
+					OnArrived();
+				}
+			}
+			else if (!m_owner.IsMoving || m_owner.CheckTicks(UpdatePositionTicks))
+			{
+				MoveToTargetPoint();
+			}
 		}
 	}
 }

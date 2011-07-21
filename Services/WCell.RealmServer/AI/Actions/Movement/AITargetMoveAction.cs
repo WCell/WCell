@@ -49,7 +49,7 @@ namespace WCell.RealmServer.AI.Actions.Movement
 			set { m_target = value; }
 		}
 
-		public virtual bool IsInRange(Unit target)
+		public virtual bool IsInRange(WorldObject target)
 		{
 			return m_owner.IsInRadiusSq(target, DistanceMax * DistanceMax) &&
 				(DistanceMin == 0 || !m_owner.IsInRadiusSq(target, DistanceMin * DistanceMin));

@@ -1,3 +1,4 @@
+using System;
 using WCell.Core.Paths;
 using WCell.Core.Terrain.Paths;
 using WCell.RealmServer.Handlers;
@@ -10,6 +11,7 @@ namespace WCell.RealmServer.Entities
 	public class Movement
 	{
 		private const float SPEED_FACTOR = 0.001f;
+		private const float AngleErrorMargin = MathUtil.PI / 6;
 
 		//public static int MoveUpdateDelay = ;
 
@@ -32,6 +34,11 @@ namespace WCell.RealmServer.Entities
 		/// The target of the current (or last) travel
 		/// </summary>
 		protected Vector3 m_destination;
+
+		/// <summary>
+		/// The angle to the target of the current (or last) travel
+		/// </summary>
+		protected float m_angle;
 
 		protected Path _currentPath;
 
@@ -69,6 +76,11 @@ namespace WCell.RealmServer.Entities
 			get { return m_destination; }
 		}
 
+		public float Angle
+		{
+			get { return m_angle; }
+		}
+
 		/// <summary>
 		/// AI-controlled Movement setting
 		/// </summary>
@@ -92,6 +104,18 @@ namespace WCell.RealmServer.Entities
 			{
 				return m_owner.Position.DistanceSquared(ref m_destination) < 1f;
 			}
+		}
+
+		/// <summary>
+		/// Whether the owner is within 1 yard of the Destination
+		/// </summary>
+		public bool IsAtAngle(float desiredAngle)
+		{
+			if (desiredAngle >= Angle - AngleErrorMargin && desiredAngle <= Angle + AngleErrorMargin)
+			{
+				return IsAtDestination;
+			}
+			return false;
 		}
 
 		/// <summary>
@@ -191,6 +215,54 @@ namespace WCell.RealmServer.Entities
 
 			m_destination = destination;
 			if (IsAtDestination)
+			{
+				return true;
+			}
+
+			if (findPath)
+			{
+				// TODO: Consider flying units & liquid levels
+				var pos = m_owner.Position;
+				pos.Z += 5;
+				m_currentQuery = new PathQuery(pos, ref destination, m_owner.ContextHandler, OnPathQueryReply);
+
+				m_owner.Map.Terrain.FindPath(m_currentQuery);
+			}
+			else if (m_owner.CanMove)
+			{
+				// start moving
+				MoveToDestination();
+			}
+			// cannot move
+			return false;
+		}
+
+		/// <summary>
+		/// Starts the MovementAI
+		/// </summary>
+		/// <returns>Whether already arrived</returns>
+		public bool MoveToAngle(Vector3 destination, float destAngle, float angleTowards, bool findPath = true)
+		{
+			if (!m_owner.IsInWorld)
+			{
+				// something's wrong here
+				m_owner.DeleteNow();
+				return false;
+			}
+
+			m_destination = destination;
+			m_angle = angleTowards;
+
+			if (IsAtDestination && !IsAtAngle(destAngle))
+			{
+				var pos = m_owner.Position;
+				pos.X += (float)Math.Cos(angleTowards);
+				pos.Y += (float)Math.Sin(angleTowards);
+				m_owner.Position = pos;
+				return false;
+			}
+
+			if (IsAtAngle(destAngle))
 			{
 				return true;
 			}

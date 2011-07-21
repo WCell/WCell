@@ -68,7 +68,7 @@ namespace WCell.RealmServer.AI.Actions.Movement
 			}
 		}
 
-		public override bool IsInRange(Unit target)
+		public override bool IsInRange(WorldObject target)
 		{
 			var angle = m_owner.GetAngleTowards(target);
 			if (angle >= MinAngle && angle <= MaxAngle)

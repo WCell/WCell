@@ -246,6 +246,7 @@
     <Compile Include="MiscFixes\ClassFixes.cs" />
     <Compile Include="MiscFixes\RaceFixes.cs" />
     <Compile Include="MiscFixes\ShapeshiftFixes.cs" />
+    <Compile Include="NPCs\DKAcherusCorrections.cs" />
     <Compile Include="NPCs\NPCCorrections.cs" />
     <Compile Include="DefaultAddon.cs" />
     <Compile Include="Instances\Kalimdor\AhnQirajTemple.cs" />

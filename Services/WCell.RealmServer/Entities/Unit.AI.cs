@@ -117,9 +117,27 @@ namespace WCell.RealmServer.Entities
 		/// Moves in front of the given target and once within default range, executes the given action
 		/// </summary>
 		/// <remarks>Requires Brain</remarks>
+		public void MoveInFrontThenExecute(GameObject go, UnitActionCallback actionCallback)
+		{
+			MoveInFrontThenExecute(go, actionCallback, 0);
+		}
+
+		/// <summary>
+		/// Moves in front of the given target and once within default range, executes the given action
+		/// </summary>
+		/// <remarks>Requires Brain</remarks>
 		public void MoveInFrontThenExecute(Unit unit, UnitActionCallback actionCallback, int millisTimeout)
 		{
 			MoveToThenExecute(unit, 0f, actionCallback);
+		}
+
+		/// <summary>
+		/// Moves in front of the given target and once within default range, executes the given action
+		/// </summary>
+		/// <remarks>Requires Brain</remarks>
+		public void MoveInFrontThenExecute(GameObject go, UnitActionCallback actionCallback, int millisTimeout)
+		{
+			MoveToThenExecute(go, 0f, actionCallback);
 		}
 
 		/// <summary>
@@ -135,9 +153,27 @@ namespace WCell.RealmServer.Entities
 		/// Moves to the given target and once within default range, executes the given action
 		/// </summary>
 		/// <remarks>Requires Brain</remarks>
+		public void MoveBehindThenExecute(GameObject go, UnitActionCallback actionCallback)
+		{
+			MoveBehindThenExecute(go, actionCallback, 0);
+		}
+
+		/// <summary>
+		/// Moves to the given target and once within default range, executes the given action
+		/// </summary>
+		/// <remarks>Requires Brain</remarks>
 		public void MoveBehindThenExecute(Unit unit, UnitActionCallback actionCallback, int millisTimeout)
 		{
 			MoveToThenExecute(unit, MathUtil.PI, actionCallback);
+		}
+
+		/// <summary>
+		/// Moves to the given target and once within default range, executes the given action
+		/// </summary>
+		/// <remarks>Requires Brain</remarks>
+		public void MoveBehindThenExecute(GameObject go, UnitActionCallback actionCallback, int millisTimeout)
+		{
+			MoveToThenExecute(go, MathUtil.PI, actionCallback);
 		}
 
 		/// <summary>
@@ -153,6 +189,15 @@ namespace WCell.RealmServer.Entities
 		/// Moves to the given target and once within default range, executes the given action
 		/// </summary>
 		/// <remarks>Requires Brain</remarks>
+		public void MoveToThenExecute(GameObject go, float angle, UnitActionCallback actionCallback)
+		{
+			MoveToThenExecute(go, angle, actionCallback, 0);
+		}
+
+		/// <summary>
+		/// Moves to the given target and once within default range, executes the given action
+		/// </summary>
+		/// <remarks>Requires Brain</remarks>
 		public void MoveToThenExecute(Unit unit, float angle, UnitActionCallback callback, int millisTimeout)
 		{
 			if (CheckBrain())
@@ -161,6 +206,25 @@ namespace WCell.RealmServer.Entities
 
 				Target = unit;
 				var action = new AIMoveIntoAngleThenExecAction(this, angle, callback)
+				{
+					TimeoutMillis = millisTimeout
+				};
+
+				m_brain.CurrentAction = action;
+			}
+		}
+
+		/// <summary>
+		/// Moves to the given gameobject and once within default range, executes the given action
+		/// </summary>
+		/// <remarks>Requires Brain</remarks>
+		public void MoveToThenExecute(GameObject go, float angle, UnitActionCallback callback, int millisTimeout)
+		{
+			if (CheckBrain())
+			{
+				//m_brain.StopCurrentAction();
+
+				var action = new AIMoveToGameObjectIntoAngleThenExecAction(this, go, angle, callback)
 				{
 					TimeoutMillis = millisTimeout
 				};
