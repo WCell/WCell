@@ -96,18 +96,6 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Whether the owner is within 1 yard of the Destination
-		/// </summary>
-		public bool IsAtAngle(float desiredAngle)
-		{
-			if (desiredAngle >= Angle - AngleErrorMargin && desiredAngle <= Angle + AngleErrorMargin)
-			{
-				return IsAtDestination;
-			}
-			return false;
-		}
-
-		/// <summary>
 		/// Get movement flags for the packet
 		/// </summary>
 		/// <returns></returns>
