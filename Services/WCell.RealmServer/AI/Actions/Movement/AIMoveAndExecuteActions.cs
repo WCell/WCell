@@ -1,3 +1,4 @@
+using System;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Misc;
 using WCell.Util;
@@ -111,6 +112,98 @@ namespace WCell.RealmServer.AI.Actions.Movement
 		}
 	}
 
+	public class AIMoveIntoRangeOfGOThenExecAction : AIMoveToThenExecAction
+	{
+		private SimpleRange m_Range;
+		private GameObject _gameObject;
+
+		public AIMoveIntoRangeOfGOThenExecAction(Unit owner, GameObject go, SimpleRange range, UnitActionCallback actionCallback)
+			: base(owner, actionCallback)
+		{
+			_gameObject = go;
+			m_Range = range;
+		}
+
+		public override float DistanceMin
+		{
+			get { return m_Range.MinDist; }
+		}
+
+		public override float DistanceMax
+		{
+			get { return m_Range.MaxDist; }
+		}
+
+		public override float DesiredDistance
+		{
+			get { return m_Range.Average; }
+		}
+
+		public override void Start()
+		{
+			if (_gameObject == null)
+			{
+				log.Error("Started " + GetType().Name + " without Target set: " + m_owner);
+				m_owner.Brain.EnterDefaultState();
+				return;
+			}
+			Update();
+		}
+
+		/// <summary>
+		/// Gets a preferred point, close to the current target and walks towards it
+		/// </summary>
+		/// <returns></returns>
+		protected override void MoveToTargetPoint()
+		{
+
+			var direction = _gameObject.Position - m_owner.Position;
+
+			if (direction == Vector3.Zero)
+			{
+				direction = Vector3.Right;
+			}
+			else
+			{
+				direction.Normalize();
+			}
+
+			m_owner.Movement.MoveTo(_gameObject.Position - direction * DesiredDistance);
+		}
+
+		public override void Update()
+		{
+			if (_gameObject == null || !_gameObject.IsInWorld)
+			{
+				// lost target
+				OnLostTarget();
+				if (_gameObject == null)
+				{
+					return;
+				}
+			}
+
+			if (!m_owner.Movement.Update() && !m_owner.CanMove)
+			{
+				return;
+			}
+
+			if (!m_owner.CanSee(_gameObject))
+			{
+				m_owner.Movement.Stop();
+			}
+
+			if (IsInRange(_gameObject))
+			{
+				OnArrived();
+			}
+			else if (!m_owner.IsMoving || m_owner.CheckTicks(UpdatePositionTicks))
+			{
+				MoveToTargetPoint();
+			}
+		}
+	}
+
 	public class AIMoveIntoAngleThenExecAction : AIMoveToThenExecAction
 	{
 		private const float ErrorMargin = MathUtil.PI/6;
@@ -129,7 +222,7 @@ namespace WCell.RealmServer.AI.Actions.Movement
 
 		public override bool IsInRange(WorldObject target)
 		{
-			var angle = m_owner.GetAngleTowards(target);
+			var angle = Math.Abs(m_owner.Orientation - m_owner.GetAngleTowards(target));
 			if (angle >= m_Angle - ErrorMargin && angle <= m_Angle + ErrorMargin)
 			{
 				return base.IsInRange(target);
@@ -144,8 +237,7 @@ namespace WCell.RealmServer.AI.Actions.Movement
 
 			Vector3 pos;
 			target.GetPointXY(m_Angle, bodySize + DesiredDistance, out pos);
-
-			m_owner.Movement.MoveToAngle(pos, m_Angle, m_owner.GetAngleTowards(target));
+			m_owner.Movement.MoveTo(pos);
 		}
 	}
 
@@ -180,7 +272,7 @@ namespace WCell.RealmServer.AI.Actions.Movement
 
 		public override bool IsInRange(WorldObject target)
 		{
-			var angleTowards = m_owner.GetAngleTowards(_gameObject);
+			var angleTowards = Math.Abs(m_owner.Orientation - m_owner.GetAngleTowards(target));
 			if (angleTowards >= _angle - ErrorMargin && angleTowards <= _angle + ErrorMargin)
 			{
 				return base.IsInRange(target);
@@ -191,9 +283,10 @@ namespace WCell.RealmServer.AI.Actions.Movement
 		protected override void MoveToTargetPoint()
 		{
 			Vector3 pos;
-			_gameObject.GetPointXY(_angle, 2f, out pos);
+			_gameObject.GetPointXY(_angle, DesiredDistance, out pos);
 			pos.Z = _gameObject.Position.Z;
-			m_owner.Movement.MoveToAngle(pos, _angle, m_owner.GetAngleTowards(_gameObject));
+
+			m_owner.Movement.MoveTo(pos);
 		}
 
 		public override void Update()

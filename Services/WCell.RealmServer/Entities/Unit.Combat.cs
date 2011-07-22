@@ -291,7 +291,7 @@ namespace WCell.RealmServer.Entities
 				return false;
 			}
 
-			//if (IsMovementConrolled)
+			//if (IsMovementControlled)
 			//{
 			//    // stop running when landing a hit
 			//    m_Movement.Stop();

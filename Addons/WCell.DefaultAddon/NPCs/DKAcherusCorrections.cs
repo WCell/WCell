@@ -13,6 +13,7 @@ using WCell.Core.Initialization;
 using WCell.RealmServer.AI;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.GameObjects;
+using WCell.RealmServer.Misc;
 using WCell.RealmServer.NPCs;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Targeting;
@@ -83,12 +84,11 @@ namespace WCell.Addons.Default.NPCs
 
 		private static bool SoulPrisonUsed(GameObject go, Character user)
 		{
-			user.SendSystemMessage("Go: {0} used by you!");
 			var nearest = go.GetNearbyNPC(NPCId.UnworthyInitiateAnchor, 2);
 			if (nearest == null) return false;
 			var shackled = nearest.ChannelObject as NPC;
 			if (shackled == null) return false;
-			
+
 			var transformSpellId = GetTransformSpellIdFor(shackled.DisplayId);
 			shackled.Auras.Remove(SpellId.ChainedPeasantChest);
 			go.Flags = GameObjectFlags.None;
@@ -101,34 +101,33 @@ namespace WCell.Addons.Default.NPCs
 				SpellId.ClassSkillBloodStrikeRank1_2,
 				SpellId.ClassSkillDeathCoil,
 				SpellId.ClassSkillDeathCoilRank1_3);
-			shackled.MoveInFrontThenExecute(go, npc =>
-			                                    	{
-			                                    		npc.Emote(EmoteType.SimpleLoot);
-			                                    		
-			                                    		npc.CallDelayed(1000, obj =>
-			                                    		                      	{
-																					obj.SpellCast.TriggerSelf(SpellId.DeathKnightInitiateVisual);
-																					obj.SpellCast.TriggerSelf(transformSpellId);
-																					((NPC)obj).VirtualItem1 = ItemId.RunedSoulblade;
-																					obj.FactionId = FactionId.ActorEvil;
-			                                    		                      	});
-														npc.CallDelayed(3000, obj =>
-														{
-															((NPC)obj).Emote(EmoteType.SimplePointNosheathe);
-															obj.Say("To battle!");
-														});
+			shackled.CallDelayed(2000, wObj => ((NPC)wObj).MoveInFrontThenExecute(go, npc =>
+			{
+				npc.Emote(EmoteType.SimpleLoot);
+				npc.CallDelayed(2000, obj =>
+				{
+					obj.SpellCast.TriggerSelf(SpellId.DeathKnightInitiateVisual);
+					obj.SpellCast.TriggerSelf(transformSpellId);
+					((NPC)obj).VirtualItem1 = ItemId.RunedSoulblade;
+					obj.FactionId = FactionId.ActorEvil;
+				});
+				
+				npc.CallDelayed(5000, obj =>
+				{
+					((NPC)obj).Emote(EmoteType.SimplePointNosheathe);
+					obj.Say("To battle!");
+				});
 
-														npc.CallDelayed(6000, obj =>
-														{
-															((NPC)obj).ThreatCollection[user] += 10000;
-															((NPC)obj).UnitFlags &= ~UnitFlags.SelectableNotAttackable;
-															((NPC)obj).UnitFlags &= ~UnitFlags.NotAttackable;
-															((NPC)obj).Brain.State = BrainState.Combat;
-														});
+				npc.CallDelayed(6000, obj =>
+				{
+					((NPC)obj).ThreatCollection[user] += 10000;
+					((NPC)obj).UnitFlags &= ~UnitFlags.SelectableNotAttackable;
+					((NPC)obj).UnitFlags &= ~UnitFlags.NotAttackable;
+					((NPC)obj).Brain.State = BrainState.Combat;
+				});
+			}));
 
-			                                    	});
-
-			return true;
+	return true;
 		}
 
 		private static SpellId GetTransformSpellIdFor(uint displayId)

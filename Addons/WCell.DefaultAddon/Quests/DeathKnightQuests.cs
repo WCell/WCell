@@ -25,13 +25,13 @@ namespace WCell.Addons.Default.Quests
 																	   SpellId.ClassSkillRuneforging};
 
 		/// <summary>
-		/// 
+		/// Custom filter to ensure the given spell only targets a specific NPC
 		/// </summary>
 		public static void IsRunebladeTriggerNPC(SpellEffectHandler effectHandler, WorldObject target, ref SpellFailedReason failedReason)
 		{
 			if(!(target is NPC))
 			{
-				failedReason =  SpellFailedReason.BadTargets;
+				failedReason =  SpellFailedReason.OutOfRange;
 				return;
 			}
 
@@ -46,7 +46,7 @@ namespace WCell.Addons.Default.Quests
 				failedReason =  SpellFailedReason.Ok;
 				return;
 			}
-			failedReason = SpellFailedReason.BadTargets;
+			failedReason = SpellFailedReason.OutOfRange;
 		}
 
         [Initialization]
@@ -86,13 +86,8 @@ namespace WCell.Addons.Default.Quests
 				IsRunebladeTriggerNPC);
 		}
 
-		[Initialization]
-		[DependentInitialization(typeof(NPCMgr))]
-		public static void FixThem()
-		{
-		}
 		#endregion
-    }
+	}
 
 	#region EmblazonRuneBladeAuraHandler
 	public class EmblazonRuneBladeAuraHandler : AuraEffectHandler

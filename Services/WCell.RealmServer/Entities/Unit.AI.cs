@@ -246,6 +246,15 @@ namespace WCell.RealmServer.Entities
 		/// Moves to the given target and once within the given range, executes the given action
 		/// </summary>
 		/// <remarks>Requires Brain</remarks>
+		public void MoveToThenExecute(GameObject go, SimpleRange range, UnitActionCallback actionCallback)
+		{
+			MoveToThenExecute(go, range, actionCallback, 0);
+		}
+
+		/// <summary>
+		/// Moves to the given target and once within the given range, executes the given action
+		/// </summary>
+		/// <remarks>Requires Brain</remarks>
 		public void MoveToThenExecute(Unit unit, SimpleRange range, UnitActionCallback actionCallback, int millisTimeout)
 		{
 			if (CheckBrain())
@@ -253,6 +262,21 @@ namespace WCell.RealmServer.Entities
 				//m_brain.StopCurrentAction();
 				Target = unit;
 				m_brain.CurrentAction = new AIMoveIntoRangeThenExecAction(this, range, actionCallback)
+				{
+					TimeoutMillis = millisTimeout
+				};
+			}
+		}
+		
+		/// <summary>
+		/// Moves to the given target and once within the given range, executes the given action
+		/// </summary>
+		/// <remarks>Requires Brain</remarks>
+		public void MoveToThenExecute(GameObject go, SimpleRange range, UnitActionCallback actionCallback, int millisTimeout)
+		{
+			if (CheckBrain())
+			{
+				m_brain.CurrentAction = new AIMoveIntoRangeOfGOThenExecAction(this, go, range, actionCallback)
 				{
 					TimeoutMillis = millisTimeout
 				};

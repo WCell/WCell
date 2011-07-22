@@ -1524,7 +1524,7 @@ namespace WCell.RealmServer.Entities
 			set { m_movementFlags2 = value; }
 		}
 
-		public bool IsMovementConrolled
+		public bool IsMovementControlled
 		{
 			get { return m_Movement != null; }
 		}
