@@ -21,6 +21,7 @@ namespace WCell.Constants.GameObjects
     [Flags]
     public enum GameObjectFlags // :ushort
     {
+		None,
         /// <summary>
         /// 0x1
         /// Disables interaction while animated

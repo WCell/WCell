@@ -1331,7 +1331,7 @@ namespace WCell.RealmServer.Spells
 						return CastMissReason.Immune_2;
 					}
 
-					if (spell.Schools.All(target.IsImmune))
+					if (!spell.Attributes.HasFlag(SpellAttributesEx.UnaffectedBySchoolImmunity) && spell.Schools.All(target.IsImmune))
 					{
 						return CastMissReason.Immune;
 					}
