@@ -20,7 +20,7 @@ namespace WCell.RealmServer.AI.Actions.States
 		/// </summary>
 		public static int ReevaluateThreatTicks = 20;
 
-		private static Logger log = LogManager.GetCurrentClassLogger();
+		private static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
 		protected AIAction m_Strategy;
 		private bool m_init;
@@ -103,7 +103,7 @@ namespace WCell.RealmServer.AI.Actions.States
 							if (m_Strategy == null)
 							{
 								// no action set - must not happen
-								log.Error("Executing " + GetType().Name + " without having a Strategy set.");
+								Log.Error("Executing " + GetType().Name + " without having a Strategy set.");
 							}
 							else
 							{

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NLog;
 using WCell.Constants;
 using WCell.Constants.Factions;
 using WCell.Constants.GameObjects;
@@ -11,8 +12,13 @@ using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
 using WCell.Core.Initialization;
 using WCell.RealmServer.AI;
+using WCell.RealmServer.AI.Actions;
+using WCell.RealmServer.AI.Actions.Combat;
+using WCell.RealmServer.AI.Actions.Movement;
+using WCell.RealmServer.AI.Brains;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.GameObjects;
+using WCell.RealmServer.Items;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.NPCs;
 using WCell.RealmServer.Spells;
@@ -24,25 +30,50 @@ namespace WCell.Addons.Default.NPCs
 	{
 
 		[Initialization]
-		[DependentInitialization(typeof(NPCMgr))]
+		[DependentInitialization(typeof (NPCMgr))]
 		public static void FixThem()
 		{
 			var entry = NPCMgr.GetEntry(NPCId.UnworthyInitiate);
 			entry.Activated += UnworthyInitiateActivated;
+			entry.Activated += initiate =>
+			                   	{
+			                   		((BaseBrain) initiate.Brain).DefaultCombatAction.Strategy =
+			                   			new UnworthyInitiateAttackAction(initiate);
+			                   	};
 			entry = NPCMgr.GetEntry(NPCId.UnworthyInitiate_2);
 			entry.Activated += UnworthyInitiateActivated;
+			entry.Activated += initiate =>
+			                   	{
+			                   		((BaseBrain) initiate.Brain).DefaultCombatAction.Strategy =
+			                   			new UnworthyInitiateAttackAction(initiate);
+			                   	};
 			entry = NPCMgr.GetEntry(NPCId.UnworthyInitiate_3);
 			entry.Activated += UnworthyInitiateActivated;
+			entry.Activated += initiate =>
+			                   	{
+			                   		((BaseBrain) initiate.Brain).DefaultCombatAction.Strategy =
+			                   			new UnworthyInitiateAttackAction(initiate);
+			                   	};
 			entry = NPCMgr.GetEntry(NPCId.UnworthyInitiate_4);
 			entry.Activated += UnworthyInitiateActivated;
+			entry.Activated += initiate =>
+			                   	{
+			                   		((BaseBrain) initiate.Brain).DefaultCombatAction.Strategy =
+			                   			new UnworthyInitiateAttackAction(initiate);
+			                   	};
 			entry = NPCMgr.GetEntry(NPCId.UnworthyInitiate_5);
 			entry.Activated += UnworthyInitiateActivated;
+			entry.Activated += initiate =>
+			                   	{
+			                   		((BaseBrain) initiate.Brain).DefaultCombatAction.Strategy =
+			                   			new UnworthyInitiateAttackAction(initiate);
+			                   	};
 		}
 
 		private static void UnworthyInitiateActivated(NPC npc)
 		{
 			npc.StandState = StandState.Kneeling;
-			npc.AddMessage( 
+			npc.AddMessage(
 				() =>
 					{
 						var nearest = npc.GetNearbyNPC(NPCId.UnworthyInitiateAnchor, 7);
@@ -50,156 +81,53 @@ namespace WCell.Addons.Default.NPCs
 						nearest.SpellCast.Trigger(SpellId.ChainedPeasantChest, npc);
 					});
 		}
+	}
 
-		[Initialization]
-		[DependentInitialization(typeof(GOMgr))]
-		public static void FixGOs()
+	public class UnworthyInitiateAttackAction : AIAttackAction
+	{
+		private static readonly Logger Log = LogManager.GetCurrentClassLogger();
+
+		public UnworthyInitiateAttackAction(NPC unworthyInitiate)
+			: base(unworthyInitiate)
 		{
-			var entry = GOMgr.GetEntry(GOEntryId.AcherusSoulPrison);
-			entry.Used += SoulPrisonUsed;
-			entry = GOMgr.GetEntry(GOEntryId.AcherusSoulPrison_2);
-			entry.Used += SoulPrisonUsed;
-			entry = GOMgr.GetEntry(GOEntryId.AcherusSoulPrison_3);
-			entry.Used += SoulPrisonUsed;
-			entry = GOMgr.GetEntry(GOEntryId.AcherusSoulPrison_4);
-			entry.Used += SoulPrisonUsed;
-			entry = GOMgr.GetEntry(GOEntryId.AcherusSoulPrison_5);
-			entry.Used += SoulPrisonUsed;
-			entry = GOMgr.GetEntry(GOEntryId.AcherusSoulPrison_6);
-			entry.Used += SoulPrisonUsed;
-			entry = GOMgr.GetEntry(GOEntryId.AcherusSoulPrison_7);
-			entry.Used += SoulPrisonUsed;
-			entry = GOMgr.GetEntry(GOEntryId.AcherusSoulPrison_8);
-			entry.Used += SoulPrisonUsed;
-			entry = GOMgr.GetEntry(GOEntryId.AcherusSoulPrison_9);
-			entry.Used += SoulPrisonUsed;
-			entry = GOMgr.GetEntry(GOEntryId.AcherusSoulPrison_10);
-			entry.Used += SoulPrisonUsed;
-			entry = GOMgr.GetEntry(GOEntryId.AcherusSoulPrison_11);
-			entry.Used += SoulPrisonUsed;
-			entry = GOMgr.GetEntry(GOEntryId.AcherusSoulPrison_12);
-			entry.Used += SoulPrisonUsed;
-
 		}
 
-		private static bool SoulPrisonUsed(GameObject go, Character user)
+		/// <summary>
+		/// Called when starting to attack a new Target
+		/// </summary>
+		public override void Start()
 		{
-			var nearest = go.GetNearbyNPC(NPCId.UnworthyInitiateAnchor, 2);
-			if (nearest == null) return false;
-			var shackled = nearest.ChannelObject as NPC;
-			if (shackled == null) return false;
-
-			var transformSpellId = GetTransformSpellIdFor(shackled.DisplayId);
-			shackled.Auras.Remove(SpellId.ChainedPeasantChest);
-			go.Flags = GameObjectFlags.None;
-			shackled.StandState = StandState.Stand;
-			shackled.Emote(EmoteType.SimpleTalk);
-			shackled.Yell("They brand me unworthy? I will show them unworthy!");
-			shackled.Spells.AddSpell(
-				SpellId.ClassSkillPlagueStrikeRank1_2,
-				SpellId.ClassSkillIcyTouchRank1_2,
-				SpellId.ClassSkillBloodStrikeRank1_2,
-				SpellId.ClassSkillDeathCoil,
-				SpellId.ClassSkillDeathCoilRank1_3);
-			shackled.CallDelayed(2000, wObj => ((NPC)wObj).MoveInFrontThenExecute(go, npc =>
+			m_owner.IsFighting = true;
+			if (UsesSpells)
 			{
-				npc.Emote(EmoteType.SimpleLoot);
-				npc.CallDelayed(2000, obj =>
-				{
-					obj.SpellCast.TriggerSelf(SpellId.DeathKnightInitiateVisual);
-					obj.SpellCast.TriggerSelf(transformSpellId);
-					((NPC)obj).VirtualItem1 = ItemId.RunedSoulblade;
-					obj.FactionId = FactionId.ActorEvil;
-				});
-				
-				npc.CallDelayed(5000, obj =>
-				{
-					((NPC)obj).Emote(EmoteType.SimplePointNosheathe);
-					obj.Say("To battle!");
-				});
-
-				npc.CallDelayed(6000, obj =>
-				{
-					((NPC)obj).ThreatCollection[user] += 10000;
-					((NPC)obj).UnitFlags &= ~UnitFlags.SelectableNotAttackable;
-					((NPC)obj).UnitFlags &= ~UnitFlags.NotAttackable;
-					((NPC)obj).Brain.State = BrainState.Combat;
-				});
-			}));
-
-	return true;
-		}
-
-		private static SpellId GetTransformSpellIdFor(uint displayId)
-		{
-			SpellId transformSpellId;
-			switch (displayId)
-			{
-				case 25355:
-					transformSpellId = SpellId.DeathKnightInitiateFemaleHuman;
-					break;
-				case 25360:
-					transformSpellId = SpellId.DeathKnightInitiateFemaleNightElf;
-					break;
-				case 25356:
-					transformSpellId = SpellId.DeathKnightInitiateMaleDwarf;
-					break;
-				case 25362:
-					transformSpellId = SpellId.DeathKnightInitiateFemaleGnome;
-					break;
-				case 25363:
-					transformSpellId = SpellId.DeathKnightInitiateFemaleDraenei;
-					break;
-				case 25368:
-					transformSpellId = SpellId.DeathKnightInitiateFemaleOrc;
-					break;
-				case 25365:
-					transformSpellId = SpellId.DeathKnightInitiateMaleTroll;
-					break;
-				case 25371:
-					transformSpellId = SpellId.DeathKnightInitiateFemaleTauren;
-					break;
-				case 25372:
-					transformSpellId = SpellId.DeathKnightInitiateFemaleForsaken;
-					break;
-				case 24369:
-					transformSpellId = SpellId.DeathKnightInitiateFemaleBloodElf;
-					break;
-				case 25354:
-					transformSpellId = SpellId.DeathKnightInitiateMaleHuman;
-					break;
-				case 25358:
-					transformSpellId = SpellId.DeathKnightInitiateMaleNightElf;
-					break;
-				case 25361:
-					transformSpellId = SpellId.DeathKnightInitiateFemaleDwarf;
-					break;
-				case 25359:
-					transformSpellId = SpellId.DeathKnightInitiateMaleGnome;
-					break;
-				case 25357:
-					transformSpellId = SpellId.DeathKnightInitiateMaleDraenei;
-					break;
-				case 25364:
-					transformSpellId = SpellId.DeathKnightInitiateMaleOrc;
-					break;
-				case 25370:
-					transformSpellId = SpellId.DeathKnightInitiateFemaleTroll;
-					break;
-				case 25366:
-					transformSpellId = SpellId.DeathKnightInitiateMaleTauren;
-					break;
-				case 25367:
-					transformSpellId = SpellId.DeathKnightInitiateMaleForsaken;
-					break;
-				case 25373:
-					transformSpellId = SpellId.DeathKnightInitiateMaleBloodElf;
-					break;
-				default: //uh oh!
-					transformSpellId = SpellId.DeathKnightInitiateFemaleBloodElf;
-					break;
+				((NPC)m_owner).NPCSpells.ShuffleReadySpells();
 			}
-			return transformSpellId;
+
+			m_target = m_owner.Target;
+			if (m_target != null)
+			{
+				maxDist = m_owner.GetAttackRange(m_owner.MainWeapon, m_target) - 1;
+				if (maxDist < 0.5f)
+				{
+					maxDist = 0.5f;
+				}
+				desiredDist = maxDist / 2;
+			}
+			if (m_owner.CanMelee)
+			{
+				if (m_target == null)
+				{
+					if (m_owner.Target == null)
+					{
+						Log.Error("Started " + GetType().Name + " without Target set: " + m_owner);
+						m_owner.Brain.EnterDefaultState();
+						return;
+					}
+					
+					m_target = m_owner.Target;
+				}
+				Update();
+			}
 		}
 	}
 }

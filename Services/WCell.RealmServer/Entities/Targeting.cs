@@ -173,6 +173,38 @@ namespace WCell.RealmServer.Entities
 			return Character.EmptyArray;
 		}
 
+		/// <summary>
+		/// Gets all units that are at least neutral with it who can see this object
+		/// </summary>
+		public static ICollection<Unit> GetNearbyAtLeastNeutralUnits<O>(this O obj) where O : WorldObject
+		{
+			return obj.GetNearbyAtLeastNeutralUnits(WorldObject.BroadcastRange);
+		}
+
+		/// <summary>
+		/// Gets all units that are at least neutral with it who can see this object
+		/// </summary>
+		public static ICollection<Unit> GetNearbyAtLeastNeutralUnits<O>(this O obj, bool includeSelf) where O : WorldObject
+		{
+			return obj.GetNearbyAtLeastNeutralUnits(WorldObject.BroadcastRange, includeSelf);
+		}
+
+		/// <summary>
+		/// Gets all units that are at least neutral with it who can see this object
+		/// </summary>
+		public static ICollection<Unit> GetNearbyAtLeastNeutralUnits<O>(this O obj, float radius, bool includeSelf = true) where O : WorldObject
+		{
+			if (obj.Map != null && obj.AreaCharCount > 0)
+			{
+				Func<Unit, bool> visCheck =
+					otherObj => otherObj.CanSee(obj) && (obj != otherObj || includeSelf) && obj.IsAtLeastNeutralWith(otherObj);
+
+				return obj.Map.GetObjectsInRadius(obj.Position, radius, visCheck, obj.Phase);
+			}
+
+			return new Unit[0];
+		}
+
 		public static GameObject GetNearbyGO<O>(this O wObj, GOEntryId id) where O : WorldObject
 		{
 			return wObj.GetNearbyGO(id, WorldObject.BroadcastRange);

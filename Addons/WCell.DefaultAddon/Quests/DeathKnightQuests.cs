@@ -1,10 +1,15 @@
 ﻿using System.Linq;
 using WCell.Constants;
+using WCell.Constants.Factions;
+using WCell.Constants.GameObjects;
 using WCell.Constants.Items;
+using WCell.Constants.Misc;
 using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
 using WCell.Core.Initialization;
+using WCell.RealmServer.AI;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.GameObjects;
 using WCell.RealmServer.NPCs;
 using WCell.RealmServer.Quests;
 using WCell.RealmServer.Spells;
@@ -16,7 +21,26 @@ namespace WCell.Addons.Default.Quests
 {
 	public static class DeathKnightQuests
 	{
-		#region EmblazonRuneBlade
+		
+		[Initialization]
+        [DependentInitialization(typeof(QuestMgr))]
+        public static void FixIt()
+        {
+			//The Emblazoned Runeblade
+        	var quest = QuestMgr.GetTemplate(12619);
+        	quest.QuestFinished += EmblazonRuneBladeQuestFinished;
+
+			//The Endless Hunger
+        	quest = QuestMgr.GetTemplate(12848);
+        	var index = quest.GetInteractionTemplateFor(NPCId.UnworthyInitiate).Index;
+			quest.AddLinkedNPCInteractions(index,
+				NPCId.UnworthyInitiate_2,
+				NPCId.UnworthyInitiate_3,
+				NPCId.UnworthyInitiate_4,
+				NPCId.UnworthyInitiate_5);
+        }
+
+		#region Emblazoned Rune Blade
 
 		private static SpellId _emblazonRunebladeId = SpellId.EmblazonRuneblade_3;
 		private static SpellId[] _emblazonRunebladeLearnSpellIds = { 
@@ -49,15 +73,6 @@ namespace WCell.Addons.Default.Quests
 			failedReason = SpellFailedReason.OutOfRange;
 		}
 
-        [Initialization]
-        [DependentInitialization(typeof(QuestMgr))]
-        public static void FixIt()
-        {
-			//The Emblazoned Runeblade
-        	var quest = QuestMgr.GetTemplate(12619);
-        	quest.QuestFinished += EmblazonRuneBladeQuestFinished;
-        }
-
     	private static void EmblazonRuneBladeQuestFinished(Quest obj)
     	{
     		var chr = obj.Owner;
@@ -86,6 +101,164 @@ namespace WCell.Addons.Default.Quests
 				IsRunebladeTriggerNPC);
 		}
 
+		#endregion
+
+		#region The Endless Hunger
+		
+		[Initialization]
+		[DependentInitialization(typeof(GOMgr))]
+		public static void FixGOs()
+		{
+			var entry = GOMgr.GetEntry(GOEntryId.AcherusSoulPrison);
+			entry.Used += SoulPrisonUsed;
+			entry = GOMgr.GetEntry(GOEntryId.AcherusSoulPrison_2);
+			entry.Used += SoulPrisonUsed;
+			entry = GOMgr.GetEntry(GOEntryId.AcherusSoulPrison_3);
+			entry.Used += SoulPrisonUsed;
+			entry = GOMgr.GetEntry(GOEntryId.AcherusSoulPrison_4);
+			entry.Used += SoulPrisonUsed;
+			entry = GOMgr.GetEntry(GOEntryId.AcherusSoulPrison_5);
+			entry.Used += SoulPrisonUsed;
+			entry = GOMgr.GetEntry(GOEntryId.AcherusSoulPrison_6);
+			entry.Used += SoulPrisonUsed;
+			entry = GOMgr.GetEntry(GOEntryId.AcherusSoulPrison_7);
+			entry.Used += SoulPrisonUsed;
+			entry = GOMgr.GetEntry(GOEntryId.AcherusSoulPrison_8);
+			entry.Used += SoulPrisonUsed;
+			entry = GOMgr.GetEntry(GOEntryId.AcherusSoulPrison_9);
+			entry.Used += SoulPrisonUsed;
+			entry = GOMgr.GetEntry(GOEntryId.AcherusSoulPrison_10);
+			entry.Used += SoulPrisonUsed;
+			entry = GOMgr.GetEntry(GOEntryId.AcherusSoulPrison_11);
+			entry.Used += SoulPrisonUsed;
+			entry = GOMgr.GetEntry(GOEntryId.AcherusSoulPrison_12);
+			entry.Used += SoulPrisonUsed;
+
+		}
+
+		private static bool SoulPrisonUsed(GameObject go, Character user)
+		{
+			var nearest = go.GetNearbyNPC(NPCId.UnworthyInitiateAnchor, 2);
+			if (nearest == null) return false;
+			var shackled = nearest.ChannelObject as NPC;
+			if (shackled == null) return false;
+
+			var transformSpellId = GetTransformSpellIdFor(shackled.DisplayId);
+			//just clear all auras! uh oh...not
+			shackled.Auras.Clear();
+			shackled.IsInvulnerable = false;
+			go.Flags = GameObjectFlags.None;
+			shackled.StandState = StandState.Stand;
+			shackled.Emote(EmoteType.SimpleTalk);
+			shackled.Say("They brand me unworthy? I will show them unworthy!");
+			shackled.Spells.Clear();
+			shackled.Spells.AddSpell(
+				SpellId.ClassSkillPlagueStrikeRank1_2,
+				SpellId.ClassSkillIcyTouchRank1_2,
+				SpellId.ClassSkillBloodStrikeRank1_2,
+				SpellId.ClassSkillDeathCoil,
+				SpellId.ClassSkillDeathCoilRank1_3);
+			shackled.CallDelayed(3000, wObj => ((NPC)wObj).MoveInFrontThenExecute(go, npc =>
+			{
+				npc.Emote(EmoteType.SimpleLoot);
+				npc.CallDelayed(4000, obj =>
+				{
+					obj.SpellCast.TriggerSelf(SpellId.DeathKnightInitiateVisual);
+					obj.SpellCast.TriggerSelf(transformSpellId);
+					((NPC) obj).VirtualItem1 = ItemId.RunedSoulblade;
+					obj.FactionId = FactionId.ActorEvil;
+				});
+				
+				npc.CallDelayed(7000, obj =>
+				{
+					((NPC)obj).Emote(EmoteType.SimplePointNosheathe);
+					obj.Say("To battle!");
+				});
+
+				npc.CallDelayed(9000, obj =>
+				{
+					((NPC)obj).ThreatCollection[user] += 10000;
+					((NPC)obj).UnitFlags &= ~UnitFlags.SelectableNotAttackable;
+					((NPC)obj).UnitFlags &= ~UnitFlags.NotAttackable;
+					((NPC) obj).Target = user;
+					((NPC)obj).Brain.State = BrainState.Combat;
+				});
+			}));
+
+			return true;
+		}
+
+		private static SpellId GetTransformSpellIdFor(uint displayId)
+		{
+			SpellId transformSpellId;
+			switch (displayId)
+			{
+				case 25355:
+					transformSpellId = SpellId.DeathKnightInitiateFemaleHuman;
+					break;
+				case 25360:
+					transformSpellId = SpellId.DeathKnightInitiateFemaleNightElf;
+					break;
+				case 25356:
+					transformSpellId = SpellId.DeathKnightInitiateMaleDwarf;
+					break;
+				case 25362:
+					transformSpellId = SpellId.DeathKnightInitiateFemaleGnome;
+					break;
+				case 25363:
+					transformSpellId = SpellId.DeathKnightInitiateFemaleDraenei;
+					break;
+				case 25368:
+					transformSpellId = SpellId.DeathKnightInitiateFemaleOrc;
+					break;
+				case 25365:
+					transformSpellId = SpellId.DeathKnightInitiateMaleTroll;
+					break;
+				case 25371:
+					transformSpellId = SpellId.DeathKnightInitiateFemaleTauren;
+					break;
+				case 25372:
+					transformSpellId = SpellId.DeathKnightInitiateFemaleForsaken;
+					break;
+				case 24369:
+					transformSpellId = SpellId.DeathKnightInitiateFemaleBloodElf;
+					break;
+				case 25354:
+					transformSpellId = SpellId.DeathKnightInitiateMaleHuman;
+					break;
+				case 25358:
+					transformSpellId = SpellId.DeathKnightInitiateMaleNightElf;
+					break;
+				case 25361:
+					transformSpellId = SpellId.DeathKnightInitiateFemaleDwarf;
+					break;
+				case 25359:
+					transformSpellId = SpellId.DeathKnightInitiateMaleGnome;
+					break;
+				case 25357:
+					transformSpellId = SpellId.DeathKnightInitiateMaleDraenei;
+					break;
+				case 25364:
+					transformSpellId = SpellId.DeathKnightInitiateMaleOrc;
+					break;
+				case 25370:
+					transformSpellId = SpellId.DeathKnightInitiateFemaleTroll;
+					break;
+				case 25366:
+					transformSpellId = SpellId.DeathKnightInitiateMaleTauren;
+					break;
+				case 25367:
+					transformSpellId = SpellId.DeathKnightInitiateMaleForsaken;
+					break;
+				case 25373:
+					transformSpellId = SpellId.DeathKnightInitiateMaleBloodElf;
+					break;
+				default: //uh oh!
+					transformSpellId = SpellId.DeathKnightInitiateFemaleBloodElf;
+					break;
+			}
+			return transformSpellId;
+		}
 		#endregion
 	}
 

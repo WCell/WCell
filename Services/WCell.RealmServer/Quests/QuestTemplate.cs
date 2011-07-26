@@ -548,11 +548,14 @@ namespace WCell.RealmServer.Quests
 		#region Modify Templates
 		/// <summary>
 		/// To finish this Quest the Character has to interact with the given
-		/// kind of GO the given amount of times.
+		/// kind of GO the given amount of times. This is a unique interaction.
+		/// To Add more than one GO for a particular objective add the first with
+		/// this method then use <seealso cref="AddLinkedGOInteraction"/>
 		/// </summary>
-		/// <param name="goId"></param>
-		/// <param name="amount"></param>
-		public void AddGOInteraction(GOEntryId goId, int amount, SpellId requiredSpell = SpellId.None)
+		/// <param name="goId">The entry id of the GO that must be interacted with</param>
+		/// <param name="amount">The number of times this GO must be interacted with</param>
+		/// <returns>The index of this template in the <see cref="GOInteractions"/> array</returns>
+		public int AddGOInteraction(GOEntryId goId, int amount, SpellId requiredSpell = SpellId.None)
 		{
 			int goIndex;
 			if (GOInteractions == null)
@@ -572,12 +575,73 @@ namespace WCell.RealmServer.Quests
 			{
 				Index = index,
 				Amount = amount,
-				TemplateId = (uint)goId,
 				RequiredSpellId = requiredSpell,
 				ObjectType = ObjectTypeId.GameObject
 			};
+			templ.TemplateId[0] = (uint) goId;
+
 			ArrayUtil.Set(ref ObjectOrSpellInteractions, index, templ);
 			GOInteractions[goIndex] = templ;
+
+			return goIndex;
+		}
+
+		/// <summary>
+		/// Adds an alternative GO to the interaction template that may also
+		/// be interacted with for this quest objective <seealso cref="AddGOInteraction"/>
+		/// </summary>
+		/// <param name="index">The index into the <see cref="GOInteractions"/>
+		/// array where the first GO was added with <seealso cref="AddGOInteraction"/></param>
+		/// <param name="goEntry">The entry id of the alternative GO that can be interacted with</param>
+		public void AddLinkedGOInteraction(uint index, GOEntryId goEntry)
+		{
+			var templ = GOInteractions.Get(index);
+			if (templ.TemplateId.Contains((uint)goEntry))
+				return;
+			Array.Resize(ref templ.TemplateId, templ.TemplateId.Length + 1);
+			ArrayUtil.Add(ref templ.TemplateId, (uint)goEntry);
+		}
+
+		/// <summary>
+		/// Adds alternative GOs to the interaction template that may also
+		/// be interacted with for this quest objective. <seealso cref="AddGOInteraction"/>
+		/// </summary>
+		/// <param name="index">The index into the <see cref="GOInteractions"/> array
+		/// where the first GO was added with <seealso cref="AddGOInteraction"/></param>
+		/// <param name="goids">The entry ids of the alternative GOs that can be interacted with</param>
+		public void AddLinkedGOInteractions(uint index, IEnumerable<GOEntryId> goids)
+		{
+			var templ = NPCInteractions.Get(index);
+			Array.Resize(ref templ.TemplateId, templ.TemplateId.Length + goids.Count());
+			foreach (var npcId in goids.Where(npcId => !templ.TemplateId.Contains((uint)npcId)))
+			{
+				ArrayUtil.Add(ref templ.TemplateId, (uint)npcId);
+			}
+		}
+
+		/// <summary>
+		/// Adds alternative GOs to the interaction template that may also
+		/// be interacted with for this quest objective. <seealso cref="AddGOInteraction"/>
+		/// </summary>
+		/// <param name="index">The index into the <see cref="GOInteractions"/> array
+		/// where the first GO was added with <seealso cref="AddGOInteraction"/></param>
+		/// <param name="goids">The entry ids of the alternative GOs that can be interacted with</param>
+		public void AddLinkedGOInteractions(uint index, params GOEntryId[] goids)
+		{
+			var templ = NPCInteractions.Get(index);
+			Array.Resize(ref templ.TemplateId, templ.TemplateId.Length + goids.Count());
+			foreach (var npcId in goids.Where(npcId => !templ.TemplateId.Contains((uint)npcId)))
+			{
+				ArrayUtil.Add(ref templ.TemplateId, (uint)npcId);
+			}
+		}
+
+		/// <summary>
+		/// Returns the first QuestInteractionTemplate that requires the given NPC to be interacted with
+		/// </summary>
+		public QuestInteractionTemplate GetInteractionTemplateFor(GOEntryId goEntryId)
+		{
+			return GOInteractions.FirstOrDefault(interaction => interaction.TemplateId.Contains((uint)goEntryId));
 		}
 
 		public void AddProvidedItem(ItemId id, int amount = 1)
@@ -592,11 +656,14 @@ namespace WCell.RealmServer.Quests
 
 		/// <summary>
 		/// To finish this Quest the Character has to interact with the given
-		/// kind of NPC the given amount of times.
+		/// kind of NPC the given amount of times. This is a unique interaction.
+		/// To Add more than one NPC for a particular objective add the first with
+		/// this method then use <seealso cref="AddLinkedNPCInteraction"/>
 		/// </summary>
-		/// <param name="npcid"></param>
-		/// <param name="amount"></param>
-		public void AddNPCInteraction(NPCId npcid, int amount, SpellId requiredSpell = SpellId.None)
+		/// <param name="npcid">The entry id of the NPC that must be interacted with</param>
+		/// <param name="amount">The number of times this NPC must be interacted with</param>
+		/// <returns>The index of this template in the <see cref="NPCInteractions"/> array</returns>
+		public int AddNPCInteraction(NPCId npcid, int amount, SpellId requiredSpell = SpellId.None)
 		{
 			int npcIndex;
 			if (NPCInteractions == null)
@@ -616,13 +683,75 @@ namespace WCell.RealmServer.Quests
 			{
 				Index = index,
 				Amount = amount,
-				TemplateId = (uint)npcid,
-				RequiredSpellId = SpellId.None,
-				ObjectType = ObjectTypeId.Unit
+				RequiredSpellId = requiredSpell,
+				ObjectType = ObjectTypeId.GameObject
 			};
+			templ.TemplateId[0] = (uint) npcid;
+
 			ArrayUtil.Set(ref ObjectOrSpellInteractions, index, templ);
 			NPCInteractions[npcIndex] = templ;
+
+			return npcIndex;
 		}
+
+		/// <summary>
+		/// Adds an alternative NPC to the interaction template that may also
+		/// be interacted with for this quest objective. <seealso cref="AddNPCInteraction"/>
+		/// </summary>
+		/// <param name="index">The index into the <see cref="NPCInteractions"/> array
+		/// where the first NPC was added with <seealso cref="AddNPCInteraction"/></param>
+		/// <param name="npcid">The entry id of the alternative NPC that can be interacted with</param>
+		public void AddLinkedNPCInteraction(uint index, NPCId npcid)
+		{
+			var templ = NPCInteractions.Get(index);
+			if (templ.TemplateId.Contains((uint)npcid))
+				return;
+			Array.Resize(ref templ.TemplateId, templ.TemplateId.Length + 1);
+			ArrayUtil.Add(ref templ.TemplateId, (uint)npcid);
+		}
+
+		/// <summary>
+		/// Adds alternative NPCs to the interaction template that may also
+		/// be interacted with for this quest objective. <seealso cref="AddNPCInteraction"/>
+		/// </summary>
+		/// <param name="index">The index into the <see cref="NPCInteractions"/> array
+		/// where the first NPC was added with <seealso cref="AddNPCInteraction"/></param>
+		/// <param name="npcids">The entry ids of the alternative NPCs that can be interacted with</param>
+		public void AddLinkedNPCInteractions(uint index, IEnumerable<NPCId> npcids)
+		{
+			var templ = NPCInteractions.Get(index);
+			Array.Resize(ref templ.TemplateId, templ.TemplateId.Length + npcids.Count());
+			foreach (var npcId in npcids.Where(npcId => !templ.TemplateId.Contains((uint)npcId)))
+			{
+				ArrayUtil.Add(ref templ.TemplateId, (uint)npcId);
+			}
+		}
+
+		/// <summary>
+		/// Adds alternative NPCs to the interaction template that may also
+		/// be interacted with for this quest objective. <seealso cref="AddNPCInteraction"/>
+		/// </summary>
+		/// <param name="index">The index into the <see cref="NPCInteractions"/> array
+		/// where the first NPC was added with <seealso cref="AddNPCInteraction"/></param>
+		/// <param name="npcids">The entry ids of the alternative NPCs that can be interacted with</param>
+		public void AddLinkedNPCInteractions(uint index, params NPCId[] npcids)
+		{
+			var templ = NPCInteractions.Get(index);
+			Array.Resize(ref templ.TemplateId, templ.TemplateId.Length + npcids.Count());
+			foreach (var npcId in npcids.Where(npcId => !templ.TemplateId.Contains((uint)npcId)))
+			{
+				ArrayUtil.Add(ref templ.TemplateId, (uint)npcId);
+			}
+		}
+
+		/// <summary>
+		/// Returns the first QuestInteractionTemplate that requires the given NPC to be interacted with
+		/// </summary>
+		public QuestInteractionTemplate GetInteractionTemplateFor(NPCId npcId)
+		{
+			return NPCInteractions.FirstOrDefault(interaction => interaction.TemplateId.Contains((uint) npcId));
+		}
+
 		#endregion
 
 		#region Requirements
@@ -1171,7 +1300,7 @@ namespace WCell.RealmServer.Quests
 			writer.WriteLineNotDefault(Starters.Count, "Starters: " + Starters.ToString(", "));
 			writer.WriteLineNotDefault(Finishers.Count, "Finishers: " + Finishers.ToString(", "));
 
-			var interactions = ObjectOrSpellInteractions.Where(action => action != null && action.TemplateId > 0);
+			var interactions = ObjectOrSpellInteractions.Where(action => action != null && action.TemplateId[0] != 0).ToList();
 			writer.WriteLineNotDefault(interactions.Count(), "Interactions: " + interactions.ToString(", "));
 
 			if (CollectableItems != null && CollectableItems.Length > 0)
@@ -1403,7 +1532,7 @@ namespace WCell.RealmServer.Quests
 	public class QuestInteractionTemplate
 	{
 		[NotPersistent]
-		public uint TemplateId;
+		public uint[] TemplateId = new uint[1];
 
 		/// <summary>
 		/// Either <see cref="ObjectTypeId.Unit"/> or <see cref="ObjectTypeId.GameObject"/>
@@ -1425,6 +1554,8 @@ namespace WCell.RealmServer.Quests
 		/// <summary>
 		/// The RawId is used in certain Packets.
 		/// It encodes TemplateId and Type
+		/// The setter should only ever be used
+		/// when loading info from the database!
 		/// </summary>
 		public uint RawId
 		{
@@ -1432,20 +1563,20 @@ namespace WCell.RealmServer.Quests
 			{
 				return ObjectType == ObjectTypeId.GameObject ?
 					//(uint)-(int)(TemplateId | QuestConstants.GOIndicator) : TemplateId;
-					(uint.MaxValue - TemplateId + 1) : TemplateId;
+					(uint.MaxValue - TemplateId[0] + 1) : TemplateId[0];
 			}
 			set
 			{
 				if (value > QuestConstants.GOIndicator)
 				{
 					// GO
-					TemplateId = uint.MaxValue - value + 1;
+					TemplateId[0] = uint.MaxValue - value + 1;
 					ObjectType = ObjectTypeId.GameObject;
 				}
 				else if (value != 0)
 				{
 					// NPC
-					TemplateId = value;
+					TemplateId[0] = value;
 					ObjectType = ObjectTypeId.Unit;
 				}
 			}
@@ -1453,12 +1584,13 @@ namespace WCell.RealmServer.Quests
 
 		public bool IsValid
 		{
-			get { return TemplateId != 0 || RequiredSpellId != 0; }
+			get { return TemplateId[0] != 0 || RequiredSpellId != 0; }
 		}
 
 		public override string ToString()
 		{
-			return (Amount != 1 ? Amount + "x " : "") + ObjectType + " " + ObjectType.ToString(TemplateId) + (RequiredSpellId != 0 ? (" - Spell: " + RequiredSpellId) : "");
+			var templates = TemplateId.Where(templ => templ != 0);
+			return (Amount != 1 ? Amount + "x " : "") + ObjectType + " " + ObjectType.ToString(TemplateId, ", ") + (RequiredSpellId != 0 ? (" - Spell: " + RequiredSpellId) : "");
 		}
 	}
 

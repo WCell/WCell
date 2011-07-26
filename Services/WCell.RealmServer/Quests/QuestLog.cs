@@ -618,7 +618,7 @@ namespace WCell.RealmServer.Quests
 					for (var i = 0; i < quest.Template.NPCInteractions.Length; i++)
 					{
 						var interaction = quest.Template.NPCInteractions[i];
-						if (interaction.TemplateId == npc.Entry.Id)
+						if (interaction.TemplateId.Contains(npc.Entry.Id))
 						{
 							UpdateInteractionCount(quest, interaction, npc);
 						}
@@ -638,7 +638,7 @@ namespace WCell.RealmServer.Quests
 				for (var i = 0; i < quest.Template.NPCInteractions.Length; i++)
 				{
 					var interaction = quest.Template.NPCInteractions[i];
-					if (interaction.TemplateId == (uint)npc)
+					if (interaction.TemplateId.Contains((uint)npc))
 					{
 						return quest;
 					}
@@ -662,7 +662,7 @@ namespace WCell.RealmServer.Quests
 					for (var i = 0; i < quest.Template.GOInteractions.Length; i++)
 					{
 						var interaction = quest.Template.GOInteractions[i];
-						if (interaction.TemplateId == go.Entry.Id)
+						if (interaction.TemplateId.Contains(go.Entry.Id))
 						{
 							UpdateInteractionCount(quest, interaction, go);
 						}
@@ -711,7 +711,7 @@ namespace WCell.RealmServer.Quests
 				for (var i = 0; i < quest.Template.GOInteractions.Length; i++)
 				{
 					var interaction = quest.Template.GOInteractions[i];
-					if (interaction.TemplateId == go.EntryId)
+					if (interaction.TemplateId.Contains(go.EntryId))
 					{
 						return true;
 					}
@@ -848,7 +848,7 @@ namespace WCell.RealmServer.Quests
 							{
 								case ObjectTypeId.GameObject:
 									// GO
-									var go = cast.Targets.FirstOrDefault(target => target is GameObject && target.EntryId == interaction.TemplateId);
+									var go = cast.Targets.FirstOrDefault(target => target is GameObject && interaction.TemplateId.Contains(target.EntryId));
 									if (go != null)
 									{
 										UpdateInteractionCount(q, interaction, go);
@@ -856,7 +856,7 @@ namespace WCell.RealmServer.Quests
 									break;
 								case ObjectTypeId.Unit:
 									// NPC
-									var npc = cast.Targets.FirstOrDefault(target => target is NPC && target.EntryId == interaction.TemplateId);
+									var npc = cast.Targets.FirstOrDefault(target => target is NPC && interaction.TemplateId.Contains(target.EntryId));
 									if (npc != null)
 									{
 										UpdateInteractionCount(q, interaction, npc);

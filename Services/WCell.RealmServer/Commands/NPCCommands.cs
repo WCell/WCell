@@ -499,6 +499,50 @@ namespace WCell.RealmServer.Commands
 			}
 		}
         #endregion
+
+		#region Selectable
+		public class SelectableNPCCommand : RealmServerCommand
+		{
+			protected override void Initialize()
+			{
+				Init("Selectable", "NPCSel");
+				EnglishDescription = "Makes all NPCs on the current Map selectable";
+			}
+
+			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+			{
+				var rgn = trigger.Args.Character.Map;
+
+				if (rgn == null)
+				{
+					trigger.Reply("Instances are currently not supported.");
+					return;
+				}
+
+
+				// add message to iterate and then reply
+				rgn.ExecuteInContext(() =>
+				{
+					foreach (var obj in rgn)
+					{
+						if (obj is NPC)
+						{
+							((NPC)obj).UnitFlags &= ~UnitFlags.NotSelectable;
+						}
+					}
+				});
+				trigger.Reply("Done.");
+			}
+
+			public override bool RequiresCharacter
+			{
+				get
+				{
+					return true;
+				}
+			}
+		}
+		#endregion
     }
 
 	#region Respawn
