@@ -412,7 +412,11 @@ namespace WCell.RealmServer.Spells
 						if (ValidateTarget(target, DefaultTargetDefinitions.GetTargetFilter(firstHandler.Effect.ImplicitTargetA)) == SpellFailedReason.Ok)
 						{
 							var filter = DefaultTargetDefinitions.GetTargetFilter(firstHandler.Effect.ImplicitTargetB);
-							if (filter != null)
+							if (filter == null)
+							{
+								continue;
+							}
+							else
 							{
 								var failedReason = SpellFailedReason.Ok;
 								filter(firstHandler, target, ref failedReason);
