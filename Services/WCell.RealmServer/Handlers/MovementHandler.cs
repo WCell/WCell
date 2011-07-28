@@ -365,7 +365,7 @@ namespace WCell.RealmServer.Handlers
 		{
 			var chr = client.ActiveCharacter;
 
-			var chrEntityId = packet.ReadEntityId();
+			var chrEntityId = packet.ReadPackedEntityId();
 			var unknown1 = packet.ReadUInt32();
 			var unknown2 = packet.ReadUInt32();
 			var posX = packet.ReadFloat();

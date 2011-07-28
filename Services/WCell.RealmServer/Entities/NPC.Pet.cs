@@ -570,5 +570,67 @@ namespace WCell.RealmServer.Entities
 			RealmServer.IOQueue.AddMessage(record.Delete);
 			m_PetRecord = null;
 		}
+
+		public uint[] BuildVehicleActionBar()
+		{
+			var bar = new uint[PetConstants.PetActionCount];
+			var i = 0;
+
+			byte j;
+			if (Entry.Spells != null)
+			{
+				var spells = Entry.Spells.GetEnumerator();
+
+				for (j = 0; j < PetConstants.PetSpellCount; j++)
+				{
+					if (!spells.MoveNext())
+					{
+						bar[i++] = new PetActionEntry
+						           	{
+						           		Type = PetActionType.CastSpell2 + j
+						           	}.Raw;
+					}
+					else
+					{
+						var spell = spells.Current;
+						var actionEntry = new PetActionEntry();
+						if (spell.Value.IsPassive)
+						{
+							var cast = SpellCast;
+							if (cast != null)
+								cast.TriggerSelf(spell.Value);
+
+							actionEntry.Type = PetActionType.CastSpell2 + j;
+						}
+						else
+						{
+							actionEntry.SetSpell(spell.Key, PetActionType.CastSpell2 + j);
+
+						}
+						bar[i++] = actionEntry.Raw;
+					}
+				}
+			}
+			else
+			{
+				for (j = 0; j < PetConstants.PetSpellCount; j++)
+				{
+					bar[i++] = new PetActionEntry
+					           	{
+					           		Type = PetActionType.CastSpell2 + j
+					           	}.Raw;
+				}
+			}
+
+			for (; j < PetConstants.PetActionCount; j++)
+			{
+				bar[i++] = new PetActionEntry
+				           	{
+				           		Type = PetActionType.CastSpell2 + j
+				           	}.Raw;
+			}
+
+			return bar;
+		}
 	}
 }

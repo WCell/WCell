@@ -388,6 +388,7 @@ namespace WCell.RealmServer.Spells
 			{
 				var triggerHandler = m_TargetTriggers[i];
 				var effect = triggerHandler.SpellEffect;
+				if (effect.EffectType == SpellEffectType.TriggerSpellFromTargetWithCasterAsTarget) continue;
 				if (spell.SpellClassSet == effect.Spell.SpellClassSet &&
 					effect.MatchesSpell(spell) &&
 					(((val = effect.CalcEffectValue(Owner)) >= 100) || Utility.Random(0, 101) <= val) &&

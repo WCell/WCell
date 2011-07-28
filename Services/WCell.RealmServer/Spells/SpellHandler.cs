@@ -524,6 +524,7 @@ namespace WCell.RealmServer.Spells
 			SpellEffectCreators[(int)SpellEffectType.RestoreHealthPercent] = (cast, effect) => new RestoreHealthPercentEffectHandler(cast, effect);				// 136
 			SpellEffectCreators[(int)SpellEffectType.RestoreManaPercent] = (cast, effect) => new RestoreManaPercentEffectHandler(cast, effect);					// 137
 			SpellEffectCreators[(int)SpellEffectType.ClearQuest] = (cast, effect) => new ClearQuestEffectHandler(cast, effect);									// 139
+			SpellEffectCreators[(int)SpellEffectType.TriggerSpellFromTargetWithCasterAsTarget] = (cast, effect) => new TriggerSpellFromTargetWithCasterAsTargetHandler(cast, effect);					//140
 			SpellEffectCreators[(int)SpellEffectType.ApplyAuraToMaster] = (cast, effect) => new ApplyAuraToMasterEffectHandler(cast, effect);					// 143
 			SpellEffectCreators[(int)SpellEffectType.TriggerRitualOfSummoning] = (cast, effect) => new TriggerRitualOfSummoningEffectHandler(cast, effect);		// 151
 			SpellEffectCreators[(int)SpellEffectType.TeachFlightPath] = (cast, effect) => new TeachFlightPathEffectHandler(cast, effect);						// 154
@@ -573,7 +574,8 @@ namespace WCell.RealmServer.Spells
 
 		public static readonly SpellSummonHandler
 			DefaultSummonHandler = new SpellSummonHandler(),
-			PetSummonHandler = new SpellSummonPetHandler();
+			PetSummonHandler = new SpellSummonPetHandler(),
+			PossesedSummonHandler = new SpellSummonPossessedHandler();
 
 		static void InitSummonHandlers()
 		{
@@ -595,7 +597,7 @@ namespace WCell.RealmServer.Spells
 					switch (entry.Group)
 					{
 						case SummonGroup.Controllable:
-							entry.Handler = DefaultSummonHandler;
+							entry.Handler = PossesedSummonHandler;
 							break;
 						case SummonGroup.Friendly:
 							entry.Handler = DefaultSummonHandler;

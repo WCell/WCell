@@ -103,6 +103,113 @@
     </Switch>
   </RealmPacket>
 
+  <RealmPacket OpCode="CMSG_PET_CAST_SPELL">
+    <Simple>
+      <Name>Pet EntityId</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>CastId</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>SpellId</Name>
+      <Type>UInt</Type>
+      <SegmentType>WCell.Constants.Spells.SpellId</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>UnkFlags</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>TargetMask</Name>
+      <Type>UInt</Type>
+      <SegmentType>WCell.Constants.Spells.SpellTargetFlags</SegmentType>
+    </Simple>
+    <Switch CompareWith="TargetMask">
+      <Case And="Unit">
+        <Simple>
+          <Name>Target Unit Guid</Name>
+          <Type>PackedGuid</Type>
+        </Simple>
+      </Case>
+      <Case And="PvPCorpse">
+        <Simple>
+          <Name>PVP Corpse Guid</Name>
+          <Type>PackedGuid</Type>
+        </Simple>
+      </Case>
+      <Case And="Object">
+        <Simple>
+          <Name>Object Guid</Name>
+          <Type>PackedGuid</Type>
+        </Simple>
+      </Case>
+      <Case And="Corpse">
+        <Simple>
+          <Name>Corpse Guid</Name>
+          <Type>PackedGuid</Type>
+        </Simple>
+      </Case>
+      <Case And="SpellTargetFlag_Dynamic_0x10000">
+        <Simple>
+          <Name>Flag_0x10000 Guid</Name>
+          <Type>PackedGuid</Type>
+        </Simple>
+      </Case>
+      <Case And="TradeItem">
+        <Simple>
+          <Name>Trade Item Guid</Name>
+          <Type>PackedGuid</Type>
+        </Simple>
+      </Case>
+      <Case And="Item">
+        <Simple>
+          <Name>Item Guid</Name>
+          <Type>PackedGuid</Type>
+        </Simple>
+      </Case>
+      <Case And="SourceLocation">
+        <Simple>
+          <Name>Source X</Name>
+          <Type>Float</Type>
+        </Simple>
+        <Simple>
+          <Name>Source Y</Name>
+          <Type>Float</Type>
+        </Simple>
+        <Simple>
+          <Name>Source Z</Name>
+          <Type>Float</Type>
+        </Simple>
+      </Case>
+      <Case And="DestinationLocation">
+        <Simple>
+          <Name>Destination Guid</Name>
+          <Type>PackedGuid</Type>
+        </Simple>
+        <Simple>
+          <Name>Destination X</Name>
+          <Type>Float</Type>
+        </Simple>
+        <Simple>
+          <Name>Destination Y</Name>
+          <Type>Float</Type>
+        </Simple>
+        <Simple>
+          <Name>Destination Z</Name>
+          <Type>Float</Type>
+        </Simple>
+      </Case>
+      <Case And="String">
+        <Simple>
+          <Name>String</Name>
+          <Type>CString</Type>
+        </Simple>
+      </Case>
+    </Switch>
+  </RealmPacket>
+  
   <RealmPacket OpCode="SMSG_CAST_FAILED">
     <Simple>
       <Name>CastId</Name>
@@ -487,6 +594,10 @@
         </Simple>
       </Case>
       <Case And="SourceLocation">
+        <Simple>
+          <Name>Source Guid</Name>
+          <Type>PackedGuid</Type>
+        </Simple>
         <Simple>
           <Name>Source X</Name>
           <Type>Float</Type>

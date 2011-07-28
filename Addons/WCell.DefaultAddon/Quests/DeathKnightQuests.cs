@@ -8,6 +8,7 @@ using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
 using WCell.Core.Initialization;
 using WCell.RealmServer.AI;
+using WCell.RealmServer.Chat;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.GameObjects;
 using WCell.RealmServer.NPCs;
@@ -38,6 +39,13 @@ namespace WCell.Addons.Default.Quests
 				NPCId.UnworthyInitiate_3,
 				NPCId.UnworthyInitiate_4,
 				NPCId.UnworthyInitiate_5);
+
+			//Death Comes From On High
+			quest = QuestMgr.GetTemplate(12641);
+
+			//make the go sparkle, we dont click the eye
+			//we must click the holder under it!
+			quest.AddGOInteraction(GOEntryId.EyeOfAcherusControlMechanism, 0);
         }
 
 		#region Emblazoned Rune Blade
@@ -260,9 +268,96 @@ namespace WCell.Addons.Default.Quests
 			return transformSpellId;
 		}
 		#endregion
+
+		#region Death Comes From On High
+		[Initialization]
+		[DependentInitialization(typeof(GOMgr))]
+		public static void FixControlMechanism()
+		{
+			var entry = GOMgr.GetEntry(GOEntryId.EyeOfAcherusControlMechanism);
+			entry.Used += ControlMechanismUsed;
+		}
+
+		private static bool ControlMechanismUsed(GameObject go, Character user)
+		{
+			go.SpellCast.Trigger(SpellId.SummonEyeOfAcherus, user);
+			user.SpellCast.Trigger(SpellId.NotDisplayedOpening_2, go);
+			return true;
+		}
+
+		[Initialization]
+		[DependentInitialization(typeof(NPCMgr))]
+		public static void FixEyeOfAcherus()
+		{
+			var eye = NPCMgr.GetEntry(NPCId.EyeOfAcherus);
+			eye.Activated += EyeOfAcherusActivated;
+			eye.Deleted += EyeOfAcherusDeleted;
+		}
+
+		private static void EyeOfAcherusDeleted(NPC npc)
+		{
+			var chr = npc.Map.GetObject(npc.Creator) as Character;
+			if (chr != null)
+			{
+				chr.UnPossess(npc);
+				chr.Phase = 1;
+			}
+		}
+
+		private static void EyeOfAcherusActivated(NPC npc)
+		{
+			//npc.SpellCast.TriggerSelf((SpellId)51860);
+			npc.SpellCast.TriggerSelf(SpellId.EyeOfAcherusVisual);
+			npc.Phase = 2;
+			
+			//TODO: Set the creator as the chr that used the eye of acherus control mechanism
+			var chr = npc.Map.GetObject(npc.Creator) as Character;
+			if (chr != null)
+			{
+				//TODO localise!
+				ChatMgr.SendRaidBossWhisper(npc, chr, "The Eye of Acherus launches towards its destination.");
+
+				npc.SpellCast.Trigger(SpellId.EyeOfAcherusFlightBoost, npc, chr);
+				npc.Flying++;
+				//npc.IncMechanicCount(SpellMechanic.Rooted);
+				//Move to destination
+				npc.MoveToThenExecute(new Vector3(1758.007f, -5876.785f, 166.8667f), unit =>
+				                                                                     	{
+				                                                                     		unit.SpellCast.TriggerSelf(
+				                                                                     			SpellId.EyeOfAcherusFlight);
+				                                                                     		npc.Auras.Remove(
+				                                                                     			SpellId.EyeOfAcherusFlightBoost);
+				                                                                     		ChatMgr.SendRaidBossWhisper(unit, chr,
+				                                                                     		                            "The Eye of Acherus is in your control.");
+																							//unit.DecMechanicCount(SpellMechanic.Rooted);
+				                                                                     	});
+			}
+		}
+
+		[Initialization(InitializationPass.Second)]
+		public static void FixEyeOfAcherusControlSpell()
+		{
+			var eyeSpell = SpellHandler.Get(SpellId.EffectTheEyeOfAcherus);
+			eyeSpell.AuraRemoved += EffectTheEyeOfAcherusRemoved;
+		}
+
+		private static void EffectTheEyeOfAcherusRemoved(Aura obj)
+		{
+			if (obj.Owner is Character)
+			{
+				var chr = obj.Owner as Character;
+				chr.UnPossess(chr.Charm);
+				chr.Auras.Remove(SpellId.EyeOfAcherusVisual);
+				chr.Phase = 1;
+			}
+		}
+
+		#endregion
 	}
 
-	#region EmblazonRuneBladeAuraHandler
+		
+
+		#region EmblazonRuneBladeAuraHandler
 	public class EmblazonRuneBladeAuraHandler : AuraEffectHandler
 	{
 		protected override void Apply()

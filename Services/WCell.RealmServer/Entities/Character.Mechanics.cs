@@ -242,14 +242,7 @@ namespace WCell.RealmServer.Entities
 			MoveControl.Mover = mover ?? this;
 			MoveControl.CanControl = canControl;
 
-			if (mover == null)
-			{
-				CharacterHandler.SendControlUpdate(this, this, canControl);
-			}
-			else
-			{
-				CharacterHandler.SendControlUpdate(this, mover, canControl);
-			}
+			CharacterHandler.SendControlUpdate(this, MoveControl.Mover, canControl);
 		}
 
 		public void ResetMover()

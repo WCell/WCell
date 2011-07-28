@@ -522,6 +522,17 @@
     </Simple>
   </RealmPacket>
 
+  <RealmPacket OpCode="SMSG_CLIENT_CONTROL_UPDATE">
+    <Simple>
+      <Name>Mover</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>CanControl</Name>
+      <Type>Byte</Type>
+    </Simple>
+  </RealmPacket>
+
   <RealmPacket OpCode="SMSG_STANDSTATE_UPDATE">
     <Simple>
       <Name>Stand State</Name>
@@ -544,7 +555,7 @@
   <RealmPacket OpCode="CMSG_FORCE_MOVE_ROOT_ACK">
     <Simple>
       <Name>Character</Name>
-      <Type>Guid</Type>
+      <Type>PackedGuid</Type>
     </Simple>
     <Simple>
       <Name>Unknown UInt1</Name>
@@ -581,8 +592,7 @@
       <Type>PackedGuid</Type>
     </Simple>
   </RealmPacket>
-  <!--Why doesnt the PA parse these?-->
-  <RealmPacket Sender="Server">
+  <RealmPacket>
     <OpCodes>
       <OpCode>SMSG_SPLINE_SET_RUN_SPEED</OpCode>
       <OpCode>SMSG_SPLINE_SET_RUN_BACK_SPEED</OpCode>

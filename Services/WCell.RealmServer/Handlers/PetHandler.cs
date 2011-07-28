@@ -417,7 +417,7 @@ namespace WCell.RealmServer.Handlers
 			}
 		}
 
-		public static void SendVehicleSpells(IPacketReceiver receiver, Vehicle vehicle)
+		public static void SendVehicleSpells(IPacketReceiver receiver, NPC vehicle)
 		{
 		    var actions = vehicle.BuildVehicleActionBar();
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PET_SPELLS, 18))

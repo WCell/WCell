@@ -71,6 +71,14 @@ namespace WCell.RealmServer.Entities
 
 		protected bool m_initialized;
 
+		private Unit observing;
+
+		public Unit Observing
+		{
+			get { return observing; }
+			set { observing = value;  }
+		}
+
 		#region Messages
 		/// <summary>
 		/// Will be executed by the current map we are currently in or enqueued and executed,
@@ -181,12 +189,14 @@ namespace WCell.RealmServer.Entities
 		{
 			var toRemove = WorldObjectSetPool.Obtain();
 			toRemove.AddRange(KnownObjects);
+			toRemove.Remove(this);
 
 			NearbyObjects.Clear();
 
 			if (m_initialized)
 			{
-				this.IterateEnvironment(BroadcastRange, (obj) =>
+				var updateOrigin = observing ?? this;
+				updateOrigin.IterateEnvironment(BroadcastRange, (obj) =>
 				{
 					if (!IsInPhase(obj))
 					{
@@ -195,7 +205,10 @@ namespace WCell.RealmServer.Entities
 
 					NearbyObjects.Add(obj);
 
-					if (!CanSee(obj))
+
+					//ensure "this" never goes out of range
+					//if we are observing another units broadcasts
+					if (!CanSee(obj) && !ReferenceEquals(obj, this))
 					{
 						return true;
 					}
