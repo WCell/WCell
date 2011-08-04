@@ -207,7 +207,7 @@ namespace WCell.RealmServer.Handlers
 			if (pet != null)
 			{
 				//TODO: Add (pet as Vehicle).GetDriver() == chr;
-				if (pet == chr.ActivePet || pet is Vehicle || chr.GodMode)
+				if (pet == chr.ActivePet || chr.Vehicle == pet || chr.Charm == pet || chr.GodMode)
 				{
 					var castCount = packet.ReadByte();
 					var spellId = packet.ReadUInt32();
@@ -218,7 +218,7 @@ namespace WCell.RealmServer.Handlers
 					var spell = SpellHandler.Get(spellId);
 					if (spell != null)
 					{
-						var cast = client.ActiveCharacter.SpellCast;
+						var cast = pet.SpellCast;
 						cast.Start(spell, packet, castCount, unkFlags);
 					}
 				}

@@ -227,7 +227,7 @@ namespace WCell.RealmServer.Entities
 				if (!IsInRadius(ref LastPosition, maxDistance))
 				{
 					// most certainly a speed hacker
-					log.Warn("WARNING: Possible speedhacker [{0}] moved {1} yards in {2} milliseconds (Latency: {3}, Tollerance: {4})",
+					log.Warn("WARNING: Possible speedhacker [{0}] moved {1} yards in {2} milliseconds (Latency: {3}, Tolerance: {4})",
 							 this, GetDistance(ref LastPosition), delay, latency, SpeedHackToleranceFactor);
 				}
 
@@ -332,7 +332,7 @@ namespace WCell.RealmServer.Entities
 				KnownObjects.Remove(obj);
 
 				// send the destroy packet
-				obj.SendDestroyToPlayer(this);
+				//obj.SendDestroyToPlayer(this);
 			}
 		}
 

@@ -231,7 +231,7 @@ namespace WCell.RealmServer.Handlers
 			// it is only orientation if it is none of the packets below, and has no flags but orientation flags
 			var onlyOrientation = newPosition == mover.Position;
 
-			if (!onlyOrientation && !mover.SetPosition(newPosition, orientation))
+			if (!onlyOrientation && (mover.IsInWorld && !mover.SetPosition(newPosition, orientation)))
 			{
 				// rather unrealistic case
 			}
@@ -466,7 +466,7 @@ namespace WCell.RealmServer.Handlers
 		#region SEND
 		public static void SendMoveToPacket(Unit movingUnit, ref Vector3 pos, float orientation, uint moveTime, MonsterMoveFlags moveFlags)
 		{
-			if (!movingUnit.IsAreaActive)
+			if (!movingUnit.IsAreaActive && movingUnit.CharacterMaster == null)
 			{
 				return;
 			}

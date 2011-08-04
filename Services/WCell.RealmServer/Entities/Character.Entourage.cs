@@ -188,42 +188,54 @@ namespace WCell.RealmServer.Entities
 		#region Controlling
 		public void Possess(int duration, Unit target, bool controllable = true, bool sendPetActionsWithSpells = true)
 		{
-			if (target == null) return;
+			if (target == null)
+				return;
 			if (target is NPC)
 			{
+				
 				Enslave((NPC)target, duration);
 				target.Charmer = this;
 				Charm = target;
 				target.Brain.State = BrainState.Idle;
+
 				if(sendPetActionsWithSpells)
 					PetHandler.SendSpells(this, (NPC)target, PetAction.Stay);
 				else
 					PetHandler.SendVehicleSpells(this, (NPC)target);
+
 				SetMover(target, controllable);
 				target.UnitFlags |= UnitFlags.Possessed;
-				Observing = target;
+				
 			}
 			else if (target is Character)
 			{
 				PetHandler.SendPlayerPossessedPetSpells(this, (Character)target);
 				SetMover(target, controllable);
 			}
-
+			Observing = target;
 			FarSight = target.EntityId;
+			
 		}
 
 		public void UnPossess(Unit target)
 		{
+			Observing = null;
 			SetMover(this, true);
 			ResetMover();
 			FarSight = EntityId.Zero;
 			PetHandler.SendEmptySpells(this);
-			Observing = null;
-			if (target == null) return;
-			target.Charmer = null;
+			
 			Charm = null;
+
+			if (target == null)
+				return;
+
+			target.Charmer = null;
 			target.UnitFlags &= ~UnitFlags.Possessed;
-			if (!(target is NPC)) return;
+
+			if (!(target is NPC))
+				return;
+
 			target.Brain.EnterDefaultState();
 			((NPC)target).RemainingDecayDelayMillis = 1;
 		}

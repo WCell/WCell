@@ -75,7 +75,7 @@ namespace WCell.RealmServer.Entities
 
 		public Unit Observing
 		{
-			get { return observing; }
+			get { return observing ?? this; }
 			set { observing = value;  }
 		}
 
@@ -195,8 +195,7 @@ namespace WCell.RealmServer.Entities
 
 			if (m_initialized)
 			{
-				var updateOrigin = observing ?? this;
-				updateOrigin.IterateEnvironment(BroadcastRange, (obj) =>
+				Observing.IterateEnvironment(BroadcastRange, (obj) =>
 				{
 					if (!IsInPhase(obj))
 					{
@@ -285,6 +284,11 @@ namespace WCell.RealmServer.Entities
 				foreach (var obj in toRemove)
 				{
 					OnOutOfRange(obj);
+				}
+
+				if (toRemove.Count > 0)
+				{
+					SendOutOfRangeUpdate(this, toRemove);
 				}
 			}
 

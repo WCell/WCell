@@ -82,6 +82,20 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
+		/// Moves towards the given target and then executes the given action
+		/// </summary>
+		/// <remarks>Requires Brain</remarks>
+		public void MoveToPointsThenExecute(List<Vector3> points, UnitActionCallback actionCallback)
+		{
+			if (CheckBrain())
+			{
+				//m_brain.StopCurrentAction();
+				m_Movement.MoveToPoints(points);
+				m_brain.CurrentAction = new AIMoveThenExecAction(this, actionCallback);
+			}
+		}
+
+		/// <summary>
 		/// Moves to the given target and once within default range, executes the given action
 		/// </summary>
 		/// <remarks>Requires Brain</remarks>

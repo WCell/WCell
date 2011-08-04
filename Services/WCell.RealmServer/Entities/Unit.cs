@@ -1179,7 +1179,7 @@ namespace WCell.RealmServer.Entities
 			if (val > 0)
 			{
 				// stealthed Unit
-				// TODO: Calc detection, based on Stealth value, boni, detection, detection boni, distance and viewing angle
+				// TODO: Calc detection, based on Stealth value, bonuses, detection, detection bonuses, distance and viewing angle
 
 				//if we are stunned we don't see anything
 				if ((this.UnitFlags & UnitFlags.Stunned) != 0)

@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using WCell.Core.Paths;
 using WCell.Core.Terrain.Paths;
 using WCell.RealmServer.Handlers;
@@ -210,6 +212,44 @@ namespace WCell.RealmServer.Entities
 				// start moving
 				MoveToDestination();
 			}
+			// cannot move
+			return false;
+		}
+
+		/// <summary>
+		/// Starts the MovementAI
+		/// </summary>
+		/// <returns>Whether already arrived</returns>
+		public bool MoveToPoints(List<Vector3> points)
+		{
+			if (!m_owner.IsInWorld)
+			{
+				// something's wrong here
+				m_owner.DeleteNow();
+				return false;
+			}
+
+			m_destination = points[points.Count - 1];
+			if (IsAtDestination)
+			{
+				return true;
+			}
+
+
+			// TODO: Consider flying units & liquid levels
+			var pos = m_owner.Position;
+			pos.Z += 5;
+			m_currentQuery = new PathQuery(pos, ref m_destination, m_owner.ContextHandler, OnPathQueryReply);
+
+			m_currentQuery.Path.Reset(points.Count);
+			foreach (var point in points)
+			{
+				m_currentQuery.Path.Add(point);
+			}
+			m_currentQuery.Reply();
+
+			//m_owner.Map.Terrain.FindPath(m_currentQuery);
+
 			// cannot move
 			return false;
 		}

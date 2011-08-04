@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using WCell.Constants;
 using WCell.Constants.Factions;
 using WCell.Constants.GameObjects;
@@ -24,16 +25,16 @@ namespace WCell.Addons.Default.Quests
 	{
 		
 		[Initialization]
-        [DependentInitialization(typeof(QuestMgr))]
-        public static void FixIt()
-        {
+		[DependentInitialization(typeof(QuestMgr))]
+		public static void FixIt()
+		{
 			//The Emblazoned Runeblade
-        	var quest = QuestMgr.GetTemplate(12619);
-        	quest.QuestFinished += EmblazonRuneBladeQuestFinished;
+			var quest = QuestMgr.GetTemplate(12619);
+			quest.QuestFinished += EmblazonRuneBladeQuestFinished;
 
 			//The Endless Hunger
-        	quest = QuestMgr.GetTemplate(12848);
-        	var index = quest.GetInteractionTemplateFor(NPCId.UnworthyInitiate).Index;
+			quest = QuestMgr.GetTemplate(12848);
+			var index = quest.GetInteractionTemplateFor(NPCId.UnworthyInitiate).Index;
 			quest.AddLinkedNPCInteractions(index,
 				NPCId.UnworthyInitiate_2,
 				NPCId.UnworthyInitiate_3,
@@ -42,11 +43,11 @@ namespace WCell.Addons.Default.Quests
 
 			//Death Comes From On High
 			quest = QuestMgr.GetTemplate(12641);
-
+			quest.QuestCancelled += DeathComesFromOnHighCancelled;
 			//make the go sparkle, we dont click the eye
 			//we must click the holder under it!
 			quest.AddGOInteraction(GOEntryId.EyeOfAcherusControlMechanism, 0);
-        }
+		}
 
 		#region Emblazoned Rune Blade
 
@@ -81,9 +82,9 @@ namespace WCell.Addons.Default.Quests
 			failedReason = SpellFailedReason.OutOfRange;
 		}
 
-    	private static void EmblazonRuneBladeQuestFinished(Quest obj)
-    	{
-    		var chr = obj.Owner;
+		private static void EmblazonRuneBladeQuestFinished(Quest obj)
+		{
+			var chr = obj.Owner;
 			if(chr == null)
 				return;
 
@@ -92,9 +93,9 @@ namespace WCell.Addons.Default.Quests
 				chr.PlayerSpells.AddSpellRequirements(spell);
 				chr.Spells.AddSpell(spell);
 			}
-    	}
+		}
 
-    	[Initialization(InitializationPass.Second)]
+		[Initialization(InitializationPass.Second)]
 		public static void FixSpells()
 		{
 			var emblazonRuneblade = SpellHandler.Get(_emblazonRunebladeId);
@@ -272,16 +273,44 @@ namespace WCell.Addons.Default.Quests
 		#region Death Comes From On High
 		[Initialization]
 		[DependentInitialization(typeof(GOMgr))]
-		public static void FixControlMechanism()
+		public static void FixDeathComesGOs()
 		{
 			var entry = GOMgr.GetEntry(GOEntryId.EyeOfAcherusControlMechanism);
 			entry.Used += ControlMechanismUsed;
+
+			entry = GOMgr.GetEntry(GOEntryId.AbandonedMail);
+			entry.Activated += NewAvalonSpawnsActivated;
+			entry = GOMgr.GetEntry(GOEntryId.SaroniteArrow);
+			entry.Activated += NewAvalonSpawnsActivated;
+			
+			entry = GOMgr.GetEntry(GOEntryId.Unknown_269);
+			entry.Activated += NewAvalonSpawnsActivated;
+			entry = GOMgr.GetEntry(GOEntryId.Unknown_350);
+			entry.Activated += NewAvalonSpawnsActivated;
+			entry = GOMgr.GetEntry(GOEntryId.Unknown_351);
+			entry.Activated += NewAvalonSpawnsActivated;
+			entry = GOMgr.GetEntry(GOEntryId.Unknown_352);
+			entry.Activated += NewAvalonSpawnsActivated;
+			entry = GOMgr.GetEntry(GOEntryId.Unknown_353);
+			entry.Activated += NewAvalonSpawnsActivated;
+			entry = GOMgr.GetEntry(GOEntryId.Unknown_354);
+			entry.Activated += NewAvalonSpawnsActivated;
+			entry = GOMgr.GetEntry(GOEntryId.Unknown_359);
+			entry.Activated += NewAvalonSpawnsActivated;
+			entry = GOMgr.GetEntry(GOEntryId.Unknown_361);
+			entry.Activated += NewAvalonSpawnsActivated;
+			entry = GOMgr.GetEntry(GOEntryId.Unknown_363);
+			entry.Activated += NewAvalonSpawnsActivated;
+			entry = GOMgr.GetEntry(GOEntryId.Unknown_364);
+			entry.Activated += NewAvalonSpawnsActivated;
+			entry = GOMgr.GetEntry(GOEntryId.Unknown_365);
+			entry.Activated += NewAvalonSpawnsActivated;
 		}
 
 		private static bool ControlMechanismUsed(GameObject go, Character user)
 		{
+			user.Phase = 2;
 			go.SpellCast.Trigger(SpellId.SummonEyeOfAcherus, user);
-			user.SpellCast.Trigger(SpellId.NotDisplayedOpening_2, go);
 			return true;
 		}
 
@@ -292,6 +321,49 @@ namespace WCell.Addons.Default.Quests
 			var eye = NPCMgr.GetEntry(NPCId.EyeOfAcherus);
 			eye.Activated += EyeOfAcherusActivated;
 			eye.Deleted += EyeOfAcherusDeleted;
+
+			var npcEntry = NPCMgr.GetEntry(NPCId.ScarletCrusader);
+			npcEntry.Activated += NewAvalonSpawnsActivated;
+			npcEntry = NPCMgr.GetEntry(NPCId.ScarletCommander);
+			npcEntry.Activated += NewAvalonSpawnsActivated;
+			npcEntry = NPCMgr.GetEntry(NPCId.ScarletPreacher);
+			npcEntry.Activated += NewAvalonSpawnsActivated;
+			
+			npcEntry = NPCMgr.GetEntry(NPCId.CitizenOfNewAvalon);
+			npcEntry.Activated += NewAvalonSpawnsActivated;
+			npcEntry = NPCMgr.GetEntry(NPCId.CitizenOfNewAvalon_2);
+			npcEntry.Activated += NewAvalonSpawnsActivated;
+			npcEntry = NPCMgr.GetEntry(NPCId.CitizenOfNewAvalon_3);
+			npcEntry.Activated += NewAvalonSpawnsActivated;
+			npcEntry = NPCMgr.GetEntry(NPCId.CitizenOfNewAvalon_4);
+			npcEntry.Activated += NewAvalonSpawnsActivated;
+
+			npcEntry = NPCMgr.GetEntry(NPCId.CitizenOfHavenshire);
+			npcEntry.Activated += NewAvalonSpawnsActivated;
+			npcEntry = NPCMgr.GetEntry(NPCId.CitizenOfHavenshire_2);
+			npcEntry.Activated += NewAvalonSpawnsActivated;
+			npcEntry = NPCMgr.GetEntry(NPCId.CitizenOfHavenshire_3);
+			npcEntry.Activated += NewAvalonSpawnsActivated;
+			npcEntry = NPCMgr.GetEntry(NPCId.CitizenOfHavenshire_4);
+			npcEntry.Activated += NewAvalonSpawnsActivated;
+
+			npcEntry = NPCMgr.GetEntry(NPCId.HighGeneralAbbendis_3);
+			npcEntry.Activated += NewAvalonSpawnsActivated;
+			npcEntry = NPCMgr.GetEntry(NPCId.HighAbbotLandgren_3);
+			npcEntry.Activated += NewAvalonSpawnsActivated;
+
+			npcEntry = NPCMgr.GetEntry(NPCId.NewAvalonForge);
+			npcEntry.Activated += NewAvalonSpawnsActivated;
+
+			//Used by the summon ghouls spell
+			npcEntry = NPCMgr.GetEntry(NPCId.VengefulGhoul);
+			npcEntry.Activated += NewAvalonSpawnsActivated;
+			
+		}
+
+		private static void NewAvalonSpawnsActivated(WorldObject obj)
+		{
+			obj.Phase = 2;
 		}
 
 		private static void EyeOfAcherusDeleted(NPC npc)
@@ -321,16 +393,27 @@ namespace WCell.Addons.Default.Quests
 				npc.Flying++;
 				//npc.IncMechanicCount(SpellMechanic.Rooted);
 				//Move to destination
-				npc.MoveToThenExecute(new Vector3(1758.007f, -5876.785f, 166.8667f), unit =>
-				                                                                     	{
-				                                                                     		unit.SpellCast.TriggerSelf(
-				                                                                     			SpellId.EyeOfAcherusFlight);
-				                                                                     		npc.Auras.Remove(
-				                                                                     			SpellId.EyeOfAcherusFlightBoost);
-				                                                                     		ChatMgr.SendRaidBossWhisper(unit, chr,
-				                                                                     		                            "The Eye of Acherus is in your control.");
+
+				var points = new List<Vector3>(3)
+								{
+									new Vector3(1758.007f, -5876.785f, 166.8667f),
+									new Vector3(1957.396f, -5844.105f, 273.8667f),
+									new Vector3(2341.571f, -5672.797f, 538.3942f),
+									
+									
+								};
+
+
+				npc.MoveToPointsThenExecute(points, unit =>
+																						{
+																							unit.SpellCast.TriggerSelf(
+																								SpellId.EyeOfAcherusFlight);
+																							unit.Auras.Remove(
+																								SpellId.EyeOfAcherusFlightBoost);
+																							ChatMgr.SendRaidBossWhisper(unit, chr,
+																														"The Eye of Acherus is in your control.");
 																							//unit.DecMechanicCount(SpellMechanic.Rooted);
-				                                                                     	});
+																						});
 			}
 		}
 
@@ -346,16 +429,27 @@ namespace WCell.Addons.Default.Quests
 			if (obj.Owner is Character)
 			{
 				var chr = obj.Owner as Character;
-				chr.UnPossess(chr.Charm);
-				chr.Auras.Remove(SpellId.EyeOfAcherusVisual);
-				chr.Phase = 1;
+				CleanUpEyeOfAcherus(chr);
 			}
+		}
+
+		private static void DeathComesFromOnHighCancelled(Quest quest, bool failed)
+		{
+			var chr = quest.Owner;
+			if(chr != null)
+				CleanUpEyeOfAcherus(chr);
+		}
+
+		private static void CleanUpEyeOfAcherus(Character chr)
+		{
+			chr.UnPossess(chr.Charm);
+			chr.Auras.Remove(SpellId.EyeOfAcherusVisual);
+			chr.Auras.Remove(SpellId.EyeOfAcherusFlightBoost);
+			chr.Phase = 1;
 		}
 
 		#endregion
 	}
-
-		
 
 		#region EmblazonRuneBladeAuraHandler
 	public class EmblazonRuneBladeAuraHandler : AuraEffectHandler

@@ -1815,6 +1815,11 @@ namespace WCell.RealmServer.Global
 		{
 			IterateObjects(center, WorldObject.BroadcastRange, phase, obj =>
 			{
+				if ((obj is NPC) && ((NPC)obj).Charmer != null && (((NPC)obj).Charmer is Character))
+				{
+					((Character)(((NPC)obj).Charmer)).Send(packet.GetFinalizedPacket());
+				}
+
 				if (obj is Character)
 				{
 					((Character)obj).Send(packet.GetFinalizedPacket());

@@ -39,15 +39,15 @@ namespace WCell.RealmServer.GameObjects
 		/// <returns></returns>
 		public bool CanBeUsedBy(Character chr)
 		{
-			if (chr.GodMode)
-			{
-				return true;
-			}
-
 			// must be enabled
 			if (!chr.CanSee(m_go) || m_go.State == GameObjectState.Disabled)
 			{
 				return false;
+			}
+
+			if (chr.GodMode)
+			{
+				return true;
 			}
 
 			// must have the right Faction (if limited to either side)

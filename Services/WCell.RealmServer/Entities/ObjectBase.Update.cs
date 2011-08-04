@@ -160,6 +160,17 @@ namespace WCell.RealmServer.Entities
         {
         }
 
+		public void WriteOutOfRangeEntitiesUpdate(Character receiver, HashSet<WorldObject> worldObjects)
+		{
+			receiver.m_updatePacket.Write((byte) UpdateType.OutOfRange);
+			receiver.m_updatePacket.Write(worldObjects.Count);
+			foreach (var worldObject in worldObjects)
+			{
+				worldObject.EntityId.WritePacked(receiver.m_updatePacket);
+			}
+			receiver.UpdateCount++;
+		}
+
 		public void WriteObjectValueUpdate(Character receiver)
 		{
 			// TODO: Find a better way to keep track of changed Dynamic UpdateFields
@@ -337,6 +348,23 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
+		public void SendOutOfRangeUpdate(Character receiver, HashSet<WorldObject> worldObjects)
+		{
+			using (var packet = new UpdatePacket(1024))
+			{
+				packet.Position = 4;						// jump over header
+				packet.Write(1);							// Update Count
+				packet.Write((byte)UpdateType.OutOfRange);
+				packet.Write(worldObjects.Count);
+				foreach (var worldObject in worldObjects)
+				{
+					worldObject.EntityId.WritePacked(packet);
+				}
+
+				receiver.Send(packet);
+			}
+		}
+		
 		// TODO: Improve (a lot)
 
 		#region Spontaneous UpdateBlock Creation

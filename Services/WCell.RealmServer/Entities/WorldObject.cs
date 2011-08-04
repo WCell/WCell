@@ -983,12 +983,27 @@ namespace WCell.RealmServer.Entities
 			{
 				this.IterateEnvironment(BroadcastRange, obj =>
 				{
+					if ((obj is NPC) && ((NPC)obj).Charmer != null && (((NPC)obj).Charmer is Character))
+					{
+						((Character)(((NPC)obj).Charmer)).Send(packet.GetFinalizedPacket());
+					}
+
 					if (obj is Character)
 					{
 						((Character)obj).Send(packet.GetFinalizedPacket());
 					}
 					return true;
 				});
+			}
+			else
+			{
+				if (!(this is NPC))
+					return;
+
+				if (((NPC)this).Charmer == null || !(((NPC)this).Charmer is Character))
+					return;
+
+				((Character)(((NPC)this).Charmer)).Send(packet.GetFinalizedPacket());
 			}
 		}
 

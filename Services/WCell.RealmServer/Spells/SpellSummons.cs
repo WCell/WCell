@@ -126,7 +126,7 @@ namespace WCell.RealmServer.Spells
 				cast.CasterChar.Summon = EntityId.Zero;
 				npc.Summoner = null;
 				npc.Master = cast.CasterChar;
-				cast.CasterChar.Possess(0, npc, true, false);
+				npc.AddMessage(() => cast.CasterChar.Possess(0, npc, true, false)); 
 			}
 			return npc;
 		}
