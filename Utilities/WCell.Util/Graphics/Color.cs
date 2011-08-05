@@ -169,5 +169,13 @@ namespace WCell.Util.Graphics
 
 		[FieldOffset(1)]
 		public byte B;
+
+		public string Hex
+		{
+			get
+			{
+				return String.Format("{0}{1}{2}{3}", R.ToString("X"), G.ToString("X"), B.ToString("X"), A.ToString("X"));
+			}
+		}
 	}
 }
