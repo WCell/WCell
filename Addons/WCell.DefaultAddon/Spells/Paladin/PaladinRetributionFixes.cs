@@ -10,6 +10,7 @@ using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Spells.Auras.Handlers;
 using WCell.RealmServer.Spells.Auras.Misc;
 using WCell.RealmServer.Spells.Effects;
+using WCell.RealmServer.Entities;
 
 namespace WCell.Addons.Default.Spells.Paladin
 {
@@ -100,9 +101,51 @@ namespace WCell.Addons.Default.Spells.Paladin
 				dmgEffect.APValueFactor = 0.15f;
 				dmgEffect.SpellPowerValuePct = 15;
 			});
+
+            // Divine Storm Heal Effect
+            SpellLineId.PaladinRetributionDivineStorm.Apply(spell =>
+            {
+                spell.GetEffect(SpellEffectType.WeaponPercentDamage).SpellEffectHandlerCreator =
+                    (cast, eff) => new DivineStormHealHandler(cast, eff);
+      
+            });
 		}
 	}
 
+    public class DivineStormHealHandler : WeaponDamageEffectHandler
+    {
+        public DivineStormHealHandler(SpellCast cast, SpellEffect eff)
+            : base(cast, eff) { }
+
+        public override void OnHit(DamageAction action)
+        {
+            var chr = action.Attacker as Character;
+            if (chr != null)
+            {
+                if (chr.Group != null)
+                {
+                    List<Character> origGroup = new List<Character>(chr.Group.GetAllCharacters());
+                    List<Character> scrambledGroup = new List<Character>();
+
+                    Random randNum = new Random();
+                    int i = -1;
+                    foreach (Character groupMember in origGroup)
+                    {
+                        i++;
+                        if (groupMember == chr)
+                            continue;
+                        if (randNum.NextDouble() < (3 - scrambledGroup.Count / origGroup.Count - i))
+                            scrambledGroup.Add(groupMember);
+                    }
+                    var effect = SpellHandler.Get(SpellId.DivineStorm_2).GetEffect(SpellEffectType.Heal);
+                    foreach (Character target in scrambledGroup)
+                        target.Heal(action.GetDamagePercent(25), chr, effect);
+                }
+            }
+            base.OnHit(action);
+        }
+
+    }
 	/// <summary>
 	/// Reflects damage, but caps at 50% of wearer's max health
 	/// </summary>
