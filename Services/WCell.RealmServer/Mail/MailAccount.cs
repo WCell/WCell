@@ -117,6 +117,12 @@ namespace WCell.RealmServer.Mail
 
 			if (!m_chr.GodMode)
 			{
+                if (stationary == MailStationary.GM)
+                {
+                    MailHandler.SendResult(m_chr.Client, 0, MailResult.MailSent, MailError.INTERNAL_ERROR);
+                    return MailError.INTERNAL_ERROR;
+                }
+
 				// Can't send to people who ignore you
 				if (RelationMgr.IsIgnoring(recipientRecord.EntityLowId, m_chr.EntityId.Low))
 				{
