@@ -172,10 +172,7 @@ namespace WCell.Util.Graphics
 
 		public string Hex
 		{
-			get
-			{
-				return String.Format("{0}{1}{2}{3}", R.ToString("X"), G.ToString("X"), B.ToString("X"), A.ToString("X"));
-			}
+			get { return ARGBValue.ToString("X"); }
 		}
 	}
 }
