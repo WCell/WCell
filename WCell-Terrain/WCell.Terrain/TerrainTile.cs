@@ -19,7 +19,7 @@ namespace WCell.Terrain
 	public class TerrainTile : IShape
 	{
 		public int[] TerrainIndices;
-		public Vector3[] TerrainVertices;
+	    public Vector3[] TerrainVertices;
 
 		public TerrainLiquidChunk[,] LiquidChunks;
 

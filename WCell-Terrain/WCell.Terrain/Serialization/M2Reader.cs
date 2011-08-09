@@ -293,9 +293,9 @@ namespace WCell.Terrain.Serialization
 			var tempIndices = new List<int>();
 			foreach (var tri in model.BoundingTriangles)
 			{
-				tempIndices.Add(tri.Index2);
-				tempIndices.Add(tri.Index1);
 				tempIndices.Add(tri.Index0);
+				tempIndices.Add(tri.Index1);
+				tempIndices.Add(tri.Index2);
 			}
 
 			var currentM2 = TransformM2(model, tempIndices, doodadDefinition);

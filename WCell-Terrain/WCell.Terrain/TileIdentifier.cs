@@ -93,7 +93,10 @@ namespace WCell.Terrain
 		public static string GetName(MapId map)
 		{
 			string name;
-			InternalMapNames.TryGetValue(map, out name);
+			if (!InternalMapNames.TryGetValue(map, out name))
+			{
+			    LogUtil.ErrorException("No map corresponding to {0} could be found.", map);
+			}
 			return name;
 		}
 
