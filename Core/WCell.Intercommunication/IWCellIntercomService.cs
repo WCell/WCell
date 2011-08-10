@@ -83,8 +83,8 @@ namespace WCell.Intercommunication
 		bool UpdateRealmServer(string serverName, int chrCount, int capacity, RealmServerType serverType,
 		                       RealmFlags flags, RealmCategory serverCategory, RealmStatus serverStatus);
 
-		[OperationContract(Action = "http://www.wcell.org/IServerIPC/UnregisterRealServer",
-			ReplyAction = "http://www.wcell.org/IServerIPC/UnregisterRealServerResponse")]
+		[OperationContract(Action = "http://www.wcell.org/IServerIPC/UnregisterRealmServer",
+			ReplyAction = "http://www.wcell.org/IServerIPC/UnregisterRealmServerResponse")]
 		void UnregisterRealmServer();
 
 		#region Logon

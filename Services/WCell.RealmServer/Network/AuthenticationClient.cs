@@ -62,7 +62,7 @@ namespace WCell.RealmServer.Network
 		public AuthenticationClient()
 		{
 			m_IsRunning = true;
-			binding = new NetTcpBinding {Security = {Mode = SecurityMode.None}};
+			binding = new NetTcpBinding(SecurityMode.None);
 		}
 
 		/// <summary>

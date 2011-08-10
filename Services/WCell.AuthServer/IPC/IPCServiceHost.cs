@@ -53,19 +53,17 @@ namespace WCell.AuthServer.IPC
 
 				lock (typeof(IPCServiceHost))
 				{
-					host = new ServiceHost(typeof(IPCServiceAdapter));
-					var binding = new NetTcpBinding();
-					binding.Security.Mode = SecurityMode.None;
+					var uri = new Uri(AuthServerConfiguration.IPCAddress);
+					host = new ServiceHost(typeof(IPCServiceAdapter), uri);
 
 					var endPoint = host.AddServiceEndpoint(
 						typeof(IWCellIntercomService),
-						binding,
-						AuthServerConfiguration.IPCAddress);
+						new NetTcpBinding(SecurityMode.None),
+						uri);
 
 					host.Open();
 
-					var addr = host.Description.Endpoints[0].ListenUri.AbsoluteUri;
-					log.Info(resources.IPCServiceStarted, addr);
+					log.Info(resources.IPCServiceStarted, uri.AbsoluteUri);
 				}
 			}
 		}
