@@ -18,7 +18,7 @@
   </Setting>
   <Setting>
     <Name>WailingCaverns</Name>
-    <Type>WCell.Addons.Default.Instances.WailingCaverns</Type>
+    <Type>WCell.Addons.Default.Instances.Kalimdor.WailingCaverns</Type>
   </Setting>
   <Setting>
     <Name>UnusedMonastery</Name>
