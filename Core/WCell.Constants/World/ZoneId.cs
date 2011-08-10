@@ -1731,7 +1731,7 @@ namespace WCell.Constants.World
 		TheSunForge = 4093,
 		SunwellPlateau_2 = 4094,
 		MagistersTerrace = 4095,
-		ClaytönsWoWEditLand = 4096,
+		ClaytonsWoWEditLand = 4096,
 		WinterfinCaverns = 4097,
 		GlimmerBay = 4098,
 		WinterfinRetreat = 4099,
