@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2009-12-29 05:43:08 +0100 (ti, 29 dec 2009) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 1160 $
  *
  *   This program is free software; you can redistribute it and/or modify

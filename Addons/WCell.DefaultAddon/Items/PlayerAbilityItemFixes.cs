@@ -15,7 +15,7 @@ namespace WCell.Addons.Default.Items
 	public static class PlayerAbilityItemFixes
 	{
 		/// <summary>
-		/// This must not be called *after* items have been loaded!
+		/// This must NOT be called *after* items have been loaded!
 		/// </summary>
 		[Initialization(InitializationPass.First)]
 		public static void FixMe()

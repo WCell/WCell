@@ -233,6 +233,7 @@ namespace WCell.RealmServer.Handlers
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_LOOT_MONEY_NOTIFY))
 			{
 				packet.WriteUInt(amount);
+				packet.WriteByte(looter.IsInGroup ? 0 : 1);
 				looter.Client.Send(packet);
 			}
 		}

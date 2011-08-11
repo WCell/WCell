@@ -81,27 +81,24 @@ namespace WCell.RealmServer.NPCs
             id = GetInt32(rawData, 0);
             var vehicle = new VehicleEntry {
                 Id = GetUInt32(rawData,0),
-                Flags = GetUInt32(rawData,1),
+                Flags = (VehicleFlags)GetUInt32(rawData,1),
                 TurnSpeed = GetFloat(rawData,2),
                 PitchSpeed = GetFloat(rawData,3),
                 PitchMin = GetFloat(rawData,4),
-                PitchMax = GetFloat(rawData,5),
-                // a vehicle has 1 - 8 seats
-                Seats = new VehicleSeatEntry[8],
+                PitchMax = GetFloat(rawData,5)
             };
 
         	var lastSeatId = 0;
-        	int count = 0;
-			for (int i = 0; i < vehicle.Seats.Length; i++)
+        	var count = 0;
+			for (var i = 0; i < vehicle.Seats.Length; i++)
 			{
 				var seatId = GetUInt32(rawData, 6 + i);
-				if (seatId > 0)
-				{
-					var seatEntry = NPCMgr.GetVehicleSeatEntry(seatId);
-					vehicle.Seats[i] = seatEntry;
-					count++;
-					lastSeatId = i;
-				}
+				if (seatId <= 0) continue;
+
+				var seatEntry = NPCMgr.GetVehicleSeatEntry(seatId);
+				vehicle.Seats[i] = seatEntry;
+				count++;
+				lastSeatId = i;
 			}
 
 			vehicle.SeatCount = count;
@@ -109,6 +106,8 @@ namespace WCell.RealmServer.NPCs
 			{
 				Array.Resize(ref vehicle.Seats, (int)lastSeatId + 1);
 			}
+
+        	vehicle.PowerType = (VehiclePowerType)GetInt32(rawData, 37);
 
         	return vehicle;
         }
@@ -120,7 +119,7 @@ namespace WCell.RealmServer.NPCs
             id = GetInt32(rawData, 0);
             var seat = new VehicleSeatEntry {
 				Id = GetUInt32(rawData, 0),
-                Flags = GetUInt32(rawData,1),
+                Flags = (VehicleSeatFlags)GetUInt32(rawData,1),
                 AttachmentId = GetInt32(rawData,2),
                 AttachmentOffset = new Vector3(
 					GetFloat(rawData,3),
@@ -152,7 +151,8 @@ namespace WCell.RealmServer.NPCs
                 PassengerYaw = GetFloat(rawData,29),
                 PassengerPitch = GetFloat(rawData,30),
                 PassengerRoll = GetFloat(rawData,31),
-                PassengerAttachmentId = GetInt32(rawData,32)
+                PassengerAttachmentId = GetInt32(rawData,32),
+				FlagsB = (VehicleSeatFlagsB)GetUInt32(rawData, 45)
             };
             return seat;
         }

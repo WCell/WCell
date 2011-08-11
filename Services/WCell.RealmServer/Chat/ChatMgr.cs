@@ -649,6 +649,23 @@ namespace WCell.RealmServer.Chat
 		}
 
 		/// <summary>
+		/// Sends a whisper from one player to another.
+		/// </summary>
+		/// <param name="sender">the sender of the whisper</param>
+		/// <param name="receiver">the target of the whisper</param>
+		/// <param name="message">the message to send</param>
+		public static void SendRaidBossWhisper(WorldObject sender, IChatter receiver, string message)
+		{
+			if (message.Length == 0)
+				return;
+
+			using (var chatPacket = CreateCharChatMessage(ChatMsgType.RaidBossWhisper, ChatLanguage.Universal, sender.EntityId, receiver.EntityId, sender.Name, message, ChatTag.None))
+			{
+				receiver.Send(chatPacket);
+			}
+		}
+
+		/// <summary>
 		/// Sends a message to guild chat.
 		/// </summary>
 		/// <param name="sender">the sender/guild member of the message</param>

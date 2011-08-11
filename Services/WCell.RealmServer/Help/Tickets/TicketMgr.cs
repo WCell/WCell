@@ -26,7 +26,7 @@ namespace WCell.RealmServer.Help.Tickets
 	///
 	/// TODO: Commands - Summon, Goto, Next, Previous
 	/// TODO: Staff chat-channeling for enforced help
-	/// TODO: Inidividual settings for staff/ticket issuing? Use ticket types?
+	/// TODO: Individual settings for staff/ticket issuing? Use ticket types?
 	/// TODO: Backup command to store certain tickets?
 	/// </summary>
 	public class TicketMgr

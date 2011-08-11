@@ -1,4 +1,5 @@
 using System;
+using Castle.ActiveRecord;
 using WCell.Constants.World;
 using WCell.Core.Database;
 using WCell.RealmServer.Global;
@@ -18,28 +19,47 @@ namespace WCell.RealmServer.Instances
 			MapId = mapId;
 		}
 
-		public DateTime BindTime
+		public uint InstanceId
 		{
-			get;
-			set;
+			get { return (uint)_InstanceId; }
+			set { _InstanceId = (int)value; }
 		}
 
-		public uint DifficultyIndex
-		{
-			get { return (uint)m_DifficultyIndex; }
-			set { m_DifficultyIndex = (int)value; }
-		}
-
+		[PrimaryKey]
 		public MapId MapId
 		{
 			get;
 			set;
 		}
 
-		public uint InstanceId
+		[PrimaryKey]
+		private int _InstanceId
 		{
 			get;
 			set;
+		}
+
+		[Property(NotNull = true)]
+		public uint DifficultyIndex
+		{
+			get { return (uint)m_DifficultyIndex; }
+			set { m_DifficultyIndex = (int)value; }
+		}
+
+		[Property(NotNull = true)]
+		public DateTime BindTime
+		{
+			get;
+			set;
+		}
+
+		public DateTime NextResetTime
+		{
+			get
+			{
+				// TODO: Correct reset time
+				return InstanceMgr.GetNextResetTime(Difficulty);
+			}
 		}
 
 		public MapTemplate MapTemplate
@@ -58,11 +78,6 @@ namespace WCell.RealmServer.Instances
 		public InstancedMap Instance
 		{
 			get { return InstanceMgr.Instances.GetInstance(MapId, InstanceId); }
-		}
-
-		public DateTime NextResetTime
-		{
-			get { return InstanceMgr.GetNextResetTime(MapId, DifficultyIndex); }
 		}
 
 		#region Misc Overrides
@@ -95,7 +110,7 @@ namespace WCell.RealmServer.Instances
 			if (ReferenceEquals(null, obj)) return false;
 			if (ReferenceEquals(this, obj)) return true;
 			if (!(obj is InstanceBinding)) return false;
-			return Equals((InstanceBinding) obj);
+			return Equals((InstanceBinding)obj);
 		}
 
 		public override int GetHashCode()
@@ -103,9 +118,9 @@ namespace WCell.RealmServer.Instances
 			unchecked
 			{
 				var result = m_DifficultyIndex;
-				result = (result*397) ^ BindTime.GetHashCode();
-				result = (result*397) ^ MapId.GetHashCode();
-				result = (result*397) ^ InstanceId.GetHashCode();
+				result = (result * 397) ^ BindTime.GetHashCode();
+				result = (result * 397) ^ MapId.GetHashCode();
+				result = (result * 397) ^ InstanceId.GetHashCode();
 				return result;
 			}
 		}

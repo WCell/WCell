@@ -343,6 +343,17 @@ namespace WCell.Addons.Default.Spells.Druid
 					spell.AttributesExB = SpellAttributesExB.None;
 				});
 
+            // Druid Faerie Fire / Druid Faerie Fire (Feral)
+            // Should add stealth/invis immunity to the target.
+            SpellHandler.Apply(spell =>
+            {
+                var stealth = spell.AddAuraEffect(AuraType.DispelImmunity, ImplicitSpellTargetType.SingleEnemy);
+                var invis = spell.AddAuraEffect(AuraType.DispelImmunity, ImplicitSpellTargetType.SingleEnemy);
+
+                stealth.MiscValue = (int)DispelType.Stealth;
+                invis.MiscValue = (int)DispelType.Invisibility;
+            }, SpellLineId.DruidFaerieFire, SpellLineId.DruidFaerieFireFeral);
+
 			FixBloodFrenzy();
 		}
 

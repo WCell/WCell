@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2010-02-17 05:08:19 +0100 (on, 17 feb 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+ 
  *   revision		: $Rev: 1256 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -1022,7 +1022,29 @@ namespace WCell.RealmServer.Entities
 				}
 			}
 		}
-
+		/// <summary>
+		/// Helper function for Aurastate related fix and Conflagrate spell.
+		/// see UpdateFieldHandler/Warlockfixes
+		/// </summary>
+		public SpellId GetStrongestImmolate()
+		{
+			var immolate = this.Auras[SpellLineId.WarlockImmolate];
+			var shadowflamerank1 = this.Auras[SpellId.Shadowflame_3];
+			var shadowflamerank2 = this.Auras[SpellId.Shadowflame_5];
+			if (immolate != null)
+			{
+				return immolate.Spell.SpellId;
+			}
+			else if (shadowflamerank2 != null)
+			{
+				return shadowflamerank2.Spell.SpellId;
+			}
+			else if (shadowflamerank1 != null)
+			{
+				return shadowflamerank1.Spell.SpellId;
+			}
+			return SpellId.None;
+		}
 
 		#region UNIT_FIELD_BYTES_0
 
@@ -1464,6 +1486,19 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
+		/// Current amount of power in percent
+		/// </summary>
+		public int PowerPct
+		{
+			get
+			{
+				var max = MaxPower;
+				return (100 * Power + (max >> 1)) / max;
+			}
+			set { Power = ((value * MaxPower) + 50) / 100; }
+		}
+
+		/// <summary>
 		/// </summary>
 		protected void UpdateHealthAuraState()
 		{
@@ -1567,7 +1602,7 @@ namespace WCell.RealmServer.Entities
 		protected float internalPower;
 		internal void UpdatePower(int delayMillis)
 		{
-			internalPower += (m_PowerRegenPerTick * delayMillis) / (float)RegenerationFormulas.RegenTickDelayMillis;	// rounding
+			internalPower += (PowerRegenPerTickActual * delayMillis) / (float)RegenerationFormulas.RegenTickDelayMillis;	// rounding
 			internalPower = MathUtil.ClampMinMax(internalPower, 0, MaxPower);
 			//SetInt32(UnitFields.POWER1 + (int)PowerType, (int)(val + 0.5f));
 		}

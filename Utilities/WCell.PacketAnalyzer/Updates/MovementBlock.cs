@@ -134,7 +134,7 @@ namespace WCell.PacketAnalysis.Updates
 				writer.WriteLine(indent + "FallFloat4: " + FallFloat4);
 			}
 
-            if (MovementFlags.HasFlag(MovementFlags.Spline))
+            if (MovementFlags.HasFlag(MovementFlags.SplineElevation))
 			{
 				writer.WriteLine(indent + "Spline0x4000000: " + Spline0x4000000);
 			}
@@ -144,7 +144,7 @@ namespace WCell.PacketAnalysis.Updates
 				writer.WriteLine(indent + "Speeds: " + Speeds);
 			}
 
-            if (MovementFlags.HasFlag(MovementFlags.SplinePath))
+            if (MovementFlags.HasFlag(MovementFlags.SplineEnabled))
 			{
 				DumpSpline(indent, writer);
 			}
@@ -185,12 +185,12 @@ namespace WCell.PacketAnalysis.Updates
 		{
 			writer.WriteLine(indent + "SplineFlags: " + SplineFlags);
 
-			if (SplineFlags.HasAnyFlag(SplineFlags.XYZ | SplineFlags.Orientation))
+			if (SplineFlags.HasAnyFlag(SplineFlags.FinalFacePoint | SplineFlags.FinalFaceAngle))
 			{
 				writer.WriteLine(indent + "SplinePosition: " + SplinePosition);
 			}
 
-            if (SplineFlags.HasFlag(SplineFlags.GUID))
+            if (SplineFlags.HasFlag(SplineFlags.FinalFaceTarget))
 			{
 				writer.WriteLine(indent + "SplineGuid: " + SplineId);
 			}
@@ -333,7 +333,7 @@ namespace WCell.PacketAnalysis.Updates
 			}
 
 			// Client checks for 0x4000000
-            if (block.MovementFlags.HasFlag(MovementFlags.Spline))
+            if (block.MovementFlags.HasFlag(MovementFlags.SplineElevation))
 			{
 				block.Spline0x4000000 = block.Update.ReadFloat();
 			}
@@ -353,19 +353,19 @@ namespace WCell.PacketAnalysis.Updates
 			};
 
 
-            if (block.MovementFlags.HasFlag(MovementFlags.SplinePath))
+            if (block.MovementFlags.HasFlag(MovementFlags.SplineEnabled))
 			{
 				block.SplineFlags = (SplineFlags)block.Update.ReadUInt();
 
-                if (block.SplineFlags.HasFlag(SplineFlags.Orientation))
+                if (block.SplineFlags.HasFlag(SplineFlags.FinalFaceAngle))
 				{
 					block.SplinePosition.W = block.Update.ReadFloat();
 				}
-                else if (block.SplineFlags.HasFlag(SplineFlags.GUID))
+                else if (block.SplineFlags.HasFlag(SplineFlags.FinalFaceTarget))
 				{
 					block.SplineId = block.Update.ReadEntityId();
 				}
-                else if (block.SplineFlags.HasFlag(SplineFlags.XYZ))
+                else if (block.SplineFlags.HasFlag(SplineFlags.FinalFacePoint))
 				{
 					block.SplinePosition = block.Update.ReadVector4NoO();
 				}

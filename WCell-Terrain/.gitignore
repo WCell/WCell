@@ -1,0 +1,36 @@
+changes
+
+#ignore thumbnails created by windows
+Thumbs.db
+
+#Ignore files built by Visual Studio
+ipch
+*sdf
+*.obj
+*.exe
+*.user
+*.aps
+*.pch
+*.vspscc
+*_i.c
+*_p.c
+*.ncb
+*.suo
+*.tlb
+*.tlh
+*.bak
+*.cache
+*.ilk
+*.log
+[Bb]in/
+[Dd]ebug/
+*.sbr
+obj/
+[Rr]elease*/
+_ReSharper*/
+[Tt]est[Rr]esult*
+changes.diff
+
+#ignore the program config
+Terra/terra/
+Run/Content/Maps/

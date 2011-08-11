@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2010-01-30 10:02:00 +0100 (lø, 30 jan 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+ 
  *   revision		: $Rev: 1234 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -70,6 +70,14 @@ namespace WCell.RealmServer.Entities
 		private readonly LockfreeQueue<Action> m_environmentQueue = new LockfreeQueue<Action>();
 
 		protected bool m_initialized;
+
+		private Unit observing;
+
+		public Unit Observing
+		{
+			get { return observing ?? this; }
+			set { observing = value;  }
+		}
 
 		#region Messages
 		/// <summary>
@@ -181,12 +189,13 @@ namespace WCell.RealmServer.Entities
 		{
 			var toRemove = WorldObjectSetPool.Obtain();
 			toRemove.AddRange(KnownObjects);
+			toRemove.Remove(this);
 
 			NearbyObjects.Clear();
 
 			if (m_initialized)
 			{
-				this.IterateEnvironment(BroadcastRange, (obj) =>
+				Observing.IterateEnvironment(BroadcastRange, (obj) =>
 				{
 					if (!IsInPhase(obj))
 					{
@@ -195,7 +204,10 @@ namespace WCell.RealmServer.Entities
 
 					NearbyObjects.Add(obj);
 
-					if (!CanSee(obj))
+
+					//ensure "this" never goes out of range
+					//if we are observing another units broadcasts
+					if (!CanSee(obj) && !ReferenceEquals(obj, this))
 					{
 						return true;
 					}
@@ -272,6 +284,11 @@ namespace WCell.RealmServer.Entities
 				foreach (var obj in toRemove)
 				{
 					OnOutOfRange(obj);
+				}
+
+				if (toRemove.Count > 0)
+				{
+					SendOutOfRangeUpdate(this, toRemove);
 				}
 			}
 

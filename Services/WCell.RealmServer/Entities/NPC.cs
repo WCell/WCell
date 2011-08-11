@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2010-02-20 06:16:32 +0100 (lø, 20 feb 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 1257 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -149,7 +149,6 @@ namespace WCell.RealmServer.Entities
 
 			// misc stuff
 			Name = m_entry.DefaultName;
-			Faction = entry.Faction;
 			NPCFlags = entry.NPCFlags;
 			UnitFlags = entry.UnitFlags;
 			DynamicFlags = entry.DynamicFlags;
@@ -157,6 +156,20 @@ namespace WCell.RealmServer.Entities
 			Race = entry.RaceId;
 			YieldsXpOrHonor = entry.GeneratesXp;
 			SheathType = SheathType.Melee;
+
+			// decide which faction
+			if (m_spawnPoint != null)
+			{
+				var map = m_spawnPoint.Map;
+				if (map != null)
+				{
+					Faction = DefaultFaction;
+				}
+			}
+			if (Faction == null)
+			{
+				Faction = entry.RandomFaction;
+			}
 
 			// speeds
 			m_runSpeed = entry.RunSpeed;
@@ -176,7 +189,9 @@ namespace WCell.RealmServer.Entities
 			// Set model after Scale
 			Model = m_entry.GetRandomModel();
 
-			GossipMenu = entry.DefaultGossip; // set gossip menu
+			GossipMenu = (m_spawnPoint != null && m_spawnPoint.SpawnEntry.DefaultGossip != null) ? 
+								m_spawnPoint.SpawnEntry.DefaultGossip : 
+								entry.DefaultGossip;
 
 			// TODO: Init stats
 			//for (int i = 0; i < 5; i++)
@@ -225,7 +240,7 @@ namespace WCell.RealmServer.Entities
 
 			if (PowerType == PowerType.Mana)
 			{
-				ManaRegenPerTickInterruptedPct = 20;
+				ManaRegenPerTickInterrupted = 20;
 			}
 
 			UpdateUnitState();
@@ -422,7 +437,14 @@ namespace WCell.RealmServer.Entities
 
 		public override Faction DefaultFaction
 		{
-			get { return m_entry.Faction; }
+			get
+			{
+				if (Map != null)
+				{
+					return m_entry.GetFaction(Map.OwningFaction);
+				}
+				return m_entry.HordeFaction;				// just return anything... this should never be relevant anyway
+			}
 		}
 
 		public ThreatCollection ThreatCollection
@@ -588,6 +610,12 @@ namespace WCell.RealmServer.Entities
 				return 0;
 			}
 		}
+
+		public override bool IsRegenerating
+		{
+			get { return IsAreaActive && base.IsRegenerating; }
+		}
+
 		#endregion
 
 		#region NPC-specific Fields
@@ -860,6 +888,7 @@ namespace WCell.RealmServer.Entities
 
 			m_entry.NotifyActivated(this);
 		}
+
 		#endregion
 
 		/// <summary>

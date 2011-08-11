@@ -1,21 +1,40 @@
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
 using WCell.Util.Variables;
 using WCell.Core.Variables;
 using NLog;
-using System.Reflection;
 using System.IO;
 
 namespace WCell.Core.Addons
 {
+	public abstract class WCellAddonBase<A> : WCellAddonBase
+		where A : WCellAddonBase
+	{
+		public static A Instance
+		{
+			get;
+			private set;
+		}
+
+		protected WCellAddonBase()
+		{
+			if (Instance != null)
+			{
+				throw new InvalidOperationException("Tried to create Addon twice: " + this);
+			}
+			Instance = this as A;
+			if (Instance == null)
+			{
+				throw new InvalidOperationException("Addon has wrong Type parameter - Expected: " + typeof(A).FullName + " - Found: " + GetType());
+			}
+		}
+	}
+
 	public abstract class WCellAddonBase : IWCellAddon
 	{
 		private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-		protected VariableConfiguration<WCellVariableDefinition> config;
+		protected IConfiguration config;
 
 		/// <summary>
 		/// The <see cref="WCellAddonContext"/> that was used to load this Addon.
@@ -28,14 +47,6 @@ namespace WCell.Core.Addons
 
 		protected WCellAddonBase()
 		{
-			config = new VariableConfiguration<WCellVariableDefinition>(OnError);
-
-			var asm = GetType().Assembly;
-			if (asm.Location == null)
-			{
-				OnError("Addon Assembly does not have a location. - Could not set Filename Configuration of: " +
-						this.GetDefaultDescription());
-			}
 		}
 
 		static void OnError(string msg)
@@ -46,6 +57,15 @@ namespace WCell.Core.Addons
 		public virtual bool UseConfig
 		{
 			get { return false; }
+		}
+
+		public virtual IConfiguration CreateConfig()
+		{
+			var cfg = new VariableConfiguration<WCellVariableDefinition>(OnError);
+			cfg.FilePath = Path.Combine(Context.File.DirectoryName, GetType().Name + "Config.xml");
+			cfg.AutoSave = true;
+			cfg.AddVariablesOfAsm<VariableAttribute>(GetType().Assembly);
+			return cfg;
 		}
 
 		public abstract string Name { get; }
@@ -70,22 +90,23 @@ namespace WCell.Core.Addons
             return Name + " (" + ShortName + ") by " + Author;
         }
 
-		public void InitConfig(WCellAddonContext context)
+		public void InitAddon(WCellAddonContext context)
 		{
 			Context = context;
-			config.FilePath = Path.Combine(context.File.DirectoryName, GetType().Name + "Config.xml");
 			if (UseConfig)
 			{
-				config.AutoSave = true;
-				config.AddVariablesOfAsm<VariableAttribute>(GetType().Assembly);
-				config.Load();
-				try
+				config = CreateConfig();
+				if (config.Load())
 				{
-					config.Save();
-				}
-				catch (Exception e)
-				{
-					throw new Exception("Unable to save " + config.GetType().Name + " of addon: " + this, e);
+					try
+					{
+						// TODO: Do not save before startup completed
+						config.Save();
+					}
+					catch (Exception e)
+					{
+						throw new Exception("Unable to save " + config.GetType().Name + " of addon: " + this, e);
+					}
 				}
 			}
 		}

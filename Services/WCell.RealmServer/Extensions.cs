@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2010-01-14 20:38:52 +0100 (to, 14 jan 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 1195 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -22,6 +22,7 @@ using System.Xml.Linq;
 using Cell.Core;
 using WCell.Constants;
 using WCell.Core.Paths;
+using WCell.Core.Terrain.Paths;
 using WCell.RealmServer.Items;
 using WCell.RealmServer.Entities;
 using WCell.Util.Graphics;

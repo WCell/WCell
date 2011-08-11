@@ -189,9 +189,9 @@ namespace WCell.RealmServer.Spells
 
 			IsAreaAuraEffect = (EffectType == SpellEffectType.PersistantAreaAura ||
 								EffectType == SpellEffectType.ApplyAreaAura ||
-								EffectType == SpellEffectType.ApplyGroupAura);
+								EffectType == SpellEffectType.ApplyRaidAura);
 
-			if (EffectType == SpellEffectType.ApplyGroupAura)
+			if (EffectType == SpellEffectType.ApplyRaidAura)
 			{
 				if (Radius > 0)
 				{
@@ -824,7 +824,7 @@ namespace WCell.RealmServer.Spells
 		string GetMiscStr(Type type, int val)
 		{
 			object obj = null;
-			if (type != null && Utility.Parse(val.ToString(), type, ref obj))
+			if (type != null && StringParser.Parse(val.ToString(), type, ref obj))
 			{
 				return string.Format("{0} ({1})", obj, val);
 			}
@@ -1005,7 +1005,20 @@ namespace WCell.RealmServer.Spells
 			}
 		}
 		#endregion
-
+		/// <summary>
+		/// Get's Basepoints for a spell after applying DamageMods.
+		/// </summary>
+		public int GetModifiedDamage(Unit caster)
+		{
+			if (IsPeriodic)
+			{
+				return caster.Auras.GetModifiedInt(SpellModifierType.PeriodicEffectValue, this.Spell, CalcEffectValue());
+			}
+			else
+			{
+				return caster.GetFinalDamage(caster.GetLeastResistantSchool(this.Spell), CalcEffectValue(), this.Spell);
+			}
+		}
 		public override bool Equals(object obj)
 		{
 			return obj is SpellEffect && ((SpellEffect)obj).EffectType == EffectType;

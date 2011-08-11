@@ -16,6 +16,11 @@ namespace WCell.Util.Variables
 
 		public bool IsReadOnly;
 
+		/// <summary>
+		/// If set to false, cannot get or set this variable through any command
+		/// </summary>
+		public bool IsFileOnly;
+
 		public VariableAttribute()
 		{
 		}

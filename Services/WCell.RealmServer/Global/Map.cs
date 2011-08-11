@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2008-06-30 01:30:45 +0800 (Mon, 30 Jun 2008) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 542 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -20,6 +20,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using WCell.Constants.Factions;
+using WCell.Core.Paths;
 using WCell.RealmServer.GameObjects.Spawns;
 using WCell.RealmServer.NPCs.Spawns;
 using WCell.RealmServer.Res;
@@ -38,6 +40,7 @@ using WCell.RealmServer.Battlegrounds.Arenas;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Misc;
 using WCell.Util.Graphics;
+using WCell.Core.Terrain;
 using WCell.Util.Threading;
 using WCell.Util.Threading.TaskParallel;
 using WCell.Core.Timers;
@@ -47,7 +50,7 @@ using WCell.RealmServer.Formulas;
 using WCell.RealmServer.GameObjects;
 using WCell.RealmServer.GameObjects.GOEntries;
 using WCell.RealmServer.NPCs;
-using WCell.Core.Paths;
+using WCell.Core.Terrain.Paths;
 using WCell.Util;
 using WCell.Util.NLog;
 using WCell.Util.Variables;
@@ -55,7 +58,6 @@ using WCell.Intercommunication.DataTypes;
 using WCell.Constants.GameObjects;
 using WCell.Constants.NPCs;
 using WCell.RealmServer.AI;
-using WCell.Core.TerrainAnalysis;
 using WCell.Constants.Achievements;
 
 
@@ -669,6 +671,11 @@ namespace WCell.RealmServer.Global
 			}
 		}
 
+
+		public virtual FactionGroup OwningFaction
+		{
+			get { return FactionGroup.Invalid; }
+		}
 		#endregion
 
 		#region Start / Stop
@@ -1808,6 +1815,11 @@ namespace WCell.RealmServer.Global
 		{
 			IterateObjects(center, WorldObject.BroadcastRange, phase, obj =>
 			{
+				if ((obj is NPC) && ((NPC)obj).Charmer != null && (((NPC)obj).Charmer is Character))
+				{
+					((Character)(((NPC)obj).Charmer)).Send(packet.GetFinalizedPacket());
+				}
+
 				if (obj is Character)
 				{
 					((Character)obj).Send(packet.GetFinalizedPacket());
@@ -1823,13 +1835,6 @@ namespace WCell.RealmServer.Global
 		public void SendPacketToMap(RealmPacketOut packet)
 		{
 			CallOnAllCharacters(chr => chr.Send(packet.GetFinalizedPacket()));
-		}
-		#endregion
-
-		#region Terrain Management
-		public void QueryDirectPath(PathQuery query)
-		{
-			m_Terrain.QueryDirectPath(query);
 		}
 		#endregion
 
@@ -1970,7 +1975,7 @@ namespace WCell.RealmServer.Global
 						m_characters.Add(chr);
 						if (chr.Role.Status == RoleStatus.Player)
 						{
-							AddPlayerCount(chr);
+							IncreasePlayerCount(chr);
 						}
 						OnEnter(chr);
 					}
@@ -2013,7 +2018,7 @@ namespace WCell.RealmServer.Global
 			}
 		}
 
-		internal void AddPlayerCount(Character chr)
+		internal void IncreasePlayerCount(Character chr)
 		{
 			if (chr.Faction.IsHorde)
 			{
@@ -2022,6 +2027,18 @@ namespace WCell.RealmServer.Global
 			else
 			{
 				m_allyCount++;
+			}
+		}
+
+		internal void DecreasePlayerCount(Character chr)
+		{
+			if (chr.Faction.IsHorde)
+			{
+				m_hordeCount--;
+			}
+			else
+			{
+				m_allyCount--;
 			}
 		}
 
@@ -2036,18 +2053,6 @@ namespace WCell.RealmServer.Global
 			WorldObject entity;
 			m_objects.TryGetValue(id, out entity);
 			return entity;
-		}
-
-		internal void RemovePlayerCount(Character chr)
-		{
-			if (chr.Faction.IsHorde)
-			{
-				m_hordeCount--;
-			}
-			else
-			{
-				m_allyCount--;
-			}
 		}
 
 		/// <summary>
@@ -2108,7 +2113,7 @@ namespace WCell.RealmServer.Global
 				{
 					if (chr.Role.Status == RoleStatus.Player)
 					{
-						RemovePlayerCount(chr);
+						DecreasePlayerCount(chr);
 					}
 					OnLeave(chr);
 				}
@@ -2587,7 +2592,7 @@ namespace WCell.RealmServer.Global
 		}
 
 		/// <summary>
-		/// Is called whenevr an honorable character was killed by another character
+		/// Is called whenever an honorable character was killed by another character
 		/// </summary>
 		/// <param name="action"></param>
 		protected internal virtual void OnHonorableKill(IDamageAction action)
@@ -2630,6 +2635,11 @@ namespace WCell.RealmServer.Global
 					}
 				}
 			}
+		}
+
+		public virtual void Save()
+		{
+			// do nothing
 		}
 	}
 }

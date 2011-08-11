@@ -16,6 +16,7 @@
 
 using System;
 using WCell.Util.Collections;
+using WCell.Util.ObjectPools;
 
 namespace Cell.Core
 {

@@ -1,5 +1,6 @@
 using System;
 using Castle.ActiveRecord;
+using NHibernate.Criterion;
 using WCell.Constants;
 using WCell.Constants.Guilds;
 
@@ -8,6 +9,13 @@ namespace WCell.RealmServer.Guilds
 	[ActiveRecord("GuildEventLogEntries", Access = PropertyAccess.Property)]
 	public class GuildEventLogEntry : ActiveRecordBase<GuildEventLogEntry>
 	{
+		private static readonly Order CreatedOrder = new Order("Created", false);
+
+		public static GuildEventLogEntry[] LoadAll(uint guildId)
+		{
+			return FindAll(CreatedOrder, Restrictions.Eq("m_GuildId", (int)guildId));
+		}
+
 		[PrimaryKey(PrimaryKeyType.Increment)]
 		long Guid
 		{

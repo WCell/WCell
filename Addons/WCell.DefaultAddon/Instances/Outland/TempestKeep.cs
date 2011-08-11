@@ -7,7 +7,7 @@ using WCell.RealmServer.Instances;
 
 namespace WCell.Addons.Default.Instances
 {
-	public class TempestKeep : DungeonInstance
+	public class TempestKeep : BaseInstance
 	{
 	}
 

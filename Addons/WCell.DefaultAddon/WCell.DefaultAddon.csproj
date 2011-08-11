@@ -246,6 +246,7 @@
     <Compile Include="MiscFixes\ClassFixes.cs" />
     <Compile Include="MiscFixes\RaceFixes.cs" />
     <Compile Include="MiscFixes\ShapeshiftFixes.cs" />
+    <Compile Include="NPCs\DKAcherusCorrections.cs" />
     <Compile Include="NPCs\NPCCorrections.cs" />
     <Compile Include="DefaultAddon.cs" />
     <Compile Include="Instances\Kalimdor\AhnQirajTemple.cs" />
@@ -289,6 +290,7 @@
     <Compile Include="Instances\Eastern Kingdoms\ZulAman.cs" />
     <Compile Include="Instances\Kalimdor\ZulFarrak.cs" />
     <Compile Include="Instances\Eastern Kingdoms\ZulGurub.cs" />
+    <Compile Include="Quests\DeathKnightQuests.cs" />
     <Compile Include="Spells\DeathKnight\DeathKnightDiseases.cs" />
     <Compile Include="Spells\DeathKnight\DeathKnightFrostFixes.cs" />
     <Compile Include="Spells\DeathKnight\DeathKnightBloodFixes.cs" />
@@ -310,6 +312,7 @@
     <Compile Include="Spells\Priest\PriestShadowFixes.cs" />
     <Compile Include="Spells\Rogue\RogueCombatFixes.cs" />
     <Compile Include="Spells\Rogue\RogueSubtletyFixes.cs" />
+    <Compile Include="Spells\VehicleSpells.cs" />
     <Compile Include="Spells\Warrior\WarriorArmsFixes.cs" />
     <Compile Include="Spells\Warrior\WarriorFuryFixes.cs" />
     <Compile Include="Spells\Warrior\WarriorProtectionFixes.cs" />
@@ -334,6 +337,8 @@
     <Compile Include="Spells\Warrior\WarriorFixes.cs" />
     <Compile Include="Teleport\TeleportNode.cs" />
     <Compile Include="Teleport\ZeppelinMaster.cs" />
+    <Compile Include="Vehicles\VehicleCorrections.cs" />
+    <Compile Include="Vehicles\VehicleData.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Core\Cell.Core\Cell.Core.csproj">
@@ -367,7 +372,9 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="GameObjects\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

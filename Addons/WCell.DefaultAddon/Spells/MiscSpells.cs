@@ -1,14 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using WCell.Constants.Spells;
+using WCell.Constants.Items;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Spells.Auras.Handlers;
 using WCell.Util.Graphics;
+using WCell.RealmServer.Spells.Effects;
 
 namespace WCell.Addons.Default.Spells
 {
@@ -51,6 +51,12 @@ namespace WCell.Addons.Default.Spells
 				eff.AuraEffectHandlerCreator = () => new ResSicknessHandler();
 
 			}, SpellId.ResurrectionSickness);
+
+			SpellHandler.Apply(spell =>
+			{
+				spell.Effects[1].SpellEffectHandlerCreator = (cast, effect) => new CopyWeapon(cast, effect);
+				spell.Effects[2].SpellEffectHandlerCreator = (cast, effect) => new CopyOffHandWeapon(cast, effect);
+			}, SpellId.CloneMe);
 
 		}
 
@@ -239,6 +245,56 @@ namespace WCell.Addons.Default.Spells
 
 			}
 		}
+		#endregion
+
+		#region CopyWeaponHandler
+		public class CopyWeapon : ScriptEffectHandler
+		{
+			public CopyWeapon(SpellCast cast, SpellEffect effect)
+				: base(cast, effect)
+			{
+			}
+			protected override void Apply(WorldObject target)
+			{
+				var image = (Unit)target;
+				var chr = m_cast.CasterChar;
+
+				if (image != null && chr != null)
+				{
+					var item = (Item)chr.GetWeapon(EquipmentSlot.MainHand);
+					if (item != null)
+					{
+						image.VirtualItem1 = item.Template.ItemId;
+						chr.SpellCast.Trigger(SpellHandler.Get((uint)m_cast.Spell.Effects[1].BasePoints), image);
+					}
+
+				}
+			}
+		};
+		#endregion
+		#region CopyOffHandWeaponHandler
+		public class CopyOffHandWeapon : ScriptEffectHandler
+		{
+			public CopyOffHandWeapon(SpellCast cast, SpellEffect effect)
+				: base(cast, effect)
+			{
+			}
+			protected override void Apply(WorldObject target)
+			{
+				var image = (Unit)target;
+				var chr = m_cast.CasterChar;
+
+				if (image != null && chr != null)
+				{
+					var item = (Item)chr.GetWeapon(EquipmentSlot.OffHand);
+					if (item != null)
+					{
+						image.VirtualItem2 = item.Template.ItemId;
+						chr.SpellCast.Trigger(SpellHandler.Get((uint)m_cast.Spell.Effects[2].BasePoints), image);
+					}
+				}
+			}
+		};
 		#endregion
 	}
 }

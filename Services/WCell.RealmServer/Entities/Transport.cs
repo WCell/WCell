@@ -9,7 +9,7 @@ using WCell.RealmServer.GameObjects;
 using WCell.RealmServer.GameObjects.GOEntries;
 using WCell.RealmServer.GameObjects.Spawns;
 using WCell.RealmServer.Misc;
-using WCell.Core.Paths;
+using WCell.Core.Terrain.Paths;
 using WCell.RealmServer.Paths;
 using WCell.RealmServer.Taxi;
 using WCell.RealmServer.Transports;

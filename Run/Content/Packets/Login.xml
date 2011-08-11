@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-             xsi:schemaLocation=". ../../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd"
+             xsi:schemaLocation=". ../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd"
              Version="4">
   
   <RealmPacket Sender="Client" OpCode="CMSG_REALM_SPLIT">
@@ -97,7 +97,7 @@
       </Simple>
       <Simple>
         <Name>Region</Name>
-        <Type>UInt</Type>
+        <Type>Int</Type>
         <SegmentType>WCell.Constants.World.MapId</SegmentType>
       </Simple>
       <Simple>
@@ -118,7 +118,7 @@
       </Simple>
       <Simple>
         <Name>CharacterFlags</Name>
-        <Type>UInt</Type>
+        <Type>Int</Type>
         <SegmentType>Login.CharEnumFlags</SegmentType>
       </Simple>
       <Simple>

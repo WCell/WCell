@@ -1,10 +1,10 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: AuraHandler.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2010-01-31 03:46:31 +0100 (s�, 31 jan 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 1238 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -56,170 +56,177 @@ namespace WCell.RealmServer.Spells.Auras
 
 		static AuraHandler()
 		{
-			EffectHandlers[(int)AuraType.None] = () => new AuraVoidHandler();
-			EffectHandlers[(int)AuraType.PeriodicDamage] = () => new PeriodicDamageHandler();
-            EffectHandlers[(int)AuraType.ModPossess] = () => new ModPossessAuraHandler();
-			EffectHandlers[(int)AuraType.Dummy] = () => new DummyHandler();
-			EffectHandlers[(int)AuraType.PeriodicHeal] = () => new PeriodicHealHandler();
-			EffectHandlers[(int)AuraType.ModAttackSpeed] = () => new ModAttackSpeedHandler();
-			EffectHandlers[(int)AuraType.ModThreat] = () => new ModThreatHandler();
-			EffectHandlers[(int)AuraType.ModStun] = () => new StunHandler();
-			EffectHandlers[(int)AuraType.ModDamageDone] = () => new ModDamageDoneHandler();
-			EffectHandlers[(int)AuraType.ModStealth] = () => new ModStealthHandler();
-			EffectHandlers[(int)AuraType.ModInvisibility] = () => new ModInvisibilityHandler();
-			EffectHandlers[(int)AuraType.RegenPercentOfTotalHealth] = () => new RegenPercentOfTotalHealthHandler();
-			EffectHandlers[(int)AuraType.RegenPercentOfTotalMana] = () => new RegenPercentOfTotalManaHandler();
-			EffectHandlers[(int)AuraType.ModResistance] = () => new ModResistanceHandler();
-			EffectHandlers[(int)AuraType.ModResistancePercent] = () => new ModResistancePctHandler();
-			EffectHandlers[(int)AuraType.PeriodicTriggerSpell] = () => new PeriodicTriggerSpellHandler();
-			EffectHandlers[(int)AuraType.PeriodicEnergize] = () => new PeriodicEnergizeHandler();
-			EffectHandlers[(int)AuraType.ModRoot] = () => new RootHandler();
-			EffectHandlers[(int)AuraType.ModStat] = () => new ModStatHandler();
-			EffectHandlers[(int)AuraType.ModStatPercent] = () => new ModStatPercentHandler();
-			EffectHandlers[(int)AuraType.ModTotalStatPercent] = () => new ModTotalStatPercentHandler();
-			EffectHandlers[(int)AuraType.ModIncreaseSpeed] = () => new ModIncreaseSpeedHandler();
-			EffectHandlers[(int)AuraType.ModIncreaseMountedSpeed] = () => new ModIncreaseMountedSpeedHandler();
-			EffectHandlers[(int)AuraType.ModDecreaseSpeed] = () => new ModDecreaseSpeedHandler();
-			EffectHandlers[(int)AuraType.ModIncreaseEnergy] = () => new ModIncreaseEnergyHandler();
-			EffectHandlers[(int)AuraType.ModShapeshift] = () => new ShapeshiftHandler();
-			EffectHandlers[(int)AuraType.ModHealingTakenPercent] = () => new ModHealingTakenPctHandler();
-			EffectHandlers[(int)AuraType.ModHealingDone] = () => new ModHealingDoneHandler();
-			EffectHandlers[(int)AuraType.SchoolImmunity] = () => new SchoolImmunityHandler();
-			EffectHandlers[(int)AuraType.DamageImmunity] = () => new DamageImmunityHandler();
-			EffectHandlers[(int)AuraType.DispelImmunity] = () => new DispelImmunityHandler();
-			EffectHandlers[(int)AuraType.ProcTriggerSpell] = () => new ProcTriggerSpellHandler();
-			EffectHandlers[(int)AuraType.ProcTriggerSpellWithOverride] = () => new ProcTriggerSpellHandler();		// TODO: Might need some tweaks
-			EffectHandlers[(int)AuraType.ProcTriggerDamage] = () => new ProcTriggerDamageHandler();
-			EffectHandlers[(int)AuraType.TrackCreatures] = () => new TrackCreaturesHandler();
-			EffectHandlers[(int)AuraType.TrackResources] = () => new TrackResourcesHandler();
-			EffectHandlers[(int)AuraType.ModDodgePercent] = () => new ModDodgePercentHandler();
-			EffectHandlers[(int)AuraType.ModCritHealValuePct] = () => new ModCritHealValuePctHandler();
-			EffectHandlers[(int)AuraType.ModBlockPercent] = () => new ModBlockPercentHandler();
-			EffectHandlers[(int)AuraType.ModParryPercent] = () => new ModParryPercentHandler();
-			EffectHandlers[(int)AuraType.ModShieldBlockvaluePct] = () => new ModShieldBlockValuePercentHandler();
-			EffectHandlers[(int)AuraType.ModCritPercent] = () => new ModCritPercentHandler();
-			EffectHandlers[(int)AuraType.PeriodicLeech] = () => new PeriodicLeechHandler();
-			EffectHandlers[(int)AuraType.Transform] = () => new TransformHandler();
-			EffectHandlers[(int)AuraType.ModSpellCritChance] = () => new ModSpellCritChanceHandler();
-			EffectHandlers[(int)AuraType.ModIncreaseSwimSpeed] = () => new ModIncreaseSwimSpeedHandler();
-			EffectHandlers[(int)AuraType.ModScale] = () => new ModScaleHandler();
-			EffectHandlers[(int)AuraType.PeriodicHealthFunnel] = () => new PeriodicHealthFunnelHandler();
-			EffectHandlers[(int)AuraType.PeriodicManaLeech] = () => new PeriodicManaLeechHandler();
-			EffectHandlers[(int)AuraType.ModCastingSpeed] = () => new ModCastingSpeedHandler();
-			EffectHandlers[(int)AuraType.SchoolAbsorb] = () => new SchoolAbsorbHandler();
-			EffectHandlers[(int)AuraType.ModSpellCritChanceForSchool] = () => new ModSpellCritChanceForSchoolHandler();
-			EffectHandlers[(int)AuraType.ModPowerCost] = () => new ModPowerCostHandler();
-			EffectHandlers[(int)AuraType.ModPowerCostForSchool] = () => new ModPowerCostForSchoolHandler();
-			EffectHandlers[(int)AuraType.ModLanguage] = () => new ModLanguageHandler();
-			EffectHandlers[(int)AuraType.MechanicImmunity] = () => new MechanicImmunityHandler();
-			EffectHandlers[(int)AuraType.Mounted] = () => new MountedHandler();
-			EffectHandlers[(int)AuraType.ModDamageDonePercent] = () => new ModDamageDonePercentHandler();
-			EffectHandlers[(int)AuraType.SplitDamage] = () => new SplitDamageHandler();
-			EffectHandlers[(int)AuraType.ModPowerRegen] = () => new ModPowerRegenHandler();
-			EffectHandlers[(int)AuraType.CreateItemOnTargetDeath] = () => new CreateItemOnTargetDeathHandler();
-			EffectHandlers[(int)AuraType.PeriodicDamagePercent] = () => new PeriodicDamagePercentHandler();
-			EffectHandlers[(int)AuraType.InterruptRegen] = () => new InterruptRegenHandler();
-			EffectHandlers[(int)AuraType.Ghost] = () => new GhostHandler();
-			EffectHandlers[(int)AuraType.ManaShield] = () => new ManaShieldHandler();
-			EffectHandlers[(int)AuraType.ModSkillTalent] = () => new ModSkillTalentHandler();
-			EffectHandlers[(int)AuraType.ModMeleeAttackPower] = () => new ModMeleeAttackPowerHandler();
-			EffectHandlers[(int)AuraType.ModAttackPowerPercent] = () => new ModMeleeAttackPowerPercentHandler();
-			EffectHandlers[(int)AuraType.ModRangedAttackPower] = () => new ModRangedAttackPowerHandler();
-			EffectHandlers[(int)AuraType.ModRangedAttackPowerPercent] = () => new ModRangedAttackPowerPercentHandler();
-			EffectHandlers[(int)AuraType.WaterWalk] = () => new WaterWalkHandler();
-			EffectHandlers[(int)AuraType.Hover] = () => new HoverHandler();
-			EffectHandlers[(int)AuraType.AddModifierFlat] = () => new AddModifierFlatHandler();
-			EffectHandlers[(int)AuraType.AddModifierPercent] = () => new AddModifierPercentHandler();
-			EffectHandlers[(int)AuraType.AddTargetTrigger] = () => new AddTargetTriggerHandler();
-			EffectHandlers[(int)AuraType.ModPowerRegenPercent] = () => new ModPowerRegenPercentHandler();
-			EffectHandlers[(int)AuraType.AddCasterHitTrigger] = () => new AddCasterHitTriggerHandler();
-			EffectHandlers[(int)AuraType.ModMechanicResistance] = () => new ModMechanicResistanceHandler();
-			EffectHandlers[(int)AuraType.Untrackable] = () => new UntrackableHandler();
-			EffectHandlers[(int)AuraType.ModTargetResistance] = () => new ModTargetResistanceHandler();
-			EffectHandlers[(int)AuraType.ModIncreaseSpeedAlways] = () => new ModIncreaseSpeedAlwaysHandler();
-			EffectHandlers[(int)AuraType.ModMountedSpeedAlways] = () => new ModMountedSpeedAlwaysHandler();
-			EffectHandlers[(int)AuraType.ModIncreaseEnergyPercent] = () => new ModIncreaseEnergyPercentHandler();
-			EffectHandlers[(int)AuraType.ModIncreaseHealthPercent] = () => new ModIncreaseHealthPercentHandler();
-			EffectHandlers[(int)AuraType.ModIncreaseHealth] = () => new ModIncreaseHealthHandler();
-			EffectHandlers[(int)AuraType.ModManaRegenInterrupt] = () => new ModManaRegenInterruptHandler();
-			EffectHandlers[(int)AuraType.ModHealingDonePct] = () => new ModHealingDonePctHandler();
-			EffectHandlers[(int)AuraType.ModHaste] = () => new ModHasteHandler();
-			EffectHandlers[(int)AuraType.ModHastePercent] = () => new ModHastePercentHandler();
-			EffectHandlers[(int)AuraType.ModMeleeHastePercent] = () => new ModMeleeHastePercentHandler();
-			EffectHandlers[(int)AuraType.ModSpecificCombatRating] = () => new ModCombatRatingStat();
-			EffectHandlers[(int)AuraType.ModBaseResistancePercent] = () => new ModBaseResistancePercentHandler();
-			EffectHandlers[(int)AuraType.ModResistanceExclusive] = () => new ModResistanceExclusiveHandler();
-			EffectHandlers[(int)AuraType.SafeFall] = () => new SafeFallHandler();
-			EffectHandlers[(int)AuraType.RetainComboPoints] = () => new RetainComboPointsHandler();
-			EffectHandlers[(int)AuraType.ModResistSpellInterruptionPercent] = () => new ModResistSpellInterruptionPercentHandler();
-			EffectHandlers[(int)AuraType.ModHealthRegenInCombat] = () => new ModHealthRegenInCombatHandler();
-			EffectHandlers[(int)AuraType.PowerBurn] = () => new PowerBurnHandler();
-			EffectHandlers[(int)AuraType.ModDebuffResistancePercent] = () => new ModDebuffResistancePercentHandler();
-			EffectHandlers[(int)AuraType.ModRating] = () => new ModRatingHandler();
-			EffectHandlers[(int)AuraType.ModAllCooldownDuration] = () => new ModAllCooldownDurationHandler();
-			EffectHandlers[(int)AuraType.ModAttackerCritChancePercent] = () => new ModAttackerCritChancePercentHandler();
-			EffectHandlers[(int)AuraType.Fly] = () => new FlyHandler();
-			EffectHandlers[(int)AuraType.ModRangedAttackPowerByPercentOfStat] =
+			EffectHandlers[(int)AuraType.None] = () => new AuraVoidHandler();														// 0
+			EffectHandlers[(int)AuraType.ModPossess] = () => new ModPossessAuraHandler();											// 2
+			EffectHandlers[(int)AuraType.PeriodicDamage] = () => new PeriodicDamageHandler();										// 3  
+			EffectHandlers[(int)AuraType.Dummy] = () => new DummyHandler();															// 4
+			EffectHandlers[(int)AuraType.ModConfuse] = () => new ModConfuseHandler();												// 5
+			EffectHandlers[(int)AuraType.Charm] = () => new CharmAuraHandler();														// 6
+			EffectHandlers[(int)AuraType.Fear] = () => new FearHandler();															// 7
+			EffectHandlers[(int)AuraType.PeriodicHeal] = () => new PeriodicHealHandler();											// 8
+			EffectHandlers[(int)AuraType.ModAttackSpeed] = () => new ModAttackSpeedHandler();										// 9
+			EffectHandlers[(int)AuraType.ModThreat] = () => new ModThreatHandler();													// 10
+			EffectHandlers[(int)AuraType.ModTaunt] = () => new ModTauntAuraHandler();												// 11
+			EffectHandlers[(int)AuraType.ModStun] = () => new StunHandler();														// 12
+			EffectHandlers[(int)AuraType.ModDamageDone] = () => new ModDamageDoneHandler();											// 13
+			EffectHandlers[(int)AuraType.ModDamageTaken] = () => new ModDamageTakenHandler();										// 14
+			EffectHandlers[(int)AuraType.DamageShield] = () => new DamageShieldEffectHandler();										// 15
+			EffectHandlers[(int)AuraType.ModStealth] = () => new ModStealthHandler();												// 16
+			EffectHandlers[(int)AuraType.ModInvisibility] = () => new ModInvisibilityHandler();										// 18
+			EffectHandlers[(int)AuraType.RegenPercentOfTotalHealth] = () => new RegenPercentOfTotalHealthHandler();					// 20
+			EffectHandlers[(int)AuraType.RegenPercentOfTotalMana] = () => new RegenPercentOfTotalManaHandler();						// 21
+			EffectHandlers[(int)AuraType.ModResistance] = () => new ModResistanceHandler();											// 22
+			EffectHandlers[(int)AuraType.PeriodicTriggerSpell] = () => new PeriodicTriggerSpellHandler();							// 23		
+			EffectHandlers[(int)AuraType.PeriodicEnergize] = () => new PeriodicEnergizeHandler();									// 24
+			EffectHandlers[(int)AuraType.ModPacify] = () => new ModPacifyHandler();													// 25
+			EffectHandlers[(int)AuraType.ModRoot] = () => new RootHandler();														// 26
+			EffectHandlers[(int)AuraType.ModSilence] = () => new ModSilenceHandler();												// 27
+			EffectHandlers[(int)AuraType.ModStat] = () => new ModStatHandler();														// 29
+			EffectHandlers[(int)AuraType.ModIncreaseSpeed] = () => new ModIncreaseSpeedHandler();									// 31
+			EffectHandlers[(int)AuraType.ModIncreaseMountedSpeed] = () => new ModIncreaseMountedSpeedHandler();						// 32
+			EffectHandlers[(int)AuraType.ModDecreaseSpeed] = () => new ModDecreaseSpeedHandler();									// 33
+			EffectHandlers[(int)AuraType.ModIncreaseHealth] = () => new ModIncreaseHealthHandler();									// 34
+			EffectHandlers[(int)AuraType.ModIncreaseEnergy] = () => new ModIncreaseEnergyHandler();									// 35
+			EffectHandlers[(int)AuraType.ModShapeshift] = () => new ShapeshiftHandler();											// 36
+			EffectHandlers[(int)AuraType.SchoolImmunity] = () => new SchoolImmunityHandler();										// 39
+			EffectHandlers[(int)AuraType.DamageImmunity] = () => new DamageImmunityHandler();										// 40
+			EffectHandlers[(int)AuraType.DispelImmunity] = () => new DispelImmunityHandler();										// 41
+			EffectHandlers[(int)AuraType.ProcTriggerSpell] = () => new ProcTriggerSpellHandler();									// 42
+			EffectHandlers[(int)AuraType.ProcTriggerDamage] = () => new ProcTriggerDamageHandler();									// 43
+			EffectHandlers[(int)AuraType.TrackCreatures] = () => new TrackCreaturesHandler();										// 44
+			EffectHandlers[(int)AuraType.TrackResources] = () => new TrackResourcesHandler();										// 45
+			EffectHandlers[(int)AuraType.ModParryPercent] = () => new ModParryPercentHandler();										// 47
+			EffectHandlers[(int)AuraType.ModDodgePercent] = () => new ModDodgePercentHandler();										// 49
+			EffectHandlers[(int)AuraType.ModCritHealValuePct] = () => new ModCritHealValuePctHandler();								// 50
+			EffectHandlers[(int)AuraType.ModBlockPercent] = () => new ModBlockPercentHandler();										// 51
+			EffectHandlers[(int)AuraType.ModCritPercent] = () => new ModCritPercentHandler();										// 52
+			EffectHandlers[(int)AuraType.PeriodicLeech] = () => new PeriodicLeechHandler();											// 53
+			EffectHandlers[(int)AuraType.ModHitChance] = () => new ModHitChanceHandler();											// 54
+			EffectHandlers[(int)AuraType.ModSpellHitChance] = () => new ModSpellHitChanceHandler();									// 55
+			EffectHandlers[(int)AuraType.Transform] = () => new TransformHandler();													// 56
+			EffectHandlers[(int)AuraType.ModSpellCritChance] = () => new ModSpellCritChanceHandler();								// 57
+			EffectHandlers[(int)AuraType.ModIncreaseSwimSpeed] = () => new ModIncreaseSwimSpeedHandler();							// 58
+			EffectHandlers[(int)AuraType.ModPacifySilence] = () => new ModPacifySilenceHandler();									// 60
+			EffectHandlers[(int)AuraType.ModScale] = () => new ModScaleHandler();													// 61
+			EffectHandlers[(int)AuraType.PeriodicHealthFunnel] = () => new PeriodicHealthFunnelHandler();							// 62
+			EffectHandlers[(int)AuraType.PeriodicManaLeech] = () => new PeriodicManaLeechHandler();									// 64
+			EffectHandlers[(int)AuraType.ModCastingSpeed] = () => new ModCastingSpeedHandler();										// 65
+			EffectHandlers[(int)AuraType.DisarmMainHand] = () => new DisarmMainHandHandler();										// 67
+			EffectHandlers[(int)AuraType.SchoolAbsorb] = () => new SchoolAbsorbHandler();											// 69
+			EffectHandlers[(int)AuraType.ModSpellCritChanceForSchool] = () => new ModSpellCritChanceForSchoolHandler();				// 71
+			EffectHandlers[(int)AuraType.ModPowerCost] = () => new ModPowerCostHandler();											// 72
+			EffectHandlers[(int)AuraType.ModPowerCostForSchool] = () => new ModPowerCostForSchoolHandler();							// 73
+			EffectHandlers[(int)AuraType.ModLanguage] = () => new ModLanguageHandler();												// 75
+			EffectHandlers[(int)AuraType.MechanicImmunity] = () => new MechanicImmunityHandler();									// 77
+			EffectHandlers[(int)AuraType.Mounted] = () => new MountedHandler();														// 78
+			EffectHandlers[(int)AuraType.ModDamageDonePercent] = () => new ModDamageDonePercentHandler();							// 79
+			EffectHandlers[(int)AuraType.ModStatPercent] = () => new ModStatPercentHandler();										// 80
+			EffectHandlers[(int)AuraType.SplitDamage] = () => new SplitDamageHandler();												// 81
+			EffectHandlers[(int)AuraType.ModPowerRegen] = () => new ModPowerRegenHandler();											// 85
+			EffectHandlers[(int)AuraType.CreateItemOnTargetDeath] = () => new CreateItemOnTargetDeathHandler();						// 86
+			EffectHandlers[(int)AuraType.ModDamageTakenPercent] = () => new ModDamageTakenPercentHandler();							// 87
+			EffectHandlers[(int)AuraType.PeriodicDamagePercent] = () => new PeriodicDamagePercentHandler();							// 89
+			EffectHandlers[(int)AuraType.ModDetectRange] = () => new ModDetectRangeHandler();										// 91
+			EffectHandlers[(int)AuraType.Unattackable] = () => new UnattackableHandler();											// 93
+			EffectHandlers[(int)AuraType.InterruptRegen] = () => new InterruptRegenHandler();										// 94
+			EffectHandlers[(int)AuraType.Ghost] = () => new GhostHandler();															// 95
+			EffectHandlers[(int)AuraType.ManaShield] = () => new ManaShieldHandler();												// 97
+			EffectHandlers[(int)AuraType.ModSkillTalent] = () => new ModSkillTalentHandler();										// 98
+			EffectHandlers[(int)AuraType.ModMeleeAttackPower] = () => new ModMeleeAttackPowerHandler();								// 99
+			EffectHandlers[(int)AuraType.ModResistancePercent] = () => new ModResistancePctHandler();								// 101
+			EffectHandlers[(int)AuraType.WaterWalk] = () => new WaterWalkHandler();													// 104
+			EffectHandlers[(int)AuraType.FeatherFall] = () => new FeatherFallHandler();												// 105
+			EffectHandlers[(int)AuraType.Hover] = () => new HoverHandler();															// 106
+			EffectHandlers[(int)AuraType.AddModifierFlat] = () => new AddModifierFlatHandler();										// 107
+			EffectHandlers[(int)AuraType.AddModifierPercent] = () => new AddModifierPercentHandler();								// 108
+			EffectHandlers[(int)AuraType.AddTargetTrigger] = () => new AddTargetTriggerHandler();									// 109
+			EffectHandlers[(int)AuraType.ModPowerRegenPercent] = () => new ModPowerRegenPercentHandler();							// 110
+			EffectHandlers[(int)AuraType.AddCasterHitTrigger] = () => new AddCasterHitTriggerHandler();								// 111
+			EffectHandlers[(int)AuraType.ModMechanicResistance] = () => new ModMechanicResistanceHandler();							// 117
+			EffectHandlers[(int)AuraType.ModHealingTakenPercent] = () => new ModHealingTakenPctHandler();							// 118
+			EffectHandlers[(int)AuraType.Untrackable] = () => new UntrackableHandler();												// 120
+			EffectHandlers[(int)AuraType.ModOffhandDamagePercent] = () => new ModOffhandDamagePercentHandler();						// 122
+			EffectHandlers[(int)AuraType.ModTargetResistance] = () => new ModTargetResistanceHandler();								// 123
+			EffectHandlers[(int)AuraType.ModRangedAttackPower] = () => new ModRangedAttackPowerHandler();							// 124
+			EffectHandlers[(int)AuraType.ModIncreaseSpeedAlways] = () => new ModIncreaseSpeedAlwaysHandler();						// 129
+			EffectHandlers[(int)AuraType.ModMountedSpeedAlways] = () => new ModMountedSpeedAlwaysHandler();							// 130
+			EffectHandlers[(int)AuraType.ModIncreaseEnergyPercent] = () => new ModIncreaseEnergyPercentHandler();					// 132
+			EffectHandlers[(int)AuraType.ModIncreaseHealthPercent] = () => new ModIncreaseHealthPercentHandler();					// 133
+			EffectHandlers[(int)AuraType.ModManaRegenInterrupt] = () => new ModManaRegenInterruptHandler();							// 134
+			EffectHandlers[(int)AuraType.ModHealingDone] = () => new ModHealingDoneHandler();										// 135
+			EffectHandlers[(int)AuraType.ModHealingDonePct] = () => new ModHealingDonePctHandler();									// 136
+			EffectHandlers[(int)AuraType.ModTotalStatPercent] = () => new ModTotalStatPercentHandler();								// 137
+			EffectHandlers[(int)AuraType.ModHaste] = () => new ModHasteHandler();													// 138
+			EffectHandlers[(int)AuraType.ForceReaction] = () => new ForceReactionHandler();											// 139
+			EffectHandlers[(int)AuraType.ModBaseResistancePercent] = () => new ModBaseResistancePercentHandler();					// 142
+			EffectHandlers[(int)AuraType.ModResistanceExclusive] = () => new ModResistanceExclusiveHandler();						// 143
+			EffectHandlers[(int)AuraType.SafeFall] = () => new SafeFallHandler();													// 144
+			EffectHandlers[(int)AuraType.ModTalentPoints] = () => new ModPetTalentPointsHandler();									// 145
+			EffectHandlers[(int)AuraType.ControlExoticPet] = () => new ControlExoticPetsHandler();									// 146
+			EffectHandlers[(int)AuraType.RetainComboPoints] = () => new RetainComboPointsHandler();									// 148
+			EffectHandlers[(int)AuraType.ModResistSpellInterruptionPercent] = () => new ModResistSpellInterruptionPercentHandler();	// 149
+			EffectHandlers[(int)AuraType.ModShieldBlockValuePct] = () => new ModShieldBlockValuePercentHandler();					// 150
+			EffectHandlers[(int)AuraType.ModReputationGain] = () => new ModReputationGainHandler();									// 156
+			EffectHandlers[(int)AuraType.NoPvPCredit] = () => new NoPvPCreditHandler();												// 159
+			EffectHandlers[(int)AuraType.ModHealthRegenInCombat] = () => new ModHealthRegenInCombatHandler();						// 161
+			EffectHandlers[(int)AuraType.PowerBurn] = () => new PowerBurnHandler();													// 162
+			EffectHandlers[(int)AuraType.ModMeleeCritDamageBonus] = () => new ModMeleeCritDamageBonusHandler();						// 163
+			EffectHandlers[(int)AuraType.ModAttackPowerPercent] = () => new ModMeleeAttackPowerPercentHandler();					// 166
+			EffectHandlers[(int)AuraType.ModRangedAttackPowerPercent] = () => new ModRangedAttackPowerPercentHandler();				// 167
+			EffectHandlers[(int)AuraType.ModDamageDoneVersusCreatureType] = () => new ModDamageDoneVersusCreatureTypeHandler();		// 168
+			EffectHandlers[(int)AuraType.ModSpellDamageByPercentOfStat] = () => new ModSpellDamageByPercentOfStatHandler();			// 174
+			EffectHandlers[(int)AuraType.ModSpellHealingByPercentOfStat] = () => new ModHealingByPercentOfStatHandler();			// 175
+			EffectHandlers[(int)AuraType.ModDebuffResistancePercent] = () => new ModDebuffResistancePercentHandler();				// 178
+			EffectHandlers[(int)AuraType.ModAttackerSpellCritChance] = () => new ModAttackerSpellCritChanceHandler();				// 179
+			EffectHandlers[(int)AuraType.ModArmorByPercentOfIntellect] = () => new ModArmorByPercentOfIntellectHandler();			// 182
+			EffectHandlers[(int)AuraType.ModAttackerMeleeHitChance] = () => new ModAttackerMeleeHitChanceHandler();					// 184
+			EffectHandlers[(int)AuraType.ModAttackerRangedHitChance] = () => new ModAttackerRangedHitChanceHandler();				// 185
+			EffectHandlers[(int)AuraType.ModAttackerSpellHitChance] = () => new ModAttackerSpellHitChanceHandler();					// 186
+			EffectHandlers[(int)AuraType.ModRating] = () => new ModRatingHandler();													// 189
+			EffectHandlers[(int)AuraType.ModMeleeHastePercent] = () => new ModMeleeHastePercentHandler();							// 192
+			EffectHandlers[(int)AuraType.ModHastePercent] = () => new ModHastePercentHandler();										// 193
+			EffectHandlers[(int)AuraType.ModAllCooldownDuration] = () => new ModAllCooldownDurationHandler();						// 196
+			EffectHandlers[(int)AuraType.ModAttackerCritChancePercent] = () => new ModAttackerCritChancePercentHandler();			// 197
+			EffectHandlers[(int)AuraType.ModSpellHitChance2] = () => new ModSpellHitChanceHandler();								// 199
+			EffectHandlers[(int)AuraType.ModKillXpPct] = () => new ModKillXpPctHandler();											// 200
+			EffectHandlers[(int)AuraType.Fly] = () => new FlyHandler();																// 201
+			EffectHandlers[(int)AuraType.ModSpeedMountedFlight] = () => new ModSpeedMountedFlightHandler();							// 207
+			EffectHandlers[(int)AuraType.ModRangedAttackPowerByPercentOfStat] =														// 212
 				() => new ModRangedAttackPowerByPercentOfStatHandler();
-			EffectHandlers[(int)AuraType.ModMeleeAttackPowerByPercentOfStat] =
+			EffectHandlers[(int)AuraType.ModRageFromDamageDealtPercent] = () => new ModRageFromDamageDealtPercentHandler();			// 213
+			EffectHandlers[(int)AuraType.ArenaPreparation] = () => new ArenaPreparationHandler();									// 215
+			EffectHandlers[(int)AuraType.ModSpellHastePercent] = () => new ModSpellHastePercentHandler();							// 216
+			EffectHandlers[(int)AuraType.ModManaRegen] = () => new ModManaRegenHandler();											// 219
+			EffectHandlers[(int)AuraType.ModSpecificCombatRating] = () => new ModCombatRatingStat();								// 220
+			EffectHandlers[(int)AuraType.PeriodicTriggerSpell2] = () => new PeriodicTriggerSpellHandler();							// 227
+			EffectHandlers[(int)AuraType.ModAOEDamagePercent] = () => new ModAOEDamagePercentHandler();								// 229
+			EffectHandlers[(int)AuraType.ModMaxHealth] = () => new ModMaxHealthHandler();											// 230
+			EffectHandlers[(int)AuraType.ProcTriggerSpellWithOverride] = 
+				() => new ProcTriggerSpellHandler();								//TODO: Might need some tweaks					// 231 
+			EffectHandlers[(int)AuraType.ModSilenceDurationPercent] = () => new ModSilenceDurationPercentHandler();					// 232
+			EffectHandlers[(int)AuraType.ModMechanicDurationPercent] = () => new ModMechanicDurationPercentHandler();				// 234
+			EffectHandlers[(int)AuraType.Vehicle] = () => new VehicleAuraHandler();													// 236
+			EffectHandlers[(int)AuraType.ModSpellPowerByAPPct] = () => new ModSpellPowerByAPPctHandler();							// 237
+			EffectHandlers[(int)AuraType.ModScale2] = () => new ModScaleHandler();													// 239
+			EffectHandlers[(int)AuraType.Expertise] = () => new ModExpertiseHandler();												// 240
+			EffectHandlers[(int)AuraType.ForceAutoRunForward] = () => new ForceAutoRunForwardHandler();								// 241
+			EffectHandlers[(int)AuraType.MirrorImage] = () => new MirrorImageHandler();												// 247
+			EffectHandlers[(int)AuraType.ModChanceTargetDodgesAttackPercent] = 
+				() => new ModChanceTargetDodgesAttackPercentHandler();																// 248
+			EffectHandlers[(int)AuraType.CriticalBlockPct] = () => new CriticalBlockPctHandler();									// 253
+			EffectHandlers[(int)AuraType.DisarmOffhandAndShield] = () => new DisarmOffHandHandler();								// 254
+			EffectHandlers[(int)AuraType.IncreaseBleedEffectPct] = () => new AuraVoidHandler();										// 255
+			EffectHandlers[(int)AuraType.Phase] = () => new PhaseAuraHandler();														// 261
+			EffectHandlers[(int)AuraType.ModMeleeAttackPowerByPercentOfStat] =														// 268
 				() => new ModMeleeAttackPowerByPercentOfStatHandler();
-			EffectHandlers[(int)AuraType.ModSpellHastePercent] = () => new ModSpellHastePercentHandler();
-			EffectHandlers[(int)AuraType.ModManaRegen] = () => new ModManaRegenHandler();
-			EffectHandlers[(int)AuraType.ModMaxHealth] = () => new ModMaxHealthHandler();
-			EffectHandlers[(int)AuraType.ModSilenceDurationPercent] = () => new ModSilenceDurationPercentHandler();
-			EffectHandlers[(int)AuraType.ModMechanicDurationPercent] = () => new ModMechanicDurationPercentHandler();
-			EffectHandlers[(int)AuraType.NoPvPCredit] = () => new NoPvPCreditHandler();
-			EffectHandlers[(int)AuraType.ModTalentPoints] = () => new ModPetTalentPointsHandler();
-			EffectHandlers[(int)AuraType.ControlExoticPet] = () => new ControlExoticPetsHandler();
-			EffectHandlers[(int)AuraType.ForceReaction] = () => new ForceReactionHandler();
-			EffectHandlers[(int)AuraType.Vehicle] = () => new VehicleAuraHandler();
-			EffectHandlers[(int)AuraType.Phase] = () => new PhaseAuraHandler();
-			EffectHandlers[(int)AuraType.FeatherFall] = () => new FeatherFallHandler();
-			EffectHandlers[(int)AuraType.Charm] = () => new CharmAuraHandler();
-			EffectHandlers[(int)AuraType.ModTaunt] = () => new ModTauntAuraHandler();
-			EffectHandlers[(int)AuraType.ModPacify] = () => new ModPacifyHandler();
-			EffectHandlers[(int)AuraType.ModSilence] = () => new ModSilenceHandler();
-			EffectHandlers[(int)AuraType.ModPacifySilence] = () => new ModPacifySilenceHandler();
-			EffectHandlers[(int)AuraType.ModSpellDamageByPercentOfStat] = () => new ModSpellDamageByPercentOfStatHandler();
-			EffectHandlers[(int)AuraType.ModSpellHealingByPercentOfStat] = () => new ModHealingByPercentOfStatHandler();
-			EffectHandlers[(int)AuraType.DamagePctAmplifier] = () => new DamagePctAmplifierHandler();
-			EffectHandlers[(int)AuraType.ModArmorPenetration] = () => new ModArmorPenetrationHandler();
-			EffectHandlers[(int)AuraType.PeriodicTriggerSpell2] = () => new PeriodicTriggerSpellHandler();
-			EffectHandlers[(int)AuraType.ModMeleeCritDamageBonus] = () => new ModMeleeCritDamageBonusHandler();
-			EffectHandlers[(int)AuraType.ModChanceTargetDodgesAttackPercent] = () => new ModChanceTargetDodgesAttackPercentHandler();
-			EffectHandlers[(int)AuraType.ModOffhandDamagePercent] = () => new ModOffhandDamagePercentHandler();
-			EffectHandlers[(int)AuraType.Expertise] = () => new ModExpertiseHandler();
-			EffectHandlers[(int)AuraType.ModHitChance] = () => new ModHitChanceHandler();
-			EffectHandlers[(int)AuraType.ModRageFromDamageDealtPercent] = () => new ModRageFromDamageDealtPercentHandler();
-			EffectHandlers[(int)AuraType.CriticalBlockPct] = () => new CriticalBlockPctHandler();
-			EffectHandlers[(int)AuraType.ModAPByArmor] = () => new ModAPByArmorHandler();
-			EffectHandlers[(int)AuraType.DisarmMainHand] = () => new DisarmMainHandHandler();
-			EffectHandlers[(int)AuraType.DisarmOffhandAndShield] = () => new DisarmOffHandHandler();
-			EffectHandlers[(int)AuraType.DisarmRanged] = () => new DisarmRangedHandler();
-			EffectHandlers[(int)AuraType.ModDamageDoneVersusCreatureType] = () => new ModDamageDoneVersusCreatureTypeHandler();
-			EffectHandlers[(int)AuraType.ModAttackerSpellHitChance] = () => new ModAttackerSpellHitChanceHandler();
-			EffectHandlers[(int)AuraType.ModAttackerMeleeHitChance] = () => new ModAttackerMeleeHitChanceHandler();
-			EffectHandlers[(int)AuraType.ModAttackerRangedHitChance] = () => new ModAttackerRangedHitChanceHandler();
-			EffectHandlers[(int)AuraType.ModSpellPowerByAPPct] = () => new ModSpellPowerByAPPctHandler();
-			EffectHandlers[(int)AuraType.ModSpellHitChance] = () => new ModSpellHitChanceHandler();
-			EffectHandlers[(int)AuraType.ModSpellHitChance2] = () => new ModSpellHitChanceHandler();
-			EffectHandlers[(int)AuraType.DamageShield] = () => new DamageShieldEffectHandler();
-			EffectHandlers[(int)AuraType.Unattackable] = () => new UnattackableHandler();
-			EffectHandlers[(int)AuraType.ModDamageTaken] = () => new ModDamageTakenHandler();
-			EffectHandlers[(int)AuraType.ModDamageTakenPercent] = () => new ModDamageTakenPercentHandler();
-			EffectHandlers[(int)AuraType.ModAOEDamagePercent] = () => new ModAOEDamagePercentHandler();
-            EffectHandlers[(int)AuraType.ModSpeedMountedFlight] = () => new ModSpeedMountedFlightHandler();
-            EffectHandlers[(int)AuraType.ModReputationGain] = () => new ModReputationGainHandler();
-			EffectHandlers[(int)AuraType.ModKillXpPct] = () => new ModKillXpPctHandler();
-			EffectHandlers[(int)AuraType.ModQuestXpPct] = () => new ModQuestXpPctHandler();
-			EffectHandlers[(int)AuraType.EnableCritical] = () => new EnableCriticalHandler();
-			EffectHandlers[(int)AuraType.ModDetectRange] = () => new ModDetectRangeHandler();
-			EffectHandlers[(int)AuraType.IncreaseBleedEffectPct] = () => new AuraVoidHandler();
-			EffectHandlers[(int)AuraType.ToggleAura] = () => new ToggleAuraHandler();
-			EffectHandlers[(int)AuraType.ModAttackerSpellCritChance] = () => new ModAttackerSpellCritChanceHandler();
-            EffectHandlers[(int)AuraType.ModArmorByPercentOfIntellect] = () => new ModArmorByPercentOfIntellectHandler();
-            EffectHandlers[(int)AuraType.ModConfuse] = () => new ModConfuseHandler();
-            EffectHandlers[(int)AuraType.Fear] = () => new FearHandler();
+			EffectHandlers[(int)AuraType.DamagePctAmplifier] = () => new DamagePctAmplifierHandler();								// 271
+			EffectHandlers[(int)AuraType.DisarmRanged] = () => new DisarmRangedHandler();											// 278
+			EffectHandlers[(int)AuraType.ModArmorPenetration] = () => new ModArmorPenetrationHandler();								// 280
+			EffectHandlers[(int)AuraType.ToggleAura] = () => new ToggleAuraHandler();												// 284
+			EffectHandlers[(int)AuraType.ModAPByArmor] = () => new ModAPByArmorHandler();											// 285
+			EffectHandlers[(int)AuraType.EnableCritical] = () => new EnableCriticalHandler();										// 286
+			EffectHandlers[(int)AuraType.ModQuestXpPct] = () => new ModQuestXpPctHandler();											// 291
+			EffectHandlers[(int)AuraType.CallStabledPet] = () => new CallStabledPetHandler();										// 292
 
 			// make sure, there are no missing handlers
 			for (var i = 0; i < (int)AuraType.End; i++)

@@ -2,7 +2,7 @@
 using WCell.Core.Database;
 using WCell.RealmServer.Database;
 
-namespace WCell.RealmServer.ArenaTeams
+namespace WCell.RealmServer.Battlegrounds.Arenas
 {
 	[ActiveRecord("ArenaTeamMember", Access = PropertyAccess.Property)]
 	public partial class ArenaTeamMember : WCellRecord<ArenaTeamMember>

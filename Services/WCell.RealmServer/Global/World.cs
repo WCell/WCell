@@ -26,6 +26,7 @@ using WCell.Core.DBC;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Battlegrounds;
 using WCell.RealmServer.Lang;
+using WCell.Util.Graphics;
 using WCell.Util.Threading;
 using WCell.RealmServer.Chat;
 using WCell.RealmServer.Content;
@@ -63,7 +64,7 @@ namespace WCell.RealmServer.Global
 		/// </summary>
 		public static readonly World Instance = new World();
 
-		private static readonly ReaderWriterLockSlim m_worldLock = new ReaderWriterLockSlim();
+		private static readonly ReaderWriterLockWrapper worldLock = new ReaderWriterLockWrapper();
 
 		/// <summary>
 		/// While pausing, resuming and saving, the World locks against this Lock, 
@@ -337,7 +338,13 @@ namespace WCell.RealmServer.Global
 					// pause the world so nothing else can happen anymore
 					//Paused = true;
 
-					// save everything
+					// save maps
+					foreach (var map in GetAllMaps())
+					{
+						map.Save();
+					}
+
+					// save characters
 					var chars = GetAllCharacters();
 					var saveCount = chars.Count;
 					RealmServer.IOQueue.ExecuteInContext(() =>
@@ -494,8 +501,7 @@ namespace WCell.RealmServer.Global
 		/// </summary>
 		public static void Resync()
 		{
-			m_worldLock.EnterWriteLock();
-			try
+			using (worldLock.EnterWriteLock())
 			{
 				s_characterCount = s_staffMemberCount = s_hordePlayerCount = s_allyPlayerCount = 0;
 				foreach (var entity in s_namedEntities.Values)
@@ -522,10 +528,6 @@ namespace WCell.RealmServer.Global
 					}
 				}
 			}
-			finally
-			{
-				m_worldLock.ExitWriteLock();
-			}
 		}
 
 		/// <summary>
@@ -539,15 +541,10 @@ namespace WCell.RealmServer.Global
 				return;
 			}
 
-			m_worldLock.EnterWriteLock();
-			try
+			using (worldLock.EnterWriteLock())
 			{
 				s_namedEntities.Add(entity.EntityId.Low, entity);
 				s_entitiesByName.Add(entity.Name, entity);
-			}
-			finally
-			{
-				m_worldLock.ExitWriteLock();
 			}
 		}
 
@@ -557,9 +554,7 @@ namespace WCell.RealmServer.Global
 		/// <param name="chr">the character to add</param>
 		public static void AddCharacter(Character chr)
 		{
-			m_worldLock.EnterWriteLock();
-
-			try
+			using (worldLock.EnterWriteLock()) 
 			{
 				s_namedEntities.Add(chr.EntityId.Low, chr);
 				s_entitiesByName.Add(chr.Name, chr);
@@ -578,10 +573,6 @@ namespace WCell.RealmServer.Global
 					s_allyPlayerCount++;
 				}
 			}
-			finally
-			{
-				m_worldLock.ExitWriteLock();
-			}
 		}
 
 		/// <summary>
@@ -590,9 +581,7 @@ namespace WCell.RealmServer.Global
 		/// <param name="chr">the character to stop tracking</param>
 		public static bool RemoveCharacter(Character chr)
 		{
-			m_worldLock.EnterWriteLock();
-
-			try
+			using (worldLock.EnterWriteLock())
 			{
 				s_entitiesByName.Remove(chr.Name);
 				if (s_namedEntities.Remove(chr.EntityId.Low))
@@ -613,10 +602,6 @@ namespace WCell.RealmServer.Global
 					return true;
 				}
 			}
-			finally
-			{
-				m_worldLock.ExitWriteLock();
-			}
 			return false;
 		}
 
@@ -629,9 +614,10 @@ namespace WCell.RealmServer.Global
 		{
 			INamedEntity chr;
 
-			m_worldLock.EnterReadLock();
-			s_namedEntities.TryGetValue(lowEntityId, out chr);
-			m_worldLock.ExitReadLock();
+			using (worldLock.EnterReadLock())
+			{
+				s_namedEntities.TryGetValue(lowEntityId, out chr);
+			}
 
 			return chr as Character;
 		}
@@ -639,10 +625,11 @@ namespace WCell.RealmServer.Global
 		public static INamedEntity GetNamedEntity(uint lowEntityId)
 		{
 			INamedEntity entity;
-
-			m_worldLock.EnterReadLock();
-			s_namedEntities.TryGetValue(lowEntityId, out entity);
-			m_worldLock.ExitReadLock();
+			
+			using (worldLock.EnterReadLock())
+			{
+				s_namedEntities.TryGetValue(lowEntityId, out entity);
+			}
 
 			return entity;
 		}
@@ -658,20 +645,14 @@ namespace WCell.RealmServer.Global
 				return null;
 
 			INamedEntity chr;
-
-			m_worldLock.EnterReadLock();
-
-			try
+			
+			using (worldLock.EnterReadLock())
 			{
 				s_entitiesByName.TryGetValue(name, out chr);
 				if (caseSensitive && chr.Name != name)
 				{
 					return null;
 				}
-			}
-			finally
-			{
-				m_worldLock.ExitReadLock();
 			}
 
 			return chr as Character;
@@ -689,20 +670,14 @@ namespace WCell.RealmServer.Global
 				return null;
 
 			INamedEntity entity;
-
-			m_worldLock.EnterReadLock();
-
-			try
+			
+			using (worldLock.EnterReadLock())
 			{
 				s_entitiesByName.TryGetValue(name, out entity);
 				if (caseSensitive && entity.Name != name)
 				{
 					return null;
 				}
-			}
-			finally
-			{
-				m_worldLock.ExitReadLock();
 			}
 
 			return entity;
@@ -715,9 +690,8 @@ namespace WCell.RealmServer.Global
 		public static List<Character> GetAllCharacters()
 		{
 			var list = new List<Character>(s_namedEntities.Count);
-
-			m_worldLock.EnterReadLock();
-			try
+			
+			using (worldLock.EnterReadLock())
 			{
 				foreach (var chr in s_namedEntities.Values)
 				{
@@ -726,10 +700,6 @@ namespace WCell.RealmServer.Global
 						list.Add((Character)chr);
 					}
 				}
-			}
-			finally
-			{
-				m_worldLock.ExitReadLock();
 			}
 
 			return list;
@@ -741,15 +711,9 @@ namespace WCell.RealmServer.Global
 		/// <returns>a list of <see cref="Character" /> objects</returns>
 		public static ICollection<INamedEntity> GetAllNamedEntities()
 		{
-			m_worldLock.EnterReadLock();
-
-			try
+			using (worldLock.EnterReadLock())
 			{
 				return s_namedEntities.Values.ToList();
-			}
-			finally
-			{
-				m_worldLock.ExitReadLock();
 			}
 		}
 
@@ -761,8 +725,8 @@ namespace WCell.RealmServer.Global
 		public static ICollection<Character> GetCharactersOfRace(RaceId entRace)
 		{
 			var list = new List<Character>(s_namedEntities.Count);
-			m_worldLock.EnterReadLock();
-			try
+
+			using (worldLock.EnterReadLock())
 			{
 				foreach (INamedEntity chr in s_namedEntities.Values)
 				{
@@ -771,10 +735,6 @@ namespace WCell.RealmServer.Global
 						list.Add((Character)chr);
 					}
 				}
-			}
-			finally
-			{
-				m_worldLock.ExitReadLock();
 			}
 			return list;
 		}
@@ -787,8 +747,7 @@ namespace WCell.RealmServer.Global
 		public static ICollection<Character> GetCharactersOfClass(ClassId entClass)
 		{
 			var list = new List<Character>(s_namedEntities.Count);
-			m_worldLock.EnterReadLock();
-			try
+			using (worldLock.EnterReadLock())
 			{
 				foreach (INamedEntity chr in s_namedEntities.Values)
 				{
@@ -797,10 +756,6 @@ namespace WCell.RealmServer.Global
 						list.Add((Character)chr);
 					}
 				}
-			}
-			finally
-			{
-				m_worldLock.ExitReadLock();
 			}
 			return list;
 		}
@@ -813,8 +768,7 @@ namespace WCell.RealmServer.Global
 		public static ICollection<Character> GetCharactersOfLevel(uint level)
 		{
 			var list = new List<Character>(s_namedEntities.Count);
-			m_worldLock.EnterReadLock();
-			try
+			using (worldLock.EnterReadLock())
 			{
 				foreach (INamedEntity chr in s_namedEntities.Values)
 				{
@@ -823,10 +777,6 @@ namespace WCell.RealmServer.Global
 						list.Add((Character)chr);
 					}
 				}
-			}
-			finally
-			{
-				m_worldLock.ExitReadLock();
 			}
 			return list;
 		}
@@ -839,8 +789,8 @@ namespace WCell.RealmServer.Global
 		public static ICollection<Character> GetCharactersStartingWith(string nameStarts)
 		{
 			var list = new List<Character>(s_namedEntities.Count);
-			m_worldLock.EnterReadLock();
-			try
+
+			using (worldLock.EnterReadLock())
 			{
 				foreach (INamedEntity chr in s_namedEntities.Values)
 				{
@@ -849,10 +799,6 @@ namespace WCell.RealmServer.Global
 						list.Add((Character)chr);
 					}
 				}
-			}
-			finally
-			{
-				m_worldLock.ExitReadLock();
 			}
 			return list;
 		}
@@ -982,6 +928,16 @@ namespace WCell.RealmServer.Global
 				LoadMapData();
 			}
 			return s_MapTemplates.Get((uint)mapID);
+		}
+
+		public static BoundingBox GetMapBoundingBox(MapId mapId)
+		{
+			var templ = s_MapTemplates.Get((uint)mapId);
+			if (templ != null)
+			{
+				return templ.Bounds;
+			}
+			return default(BoundingBox);
 		}
 
 		public static bool IsInstance(MapId mapId)

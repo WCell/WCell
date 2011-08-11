@@ -930,7 +930,7 @@ namespace WCell.Constants.Updates
 				},
 				// UnitFields.AURASTATE
 				new UpdateField {
-					Flags = UpdateFieldFlags.Public,
+					Flags = UpdateFieldFlags.Dynamic,
 					Group = ObjectTypeId.Unit,
 					Name = "AURASTATE",
 					Offset = 61,

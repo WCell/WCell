@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2010-02-20 06:16:32 +0100 (l? 20 feb 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 1257 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@ using WCell.Constants.Updates;
 using WCell.Constants.World;
 using WCell.Core.Timers;
 using WCell.RealmServer.AreaTriggers;
-using WCell.RealmServer.ArenaTeams;
+using WCell.RealmServer.Battlegrounds.Arenas;
 using WCell.RealmServer.Chat;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Factions;
@@ -1181,7 +1181,7 @@ namespace WCell.RealmServer.Entities
 			{
 				actions[btnIndex] = (byte)(action & 0x0000FF);
 				actions[btnIndex + 1] = (byte)((action & 0x00FF00) >> 8);
-				actions[btnIndex + 2] = (byte)((action & 0xFF000) >> 16);
+				actions[btnIndex + 2] = (byte)((action & 0xFF0000) >> 16);
 				actions[btnIndex + 3] = type;
 			}
 
@@ -1189,6 +1189,23 @@ namespace WCell.RealmServer.Entities
 			{
 				CharacterHandler.SendActionButtons(this);
 			}
+		}
+
+		public uint GetActionFromActionButton(int buttonIndex)
+		{
+			var actions = CurrentSpecProfile.ActionButtons;
+			buttonIndex = buttonIndex * 4;
+
+			var action = BitConverter.ToUInt32(actions, buttonIndex);
+			action = action & 0x00FFFFFF;
+
+			return action;
+		}
+
+		public byte GetTypeFromActionButton(int buttonIndex)
+		{
+			buttonIndex = buttonIndex * 4;
+			return CurrentSpecProfile.ActionButtons[buttonIndex + 3];
 		}
 
 		/// <summary>
@@ -2177,6 +2194,14 @@ namespace WCell.RealmServer.Entities
 		public uint GetGlyphSlot(byte slot)
 		{
 			return GetUInt32(PlayerFields.GLYPH_SLOTS_1 + slot);
+		}
+		public void SetGlyph(byte slot, uint glyph)
+		{
+			SetUInt32(PlayerFields.GLYPHS_1 + slot, glyph);
+		}
+		public uint GetGlyph(byte slot)
+		{
+			return GetUInt32(PlayerFields.GLYPHS_1 + slot);
 		}
 		#endregion
 	}

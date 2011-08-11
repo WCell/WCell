@@ -7,8 +7,10 @@ using WCell.RealmServer.NPCs.Vehicles;
 namespace WCell.RealmServer.Handlers {
     public static class VehicleHandler {
         [PacketHandler(RealmServerOpCode.CMSG_DISMISS_CONTROLLED_VEHICLE)]
-        public static void HandleDismissControlledVehicle(IRealmClient client, RealmPacketIn packet) 
+        public static void HandleDismissControlledVehicle(IRealmClient client, RealmPacketIn packet)
         {
+            client.ActiveCharacter.Vehicle.ClearAllSeats(true);
+            MovementHandler.HandleMovement(client, packet);
         }
 
         [PacketHandler(RealmServerOpCode.CMSG_REQUEST_VEHICLE_EXIT)]
@@ -38,7 +40,41 @@ namespace WCell.RealmServer.Handlers {
         [PacketHandler(RealmServerOpCode.CMSG_CHANGE_SEATS_ON_CONTROLLED_VEHICLE)]
         public static void HandleChangeSeatsOnControlledVehicle(IRealmClient client, RealmPacketIn packet)
         {
-            
+        	var guid = packet.ReadPackedEntityId();
+			var oldVehicle = client.ActiveCharacter.Map.GetObject(guid) as Vehicle;
+			if (oldVehicle == null)
+				return;
+        	uint clientTime;
+        	MovementHandler.ReadMovementInfo(packet, client.ActiveCharacter, oldVehicle, out clientTime);
+
+			var newVehicleGuid = packet.ReadPackedEntityId();
+			var newVehicle = client.ActiveCharacter.Map.GetObject(newVehicleGuid) as Vehicle;
+			if (newVehicle == null)
+				return;
+
+			var passenger = client.ActiveCharacter;
+        	var oldSeat = passenger.m_vehicleSeat;
+
+			//shouldnt need this, but fall back just in case
+			if (oldSeat == null)
+				oldVehicle.FindSeatOccupiedBy(passenger);
+
+			//uh oh!
+			if(oldSeat == null)
+				return;
+
+        	var seatId = packet.ReadByte();
+        	var newSeat = newVehicle.Seats[seatId];
+			//something went wrong
+			if(newSeat == null)
+				return;
+
+			//cheater?!
+			if(newSeat.Passenger != null)
+				return;
+
+			oldSeat.ClearSeat();
+			newSeat.Enter(passenger);
         }
 
 		public static void SendBreakTarget(IPacketReceiver rcvr, IEntity target)

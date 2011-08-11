@@ -15,9 +15,6 @@
  *************************************************************************/
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace WCell.Constants.Factions
 {
@@ -70,4 +67,49 @@ namespace WCell.Constants.Factions
         Horde = 2,
         Invalid = 3
     }
+
+	/// <summary>
+	/// Flags used in Faction Template DBCs
+	/// </summary>
+	[Flags]
+	public enum FactionTemplateFlags : uint
+	{
+		None = 0x0,
+		Flagx1 = 0x1,
+		Flagx2 = 0x2,
+		Flagx4 = 0x4,
+		Flagx8 = 0x8,
+		Flagx10 = 0x10,
+		Flagx20 = 0x20,
+		Flagx40 = 0x40,
+		Flagx80= 0x80,
+		Flagx100 = 0x100,
+		Flagx200 = 0x200,
+		Flagx400 = 0x400,
+
+		/// <summary>
+		/// Flagged for PvP
+		/// </summary>
+		PvP = 0x800,
+
+		/// <summary>
+		/// Attacks players that have been involved in PvP
+		/// </summary>
+		ContestedGuard = 0x1000,
+
+		Flagx2000 = 0x2000
+	}
+
+	[Flags]
+	public enum FactionFlags : byte
+	{
+		None = 0x00,
+		Visible = 0x01,
+		AtWar = 0x02,
+		Hidden = 0x04,
+		Inivisible = 0x08,
+		Peace = 0x10,
+		Inactive = 0x20,
+		Rival = 0x40
+	}
 }

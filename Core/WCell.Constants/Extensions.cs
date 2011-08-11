@@ -38,6 +38,11 @@ namespace WCell.Constants
 			return entryStr;
 		}
 
+		public static string ToString(this ObjectTypeId type, IEnumerable<uint> ids, string conj)
+		{
+			return ids.Aggregate("", (current, id) => current + (type.ToString(id) + conj));
+		}
+
 		public static string ToString(this GOEntryId id)
 		{
 			return id + "(Id: " + (int)id + ")";

@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2009-02-11 01:52:08 +0800 (Wed, 11 Feb 2009) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 750 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -84,6 +84,11 @@ namespace WCell.RealmServer.AI.Brains
 		bool ScanAndAttack();
 
 		bool CheckCombat();
+
+		/// <summary>
+		/// Used to get the owner of this brain out of combat and leave all fighting behind
+		/// </summary>
+		void ClearCombat(BrainState newState);
 
 		/// <summary>
 		/// Called when the AIGroup of an NPC is about to change

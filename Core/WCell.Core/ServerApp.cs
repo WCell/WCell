@@ -117,7 +117,7 @@ namespace WCell.Core
 				if (asm != null)
 				{
 					var ver = asm.GetName().Version;
-					return string.Format("{0}.{1} ({2}#{3})", ver.Major, ver.Minor, ver.Build, ver.Revision);
+					return string.Format("{0}.{1}.{2}.{3})", ver.Major, ver.Minor, ver.Build, ver.Revision);
 				}
 				return string.Format("[Cannot get AssemblyVersion]");
 			}
@@ -173,7 +173,7 @@ namespace WCell.Core
 			get;
 		}
 
-		protected void UpdateTitle()
+		public void UpdateTitle()
 		{
 			SetTitle(ToString());
 		}
@@ -183,6 +183,14 @@ namespace WCell.Core
 			if (ConsoleActive)
 			{
 				Console.Title = title;
+			}
+		}
+
+		public void SetTitle(string title, params object[] args)
+		{
+			if (ConsoleActive)
+			{
+				Console.Title = string.Format(title, args);
 			}
 		}
 
@@ -222,6 +230,10 @@ namespace WCell.Core
 		}
 
 		#region Start
+		/// <summary>
+		/// Is executed when the server finished starting up
+		/// </summary>
+		public static event Action Started;
 
 		/// <summary>
 		/// Starts the server and performs and needed initialization.
@@ -251,6 +263,12 @@ namespace WCell.Core
 				s_log.Info("Server started - Max Working Set Size: {0}", Process.GetCurrentProcess().MaxWorkingSet);
 				//GC.Collect(2, GCCollectionMode.Optimized);
 				UpdateTitle();
+
+				var evt = Started;
+				if (evt != null)
+				{
+					evt();
+				}
 			}
 			else
 			{

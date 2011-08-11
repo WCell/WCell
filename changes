@@ -1,3 +1,0 @@
-- fixed a bug where charming/taming interrupted itself
-- fixed a bug with constraint checks of dependent auras
-- fixed another bug with any ModCritPercent spell, such as Lethal Shot, to apply the correct crit bonus

@@ -99,7 +99,7 @@ namespace WCell.Util
 		}
 		#endregion
 
-		public static void AddUnique<T>(this IList<T> items, T item)
+		public static void AddUnique<T>(this ICollection<T> items, T item)
 		{
 			if (!items.Contains(item))
 			{
@@ -107,11 +107,15 @@ namespace WCell.Util
 			}
 		}
 
-		public static bool Iterate<T>(this IEnumerable<T> items, Func<T, bool> action)
+		/// <summary>
+		/// The predicate returns false to stop the iteration (and to indicate that it found the item).
+		/// Iterate returns true once the predicate returned false the first time.
+		/// </summary>
+		public static bool Iterate<T>(this IEnumerable<T> items, Func<T, bool> predicate)
 		{
 			foreach (var item in items)
 			{
-				if (!action(item))
+				if (!predicate(item))
 				{
 					return true;
 				}

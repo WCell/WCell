@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using WCell.Constants.Factions;
 using WCell.Constants.Spells;
+using WCell.Core;
 using WCell.Core.DBC;
 using WCell.RealmServer.NPCs;
 using WCell.RealmServer.Entities;
@@ -50,6 +51,12 @@ namespace WCell.RealmServer.Spells
 			}
 			minion.Summoner = caster;
 			minion.Creator = cast.CasterReference.EntityId;
+			if(caster != null)
+			{
+				caster.Summon = minion.EntityId;
+				if(caster.HasMaster)
+					minion.Master = caster.Master;
+			}
 
 			return minion;
 		}
@@ -104,6 +111,23 @@ namespace WCell.RealmServer.Spells
 		{
 			var npc = base.Summon(cast, ref targetLoc, entry);
 			npc.HasPermissionToMove = false;
+			return npc;
+		}
+	}
+
+	public class SpellSummonPossessedHandler : SpellSummonHandler
+	{
+		public override NPC Summon(SpellCast cast, ref Vector3 targetLoc, NPCEntry entry)
+		{
+			var npc = base.Summon(cast, ref targetLoc, entry);
+			if(cast.CasterChar != null)
+			{
+				//Client needs to think we are charmer not summoner!
+				cast.CasterChar.Summon = EntityId.Zero;
+				npc.Summoner = null;
+				npc.Master = cast.CasterChar;
+				npc.AddMessage(() => cast.CasterChar.Possess(0, npc, true, false)); 
+			}
 			return npc;
 		}
 	}

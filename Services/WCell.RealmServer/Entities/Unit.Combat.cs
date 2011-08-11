@@ -291,7 +291,7 @@ namespace WCell.RealmServer.Entities
 				return false;
 			}
 
-			//if (IsMovementConrolled)
+			//if (IsMovementControlled)
 			//{
 			//    // stop running when landing a hit
 			//    m_Movement.Stop();
@@ -767,7 +767,7 @@ namespace WCell.RealmServer.Entities
 					}
 
 					// Pet entered combat, so will it's master.
-					if (Master != this)
+					if (HasMaster)
 					{
 						Master.IsInCombat = true;
 					}

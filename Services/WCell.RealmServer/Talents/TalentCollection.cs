@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2009-12-21 18:48:36 +0100 (ma, 21 dec 2009) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 1149 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NLog;
 using WCell.Constants;
+using WCell.Constants.Achievements;
 using WCell.Constants.NPCs;
 using WCell.Constants.Pets;
 using WCell.Constants.Spells;
@@ -401,6 +402,7 @@ namespace WCell.RealmServer.Talents
 
 				chr.Money -= price;
 				CurrentResetTier = tier + 1;
+                chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.GoldSpentForTalents, price);
 				return true;
 			}
 			return false;

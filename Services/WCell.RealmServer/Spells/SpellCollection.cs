@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2010-01-29 04:07:03 +0100 (fr, 29 jan 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 1232 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,14 @@ using System.Collections.Generic;
 using Castle.ActiveRecord;
 using Cell.Core;
 using NLog;
+using WCell.Constants.Achievements;
 using WCell.Constants.Spells;
+using WCell.RealmServer.Achievements;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Spells.Auras.Handlers;
 using WCell.Util.NLog;
+using WCell.Util.ObjectPools;
 using WCell.Util.Threading;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
@@ -140,6 +143,10 @@ namespace WCell.RealmServer.Spells
 					AddSpell(spe);
 				}
 			}
+            if (Owner is Character)
+            {
+                ((Character)Owner).Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.LearnSpell, spell.Id);
+            }
 		}
 
 		/// <summary>
@@ -339,6 +346,18 @@ namespace WCell.RealmServer.Spells
 			ClearCooldown(spell, alsoClearCategory);
 		}
 
+		public void ClearCooldown(SpellLineId id, bool alsoClearCategory = true)
+		{
+			var line = id.GetLine();
+			if (line != null)
+			{
+				foreach (var spell in line)
+				{
+					ClearCooldown(spell, alsoClearCategory);
+				}
+			}
+		}
+
 		public abstract void ClearCooldown(Spell cooldownSpell, bool alsoClearCategory = true);
 
 		#region Special Spell Casting behavior
@@ -369,6 +388,7 @@ namespace WCell.RealmServer.Spells
 			{
 				var triggerHandler = m_TargetTriggers[i];
 				var effect = triggerHandler.SpellEffect;
+				if (effect.EffectType == SpellEffectType.TriggerSpellFromTargetWithCasterAsTarget) continue;
 				if (spell.SpellClassSet == effect.Spell.SpellClassSet &&
 					effect.MatchesSpell(spell) &&
 					(((val = effect.CalcEffectValue(Owner)) >= 100) || Utility.Random(0, 101) <= val) &&

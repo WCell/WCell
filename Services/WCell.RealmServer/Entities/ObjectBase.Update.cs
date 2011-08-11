@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2010-01-14 13:00:53 +0100 (to, 14 jan 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+ 
  *   revision		: $Rev: 1192 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -160,6 +160,17 @@ namespace WCell.RealmServer.Entities
         {
         }
 
+		public void WriteOutOfRangeEntitiesUpdate(Character receiver, HashSet<WorldObject> worldObjects)
+		{
+			receiver.m_updatePacket.Write((byte) UpdateType.OutOfRange);
+			receiver.m_updatePacket.Write(worldObjects.Count);
+			foreach (var worldObject in worldObjects)
+			{
+				worldObject.EntityId.WritePacked(receiver.m_updatePacket);
+			}
+			receiver.UpdateCount++;
+		}
+
 		public void WriteObjectValueUpdate(Character receiver)
 		{
 			// TODO: Find a better way to keep track of changed Dynamic UpdateFields
@@ -245,7 +256,7 @@ namespace WCell.RealmServer.Entities
 
 		protected void WriteUpdateValue(UpdatePacket packet, Character receiver, int index)
 		{
-			if (_UpdateFieldInfos.FieldFlags[index] == UpdateFieldFlags.Dynamic)
+			if (_UpdateFieldInfos.FieldFlags[index].HasAnyFlag(UpdateFieldFlags.Dynamic))
 			{
 				DynamicUpdateFieldHandlers[index](this, receiver, packet);
 			}
@@ -337,6 +348,23 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
+		public void SendOutOfRangeUpdate(Character receiver, HashSet<WorldObject> worldObjects)
+		{
+			using (var packet = new UpdatePacket(1024))
+			{
+				packet.Position = 4;						// jump over header
+				packet.Write(1);							// Update Count
+				packet.Write((byte)UpdateType.OutOfRange);
+				packet.Write(worldObjects.Count);
+				foreach (var worldObject in worldObjects)
+				{
+					worldObject.EntityId.WritePacked(packet);
+				}
+
+				receiver.Send(packet);
+			}
+		}
+		
 		// TODO: Improve (a lot)
 
 		#region Spontaneous UpdateBlock Creation

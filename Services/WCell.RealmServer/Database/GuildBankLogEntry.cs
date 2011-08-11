@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Castle.ActiveRecord;
+using NHibernate.Criterion;
 using WCell.Constants;
 using WCell.Constants.Guilds;
 using WCell.RealmServer.Entities;
@@ -10,76 +11,101 @@ using WCell.RealmServer.Global;
 
 namespace WCell.RealmServer.Guilds
 {
-    [ActiveRecord("GuildBankLogEntries", Access = PropertyAccess.Property)]
-    public class GuildBankLogEntry : ActiveRecordBase<GuildBankLogEntry>
-    {
-        [PrimaryKey(PrimaryKeyType.GuidComb)]
-        public long BankLogEntryRecordId
-        {
-            get;
-            set;
-        }
+	[ActiveRecord("GuildBankLogEntries", Access = PropertyAccess.Property)]
+	public class GuildBankLogEntry : ActiveRecordBase<GuildBankLogEntry>
+	{
+		private static readonly Order CreatedOrder = new Order("Created", false);
 
-        public GuildBankLog BankLog
-        {
-            get;
-            set;
-        }
+		public static GuildBankLogEntry[] LoadAll(uint guildId)
+		{
+			return FindAll(CreatedOrder, Restrictions.Eq("GuildId", (int)guildId));
+		}
 
-        [Field]
-        private int bankLogEntryType;
+		public GuildBankLogEntry()
+		{
 
-        [Field]
-        private int actorEntityLowId;
+		}
 
-        [Property]
-        public int ItemEntryId
-        {
-            get;
-            set;
-        }
+		public GuildBankLogEntry(uint guildId)
+		{
+			GuildId = (int) guildId;
+		}
 
-        [Property]
-        public int ItemStackCount
-        {
-            get;
-            set;
-        }
+		//[PrimaryKey(PrimaryKeyType.Assigned)]
+		[Property]
+		public int GuildId
+		{
+			get;
+			set;
+		}
 
-        [Property]
-        public int Money
-        {
-            get;
-            set;
-        }
+		[PrimaryKey(PrimaryKeyType.GuidComb)]
+		public long BankLogEntryRecordId
+		{
+			get;
+			set;
+		}
 
-        [Field]
-        public int DestinationTabId;
+		public GuildBankLog BankLog
+		{
+			get;
+			set;
+		}
 
-        [Property]
-        public DateTime TimeStamp
-        {
-            get;
-            set;
-        }
+		[Field]
+		private int bankLogEntryType;
+
+		[Field]
+		private int actorEntityLowId;
+
+		[Property]
+		public int ItemEntryId
+		{
+			get;
+			set;
+		}
+
+		[Property]
+		public int ItemStackCount
+		{
+			get;
+			set;
+		}
+
+		[Property]
+		public int Money
+		{
+			get;
+			set;
+		}
+
+		[Field]
+		public int DestinationTabId;
+
+		[Property]
+		public DateTime Created
+		{
+			get;
+			set;
+		}
 
 
-        public GuildBankLogEntryType Type
-        {
-            get { return (GuildBankLogEntryType)bankLogEntryType; }
-            set { bankLogEntryType = (int)value; }
-        }
+		public GuildBankLogEntryType Type
+		{
+			get { return (GuildBankLogEntryType)bankLogEntryType; }
+			set { bankLogEntryType = (int)value; }
+		}
 
-        public Character Actor
-        {
-            get { return World.GetCharacter((uint)actorEntityLowId); }
-            set { actorEntityLowId = (int)value.EntityId.Low; }
-        }
+		public Character Actor
+		{
+			get { return World.GetCharacter((uint)actorEntityLowId); }
+			set { actorEntityLowId = (int)value.EntityId.Low; }
+		}
 
-        public GuildBankTab DestinationTab
-        {
-            get { return BankLog.Bank[DestinationTabId]; }
-            set { DestinationTabId = value.BankSlot; }
-        }
-    }
+		public GuildBankTab DestinationTab
+		{
+			get { return BankLog.Bank[DestinationTabId]; }
+			set { DestinationTabId = value.BankSlot; }
+		}
+	}
 }

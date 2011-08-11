@@ -36,4 +36,19 @@ namespace WCell.Constants.Items
 		Bag4 = 22,
 		End
 	}
+	//the ones you can see on your character
+	public enum VisibleEquipmentSlot
+	{
+		Head = 0,
+		Shoulder = 2,
+		Shirt = 3,
+		Chest = 4,
+		Belt = 5,
+		Pants = 6,
+		Boots = 7,
+		Wrist = 8,
+		Gloves = 9,
+		Back = 14,
+		Tabard = 18
+	}
 }

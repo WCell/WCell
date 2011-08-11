@@ -15,6 +15,7 @@
  *************************************************************************/
 
 using System;
+using System.Linq;
 using WCell.Constants.Achievements;
 using WCell.Constants.NPCs;
 using WCell.Constants.Quests;
@@ -37,6 +38,11 @@ namespace WCell.RealmServer.Quests
 		private bool m_saved;
 
 		private readonly QuestRecord m_record;
+
+		public Character Owner
+		{
+			get { return m_Log.Owner; }
+		}
 
 		/// <summary>
 		/// Template on which is this quest based, we might actually somehow cache only used templates
@@ -84,7 +90,9 @@ namespace WCell.RealmServer.Quests
 
 			if (template.HasObjectOrSpellInteractions)
 			{
-				if (Interactions == null)
+				if (Interactions == null ||
+				//template has been changed, probably due to a quest fix
+				template.ObjectOrSpellInteractions.Count() != Interactions.Count())
 				{
 					Interactions = new uint[template.ObjectOrSpellInteractions.Length];
 				}
@@ -92,6 +100,7 @@ namespace WCell.RealmServer.Quests
 				for (var i = 0; i < Template.ObjectOrSpellInteractions.Length; i++)
 				{
 					var interaction = Template.ObjectOrSpellInteractions[i];
+					
 					if (interaction == null || !interaction.IsValid) continue;
 
 					log.Owner.SetQuestCount(Slot, interaction.Index, (byte)Interactions[i]);
@@ -109,6 +118,11 @@ namespace WCell.RealmServer.Quests
 				CollectedItems = new int[template.CollectableItems.Length];
 			}
 
+            if (template.CollectableSourceItems.Length > 0)
+            {
+                CollectedSourceItems = new int[template.CollectableSourceItems.Length];
+            }
+
 			m_Log = log;
 			Template = template;
 		}
@@ -117,6 +131,11 @@ namespace WCell.RealmServer.Quests
 		/// Amounts of picked up Items
 		/// </summary>
 		public readonly int[] CollectedItems;
+
+        /// <summary>
+        /// Amounts of picked up Items
+        /// </summary>
+        public readonly int[] CollectedSourceItems;
 
 		/// <summary>
 		/// Amounts interactions
@@ -303,7 +322,7 @@ namespace WCell.RealmServer.Quests
 
 				if(Template.IsDaily)
 				{
-					chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.CompleteDailyQuest, 1);;
+					chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.CompleteDailyQuest, 1);
 				}
 
 				return true;

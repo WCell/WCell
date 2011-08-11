@@ -101,6 +101,17 @@ namespace WCell.RealmServer.NPCs
 		/// </summary>
 		public bool IsIdle;
 
+		/// <summary>
+		/// Whether an NPC is a special event trigger like the little
+		/// elementals used to cast spells or trigger concerts
+		/// </summary>
+		[NotPersistent]
+		public bool IsEventTrigger
+		{
+			get;
+			private set;
+		}
+
 		public uint EquipmentId;
 
 		[NotPersistent]
@@ -110,9 +121,13 @@ namespace WCell.RealmServer.NPCs
 
 		public InvisType InvisibilityType;
 
-		public InhabitType InhabitType = InhabitType.Anywhere;
+		public InhabitType InhabitType = InhabitType.Ground;
 
 		public bool Regenerates;
+
+	    public uint TrainerTemplateId;
+
+        public uint VendorTemplateId;
 
 		// addon data
 		public NPCAddonData AddonData
@@ -513,15 +528,64 @@ namespace WCell.RealmServer.NPCs
 		#endregion
 
 		#region Factions
+		private FactionTemplateId m_HordeFactionId;
+		private FactionTemplateId m_AllianceFactionId;
+
 		/// <summary>
 		/// 
 		/// </summary>
-		public FactionTemplateId HordeFactionId, AllianceFactionId;
+		public FactionTemplateId HordeFactionId
+		{
+			get { return m_HordeFactionId; }
+			set
+			{
+				m_HordeFactionId = value;
+				if (HordeFaction != null)
+				{
+					HordeFaction = FactionMgr.Get(value);
+				}
+			}
+		}
+
+		public FactionTemplateId AllianceFactionId
+		{
+			get { return m_AllianceFactionId; }
+			set
+			{
+				m_AllianceFactionId = value;
+				if (AllianceFaction != null)
+				{
+					AllianceFaction = FactionMgr.Get(value);
+				}
+			}
+		}
 
 		[NotPersistent]
-		public Faction HordeFaction, AllianceFaction;
+		public Faction HordeFaction
+		{
+			get;
+			private set;
+		}
+		
+		[NotPersistent]
+		public Faction AllianceFaction
+		{
+			get;
+			private set;
+		}
 
-		public Faction Faction { get { return HordeFaction; } }
+		public Faction RandomFaction
+		{
+			get
+			{
+				return Utility.HeadsOrTails() ? HordeFaction : AllianceFaction;
+			}
+		}
+
+		public Faction GetFaction(FactionGroup fact)
+		{
+			return fact == FactionGroup.Alliance ? AllianceFaction : HordeFaction;
+		}
 		#endregion
 
 		#region Spells
@@ -791,9 +855,16 @@ namespace WCell.RealmServer.NPCs
 			DefaultDecayDelayMillis = _DefaultDecayDelayMillis;
 			Family = NPCMgr.GetFamily(FamilyId);
 
-			if (Type == CreatureType.NotSpecified)
+			if (Type == CreatureType.NotSpecified || VehicleEntry != null)
 			{
 				IsIdle = true;
+			}
+			
+			if (Type == CreatureType.NotSpecified && UnitFlags.HasFlag((UnitFlags.Passive | UnitFlags.NotSelectable)))
+			{
+				IsEventTrigger = true;
+				IsIdle = false;
+				MovesRandomly = false;
 			}
 
 			if (Resistances == null)
@@ -802,25 +873,28 @@ namespace WCell.RealmServer.NPCs
 			}
 
 			SetFlagIndices = Utility.GetSetIndices((uint)NPCFlags);
+
+			// set/fix factions
 			HordeFaction = FactionMgr.Get(HordeFactionId);
 			AllianceFaction = FactionMgr.Get(AllianceFactionId);
-
 			if (HordeFaction == null)
 			{
 				HordeFaction = AllianceFaction;
+				HordeFactionId = AllianceFactionId;
 			}
 			else if (AllianceFaction == null)
 			{
 				AllianceFaction = HordeFaction;
+				AllianceFactionId = HordeFactionId;
 			}
-
 			if (AllianceFaction == null)
 			{
 				ContentMgr.OnInvalidDBData("NPCEntry has no valid Faction: " + this);
-				AllianceFaction = NPCMgr.DefaultFaction;
-				HordeFaction = AllianceFaction;
+				HordeFaction = AllianceFaction = NPCMgr.DefaultFaction;
+				HordeFactionId = AllianceFactionId = (FactionTemplateId) HordeFaction.Template.Id;
 			}
 
+			// speeds
 			if (SpeedFactor < 0.01)
 			{
 				SpeedFactor = 1;
@@ -882,6 +956,25 @@ namespace WCell.RealmServer.NPCs
 				return;
 			}
 
+            if(TrainerTemplateId != 0)
+            {
+                if (!NPCMgr.TrainerSpellTemplates.ContainsKey(TrainerTemplateId))
+                {
+                    ContentMgr.OnInvalidDBData("NPCEntry has invalid TrainerTemplateId: {0} ({1})", this, TrainerTemplateId);
+                }
+                else
+                {
+                    if (TrainerEntry == null)
+                    {
+                        TrainerEntry = new TrainerEntry();
+                    }
+                    foreach (var trainerSpell in NPCMgr.TrainerSpellTemplates[TrainerTemplateId])
+                    {
+                        TrainerEntry.AddSpell(trainerSpell);
+                    }
+                }
+            }
+
 			if (AddonData != null)
 			{
 				AddonData.InitAddonData(this);
@@ -936,24 +1029,38 @@ namespace WCell.RealmServer.NPCs
 			return npc;
 		}
 
-		public NPC SpawnAt(Map map, Vector3 pos)
+		public NPC SpawnAt(Map map, Vector3 pos, bool hugGround = false)
 		{
 			var npc = Create(map.DifficultyIndex);
+			if (hugGround && InhabitType == InhabitType.Ground)
+			{
+				pos.Z = map.Terrain.GetGroundHeightUnderneath(pos);
+			}
 			map.AddObject(npc, pos);
 			return npc;
 		}
 
-		public NPC SpawnAt(IWorldZoneLocation loc)
+		public NPC SpawnAt(IWorldZoneLocation loc, bool hugGround = false)
 		{
 			var npc = Create(loc.Map.DifficultyIndex);
 			npc.Zone = loc.GetZone();
-			loc.Map.AddObject(npc, loc.Position);
+			var pos = loc.Position;
+			if (hugGround && InhabitType == InhabitType.Ground)
+			{
+				pos.Z = loc.Map.Terrain.GetGroundHeightUnderneath(pos);
+			}
+			loc.Map.AddObject(npc, pos);
 			return npc;
 		}
 
-		public NPC SpawnAt(IWorldLocation loc)
+		public NPC SpawnAt(IWorldLocation loc, bool hugGround = false)
 		{
 			var npc = Create(loc.Map.DifficultyIndex);
+			var pos = loc.Position;
+			if (hugGround && InhabitType == InhabitType.Ground)
+			{
+				pos.Z = loc.Map.Terrain.GetGroundHeightUnderneath(pos);
+			}
 			loc.Map.AddObject(npc, loc.Position);
 			npc.Phase = loc.Phase;
 			return npc;

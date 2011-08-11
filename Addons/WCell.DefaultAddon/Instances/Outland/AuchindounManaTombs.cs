@@ -11,7 +11,7 @@ using WCell.Util;
 
 namespace WCell.Addons.Default.Instances
 {
-    public class AuchindounManaTombs : DungeonInstance
+    public class AuchindounManaTombs : BaseInstance
     {
         #region Setup Content
 		private static NPCEntry pandemoniusEntry;
@@ -77,6 +77,10 @@ namespace WCell.Addons.Default.Instances
             }
         };
         #endregion
+
+    	protected override void PerformSave()
+    	{
+    	}
     }
 
 }

@@ -711,7 +711,7 @@ namespace WCell.RealmServer.Misc
 
 		public void Block()
 		{
-			HitFlags = HitFlags.NormalSwingAnim | HitFlags.Block;
+			HitFlags = HitFlags.PlayWoundAnimation | HitFlags.Block;
 			VictimState = VictimState.Block;
 			Blocked = CalcBlockDamage();
 			IsCritical = false;
@@ -738,7 +738,7 @@ namespace WCell.RealmServer.Misc
 		public void StrikeCrushing()
 		{
 			Damage = (Damage * 10 + 5) / 15;		// == Damage * 1.5f
-			HitFlags = HitFlags.NormalSwingAnim | HitFlags.Crushing;
+			HitFlags = HitFlags.PlayWoundAnimation | HitFlags.Crushing;
 			VictimState = VictimState.Wound;
 			Blocked = 0;
 			IsCritical = false;
@@ -749,7 +749,7 @@ namespace WCell.RealmServer.Misc
 		{
 			IsCritical = Victim.StandState == StandState.Stand;
 			SetCriticalDamage();
-			HitFlags = HitFlags.NormalSwingAnim | HitFlags.Resist_1 | HitFlags.Resist_2 | HitFlags.CriticalStrike;
+			HitFlags = HitFlags.PlayWoundAnimation | HitFlags.ResistType1 | HitFlags.ResistType2 | HitFlags.CriticalStrike;
 			VictimState = VictimState.Wound;
 			Blocked = 0;
 			// Automatic double damage against sitting target - but doesn't proc crit abilities
@@ -765,7 +765,7 @@ namespace WCell.RealmServer.Misc
 		{
 			Damage = (int)(Damage * CalcGlancingBlowDamageFactor());
 			VictimState = VictimState.Wound;
-			HitFlags = HitFlags.NormalSwingAnim | HitFlags.Glancing;
+			HitFlags = HitFlags.PlayWoundAnimation | HitFlags.Glancing;
 			Blocked = 0;
 			IsCritical = false;
 			DoStrike();
@@ -773,7 +773,7 @@ namespace WCell.RealmServer.Misc
 
 		public void StrikeNormal()
 		{
-			HitFlags = HitFlags.NormalSwingAnim;
+			HitFlags = HitFlags.PlayWoundAnimation;
 			VictimState = VictimState.Wound;
 			Blocked = 0;
 			IsCritical = false;
@@ -837,7 +837,7 @@ namespace WCell.RealmServer.Misc
 					Resisted = MathUtil.RoundInt(ResistPct * Damage / 100f);
 					if (Absorbed > 0)
 					{
-						HitFlags |= HitFlags.Absorb_1 | HitFlags.Absorb_2;
+						HitFlags |= HitFlags.AbsorbType1 | HitFlags.AbsorbType2;
 					}
 					else
 					{
@@ -846,7 +846,7 @@ namespace WCell.RealmServer.Misc
 
 					if (Weapon == Attacker.OffHandWeapon)
 					{
-						HitFlags |= HitFlags.LeftSwing;
+						HitFlags |= HitFlags.OffHand;
 					}
 
 					Victim.DoRawDamage(this);
@@ -1100,14 +1100,14 @@ namespace WCell.RealmServer.Misc
 		/// We use basic laws of probability:
 		/// P(CritWithBonus | NoCrit) = 
 		/// P(CritWithBonus) / P(NoCrit) =
-		/// critBonus / (1 - origCritChance)
+		/// critBonus / (10000 - origCritChance)
 		/// </summary>
 		public void AddBonusCritChance(int critBonusPct)
 		{
 			if (IsCritical) return;
 
 			var origCritChance = CalcCritChance();	// 0-10000
-			var critChance = (critBonusPct * 100) / (1 - origCritChance);
+			var critChance = ((critBonusPct * 100)*10000) / (10000 - origCritChance);
 
 			IsCritical = Utility.Random(0, 10000) < critChance;
 			if (IsCritical)

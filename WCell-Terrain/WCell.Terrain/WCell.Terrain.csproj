@@ -1,0 +1,245 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{5F86593D-8412-46C2-9438-A0D7FE21DB14}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>WCell.Terrain</RootNamespace>
+    <AssemblyName>WCell.Terrain</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisLogFile>bin\Debug\WCell.Terrain.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;D:\progs\vs 2010\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisRuleDirectories>;D:\progs\vs 2010\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisLogFile>bin\Release\WCell.Terrain.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;D:\progs\vs 2010\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisRuleDirectories>;D:\progs\vs 2010\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <CodeAnalysisLogFile>bin\Debug\WCell.Terrain.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;D:\progs\vs 2010\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisRuleDirectories>;D:\progs\vs 2010\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <CodeAnalysisLogFile>bin\Release\WCell.Terrain.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;D:\progs\vs 2010\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisRuleDirectories>;D:\progs\vs 2010\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+    <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="NLog">
+      <HintPath>..\..\Libraries\Binaries\Release\NLog\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CollisionUtil.cs" />
+    <Compile Include="Legacy\AABB.cs" />
+    <Compile Include="Legacy\BSPTree\BSPTree.cs" />
+    <Compile Include="Legacy\CollisionUtil.cs" />
+    <Compile Include="Legacy\ICollidable.cs" />
+    <Compile Include="Legacy\Intersection.cs" />
+    <Compile Include="IShape.cs" />
+    <Compile Include="Legacy\OBB.cs" />
+    <Compile Include="Legacy\OCTree\IntermediateOCTreeNode.cs" />
+    <Compile Include="Legacy\OCTree\OCTPoly.cs" />
+    <Compile Include="Legacy\OCTree\OCTree.cs" />
+    <Compile Include="Legacy\OCTree\OCTreeBuilder.cs" />
+    <Compile Include="Legacy\OCTree\OCTreeIntersection.cs" />
+    <Compile Include="Legacy\OCTree\OCTreeIntersectionType.cs" />
+    <Compile Include="Legacy\OCTree\OCTreeNode.cs" />
+    <Compile Include="LargeObjectPools.cs" />
+    <Compile Include="Pathfinding\Pathfinder.cs" />
+    <Compile Include="Pathfinding\SearchItem.cs" />
+    <Compile Include="Recast\NavMesh\NavMeshBuilder.cs" />
+    <Compile Include="Recast\RecastUtil.cs" />
+    <Compile Include="TerrainLiquidChunk.cs" />
+    <Compile Include="Tools\MapBoundaryUtil.cs" />
+    <Compile Include="Tools\MapBoundaryWriter.cs" />
+    <Compile Include="Tools\ZoneGridWriter.cs" />
+    <Compile Include="Tools\ZoneBoundaryWriter.cs" />
+    <Compile Include="MPQ\DBC\MapDBCEntry.cs" />
+    <Compile Include="MPQ\WDT.cs" />
+    <Compile Include="MPQ\WDTHeader.cs" />
+    <Compile Include="SimpleTerrain.cs" />
+    <Compile Include="MPQ\ADTChunk.cs" />
+    <Compile Include="Serialization\SimpleTileReader.cs" />
+    <Compile Include="Simple\SimpleM2.cs" />
+    <Compile Include="Simple\SimpleMapM2Definition.cs" />
+    <Compile Include="Simple\SimpleWMO.cs" />
+    <Compile Include="Simple\SimpleWMODefinition.cs" />
+    <Compile Include="Simple\SimpleWMOGroup.cs" />
+    <Compile Include="Simple\SimpleWMOM2Definition.cs" />
+    <Compile Include="MPQ\ADT.cs" />
+    <Compile Include="TerrainChunk.cs" />
+    <Compile Include="TerrainTile.cs" />
+    <Compile Include="Serialization\ADTChunkReader.cs" />
+    <Compile Include="Serialization\ADTReader.cs" />
+    <Compile Include="MPQ\ADTs\MapChunkHeader.cs" />
+    <Compile Include="MPQ\ADTs\MapChunkInfo.cs" />
+    <Compile Include="MPQ\ADTs\MapDoodadDefinition.cs" />
+    <Compile Include="MPQ\ADTs\MapHeader.cs" />
+    <Compile Include="MPQ\ADTs\MapNormals.cs" />
+    <Compile Include="MPQ\ADTs\MapObjectDefinition.cs" />
+    <Compile Include="MPQ\ADTs\MapVertices.cs" />
+    <Compile Include="MPQ\ADTs\MH2O.cs" />
+    <Compile Include="MPQ\Color4.cs" />
+    <Compile Include="MPQ\M2s\ModelHeader.cs" />
+    <Compile Include="MPQ\M2s\ModelVertices.cs" />
+    <Compile Include="MPQ\M2.cs" />
+    <Compile Include="MPQ\M2Model.cs" />
+    <Compile Include="Serialization\M2Reader.cs" />
+    <Compile Include="MPQ\OffsetLocation.cs" />
+    <Compile Include="MPQ\Signatures.cs" />
+    <Compile Include="MPQ\VertexSpan.cs" />
+    <Compile Include="MPQ\ContinentType.cs" />
+    <Compile Include="Serialization\WDTReader.cs" />
+    <Compile Include="MPQ\WMOs\WMOBSPNode.cs" />
+    <Compile Include="MPQ\WMOs\DoodadDefinition.cs" />
+    <Compile Include="MPQ\WMOs\DoodadSet.cs" />
+    <Compile Include="MPQ\WMOs\Fog.cs" />
+    <Compile Include="MPQ\WMOs\GroupHeader.cs" />
+    <Compile Include="MPQ\WMOs\GroupInformation.cs" />
+    <Compile Include="MPQ\WMOs\LightInformation.cs" />
+    <Compile Include="MPQ\WMOs\LiquidInfo.cs" />
+    <Compile Include="MPQ\WMOs\MapPoly.cs" />
+    <Compile Include="MPQ\WMOs\Material.cs" />
+    <Compile Include="MPQ\WMOs\PortalInformation.cs" />
+    <Compile Include="MPQ\WMOs\PortalRelation.cs" />
+    <Compile Include="MPQ\WMOs\RenderBatch.cs" />
+    <Compile Include="MPQ\WMOs\RootHeader.cs" />
+    <Compile Include="MPQ\WMOs\WMOGroupFlags.cs" />
+    <Compile Include="MPQ\Index3.cs" />
+    <Compile Include="MPQ\WMO.cs" />
+    <Compile Include="MPQ\WMOGroup.cs" />
+    <Compile Include="Serialization\WMOGroupReader.cs" />
+    <Compile Include="MPQ\WMORoot.cs" />
+    <Compile Include="Serialization\WMOReader.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Recast\NavMesh\NavMesh.cs" />
+    <Compile Include="Recast\NavMesh\NavMeshDetailTriIndex.cs" />
+    <Compile Include="Recast\NavMesh\NavMeshPolyDetail.cs" />
+    <Compile Include="Recast\NavMesh\NavMeshPolygon.cs" />
+    <Compile Include="Recast\NavMesh\NavOffMeshConnection.cs" />
+    <Compile Include="Recast\RecastAPI.cs" />
+    <Compile Include="Serialization\SimpleTileWriter.cs" />
+    <Compile Include="Terrain.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="TerrainUtil.cs" />
+    <Compile Include="WCellTerrainSettings.cs" />
+    <Compile Include="TileIdentifier.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\WCell.Constants\WCell.Constants.csproj">
+      <Project>{42F497A4-0347-491D-8FA8-50E4D8AD19EB}</Project>
+      <Name>WCell.Constants</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Core\WCell.Core\WCell.Core.csproj">
+      <Project>{EEA9DEB6-8EA6-46F1-B1B7-AB38D8BBCA6C}</Project>
+      <Name>WCell.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Utilities\C5\C5\C5.csproj">
+      <Project>{D02E0664-C56C-4C3F-98E5-C8EC881A8439}</Project>
+      <Name>C5</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Utilities\WCell.MPQTool\WCell.MPQTool.csproj">
+      <Project>{5F96293A-1276-4515-8048-EBC49CD81D71}</Project>
+      <Name>WCell.MPQTool</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Utilities\WCell.Util\WCell.Util.csproj">
+      <Project>{F753AF28-A251-4C12-9335-07E8236184F2}</Project>
+      <Name>WCell.Util</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Terra\Terra.csproj">
+      <Project>{1E90346C-7D04-4D97-8399-397B2E7DD0D6}</Project>
+      <Name>Terra</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

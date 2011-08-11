@@ -27,6 +27,10 @@ namespace WCell.RealmServer.Lang
 		InvalidSelection,
 
 		// ########################################################################
+		// Server
+		Initializing,
+
+		// ########################################################################
 		// Time
 		Second,
 		Seconds,

@@ -17,7 +17,7 @@ using System;
 
 namespace WCell.Addons.Default.Instances
 {
-	public class RagefireChasm : DungeonInstance
+	public class RagefireChasm : BaseInstance
 	{
 		#region Setup Content
 		private static NPCEntry oggleflintEntry;

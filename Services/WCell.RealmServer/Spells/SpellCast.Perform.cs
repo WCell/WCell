@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NLog;
 using WCell.Constants;
+using WCell.Constants.Achievements;
 using WCell.Constants.Misc;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
@@ -16,20 +17,28 @@ namespace WCell.RealmServer.Spells
 	public partial class SpellCast
 	{
 		/// <summary>
-		/// Returns whether the spell can be casted (true) or if immunity of the target prevents it (false)
+		/// Returns whether the given target is immune to the given spell
 		/// </summary>
-		public static bool CheckImmune(Unit target, Spell spell, bool hostile)
+		public static bool IsImmune(Unit target, Spell spell, bool hostile)
 		{
-			if (spell.Mechanic != SpellMechanic.None &&
-						hostile == spell.Mechanic.IsNegative() &&
-						((spell.Mechanic == SpellMechanic.Invulnerable_2 || spell.Mechanic == SpellMechanic.Invulnerable) &&
+			if (
+						hostile &&
+						spell.Mechanic.IsNegative() &&
 						!spell.Attributes.HasFlag(SpellAttributes.UnaffectedByInvulnerability) &&
-						(target.IsImmune(SpellMechanic.Invulnerable_2) || target.IsImmune(SpellMechanic.Invulnerable))) ||
-						(target.IsImmune(spell.Mechanic) || target.IsImmune(spell.DispelType)))
+						(spell.Mechanic == SpellMechanic.Invulnerable_2 || spell.Mechanic == SpellMechanic.Invulnerable) &&
+						(
+							// immune against spell
+							target.IsInvulnerable ||
+							target.IsImmune(SpellMechanic.Invulnerable_2) ||
+							target.IsImmune(SpellMechanic.Invulnerable) ||
+							target.IsImmune(spell.Mechanic) ||
+							target.IsImmune(spell.DispelType)
+						)
+				)
 			{
-				return false;
+				return true;
 			}
-			return true;
+			return false;
 		}
 
 		#region InitHandlers
@@ -237,7 +246,7 @@ namespace WCell.RealmServer.Spells
 				if (!IsAoE && Selected is Unit && !m_spell.IsPreventionDebuff)
 				{
 					var hostile = m_spell.IsHarmfulFor(CasterReference, Selected);
-					if (!CheckImmune((Unit)Selected, m_spell, hostile))
+					if (IsImmune((Unit)Selected, m_spell, hostile))
 					{
 						Cancel(SpellFailedReason.Immune);
 						return SpellFailedReason.Immune;
@@ -436,12 +445,12 @@ namespace WCell.RealmServer.Spells
 				{
 
 					var runeMask = UsesRunes ? CasterChar.PlayerSpells.Runes.GetActiveRuneMask() : (byte)0;
+					CheckHitAndSendSpellGo(false, runeMask);
+
 					if (CasterUnit != null)
 					{
 						OnCasted();
 					}
-					// TODO: Fix this in case the spellcast got cancelled
-					CheckHitAndSendSpellGo(false, runeMask);
 				}
 
 				if (m_casting)
@@ -704,7 +713,7 @@ namespace WCell.RealmServer.Spells
 					}
 
 					// Check for quest progress
-					chr.QuestLog.OnSpellCast(this);
+					chr.QuestLog.OnSpellCast(this);																// can potentially execute arbitrary code
 				}
 
 				// casting a spell on a combatant also puts the Caster in combat mode
@@ -733,7 +742,8 @@ namespace WCell.RealmServer.Spells
 			// Used an item
 			if (TargetItem != null)
 			{
-				TargetItem.OnUse();
+				CasterChar.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.UseItem, Spell.Id);
+				TargetItem.OnUse();																				// can execute arbitrary code
 			}
 
 			// update AuraState
@@ -748,7 +758,7 @@ namespace WCell.RealmServer.Spells
 				var target = m_targets.FirstOrDefault() as Unit;
 				CasterUnit.Proc(ProcTriggerFlags.SpellCast, target,
 								new SimpleUnitAction { Attacker = CasterUnit, Victim = target, IsCritical = false, Spell = m_spell },
-								true);
+								true);																			// can execute arbitrary code
 			}
 
 			var hasRunes = UsesRunes;
@@ -814,7 +824,7 @@ namespace WCell.RealmServer.Spells
 				for (var i = 0; i < m_spell.TargetTriggerSpells.Length; i++)
 				{
 					var trigSpell = m_spell.TargetTriggerSpells[i];
-					Trigger(trigSpell, m_targets.ToArray());
+					Trigger(trigSpell, m_targets.ToArray());													// can execute arbitrary code
 					if (!m_casting)
 					{
 						return; // should not happen (but might)
@@ -826,7 +836,7 @@ namespace WCell.RealmServer.Spells
 				for (var i = 0; i < m_spell.CasterTriggerSpells.Length; i++)
 				{
 					var trigSpell = m_spell.CasterTriggerSpells[i];
-					Trigger(trigSpell, m_targets.ToArray());
+					Trigger(trigSpell, m_targets.ToArray());													// can execute arbitrary code
 					if (!m_casting)
 					{
 						return; // should not happen (but might)
@@ -835,7 +845,7 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// trigger dynamic post-cast spells, eg Shadow Weaving etc
-			caster.Spells.TriggerSpellsFor(this);
+			caster.Spells.TriggerSpellsFor(this);																// can execute arbitrary code
 			if (!m_casting)
 			{
 				return; // should not happen (but might)
@@ -856,7 +866,7 @@ namespace WCell.RealmServer.Spells
 
 			if (IsAICast)
 			{
-				OnAICasted();
+				OnAICasted();																					// can execute arbitrary code
 				if (!m_casting)
 				{
 					return; // should not happen (but might)
@@ -865,7 +875,10 @@ namespace WCell.RealmServer.Spells
 
 			// Casted event
 			m_spell.NotifyCasted(this);
-
+			if (caster is Character)
+			{
+				CasterChar.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.CastSpell, Spell.Id);
+			}
 			//if (CasterChar != null)
 			//{
 			//    CasterChar.SendSystemMessage("SpellCast (Casted): {0} ms", sw1.ElapsedTicks / 10000d);

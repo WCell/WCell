@@ -202,7 +202,7 @@ namespace WCell.RealmServer.Entities
 						// If the character current health is higher then the fall damage, the player survived the fall.
 						if (fallDamage < Health)
 						{
-							Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.FallWithoutDying, (uint)(m_fallStartHeight - m_position.Z * 100));
+							Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.FallWithoutDying, (uint)(m_fallStartHeight - m_position.Z));
 						}
 					//	DoEnvironmentalDamage(EnviromentalDamageType.Fall, fallDamage);
 					}
@@ -227,7 +227,7 @@ namespace WCell.RealmServer.Entities
 				if (!IsInRadius(ref LastPosition, maxDistance))
 				{
 					// most certainly a speed hacker
-					log.Warn("WARNING: Possible speedhacker [{0}] moved {1} yards in {2} milliseconds (Latency: {3}, Tollerance: {4})",
+					log.Warn("WARNING: Possible speedhacker [{0}] moved {1} yards in {2} milliseconds (Latency: {3}, Tolerance: {4})",
 							 this, GetDistance(ref LastPosition), delay, latency, SpeedHackToleranceFactor);
 				}
 
@@ -242,14 +242,7 @@ namespace WCell.RealmServer.Entities
 			MoveControl.Mover = mover ?? this;
 			MoveControl.CanControl = canControl;
 
-			if (mover == null)
-			{
-				CharacterHandler.SendControlUpdate(this, this, canControl);
-			}
-			else
-			{
-				CharacterHandler.SendControlUpdate(this, mover, canControl);
-			}
+			CharacterHandler.SendControlUpdate(this, MoveControl.Mover, canControl);
 		}
 
 		public void ResetMover()
@@ -339,7 +332,7 @@ namespace WCell.RealmServer.Entities
 				KnownObjects.Remove(obj);
 
 				// send the destroy packet
-				obj.SendDestroyToPlayer(this);
+				//obj.SendDestroyToPlayer(this);
 			}
 		}
 

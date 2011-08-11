@@ -776,14 +776,14 @@
       <Type>PackedDate</Type>
     </Simple>
   </RealmPacket>
-  <RealmPacket OpCode="CMSG_CALENDAR_UNKNOWN_1210">
+  <RealmPacket OpCode="CMSG_CALENDAR_CONTEXT_EVENT_SIGNUP">
     <!--Event Signup-->
     <Simple>
       <Name>Event Id</Name>
       <Type>ULong</Type>
     </Simple>
   </RealmPacket>
-  <RealmPacket OpCode="SMSG_CALENDAR_UNKNOWN_1211">
+  <RealmPacket OpCode="SMSG_CALENDAR_ACTION_PENDING">
     <!--EMPTY, something like SIGNUP_ACK-->
   </RealmPacket>
   <RealmPacket OpCode="SMSG_CALENDAR_COMMAND_RESULT">

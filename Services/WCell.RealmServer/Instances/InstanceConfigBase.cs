@@ -54,15 +54,18 @@ namespace WCell.RealmServer.Instances
 			return settings;
 		}
 
-		private Dictionary<E, InstanceSetting<E>> m_Settings = new Dictionary<E, InstanceSetting<E>>();
-		private InstanceSetting<E>[] m_entries;
+		[XmlIgnore]
+		private Dictionary<E, InstanceConfigEntry<E>> m_Settings = new Dictionary<E, InstanceConfigEntry<E>>();
+
+		[XmlIgnore]
+		private InstanceConfigEntry<E>[] m_entries;
 
 		public InstanceConfigBase()
 		{
 		}
 
 		[XmlElement("Setting")]
-		public InstanceSetting<E>[] Entries
+		public InstanceConfigEntry<E>[] Entries
 		{
 			get { return m_entries; }
 			set
@@ -73,7 +76,7 @@ namespace WCell.RealmServer.Instances
 		}
 
 		[XmlIgnore]
-		public Dictionary<E, InstanceSetting<E>> Settings
+		public Dictionary<E, InstanceConfigEntry<E>> Settings
 		{
 			get { return m_Settings; }
 			set
@@ -88,14 +91,14 @@ namespace WCell.RealmServer.Instances
 			get;
 		}
 
-		public InstanceSetting<E> GetSetting(E id)
+		public InstanceConfigEntry<E> GetSetting(E id)
 		{
-			InstanceSetting<E> setting;
-			m_Settings.TryGetValue(id, out setting);
-			return setting;
+			InstanceConfigEntry<E> configEntry;
+			m_Settings.TryGetValue(id, out configEntry);
+			return configEntry;
 		}
 
-		protected abstract void InitSetting(InstanceSetting<E> setting);
+		protected abstract void InitSetting(InstanceConfigEntry<E> configEntry);
 
 		public void Setup()
 		{
@@ -146,28 +149,28 @@ namespace WCell.RealmServer.Instances
 				var setting = GetSetting(id);
 				if (setting == null)
 				{
-					Settings[id] = new InstanceSetting<E>(id, " ");
+					Settings[id] = new InstanceConfigEntry<E>(id, " ");
 				}
 			}
 		}
 	}
 
-	public class InstanceSetting<E> : IComparable
+	public class InstanceConfigEntry<E> : IComparable
 		where E : IComparable
 	{
 		private string m_TypeName;
 
-		public InstanceSetting()
+		public InstanceConfigEntry()
 		{
 			TypeName = " ";
 		}
 
-		public InstanceSetting(E id)
+		public InstanceConfigEntry(E id)
 			: this(id, " ")
 		{
 		}
 
-		public InstanceSetting(E id, string typeName)
+		public InstanceConfigEntry(E id, string typeName)
 		{
 			Name = id;
 			TypeName = typeName;
@@ -189,7 +192,7 @@ namespace WCell.RealmServer.Instances
 
 		public int CompareTo(object obj)
 		{
-			var setting = obj as InstanceSetting<E>;
+			var setting = obj as InstanceConfigEntry<E>;
 			if (setting != null)
 			{
 				return Name.CompareTo(setting.Name);

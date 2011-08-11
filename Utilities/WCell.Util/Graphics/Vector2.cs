@@ -132,6 +132,11 @@ namespace WCell.Util.Graphics
             result = (value1.X * value2.X) + (value1.Y * value2.Y);
         }
 
+		public Vector2 RightNormal()
+		{
+			return new Vector2(Y, -X);
+		}
+
 	    /// <summary>
 		/// Checks equality of two vectors.
 		/// </summary>
@@ -185,7 +190,26 @@ namespace WCell.Util.Graphics
         public static Vector2 operator *(Vector2 a, float f)
         {
             return new Vector2(f*a.X, f*a.Y);
-        }
+		}
+
+		public static Vector2 operator /(Vector2 a, Vector2 b)
+		{
+			Vector2 vector;
+			vector.X = a.X / b.X;
+			vector.Y = a.Y / b.Y;
+
+			return vector;
+		}
+
+		public static Vector2 operator /(Vector2 a, float scaleFactor)
+		{
+			Vector2 vector;
+			float factor = 1f / scaleFactor;
+			vector.X = a.X * factor;
+			vector.Y = a.Y * factor;
+
+			return vector;
+		}
 
 		public override string ToString()
 		{

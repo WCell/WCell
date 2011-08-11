@@ -486,6 +486,7 @@ namespace WCell.Constants
 		TargetDodgesAttackChance,
 
 		CriticalHealValuePct,
+		ManaRegenInterruptPct,
 
 		Expertise
 	}
@@ -528,7 +529,7 @@ namespace WCell.Constants
         OK = 0,
         ALREADY_IN_GUILD = 2,
         NEED_MORE_SIGNATURES = 4,
-    };
+    }
 
     public enum PetitionSigns : uint
     {
@@ -537,5 +538,19 @@ namespace WCell.Constants
         ALREADY_IN_GUILD = 2,
         CANT_SIGN_OWN = 3,
         NOT_SERVER = 4,
-    };
+    }
+
+	// extract from ServerMessages.dbc
+	public enum ServerMessagesType
+	{
+		ServerShutdownStart = 1,
+		ServerRestartStart = 2,
+		Custom = 3,
+		ServerShutdownCancelled = 4,
+		ServerRestartCancelled = 5,
+		BattlegroundShutdown = 6,
+		BattlegroundRestart = 7,
+		InstanceShutdown = 8,
+		InstanceRestart = 9
+	}
 }

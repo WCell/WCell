@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using WCell.Util;
 using WCell.Util.Collections;
 using WCell.Constants;
 using WCell.Constants.Guilds;
@@ -10,27 +12,22 @@ using WCell.RealmServer.Guilds;
 
 namespace WCell.RealmServer.Guilds
 {
-	public class GuildEventLog
+	public class GuildEventLog : IEnumerable<GuildEventLogEntry>
 	{
 		protected const int MAX_ENTRIES_COUNT = 100;
 
 		protected readonly Guild m_guild;
-		protected readonly LockfreeQueue<GuildEventLogEntry> m_entries;
-
-		public LockfreeQueue<GuildEventLogEntry> Entries
-		{
-			get { return m_entries; }
-		}
+		protected readonly StaticCircularList<GuildEventLogEntry> entries;
 
 		internal GuildEventLog(Guild guild, bool isNew)
 			: this(guild)
 		{
 			if (!isNew)
 			{
-				var entries = GuildEventLogEntry.FindAllByProperty("m_GuildId", (int)guild.Id);
-				foreach (var entry in entries)
+				var loadedEntries = GuildEventLogEntry.LoadAll(guild.Id);
+				foreach (var entry in loadedEntries)
 				{
-					m_entries.Enqueue(entry);
+					entries.Insert(entry);
 				}
 			}
 		}
@@ -38,7 +35,7 @@ namespace WCell.RealmServer.Guilds
 		internal GuildEventLog(Guild guild)
 		{
 			m_guild = guild;
-			m_entries = new LockfreeQueue<GuildEventLogEntry>();
+			entries = new StaticCircularList<GuildEventLogEntry>(MAX_ENTRIES_COUNT, OnEntryDeleted);
 		}
 
 		public void AddEvent(GuildEventLogEntryType type, uint character1LowId, uint character2LowId,
@@ -47,15 +44,12 @@ namespace WCell.RealmServer.Guilds
 			var evt = new GuildEventLogEntry(m_guild, type,
 			                                 (int)character1LowId,
 			                                 (int)character2LowId,
-			                                 newRankId, DateTime.Now);
-			m_entries.Enqueue(evt);
-
+											 newRankId, DateTime.Now);
 			evt.CreateLater();
 
-			if (m_entries.Count > MAX_ENTRIES_COUNT)
+			lock (entries)
 			{
-				var entry = m_entries.Dequeue();
-				RealmServer.IOQueue.AddMessage(new Message(entry.Delete));
+				entries.Insert(evt);
 			}
 		}
 
@@ -87,6 +81,27 @@ namespace WCell.RealmServer.Guilds
 		public void AddLeaveEvent(uint playerLowId)
 		{
 			AddEvent(GuildEventLogEntryType.LEAVE_GUILD, playerLowId, 0, 0);
+		}
+
+		private static void OnEntryDeleted(GuildEventLogEntry obj)
+		{
+			obj.DeleteLater();
+		}
+
+		public IEnumerator<GuildEventLogEntry> GetEnumerator()
+		{
+			lock (entries)
+			{
+				foreach (var entry in entries)
+				{
+					yield return entry;
+				}
+			}
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return GetEnumerator();
 		}
 	}
 }

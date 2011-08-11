@@ -7,7 +7,7 @@ using WCell.RealmServer.Instances;
 
 namespace WCell.Addons.Default.Instances
 {
-	public class Karazhan : DungeonInstance
+	public class Karazhan : BaseInstance
 	{
 	}
 

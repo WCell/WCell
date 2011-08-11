@@ -36,7 +36,7 @@ namespace WCell.RealmServer.NPCs.Trainers
 			new Dictionary<SpellId, TrainerSpellEntry>(20);
 
 		/// <summary>
-		/// Text dislayed in the upper panel of the client's trainer list menu.
+		/// TODO: Text dislayed in the upper panel of the client's trainer list menu.
 		/// </summary>
 		public string Message = "Hello!";
 

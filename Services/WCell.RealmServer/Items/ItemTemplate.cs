@@ -5,6 +5,7 @@ using System.Linq;
 using WCell.Constants;
 using WCell.Constants.Factions;
 using WCell.Constants.Items;
+using WCell.Constants.Misc;
 using WCell.Constants.Skills;
 using WCell.Constants.Spells;
 using WCell.Constants.World;
@@ -150,7 +151,7 @@ namespace WCell.RealmServer.Items
 
 		public uint PageTextId;
 
-		public uint PageCount;
+		public ChatLanguage LanguageId;
 
 		public PageMaterial PageMaterial;
 
@@ -407,7 +408,7 @@ namespace WCell.RealmServer.Items
 
 		public bool HasQuestRequirements
 		{
-			get { return QuestHolderInfo == null && CollectQuests == null; }
+			get { return QuestHolderInfo != null || CollectQuests != null; }
 		}
 
 		[NotPersistent]
@@ -492,8 +493,7 @@ namespace WCell.RealmServer.Items
 			IsTwoHandWeapon = InventorySlotType == InventorySlotType.TwoHandWeapon;
 			SetIsWeapon();
 
-			if (ToolCategory != 0// && TotemCategory != TotemCategory.SkinningKnife)
-				)
+			if (ToolCategory != 0)// && TotemCategory != TotemCategory.SkinningKnife)
 			{
 				ItemMgr.FirstTotemsPerCat[(uint)ToolCategory] = this;
 			}
@@ -655,7 +655,7 @@ namespace WCell.RealmServer.Items
 
 		public bool CheckQuestConstraints(Character looter)
 		{
-			if (HasQuestRequirements)			// no quest requirements
+			if (!HasQuestRequirements)			// no quest requirements
 				return true;
 
 			if (looter == null)
@@ -684,12 +684,31 @@ namespace WCell.RealmServer.Items
 					{
 						if (looter.QuestLog.HasActiveQuest(q.Id))
 						{
-							return false;
+							for (int it = 0; it < q.CollectableItems.Length; it++)
+							{
+								if (q.CollectableItems[it].ItemId == ItemId)
+								{
+									if (q.CollectableItems[it].Amount > looter.QuestLog.GetActiveQuest(q.Id).CollectedItems[it])
+									{
+										return true;
+									}
+								}
+							}
+                            for (int it = 0; it < q.CollectableSourceItems.Length; it++)
+                            {
+                                if (q.CollectableSourceItems[it].ItemId == ItemId)
+                                {
+                                    if (q.CollectableSourceItems[it].Amount > looter.QuestLog.GetActiveQuest(q.Id).CollectedSourceItems[it])
+                                    {
+                                        return true;
+                                    }
+                                }
+                            }
 						}
 					}
 				}
 			}
-			return true;
+			return false;
 		}
 
 		/// <summary>
@@ -1016,9 +1035,9 @@ namespace WCell.RealmServer.Items
 			{
 				writer.WriteLine(indent + "PageMaterial: " + PageMaterial);
 			}
-			if ((int)PageCount != 0)
+			if ((int)LanguageId != 0)
 			{
-				writer.WriteLine(indent + "PageCount: " + PageCount);
+				writer.WriteLine(indent + "LanguageId: " + LanguageId);
 			}
 			if ((int)LockId != 0)
 			{

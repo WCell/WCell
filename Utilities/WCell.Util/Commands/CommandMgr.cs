@@ -823,7 +823,7 @@ namespace WCell.Util.Commands
 						{
 							var paramType = exec.ParameterTypes[i];
 							var str = (i == len - 1) ? txt.Remainder : txt.NextWord(); // check for last argument
-							Utility.Parse(str, paramType, ref value);
+							StringParser.Parse(str, paramType, ref value);
 							args[i] = value;
 						}
 						exec.Exec(args);

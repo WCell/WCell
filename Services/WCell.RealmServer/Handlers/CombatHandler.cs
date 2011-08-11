@@ -124,7 +124,7 @@ namespace WCell.RealmServer.Handlers
 					packet.Write(dmg);
 				}
 
-				if (action.HitFlags.HasAnyFlag(HitFlags.Absorb_1 | HitFlags.Absorb_2))
+				if (action.HitFlags.HasAnyFlag(HitFlags.AbsorbType1 | HitFlags.AbsorbType2))
 				{
 					for (byte i = 0; i < damageCount; i++)
 					{
@@ -132,7 +132,7 @@ namespace WCell.RealmServer.Handlers
 					}
 				}
 
-				if (action.HitFlags.HasAnyFlag(HitFlags.Resist_1 | HitFlags.Resist_2))
+				if (action.HitFlags.HasAnyFlag(HitFlags.ResistType1 | HitFlags.ResistType2))
 				{
 					for (byte i = 0; i < damageCount; i++)
 					{

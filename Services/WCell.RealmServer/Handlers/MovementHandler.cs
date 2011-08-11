@@ -1,4 +1,4 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: MovementHandler.cs
  *   copyright		: (C) The WCell Team
@@ -22,9 +22,10 @@ using WCell.Constants;
 using WCell.Constants.NPCs;
 using WCell.Constants.World;
 using WCell.Core.Network;
+using WCell.Core.Paths;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Network;
-using WCell.Core.Paths;
+using WCell.Core.Terrain.Paths;
 using WCell.Util;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.NPCs.Vehicles;
@@ -66,7 +67,6 @@ namespace WCell.RealmServer.Handlers
 		[ClientPacketHandler(RealmServerOpCode.MSG_MOVE_STOP_ASCEND)]
 		[ClientPacketHandler(RealmServerOpCode.CMSG_MOVE_CHNG_TRANSPORT)]
 		[ClientPacketHandler(RealmServerOpCode.CMSG_MOVE_FALL_RESET)]
-        [ClientPacketHandler(RealmServerOpCode.CMSG_MOVE_NOT_ACTIVE_MOVER)]
 		public static void HandleMovement(IRealmClient client, RealmPacketIn packet)
 		{
 			var chr = client.ActiveCharacter;
@@ -90,12 +90,44 @@ namespace WCell.RealmServer.Handlers
                 if (mover == null)
                     return;
             }
-			var moveFlags = (MovementFlags)packet.ReadInt32();
+			uint clientTime;
+			if(ReadMovementInfo(packet, chr, mover, out clientTime))
+				BroadcastMovementInfo(packet, chr, mover, clientTime);
+		}
+
+		[ClientPacketHandler(RealmServerOpCode.CMSG_MOVE_NOT_ACTIVE_MOVER)]
+		public static void HandleMoveNotActiveMover(IRealmClient client, RealmPacketIn packet)
+		{
+			var chr = client.ActiveCharacter;
+			var guid = packet.ReadPackedEntityId();
+
+			var mover = client.ActiveCharacter.Map.GetObject(guid) as Unit;
+			if (mover == null)
+				return;
+
+			mover.CancelEmote();
+
+			uint clientTime;
+			if (ReadMovementInfo(packet, chr, mover, out clientTime))
+				BroadcastMovementInfo(packet, chr, mover, clientTime);
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="packet">The packet to read the info from</param>
+		/// <param name="chr">The active character in the client that send the movement packet</param>
+		/// <param name="mover">The unit we want this movement info to affect</param>
+		/// <param name="clientTime">Used to return the read client time</param>
+		/// <returns>A boolean value used to determine broadcasting of this movement info to other clients</returns>
+		public static bool ReadMovementInfo(RealmPacketIn packet, Character chr, Unit mover, out uint clientTime)
+		{
+			var moveFlags = (MovementFlags) packet.ReadInt32();
 			//var moveFlags2 = (MovementFlags2)packet.ReadInt32();
-			var moveFlags2 = (MovementFlags2)packet.ReadInt16();
+			var moveFlags2 = (MovementFlags2) packet.ReadInt16();
 			//var moveFlags2 = MovementFlags2.None;
 
-			var clientTime = packet.ReadUInt32();
+			clientTime = packet.ReadUInt32();
 			//var delay = Utility.GetEpochTime() - clientTime;
 
 			var newPosition = packet.ReadVector3();
@@ -119,18 +151,18 @@ namespace WCell.RealmServer.Handlers
 						mover.Transport.RemovePassenger(mover);
 					}
 					//client.ActiveCharacter.Kick("Invalid Transport flag");
-					return;
+					return false;
 				}
 
 				if (mover.TransportInfo != transport)
 				{
 					if (!isVehicle)
 					{
-						((Transport)transport).AddPassenger(mover);
+						((Transport) transport).AddPassenger(mover);
 					}
 					else
 					{
-						return;
+						return false;
 					}
 				}
 
@@ -147,18 +179,18 @@ namespace WCell.RealmServer.Handlers
 			}
 
 			if (moveFlags.HasFlag(MovementFlags.Swimming | MovementFlags.Flying) ||
-				moveFlags2.HasFlag(MovementFlags2.AlwaysAllowPitching))
+			    moveFlags2.HasFlag(MovementFlags2.AlwaysAllowPitching))
 			{
 				if (moveFlags.HasFlag(MovementFlags.Flying) && !chr.CanFly)
 				{
-					return;
+					return false;
 				}
 
 				// pitch, ranges from -1.55 to 1.55
 				var pitch = packet.ReadFloat();
 
-                if(chr == mover)
-				    chr.MovePitch(pitch);
+				if (chr == mover)
+					chr.MovePitch(pitch);
 			}
 
 			var airTime = packet.ReadUInt32();
@@ -177,21 +209,21 @@ namespace WCell.RealmServer.Handlers
 				//chr.OnFalling(airTime, jumpXYSpeed);
 			}
 
-            if (packet.PacketId.RawId == (uint)RealmServerOpCode.MSG_MOVE_FALL_LAND && chr == mover)
+			if (packet.PacketId.RawId == (uint) RealmServerOpCode.MSG_MOVE_FALL_LAND && chr == mover)
 			{
 				chr.OnFalling();
 			}
 
-            if (moveFlags.HasFlag(MovementFlags.Swimming) && chr == mover)
+			if (moveFlags.HasFlag(MovementFlags.Swimming) && chr == mover)
 			{
 				chr.OnSwim();
 			}
-            else if (chr.IsSwimming && chr == mover)
+			else if (chr.IsSwimming && chr == mover)
 			{
 				chr.OnStopSwimming();
 			}
 
-			if (moveFlags.HasFlag(MovementFlags.Spline))
+			if (moveFlags.HasFlag(MovementFlags.SplineElevation))
 			{
 				var spline = packet.ReadFloat();
 			}
@@ -199,7 +231,7 @@ namespace WCell.RealmServer.Handlers
 			// it is only orientation if it is none of the packets below, and has no flags but orientation flags
 			var onlyOrientation = newPosition == mover.Position;
 
-			if (!onlyOrientation && !mover.SetPosition(newPosition, orientation))
+			if (!onlyOrientation && (mover.IsInWorld && !mover.SetPosition(newPosition, orientation)))
 			{
 				// rather unrealistic case
 			}
@@ -227,28 +259,32 @@ namespace WCell.RealmServer.Handlers
 					{
 						// cannot kick, since sometimes packets simply have bad timing
 						//chr.Kick("Illegal movement.");
-						return;
+						return false;
 					}
 				}
+				return true;
+			}
+			return false;
+		}
 
-				var clients = chr.GetNearbyClients(false);
-				if (clients.Count > 0)
+		private static void BroadcastMovementInfo(PacketIn packet, Character chr, Unit mover, uint clientTime)
+		{
+			var clients = chr.GetNearbyClients(false);
+			if (clients.Count <= 0) return;
+
+			using (var outPacket = new RealmPacketOut(packet.PacketId))
+			{
+				var guidLength = mover.EntityId.WritePacked(outPacket);
+
+				// set position to start of data
+				packet.Position = packet.HeaderSize + guidLength;
+
+				outPacket.Write(packet.ReadBytes(packet.RemainingLength));
+
+				foreach (var outClient in clients)
 				{
-					using (var outPacket = new RealmPacketOut(packet.PacketId))
-					{
-						var guidLength = mover.EntityId.WritePacked(outPacket);
-
-						// set position to start of data
-						packet.Position = packet.HeaderSize + guidLength;
-
-						outPacket.Write(packet.ReadBytes(packet.RemainingLength));
-
-						foreach (var outClient in clients)
-						{
-							// 4 packet header + 4 moveflags + 2 moveflags2 + packed guid length
-							SendMovementPacket(outClient, outPacket, 10 + guidLength, clientTime);
-						}
-					}
+					// 4 packet header + 4 moveflags + 2 moveflags2 + packed guid length
+					SendMovementPacket(outClient, outPacket, 10 + guidLength, clientTime);
 				}
 			}
 		}
@@ -329,7 +365,7 @@ namespace WCell.RealmServer.Handlers
 		{
 			var chr = client.ActiveCharacter;
 
-			var chrEntityId = packet.ReadEntityId();
+			var chrEntityId = packet.ReadPackedEntityId();
 			var unknown1 = packet.ReadUInt32();
 			var unknown2 = packet.ReadUInt32();
 			var posX = packet.ReadFloat();
@@ -386,9 +422,17 @@ namespace WCell.RealmServer.Handlers
 				packet.Write((ushort)0);				// unknown flags
 				packet.Write(from);
 				packet.Write(Utility.GetSystemTime());
-				packet.Write((byte)MovementState.WalkOnLand);
-				packet.Write(unit.TransportOrientation);
-				packet.Write((uint)MonsterMoveFlags.Flag_0x800000);
+				if (unit is Character)
+				{
+					packet.Write((byte) MovementState.WalkOnLand);
+					packet.Write(unit.TransportOrientation);
+					packet.Write((uint) MonsterMoveFlags.Flag_0x800000);
+				}
+				else
+				{
+					packet.Write((byte)0);
+					packet.Write((uint) MonsterMoveFlags.Walk);
+				}
 				packet.Write(0);
 				packet.Write(1);
 				packet.Write(to);
@@ -422,7 +466,7 @@ namespace WCell.RealmServer.Handlers
 		#region SEND
 		public static void SendMoveToPacket(Unit movingUnit, ref Vector3 pos, float orientation, uint moveTime, MonsterMoveFlags moveFlags)
 		{
-			if (!movingUnit.IsAreaActive)
+			if (!movingUnit.IsAreaActive && movingUnit.CharacterMaster == null)
 			{
 				return;
 			}

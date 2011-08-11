@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-             xsi:schemaLocation=". ../../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd"
+             xsi:schemaLocation=". ../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd"
              Version="4">
 
   <RealmPacket OpCode="CMSG_GAMEOBJ_REPORT_USE">
@@ -15,6 +15,17 @@
     <Simple>
       <Name>ObjectId</Name>
       <Type>Guid</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_GAMEOBJECT_CUSTOM_ANIM">
+    <Simple>
+      <Name>ObjectId</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>AnimId?</Name>
+      <Type>Int</Type>
     </Simple>
   </RealmPacket>
 </Definitions>

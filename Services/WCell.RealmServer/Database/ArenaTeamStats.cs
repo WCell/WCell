@@ -1,7 +1,7 @@
 ﻿using Castle.ActiveRecord;
 using WCell.Core.Database;
 
-namespace WCell.RealmServer.ArenaTeams
+namespace WCell.RealmServer.Battlegrounds.Arenas
 {
 	[ActiveRecord("ArenaTeamStats", Access = PropertyAccess.Property)]
 	public partial class ArenaTeamStats : WCellRecord<ArenaTeamStats>

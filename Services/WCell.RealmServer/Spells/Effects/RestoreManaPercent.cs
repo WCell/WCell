@@ -3,8 +3,8 @@
  *   file		: RestoreManaPercent.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
- *   last changed	: $LastChangedDate: 2010-01-17 17:38:11 +0100 (sø, 17 jan 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+ *   last changed	: $LastChangedDate: 2010-01-17 17:38:11 +0100 (s? 17 jan 2010) $
+
  *   revision		: $Rev: 1198 $
  *
  *   This program is free software; you can redistribute it and/or modify

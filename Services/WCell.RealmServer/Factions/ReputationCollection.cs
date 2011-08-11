@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2009-09-01 08:52:17 +0200 (ti, 01 sep 2009) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 1061 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using NLog;
 using WCell.Constants;
+using WCell.Constants.Achievements;
 using WCell.Constants.Factions;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
@@ -274,7 +275,22 @@ namespace WCell.RealmServer.Factions
 		{
 			if (rep.SetValue(rep.Value + value))
 			{
-				//UpdateHostile(rep, rep.Hostile);
+				if (rep.StandingLevel >= StandingLevel.Honored)
+				{
+					Owner.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.GainHonoredReputation);
+				}
+				if (rep.StandingLevel >= StandingLevel.Revered)
+				{
+					Owner.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.GainReveredReputation);
+				}
+				if (rep.StandingLevel >= StandingLevel.Exalted)
+				{
+					Owner.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.GainExaltedReputation);
+				}
+				if (value > 0)
+				{
+					Owner.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.GainReputation);
+				}
 			}
 			FactionHandler.SendReputationStandingUpdate(m_owner.Client, rep);
 		}
@@ -389,6 +405,8 @@ namespace WCell.RealmServer.Factions
             {
                 rep.IsVisible = true;
 
+				Owner.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.KnownFactions);
+
                 // Let the client know the Faction is visible
                 FactionHandler.SendVisible(m_owner.Client, reputationIndex);
             }
@@ -404,6 +422,58 @@ namespace WCell.RealmServer.Factions
         {
             value = value + (int)Math.Round(value * m_owner.ReputationGainModifierPercent / 100.0);
             return ModValue(factionId, value);
+        }
+
+		public uint GetVisibleReputations()
+		{
+			uint countOfVisibleReputations = 0;
+			foreach (Reputation reputation in m_byIndex.Values)
+			{
+				if (reputation.IsVisible)
+				{
+					++countOfVisibleReputations;
+				}
+			}
+			return countOfVisibleReputations;
+		}
+
+		public uint GetHonoredReputations()
+		{
+			uint countOfHonoredReputations = 0;
+			foreach (Reputation reputation in m_byIndex.Values)
+			{
+				if (reputation.StandingLevel >= StandingLevel.Honored)
+				{
+					++countOfHonoredReputations;
+				}
+			}
+			return countOfHonoredReputations;
+		}
+
+		public uint GetReveredReputations()
+		{
+			uint countOfReveredReputations = 0;
+			foreach (Reputation reputation in m_byIndex.Values)
+			{
+				if (reputation.StandingLevel >= StandingLevel.Revered)
+				{
+					++countOfReveredReputations;
+				}
+			}
+			return countOfReveredReputations;
+		}
+
+        public uint GetExaltedReputations()
+        {
+            uint countOfExaltedReputations = 0;
+            foreach (Reputation reputation in m_byIndex.Values)
+            {
+                if (reputation.StandingLevel >= StandingLevel.Exalted)
+                {
+                    ++countOfExaltedReputations;
+                }
+            }
+            return countOfExaltedReputations;           
         }
 	} 
 }

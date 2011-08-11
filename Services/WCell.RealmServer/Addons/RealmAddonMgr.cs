@@ -19,7 +19,7 @@ namespace WCell.RealmServer.Addons
 		public static string AddonDir = "RealmServerAddons";
 
 		/// <summary>
-		/// A list of all libs or folders in the AddonDir that are not to be loaded.
+		/// A semicolon-separated (;) list of all libs or folders in the AddonDir that are not to be loaded.
 		/// </summary>
 		public static string IgnoredAddonFiles = "";
 
@@ -57,6 +57,7 @@ namespace WCell.RealmServer.Addons
 		{
 			var mgr = new InitMgr();
 			InitAddon(context, mgr);
+			mgr.AddGlobalMgrsOfAsm(typeof(RealmAddonMgr).Assembly);		// Add all GlobalMgrs
 			mgr.PerformInitialization();
 		}
 
@@ -75,7 +76,7 @@ namespace WCell.RealmServer.Addons
 				// init config
 				if (addon is WCellAddonBase)
 				{
-					((WCellAddonBase)addon).InitConfig(context);
+					((WCellAddonBase)addon).InitAddon(context);
 				}
 			}
 		}

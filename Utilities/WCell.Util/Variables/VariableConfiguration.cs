@@ -7,6 +7,7 @@ using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 using NLog;
+using WCell.Util.NLog;
 using WCell.Util.Strings;
 using WCell.Util.Xml;
 using System.Diagnostics;
@@ -18,6 +19,9 @@ namespace WCell.Util.Variables
 		where C : VariableConfiguration<V>
 		where V : TypeVariableDefinition, new()
 	{
+		protected VariableConfiguration()
+		{
+		}
 		protected VariableConfiguration(Action<string> onError)
 			: base(onError)
 		{
@@ -27,7 +31,6 @@ namespace WCell.Util.Variables
 	public class VariableConfiguration<V> : IConfiguration
 		where V : TypeVariableDefinition, new()
 	{
-		private static readonly Logger log = LogManager.GetCurrentClassLogger();
 		protected string RootNodeName = "Config";
 		private const string SettingsNodeName = "Settings";
 
@@ -48,11 +51,21 @@ namespace WCell.Util.Variables
 		[XmlIgnore]
 		public Action<V> VariableDefinintionInitializor = DefaultDefinitionInitializor;
 
+		public VariableConfiguration() : this(null)
+		{
+		}
+
 		public VariableConfiguration(Action<string> onError)
 		{
 			Tree = new StringTree<TypeVariableDefinition>(onError, "\t", '.');
 			Definitions = new Dictionary<string, V>(StringComparer.InvariantCultureIgnoreCase);
 			AutoSave = true;
+		}
+
+		public Action<string> ErrorHandler
+		{
+			get { return Tree.ErrorHandler; }
+			set { Tree.ErrorHandler = value; }
 		}
 
 		public virtual string FilePath
@@ -301,9 +314,9 @@ namespace WCell.Util.Variables
 		#endregion
 
 		#region Create & Add
-		public V CreateDefinition(string name, MemberInfo member, bool serialized, bool readOnly)
+		public V CreateDefinition(string name, MemberInfo member, bool serialized, bool readOnly, bool fileOnly)
 		{
-			var def = new V { Name = name, Member = member, Serialized = serialized, IsReadOnly = readOnly };
+			var def = new V { Name = name, Member = member, Serialized = serialized, IsReadOnly = readOnly, IsFileOnly = fileOnly };
 			VariableDefinintionInitializor(def);
 			return def;
 		}
@@ -311,18 +324,27 @@ namespace WCell.Util.Variables
 		public void AddVariablesOfAsm<A>(Assembly asm)
 			where A : VariableAttribute
 		{
-			var types = asm.GetTypes();
+			Type[] types;
+			try
+			{
+				types = asm.GetTypes();
+			}
+			catch (Exception e)
+			{
+				LogUtil.ErrorException(e, "Could not initialize assembly \"{0}\". You can probably fix this issue by making sure that the target platform of the assembly and all it's dependencies are equal.", asm.FullName);
+				return;
+			}
+
 			foreach (var type in types)
 			{
-
 				var members = type.GetMembers(BindingFlags.Public | BindingFlags.Static);
 				InitMembers<A>(members);
 
 				var varClassAttr = type.GetCustomAttributes(typeof(VariableClassAttribute), true).FirstOrDefault() as VariableClassAttribute;
 				if (varClassAttr != null && varClassAttr.Inherit)
 				{
-					Type t;
-					while ((t = type.BaseType) != null && !t.Namespace.StartsWith("System"))
+					Type t = type.BaseType;
+					while (t != null && (t.Namespace == null || !t.Namespace.StartsWith("System")))
 					{
 						var members2 = t.GetMembers(BindingFlags.Public | BindingFlags.Static);
 						InitMembers<A>(members2);
@@ -358,9 +380,10 @@ namespace WCell.Util.Variables
 
 				var varAttr = member.GetCustomAttributes(typeof(A), true).FirstOrDefault() as A;
 				var readOnly = member.IsReadonly() || (varAttr != null && varAttr.IsReadOnly);
+				var fileOnly = varAttr != null && varAttr.IsFileOnly;
 
 				Type memberType;
-				if ((!readOnly || (varAttr != null && member.IsFieldOrProp())) &&
+				if (member.IsFieldOrProp() && (!readOnly || varAttr != null) &&
 					((memberType = member.GetVariableType()).IsSimpleType() ||
 					readOnly ||
 					memberType.IsArray ||
@@ -380,7 +403,7 @@ namespace WCell.Util.Variables
 						name = member.Name;
 					}
 
-					Add(name, member, serialized, readOnly);
+					Add(name, member, serialized, readOnly, fileOnly);
 				}
 				else if (varAttr != null)
 				{
@@ -391,7 +414,7 @@ namespace WCell.Util.Variables
 			}
 		}
 
-		public V Add(string name, MemberInfo member, bool serialized, bool readOnly)
+		public V Add(string name, MemberInfo member, bool serialized, bool readOnly, bool fileOnly)
 		{
 			V existingDef;
 			if (Definitions.TryGetValue(name, out existingDef))
@@ -401,7 +424,7 @@ namespace WCell.Util.Variables
 				"(public static variables that are not read-only, are automatically added to the global variable collection)");
 			}
 
-			var def = CreateDefinition(name, member, serialized, readOnly);
+			var def = CreateDefinition(name, member, serialized, readOnly, fileOnly);
 			if (def != null)
 			{
 				Add(def, serialized);

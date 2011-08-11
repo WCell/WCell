@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2010-01-27 14:06:21 +0100 (on, 27 jan 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 1228 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -14,10 +14,13 @@
  *
  *************************************************************************/
 
+using WCell.Constants;
+using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
+using System;
 
 namespace WCell.RealmServer.Spells.Effects
 {
@@ -30,7 +33,11 @@ namespace WCell.RealmServer.Spells.Effects
 
 		public override void Initialize(ref SpellFailedReason failReason)
 		{
-			if (!Effect.Spell.IsHearthStoneSpell &&
+			var casterUnit = Cast.CasterUnit as NPC;
+			if(casterUnit != null && casterUnit.Entry.IsEventTrigger)
+			{
+			}
+			else if (!Effect.Spell.IsHearthStoneSpell &&
 				(m_cast.TargetLoc.X == 0 || m_cast.TargetLoc.Y == 0))
 			{
 				failReason = SpellFailedReason.BadTargets;
@@ -62,11 +69,27 @@ namespace WCell.RealmServer.Spells.Effects
 			}
 			else
 			{
-				// teleport to given target location
-				var map = m_cast.TargetMap;
-				var pos = m_cast.TargetLoc;
-				var ori = m_cast.TargetOrientation;
-				target.AddMessage(() => ((Unit)target).TeleportTo(map, pos, ori));
+				if (Effect.ImplicitTargetB == ImplicitSpellTargetType.BehindTargetLocation)
+				{
+					var unit = (Unit)target;
+					if (unit != null)
+					{
+						var o = unit.Orientation;
+						var newx = unit.Position.X - (unit.BoundingRadius + 0.5f) * (float)Math.Cos(o);
+						var newy = unit.Position.Y - (unit.BoundingRadius + 0.5f) * (float)Math.Sin(o);
+						var newpos = new Util.Graphics.Vector3(newx, newy, unit.Position.Z);
+						m_cast.CasterChar.TeleportTo(newpos, o);
+					}
+
+				}
+				else
+				{
+					// teleport to given target location
+					var map = m_cast.TargetMap;
+					var pos = m_cast.TargetLoc;
+					var ori = m_cast.TargetOrientation;
+					target.AddMessage(() => ((Unit)target).TeleportTo(map, pos, ori));
+				}
 			}
 		}
 

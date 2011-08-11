@@ -91,8 +91,6 @@ namespace WCell.RealmServer.Mail
 				RealmDBMgr.OnDBError(e);
 				CreateIdGenerators();
 			}
-
-			Instance.InternalStart();
 		}
 
 		private static void CreateIdGenerators()
@@ -111,16 +109,6 @@ namespace WCell.RealmServer.Mail
 
 		protected MailMgr()
 		{
-		}
-
-		protected override bool InternalStart()
-		{
-			return true;
-		}
-
-		protected override bool InternalStop()
-		{
-			return true;
 		}
 		#endregion
 

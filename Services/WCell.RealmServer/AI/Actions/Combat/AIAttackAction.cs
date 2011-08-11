@@ -13,16 +13,17 @@ namespace WCell.RealmServer.AI.Actions.Combat
 	/// </summary>
 	public class AIAttackAction : AITargetMoveAction
 	{
-		protected float maxDist, desiredDist;
+		protected float minDist, maxDist, desiredDist;
 
 		public AIAttackAction(NPC owner)
 			: base(owner)
 		{
+			minDist = owner.BoundingRadius;
 		}
 
 		public override float DistanceMin
 		{
-			get { return m_owner.BoundingRadius; }
+			get { return minDist; }
 		}
 
 		public override float DistanceMax

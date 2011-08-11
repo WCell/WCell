@@ -18,32 +18,31 @@ using System;
 using System.Collections.Generic;
 using NLog;
 using WCell.Constants;
+using WCell.Constants.Achievements;
+using WCell.Constants.Chat;
 using WCell.Constants.Misc;
 using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
-using WCell.Core.Timers;
 using WCell.Core;
+using WCell.Core.Timers;
+using WCell.RealmServer.AI;
 using WCell.RealmServer.AI.Brains;
 using WCell.RealmServer.Factions;
 using WCell.RealmServer.Formulas;
+using WCell.RealmServer.Gossips;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Modifiers;
 using WCell.RealmServer.NPCs;
+using WCell.RealmServer.NPCs.Vehicles;
 using WCell.RealmServer.Paths;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Taxi;
 using WCell.Util;
-using WCell.RealmServer.AI.Actions.Movement;
-using System.Threading;
-using WCell.RealmServer.Gossips;
-using WCell.RealmServer.AI;
-using WCell.RealmServer.NPCs.Vehicles;
 using WCell.Util.Graphics;
 using WCell.Util.NLog;
-using WCell.Constants.Chat;
 
 
 namespace WCell.RealmServer.Entities
@@ -593,11 +592,18 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
+		/// <summary>
+		/// The real amount of Power that is added per regen-tick
+		/// </summary>
+		public int PowerRegenPerTickActual
+		{
+			get; internal set;
+		}
 		private int m_PowerRegenPerTick;
 
 		/// <summary>
 		/// The amount of Power to add per regen-tick (while not being "interrupted").
-		/// Value is automatically set, depending on Spirit
+		/// Value is automatically set, depending on stats
 		/// </summary>
 		public int PowerRegenPerTick
 		{
@@ -617,18 +623,22 @@ namespace WCell.RealmServer.Entities
 			get { return m_PowerRegenPerTick / (float)RegenerationFormulas.RegenTickDelayMillis; }
 		}
 
-		private int m_ManaRegenPerTickInterruptedPct;
+		private int _manaRegenPerTickInterrupted;
 
 		/// <summary>
-		/// The precentage of power to be generated during combat per regen tick (while being "interrupted")
+		/// The amount of power to be generated during combat per regen tick (while being "interrupted")
+		/// Only used for PowerType.Mana units
 		/// </summary>
-		public int ManaRegenPerTickInterruptedPct
+		public int ManaRegenPerTickInterrupted
 		{
-			get { return m_ManaRegenPerTickInterruptedPct; }
+			get { return _manaRegenPerTickInterrupted; }
 			internal set
 			{
-				m_ManaRegenPerTickInterruptedPct = value;
-				this.UpdatePowerRegen();
+				if (_manaRegenPerTickInterrupted != value)
+				{
+					_manaRegenPerTickInterrupted = value;
+					SetFloat(UnitFields.POWER_REGEN_INTERRUPTED_FLAT_MODIFIER + (int) PowerType, value);
+				}
 			}
 		}
 
@@ -683,7 +693,7 @@ namespace WCell.RealmServer.Entities
 
 			//if (IsManaRegenInterrupted)
 			//{
-			//    power = MathUtil.Divide(power * ManaRegenPerTickInterruptedPct, 100);
+			//    power = MathUtil.Divide(power * ManaRegenPerTickInterrupted, 100);
 			//}
 
 			// TODO: Find out when client is in interrupted mode
@@ -1169,7 +1179,7 @@ namespace WCell.RealmServer.Entities
 			if (val > 0)
 			{
 				// stealthed Unit
-				// TODO: Calc detection, based on Stealth value, boni, detection, detection boni, distance and viewing angle
+				// TODO: Calc detection, based on Stealth value, bonuses, detection, detection bonuses, distance and viewing angle
 
 				//if we are stunned we don't see anything
 				if ((this.UnitFlags & UnitFlags.Stunned) != 0)
@@ -1271,6 +1281,10 @@ namespace WCell.RealmServer.Entities
 		/// <param name="emote">Anything that has a name (to do something with) or null</param>
 		public void TextEmote(TextEmote emote, INamed target)
 		{
+			if (this is Character)
+			{
+				((Character)this).Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.DoEmote, (uint)emote);
+			}
 			EmoteHandler.SendTextEmote(this, emote, target);
 		}
 

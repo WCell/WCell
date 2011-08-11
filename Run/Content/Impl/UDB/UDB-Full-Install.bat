@@ -1,33 +1,5 @@
 @ECHO off
-REM ############################################################################
-REM #
-REM #      B A S I C   U S E R   C O N F I G U R A T I O N   A R E A
-REM #
-REM ############################################################################
-REM #########################################
-REM # server - Base Table host
-REM # user - MySQL username
-REM # pass - MySQL login password
-REM # wdb  -  Database name
-REM # udbdir  - Main UDB directory on your harddisk (note the trailing backslash!, for example C:\Users\Villem\Documents\Kood\UDB\)
-REM # The folder should contain 2 folders: Updates and Full_DB
-REM # Remember not to include FULL_DB on the end of udbdir, only the main directory should be set here.
-REM #########################################
-
-set user=changeme
-set pass=changeme
-set wdb=wcellrealmserver
-set udbdir="changeme"
-
-REM ############################################################################
-REM #
-REM #    A D V A N C E D   U S E R   C O N F I G U R A T I O N   A R E A
-REM #
-REM ############################################################################
-
-set server=localhost
-set port=3306
-set udb-main=UDB_0.12.1.393_mangos_10545_SD2_1833
+CALL CONFIGURATION.bat
 
 REM ############################################################################
 REM #
@@ -45,6 +17,7 @@ ECHO port: %port%
 ECHO udb-main: %udb-main%
 ECHO.
 ECHO Check the above variables to see if they are correct before continuing
+ECHO These can be edited in CONFIGURATION.bat
 ECHO.
 pause
 
@@ -65,7 +38,8 @@ ECHO		Please type the letter for the option:
 ECHO.
 ECHO		 e = Extract UDB
 ECHO		 i = Install UDB
-ECHO		 c = Install all Changesets (394, 395, 396, 397, 398, 399, 400)
+ECHO		 c = Install all Changesets (394, 395, 396, 397, 398, 399, 400, 401)
+ECHO             v = Install Vehicle data patch
 ECHO.
 ECHO		 394 = Install Changeset 394
 ECHO		 395 = Install Changeset 395
@@ -74,6 +48,7 @@ ECHO		 397 = Install Changeset 397
 ECHO		 398 = Install Changeset 398
 ECHO		 399 = Install Changeset 399
 ECHO		 400 = Install Changeset 400
+ECHO		 401 = Install Changeset 401
 ECHO.
 ECHO.
 ECHO		 x - Exit
@@ -86,6 +61,8 @@ if %l%==E GOTO extract
 if %l%==e GOTO extract
 if %l%==c GOTO changesets
 if %l%==C GOTO changesets
+if %l%==v GOTO vehicles
+if %l%==V GOTO vehicles
 if %l%==x GOTO quit
 if %l%==X GOTO quit
 if "%l%"=="394" GOTO changeset394
@@ -95,6 +72,7 @@ if "%l%"=="397" GOTO changeset397
 if "%l%"=="398" GOTO changeset398
 if "%l%"=="399" GOTO changeset399
 if "%l%"=="400" GOTO changeset400
+if "%l%"=="401" GOTO changeset401
 goto error
 
 :import
@@ -104,6 +82,19 @@ ECHO.
 ECHO [Importing] Started...
 ECHO [Importing] Main UDB database ...
 mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Full_DB\%udb-main%.sql
+mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < .\Data\vehicle_patch.sql
+ECHO [Importing] Finished
+ECHO.
+PAUSE    
+GOTO menu
+
+:vehicles
+CLS
+ECHO.
+ECHO.
+ECHO [Importing] Started...
+ECHO [Importing] Vehicle data patch ...
+mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < .\Data\vehicle_patch.sql
 ECHO [Importing] Finished
 ECHO.
 PAUSE    
@@ -139,6 +130,10 @@ ECHO [Importing] UDB updatepack 399...
 mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.12.1_additions\399_updatepack_mangos.sql
 ECHO [Importing] UDB updatepack 400...
 mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.12.1_additions\400_updatepack_mangos.sql
+ECHO [Importing] UDB database changeset 401...
+mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.12.1_additions\401_corepatch_mangos_11305_to_11376.sql
+ECHO [Importing] UDB updatepack 401...
+mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.12.1_additions\401_updatepack_mangos.sql
 ECHO [Importing] Finished
 ECHO.
 PAUSE    
@@ -231,8 +226,22 @@ CLS
 ECHO.
 ECHO.
 ECHO Started...
-ECHO [Importing] UDB database changeset 400...
+ECHO [Importing] UDB updatepack 400...
 mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.12.1_additions\400_updatepack_mangos.sql
+ECHO [Importing] Finished
+ECHO.
+PAUSE
+GOTO menu
+
+:changeset401
+CLS
+ECHO.
+ECHO.
+ECHO Started...
+ECHO [Importing] UDB database changeset 401...
+mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.12.1_additions\401_corepatch_mangos_11305_to_11376.sql
+ECHO [Importing] UDB updatepack 401...
+mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.12.1_additions\401_updatepack_mangos.sql
 ECHO [Importing] Finished
 ECHO.
 PAUSE
@@ -301,9 +310,18 @@ GOTO quit
 
 :error3
 ECHO [FAILURE] You did not change the UDB directory variable
-ECHO [FAILURE] Please edit this script and enter the proper directory
+ECHO [FAILURE] Please edit CONFIGURATION.bat and enter the proper directory
 ECHO [FAILURE] (e.g. set udbdir=E:\Code\UDB\)
 PAUSE
 GOTO quit
 
 :quit
+REM Clear all set environment variables
+set user=""
+set pass=""
+set wdb=""
+set udbdir=""
+set server=""
+set port=""
+set udb-main=""
+set rusdbdir=""

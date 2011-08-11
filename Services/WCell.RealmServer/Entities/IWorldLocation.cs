@@ -1,6 +1,7 @@
 using System;
 using WCell.Constants.World;
 using WCell.Core.Paths;
+using WCell.Core.Terrain.Paths;
 using WCell.RealmServer.Global;
 using WCell.Util.Data;
 using WCell.Util.Graphics;

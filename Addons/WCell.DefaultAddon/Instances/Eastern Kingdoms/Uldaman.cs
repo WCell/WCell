@@ -7,7 +7,7 @@ using WCell.RealmServer.Instances;
 
 namespace WCell.Addons.Default.Instances
 {
-	public class Uldaman : RaidInstance
+	public class Uldaman : BaseInstance
 	{
 	}
 

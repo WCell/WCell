@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2008-08-12 23:56:01 +0800 (Tue, 12 Aug 2008) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 590 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -32,7 +32,6 @@ using WCell.RealmServer.Chat;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Network;
 using WCell.RealmServer.Privileges;
-using WCell.RealmServer.Server;
 using WCell.Util;
 using WCell.Core.Initialization;
 using WCell.Util.Variables;
@@ -46,8 +45,10 @@ namespace WCell.RealmServer
 	/// authentication server 
 	/// </summary>
 	[VariableClassAttribute(true)]
-	public sealed partial class RealmServer : ServerApp<RealmServer>
+	public sealed class RealmServer : ServerApp<RealmServer>
 	{
+		public event Action<RealmStatus> StatusChanged;
+
 		static DateTime timeStart;
 		private static long timeStartTicks;
 
@@ -231,7 +232,7 @@ namespace WCell.RealmServer
 					World.CharacterCount,
 					RealmServerConfiguration.MaxClientCount,
 					RealmServerConfiguration.ServerType,
-					RealmFlags.None,
+					RealmServerConfiguration.Flags,
 					RealmServerConfiguration.Category,
 					RealmServerConfiguration.Status,
 					WCellInfo.RequiredVersion);
@@ -262,7 +263,7 @@ namespace WCell.RealmServer
 														  World.CharacterCount,
 														  RealmServerConfiguration.MaxClientCount,
 														  RealmServerConfiguration.ServerType,
-														  RealmFlags.None,
+														  RealmServerConfiguration.Flags,
 														  RealmServerConfiguration.Category,
 														  RealmServerConfiguration.Status))
 			{
@@ -533,9 +534,12 @@ namespace WCell.RealmServer
 		#region Shutdown
 		public override void ShutdownIn(uint delayMillis)
 		{
-			World.Broadcast("[WARNING]: " + RealmServerConfiguration.RealmName + " is going to shutdown in {0}.",
-				TimeSpan.FromMilliseconds(delayMillis).Format());
-
+			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_SERVER_MESSAGE))
+			{
+				packet.Write((uint)ServerMessagesType.ServerShutdownStart);
+				packet.Write(TimeSpan.FromMilliseconds(delayMillis).Format());
+				World.Broadcast(packet);
+			}
 			base.ShutdownIn(delayMillis);
 		}
 
@@ -543,7 +547,12 @@ namespace WCell.RealmServer
 		{
 			if (IsPreparingShutdown)
 			{
-				World.Broadcast("[INFO]: Shutdown has been cancelled.");
+				using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_SERVER_MESSAGE))
+				{
+					packet.Write((uint)ServerMessagesType.ServerShutdownCancelled);
+					packet.Write(string.Empty);
+					World.Broadcast(packet);
+				}
 			}
 			base.CancelShutdown();
 		}

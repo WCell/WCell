@@ -17,6 +17,8 @@
 using System;
 using System.Collections.Generic;
 using Castle.ActiveRecord;
+using NLog;
+using WCell.Util;
 using WCell.Util.Collections;
 using WCell.Constants;
 using WCell.Constants.Guilds;
@@ -35,6 +37,29 @@ namespace WCell.RealmServer.Guilds
 	public sealed class GuildMgr : Manager<GuildMgr>
 	{
 		private static uint guildCharterCost = 1000;
+
+		public const int MIN_GUILD_RANKS = 5;
+		public const int MAX_GUILD_RANKS = 10;
+		public static int MaxGuildNameLength = 20;
+		public static int MaxGuildRankNameLength = 10;
+		public static int MaxGuildMotdLength = 100;
+		public static int MaxGuildInfoLength = 500;
+		public static int MaxGuildMemberNoteLength = 100;
+
+		/// <summary>
+		/// Cost (in copper) of a new Guild Tabard
+		/// </summary>
+		public static uint GuildTabardCost = 100000;
+
+		/// <summary>
+		/// The delay (in hours) before Guild Members' BankMoneyWithdrawlAllowance resets.
+		/// </summary>
+		public const int BankMoneyAllowanceResetDelay = 24;
+
+		public const uint UNLIMITED_BANK_MONEY_WITHDRAWL = UInt32.MaxValue;
+		public const uint UNLIMITED_BANK_SLOT_WITHDRAWL = UInt32.MaxValue;
+		public const int MAX_BANK_TABS = 6;
+		public const int MAX_BANK_TAB_SLOTS = 98;
 
 		public static uint GuildCharterCost
 		{
@@ -61,16 +86,18 @@ namespace WCell.RealmServer.Guilds
 		/// <summary>
 		/// Maps char-id to the corresponding GuildMember object so it can be looked up when char reconnects
 		/// </summary>
-		public static readonly IDictionary<uint, GuildMember> OfflineChars;
+		public static readonly IDictionary<uint, GuildMember> OfflineMembers;
 		public static readonly IDictionary<uint, Guild> GuildsById;
 		public static readonly IDictionary<string, Guild> GuildsByName;
+		private static readonly ReaderWriterLockWrapper guildsLock = new ReaderWriterLockWrapper();
+		private static readonly ReaderWriterLockWrapper membersLock = new ReaderWriterLockWrapper();
 
 		#region Init
 		static GuildMgr()
 		{
 			GuildsById = new SynchronizedDictionary<uint, Guild>();
 			GuildsByName = new SynchronizedDictionary<string, Guild>(StringComparer.InvariantCultureIgnoreCase);
-			OfflineChars = new SynchronizedDictionary<uint, GuildMember>();
+			OfflineMembers = new SynchronizedDictionary<uint, GuildMember>();
 		}
 
 		private GuildMgr()
@@ -78,12 +105,12 @@ namespace WCell.RealmServer.Guilds
 		}
 
 		[Initialization(InitializationPass.Fifth, "Initialize Guilds")]
-		public static void Initialize()
+		public static bool Initialize()
 		{
-			Instance.Start();
+			return Instance.Start();
 		}
 
-		protected override bool InternalStart()
+		private bool Start()
 		{
 			Guild[] guilds = null;
 
@@ -111,15 +138,6 @@ namespace WCell.RealmServer.Guilds
 
 			return true;
 		}
-
-		protected override bool InternalStop()
-		{
-			GuildsById.Clear();
-			GuildsByName.Clear();
-			OfflineChars.Clear();
-
-			return true;
-		}
 		#endregion
 
 		public static ImmutableList<GuildRank> CreateDefaultRanks(Guild guild)
@@ -139,10 +157,17 @@ namespace WCell.RealmServer.Guilds
 		internal void OnCharacterLogin(Character chr)
 		{
 			GuildMember member;
-			if (OfflineChars.TryGetValue(chr.EntityId.Low, out member))
+			using (membersLock.EnterWriteLock())
 			{
-				OfflineChars.Remove(chr.EntityId.Low);
-				member.Character = chr;
+				if (OfflineMembers.TryGetValue(chr.EntityId.Low, out member))
+				{
+					OfflineMembers.Remove(chr.EntityId.Low);
+					member.Character = chr;
+				}
+			}
+
+			if (member != null)
+			{
 				chr.GuildMember = member;
 				if (member.Guild != null)
 				{
@@ -150,7 +175,8 @@ namespace WCell.RealmServer.Guilds
 				}
 				else
 				{
-					// ???
+					// now this is bad
+					LogManager.GetCurrentClassLogger().Warn("Found orphaned GuildMember for character \"{0}\" during logon.");
 				}
 			}
 		}
@@ -168,12 +194,11 @@ namespace WCell.RealmServer.Guilds
 			}
 
 			var chr = member.Character;
-			var listInviters = Singleton<RelationMgr>.Instance.GetPassiveRelations(chr.EntityId.Low,
-				CharacterRelationType.GuildInvite);
+			var listInviters = RelationMgr.Instance.GetPassiveRelations(chr.EntityId.Low, CharacterRelationType.GuildInvite);
 
 			foreach (GroupInviteRelation inviteRelation in listInviters)
 			{
-				Singleton<RelationMgr>.Instance.RemoveRelation(inviteRelation);
+				RelationMgr.Instance.RemoveRelation(inviteRelation);
 			}
 
 			var guild = member.Guild;
@@ -189,9 +214,12 @@ namespace WCell.RealmServer.Guilds
 
 			member.Character = null;
 
-			member.Update();
+			member.UpdateLater();
 
-			OfflineChars[chr.EntityId.Low] = member;
+			using (membersLock.EnterWriteLock())
+			{
+				OfflineMembers[chr.EntityId.Low] = member;
+			}
 
 			GuildHandler.SendEventToGuild(member.Guild, GuildEvents.OFFLINE, member);
 		}
@@ -202,46 +230,71 @@ namespace WCell.RealmServer.Guilds
 		/// <param name="guild"></param>
 		internal void RegisterGuild(Guild guild)
 		{
-			GuildsById.Add(guild.Id, guild);
-			GuildsByName.Add(guild.Name, guild);
-
-			foreach (var gm in guild.Members.Values)
+			using (guildsLock.EnterWriteLock())
 			{
-				if (gm.Character == null && !OfflineChars.ContainsKey(gm.Id))
-					OfflineChars.Add(gm.Id, gm);
+				GuildsById.Add(guild.Id, guild);
+				GuildsByName.Add(guild.Name, guild);
+				using (membersLock.EnterWriteLock())
+				{
+					foreach (var gm in guild.Members.Values)
+					{
+						if (gm.Character == null && !OfflineMembers.ContainsKey(gm.Id))
+						{
+							OfflineMembers.Add(gm.Id, gm);
+						}
+					}
+				}
 			}
 		}
 
 		internal void UnregisterGuild(Guild guild)
 		{
-			GuildsById.Remove(guild.Id);
-			GuildsByName.Remove(guild.Name);
+			using (guildsLock.EnterWriteLock())
+			{
+				GuildsById.Remove(guild.Id);
+				GuildsByName.Remove(guild.Name);
+				// no need to remove offline members, since, at this point
+				// all members have already been evicted
+			}
 		}
 
 		internal void RegisterGuildMember(GuildMember gm)
 		{
 			if (gm.Character == null)
-				OfflineChars.Add(gm.Id, gm);
+			{
+				using (membersLock.EnterWriteLock())
+				{
+					OfflineMembers.Add(gm.Id, gm);
+				}
+			}
 		}
 
 		internal void UnregisterGuildMember(GuildMember gm)
 		{
-			if (OfflineChars.ContainsKey(gm.Id))
-				OfflineChars.Remove(gm.Id);
+			using (membersLock.EnterWriteLock())
+			{
+				OfflineMembers.Remove(gm.Id);
+			}
 		}
 
 		public static Guild GetGuild(uint guildId)
 		{
-			Guild guild;
-			GuildsById.TryGetValue(guildId, out guild);
-			return guild;
+			using (guildsLock.EnterReadLock())
+			{
+				Guild guild;
+				GuildsById.TryGetValue(guildId, out guild);
+				return guild;
+			}
 		}
 
 		public static Guild GetGuild(string name)
 		{
-			Guild guild;
-			GuildsByName.TryGetValue(name, out guild);
-			return guild;
+			using (guildsLock.EnterReadLock())
+			{
+				Guild guild;
+				GuildsByName.TryGetValue(name, out guild);
+				return guild;
+			}
 		}
 
 		#region Checks
@@ -456,28 +509,5 @@ namespace WCell.RealmServer.Guilds
 		//    return true;
 		//}
 		#endregion
-
-		public const int MIN_GUILD_RANKS = 5;
-		public const int MAX_GUILD_RANKS = 10;
-		public static int MaxGuildNameLength = 20;
-		public static int MaxGuildRankNameLength = 10;
-		public static int MaxGuildMotdLength = 100;
-		public static int MaxGuildInfoLength = 500;
-		public static int MaxGuildMemberNoteLength = 100;
-
-		/// <summary>
-		/// Cost (in copper) of a new Guild Tabard
-		/// </summary>
-		public static uint GuildTabardCost = 100000;
-
-		/// <summary>
-		/// The delay (in hours) before Guild Members' BankMoneyWithdrawlAllowance resets.
-		/// </summary>
-		public const int BankMoneyAllowanceResetDelay = 24;
-
-		public const uint UNLIMITED_BANK_MONEY_WITHDRAWL = UInt32.MaxValue;
-		public const uint UNLIMITED_BANK_SLOT_WITHDRAWL = UInt32.MaxValue;
-		public const int MAX_BANK_TABS = 6;
-		public const int MAX_BANK_TAB_SLOTS = 98;
 	}
 }

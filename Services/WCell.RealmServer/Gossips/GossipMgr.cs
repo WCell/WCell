@@ -13,6 +13,7 @@ using WCell.Constants.NPCs;
 using WCell.Constants;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Taxi;
+using WCell.RealmServer.NPCs.Pets;
 using System.Collections;
 using System.Collections.Generic;
 using WCell.RealmServer.Handlers;
@@ -80,32 +81,6 @@ namespace WCell.RealmServer.Gossips
 		//        return m_gossipConversations;
 		//    }
 		//}
-		#endregion
-
-		#region Start/Stop System
-
-		protected override bool InternalStart()
-		{
-			return true;
-		}
-
-		protected override bool InternalStop()
-		{
-			Dispose();
-
-			return true;
-		}
-
-		protected override bool InternalRestart(bool forced)
-		{
-			if (State == ManagerStates.Error)
-			{
-				InternalStop();
-			}
-
-			return InternalStart();
-		}
-
 		#endregion
 
 		#region IDisposable
@@ -239,7 +214,7 @@ namespace WCell.RealmServer.Gossips
 						{
 							menu.AddItem(new LocalizedGossipMenuItem(convo =>
 							{
-								convo.Character.SendSystemMessage(RealmLangKey.FeatureNotYetImplemented);
+								PetMgr.ListStabledPets(convo.Character, ((NPC)convo.Speaker));
 							}, RealmLangKey.GossipOptionStableMaster));
 						}
 						if (entry.NPCFlags.HasAnyFlag(NPCFlags.AnyTrainer))

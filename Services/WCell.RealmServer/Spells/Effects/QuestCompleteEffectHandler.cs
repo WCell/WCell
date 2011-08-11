@@ -17,7 +17,7 @@ namespace WCell.RealmServer.Spells
 		protected override void Apply(WorldObject target)
 		{
 			var chr = (Character)target;
-			var quest = chr.QuestLog.GetActiveQuest((uint) Effect.MiscValue);
+			var quest = chr.QuestLog.GetActiveQuest((uint)Effect.MiscValue);
 			if (quest != null)
 			{
 				// TODO: Is this needed?

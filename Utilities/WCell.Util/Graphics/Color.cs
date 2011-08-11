@@ -169,5 +169,10 @@ namespace WCell.Util.Graphics
 
 		[FieldOffset(1)]
 		public byte B;
+
+		public string Hex
+		{
+			get { return ARGBValue.ToString("X"); }
+		}
 	}
 }

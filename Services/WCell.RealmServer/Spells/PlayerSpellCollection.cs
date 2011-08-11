@@ -13,6 +13,7 @@ using WCell.RealmServer.Items;
 using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Spells.Auras.Misc;
 using WCell.RealmServer.Talents;
+using WCell.Util.ObjectPools;
 using WCell.Util.Threading;
 using WCell.RealmServer.Database;
 using WCell.Util;
@@ -243,6 +244,12 @@ namespace WCell.RealmServer.Spells
 				chr.Skills.Remove(spell.Ability.Skill.Id);
 			}
 
+			// Remove any active auras from the player
+			if (spell.IsAura)
+			{
+				chr.Auras.Remove(spell);
+			}
+
 			// figure out from where to remove and do it
 			var spells = GetSpellList(spell);
 			for (var i = 0; i < spells.Count; i++)
@@ -385,7 +392,7 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// Profession
-			if (spell.Ability.Skill != null)
+			if (spell.Ability != null && spell.Ability.Skill != null)
 			{
 				chr.Skills.TryLearn(spell.Ability.Skill.Id);
 			}

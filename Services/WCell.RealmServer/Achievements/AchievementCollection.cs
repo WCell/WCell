@@ -367,7 +367,7 @@ namespace WCell.RealmServer.Achievements
 				{
 					if (IsAchieveable(entry))
 					{
-                        if(entry.RequirementSet == null || entry.RequirementSet.Meets(Owner, involved))
+                        if(entry.RequirementSet == null || entry.RequirementSet.Meets(Owner, involved, value1))
 						    entry.OnUpdate(this, value1, value2, involved);
 					}
 				}
@@ -471,18 +471,18 @@ namespace WCell.RealmServer.Achievements
 				}
 			}
 
-			foreach (var achivementProgress in AchievementProgressRecord.Load((int)Owner.EntityId.Low))
+			foreach (var achievementProgress in AchievementProgressRecord.Load((int)Owner.EntityId.Low))
 			{
 				// how to check if there's no criteria
 				//if (achievement != null)
 				{
-					if (m_progressRecords.ContainsKey(achivementProgress.AchievementCriteriaId))
+					if (m_progressRecords.ContainsKey(achievementProgress.AchievementCriteriaId))
 					{
-						log.Warn("Character {0} had progress for Achievement Criteria {1} more than once.", m_owner, achivementProgress.AchievementCriteriaId);
+						log.Warn("Character {0} had progress for Achievement Criteria {1} more than once.", m_owner, achievementProgress.AchievementCriteriaId);
 					}
 					else
 					{
-						AddProgressRecord(achivementProgress);
+						AddProgressRecord(achievementProgress);
 					}
 				}
 				//else

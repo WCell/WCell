@@ -44,7 +44,7 @@ namespace WCell.Constants.Spells
 		/// MiscValueB: Index in SummonProperties.dbc
 		/// </summary>
 		Summon = 28,
-		Leap = 29,
+		LeapForward = 29,
 		Energize = 30,
 		WeaponPercentDamage = 31,
 		TriggerMissile = 32,
@@ -70,35 +70,35 @@ namespace WCell.Constants.Spells
 		/// </summary>
 		Leap3,
 		TeleportUnitsFaceCaster,
-		SkillStep,
+		SkillStep = 44,
 		AddHonor,
 		Spawn,
 		TradeSkill,
-		Stealth,
+		Stealth = 48,
 		Detect,
 		SummonObject = 50,
 		Unused_ForceCriticalHit,
 		Unused_GuaranteeHit,
-		EnchantItem,
-		EnchantItemTemporary,
-		TameCreature,
-		SummonPet,
+		EnchantItem = 53,
+		EnchantItemTemporary = 54,
+		TameCreature = 55,
+		SummonPet = 56,
 		LearnPetSpell,
-		WeaponDamage,
+		WeaponDamage = 58,
 		OpenLockItem,
 		Proficiency = 60,
-		SendEvent,
+		SendEvent = 61,
 		PowerBurn,
-		Threat,
-		TriggerSpell,
+		Threat = 63,
+		TriggerSpell = 64,
 		/// <summary>
-		/// Applies to everyone in Group (in radius, if given)
+		/// Applies to everyone in Raid (in radius, if given)
 		/// </summary>
-		ApplyGroupAura,
-		CreateManaGem,
-		HealMaxHealth,
-		InterruptCast,
-		Distract,
+		ApplyRaidAura = 65,
+		CreateManaGem = 66,
+		HealMaxHealth = 67,
+		InterruptCast = 68,
+		Distract = 69,
 		Pull = 70,
 		Pickpocket,
 		AddFarsight,
@@ -108,28 +108,28 @@ namespace WCell.Constants.Spells
 		/// </summary>
 		ApplyGlyph = 74,
 		HealMechanical,
-		SummonObjectWild,
+		SummonObjectWild = 76,
 		ScriptEffect,
 		Attack,
-		Sanctuary,
+		Sanctuary = 79,
 		AddComboPoints = 80,
 		CreateHouse,
 		BindSight,
-		Duel,
+		Duel = 83,
 		Stuck,
-		SummonPlayer,
+		SummonPlayer = 85,
 		ActivateObject,
-		Unused_SummonTotemSlot1,
-		Unused_SummonTotemSlot2,
-		Unused_SummonTotemSlot3,
-		Unused_SummonTotemSlot4 = 90,
+		WMODamage = 87,
+		WMORepair = 88,
+		WMOChange = 89,
+		KillCreditPersonal = 90,
 		Unused_ThreatAll = 91,
 		EnchantHeldItem = 92,
 		Unused_SummonPhantasm = 93,
 		SelfResurrect = 94,
 		Skinning = 95,
 		Charge = 96,
-		Unused_SummonCritter = 97,
+		SummonAllTotems = 97,
 		KnockBack = 98,
 		Disenchant = 99,
 		Inebriate = 100,
@@ -179,10 +179,7 @@ namespace WCell.Constants.Spells
 		/// </summary>
 		RedirectThreat = 130,
 		Effect_131 = 131, // 44393, 44393
-		/// <summary>
-		/// Unused
-		/// </summary>
-		Effect_132 = 132, //Play Music
+		PlayMusic = 132,
 		ForgetSpecialization = 133,
 		Effect_134 = 134, // Kill Credit
 		Effect_135 = 135, //Call-summon pet
@@ -196,9 +193,9 @@ namespace WCell.Constants.Spells
 		/// </summary>
 		Effect_138 = 138, //Leap
 		/// <summary>
-		/// Unused
+		/// Used by spells for the ring in IceCrown
 		/// </summary>
-		Unused_Effect_139 = 139, // Clear Quest
+		ClearQuest = 139,
 		/// <summary>
 		/// Weird name, from wowhead
 		/// </summary>
@@ -216,7 +213,7 @@ namespace WCell.Constants.Spells
 		Effect_145 = 145, // Black Hole Effect, Gravity Well Effect
 		ActivateRune = 146, //EmpowerRune
 		QuestFail = 147, // Quest Fail
-		Unused_Effect_148 = 148,
+		Unused_Effect_148 = 148, // Used by only one spell : Orb Of Fire (43509)
 
 		SideLeap = 149, //Sliding, Side leap
 		Unused_Effect_150 = 150,
@@ -229,7 +226,7 @@ namespace WCell.Constants.Spells
 		/// Tame Creature
 		/// </summary>
 		Effect_153 = 153, // Highest as of 2.4.3.8606
-		Unused_154 = 154,
+		TeachFlightPath = 154, // Used only by TeachRiversHeartTaxiPath (64090)
 		/// <summary>
 		/// Allows 2h weapons to be carried in 1h and applied an aura
 		/// </summary>

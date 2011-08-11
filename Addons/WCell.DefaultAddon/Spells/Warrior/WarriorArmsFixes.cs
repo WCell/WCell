@@ -104,7 +104,39 @@ namespace WCell.Addons.Default.Spells.Warrior
 			SpellLineId.WarriorShatteringThrow.Apply(spell =>
 			{
 				spell.Effects[0].APValueFactor = 0.5f;
+				spell.GetEffect(SpellEffectType.ScriptEffect).SpellEffectHandlerCreator = (cast, effct) => new ShatteringThrowHandler(cast, effct);
+				spell.Visual = 13222;
 			});
+		}
+	}
+
+	public class ShatteringThrowHandler : SpellEffectHandler
+	{
+		public ShatteringThrowHandler(SpellCast cast, SpellEffect effect)
+			: base(cast, effect)
+		{
+		}
+		protected override void Apply(WorldObject target)
+		{
+			var unit = ((Unit)target);
+			var removedInvul = false;
+			unit.Auras.RemoveWhere(aura =>
+			{
+				if (aura.Spell.Mechanic == SpellMechanic.Invulnerable_2)
+				{
+					return removedInvul = true;
+				}
+				return false;
+			});
+
+			if (!removedInvul)
+			{
+				var caster = Cast.CasterChar;
+				if (caster != null)
+				{
+					caster.SpellCast.Trigger(SpellId.ClassSkillShatteringThrow_2);
+				}
+			}
 		}
 	}
 

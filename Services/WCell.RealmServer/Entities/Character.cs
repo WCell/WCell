@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2010-02-20 06:16:32 +0100 (lï¿? 20 feb 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 1257 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -192,6 +192,20 @@ namespace WCell.RealmServer.Entities
 				}
 			}
 		}
+
+        public bool IsAllowedLowLevelRaid
+        {
+            get { return PlayerFlags.HasFlag(PlayerFlags.AllowLowLevelRaid); }
+            set 
+            { 
+                if (value)
+                {
+                    PlayerFlags |= PlayerFlags.AllowLowLevelRaid;
+                    return;
+                }
+                PlayerFlags &= ~PlayerFlags.AllowLowLevelRaid;
+            }
+        }
 		#endregion
 
 		public uint GetInstanceDifficulty(bool isRaid)
@@ -277,10 +291,12 @@ namespace WCell.RealmServer.Entities
 		{
 			m_record.LastDeathTime = DateTime.Now;
 			MarkDead();
-
+            Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.DeathAtMap, (uint)MapId, 1);
+            Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.DeathInDungeon, (uint)MapId, 1);
 			// start release timer
 			m_corpseReleaseTimer = new TimerEntry(dt => ReleaseCorpse());
 			m_corpseReleaseTimer.Start(Corpse.AutoReleaseDelay, 0);
+
 		}
 
 		internal protected override void OnResurrect()
@@ -396,16 +412,20 @@ namespace WCell.RealmServer.Entities
 				pvp = action.Attacker.IsPvPing;
 				var chr = action.Attacker.CharacterMaster;
 
-				if (pvp && chr.IsInBattleground)
+				if (pvp)
 				{
-					// Add BG stats
-					var attackerStats = chr.Battlegrounds.Stats;
-					var victimStats = Battlegrounds.Stats;
-					attackerStats.KillingBlows++;
-					if (victimStats != null)
-					{
-						victimStats.Deaths++;
-					}
+                    if (chr.IsInBattleground)
+                    {
+                        // Add BG stats
+                        var attackerStats = chr.Battlegrounds.Stats;
+                        var victimStats = Battlegrounds.Stats;
+                        attackerStats.KillingBlows++;
+                        if (victimStats != null)
+                        {
+                            victimStats.Deaths++;
+                        }
+                    }
+                    Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.KilledByPlayer, (uint)chr.FactionGroup);
 				}
 			}
 			else
@@ -417,6 +437,8 @@ namespace WCell.RealmServer.Entities
 			{
 				// durability loss
 				m_inventory.ApplyDurabilityLoss(PlayerInventory.DeathDurabilityLossPct);
+                if(action.Attacker != null && action.Attacker is NPC)
+                    Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.KilledByCreature, (uint)((NPC)action.Attacker).Entry.NPCId);
 			}
 
 			m_Map.MapTemplate.NotifyPlayerDied(action);
@@ -988,35 +1010,54 @@ namespace WCell.RealmServer.Entities
 				return true;
 			}
 
-			var rep = m_reputations[opponent.Faction.ReputationIndex];
-			return rep != null && rep.Standing >= Standing.Friendly;
+			var opFaction = opponent.Faction;
+			var rep = m_reputations[opFaction.ReputationIndex];
+			if (rep != null)
+			{
+				return rep.Standing >= Standing.Friendly;
+			}
+			return m_faction.IsFriendlyTowards(opFaction);
 		}
 
-        public override bool IsNeutralWith(IFactionMember opponent)
+        public override bool IsAtLeastNeutralWith(IFactionMember opponent)
         {
-            if (IsAlliedWith(opponent))
+            if (IsFriendlyWith(opponent))
             {
                 return true;
             }
 
-            var rep = m_reputations[opponent.Faction.ReputationIndex];
-            return rep != null && rep.Standing >= Standing.Neutral;
+			var opFaction = opponent.Faction;
+			var rep = m_reputations[opFaction.ReputationIndex];
+			if (rep != null)
+			{
+				return rep.Standing >= Standing.Neutral;
+			}
+			return m_faction.Neutrals.Contains(opFaction);
         }
 
 		public override bool IsHostileWith(IFactionMember opponent)
 		{
-			if (object.ReferenceEquals(opponent, this) || (opponent is Unit && ((Unit)opponent).Master == this))
+			if (ReferenceEquals(opponent, this) || (opponent is Unit && ((Unit)opponent).Master == this))
 			{
 				return false;
 			}
 
 			if (opponent is Character)
 			{
-				var chr = (Character)opponent;
-				return CanPvP(chr);
+				return CanPvP((Character)opponent);
 			}
 
-			return m_reputations.IsHostile(opponent.Faction);
+			var opFaction = opponent.Faction;
+
+			if (opponent is NPC && opFaction.Neutrals.Contains(m_faction))
+			{
+				return ((NPC)opponent).ThreatCollection.HasAggressor(this);
+			}
+
+			if(m_faction.Friends.Contains(opFaction))
+				return false;
+
+			return m_faction.Enemies.Contains(opFaction) && m_reputations.CanAttack(opFaction);
 		}
 
 		public override bool MayAttack(IFactionMember opponent)
@@ -1031,7 +1072,8 @@ namespace WCell.RealmServer.Entities
 				return CanPvP((Character)opponent);
 			}
 
-			return m_reputations.CanAttack(opponent.Faction);
+			var opFaction = opponent.Faction;
+			return m_faction.Enemies.Contains(opFaction) || (!m_faction.Friends.Contains(opFaction) && m_reputations.CanAttack(opFaction));
 		}
 
 		public bool CanPvP(Character chr)
@@ -1044,7 +1086,7 @@ namespace WCell.RealmServer.Entities
 			}
 
 			return
-				(state == PvPState.PVP && chr.Faction.IsAlliance != m_faction.IsAlliance) ||					// default case
+				(state == PvPState.PVP && chr.Faction.IsAlliance != m_faction.IsAlliance) ||					// world pvp
 				(IsInBattleground && chr.IsInBattleground && chr.Battlegrounds.Team != Battlegrounds.Team) ||	// battlegrounds
 				(DuelOpponent == chr && Duel.IsActive);															// duels
 		}
@@ -1387,7 +1429,7 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
-		#region Talent Specs
+		#region Talent Specs / Glyphs
 		public SpecProfile CurrentSpecProfile
 		{
 			get { return SpecProfiles[m_talents.CurrentSpecIndex]; }
@@ -1437,6 +1479,32 @@ namespace WCell.RealmServer.Entities
 				value |= 0x20;
 
 			Glyphs_Enable = value;
+		}
+
+		public void ApplyGlyph(byte slot, GlyphPropertiesEntry gp)
+		{
+			//check if there is a already a glyph in there and remove it
+			RemoveGlyph(slot);
+
+			//slap in the new one
+			SpellCast.Trigger(SpellHandler.Get(gp.SpellId), this);
+			SetGlyph(slot, gp.Id);
+			CurrentSpecProfile.GlyphIds[slot] = gp.Id;
+			TalentHandler.SendTalentGroupList(m_talents);
+
+			//Todo: save it somewhere and dualspec related things!
+		}
+		public void RemoveGlyph(byte slot)
+		{
+			var oldglyph = GetGlyph(slot);
+
+			if (oldglyph != 0)
+			{
+				var spelltoremove = GlyphInfoHolder.GetPropertiesEntryForGlyph(oldglyph).SpellId;
+				Auras.Remove(SpellHandler.Get(spelltoremove));
+				CurrentSpecProfile.GlyphIds[slot] = 0;
+				SetGlyph(slot, 0);
+			}
 		}
 		#endregion
 

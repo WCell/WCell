@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2010-04-23 15:13:50 +0200 (fr, 23 apr 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 1282 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -183,9 +183,6 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		internal void Initialize()
 		{
-			if (Id == 11986)
-				ToString();
-
 			init1 = true;
 			var learnSpellEffect = GetEffect(SpellEffectType.LearnSpell);
 			if (learnSpellEffect == null)
@@ -1407,12 +1404,12 @@ namespace WCell.RealmServer.Spells
 			}
 
 
-			if (Description.Length > 0)
+			if (!string.IsNullOrEmpty(Description))
 			{
 				writer.WriteLine(indent + "Desc: " + Description);
 			}
 
-			if (Reagents.Length > 0)
+            if (Reagents != null && Reagents.Length > 0)
 			{
 				writer.WriteLine(indent + "Reagents: " + Reagents.ToString(", "));
 			}

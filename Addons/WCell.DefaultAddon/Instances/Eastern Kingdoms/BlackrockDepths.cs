@@ -7,7 +7,7 @@ using WCell.RealmServer.Instances;
 
 namespace WCell.Addons.Default.Instances
 {
-	public class BlackrockDepths : RaidInstance
+	public class BlackrockDepths : BaseInstance
 	{
 	}
 

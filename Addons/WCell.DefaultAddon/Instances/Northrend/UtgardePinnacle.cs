@@ -21,7 +21,7 @@ using WCell.Util.Graphics;
 
 namespace WCell.Addons.Default.Instances
 {
-	public class UtgardePinnacle : DungeonInstance
+	public class UtgardePinnacle : BaseInstance
 	{
 		NPC m_svala;
 		NPC m_arthasMirror;

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using NLog;
 using WCell.Constants;
+using WCell.Constants.Achievements;
 using WCell.Constants.Factions;
 using WCell.Constants.Items;
 using WCell.Core;
@@ -116,6 +117,12 @@ namespace WCell.RealmServer.Mail
 
 			if (!m_chr.GodMode)
 			{
+                if (stationary == MailStationary.GM)
+                {
+                    MailHandler.SendResult(m_chr.Client, 0, MailResult.MailSent, MailError.INTERNAL_ERROR);
+                    return MailError.INTERNAL_ERROR;
+                }
+
 				// Can't send to people who ignore you
 				if (RelationMgr.IsIgnoring(recipientRecord.EntityLowId, m_chr.EntityId.Low))
 				{
@@ -197,6 +204,7 @@ namespace WCell.RealmServer.Mail
 
 			// All good, send an ok message
 			MailHandler.SendResult(m_chr.Client, 0u, MailResult.MailSent, MailError.OK);
+            m_chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.GoldSpentForMail, requiredCash);
 
 			var deliveryDelay = 0u;
 			if (!m_chr.GodMode)

@@ -9,9 +9,9 @@
     <Flat Name="RequiredLevel" Column="MinLevel" />
     <Flat Name="Level" Column="QuestLevel" />
     <Flat Name="QuestType" Column="Type" />
+    <Flat Name="RequiredClass" Column="RequiredClasses" />
     <Flat Name="RequiredRaces" Column="RequiredRaces" />
-    <!--http://wiki.udbforums.org/index.php/Quest_template#SkillOrClass-->
-    <Flat Name="ReqSkill" Column="RequiredSkill" />
+    <Flat Name="RequiredSkill" Column="RequiredSkill" />
     <Flat Name="RequiredSkillValue" Column="RequiredSkillValue" />
     <Nested Name="MinReqReputation">
       <Flat Name="FactionId" Column="RequiredMinRepFaction" />
@@ -38,6 +38,10 @@
     <NestedArray Name="CollectableItems">
       <Flat Name="ItemId" Pattern="ReqItemId{#}" Offset="1" />
       <Flat Name="Amount" Pattern="ReqItemCount{#}" Offset="1" />
+    </NestedArray>
+    <NestedArray Name="CollectableSourceItems">
+      <Flat Name="ItemId" Pattern="ReqSourceId{#}" Offset="1" />
+      <Flat Name="Amount" Pattern="ReqSourceCount{#}" Offset="1" />
     </NestedArray>
     <NestedArray Name="ObjectOrSpellInteractions">
       <Flat Name="RawId" Pattern="ReqCreatureOrGOId{#}" Offset="1" />

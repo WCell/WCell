@@ -17,6 +17,10 @@
       <Value>Custom</Value>
     </Item>
 
+    <Item Key="Initializing">
+      <Value>Initializing</Value>
+    </Item>
+
     <Item Key="Addon">
       <Value>Addon</Value>
     </Item>
