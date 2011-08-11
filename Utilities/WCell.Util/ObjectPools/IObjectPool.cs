@@ -3,9 +3,8 @@ namespace WCell.Util.ObjectPools
 	/// <summary>
 	/// Interface for an object pool.
 	/// </summary>
-	/// <seealso cref="zzObjectPoolMgr"/>
 	/// <remarks>
-	/// An object pool holds reusable objects. See <see cref="zzObjectPoolMgr"/> for more details.
+    /// An object pool holds reusable objects. See zzObjectPoolMgr for more details.
 	/// </remarks>
 	public interface IObjectPool
 	{
