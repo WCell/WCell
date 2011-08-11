@@ -25,7 +25,7 @@ using WCell.Intercommunication.DataTypes;
 namespace WCell.Intercommunication
 {
 	[GeneratedCode("System.ServiceModel", "3.0.0.0")]
-	[ServiceContract(ConfigurationName = "IAuthenticationService")]
+	[ServiceContract(ConfigurationName = "IAuthenticationService", Namespace="http://www.wcell.org/IServerIPC")]
 	public interface IWCellIntercomService
 	{
 		#region Accounts & Authentication
