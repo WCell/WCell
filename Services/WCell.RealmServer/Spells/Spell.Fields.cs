@@ -132,6 +132,7 @@ namespace WCell.RealmServer.Spells
 		/// Indicates the events that let this Spell proc (if it is a proc spell)
 		/// </summary>
 		public ProcTriggerFlags ProcTriggerFlags;//28
+        public ProcTriggerFlagsEx ProcTriggerFlagsEx;
 		public uint ProcChance;//29
 		public int ProcCharges;//30
 		public int MaxLevel;//31

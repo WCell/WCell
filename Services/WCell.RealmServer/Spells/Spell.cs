@@ -1212,6 +1212,11 @@ namespace WCell.RealmServer.Spells
 			if ((int)ProcTriggerFlags != 0)
 			{
 				writer.WriteLine(indent + "ProcTriggerFlags: " + ProcTriggerFlags);
+                
+                if ((int)ProcTriggerFlagsEx != 0)
+                {
+                    writer.WriteLine(indent + "ProcTriggerFlagsEx: " + ProcTriggerFlagsEx);
+                }
 			}
 			if ((int)ProcChance != 0)
 			{

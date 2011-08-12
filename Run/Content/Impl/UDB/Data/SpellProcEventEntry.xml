@@ -25,7 +25,7 @@
     </FlatArray>
     
     <Flat Name="ProcFlags" Column="procFlags" />
-    <Flat Name="ProcEx" Column="procEx" />
+    <Flat Name="ProcFlagsEx" Column="procEx" />
     <Flat Name="PpmRate" Column="ppmRate" />
     <Flat Name="CustomChance" Column="CustomChance" />
     <Flat Name="Cooldown" Column="Cooldown" />
