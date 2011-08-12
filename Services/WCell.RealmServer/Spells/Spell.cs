@@ -761,7 +761,7 @@ namespace WCell.RealmServer.Spells
 		/// <returns></returns>
 		public SpellEffect AddEffect(SpellEffectType type, ImplicitSpellTargetType target)
 		{
-			var effect = new SpellEffect(this, -1) { EffectType = type };
+			var effect = new SpellEffect(this, EffectIndex.Custom) { EffectType = type };
 			var effects = new SpellEffect[Effects.Length + 1];
 			Array.Copy(Effects, effects, Effects.Length);
 			Effects = effects;
