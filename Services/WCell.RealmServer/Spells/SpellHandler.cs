@@ -335,14 +335,7 @@ namespace WCell.RealmServer.Spells
 				SpellLines.InitSpellLines();
 
 				ContentMgr.Load<SpellProcEventEntry>();
-				foreach (var spell in ById)
-				{
-					if (spell != null)
-					{
-						// set custom proc settings
-						ProcEventHelper.PatchAffectMasks(spell);
-					}
-				}
+                ProcEventHelper.PatchSpells(ById);
 			}
 
 			if (init)

@@ -193,4 +193,34 @@ namespace WCell.Constants.Spells
 		DEATH											= 0x1000000,
 	};
 	 */
+
+    /// <summary>
+    /// Extended proc flags for additional functionality
+    /// </summary>
+    [Flags]
+    public enum ProcTriggerFlagsEx : uint
+    {
+        #region DatabaseFlags
+        None            = 0x00000000,
+        NormalHit       = 0x00000001,
+        CriticalHit     = 0x00000002,
+        Miss            = 0x00000004,
+        Resist          = 0x00000008,
+        Dodge           = 0x00000010,
+        Parry           = 0x00000020,
+        Block           = 0x00000040,
+        Evade           = 0x00000080,
+        Immune          = 0x00000100,
+        Deflect         = 0x00000200,
+        Absorb          = 0x00000400,
+        Reflect         = 0x00000800,
+        Interrupt       = 0x00001000,
+        FullBlock       = 0x00002000,
+        Reserved        = 0x00004000,
+        NotActiveSpell  = 0x00008000,
+        TriggerAlways   = 0x00010000,
+        OneTimeTrigger  = 0x00020000,
+        OnlyActiveSpell = 0x00040000,
+        #endregion
+    }
 }
