@@ -23,6 +23,9 @@ using Cell.Core;
 using WCell.Constants;
 using WCell.Constants.Login;
 using WCell.Core;
+using WCell.Core.Timers;
+using WCell.Intercommunication;
+using WCell.Intercommunication.Client;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Res;
 using WCell.Util.Graphics;
@@ -82,7 +85,13 @@ namespace WCell.RealmServer
 
 		private readonly RealmServerConfiguration m_configuration;
 
-		private readonly AuthenticationClient m_authServiceClient = new AuthenticationClient();
+		/// <summary>
+		/// The authentication service client instance.
+		/// </summary>
+		public IpcDevice<IWCellIntercomService, EmptyCallback> AuthenticationService { get; private set; }
+
+		//private DuplexServiceClient<IWCellIntercomService, EmptyCallback> _authenticationClient;
+
 		public readonly Dictionary<string, RealmAccount> LoggedInAccounts = new Dictionary<string, RealmAccount>(StringComparer.InvariantCultureIgnoreCase);
 
 		private volatile int m_acceptedClients;
@@ -107,14 +116,6 @@ namespace WCell.RealmServer
 		public RealmServerConfiguration Configuration
 		{
 			get { return m_configuration; }
-		}
-
-		/// <summary>
-		/// The authentication service client instance.
-		/// </summary>
-		public AuthenticationClient AuthClient
-		{
-			get { return m_authServiceClient; }
 		}
 
 		/// <summary>
@@ -200,7 +201,16 @@ namespace WCell.RealmServer
 		/// </summary>
 		private void ConnectToAuthService()
 		{
-			m_authServiceClient.StartConnect(RealmServerConfiguration.AuthenticationServerAddress);
+			AuthenticationService = new IpcDevice<IWCellIntercomService, EmptyCallback>(() =>
+			                                                                            new DuplexServiceClient
+			                                                                            	<IWCellIntercomService, EmptyCallback>(
+			                                                                            	new EmptyCallback(),
+			                                                                            	RealmServerConfiguration.
+			                                                                            		AuthenticationServerAddress));
+
+			Instance.RegisterRealm();
+
+			IOQueue.RegisterUpdatable(new SimpleUpdatable(Instance.UpdateRealm));
 		}
 
 		internal void OnStatusChange(RealmStatus oldStatus)
@@ -219,13 +229,13 @@ namespace WCell.RealmServer
 		/// </summary>
 		public void RegisterRealm()
 		{
-			if (!m_authServiceClient.IsConnected || !IsRunning)
+			if (!IsRunning)
 			{
 				//s_log.Error(Resources.RegisterNotRunning);
 			}
 			else
 			{
-				m_authServiceClient.Channel.RegisterRealmServer(
+				AuthenticationService.Call(channel => channel.RegisterRealmServer(
 					RealmServerConfiguration.RealmName,
 					ExternalAddress,
 					RealmServerConfiguration.Port,
@@ -235,12 +245,12 @@ namespace WCell.RealmServer
 					RealmServerConfiguration.Flags,
 					RealmServerConfiguration.Category,
 					RealmServerConfiguration.Status,
-					WCellInfo.RequiredVersion);
+					WCellInfo.RequiredVersion));
 
-				if (m_authServiceClient.IsConnected)
+				if (AuthenticationService.IsConnected)
 				{
 					// set all active accounts (or just clear accounts if re-starting)
-					m_authServiceClient.Channel.SetAllActiveAccounts(LoggedInAccounts.Keys.ToArray());
+					AuthenticationService.Call(channel => channel.SetAllActiveAccounts(LoggedInAccounts.Keys.ToArray()));
 				}
 
 				//m_authServiceClient.IsRegisteredAtAuthServer = true;
@@ -252,24 +262,31 @@ namespace WCell.RealmServer
 		/// Updates this Realm at the Authentication-Server.
 		/// Is called automatically on a regular basis.
 		/// </summary>
-		public bool UpdateRealm()
+		public void UpdateRealm()
 		{
-			if (!m_authServiceClient.IsConnected || !IsRunning)
+			if (!IsRunning)
 			{
-				return false;
+				//s_log.Error(Resources.RegisterNotRunning);
 			}
+			else
+			{
+				var updated = false;
+				AuthenticationService.Call(channel =>
+				                           	{
+				                           		updated = channel.UpdateRealmServer(RealmServerConfiguration.RealmName,
+				                           		                                    World.CharacterCount,
+				                           		                                    RealmServerConfiguration.MaxClientCount,
+				                           		                                    RealmServerConfiguration.ServerType,
+				                           		                                    RealmServerConfiguration.Flags,
+				                           		                                    RealmServerConfiguration.Category,
+				                           		                                    RealmServerConfiguration.Status);
+				                           	});
 
-			if (!m_authServiceClient.Channel.UpdateRealmServer(RealmServerConfiguration.RealmName,
-														  World.CharacterCount,
-														  RealmServerConfiguration.MaxClientCount,
-														  RealmServerConfiguration.ServerType,
-														  RealmServerConfiguration.Flags,
-														  RealmServerConfiguration.Category,
-														  RealmServerConfiguration.Status))
-			{
-				RegisterRealm();
+				if (!updated)
+				{
+					RegisterRealm();
+				}
 			}
-			return true;
 		}
 
 		/// <summary>
@@ -319,7 +336,7 @@ namespace WCell.RealmServer
 		/// <returns>false to shutdown the server</returns>
 		protected override bool OnClientConnected(IClient client)
 		{
-			if (AuthClient.IsConnected)
+			if (AuthenticationService.IsConnected)
 			{
 				base.OnClientConnected(client);
 				LoginHandler.SendAuthChallenge((IRealmClient)client);
@@ -443,18 +460,18 @@ namespace WCell.RealmServer
 		/// <param name="loggedIn"></param>
 		internal void SetAccountLoggedIn(RealmAccount acc, bool loggedIn)
 		{
-			if (m_authServiceClient.IsConnected)
+			if (AuthenticationService.IsConnected)
 			{
 				if (loggedIn)
 				{
 					acc.OnLogin();
-					m_authServiceClient.Channel.SetAccountLoggedIn(acc.Name);
+					AuthenticationService.Call(channel => channel.SetAccountLoggedIn(acc.Name));
 				}
 				else
 				{
 					acc.OnLogout();
 					IOQueue.AddMessage(new Message1<RealmAccount>(acc, UnregisterAccount));
-					m_authServiceClient.Channel.SetAccountLoggedOut(acc.Name);
+					AuthenticationService.Call(channel => channel.SetAccountLoggedOut(acc.Name));
 				}
 			}
 		}
@@ -472,9 +489,14 @@ namespace WCell.RealmServer
 			RealmAccount acc;
 			if (!LoggedInAccounts.TryGetValue(accountName, out acc))
 			{
-				if (m_authServiceClient.IsConnected)
+				if (AuthenticationService.IsConnected)
 				{
-					return m_authServiceClient.Channel.RequestAccountInfo(accountName, requestAddr);
+					IAccountInfo info = null;
+					AuthenticationService.Call(channel =>
+					                           	{
+					                           		info = channel.RequestAccountInfo(accountName, requestAddr);
+					                           	});
+					return info;
 				}
 			}
 			else
@@ -498,9 +520,13 @@ namespace WCell.RealmServer
 			RealmAccount acc;
 			if (!LoggedInAccounts.TryGetValue(accountName, out acc))
 			{
-				if (m_authServiceClient.IsConnected)
+				if (AuthenticationService.IsConnected)
 				{
-					var info = m_authServiceClient.Channel.RequestAccountInfo(accountName, null);
+					IAccountInfo info = null;
+					AuthenticationService.Call(channel =>
+					{
+						info = channel.RequestAccountInfo(accountName, null);
+					});
 					if (info != null)
 					{
 						acc = new RealmAccount(accountName, info);
@@ -518,9 +544,14 @@ namespace WCell.RealmServer
 		/// <returns>The request information or null if it did not succeed</returns>
 		public AuthenticationInfo GetAuthenticationInfo(string accountName)
 		{
-			if (m_authServiceClient.IsConnected)
+			if (AuthenticationService.IsConnected)
 			{
-				return m_authServiceClient.Channel.GetAuthenticationInfo(accountName);
+				AuthenticationInfo info = null;
+				AuthenticationService.Call(channel =>
+				{
+					info = channel.GetAuthenticationInfo(accountName);
+				});
+				return info;
 			}
 			return null;
 		}
@@ -559,11 +590,7 @@ namespace WCell.RealmServer
 
 		public override void Stop()
 		{
-			if (m_authServiceClient != null)
-			{
-				m_authServiceClient.IsRunning = false;
-			}
-
+			AuthenticationService = null;
 			base.Stop();
 		}
 
@@ -584,12 +611,12 @@ namespace WCell.RealmServer
 
 			World.Broadcast("World saved.");
 
-			if (m_authServiceClient != null && m_authServiceClient.IsConnected)
+			if (AuthenticationService != null && AuthenticationService.IsConnected)
 			{
 				// unset all accounts
-				IOQueue.AddMessageAndWait(true, () => m_authServiceClient.Channel.SetAllActiveAccounts(EmptyStringArr));
+				IOQueue.AddMessageAndWait(true, () => AuthenticationService.Call(channel => channel.SetAllActiveAccounts(EmptyStringArr)));
 				Thread.Sleep(100);		// sleep for a short while to let the client send the msg to the AuthServer
-				m_authServiceClient.IsRunning = false;
+				AuthenticationService = null;
 			}
 			World.Broadcast("Shutting down...");
 		}

@@ -967,7 +967,7 @@
     <Compile Include="Handlers\MovementHandler.cs" />
     <Compile Include="Handlers\TradeHandler.cs" />
     <Compile Include="Help\Tickets\TicketMgr.cs" />
-    <Compile Include="Network\AuthenticationClient.cs" />
+    <Compile Include="Network\IPCDevice.cs" />
     <Compile Include="Items\ContainerInventory.cs" />
     <Compile Include="Items\BaseInventory.cs" />
     <Compile Include="Items\ItemTemplate.cs" />

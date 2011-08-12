@@ -156,10 +156,10 @@ namespace WCell.RealmServer
 			{
 				m_HighestCharLevel = value;
 				RealmServer.IOQueue.AddMessage(new Message(() => {
-					if (RealmServer.Instance.AuthClient.IsRunning)
+					if (RealmServer.Instance.AuthenticationService.IsRunning)
 					{
-						RealmServer.Instance.AuthClient.Channel.SetHighestLevel(AccountId,
-																				m_HighestCharLevel);
+						RealmServer.Instance.AuthenticationService.Call(channel => channel.SetHighestLevel(AccountId,
+																				m_HighestCharLevel));
 					}
 				}));
 			}
@@ -272,10 +272,14 @@ namespace WCell.RealmServer
 			var wasStaff = Role.IsStaff;
 			if (!Role.Equals(role))
 			{
-				if (!RealmServer.Instance.AuthClient.Channel.SetAccountRole(AccountId, role.Name))
-				{
+				var accountRoleSet = false;
+				RealmServer.Instance.AuthenticationService.Call(channel =>
+				                                                	{
+				                                                		accountRoleSet = channel.SetAccountRole(AccountId, role.Name);
+				                                                	});
+
+				if(!accountRoleSet)
 					return false;
-				}
 
 				Role = role;
 				if (wasStaff != role.IsStaff)
@@ -316,7 +320,13 @@ namespace WCell.RealmServer
 
 		public bool SetAccountActive(bool active, DateTime? statusUntil)
 		{
-			if (!RealmServer.Instance.AuthClient.Channel.SetAccountActive(AccountId, active, statusUntil))
+			var accountActiveSet = false;
+			RealmServer.Instance.AuthenticationService.Call(channel =>
+			{
+				accountActiveSet = channel.SetAccountActive(AccountId, active, statusUntil);
+			});
+
+			if (!accountActiveSet)
 			{
 				return false;
 			}
@@ -337,7 +347,13 @@ namespace WCell.RealmServer
 		{
 			if (EmailAddress != email)
 			{
-				if (!RealmServer.Instance.AuthClient.Channel.SetAccountEmail(AccountId, email))
+				var success = false;
+				RealmServer.Instance.AuthenticationService.Call(channel =>
+				{
+					success = channel.SetAccountEmail(AccountId, email);
+				});
+
+				if (!success)
 				{
 					return false;
 				}
@@ -364,7 +380,14 @@ namespace WCell.RealmServer
 			{
 				pass = null;
 			}
-			return RealmServer.Instance.AuthClient.Channel.SetAccountPass(AccountId, oldPassStr, pass);
+
+			var success = false;
+			RealmServer.Instance.AuthenticationService.Call(channel =>
+			{
+				success = channel.SetAccountPass(AccountId, oldPassStr, pass);
+			});
+
+			return success;
 		}
 
 		/// <summary>
@@ -414,7 +437,7 @@ namespace WCell.RealmServer
 				log.Info("Client ({0}) tried to use online Account: {1}.", client, accountName);
 				LoginHandler.SendAuthSessionErrorReply(client, LoginErrorCode.AUTH_ALREADY_ONLINE);
 			}
-			else if (!RealmServer.Instance.AuthClient.IsConnected)
+			else if (!RealmServer.Instance.AuthenticationService.IsConnected)
 			{
 				LoginHandler.SendAuthSessionErrorReply(client, LoginErrorCode.AUTH_DB_BUSY);
 			}

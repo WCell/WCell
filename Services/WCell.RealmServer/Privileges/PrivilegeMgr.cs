@@ -130,15 +130,14 @@ namespace WCell.RealmServer.Privileges
 
 		public void Setup()
 		{
-			var client = RealmServer.Instance.AuthClient;
-			if (client.IsConnected)
-			{
-				var groups = client.Channel.RetrieveRoleGroups();
-				if (groups != null)
-				{
-					SetGroupInfo(groups);
-				}
-			}
+			RealmServer.Instance.AuthenticationService.Call(channel =>
+			                                                	{
+			                                                		var groups = channel.RetrieveRoleGroups();
+			                                                		if (groups != null)
+			                                                		{
+			                                                			SetGroupInfo(groups);
+			                                                		}
+			                                                	});
 		}
 
 		#endregion

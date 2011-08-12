@@ -68,14 +68,19 @@ namespace WCell.AuthServer.IPC
         /// </summary>
         public IPCServiceAdapter()
         {
-            s_authServer = AuthenticationServer.Instance;
-			var channel = OperationContext.Current.Channel;
-
-        	channel.Closed += OnDisconnected;
-            channel.Faulted += OnDisconnected;
+        	s_authServer = AuthenticationServer.Instance;
+			HookIpcChannelEvents();
         }
 
-		private void OnDisconnected(object sender, EventArgs args)
+    	internal void HookIpcChannelEvents()
+    	{
+			var channel = OperationContext.Current.Channel;
+
+    		channel.Closed += OnDisconnected;
+    		channel.Faulted += OnDisconnected;
+    	}
+
+    	private void OnDisconnected(object sender, EventArgs args)
 		{
 			var realm = GetRealmByChannel((IContextChannel) sender);
 			String msg;

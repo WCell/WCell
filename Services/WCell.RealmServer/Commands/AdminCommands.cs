@@ -528,13 +528,15 @@ namespace WCell.RealmServer.Commands
 
 		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 		{
-			if (RealmServer.Instance.AuthClient.Channel == null || !RealmServer.Instance.AuthClient.IsConnected)
+			if (!RealmServer.Instance.AuthenticationService.IsConnected)
 			{
 				trigger.Reply("Connection to AuthServer is currently not established.");
 				return;
 			}
 
-			var response = RealmServer.Instance.AuthClient.Channel.ExecuteCommand(trigger.Text.Remainder);
+			BufferedCommandResponse response = null;
+			RealmServer.Instance.AuthenticationService.Call(channel =>
+			                                                	{ response = channel.ExecuteCommand(trigger.Text.Remainder); });
 			if (response != null)
 			{
 				if (response.Replies.Count > 0)
@@ -721,13 +723,13 @@ namespace WCell.RealmServer.Commands
 			else
 			{
 				// toggle
-				run = !RealmServer.Instance.AuthClient.IsRunning;
+				run = !RealmServer.Instance.AuthenticationService.IsRunning;
 			}
 
-			RealmServer.Instance.AuthClient.IsRunning = run;
-
+			//RealmServer.Instance.AuthenticationService.IsRunning = run;
+			trigger.Reply("This command is depreciated, NOT DONE.");
 			//trigger.Reply("Done. - IPC-Client is now {0}.", run ? "Online" : "Offline");
-			trigger.Reply("Done.");
+			//trigger.Reply("Done.");
 			//base.Process(trigger);
 		}
 	}

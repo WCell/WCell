@@ -24,7 +24,7 @@ using System.CodeDom.Compiler;
 namespace WCell.Intercommunication.Client
 {
     [GeneratedCode("System.ServiceModel", "3.0.0.0")]
-    public interface IAuthenticationClientChasnnel : IWCellIntercomService, IClientChannel
+    public interface IAuthenticationClientChannel : IWCellIntercomService, IClientChannel
     {
     }
 }
