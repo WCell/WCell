@@ -195,7 +195,7 @@ namespace WCell.RealmServer.Spells.Auras
 			for (var i = Math.Min(m_handlers.Count - 1, 2); i >= 0; i--)
 			{
 				var handler = m_handlers[i];
-				var index = handler.SpellEffect.EffectIndex;
+				var index = (int)handler.SpellEffect.EffectIndex;
 				if (index >= 0)
 				{
 					m_auraFlags |= (AuraFlags)(1 << index);

@@ -37,13 +37,13 @@ namespace WCell.RealmServer.Spells
 		public uint Cooldown;
 		#endregion
 
-		public uint[] GetSpellFamilyMask(int index)
+		public uint[] GetSpellFamilyMask(EffectIndex index)
 		{
 			switch (index)
 			{
-				case 0: return SpellFamilyMask0;
-				case 1: return SpellFamilyMask1;
-				case 2: return SpellFamilyMask2;
+				case EffectIndex.Zero: return SpellFamilyMask0;
+				case EffectIndex.One: return SpellFamilyMask1;
+				case EffectIndex.Two: return SpellFamilyMask2;
 			}
 			return null;
 		}
@@ -141,7 +141,7 @@ namespace WCell.RealmServer.Spells
 
             var procEffects = from effect in spell.Effects
                               where effect.AuraType == AuraType.ProcTriggerSpell
-                              && effect.EffectIndex != -1   // custom effect 
+                              && effect.EffectIndex != EffectIndex.Custom
                               select effect;
 
             foreach (var procEffect in procEffects)

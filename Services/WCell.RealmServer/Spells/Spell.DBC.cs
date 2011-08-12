@@ -431,7 +431,7 @@ namespace WCell.RealmServer.Spells
 
 			private SpellEffect ReadEffect(Spell spell, byte[] rawData, int effectStartIndex, int effectNum, out int currentIndex)
 			{
-				var effect = new SpellEffect(spell, effectNum);
+				var effect = new SpellEffect(spell, (EffectIndex)effectNum);
 
 				currentIndex = effectStartIndex + effectNum;
 

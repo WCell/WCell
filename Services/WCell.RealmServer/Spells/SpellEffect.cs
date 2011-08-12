@@ -90,7 +90,7 @@ namespace WCell.RealmServer.Spells
 
 		public SpellEffect() { }
 
-		public SpellEffect(Spell spell, int index)
+		public SpellEffect(Spell spell, EffectIndex index)
 		{
 			Spell = spell;
 			EffectIndex = index;
@@ -446,26 +446,25 @@ namespace WCell.RealmServer.Spells
 					value += (SpellPowerValuePct * caster.GetDamageDoneMod(Spell.Schools[0]) + 50) / 100;
 				}
 			}
-			if (EffectIndex <= 2)
+
+			SpellModifierType type;
+			switch (EffectIndex)
 			{
-				SpellModifierType type;
-				switch (EffectIndex)
-				{
-					case 0:
-						type = SpellModifierType.EffectValue1;
-						break;
-					case 1:
-						type = SpellModifierType.EffectValue2;
-						break;
-					case 3:
-						type = SpellModifierType.EffectValue3;
-						break;
-					default:
-						type = SpellModifierType.EffectValue4AndBeyond;
-						break;
-				}
-				value = caster.Auras.GetModifiedInt(type, Spell, value);
+				case EffectIndex.Zero:
+					type = SpellModifierType.EffectValue1;
+					break;
+				case EffectIndex.One:
+					type = SpellModifierType.EffectValue2;
+					break;
+				case EffectIndex.Two:
+					type = SpellModifierType.EffectValue3;
+					break;
+				default:
+					type = SpellModifierType.EffectValue4AndBeyond;
+					break;
 			}
+
+			value = caster.Auras.GetModifiedInt(type, Spell, value);
 			value = caster.Auras.GetModifiedInt(SpellModifierType.AllEffectValues, Spell, value);
 
 			return value;
@@ -504,12 +503,14 @@ namespace WCell.RealmServer.Spells
 
 		public int GetMultipliedValue(Unit caster, int val, int currentTargetNo)
 		{
-			if (EffectIndex >= Spell.DamageMultipliers.Length || EffectIndex < 0 || currentTargetNo == 0)
+            int effectIndex = (int)EffectIndex;
+
+			if (effectIndex >= Spell.DamageMultipliers.Length || effectIndex < 0 || currentTargetNo == 0)
 			{
 				return val;
 			}
 
-			var dmgMod = Spell.DamageMultipliers[EffectIndex];
+			var dmgMod = Spell.DamageMultipliers[effectIndex];
 			if (caster != null)
 			{
 				dmgMod = caster.Auras.GetModifiedFloat(SpellModifierType.ChainValueFactor, Spell, dmgMod);

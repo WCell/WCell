@@ -888,6 +888,14 @@ namespace WCell.Constants.Spells
 		PeriodicLeech = 0x10,
 		PeriodicEnergize = 0x20
 	}
+
+    public enum EffectIndex
+    {
+        Custom = -1,
+        Zero,
+        One,
+        Two,
+    }
 	#endregion
 
 	#region AuraState
