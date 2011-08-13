@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Net;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 using WCell.Util.Logging;
@@ -138,6 +139,11 @@ namespace WCell.AuthServer.IPC
             return AuthenticationServer.GetRealmById(GetCurrentId());
         }
 
+		/// <summary>
+		/// Gets the current end point
+		/// Always returns null under mono!
+		/// </summary>
+		/// <returns></returns>
         public RemoteEndpointMessageProperty GetCurrentEndPoint()
         {
             return (RemoteEndpointMessageProperty)OperationContext.Current.IncomingMessageProperties[RemoteEndpointMessageProperty.Name];
@@ -343,6 +349,8 @@ namespace WCell.AuthServer.IPC
             var id = GetCurrentId();
             var realm = AuthenticationServer.GetRealmById(id);
             var ep = GetCurrentEndPoint();
+        	string epAddress = null;
+			epAddress = ep == null ? channel.RemoteAddress.Uri.Host : ep.Address;
 
             // find out whether this server is just re-registering (came back online)
             var isNew = realm == null;
@@ -352,11 +360,11 @@ namespace WCell.AuthServer.IPC
                 realm = AuthenticationServer.GetRealmByName(realmName);
                 if (realm == null)
 				{
-					if (!AuthServerConfiguration.RealmIPs.Contains(ep.Address))
+					if (!AuthServerConfiguration.RealmIPs.Contains(epAddress))
 					{
 						// Ignore unknown realms
 						log.Warn("Unallowed Realm (\"{0}\") tried to register from: {1} (For more info, see the <RealmIPs> entry in your configuration)", 
-							realmName, ep.Address, AuthServerConfiguration.Instance.FilePath);
+							realmName, epAddress, AuthServerConfiguration.Instance.FilePath);
 						var chan = OperationContext.Current.Channel;
 						if (chan != null)
 						{
@@ -382,7 +390,7 @@ namespace WCell.AuthServer.IPC
             if (string.IsNullOrEmpty(addr))
             {
                 // no host given
-                addr = ep.Address;
+                addr = epAddress;
             }
 
 			realm.ChannelId = id;
@@ -398,8 +406,8 @@ namespace WCell.AuthServer.IPC
         	realm.ClientVersion = clientVersion;
 
         	realm.Channel = channel;
-            realm.ChannelAddress = ep.Address;
-            realm.ChannelPort = ep.Port;
+            realm.ChannelAddress = epAddress;
+            realm.ChannelPort = ep == null ? channel.RemoteAddress.Uri.Port : ep.Port;
 
 
             if (isNew)
