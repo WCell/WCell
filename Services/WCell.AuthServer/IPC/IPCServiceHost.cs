@@ -35,11 +35,11 @@ namespace WCell.AuthServer.IPC
 	{
 		private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-		internal static ServiceHost<IWCellIntercomService, IPCServiceAdapter> _host;
+		private static ServiceHost host;
 
 		public static bool IsOpen
 		{
-			get { return _host != null && _host.State == CommunicationState.Opened; }
+			get { return host != null && host.State == CommunicationState.Opened; }
 		}
 
 		/// <summary>
@@ -54,13 +54,16 @@ namespace WCell.AuthServer.IPC
 				lock (typeof(IPCServiceHost))
 				{
 					var uri = new Uri(AuthServerConfiguration.IPCAddress);
+					host = new ServiceHost(typeof(IPCServiceAdapter), uri);
 
-					//var adapter = new IPCServiceAdapter();
-					//_host = new ServiceHost<IWCellIntercomService, IPCServiceAdapter>(adapter, uri);
-					_host = new ServiceHost<IWCellIntercomService, IPCServiceAdapter>(uri);
-					_host.Open();
-					//adapter.HookIpcChannelEvents();
-					log.Info(resources.IPCServiceStarted, _host.Description.Endpoints[0].ListenUri.AbsoluteUri);
+					var endPoint = host.AddServiceEndpoint(
+						typeof(IWCellIntercomService),
+						new NetTcpBinding(SecurityMode.None),
+						uri);
+
+					host.Open();
+
+					log.Info(resources.IPCServiceStarted, uri.AbsoluteUri);
 				}
 			}
 		}
@@ -72,20 +75,20 @@ namespace WCell.AuthServer.IPC
 		{
 			lock (typeof(IPCServiceHost))
 			{
-				if (_host != null && _host.State != CommunicationState.Closed && _host.State != CommunicationState.Faulted)
+				if (host != null && host.State != CommunicationState.Closed && host.State != CommunicationState.Faulted)
 				{
 					try
 					{
-						_host.Close();
+						host.Close();
 					}
-					catch (Exception e)
+					catch (Exception)
 					{
 						// do nada
 					}
 					log.Info(resources.IPCServiceShutdown);
 				}
 
-				_host = null;
+				host = null;
 			}
 		}
 	}

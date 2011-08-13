@@ -69,19 +69,14 @@ namespace WCell.AuthServer.IPC
         /// </summary>
         public IPCServiceAdapter()
         {
-        	s_authServer = AuthenticationServer.Instance;
-			HookIpcChannelEvents();
-        }
-
-    	internal void HookIpcChannelEvents()
-    	{
+            s_authServer = AuthenticationServer.Instance;
 			var channel = OperationContext.Current.Channel;
 
-    		channel.Closed += OnDisconnected;
-    		channel.Faulted += OnDisconnected;
-    	}
+        	channel.Closed += OnDisconnected;
+            channel.Faulted += OnDisconnected;
+        }
 
-    	private void OnDisconnected(object sender, EventArgs args)
+		private void OnDisconnected(object sender, EventArgs args)
 		{
 			var realm = GetRealmByChannel((IContextChannel) sender);
 			String msg;
@@ -349,8 +344,8 @@ namespace WCell.AuthServer.IPC
             var id = GetCurrentId();
             var realm = AuthenticationServer.GetRealmById(id);
             var ep = GetCurrentEndPoint();
-        	string epAddress = null;
-			epAddress = ep == null ? channel.RemoteAddress.Uri.Host : ep.Address;
+        	string epAddress = epAddress = ep == null ? channel.RemoteAddress.Uri.Host : ep.Address;
+			
 
             // find out whether this server is just re-registering (came back online)
             var isNew = realm == null;

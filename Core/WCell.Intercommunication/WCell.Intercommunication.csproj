@@ -142,19 +142,14 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="Client\AuthenticationClientAdapter.cs" />
-    <Compile Include="Client\DuplexServiceClient.cs" />
     <Compile Include="Client\IAuthenticationClientChannel.cs" />
-    <Compile Include="Client\ServiceClient.cs" />
     <Compile Include="DataTypes\IRoleGroup.cs" />
     <Compile Include="DataTypes\UpdateRealmResponse.cs" />
-    <Compile Include="EmptyCallback.cs" />
-    <Compile Include="IEmptyCallback.cs" />
     <Compile Include="IWCellIntercomService.cs" />
     <Compile Include="DataTypes\AccountInfo.cs" />
     <Compile Include="DataTypes\AuthenticationInfo.cs" />
     <Compile Include="DataTypes\StringBuffer.cs" />
     <Compile Include="DataTypes\RoleGroupInfo.cs" />
-    <Compile Include="ServiceHost.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Utilities\WCell.Util\WCell.Util.csproj">
