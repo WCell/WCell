@@ -51,7 +51,8 @@ namespace WCell.Terrain.Pathfinding
 			}
 
 			// steer through corridor
-			FindPath(destination, corridor, path);
+			//FindPath(destination, corridor, path);
+            FindPathStringPull(start, destination, corridor, path);
 		}
 
 		public void FindPath(Vector3 destination, SearchItem corridor, Path path)
@@ -74,17 +75,46 @@ namespace WCell.Terrain.Pathfinding
 
 					// greedily span a vertical plane over the line between start and destination
 					var start = corridor.Previous.PointOfReference;
-					var plane = new Plane(start, destination, new Vector3(start.X, start.Y, start.Z + 10));
+					//var plane = new Plane(start, destination, new Vector3(start.X, start.Y, start.Z + 10));
+
+                    var startXY = corridor.Previous.PointOfReference.XY;
+				    var endXY = destination.XY;
 
 					// and then intersect the plane with the edge that we want to traverse
-					mesh.GetEdgePoints(corridor.Previous.Triangle, corridor.Edge, out right, out left);
-					if (!Intersection.ClosestPointToPlane(right, left, plane, out newPoint))
-					{
+					mesh.GetInsideOrderedEdgePoints(corridor.Previous.Triangle, corridor.Edge, out right, out left);
+				    var rightXY = right.XY;
+				    var leftXY = left.XY;
+
+					//if (!Intersection.ClosestPointToPlane(right, left, plane, out newPoint))
+					//{
 						// this is geometrically impossible but might happen due to numerical inaccuracy
 						//Debugger.Break();
-						newPoint = right;
-					}
-					path.Add(newPoint);
+					//	newPoint = right;
+					//}
+
+				    Vector2 newPointXY;
+				    if (Intersection.IntersectionOfLineSegments2D(startXY, endXY, rightXY, leftXY, out newPointXY))
+				    {
+				        float newZ;
+				        if (newPointXY.LerpZ(start, destination, out newZ))
+				        {
+				            newPoint = new Vector3(newPointXY, newZ);
+				        }
+				        else
+				        {
+				            // this is geometrically impossible but might happen due to numerical inaccuracy
+				            Debugger.Break();
+				            newPoint = right;
+				        }
+				    }
+				    else
+				    {
+				        // this is geometrically impossible but might happen due to numerical inaccuracy
+				        Debugger.Break();
+				        newPoint = right;
+				    }
+
+                    path.Add(newPoint);
 				}
 			}
 			else
@@ -104,7 +134,7 @@ namespace WCell.Terrain.Pathfinding
 				Vector3 lastRight, lastLeft;
 				int lastLeftIdx = -1, lastRightIdx = -1;
 				var current = corridor;
-				mesh.GetEdgePoints(current.Previous.Triangle, current.Edge, out lastRight, out lastLeft);
+				mesh.GetInsideOrderedEdgePoints(current.Previous.Triangle, current.Edge, out lastRight, out lastLeft);
 				for (var i = corridor.NodeCount - 2; i > 0; i--)
 				{
 					current = current.Previous;
@@ -170,7 +200,212 @@ namespace WCell.Terrain.Pathfinding
 			}
 		}
 
-		public SearchItem FindCorridor(Vector3 start, Vector3 destination)
+        public void FindPathStringPull(Vector3 origin3d, Vector3 destination3d, SearchItem corridor, Path path)
+        {
+            var mesh = NavMesh;
+            var corridorStart = corridor;
+            var pathNodes = new List<Vector3>(corridor.NodeCount);
+            pathNodes.Add(destination3d);
+            //path.Reset(corridor.NodeCount);
+            //path.Add(destination3d);
+
+            Vector3 curTriApex3d, curTriLeft3d, curTriRight3d;
+            Vector3 prevTriApex3d, prevTriLeft3d, prevTriRight3d;
+            Vector2 curTriApex, destination, curTriLeft, curTriRight;
+            int curTriangle, curEdge;
+
+            bool apexInFunnelLeft;
+            bool apexInFunnelRight;
+            while (corridor.Previous.Previous != SearchItem.Null) // The next triangle contains the starting point
+            {
+                curTriangle = corridor.Previous.Triangle;
+                curEdge = corridor.Edge;
+                mesh.GetOutsideOrderedEdgePointsPlusApex(curTriangle, curEdge, out curTriRight3d, out curTriLeft3d,
+                                                         out curTriApex3d);
+
+                destination = destination3d.XY;
+                curTriApex = curTriApex3d.XY;
+                curTriLeft = curTriLeft3d.XY;
+                curTriRight = curTriRight3d.XY;
+
+                var foundNewDestination = false;
+                while (!foundNewDestination) // Found new point for the path
+                {
+                    if (corridor.Previous.Previous == SearchItem.Null) break;
+
+                    apexInFunnelLeft = GeometryHelpers.IsRightOfOrOn(curTriApex, destination, curTriLeft);
+                    apexInFunnelRight = GeometryHelpers.IsLeftOfOrOn(curTriApex, destination, curTriRight);
+
+                    if (apexInFunnelLeft && apexInFunnelRight)
+                    {
+                        // the apex of the next triangle in the corridor is within the funnel. Narrow the funnel.
+                        var prevEdge = corridor.Previous.Edge;
+                        var prevTriangle = corridor.Previous.Previous.Triangle;
+                        mesh.GetOutsideOrderedEdgePointsPlusApex(prevTriangle, prevEdge, out prevTriRight3d,
+                                                                 out prevTriLeft3d, out prevTriApex3d);
+
+                        var prevTriApex = prevTriApex3d.XY;
+                        var prevTriLeft = prevTriLeft3d.XY;
+                        var prevTriRight = prevTriRight3d.XY;
+
+                        if (curTriLeft == prevTriLeft)
+                        {
+                            curTriRight3d = curTriApex3d;
+                            curTriRight = curTriApex;
+                        }
+                        else if (curTriRight == prevTriRight)
+                        {
+                            curTriLeft3d = curTriApex3d;
+                            curTriLeft = curTriApex;
+                        }
+                        else
+                        {
+                            throw new Exception("WTF! You screwed the pooch here pal, find the error.");
+                        }
+
+                        curTriApex3d = prevTriApex3d;
+                        curTriApex = prevTriApex;
+                    }
+                    else if (!apexInFunnelLeft && apexInFunnelRight)
+                    {
+                        destination3d = curTriLeft3d;
+                        pathNodes.Add(destination3d);
+                        //path.Add(destination3d);
+                        foundNewDestination = true;
+                    }
+                    else if (apexInFunnelLeft)
+                    {
+                        destination3d = curTriRight3d;
+                        pathNodes.Add(destination3d);
+                        //path.Add(destination3d);
+                        foundNewDestination = true;
+                    }
+                    else
+                    {
+                        throw new Exception("This should never happen.");
+                    }
+
+                    corridor = corridor.Previous;
+                }
+            }
+
+            // The next triangle in the corridor contains the starting point
+            curTriangle = corridor.Previous.Triangle;
+            curEdge = corridor.Edge;
+            mesh.GetOutsideOrderedEdgePointsPlusApex(curTriangle, curEdge, out curTriRight3d, out curTriLeft3d,
+                                                     out curTriApex3d);
+            destination = destination3d.XY;
+            curTriApex = origin3d.XY;
+            curTriLeft = curTriLeft3d.XY;
+            curTriRight = curTriRight3d.XY;
+            apexInFunnelLeft = GeometryHelpers.IsRightOfOrOn(curTriApex, destination, curTriLeft);
+            apexInFunnelRight = GeometryHelpers.IsLeftOfOrOn(curTriApex, destination, curTriRight);
+
+            if (apexInFunnelLeft && apexInFunnelRight)
+            {
+                // the starting point of the corridor is within the funnel. We're done.
+                pathNodes.Add(origin3d);
+                //path.Add(origin3d);
+            }
+            else if (!apexInFunnelLeft && apexInFunnelRight)
+            {
+                // the starting point of the corridor is outside the funnel on the left
+                //add the left point and then the starting point
+                pathNodes.Add(curTriLeft3d);
+                pathNodes.Add(origin3d);
+                //path.Add(curTriLeft3d);
+                //path.Add(origin3d);
+            }
+            else if (apexInFunnelLeft)
+            {
+                // the starting point of the corridor is outside the funnel on the right
+                //add the right point and then the starting point
+                pathNodes.Add(curTriRight3d);
+                pathNodes.Add(origin3d);
+                //path.Add(curTriRight3d);
+                //path.Add(origin3d);
+            }
+            else
+            {
+                throw new Exception("This should never happen.");
+            }
+
+            StringPull(corridorStart, pathNodes);
+            path.Reset(pathNodes.Count);
+            path.Add(pathNodes);
+        }
+
+        private void StringPull(SearchItem corridor, List<Vector3> points)
+        {
+            if (points.Count < 3) return;
+            for (var curIndex = 0; curIndex < (points.Count - 2); curIndex++)
+            {
+                var curPoint = points[curIndex];
+                for (var nextIndex = (curIndex + 2); nextIndex < points.Count; nextIndex++)
+                {
+                    var nextPoint = points[nextIndex];
+                    
+                    var corridorStart = corridor;
+                    if (!HasLOSXY(curPoint.XY, nextPoint.XY, corridorStart)) continue;
+
+                    var removeAt = curIndex + 1;
+                    while(removeAt < nextIndex)
+                    {
+                        points.RemoveAt(removeAt);
+                        nextIndex--;
+                    }
+                }
+            }
+        }
+
+        private bool HasLOSXY(Vector2 pointA, Vector2 pointB, SearchItem corridor)
+        {
+            // Find the triangle containing pointA
+            while(corridor != SearchItem.Null)
+            {
+                if (NavMesh.TriangleContainsPointXY(corridor.Triangle, pointA))
+                {
+                    break;
+                }
+                corridor = corridor.Previous;
+            }
+            
+            // If no triangle contains pointA, then fail
+            if (corridor == SearchItem.Null)
+            {
+                Console.WriteLine("No triangle contained pointA.");
+                return false;
+            }
+
+            Console.WriteLine("Made it past.");
+            // Are the points within the same triangle? Notice that triangles are guaranteed convex...
+            if (NavMesh.TriangleContainsPointXY(corridor.Triangle, pointB)) return true;
+
+            while (corridor.Previous != SearchItem.Null)
+            {
+                // We want to check that the line segment [pointA, pointB] intersects the edge we crossed
+                var curTriangle = corridor.Previous.Triangle;
+                var edge = corridor.Edge;
+
+                Vector3 right3d, left3d;
+                NavMesh.GetOutsideOrderedEdgePoints(curTriangle, edge, out right3d, out left3d);
+
+                var right = right3d.XY;
+                var left = left3d.XY;
+                if (!Intersection.LineSegmentsIntersect2D(pointA, pointB, right, left)) return false;
+
+                // Ok, the move into this triangle was legal, if PointB is in the tri, then we're done
+                if (NavMesh.TriangleContainsPointXY(curTriangle, pointB)) return true;
+
+                // Move to the next edge check ...
+                corridor = corridor.Previous;
+            }
+            
+            // Default
+            return false;
+        }
+
+	    public SearchItem FindCorridor(Vector3 start, Vector3 destination)
 		{
 			System.Collections.Generic.HashSet<int> visited;
 			return FindCorridor(start, destination, out visited);
@@ -215,7 +450,7 @@ namespace WCell.Terrain.Pathfinding
 				current = fringe.DeleteMin();
 
 				// get the vertices and neighbors of the current triangle
-				var triangle = mesh.GetTriangle(current.Triangle);
+				//var triangle = mesh.GetTriangle(current.Triangle);
 				var neighbors = mesh.GetNeighborsOf(current.Triangle);
 
 				//var poly = ((NavMesh)Mesh).Polygons[current.Triangle / 3];
@@ -236,25 +471,26 @@ namespace WCell.Terrain.Pathfinding
 					// determine the edge that we want to traverse
 
 					Vector3 left, right;
-					switch (edge)
-					{
-						case TerrainUtil.ABEdgeIndex:
-							left = triangle.Point1;
-							right = triangle.Point2;
-							break;
-						case TerrainUtil.ACEdgeIndex:
-							left = triangle.Point3;
-							right = triangle.Point1;
-							break;
-						case TerrainUtil.BCEdgeIndex:
-							left = triangle.Point2;
-							right = triangle.Point3;
-							break;
-						default:
-							throw new Exception("Impossible");
-					}
+                    mesh.GetInsideOrderedEdgePoints(current.Triangle, edge, out right, out left);
+                    //switch (edge)
+                    //{
+                    //    case TerrainUtil.ABEdgeIndex:
+                    //        left = triangle.Point1;
+                    //        right = triangle.Point2;
+                    //        break;
+                    //    case TerrainUtil.CAEdgeIndex:
+                    //        left = triangle.Point3;
+                    //        right = triangle.Point1;
+                    //        break;
+                    //    case TerrainUtil.BCEdgeIndex:
+                    //        left = triangle.Point2;
+                    //        right = triangle.Point3;
+                    //        break;
+                    //    default:
+                    //        throw new Exception("Impossible");
+                    //}
 
-					var refPoint = (left + right) / 2;		// the middle of the edge to be traversed
+					var refPoint = (left + right) / 2.0f;		// the middle of the edge to be traversed
 					var dist = Vector3.Distance(refPoint, destination);
 					var newItem = new SearchItem(neighbor, edge, dist, ref refPoint, current);
 
@@ -264,10 +500,8 @@ namespace WCell.Terrain.Pathfinding
 						corridor = newItem;
 						goto Done;
 					}
-					else
-					{
-						fringe.Add(newItem);
-					}
+
+				    fringe.Add(newItem);
 				}
 			} while (!fringe.IsEmpty);
 

@@ -312,25 +312,30 @@ namespace WCell.Terrain.GUI
 		/// <param name="gameTime">Provides a snapshot of timing values.</param>
 		protected override void Update(GameTime gameTime)
 		{
+            if (!IsActive) return;
+
 			UpdateState();
 
 			// use mouse navigation
+		    var bounds = Window.ClientBounds;
+            var w = bounds.Width;
+			var h = bounds.Height;
 
-			var w = Form.Width;
-			var h = Form.Height;
-
-			if (w != 0 && h != 0 && Form.ActiveForm == Form && !IsMenuVisible)
+			if (w != 0 && h != 0 && !IsMenuVisible)
 			{
 				var x = Mouse.GetState().X;
 				var y = Mouse.GetState().Y;
+                
+                if (x > 0 && x < w && y > 0 && y < h)
+                {
+                    var cx = w/2;
+                    var cy = h/2;
 
-				var cx = w / 2;
-				var cy = h / 2;
+                    avatarPitch += (y - cy)*(MouseSensitivity/1000);
+                    avatarYaw += (cx - x)*(MouseSensitivity/1000);
 
-				avatarPitch += (y - cy) * (MouseSensitivity / 1000);
-				avatarYaw += (cx - x) * (MouseSensitivity / 1000);
-
-				RecenterMouse();
+                    RecenterMouse();
+                }
 			}
 
 			UpdateTexts();
@@ -349,10 +354,15 @@ namespace WCell.Terrain.GUI
 
 		private void RecenterMouse()
 		{
-			var w = Form.Width;
-			var h = Form.Height;
-			var cx = w / 2;
-			var cy = h / 2;
+            var bounds = Window.ClientBounds;
+            var x = Mouse.GetState().X;
+		    if (x < 0 || x > bounds.Width) return;
+
+            var y = Mouse.GetState().Y;
+            if (y < 0 || y > bounds.Height) return;
+            
+            var cx = bounds.Width / 2;
+			var cy = bounds.Height / 2;
 			Mouse.SetPosition(cx, cy); // move back to center
 		}
 
@@ -362,7 +372,7 @@ namespace WCell.Terrain.GUI
 		/// <param name="gameTime">Provides a snapshot of timing values.</param>
 		protected override void Draw(GameTime gameTime)
 		{
-			_graphics.GraphicsDevice.Clear(Color.DeepSkyBlue);
+			_graphics.GraphicsDevice.Clear(Color.DimGray);
 
 			GraphicsDevice.DepthStencilState = defaultStencilState;
 			UpdateProjection();
@@ -555,9 +565,28 @@ namespace WCell.Terrain.GUI
 				ClearSelection();
 			}
 
-            if (keyboardState.IsKeyDown(Keys.LeftAlt) || keyboardState.IsKeyDown(Keys.RightAlt))
+            if (keyboardState.IsKeyDown(Keys.LeftControl) || keyboardState.IsKeyDown(Keys.RightControl))
             {
-                environmentRenderer.Enabled = false;
+                if (keyboardState.IsKeyDown(Keys.LeftAlt) || keyboardState.IsKeyDown(Keys.RightAlt))
+                {
+                    environmentRenderer.Enabled = true;
+                }
+                else if (keyboardState.IsKeyDown(Keys.LeftShift) || keyboardState.IsKeyDown(Keys.RightShift))
+                {
+                    environmentRenderer.Enabled = true;
+                }
+                else if (keyboardState.IsKeyDown(Keys.LeftWindows) || keyboardState.IsKeyDown(Keys.RightWindows))
+                {
+                    environmentRenderer.Enabled = true;
+                }
+                else if (keyboardState.IsKeyDown(Keys.PrintScreen))
+                {
+                    environmentRenderer.Enabled = true;
+                }
+                else
+                {
+                    environmentRenderer.Enabled = false;
+                }
             }
             else
             {
@@ -628,7 +657,7 @@ namespace WCell.Terrain.GUI
 		#endregion
 
 		#region Mouse selection
-		private readonly List<WCell.Util.Graphics.Vector3> selectedPoints = new List<WCell.Util.Graphics.Vector3>();
+		private readonly List<WVector3> selectedPoints = new List<WVector3>();
 
 		private void SelectOnPath()
 		{
@@ -656,10 +685,10 @@ namespace WCell.Terrain.GUI
 				if (corridor.IsNull) return;
 
 				// highlight fringe
-				foreach (var tri in visited)
+				/*foreach (var tri in visited)
 				{
-					SelectTriangle(tri, true, new Color(120, 10, 10));
-				}
+					SelectTriangle(tri, true, new Color(120, 10, 10, 128));
+				}*/
 
 				// highlight corridor
 				var current = corridor;
@@ -671,17 +700,19 @@ namespace WCell.Terrain.GUI
 				}
 
 				// draw line to along the path
-				Tile.Pathfinder.FindPath(dest, corridor, path);
-				var last = start;
+				Tile.Pathfinder.FindPathStringPull(start, dest, corridor, path);
+			    var p = start;
+                LineSelectionRenderer.SelectPoint(start, Color.Black);
 				while (path.HasNext())
 				{
-					var p = path.Next();
-					LineSelectionRenderer.SelectLine(last, p, Color.Green);
-					last = p;
+					var q = path.Next();
+				    LineSelectionRenderer.SelectLine(p, q, Color.Green);
+                    LineSelectionRenderer.SelectPoint(q, Color.Black);
+				    p = q;
 				}
 
 				// highlight corners
-				current = corridor;
+				/*current = corridor;
 				while (!current.IsNull)
 				{
 					//var tri = Tile.NavMesh.FindFirstTriangleUnderneath(curren);
@@ -689,13 +720,14 @@ namespace WCell.Terrain.GUI
 
 					if (current.Edge != -1 && current.Previous != null)
 					{
-						WVector3 left, right;
-						Tile.NavMesh.GetEdgePoints(current.Previous.Triangle, current.Edge, out left, out right);
-						LineSelectionRenderer.SelectPoint(left, Color.Purple);
-						LineSelectionRenderer.SelectPoint(right, Color.Blue);
+						WVector3 left, right, apex;
+						Tile.NavMesh.GetOutsideOrderedEdgePointsPlusApex(current.Previous.Triangle, current.Edge, out left, out right, out apex);
+						LineSelectionRenderer.SelectPoint(left, Color.LimeGreen);
+						LineSelectionRenderer.SelectPoint(right, Color.Red);
+                        LineSelectionRenderer.SelectPoint(apex, Color.Azure);
 					}
 					current = current.Previous;
-				}
+				}*/
 			}
 		}
 

@@ -344,6 +344,60 @@ namespace WCell.Terrain.Legacy
 			return true;
 		}
 
+        /// <summary>
+        /// Finds the point of intersection between line segments [a, b] and [c, d] in two dimensions.
+        /// </summary>
+        /// <param name="a">The starting point of line segment [a, b]</param>
+        /// <param name="b">The ending point of line segment [a, b]</param>
+        /// <param name="c">The starting point of line segment [c, d]</param>
+        /// <param name="d">The ending point of line segment [c, d]</param>
+        /// <param name="result">Out Vector2 containing the point of intersection or float.MinValue if no point found.</param>
+        /// <returns>True if a point of intersection was found else false;</returns>
+        public static bool IntersectionOfLineSegments2D(Vector2 a, Vector2 b, Vector2 c, Vector2 d, out Vector2 result)
+        {
+            result = new Vector2(float.MinValue, float.MinValue);
+            var denom = ((d.Y - c.Y)*(b.X - a.X)) - ((d.X - c.X)*(b.Y - a.Y));
+            // Line segments parallel if denom is zero.
+            if (denom.IsWithinEpsilon(0.0f)) return false;
+
+            var ua = (((d.X - c.X)*(a.Y - c.Y)) - ((d.Y - c.Y)*(a.X - c.X)))/denom;
+            // Intersection lies outside the bounds of line segment [a, b]
+            if (ua < 0.0f || ua > 1.0f) return false;
+
+            var ub = (((b.X - a.X)*(a.Y - c.Y)) - ((b.Y - a.Y)*(a.X - c.X)))/denom;
+            // Intersection lies outside the bounds of line segment [c, d]
+            if (ub < 0.0f || ub > 1.0f) return false;
+
+            // calc intersection point
+            result.X = a.X + ua*(b.X - a.X);
+            result.Y = a.Y + ub*(b.Y - a.Y);
+            
+            return true;
+        }
+
+        public static bool LineSegmentsIntersect2D(Vector2 a, Vector2 b, Vector2 c, Vector2 d)
+        {
+            var denom = ((d.Y - c.Y) * (b.X - a.X)) - ((d.X - c.X) * (b.Y - a.Y));
+            
+            // Line segments parallel if denom is zero.
+            if (denom.IsWithinEpsilon(0.0f))
+            {
+                // Line segments co-linear if both denom and numer are zero.
+                var numer = (((d.X - c.X)*(a.Y - c.Y)) - ((d.Y - c.Y)*(a.X - c.X)));
+                return (numer.IsWithinEpsilon(0.0f));
+            }
+
+            var ua = (((d.X - c.X) * (a.Y - c.Y)) - ((d.Y - c.Y) * (a.X - c.X))) / denom;
+            // Intersection lies outside the bounds of line segment [a, b]
+            if (ua < 0.0f || ua > 1.0f) return false;
+
+            var ub = (((b.X - a.X) * (a.Y - c.Y)) - ((b.Y - a.Y) * (a.X - c.X))) / denom;
+            // Intersection lies outside the bounds of line segment [c, d]
+            if (ub < 0.0f || ub > 1.0f) return false;
+
+            return true;
+        }
+
 		public static bool IntersectMovingSpherePlane(BoundingSphere s, Vector3 v, Plane p, ref float t, ref Vector3 q)
 		{
 			var num = Vector3.Dot(p.Normal, s.Center) - p.D;
