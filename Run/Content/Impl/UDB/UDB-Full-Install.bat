@@ -82,7 +82,6 @@ ECHO.
 ECHO [Importing] Started...
 ECHO [Importing] Main UDB database ...
 mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Full_DB\%udb-main%.sql
-mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < .\Data\vehicle_patch.sql
 ECHO [Importing] Finished
 ECHO.
 PAUSE    
@@ -134,6 +133,8 @@ ECHO [Importing] UDB database changeset 401...
 mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.12.1_additions\401_corepatch_mangos_11305_to_11376.sql
 ECHO [Importing] UDB updatepack 401...
 mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.12.1_additions\401_updatepack_mangos.sql
+ECHO [Importing] WCell Vehicle patch...
+mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < .\Data\vehicle_patch.sql
 ECHO [Importing] Finished
 ECHO.
 PAUSE    
