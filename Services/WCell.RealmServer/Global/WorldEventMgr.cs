@@ -15,6 +15,7 @@ using WCell.RealmServer.Quests;
 using WCell.RealmServer.Spells;
 using WCell.Util;
 using WCell.Util.Threading.TaskParallel;
+using WCell.Util.Variables;
 
 namespace WCell.RealmServer.Global
 {	
@@ -33,6 +34,7 @@ namespace WCell.RealmServer.Global
 
 	    private static DateTime LastUpdateTime;
 
+		[NotVariable]
         public static List<WorldEventQuest> WorldEventQuests = new List<WorldEventQuest>();
         #endregion
 
