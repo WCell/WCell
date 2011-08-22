@@ -137,6 +137,19 @@ namespace WCell.Util.Graphics
 			return new Vector2(Y, -X);
 		}
 
+        public bool LerpZ(Vector3 start, Vector3 end, out float newZ)
+        {
+            newZ = float.MinValue;
+            var denom = (end.X - start.X);
+            // start and end are the same point, linear interpolation is impossible
+            if (denom.IsWithinEpsilon(0f)) return false;
+
+            var ua = ((X - start.X) / (end.X - start.X));
+            newZ = start.Z + ua * (end.Z - start.Z);
+
+            return true;
+        }
+
 	    /// <summary>
 		/// Checks equality of two vectors.
 		/// </summary>

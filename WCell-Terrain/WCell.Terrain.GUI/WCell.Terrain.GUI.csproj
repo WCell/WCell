@@ -140,6 +140,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Content\effects.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Content\mfont.spritefont">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

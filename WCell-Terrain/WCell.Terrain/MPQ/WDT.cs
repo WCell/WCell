@@ -71,12 +71,12 @@ namespace WCell.Terrain.MPQ
 
 		public M2 GetOrReadM2(MapDoodadDefinition definition)
 		{
-			M2 wmo;
-			if (!M2s.TryGetValue(definition.FilePath, out wmo))
+			M2 m2;
+			if (!M2s.TryGetValue(definition.FilePath, out m2))
 			{
-				M2s.Add(definition.FilePath, wmo = M2Reader.ReadM2(WCellTerrainSettings.GetDefaultMPQFinder(), definition));
+				M2s.Add(definition.FilePath, m2 = M2Reader.ReadM2(WCellTerrainSettings.GetDefaultMPQFinder(), definition));
 			}
-			return wmo;
+			return m2;
 		}
 
 		/// <summary>

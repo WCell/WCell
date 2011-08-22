@@ -19,7 +19,7 @@ namespace WCell.Terrain
 	public class TerrainTile : IShape
 	{
 		public int[] TerrainIndices;
-		public Vector3[] TerrainVertices;
+	    public Vector3[] TerrainVertices;
 
 		public TerrainLiquidChunk[,] LiquidChunks;
 
@@ -202,7 +202,7 @@ namespace WCell.Terrain
 								break;
 							case TerrainUtil.ACEdgeMask:
 								// second shares a and c
-								neighbors[TerrainUtil.ACEdgeIndex] = i;
+								neighbors[TerrainUtil.CAEdgeIndex] = i;
 								break;
 							case TerrainUtil.BCEdgeMask:
 								// neighbor shares b and c

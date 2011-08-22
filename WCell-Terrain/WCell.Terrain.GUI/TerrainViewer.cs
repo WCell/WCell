@@ -60,12 +60,14 @@ namespace WCell.Terrain.GUI
 		// XNA uses this variable for graphics information
 		private readonly GraphicsDeviceManager _graphics;
 		// We use this to declare our verticies
-		private VertexDeclaration _vertexDeclaration;
+		//private VertexDeclaration _vertexDeclaration;
+
 		// Another set of XNA Variables
 		private Matrix _view;
 		private Matrix _proj;
 
-		BasicEffect effect;
+		Effect effect;
+	    private EnvironmentRenderer environmentRenderer;
 
 		//private readonly ADTManager _manager;
 		/// <summary>
@@ -81,8 +83,7 @@ namespace WCell.Terrain.GUI
 
 		//SpriteBatch spriteBatch;
 		//SpriteFont font;
-
-		public RasterizerState solidRasterizerState, frameRasterizerState;
+	    public RasterizerState solidRasterizerState, frameRasterizerState;
 
 		public readonly DepthStencilState defaultStencilState = new DepthStencilState()
 		{
@@ -111,7 +112,7 @@ namespace WCell.Terrain.GUI
 
 			avatarYaw = 90;
 
-			Form = (Form)Form.FromHandle(Window.Handle);
+			Form = (Form)Control.FromHandle(Window.Handle);
 			Tile = tile;
 		}
 
@@ -122,10 +123,11 @@ namespace WCell.Terrain.GUI
 			set
 			{
 				globalIlluminationLevel = value;
+			    effect.Parameters["xAmbient"].SetValue((0.8f)*value);
 
-				effect.DiffuseColor = new XVector3(.95f, .95f, .95f) * value;
-				effect.SpecularColor = new XVector3(0.05f, 0.05f, 0.05f) * value;
-				effect.AmbientLightColor = new XVector3(0.35f, 0.35f, 0.35f) * value;
+			    //effect.DiffuseColor = new XVector3(.95f, .95f, .95f) * value;
+			    //effect.SpecularColor = new XVector3(0.05f, 0.05f, 0.05f) * value;
+			    //effect.AmbientLightColor = new XVector3(0.35f, 0.35f, 0.35f) * value;
 			}
 		}
 
@@ -184,13 +186,14 @@ namespace WCell.Terrain.GUI
 		/// </summary>
 		protected override void LoadContent()
 		{
-			Keyboard.GetState();
-			//font = Content.Load<SpriteFont>("mfont");
-			//_spriteFont = thaFont;
-			//Console = new MpqConsole(this, thaFont);            
-			//Console.MyEvent += DoCommand;
+		    //effect = Content.Load<Effect>("effects");
+		    //Keyboard.GetState();
+		    //font = Content.Load<SpriteFont>("mfont");
+		    //_spriteFont = thaFont;
+		    //Console = new MpqConsole(this, thaFont);            
+		    //Console.MyEvent += DoCommand;
 
-			//spriteBatch = new SpriteBatch(GraphicsDevice);
+		    //spriteBatch = new SpriteBatch(GraphicsDevice);
 		}
 
 		/// <summary>
@@ -201,9 +204,9 @@ namespace WCell.Terrain.GUI
 		/// </summary>
 		protected override void Initialize()
 		{
-			// reset mouse, so we don't suddenly pan off to the sides
+            // reset mouse, so we don't suddenly pan off to the sides
 			Form.Activated += (sender, args) => RecenterMouse();
-
+            
 			IsMouseVisible = true;
 			_graphics.PreferredBackBufferWidth = 1024;
 			_graphics.PreferredBackBufferHeight = 768;
@@ -211,7 +214,7 @@ namespace WCell.Terrain.GUI
 
 			var device = _graphics.GraphicsDevice;
 			device.RasterizerState = solidRasterizerState =
-				new RasterizerState()
+				new RasterizerState
 				{
 					CullMode = CullMode.None,
 					FillMode = FillMode.Solid
@@ -234,11 +237,14 @@ namespace WCell.Terrain.GUI
 			//_graphics.GraphicsDevice.RenderState.SourceBlend = Blend.One;
 			//_graphics.GraphicsDevice.RenderState.DestinationBlend = Blend.InverseSourceAlpha; 
 
+		    effect = Content.Load<Effect>("effects");
 			InitializeEffect();
 
 
 			Components.Add(new AxisRenderer(this));
-			Components.Add(new EnvironmentRenderer(this));
+
+            environmentRenderer = new EnvironmentRenderer(this);
+			Components.Add(environmentRenderer);
 
 			if (Tile.NavMesh != null)
 			{
@@ -252,12 +258,21 @@ namespace WCell.Terrain.GUI
 
 			InitGUI();
 
-			base.Initialize();
+            base.Initialize();
 		}
 
 		private void InitializeEffect()
 		{
-			effect = new BasicEffect(_graphics.GraphicsDevice)
+		    effect.CurrentTechnique = effect.Techniques["Colored"];
+
+		    var lightDirection = new XVector3(-1.0f, 1.0f, 1.0f);
+            lightDirection.Normalize();
+            effect.Parameters["xLightDirection"].SetValue(lightDirection);
+            //effect.Parameters["xAmbient"].SetValue(0.1f);
+            effect.Parameters["xEnableLighting"].SetValue(true);
+            effect.Parameters["xWorld"].SetValue(Matrix.Identity);
+
+            /*effect = new BasicEffect(_graphics.GraphicsDevice)
 			{
 				VertexColorEnabled = true,
 				LightingEnabled = true,
@@ -274,11 +289,10 @@ namespace WCell.Terrain.GUI
 			effect.DirectionalLight1.Enabled = true;
 			effect.DirectionalLight1.DiffuseColor = new XVector3(0.1f, 0.1f, 0.1f);
 			effect.DirectionalLight1.Direction = XVector3.Normalize(new XVector3(-1.0f, -1.0f, 1.0f));
+            */
 
 			GlobalIlluminationLevel = 1.5f;
-
-
-			_vertexDeclaration = new VertexDeclaration(VertexPositionNormalColored.VertexElements);
+            //_vertexDeclaration = new VertexDeclaration(VertexPositionNormalColored.VertexElements);
 		}
 		#endregion
 
@@ -298,25 +312,30 @@ namespace WCell.Terrain.GUI
 		/// <param name="gameTime">Provides a snapshot of timing values.</param>
 		protected override void Update(GameTime gameTime)
 		{
+            if (!IsActive) return;
+
 			UpdateState();
 
 			// use mouse navigation
+		    var bounds = Window.ClientBounds;
+            var w = bounds.Width;
+			var h = bounds.Height;
 
-			var w = Form.Width;
-			var h = Form.Height;
-
-			if (w != 0 && h != 0 && Form.ActiveForm == Form && !IsMenuVisible)
+			if (w != 0 && h != 0 && !IsMenuVisible)
 			{
 				var x = Mouse.GetState().X;
 				var y = Mouse.GetState().Y;
+                
+                if (x > 0 && x < w && y > 0 && y < h)
+                {
+                    var cx = w/2;
+                    var cy = h/2;
 
-				var cx = w / 2;
-				var cy = h / 2;
+                    avatarPitch += (y - cy)*(MouseSensitivity/1000);
+                    avatarYaw += (cx - x)*(MouseSensitivity/1000);
 
-				avatarPitch += (y - cy) * (MouseSensitivity / 1000);
-				avatarYaw += (cx - x) * (MouseSensitivity / 1000);
-
-				RecenterMouse();
+                    RecenterMouse();
+                }
 			}
 
 			UpdateTexts();
@@ -335,10 +354,15 @@ namespace WCell.Terrain.GUI
 
 		private void RecenterMouse()
 		{
-			var w = Form.Width;
-			var h = Form.Height;
-			var cx = w / 2;
-			var cy = h / 2;
+            var bounds = Window.ClientBounds;
+            var x = Mouse.GetState().X;
+		    if (x < 0 || x > bounds.Width) return;
+
+            var y = Mouse.GetState().Y;
+            if (y < 0 || y > bounds.Height) return;
+            
+            var cx = bounds.Width / 2;
+			var cy = bounds.Height / 2;
 			Mouse.SetPosition(cx, cy); // move back to center
 		}
 
@@ -348,14 +372,15 @@ namespace WCell.Terrain.GUI
 		/// <param name="gameTime">Provides a snapshot of timing values.</param>
 		protected override void Draw(GameTime gameTime)
 		{
-			_graphics.GraphicsDevice.Clear(Color.DeepSkyBlue);
+			_graphics.GraphicsDevice.Clear(Color.DimGray);
 
 			GraphicsDevice.DepthStencilState = defaultStencilState;
 			UpdateProjection();
 
-
-			effect.Projection = _proj;
-			effect.View = _view;
+            effect.Parameters["xProjection"].SetValue(_proj);
+			//effect.Projection = _proj;
+			effect.Parameters["xView"].SetValue(_view);
+            //effect.View = _view;
 
 			foreach (var pass in effect.CurrentTechnique.Passes)
 			{
@@ -406,7 +431,7 @@ namespace WCell.Terrain.GUI
 
 			if (keyboardState.IsKeyDown(Keys.P))
 			{
-				System.Console.WriteLine("Open!");
+				Console.WriteLine("Open!");
 			}
 
 			// movement
@@ -540,6 +565,33 @@ namespace WCell.Terrain.GUI
 				ClearSelection();
 			}
 
+            if (keyboardState.IsKeyDown(Keys.LeftControl) || keyboardState.IsKeyDown(Keys.RightControl))
+            {
+                if (keyboardState.IsKeyDown(Keys.LeftAlt) || keyboardState.IsKeyDown(Keys.RightAlt))
+                {
+                    environmentRenderer.Enabled = true;
+                }
+                else if (keyboardState.IsKeyDown(Keys.LeftShift) || keyboardState.IsKeyDown(Keys.RightShift))
+                {
+                    environmentRenderer.Enabled = true;
+                }
+                else if (keyboardState.IsKeyDown(Keys.LeftWindows) || keyboardState.IsKeyDown(Keys.RightWindows))
+                {
+                    environmentRenderer.Enabled = true;
+                }
+                else if (keyboardState.IsKeyDown(Keys.PrintScreen))
+                {
+                    environmentRenderer.Enabled = true;
+                }
+                else
+                {
+                    environmentRenderer.Enabled = false;
+                }
+            }
+            else
+            {
+                environmentRenderer.Enabled = true;
+            }
 
 			// mouse
 			if (mouseState.LeftButton == ButtonState.Pressed && !mouseLeftButtonDown)
@@ -605,7 +657,7 @@ namespace WCell.Terrain.GUI
 		#endregion
 
 		#region Mouse selection
-		private readonly List<WCell.Util.Graphics.Vector3> selectedPoints = new List<WCell.Util.Graphics.Vector3>();
+		private readonly List<WVector3> selectedPoints = new List<WVector3>();
 
 		private void SelectOnPath()
 		{
@@ -633,10 +685,10 @@ namespace WCell.Terrain.GUI
 				if (corridor.IsNull) return;
 
 				// highlight fringe
-				foreach (var tri in visited)
+				/*foreach (var tri in visited)
 				{
-					SelectTriangle(tri, true, new Color(120, 10, 10));
-				}
+					SelectTriangle(tri, true, new Color(120, 10, 10, 128));
+				}*/
 
 				// highlight corridor
 				var current = corridor;
@@ -648,17 +700,19 @@ namespace WCell.Terrain.GUI
 				}
 
 				// draw line to along the path
-				Tile.Pathfinder.FindPath(dest, corridor, path);
-				var last = start;
+				Tile.Pathfinder.FindPathStringPull(start, dest, corridor, path);
+			    var p = start;
+                LineSelectionRenderer.SelectPoint(start, Color.Black);
 				while (path.HasNext())
 				{
-					var p = path.Next();
-					LineSelectionRenderer.SelectLine(last, p, Color.Green);
-					last = p;
+					var q = path.Next();
+				    LineSelectionRenderer.SelectLine(p, q, Color.Green);
+                    LineSelectionRenderer.SelectPoint(q, Color.Black);
+				    p = q;
 				}
 
 				// highlight corners
-				current = corridor;
+				/*current = corridor;
 				while (!current.IsNull)
 				{
 					//var tri = Tile.NavMesh.FindFirstTriangleUnderneath(curren);
@@ -666,13 +720,14 @@ namespace WCell.Terrain.GUI
 
 					if (current.Edge != -1 && current.Previous != null)
 					{
-						WVector3 left, right;
-						Tile.NavMesh.GetEdgePoints(current.Previous.Triangle, current.Edge, out left, out right);
-						LineSelectionRenderer.SelectPoint(left, Color.Purple);
-						LineSelectionRenderer.SelectPoint(right, Color.Blue);
+						WVector3 left, right, apex;
+						Tile.NavMesh.GetOutsideOrderedEdgePointsPlusApex(current.Previous.Triangle, current.Edge, out left, out right, out apex);
+						LineSelectionRenderer.SelectPoint(left, Color.LimeGreen);
+						LineSelectionRenderer.SelectPoint(right, Color.Red);
+                        LineSelectionRenderer.SelectPoint(apex, Color.Azure);
 					}
 					current = current.Previous;
-				}
+				}*/
 			}
 		}
 
@@ -772,10 +827,12 @@ namespace WCell.Terrain.GUI
 			}
 		}
 
-		#region GUI
+        #region GUI
 		private MainMenu menu;
 		private MenuItem renderingModeButton;
+	    private MenuItem toggleWaterButton;
 		private bool solidRenderingMode = true;
+	    private bool liquidRenderingEnabled = true;
 		private TreeView treeView;
 		private TextBox waitingBox;
 		readonly BackgroundWorker worker = new BackgroundWorker();
@@ -843,9 +900,10 @@ namespace WCell.Terrain.GUI
 			menu.MenuItems.Add(renderingModeButton);
 			ClickedRenderingModeButton(null, null);
 
-			var toggleWaterButton = new MenuItem("Toggle Water");
-			toggleWaterButton.Click += (a, b) => LiquidRenderer.Enabled = !LiquidRenderer.Enabled;
+			toggleWaterButton = new MenuItem("Toggle Water");
+			toggleWaterButton.Click += ClickedToggleWaterButton;
 			menu.MenuItems.Add(toggleWaterButton);
+            ClickedToggleWaterButton(null, null);
 
 			//var exportRecastMeshButton = new MenuItem("Export Tile mesh");
 			//exportRecastMeshButton.Click += ExportRecastMesh;
@@ -947,6 +1005,21 @@ namespace WCell.Terrain.GUI
 			}
 		}
 
+        private void ClickedToggleWaterButton(object sender, EventArgs e)
+        {
+            liquidRenderingEnabled = !liquidRenderingEnabled;
+            
+            LiquidRenderer.Enabled = liquidRenderingEnabled;
+            
+            if (liquidRenderingEnabled)
+            {
+                toggleWaterButton.Text = "Water Off";
+            }
+            else
+            {
+                toggleWaterButton.Text = "Water On";
+            }
+        }
 
 		private Control GetOrCreateWaitingBox(string text)
 		{

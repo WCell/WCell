@@ -112,6 +112,7 @@
     <Compile Include="Legacy\AABB.cs" />
     <Compile Include="Legacy\BSPTree\BSPTree.cs" />
     <Compile Include="Legacy\CollisionUtil.cs" />
+    <Compile Include="Legacy\GeometryHelpers.cs" />
     <Compile Include="Legacy\ICollidable.cs" />
     <Compile Include="Legacy\Intersection.cs" />
     <Compile Include="IShape.cs" />
