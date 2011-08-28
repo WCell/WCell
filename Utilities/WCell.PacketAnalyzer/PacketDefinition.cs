@@ -1,11 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using WCell.Core.Network;
-using Cell.Core;
-using WCell.PacketAnalysis.Xml;
 using WCell.Constants;
+using WCell.Core.Network;
+using WCell.PacketAnalysis.Xml;
 using WCell.Util;
 
 namespace WCell.PacketAnalysis

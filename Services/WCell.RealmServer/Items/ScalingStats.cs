@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace WCell.RealmServer.Items
+﻿namespace WCell.RealmServer.Items
 {
     public class ScalingStatDistributionEntry
     {

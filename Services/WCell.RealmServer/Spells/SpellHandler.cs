@@ -16,12 +16,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using WCell.RealmServer.Lang;
-using WCell.RealmServer.NPCs;
-using WCell.RealmServer.NPCs.Pets;
-using WCell.Util.Collections;
-using NLog;
+using WCell.Constants;
 using WCell.Constants.Spells;
 using WCell.Core;
 using WCell.Core.DBC;
@@ -30,14 +25,16 @@ using WCell.RealmServer.Content;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Items;
+using WCell.RealmServer.Lang;
+using WCell.RealmServer.NPCs.Pets;
 using WCell.RealmServer.Skills;
-using WCell.RealmServer.Spells.Effects;
-using WCell.Util;
-using WCell.Util.Variables;
 using WCell.RealmServer.Spells.Auras;
-using WCell.Constants;
+using WCell.RealmServer.Spells.Effects;
 using WCell.RealmServer.Spells.Effects.Auras;
 using WCell.RealmServer.Talents;
+using WCell.Util;
+using WCell.Util.Collections;
+using WCell.Util.Variables;
 
 namespace WCell.RealmServer.Spells
 {

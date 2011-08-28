@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using NLog;
 using WCell.Constants;
 using WCell.Core;
 using WCell.Core.DBC;

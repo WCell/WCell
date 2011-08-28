@@ -11,8 +11,8 @@ using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Handlers;
-using WCell.Util.Variables;
 using WCell.RealmServer.Network;
+using WCell.Util.Variables;
 
 namespace WCell.RealmServer.Mail
 {

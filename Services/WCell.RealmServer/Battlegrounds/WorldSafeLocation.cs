@@ -1,11 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Cell.Core;
-using WCell.Core.DBC;
 using WCell.Constants.World;
-using WCell.RealmServer.Entities;
+using WCell.Core.DBC;
 
 namespace WCell.RealmServer.Battlegrounds
 {

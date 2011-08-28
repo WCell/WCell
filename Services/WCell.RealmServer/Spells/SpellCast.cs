@@ -17,26 +17,24 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Cell.Core;
 using NLog;
 using WCell.Constants;
 using WCell.Constants.Pets;
 using WCell.Constants.Spells;
 using WCell.Constants.World;
-using WCell.Util.Graphics;
-using WCell.Util.ObjectPools;
-using WCell.Util.Threading;
 using WCell.Core.Timers;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Global;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Items;
+using WCell.RealmServer.Misc;
 using WCell.RealmServer.Network;
 using WCell.RealmServer.Spells.Auras;
-using WCell.RealmServer.Talents;
 using WCell.Util;
+using WCell.Util.Graphics;
 using WCell.Util.NLog;
-using WCell.RealmServer.Global;
-using WCell.RealmServer.Misc;
+using WCell.Util.ObjectPools;
+using WCell.Util.Threading;
 
 namespace WCell.RealmServer.Spells
 {

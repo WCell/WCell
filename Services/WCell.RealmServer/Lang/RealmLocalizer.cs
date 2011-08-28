@@ -1,11 +1,7 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using WCell.Constants;
 using WCell.Core.Initialization;
 using WCell.Util.Lang;
-using WCell.Util.NLog;
 
 namespace WCell.RealmServer.Lang
 {

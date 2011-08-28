@@ -1,4 +1,4 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: Mounted.cs
  *   copyright		: (C) The WCell Team
@@ -15,7 +15,6 @@
  *************************************************************************/
 
 using NLog;
-using WCell.Constants.NPCs;
 using WCell.RealmServer.NPCs;
 
 namespace WCell.RealmServer.Spells.Auras.Handlers

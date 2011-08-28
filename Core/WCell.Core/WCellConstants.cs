@@ -17,10 +17,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
+using System.Text;
 using WCell.Constants;
 using WCell.Util;
-using System.Text;
 
 namespace WCell.Core
 {

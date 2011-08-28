@@ -1,5 +1,3 @@
-using System;
-
 namespace WCell.Constants.Spells
 {
 	public static class SpellConstantsExtensions

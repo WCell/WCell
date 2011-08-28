@@ -2,16 +2,16 @@ using System;
 using System.Collections.Generic;
 using WCell.Constants;
 using WCell.Constants.Factions;
+using WCell.Constants.GameObjects;
 using WCell.Constants.Items;
 using WCell.Constants.NPCs;
 using WCell.Constants.Pets;
+using WCell.Constants.Skills;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.Core;
 using WCell.Core.Initialization;
 using WCell.Util;
-using WCell.Constants.Skills;
-using WCell.Constants.GameObjects;
 
 namespace WCell.PacketAnalysis.Updates
 {

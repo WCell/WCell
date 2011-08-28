@@ -1,4 +1,3 @@
-using System;
 using WCell.Util.Graphics;
 using WCell.Util.Threading;
 

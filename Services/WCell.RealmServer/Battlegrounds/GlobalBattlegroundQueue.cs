@@ -1,12 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using WCell.Util.Collections;
-using WCell.RealmServer.Entities;
-using WCell.Constants;
-using WCell.RealmServer.GameObjects;
 using NLog;
+using WCell.Constants;
+using WCell.RealmServer.Entities;
+using WCell.RealmServer.GameObjects;
+using WCell.Util.Collections;
 
 namespace WCell.RealmServer.Battlegrounds
 {

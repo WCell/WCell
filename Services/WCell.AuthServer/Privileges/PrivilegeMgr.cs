@@ -18,10 +18,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using NLog;
-using resources = WCell.AuthServer.Res.WCell_AuthServer;
 using WCell.Core;
 using WCell.Core.Initialization;
 using WCell.Intercommunication.DataTypes;
+using resources = WCell.AuthServer.Res.WCell_AuthServer;
 
 namespace WCell.AuthServer.Privileges
 {

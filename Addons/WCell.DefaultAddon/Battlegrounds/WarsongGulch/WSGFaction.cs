@@ -1,20 +1,16 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using WCell.Addons.Default.Lang;
+using WCell.Constants;
 using WCell.Constants.GameObjects;
 using WCell.Constants.Spells;
-using WCell.Core.Timers;
+using WCell.Constants.World;
 using WCell.RealmServer.Battlegrounds;
 using WCell.RealmServer.Chat;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.GameObjects;
 using WCell.RealmServer.Global;
-using WCell.Constants;
 using WCell.RealmServer.Spells;
-using WCell.Core;
-using WCell.Constants.World;
 
 namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 {

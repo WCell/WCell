@@ -17,13 +17,12 @@
 using System;
 using WCell.Constants;
 using WCell.Constants.GameObjects;
+using WCell.Constants.NPCs;
+using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Entities;
 using WCell.Util.Variables;
-using WCell.RealmServer.NPCs;
-using WCell.Constants.NPCs;
-using WCell.Constants.Spells;
 
 namespace WCell.RealmServer.UpdateFields
 {

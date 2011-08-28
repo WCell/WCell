@@ -1,6 +1,5 @@
 using System;
 using WCell.Constants;
-using WCell.Constants.Misc;
 using WCell.Constants.Spells;
 using WCell.Core.Timers;
 using WCell.RealmServer.Formulas;
@@ -9,11 +8,9 @@ using WCell.RealmServer.Items;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Modifiers;
 using WCell.RealmServer.NPCs;
-using WCell.RealmServer.RacesClasses;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Effects;
 using WCell.Util;
-using WCell.Util.Variables;
 using WCell.Util.NLog;
 
 namespace WCell.RealmServer.Entities

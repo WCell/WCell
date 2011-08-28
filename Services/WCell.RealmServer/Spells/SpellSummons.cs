@@ -1,16 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using WCell.Constants.Factions;
 using WCell.Constants.Spells;
 using WCell.Core;
 using WCell.Core.DBC;
-using WCell.RealmServer.NPCs;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.NPCs;
 using WCell.Util;
 using WCell.Util.Graphics;
-
 
 namespace WCell.RealmServer.Spells
 {

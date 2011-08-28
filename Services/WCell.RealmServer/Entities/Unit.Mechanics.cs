@@ -17,25 +17,20 @@
 using System;
 using System.Linq;
 using WCell.Constants;
-using WCell.Constants.Items;
 using WCell.Constants.Misc;
-using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
-using WCell.RealmServer.Modifiers;
-using WCell.Util.Graphics;
-using WCell.Util.Threading;
+using WCell.Constants.World;
+using WCell.Core.Initialization;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Misc;
+using WCell.RealmServer.Modifiers;
 using WCell.RealmServer.Spells;
 using WCell.Util;
-using WCell.Constants.World;
-using WCell.RealmServer.Spells.Auras.Handlers;
-using System.Collections.Generic;
-using WCell.RealmServer.Items;
+using WCell.Util.Graphics;
+using WCell.Util.Threading;
 using WCell.Util.Variables;
-using WCell.Core.Initialization;
 
 namespace WCell.RealmServer.Entities
 {

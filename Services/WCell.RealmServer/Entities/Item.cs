@@ -5,7 +5,6 @@ using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Constants.Looting;
 using WCell.Constants.Updates;
-using WCell.Core;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Items;

@@ -6,10 +6,10 @@ using WCell.Constants;
 using WCell.Constants.Factions;
 using WCell.Constants.Items;
 using WCell.Constants.Misc;
+using WCell.Constants.Pets;
 using WCell.Constants.Skills;
 using WCell.Constants.Spells;
 using WCell.Constants.World;
-using WCell.RealmServer.Content;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Factions;
@@ -21,8 +21,6 @@ using WCell.RealmServer.Skills;
 using WCell.RealmServer.Spells;
 using WCell.Util;
 using WCell.Util.Data;
-using WCell.Constants.NPCs;
-using WCell.Constants.Pets;
 
 namespace WCell.RealmServer.Items
 {

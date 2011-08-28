@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using WCell.RealmServer.Factions;
-using WCell.RealmServer.Gossips;
+﻿using WCell.RealmServer.Gossips;
 using WCell.RealmServer.Looting;
 using WCell.RealmServer.Quests;
 using WCell.Util.Data;

@@ -1,4 +1,4 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: PacketOut.cs
  *   copyright		: (C) The WCell Team
@@ -15,10 +15,8 @@
  *************************************************************************/
 
 using System.IO;
-using System.Text;
-using NLog;
-using System;
 using Cell.Core;
+using NLog;
 
 namespace WCell.Core.Network
 {

@@ -1,8 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
 using WCell.Util.Conversion;
 using WCell.Util.Data;
-using System;
 
 namespace WCell.Util.DB
 {

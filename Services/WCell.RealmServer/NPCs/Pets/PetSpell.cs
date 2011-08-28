@@ -1,7 +1,5 @@
-using System;
 using Castle.ActiveRecord;
 using WCell.Constants.Pets;
-using WCell.RealmServer.Database;
 using WCell.RealmServer.Spells;
 
 namespace WCell.RealmServer.NPCs.Pets

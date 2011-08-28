@@ -1,6 +1,5 @@
-using WCell.RealmServer.Entities;
-using WCell.RealmServer.Network;
 using WCell.Constants;
+using WCell.RealmServer.Network;
 
 namespace WCell.RealmServer.Lang
 {

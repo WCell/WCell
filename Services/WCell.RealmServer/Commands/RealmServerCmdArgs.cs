@@ -6,10 +6,8 @@ using WCell.RealmServer.Global;
 using WCell.RealmServer.Help.Tickets;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Privileges;
-using WCell.Util;
 using WCell.Util.Commands;
 using WCell.Util.Threading;
-using WCell.RealmServer.NPCs.Vehicles;
 
 namespace WCell.RealmServer.Commands
 {

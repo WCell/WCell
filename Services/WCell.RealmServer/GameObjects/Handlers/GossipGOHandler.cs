@@ -1,5 +1,4 @@
 using WCell.RealmServer.Entities;
-using WCell.RealmServer.Gossips;
 
 namespace WCell.RealmServer.GameObjects.Handlers
 {

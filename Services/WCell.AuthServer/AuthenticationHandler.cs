@@ -20,17 +20,15 @@ using System.Net;
 using System.Threading;
 using NLog;
 using WCell.AuthServer.Accounts;
-using WCell.AuthServer.Database;
+using WCell.AuthServer.Firewall;
 using WCell.AuthServer.Network;
-using resources = WCell.AuthServer.Res.WCell_AuthServer;
 using WCell.Constants;
 using WCell.Core;
 using WCell.Core.Cryptography;
-using WCell.Core.Database;
 using WCell.Core.Network;
 using WCell.Intercommunication.DataTypes;
 using WCell.Util.Threading;
-using WCell.AuthServer.Firewall;
+using resources = WCell.AuthServer.Res.WCell_AuthServer;
 
 namespace WCell.AuthServer
 {

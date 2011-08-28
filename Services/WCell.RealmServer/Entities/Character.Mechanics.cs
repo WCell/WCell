@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using WCell.Constants;
+using WCell.Constants.Achievements;
 using WCell.Constants.Items;
 using WCell.Constants.Misc;
 using WCell.Constants.NPCs;
@@ -12,12 +10,10 @@ using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Interaction;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Modifiers;
-using WCell.RealmServer.NPCs.Pets;
 using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Trade;
 using WCell.Util;
 using WCell.Util.Graphics;
-using WCell.Constants.Achievements;
 
 namespace WCell.RealmServer.Entities
 {

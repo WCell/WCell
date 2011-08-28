@@ -1,18 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using NHibernate.Criterion;
 using NLog;
 using WCell.AuthServer.Database;
-using WCell.Util;
-using resources = WCell.AuthServer.Res.WCell_AuthServer;
 using WCell.Constants;
-using WCell.Core;
 using WCell.Core.Cryptography;
 using WCell.Core.Initialization;
-using WCell.Intercommunication.DataTypes;
+using WCell.Util;
 using WCell.Util.NLog;
+using resources = WCell.AuthServer.Res.WCell_AuthServer;
 
 namespace WCell.AuthServer.Accounts
 {

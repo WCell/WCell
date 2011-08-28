@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using WCell.Constants;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Modifiers;
-using WCell.RealmServer.NPCs.Pets;
 
 namespace WCell.RealmServer.Entities
 {

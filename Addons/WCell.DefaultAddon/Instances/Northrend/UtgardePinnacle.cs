@@ -1,19 +1,14 @@
+using WCell.Constants;
+using WCell.Constants.AreaTriggers;
 using WCell.Constants.Misc;
-using WCell.Constants.Updates;
+using WCell.Constants.Spells;
 using WCell.Core.Initialization;
-using WCell.RealmServer.AI.Brains;
+using WCell.RealmServer.AI;
+using WCell.RealmServer.AreaTriggers;
+using WCell.RealmServer.Entities;
 using WCell.RealmServer.Instances;
 using WCell.RealmServer.NPCs;
-using WCell.RealmServer.Entities;
-using WCell.RealmServer.AreaTriggers;
-using WCell.Constants;
-using WCell.RealmServer.AI.Actions.States;
-using WCell.RealmServer.AI.Actions;
-using WCell.Constants.AreaTriggers;
-using WCell.Constants.Spells;
-using WCell.RealmServer.AI;
 using WCell.Util.Graphics;
-
 
 ///
 /// Date of creation: 9/1/2009

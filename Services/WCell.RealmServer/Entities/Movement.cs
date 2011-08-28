@@ -1,11 +1,8 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
+using WCell.Constants.NPCs;
 using WCell.Core.Paths;
-using WCell.Core.Terrain.Paths;
 using WCell.RealmServer.Handlers;
 using WCell.Util;
-using WCell.Constants.NPCs;
 using WCell.Util.Graphics;
 
 namespace WCell.RealmServer.Entities

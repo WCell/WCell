@@ -1,4 +1,3 @@
-using WCell.Constants;
 using WCell.Constants.Guilds;
 
 namespace WCell.RealmServer.Guilds

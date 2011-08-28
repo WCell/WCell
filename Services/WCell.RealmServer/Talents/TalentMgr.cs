@@ -18,7 +18,6 @@ using WCell.Constants;
 using WCell.Constants.Talents;
 using WCell.Core;
 using WCell.Core.DBC;
-using WCell.Core.Initialization;
 using WCell.Util;
 using WCell.Util.Variables;
 

@@ -1,5 +1,4 @@
 using WCell.Constants.GameObjects;
-using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.GameObjects;
 using WCell.RealmServer.Spells;

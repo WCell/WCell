@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using NLog;
 using WCell.Constants;
 using WCell.Constants.Misc;
+using WCell.Constants.World;
 using WCell.Core;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Entities;
@@ -9,7 +10,6 @@ using WCell.RealmServer.Items;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Spells;
 using WCell.Util.Data;
-using WCell.Constants.World;
 using WCell.Util.Graphics;
 
 namespace WCell.RealmServer.RacesClasses

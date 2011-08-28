@@ -1,12 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using WCell.Constants.GameObjects;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.GameObjects;
-using WCell.Constants.GameObjects;
 
 namespace WCell.RealmServer.Spells.Effects
 {

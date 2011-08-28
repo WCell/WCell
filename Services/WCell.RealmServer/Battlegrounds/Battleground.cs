@@ -1,9 +1,7 @@
 using System;
-using NLog;
 using WCell.Constants;
 using WCell.Constants.Spells;
 using WCell.Core.Timers;
-using WCell.RealmServer.Chat;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Handlers;

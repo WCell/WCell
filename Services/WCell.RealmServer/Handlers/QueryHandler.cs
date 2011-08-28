@@ -1,18 +1,16 @@
 using NLog;
 using WCell.Constants;
-using WCell.Core;
 using WCell.Core.Network;
-using WCell.Util.Threading;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Gossips;
 using WCell.RealmServer.Lang;
-using WCell.RealmServer.Network;
-using WCell.RealmServer.NPCs;
-using WCell.Util;
 using WCell.RealmServer.Misc;
-
+using WCell.RealmServer.NPCs;
+using WCell.RealmServer.Network;
+using WCell.Util;
+using WCell.Util.Threading;
 
 namespace WCell.RealmServer.Handlers
 {

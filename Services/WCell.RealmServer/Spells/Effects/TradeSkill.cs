@@ -1,6 +1,4 @@
-﻿using WCell.Constants.Skills;
-
-namespace WCell.RealmServer.Spells.Effects
+﻿namespace WCell.RealmServer.Spells.Effects
 {
 	/// <summary>
 	/// Learns a Trade Skill (add skill checks here?)

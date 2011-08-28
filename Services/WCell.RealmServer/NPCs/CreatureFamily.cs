@@ -1,4 +1,3 @@
-using WCell.Constants;
 using WCell.Constants.NPCs;
 using WCell.Constants.Pets;
 using WCell.RealmServer.Skills;

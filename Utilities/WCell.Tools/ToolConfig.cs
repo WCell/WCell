@@ -1,18 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using NLog;
-using WCell.PacketAnalysis.Logs;
-using WCell.RealmServer;
-using WCell.Util;
-using WCell.Tools.PATools;
 using System.IO;
 using System.Xml.Serialization;
-using WCell.RealmServer.Debugging;
+using NLog;
 using WCell.Constants;
-using WCell.Util.Variables;
 using WCell.MPQTool;
+using WCell.PacketAnalysis.Logs;
+using WCell.RealmServer.Debugging;
+using WCell.Tools.PATools;
+using WCell.Util;
+using WCell.Util.Variables;
 
 namespace WCell.Tools
 {

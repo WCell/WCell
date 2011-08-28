@@ -1,24 +1,19 @@
-using WCell.RealmServer.Instances;
-using WCell.RealmServer.Entities;
-using WCell.RealmServer.GameObjects;
-using WCell.RealmServer.GameObjects.GOEntries;
+using System;
+using System.Collections.Generic;
+using WCell.Addons.Default.Lang;
+using WCell.Constants;
 using WCell.Constants.Factions;
 using WCell.Constants.Misc;
-using WCell.Constants.World;
-using WCell.RealmServer.AI.Brains;
-using WCell.Addons.Default.Lang;
-using WCell.RealmServer.Factions;
-using WCell.RealmServer.Gossips;
 using WCell.Constants.NPCs;
-using WCell.Constants.GameObjects;
-using WCell.RealmServer.Lang;
+using WCell.Constants.World;
 using WCell.Core.Initialization;
+using WCell.RealmServer.Entities;
+using WCell.RealmServer.GameObjects;
+using WCell.RealmServer.Gossips;
+using WCell.RealmServer.Instances;
 using WCell.RealmServer.NPCs;
-using WCell.Constants;
 using WCell.Util.Graphics;
-using WCell.Constants.Spells;
-using System.Collections.Generic;
-using System;
+
 ///
 /// This file was automatically created, using WCell's CodeFileWriter
 /// Date: 9/1/2009

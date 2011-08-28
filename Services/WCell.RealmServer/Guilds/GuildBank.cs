@@ -1,14 +1,9 @@
-using System;
-using System.Collections.Generic;
-using WCell.Constants;
 using WCell.Constants.Guilds;
 using WCell.Constants.Items;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
-using WCell.RealmServer.Items;
 using WCell.Util;
-using WCell.Util.Collections;
 
 namespace WCell.RealmServer.Guilds
 {

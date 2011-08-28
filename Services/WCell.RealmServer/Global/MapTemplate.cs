@@ -1,15 +1,14 @@
+using System;
 using System.Collections.Generic;
 using WCell.Constants;
 using WCell.Constants.World;
+using WCell.RealmServer.Battlegrounds;
+using WCell.RealmServer.Entities;
+using WCell.RealmServer.Instances;
+using WCell.RealmServer.Misc;
 using WCell.Util;
 using WCell.Util.Collections;
 using WCell.Util.Data;
-using WCell.Constants.Items;
-using WCell.RealmServer.Misc;
-using WCell.RealmServer.Entities;
-using WCell.RealmServer.Battlegrounds;
-using System;
-using WCell.RealmServer.Instances;
 using WCell.Util.Graphics;
 
 namespace WCell.RealmServer.Global

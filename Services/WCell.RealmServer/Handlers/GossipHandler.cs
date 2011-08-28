@@ -1,11 +1,9 @@
 using System.Collections.Generic;
 using WCell.Constants;
-using WCell.Core;
 using WCell.Core.Network;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Gossips;
 using WCell.RealmServer.Network;
-using System.IO;
 
 namespace WCell.RealmServer.Handlers
 {

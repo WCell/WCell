@@ -15,8 +15,8 @@
  *************************************************************************/
 
 using WCell.Constants.Spells;
-using WCell.RealmServer.Entities;
 using WCell.Constants.Updates;
+using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Effects
 {

@@ -1,15 +1,12 @@
+using System.Linq;
 using WCell.Constants;
+using WCell.Constants.World;
+using WCell.RealmServer.Content;
+using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
 using WCell.Util;
 using WCell.Util.Data;
-using WCell.Constants.World;
-using WCell.RealmServer.Content;
 using WCell.Util.Graphics;
-using WCell.Util.Variables;
-using System;
-using System.Linq;
-using WCell.RealmServer.Entities;
-using WCell.Core;
 
 namespace WCell.RealmServer.Battlegrounds
 {

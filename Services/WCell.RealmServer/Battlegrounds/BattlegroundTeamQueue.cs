@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using WCell.Constants;
 using WCell.RealmServer.Entities;
-using System.Threading;
 using WCell.RealmServer.Handlers;
 
 namespace WCell.RealmServer.Battlegrounds

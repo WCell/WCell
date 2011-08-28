@@ -1,14 +1,9 @@
-using System;
-using System.Linq;
-using WCell.Constants;
-using WCell.Constants.Misc;
-using WCell.Constants.NPCs;
-using WCell.RealmServer.Entities;
-using WCell.RealmServer.NPCs;
-using WCell.Util;
-using WCell.Util.Data;
 using System.Collections.Generic;
+using System.Linq;
+using WCell.Constants.Misc;
 using WCell.RealmServer.Content;
+using WCell.RealmServer.NPCs;
+using WCell.Util.Data;
 
 namespace WCell.RealmServer.Gossips
 {

@@ -16,7 +16,6 @@
 
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Spells.Auras;
-using WCell.Constants.Updates;
 
 namespace WCell.RealmServer.Spells.Effects
 {

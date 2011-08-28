@@ -1,10 +1,9 @@
-using System;
+using NLog;
 using WCell.Constants;
 using WCell.Constants.World;
 using WCell.Core.DBC;
 using WCell.Util;
 using WCell.Util.Graphics;
-using NLog;
 
 namespace WCell.RealmServer.Global
 {

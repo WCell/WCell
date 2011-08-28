@@ -1,19 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using WCell.Core.Initialization;
-using WCell.Core;
-using WCell.Constants;
-using Castle.ActiveRecord;
-using Castle.ActiveRecord.Framework.Config;
-using System.Reflection;
-using WCell.Core.Database;
-using System.IO;
 using NLog;
-using Castle.ActiveRecord.Queries;
 using WCell.AuthServer.Accounts;
+using WCell.Core.Database;
+using WCell.Core.Initialization;
 using WCell.RealmServer.Database;
 
 namespace WCell.AuthServer.Database

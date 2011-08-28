@@ -12,8 +12,6 @@
 // *** information that has been provided with it .						 ***
 //
 
-using System;
-
 namespace WCell.Util.DynamicAccess
 {
 	/// <summary>

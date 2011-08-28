@@ -1,6 +1,4 @@
 using System;
-using WCell.Constants;
-using WCell.RealmServer.Misc;
 
 namespace WCell.RealmServer.Entities
 {

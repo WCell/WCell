@@ -2,19 +2,17 @@ using System;
 using System.Collections.Generic;
 using WCell.Constants;
 using WCell.Constants.Pets;
+using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.RealmServer.AI;
 using WCell.RealmServer.Formulas;
+using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Items;
 using WCell.RealmServer.Modifiers;
-using WCell.RealmServer.Network;
-using WCell.RealmServer.NPCs;
 using WCell.RealmServer.NPCs.Pets;
+using WCell.RealmServer.Network;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Talents;
-using PetNameInvalidReason = WCell.Constants.Pets.PetNameInvalidReason;
-using WCell.Constants.Spells;
-using WCell.RealmServer.Handlers;
 
 namespace WCell.RealmServer.Entities
 {

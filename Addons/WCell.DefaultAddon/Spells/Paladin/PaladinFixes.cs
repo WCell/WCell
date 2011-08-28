@@ -1,16 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using WCell.Constants;
 using WCell.Constants.Spells;
 using WCell.Core.Initialization;
-using WCell.RealmServer.Spells;
-using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Misc;
-using WCell.RealmServer.Spells.Auras.Handlers;
-using WCell.RealmServer.Spells.Effects;
+using WCell.RealmServer.Spells;
+using WCell.RealmServer.Spells.Auras;
 
 namespace WCell.Addons.Default.Spells.Paladin
 {

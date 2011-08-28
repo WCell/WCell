@@ -16,11 +16,9 @@
 
 using WCell.Constants;
 using WCell.Constants.Items;
-using WCell.Core;
 using WCell.Core.Network;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
-using WCell.RealmServer.Misc;
 using WCell.RealmServer.Network;
 using WCell.RealmServer.Trade;
 

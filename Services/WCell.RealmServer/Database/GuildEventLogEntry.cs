@@ -1,7 +1,6 @@
 using System;
 using Castle.ActiveRecord;
 using NHibernate.Criterion;
-using WCell.Constants;
 using WCell.Constants.Guilds;
 
 namespace WCell.RealmServer.Guilds

@@ -1,13 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using WCell.Constants;
 using WCell.Constants.NPCs;
-using WCell.Constants.Quests;
 using WCell.Constants.Spells;
-using WCell.RealmServer.Lang;
-using WCell.Util;
 using WCell.Util.Data;
 
 namespace WCell.RealmServer.Global

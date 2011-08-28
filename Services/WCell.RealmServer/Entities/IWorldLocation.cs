@@ -1,11 +1,9 @@
 using System;
 using WCell.Constants.World;
 using WCell.Core.Paths;
-using WCell.Core.Terrain.Paths;
 using WCell.RealmServer.Global;
 using WCell.Util.Data;
 using WCell.Util.Graphics;
-using Zone = WCell.RealmServer.Global.Zone;
 
 namespace WCell.RealmServer.Entities
 {

@@ -1,4 +1,3 @@
-using System;
 using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
 using WCell.Core.Initialization;

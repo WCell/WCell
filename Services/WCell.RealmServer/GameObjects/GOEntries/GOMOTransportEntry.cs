@@ -1,9 +1,9 @@
 using NLog;
 using WCell.RealmServer.Content;
+using WCell.RealmServer.Entities;
 using WCell.RealmServer.Taxi;
 using WCell.RealmServer.Transports;
 using WCell.Util;
-using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.GameObjects.GOEntries
 {

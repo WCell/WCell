@@ -2,11 +2,9 @@ using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Constants.World;
 using WCell.RealmServer.Content;
-using WCell.RealmServer.Quests;
+using WCell.RealmServer.Global;
 using WCell.Util;
 using WCell.Util.Data;
-using WCell.RealmServer.Global;
-using WCell.RealmServer.Entities;
 using WCell.Util.Graphics;
 
 namespace WCell.RealmServer.AreaTriggers

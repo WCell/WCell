@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading;
 using Cell.Core;
 using NLog;
+using WCell.Core.Addons;
 using WCell.Core.Database;
 using WCell.Core.Initialization;
 using WCell.Core.Localization;
@@ -12,7 +13,6 @@ using WCell.Core.Timers;
 using WCell.Util;
 using WCell.Util.NLog;
 using WCell.Util.Variables;
-using WCell.Core.Addons;
 
 namespace WCell.Core
 {

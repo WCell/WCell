@@ -21,13 +21,13 @@ using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
+using WCell.Core;
 using WCell.Core.DBC;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Items;
+using WCell.RealmServer.Misc;
 using WCell.Util;
 using WCell.Util.Data;
-using WCell.RealmServer.Misc;
-using WCell.Core;
 
 namespace WCell.RealmServer.Spells
 {

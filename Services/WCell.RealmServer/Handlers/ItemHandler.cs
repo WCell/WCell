@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using WCell.Constants;
 using WCell.Constants.Items;
@@ -11,7 +12,6 @@ using WCell.RealmServer.Lang;
 using WCell.RealmServer.Looting;
 using WCell.RealmServer.Network;
 using WCell.Util;
-using System;
 
 namespace WCell.RealmServer.Handlers
 {

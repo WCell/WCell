@@ -16,7 +16,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using WCell.Util.Collections;
 using WCell.Constants;
 using WCell.Constants.Chat;
 using WCell.Constants.Misc;
@@ -25,6 +24,7 @@ using WCell.RealmServer.Commands;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Misc;
+using WCell.Util.Collections;
 
 namespace WCell.RealmServer.Chat
 {

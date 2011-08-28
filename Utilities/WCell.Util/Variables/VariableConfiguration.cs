@@ -6,12 +6,9 @@ using System.Reflection;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
-using NLog;
 using WCell.Util.NLog;
 using WCell.Util.Strings;
 using WCell.Util.Xml;
-using System.Diagnostics;
-using System.Threading;
 
 namespace WCell.Util.Variables
 {

@@ -22,9 +22,8 @@ using System.Xml.Linq;
 using Cell.Core;
 using WCell.Constants;
 using WCell.Core.Paths;
-using WCell.Core.Terrain.Paths;
-using WCell.RealmServer.Items;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Items;
 using WCell.Util.Graphics;
 
 namespace WCell.RealmServer

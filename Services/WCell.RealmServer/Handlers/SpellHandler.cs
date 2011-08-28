@@ -2,15 +2,14 @@ using System;
 using System.Collections.Generic;
 using NLog;
 using WCell.Constants;
-using WCell.Core;
 using WCell.Constants.Items;
 using WCell.Constants.Spells;
 using WCell.Core.Network;
 using WCell.RealmServer.Entities;
-using WCell.RealmServer.Network;
-using WCell.RealmServer.NPCs.Vehicles;
-using WCell.Util;
 using WCell.RealmServer.NPCs;
+using WCell.RealmServer.NPCs.Vehicles;
+using WCell.RealmServer.Network;
+using WCell.Util;
 
 namespace WCell.RealmServer.Spells
 {

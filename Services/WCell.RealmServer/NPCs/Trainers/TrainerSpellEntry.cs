@@ -1,13 +1,11 @@
-using System;
+using WCell.Constants.NPCs;
 using WCell.Constants.Skills;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Entities;
-using WCell.RealmServer.Factions;
 using WCell.RealmServer.Skills;
 using WCell.RealmServer.Spells;
 using WCell.Util.Data;
-using WCell.Constants.NPCs;
 
 namespace WCell.RealmServer.NPCs.Trainers
 {

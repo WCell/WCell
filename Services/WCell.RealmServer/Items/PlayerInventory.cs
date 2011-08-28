@@ -1,4 +1,4 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: Owner.cs
  *   copyright		: (C) The WCell Team
@@ -26,8 +26,6 @@ using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
 using WCell.Util;
-using Castle.ActiveRecord;
-using WCell.Util.NLog;
 
 namespace WCell.RealmServer.Items
 {

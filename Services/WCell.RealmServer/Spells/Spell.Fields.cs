@@ -14,16 +14,13 @@
  *
  *************************************************************************/
 
-using System;
-using System.Collections.Generic;
 using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Items;
-using WCell.Util.Data;
 using WCell.RealmServer.Misc;
-using WCell.Util.Graphics;
+using WCell.Util.Data;
 
 namespace WCell.RealmServer.Spells
 {

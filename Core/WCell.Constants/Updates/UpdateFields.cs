@@ -1,5 +1,3 @@
-using System;
-
 ///
 /// This file was automatically created, using WCell's CodeFileWriter
 /// Date: 7/19/2010

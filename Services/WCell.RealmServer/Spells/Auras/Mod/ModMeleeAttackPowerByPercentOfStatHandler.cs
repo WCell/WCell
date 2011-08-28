@@ -16,7 +16,6 @@
 
 using WCell.Constants;
 using WCell.RealmServer.Entities;
-using WCell.RealmServer.Modifiers;
 
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {

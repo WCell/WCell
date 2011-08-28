@@ -15,7 +15,6 @@
  *************************************************************************/
 
 using NLog;
-using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Misc;
 

@@ -1,4 +1,3 @@
-using System;
 using WCell.Constants;
 using WCell.RealmServer.Lang;
 

@@ -1,17 +1,15 @@
 using System;
 using System.Collections.Generic;
+using Castle.ActiveRecord;
 using WCell.Constants;
 using WCell.Constants.Login;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.Core;
-using WCell.RealmServer.Achievements;
-using WCell.RealmServer.Lang;
-using WCell.RealmServer.Spells.Auras;
-using WCell.Util.Graphics;
-using WCell.Util.Threading;
 using WCell.Core.Timers;
+using WCell.RealmServer.Achievements;
 using WCell.RealmServer.AreaTriggers;
+using WCell.RealmServer.Battlegrounds;
 using WCell.RealmServer.Chat;
 using WCell.RealmServer.Commands;
 using WCell.RealmServer.Database;
@@ -26,20 +24,22 @@ using WCell.RealmServer.Help.Tickets;
 using WCell.RealmServer.Instances;
 using WCell.RealmServer.Interaction;
 using WCell.RealmServer.Items;
+using WCell.RealmServer.Lang;
 using WCell.RealmServer.Mail;
 using WCell.RealmServer.Misc;
+using WCell.RealmServer.Modifiers;
 using WCell.RealmServer.Network;
 using WCell.RealmServer.Quests;
 using WCell.RealmServer.RacesClasses;
 using WCell.RealmServer.Skills;
 using WCell.RealmServer.Spells;
+using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Talents;
 using WCell.RealmServer.Taxi;
-using WCell.RealmServer.Modifiers;
-using WCell.Util.NLog;
 using WCell.Util;
-using WCell.RealmServer.Battlegrounds;
-using Castle.ActiveRecord;
+using WCell.Util.Graphics;
+using WCell.Util.NLog;
+using WCell.Util.Threading;
 
 namespace WCell.RealmServer.Entities
 {

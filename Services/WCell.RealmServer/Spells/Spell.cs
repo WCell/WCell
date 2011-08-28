@@ -19,6 +19,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Constants.Skills;
@@ -31,7 +32,6 @@ using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Spells.Targeting;
 using WCell.Util;
 using WCell.Util.Data;
-using System.Text.RegularExpressions;
 using WCell.Util.Graphics;
 
 namespace WCell.RealmServer.Spells

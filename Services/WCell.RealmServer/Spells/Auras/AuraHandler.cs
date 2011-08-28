@@ -16,16 +16,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Auras.Effects;
-using WCell.RealmServer.Entities;
 using WCell.RealmServer.Spells.Auras.Handlers;
+using WCell.RealmServer.Spells.Auras.Misc;
 using WCell.RealmServer.Spells.Auras.Mod;
 using WCell.RealmServer.Spells.Auras.Passive;
 using WCell.Util;
-using WCell.RealmServer.Spells.Auras.Misc;
-using WCell.Util.NLog;
 
 namespace WCell.RealmServer.Spells.Auras
 {

@@ -1,10 +1,7 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using NHibernate.SqlCommand;
-using DialectType = NHibernate.Dialect.Dialect;
 using WCell.Util.DB;
+using DialectType = NHibernate.Dialect.Dialect;
 
 namespace WCell.Core.Database
 {

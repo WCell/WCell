@@ -1,11 +1,10 @@
+using System.Collections.Generic;
 using System.Linq;
-using WCell.Constants;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Guilds;
 using WCell.Util;
 using WCell.Util.Commands;
-using System.Collections.Generic;
 
 namespace WCell.RealmServer.Commands
 {

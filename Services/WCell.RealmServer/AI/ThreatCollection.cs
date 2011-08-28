@@ -1,9 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using WCell.RealmServer.Entities;
 using WCell.RealmServer.AI.Groups;
-
+using WCell.RealmServer.Entities;
 using AggressorPair = System.Collections.Generic.KeyValuePair<WCell.RealmServer.Entities.Unit, int>;
 
 namespace WCell.RealmServer.AI

@@ -1,8 +1,6 @@
 using NLog;
 using WCell.Constants;
 using WCell.Constants.Spells;
-using WCell.RealmServer.Misc;
-using WCell.Util;
 
 namespace WCell.RealmServer.GameObjects.GOEntries
 {

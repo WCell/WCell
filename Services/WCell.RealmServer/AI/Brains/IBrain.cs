@@ -19,7 +19,6 @@ using WCell.Constants.Updates;
 using WCell.Core.Timers;
 using WCell.RealmServer.AI.Actions;
 using WCell.RealmServer.AI.Groups;
-using WCell.RealmServer.Entities;
 using WCell.Util.Graphics;
 
 namespace WCell.RealmServer.AI.Brains

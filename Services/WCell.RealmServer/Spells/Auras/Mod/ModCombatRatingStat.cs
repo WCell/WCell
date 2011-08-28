@@ -1,7 +1,6 @@
-using WCell.Constants.Spells;
-using WCell.RealmServer.Entities;
 using WCell.Constants;
 using WCell.Constants.Misc;
+using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {

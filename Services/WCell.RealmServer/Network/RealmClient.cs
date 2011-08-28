@@ -1,4 +1,4 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: IRealmClient.cs
  *   copyright		: (C) The WCell Team
@@ -16,7 +16,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using Cell.Core;
@@ -28,8 +27,8 @@ using WCell.PacketAnalysis;
 using WCell.RealmServer.Debugging;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Stats;
-using WCell.Util;
 using WCell.Util.NLog;
+using Utility = WCell.Util.Utility;
 
 namespace WCell.RealmServer.Network
 {
@@ -218,7 +217,7 @@ namespace WCell.RealmServer.Network
 						                       this, opcode, packetLength, BufferSize, i, segment.Number,
 						                       isLargePacket,
 						                       _remainingLength,
-						                       bytes.ToString(" ", b => string.Format("{0:X2}", b)),
+						                       Utility.ToString(bytes, " ", b => string.Format("{0:X2}", b)),
 						                       str);
 					}
 					Disconnect();

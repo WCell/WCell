@@ -1,4 +1,3 @@
-using System;
 using Castle.ActiveRecord;
 using NHibernate.Criterion;
 

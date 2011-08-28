@@ -15,7 +15,6 @@
  *************************************************************************/
 
 using System;
-using NLog;
 using WCell.Constants.Achievements;
 using WCell.Constants.Skills;
 using WCell.Constants.Updates;

@@ -1,11 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Castle.ActiveRecord;
-using WCell.Constants;
 using WCell.Constants.Guilds;
-using WCell.RealmServer.Guilds;
 
 namespace WCell.RealmServer.Database
 {

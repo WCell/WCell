@@ -15,6 +15,7 @@
  *************************************************************************/
 
 using System.Runtime.InteropServices;
+
 namespace WCell.RealmServer.Spells.Auras
 {
 	/// <summary>
