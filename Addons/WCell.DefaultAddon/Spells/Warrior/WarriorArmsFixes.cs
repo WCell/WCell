@@ -56,7 +56,7 @@ namespace WCell.Addons.Default.Spells.Warrior
 			{
 				spell.AddProcHandler(new TriggerSpellProcHandlerTemplate(
 					SpellHandler.Get(SpellId.ClassSkillSecondWindRank1),
-					ProcTriggerFlags.SpellHit,
+					spell.ProcTriggerFlags,
 					ProcHandler.StunValidator
 				));
 			}, SpellId.WarriorArmsSecondWindRank1);
@@ -64,16 +64,10 @@ namespace WCell.Addons.Default.Spells.Warrior
 			{
 				spell.AddProcHandler(new TriggerSpellProcHandlerTemplate(
 					SpellHandler.Get(SpellId.ClassSkillSecondWindRank2),
-					ProcTriggerFlags.SpellHit,
+					spell.ProcTriggerFlags,
 					ProcHandler.StunValidator
 				));
 			}, SpellId.WarriorArmsSecondWindRank2);
-
-			// Trauma should only proc on crit hit
-			SpellLineId.WarriorArmsTrauma.Apply(spell =>
-			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.MeleeCriticalHitOther;
-			});
 
 			// Taste for blood only triggers once every 6 seconds
 			SpellLineId.WarriorArmsTasteForBlood.Apply(spell =>

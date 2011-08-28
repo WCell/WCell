@@ -254,7 +254,7 @@ namespace WCell.RealmServer.Spells
 				}
 
 				// toggle autoshot
-				if (m_spell.AttributesExB.HasFlag(SpellAttributesExB.AutoRepeat))
+				if (Spell.IsAutoRepeating)
 				{
 					if (CasterUnit.Target == null)
 					{
@@ -502,7 +502,7 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// figure out whether targets are still valid if delayed
-			List<CastMiss> missedTargets;
+			List<MissedTarget> missedTargets;
 			if (delayed)
 			{
 				CheckCasterValidity();
@@ -533,12 +533,10 @@ namespace WCell.RealmServer.Spells
 			if (CasterObject is Unit && m_spell.IsPhysicalAbility)
 			{
 				// strike at everyone
-				foreach (var target in m_targets)
+				foreach (var target in m_targets.OfType<Unit>())
 				{
-					if (target is Unit)
-					{
-						((Unit)CasterObject).Strike(GetWeapon(), (Unit)target, this);
-					}
+					ProcHitFlags hitFlags = CasterUnit.Strike(GetWeapon(), target, this);
+					m_hitInfoByTarget[target] = hitFlags;
 				}
 			}
 
@@ -752,20 +750,11 @@ namespace WCell.RealmServer.Spells
 				caster.AuraState &= ~AuraStateMask.DodgeOrBlockOrParry;
 			}
 
-			// generate new proc event
-			if (m_spell.GeneratesProcEventOnCast && CasterUnit != null)
-			{
-				var target = m_targets.FirstOrDefault() as Unit;
-				CasterUnit.Proc(ProcTriggerFlags.SpellCast, target,
-								new SimpleUnitAction { Attacker = CasterUnit, Victim = target, IsCritical = false, Spell = m_spell },
-								true);																			// can execute arbitrary code
-			}
-
 			var hasRunes = UsesRunes;
 			if (!GodMode)
 			{
 				// add cooldown (if not autoshot & not triggered by another spell)
-				if (!m_spell.AttributesExB.HasFlag(SpellAttributesExB.AutoRepeat) && TriggerEffect == null)
+				if (!Spell.IsAutoRepeating && TriggerEffect == null)
 				{
 					caster.Spells.AddCooldown(m_spell, CasterItem);
 				}
@@ -879,12 +868,132 @@ namespace WCell.RealmServer.Spells
 			{
 				CasterChar.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.CastSpell, Spell.Id);
 			}
+
+			TriggerProcOnCasted();
+
+			m_hitInfoByTarget.Clear();
+
 			//if (CasterChar != null)
 			//{
 			//    CasterChar.SendSystemMessage("SpellCast (Casted): {0} ms", sw1.ElapsedTicks / 10000d);
 			//}
 		}
 
+		#region Procs
+		void TriggerProcOnCasted()
+		{
+			// Set the flags for caster and target based on the spell
+			ProcTriggerFlags casterProcFlags = ProcTriggerFlags.None;
+			ProcTriggerFlags targetProcFlags = ProcTriggerFlags.None;
+
+			switch (Spell.DamageType)
+			{
+				case DamageType.None:
+				{
+					if (Spell.IsBeneficial)
+					{
+						casterProcFlags |= ProcTriggerFlags.DoneBeneficialSpell;
+						targetProcFlags |= ProcTriggerFlags.ReceivedBeneficialSpell;
+					}
+					else if (Spell.IsHarmful)
+					{
+						casterProcFlags |= ProcTriggerFlags.DoneHarmfulSpell;
+						targetProcFlags |= ProcTriggerFlags.ReceivedHarmfulSpell;
+					}
+					break;
+				}
+
+				case DamageType.Magic:
+				{
+					if (Spell.IsBeneficial)
+					{
+						casterProcFlags |= ProcTriggerFlags.DoneBeneficialMagicSpell;
+						targetProcFlags |= ProcTriggerFlags.ReceivedBeneficialMagicSpell;
+					}
+					else if (Spell.IsHarmful)
+					{
+						casterProcFlags |= ProcTriggerFlags.DoneHarmfulMagicSpell;
+						targetProcFlags |= ProcTriggerFlags.ReceivedHarmfulMagicSpell;
+					}
+					break;
+				}
+
+				case DamageType.Melee:
+				{
+					casterProcFlags |= ProcTriggerFlags.DoneMeleeSpell;
+					targetProcFlags |= ProcTriggerFlags.ReceivedMeleeSpell;
+					break;
+				}
+
+				case DamageType.Ranged:
+				{
+					if (Spell.IsAutoRepeating)
+					{
+						casterProcFlags |= ProcTriggerFlags.DoneRangedAutoAttack;
+						targetProcFlags |= ProcTriggerFlags.ReceivedRangedAutoAttack;
+					}
+					else
+					{
+						casterProcFlags |= ProcTriggerFlags.DoneRangedSpell;
+						targetProcFlags |= ProcTriggerFlags.ReceivedRangedSpell;
+					}
+					break;
+				}
+			}
+
+			ProcHitFlags casterHitFlags = TriggerProcOnTargets(targetProcFlags);
+
+			TriggerProcOnCaster(casterProcFlags, casterHitFlags);
+		}
+
+		/// <summary>
+		/// Triggers proc on all targets of SpellCast
+		/// </summary>
+		/// <param name="flags">What happened to targets ie. ProcTriggerFlags.ReceivedHarmfulSpell</param>
+		/// <returns>Combination of hit result on all targets.</returns>
+		private ProcHitFlags TriggerProcOnTargets(ProcTriggerFlags flags)
+		{
+			ProcHitFlags hitFlagsCombination = ProcHitFlags.None;
+
+			foreach (var hitInfo in m_hitInfoByTarget)
+			{
+				Unit target = hitInfo.Key;
+				ProcHitFlags targetHitFlags = hitInfo.Value;
+
+				hitFlagsCombination |= targetHitFlags;
+
+				var action = new SimpleUnitAction
+				{
+					Attacker = CasterUnit,
+					Spell = Spell,
+					Victim = target,
+					IsCritical = targetHitFlags.HasAnyFlag(ProcHitFlags.CriticalHit)
+				};
+
+				target.Proc(flags, CasterUnit, action, true, targetHitFlags);
+			}
+
+			return hitFlagsCombination;
+		}
+
+		/// <summary>
+		/// Trigger proc on the caster of the spell.
+		/// </summary>
+		/// <param name="flags">What spell caster casted ie. ProcTriggerFlags.DoneHarmfulSpell</param>
+		/// <param name="hitFlags">Hit result of the spell</param>
+		private void TriggerProcOnCaster(ProcTriggerFlags flags, ProcHitFlags hitFlags)
+		{
+			var casterAction = new SimpleUnitAction
+			{
+				Attacker = CasterUnit,
+				Spell = Spell,
+				Victim = m_hitInfoByTarget.Count > 0 ? m_hitInfoByTarget.First().Key : null,
+				IsCritical = hitFlags.HasAnyFlag(ProcHitFlags.CriticalHit)
+			};
+
+			CasterUnit.Proc(flags, CasterUnit, casterAction, true, hitFlags);
+		}
+		#endregion
 		#endregion
 	}
 }

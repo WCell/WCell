@@ -254,8 +254,8 @@ namespace WCell.RealmServer.Spells
 			IsPassive = Attributes.HasFlag(SpellAttributes.Passive);
 
 			IsChanneled = !IsPassive && AttributesEx.HasAnyFlag(SpellAttributesEx.Channeled_1 | SpellAttributesEx.Channeled_2) ||
-			              // don't use Enum.HasFlag!
-			              ChannelInterruptFlags > 0;
+				// don't use Enum.HasFlag!
+						  ChannelInterruptFlags > 0;
 
 			foreach (var effect in Effects)
 			{
@@ -293,7 +293,7 @@ namespace WCell.RealmServer.Spells
 			// don't use Enum.HasFlag!
 
 			IsRanged = (Attributes.HasAnyFlag(SpellAttributes.Ranged) ||
-			            AttributesExC.HasFlag(SpellAttributesExC.ShootRangedWeapon));
+						AttributesExC.HasFlag(SpellAttributesExC.ShootRangedWeapon));
 
 			IsRangedAbility = IsRanged && !IsTriggeredSpell;
 
@@ -353,7 +353,7 @@ namespace WCell.RealmServer.Spells
 			}
 
 			HasIndividualCooldown = CooldownTime > 0 ||
-			                        (IsPhysicalAbility && !IsOnNextStrike && EquipmentSlot != EquipmentSlot.End);
+									(IsPhysicalAbility && !IsOnNextStrike && EquipmentSlot != EquipmentSlot.End);
 
 			HasCooldown = HasIndividualCooldown || CategoryCooldownTime > 0;
 
@@ -398,7 +398,7 @@ namespace WCell.RealmServer.Spells
 			}
 
 			RequiresDeadTarget = HasEffect(SpellEffectType.Resurrect) || HasEffect(SpellEffectType.ResurrectFlat) || HasEffect(SpellEffectType.SelfResurrect);
-				// unreliable: TargetFlags.HasAnyFlag(SpellTargetFlags.Corpse | SpellTargetFlags.PvPCorpse | SpellTargetFlags.UnitCorpse);
+			// unreliable: TargetFlags.HasAnyFlag(SpellTargetFlags.Corpse | SpellTargetFlags.PvPCorpse | SpellTargetFlags.UnitCorpse);
 
 			CostsPower = PowerCost > 0 || PowerCostPercentage > 0;
 
@@ -413,15 +413,15 @@ namespace WCell.RealmServer.Spells
 			IsAreaSpell = HasEffectWith(effect => effect.IsAreaEffect);
 
 			IsDamageSpell = HasHarmfulEffects && !HasBeneficialEffects && HasEffectWith(effect =>
-			                                                                            effect.EffectType ==
-			                                                                            SpellEffectType.Attack ||
-			                                                                            effect.EffectType ==
-			                                                                            SpellEffectType.EnvironmentalDamage ||
-			                                                                            effect.EffectType ==
-			                                                                            SpellEffectType.InstantKill ||
-			                                                                            effect.EffectType ==
-			                                                                            SpellEffectType.SchoolDamage ||
-			                                                                            effect.IsStrikeEffect);
+																						effect.EffectType ==
+																						SpellEffectType.Attack ||
+																						effect.EffectType ==
+																						SpellEffectType.EnvironmentalDamage ||
+																						effect.EffectType ==
+																						SpellEffectType.InstantKill ||
+																						effect.EffectType ==
+																						SpellEffectType.SchoolDamage ||
+																						effect.IsStrikeEffect);
 
 			if (DamageMultipliers[0] <= 0)
 			{
@@ -432,24 +432,24 @@ namespace WCell.RealmServer.Spells
 
 			// ResurrectFlat usually has no target type set
 			ForeachEffect(effect =>
-			              	{
-			              		if (effect.ImplicitTargetA == ImplicitSpellTargetType.None &&
-			              		    effect.EffectType == SpellEffectType.ResurrectFlat)
-			              		{
-			              			effect.ImplicitTargetA = ImplicitSpellTargetType.SingleFriend;
-			              		}
-			              	});
+							{
+								if (effect.ImplicitTargetA == ImplicitSpellTargetType.None &&
+									effect.EffectType == SpellEffectType.ResurrectFlat)
+								{
+									effect.ImplicitTargetA = ImplicitSpellTargetType.SingleFriend;
+								}
+							});
 
-			Schools = Utility.GetSetIndices<DamageSchool>((uint) SchoolMask);
+			Schools = Utility.GetSetIndices<DamageSchool>((uint)SchoolMask);
 			if (Schools.Length == 0)
 			{
-				Schools = new[] {DamageSchool.Physical};
+				Schools = new[] { DamageSchool.Physical };
 			}
 
 			RequiresCasterOutOfCombat = !HasHarmfulEffects && CastDelay > 0 &&
-			                            (Attributes.HasFlag(SpellAttributes.CannotBeCastInCombat) ||
-			                             AttributesEx.HasFlag(SpellAttributesEx.RemainOutOfCombat) ||
-			                             AuraInterruptFlags.HasFlag(AuraInterruptFlags.OnStartAttack));
+										(Attributes.HasFlag(SpellAttributes.CannotBeCastInCombat) ||
+										 AttributesEx.HasFlag(SpellAttributesEx.RemainOutOfCombat) ||
+										 AuraInterruptFlags.HasFlag(AuraInterruptFlags.OnStartAttack));
 
 			if (RequiresCasterOutOfCombat)
 			{
@@ -458,12 +458,12 @@ namespace WCell.RealmServer.Spells
 			}
 
 			IsThrow = AttributesExC.HasFlag(SpellAttributesExC.ShootRangedWeapon) &&
-			          Attributes.HasFlag(SpellAttributes.Ranged) && Ability != null && Ability.Skill.Id == SkillId.Thrown;
+					  Attributes.HasFlag(SpellAttributes.Ranged) && Ability != null && Ability.Skill.Id == SkillId.Thrown;
 
 			HasModifierEffects = HasModifierEffects ||
-			                     HasEffectWith(
-			                     	effect =>
-			                     	effect.AuraType == AuraType.AddModifierFlat || effect.AuraType == AuraType.AddModifierPercent);
+								 HasEffectWith(
+									effect =>
+									effect.AuraType == AuraType.AddModifierFlat || effect.AuraType == AuraType.AddModifierPercent);
 
 			// cannot taunt players
 			CanCastOnPlayer = CanCastOnPlayer && !HasEffect(AuraType.ModTaunt);
@@ -471,12 +471,12 @@ namespace WCell.RealmServer.Spells
 			HasAuraDependentEffects = HasEffectWith(effect => effect.IsDependentOnOtherAuras);
 
 			ForeachEffect(effect =>
-			              	{
-			              		for (var i = 0; i < 3; i++)
-			              		{
-			              			AllAffectingMasks[i] |= effect.AffectMask[i];
-			              		}
-			              	});
+							{
+								for (var i = 0; i < 3; i++)
+								{
+									AllAffectingMasks[i] |= effect.AffectMask[i];
+								}
+							});
 
 			if (Range.MaxDist == 0)
 			{
@@ -497,11 +497,11 @@ namespace WCell.RealmServer.Spells
 			}
 
 			var skillEffect = GetFirstEffectWith(effect =>
-			                                     effect.EffectType == SpellEffectType.SkillStep ||
-			                                     effect.EffectType == SpellEffectType.Skill);
+												 effect.EffectType == SpellEffectType.SkillStep ||
+												 effect.EffectType == SpellEffectType.Skill);
 			if (skillEffect != null)
 			{
-				SkillTier = (SkillTierId) skillEffect.BasePoints;
+				SkillTier = (SkillTierId)skillEffect.BasePoints;
 			}
 			else
 			{
@@ -511,12 +511,12 @@ namespace WCell.RealmServer.Spells
 			ArrayUtil.PruneVals(ref RequiredToolCategories);
 
 			ForeachEffect(effect =>
-			              	{
-			              		if (effect.SpellEffectHandlerCreator != null)
-			              		{
-			              			EffectHandlerCount++;
-			              		}
-			              	});
+							{
+								if (effect.SpellEffectHandlerCreator != null)
+								{
+									EffectHandlerCount++;
+								}
+							});
 			//IsHealSpell = HasEffectWith((effect) => effect.IsHealEffect);
 
 			if (GetEffect(SpellEffectType.QuestComplete) != null)
@@ -540,7 +540,7 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// Sets the CustomTargetHandlerDefintion of all effects
 		/// </summary>
-		public void OverrideCustomTargetDefinitions(TargetAdder adder, TargetEvaluator evaluator = null, 
+		public void OverrideCustomTargetDefinitions(TargetAdder adder, TargetEvaluator evaluator = null,
 			params TargetFilter[] filters)
 		{
 			OverrideCustomTargetDefinitions(new TargetDefinition(adder, filters), evaluator);
@@ -1209,14 +1209,14 @@ namespace WCell.RealmServer.Spells
 			{
 				writer.WriteLine(indent + "ChannelInterruptFlags: " + ChannelInterruptFlags);
 			}
-			if ((int)ProcTriggerFlags != 0)
+			if (ProcTriggerFlags != ProcTriggerFlags.None)
 			{
 				writer.WriteLine(indent + "ProcTriggerFlags: " + ProcTriggerFlags);
-                
-                if ((int)ProcTriggerFlagsEx != 0)
-                {
-                    writer.WriteLine(indent + "ProcTriggerFlagsEx: " + ProcTriggerFlagsEx);
-                }
+
+				if (ProcHitFlags != ProcHitFlags.None)
+				{
+					writer.WriteLine(indent + "ProcHitFlags: " + ProcHitFlags);
+				}
 			}
 			if ((int)ProcChance != 0)
 			{
@@ -1358,9 +1358,14 @@ namespace WCell.RealmServer.Spells
 				writer.WriteLine(indent + "StanceBarOrder: " + StanceBarOrder);
 			}
 
-			if ((int)DefenseType != 0)
+			if (DamageType != DamageType.None)
 			{
-				writer.WriteLine(indent + "DefenseType: " + DefenseType);
+				writer.WriteLine(indent + "DamageType: " + DamageType);
+			}
+
+			if (HarmType != HarmType.Neutral)
+			{
+				writer.WriteLine(indent + "HarmType: " + HarmType);
 			}
 
 			if ((int)PreventionType != 0)
@@ -1414,7 +1419,7 @@ namespace WCell.RealmServer.Spells
 				writer.WriteLine(indent + "Desc: " + Description);
 			}
 
-            if (Reagents != null && Reagents.Length > 0)
+			if (Reagents != null && Reagents.Length > 0)
 			{
 				writer.WriteLine(indent + "Reagents: " + Reagents.ToString(", "));
 			}
@@ -1439,12 +1444,27 @@ namespace WCell.RealmServer.Spells
 
 		public bool IsBeneficialFor(ObjectReference casterReference, WorldObject target)
 		{
-			return HarmType == HarmType.Beneficial || (HarmType == HarmType.Neutral && (casterReference.Object == null || !casterReference.Object.MayAttack(target)));
+			return IsBeneficial || (IsNeutral && (casterReference.Object == null || !casterReference.Object.MayAttack(target)));
 		}
 
 		public bool IsHarmfulFor(ObjectReference casterReference, WorldObject target)
 		{
-			return HarmType == HarmType.Harmful || (HarmType == HarmType.Neutral && casterReference.Object != null && casterReference.Object.MayAttack(target));
+			return IsHarmful || (IsNeutral && casterReference.Object != null && casterReference.Object.MayAttack(target));
+		}
+
+		public bool IsBeneficial
+		{
+			get { return HarmType == HarmType.Beneficial; }
+		}
+
+		public bool IsHarmful
+		{
+			get { return HarmType == HarmType.Harmful; }
+		}
+
+		public bool IsNeutral
+		{
+			get { return HarmType == HarmType.Neutral; }
 		}
 
 		public override bool Equals(object obj)

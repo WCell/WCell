@@ -50,7 +50,7 @@ namespace WCell.RealmServer.Spells
 
 		internal static readonly ObjectPool<SpellCast> SpellCastPool = ObjectPoolMgr.CreatePool(() => new SpellCast(), true);
 		public static readonly ObjectPool<List<IAura>> AuraListPool = ObjectPoolMgr.CreatePool(() => new List<IAura>(), true);
-		public static readonly ObjectPool<List<CastMiss>> CastMissListPool = ObjectPoolMgr.CreatePool(() => new List<CastMiss>(3), true);
+		public static readonly ObjectPool<List<MissedTarget>> CastMissListPool = ObjectPoolMgr.CreatePool(() => new List<MissedTarget>(3), true);
 		public static readonly ObjectPool<List<SpellEffectHandler>> SpellEffectHandlerListPool = ObjectPoolMgr.CreatePool(() => new List<SpellEffectHandler>(3), true);
 		//internal static readonly ObjectPool<List<AuraApplicationInfo>> AuraAppListPool = ObjectPoolMgr.CreatePool(() => new List<AuraApplicationInfo>());
 
@@ -227,6 +227,7 @@ namespace WCell.RealmServer.Spells
 
 		private HashSet<WorldObject> m_targets;
 		private List<AuraApplicationInfo> m_auraApplicationInfos;
+		private Dictionary<Unit, ProcHitFlags> m_hitInfoByTarget = new Dictionary<Unit, ProcHitFlags>();
 
 		public int TargetCount
 		{
@@ -309,7 +310,7 @@ namespace WCell.RealmServer.Spells
 
 		#region Properties
 		/// <summary>
-		/// 
+		/// Spell being casted
 		/// </summary>
 		public Spell Spell
 		{
@@ -1043,7 +1044,7 @@ namespace WCell.RealmServer.Spells
 
 		internal void CheckHitAndSendSpellGo(bool revalidateTargets, byte previousRuneMask)
 		{
-			List<CastMiss> missedTargets;
+			List<MissedTarget> missedTargets;
 			if (revalidateTargets)
 			{
 				// check whether targets were hit
@@ -1158,7 +1159,7 @@ namespace WCell.RealmServer.Spells
 			return m_spell.CheckItemRestrictions(TargetItem, caster.Inventory);
 		}
 
-		List<CastMiss> CheckHit(Spell spell)
+		List<MissedTarget> CheckHit(Spell spell)
 		{
 			if (spell.HasHarmfulEffects && !m_passiveCast && !GodMode)
 			{
@@ -1181,7 +1182,7 @@ namespace WCell.RealmServer.Spells
 						if (missReason != CastMissReason.None)
 						{
 							// missed
-							missedTargets.Add(new CastMiss(target, missReason));
+							missedTargets.Add(new MissedTarget(target, missReason));
 
 							// remove missed target from SpellEffectHandlers' target lists
 							for (var i = 0; i < m_handlers.Length; i++)
@@ -1348,7 +1349,7 @@ namespace WCell.RealmServer.Spells
 				// resist
 				if (target.CheckResist(CasterUnit, school, spell.Mechanic) && !spell.AttributesExB.HasFlag(SpellAttributesExB.CannotBeResisted))
 				{
-					return CastMissReason.Resist;
+					return CastMissReason.FullResist;
 				}
 			}
 
@@ -1913,16 +1914,16 @@ namespace WCell.RealmServer.Spells
 		}
 	}
 
-	#region CastMiss
+	#region MissedTarget
 	/// <summary>
 	/// Represents a target which didn't get hit by a SpellCast
 	/// </summary>
-	public struct CastMiss
+	public struct MissedTarget
 	{
 		public readonly WorldObject Target;
 		public readonly CastMissReason Reason;
 
-		public CastMiss(WorldObject target, CastMissReason reason)
+		public MissedTarget(WorldObject target, CastMissReason reason)
 		{
 			Target = target;
 			Reason = reason;
@@ -1930,7 +1931,7 @@ namespace WCell.RealmServer.Spells
 
 		public override bool Equals(object obj)
 		{
-			return obj is CastMiss && (((CastMiss)obj).Target == Target);
+			return obj is MissedTarget && (((MissedTarget)obj).Target == Target);
 		}
 
 		public override int GetHashCode()

@@ -1,3 +1,4 @@
+using System;
 
 namespace WCell.Constants.Spells
 {
@@ -22,6 +23,16 @@ namespace WCell.Constants.Spells
 		public static bool HasAnyFlag(this ProcTriggerFlags flags, ProcTriggerFlags otherFlags)
 		{
 			return (flags & otherFlags) != 0;
+		}
+
+		public static bool HasAnyFlag(this ProcHitFlags flags, ProcHitFlags otherFlags)
+		{
+			return (flags & otherFlags) != 0;
+		}
+
+		public static bool RequireHitFlags(this ProcTriggerFlags flags)
+		{
+			return flags.HasAnyFlag(ProcTriggerFlags.RequiringHitFlags);
 		}
 
 		public static bool HasAnyFlag(this AuraStateMask mask, AuraState state)

@@ -654,7 +654,7 @@ namespace WCell.RealmServer.Spells
 
 		public void MakeProc(AuraEffectHandlerCreator creator, params SpellLineId[] exclusiveTriggers)
 		{
-			Spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+			//Spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
 
 			IsProc = true;
 			ClearAffectMask();
@@ -668,7 +668,7 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public void MakeProcWithMask(AuraEffectHandlerCreator creator, params SpellLineId[] exclusiveTriggers)
 		{
-			Spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+			//Spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast; 
 
 			IsProc = true;
 			SetAffectMask(exclusiveTriggers);

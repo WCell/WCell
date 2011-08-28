@@ -37,7 +37,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			var procFlags = m_aura.Spell.ProcTriggerFlags;
 			var owner = m_aura.Auras.Owner;
 			if (!owner.IsAlive && 
-				(!procFlags.HasFlag(ProcTriggerFlags.GainExperience) || owner.YieldsXpOrHonor))
+				(!procFlags.HasFlag(ProcTriggerFlags.KilledTargetThatYieldsExperienceOrHonor) || owner.YieldsXpOrHonor))
 			{
 				var item = ItemMgr.GetTemplate(SpellEffect.ItemId);
 				if (item == null)

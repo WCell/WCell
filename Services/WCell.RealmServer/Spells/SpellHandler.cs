@@ -335,7 +335,7 @@ namespace WCell.RealmServer.Spells
 				SpellLines.InitSpellLines();
 
 				ContentMgr.Load<SpellProcEventEntry>();
-                ProcEventHelper.PatchSpells(ById);
+				ProcEventHelper.PatchSpells(ById);
 			}
 
 			if (init)

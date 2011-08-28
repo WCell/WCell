@@ -25,16 +25,16 @@ namespace WCell.Addons.Default.Instances
 		private static NPCEntry jergoshEntry;
 		private static NPCEntry bazzalanEntry;
 //      Oggleflint
-        static readonly ProcHandlerTemplate cleave = new TriggerSpellProcHandlerTemplate(SpellHandler.Get(SpellId.Cleave_28), ProcTriggerFlags.AnyHit, 10);
+        static readonly ProcHandlerTemplate cleave = new TriggerSpellProcHandlerTemplate(SpellHandler.Get(SpellId.Cleave_28), ProcTriggerFlags.ReceivedAnyDamage, ProcHitFlags.None, 10);
 //      Taragaman
 //      static readonly ProcHandlerTemplate uppercut = new TriggerSpellProcHandlerTemplate(SpellHandler.Get(SpellId.Uppercut_2), ProcTriggerFlags.AnyHit, 10);  //Not working properly
-        static readonly ProcHandlerTemplate firenova = new TriggerSpellProcHandlerTemplate(SpellHandler.Get(SpellId.FireNova_2), ProcTriggerFlags.AnyHit, 10);
+        static readonly ProcHandlerTemplate firenova = new TriggerSpellProcHandlerTemplate(SpellHandler.Get(SpellId.FireNova_2), ProcTriggerFlags.ReceivedAnyDamage, ProcHitFlags.None, 10);
 //      Jergosh
-        static readonly ProcHandlerTemplate weakness = new TriggerSpellProcHandlerTemplate(SpellHandler.Get(SpellId.CurseOfWeakness_6), ProcTriggerFlags.AnyHit, 10);
-        static readonly ProcHandlerTemplate immolate = new TriggerSpellProcHandlerTemplate(SpellHandler.Get(SpellId.Immolate_13), ProcTriggerFlags.AnyHit, 15);
+        static readonly ProcHandlerTemplate weakness = new TriggerSpellProcHandlerTemplate(SpellHandler.Get(SpellId.CurseOfWeakness_6), ProcTriggerFlags.ReceivedAnyDamage, ProcHitFlags.None, 10);
+        static readonly ProcHandlerTemplate immolate = new TriggerSpellProcHandlerTemplate(SpellHandler.Get(SpellId.Immolate_13), ProcTriggerFlags.ReceivedAnyDamage, ProcHitFlags.None, 15);
 //      Bazzalan
-        static readonly ProcHandlerTemplate poison = new TriggerSpellProcHandlerTemplate(SpellHandler.Get(SpellId.Poison_10), ProcTriggerFlags.AnyHit, 5);
-        static readonly ProcHandlerTemplate sstrike = new TriggerSpellProcHandlerTemplate(SpellHandler.Get(SpellId.SinisterStrike), ProcTriggerFlags.AnyHit, 10);
+        static readonly ProcHandlerTemplate poison = new TriggerSpellProcHandlerTemplate(SpellHandler.Get(SpellId.Poison_10), ProcTriggerFlags.ReceivedAnyDamage, ProcHitFlags.None, 5);
+        static readonly ProcHandlerTemplate sstrike = new TriggerSpellProcHandlerTemplate(SpellHandler.Get(SpellId.SinisterStrike), ProcTriggerFlags.ReceivedAnyDamage, ProcHitFlags.None, 10);
         
 		[Initialization]
 		[DependentInitialization(typeof(NPCMgr))]
