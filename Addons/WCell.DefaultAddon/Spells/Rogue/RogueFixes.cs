@@ -18,14 +18,14 @@ namespace WCell.Addons.Default.Spells.Rogue
 			// RogueKick can proc RogueCombatImprovedKick
 			SpellLineId.RogueCombatImprovedKick.Apply(spell =>
 			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+				spell.ProcTriggerFlags = ProcTriggerFlags.DoneMeleeSpell;
 				spell.GetEffect(AuraType.ProcTriggerSpell).SetAffectMask(SpellLineId.RogueKick);
 			});
 
 			// RogueDeadlyThrow can proc RogueCombatThrowingSpecialization
-			SpellLineId.RogueCombatThrowingSpecialization.Apply(spell => 
+			SpellLineId.RogueCombatThrowingSpecialization.Apply(spell =>
 			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+				spell.ProcTriggerFlags = ProcTriggerFlags.DoneRangedSpell;
 				spell.GetEffect(AuraType.ProcTriggerSpell).AddAffectingSpells(SpellLineId.RogueDeadlyThrow);
 			});
 
@@ -64,7 +64,7 @@ namespace WCell.Addons.Default.Spells.Rogue
 				var chr = m_cast.CasterUnit as Character;
 				if (chr != null)
 				{
-						chr.SpellCast.Trigger(SpellId.HungerForBlood_3, chr);
+					chr.SpellCast.Trigger(SpellId.HungerForBlood_3, chr);
 				}
 			}
 		}

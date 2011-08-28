@@ -33,30 +33,21 @@ namespace WCell.Addons.Default.Spells.Mage
 				// always procs on critical spells of the given AffectMask
 				var effect = spell.GetEffect(AuraType.Dummy);
 				spell.ProcChance = 100;
-				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCastCritical;
 				
 				effect.AuraType = AuraType.ProcTriggerSpell;		// make it a ProcTriggerSpell
 				effect.AffectMask = burnoutEffect.AffectMask;		// set the correct affect mask
 				effect.TriggerSpellId = SpellId.ClassSkillBurnout;	// trigger the mana consumption spell
 			});
 
-			// Improved Scorch has the wrong trigger
-			SpellLineId.MageFireImprovedScorch.Apply(spell =>
-			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;	// proc on all spell casts of Scorch
-			});
-
 			// Impact needs the right triggers
 			SpellLineId.MageFireImpact.Apply(spell =>
 			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
 				var triggerEffect = spell.GetEffect(AuraType.ProcTriggerSpell);
 				// triggerEffect.AddAffectingSpells(...); // TODO: Triggered by all damaging spells
 			});
 			// Impact's triggered effect also needs some adjustments
 			SpellHandler.Apply(spell =>
 			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
 				var triggerEffect = spell.GetEffect(AuraType.ProcTriggerSpell);
 				triggerEffect.ImplicitTargetA = ImplicitSpellTargetType.SingleEnemy;
 				triggerEffect.AddAffectingSpells(SpellLineId.MageFireBlast);		// triggered by fire blast only
@@ -65,8 +56,6 @@ namespace WCell.Addons.Default.Spells.Mage
 			// Combustion should proc
 			SpellLineId.MageFireCombustion.Apply(spell =>
 			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
-
 				var modEffect = spell.GetEffect(AuraType.AddModifierPercent);
 
 				// the trigger effect is actually supposed to be proc'ed by the same spells that have their crit damage increased

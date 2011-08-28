@@ -154,7 +154,7 @@ namespace WCell.RealmServer.Spells
 	{
 		public static AISpellCooldownCategory GetAISpellCooldownCategory(this Spell spell)
 		{
-			var beneficial = spell.HarmType == HarmType.Beneficial;
+			var beneficial = spell.IsBeneficial;
 			if (spell.IsAura)
 			{
 				return beneficial ? AISpellCooldownCategory.AuraBeneficial : AISpellCooldownCategory.AuraHarmful;

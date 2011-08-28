@@ -78,7 +78,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 				// "When the target blocks, parries, or dodges a melee attack the target will gain $57319s1% of maximum displayed mana."
 				spell.AddProcHandler(new TriggerSpellProcHandlerTemplate(
 					SpellHandler.Get(SpellId.BlessingOfSanctuary),
-					ProcTriggerFlags.MeleeHitOther | ProcTriggerFlags.RangedHitOther,
+					spell.ProcTriggerFlags,
 					ProcHandler.DodgeBlockOrParryValidator
 					));
 

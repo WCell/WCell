@@ -36,7 +36,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 		{
 			line.Apply(spell =>
 			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+				spell.ProcTriggerFlags = ProcTriggerFlags.DoneHarmfulMagicSpell | ProcTriggerFlags.DoneMeleeSpell;
 
 				var effect = spell.GetEffect(AuraType.Dummy2);
 				// should not have an amplitude 

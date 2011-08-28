@@ -31,7 +31,7 @@ namespace WCell.RealmServer.Spells
 		public uint[] SpellFamilyMask2;
 
 		public ProcTriggerFlags ProcFlags;
-		public ProcTriggerFlagsEx ProcFlagsEx; //proc Extend info
+		public ProcFlagsExLegacy ProcFlagsEx; //proc Extend info
 		public float PpmRate;
 		public float CustomChance;
 		public uint Cooldown;
@@ -130,7 +130,8 @@ namespace WCell.RealmServer.Spells
 
             if (procEntry.ProcFlagsEx != 0)
             {
-                spell.ProcTriggerFlagsEx = procEntry.ProcFlagsEx;
+                // Take just hit flags we don't need others
+                spell.ProcHitFlags = (ProcHitFlags)procEntry.ProcFlagsEx & ProcHitFlags.All;
             }
 
             if (procEntry.CustomChance != 0)

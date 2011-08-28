@@ -20,7 +20,7 @@ namespace WCell.RealmServer.Spells
 			var missReason = CastMissReason.None;
 			if (hostile && target.CheckDebuffResist(casterLevel, target.GetLeastResistantSchool(spell)))
 			{
-				missReason = CastMissReason.Resist;
+				missReason = CastMissReason.FullResist;
 			}
 			return missReason;
 		}
@@ -78,7 +78,7 @@ namespace WCell.RealmServer.Spells
 			return SpellFailedReason.Ok;
 		}
 
-		void CreateAuras(ref List<CastMiss> missedTargets, ref List<IAura> auras, DynamicObject dynObj)
+		void CreateAuras(ref List<MissedTarget> missedTargets, ref List<IAura> auras, DynamicObject dynObj)
 		{
 			auras = AuraListPool.Obtain();
 
@@ -158,7 +158,7 @@ namespace WCell.RealmServer.Spells
 					(missReason = CheckDebuffResist(target, m_spell, CasterReference.Level, hostile)) != CastMissReason.None)
 				{
 					// debuff miss
-					missedTargets.Add(new CastMiss(target, missReason));
+					missedTargets.Add(new MissedTarget(target, missReason));
 				}
 				else
 				{

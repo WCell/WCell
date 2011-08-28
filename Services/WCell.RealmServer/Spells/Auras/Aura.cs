@@ -582,18 +582,18 @@ namespace WCell.RealmServer.Spells.Auras
 			}
 
 			CanBeSaved = this != m_auras.GhostAura &&
-			             !m_spell.AttributesExC.HasFlag(SpellAttributesExC.HonorlessTarget) &&
-			             UsedItem == null;
+						 !m_spell.AttributesExC.HasFlag(SpellAttributesExC.HonorlessTarget) &&
+						 UsedItem == null;
 
 			m_auras.OnAuraChange(this);
 
 			var caster = CasterUnit;
 			var owner = Owner;
-			if (caster != null)
-			{
-				caster.Proc(ProcTriggerFlags.AuraStarted, owner,
-					new AuraAction { Attacker = caster, Victim = owner, Aura = this }, true);
-			}
+			//if (caster != null)
+			//{
+			//    caster.Proc(ProcTriggerFlags.AuraStarted, owner,
+			//        new AuraAction { Attacker = caster, Victim = owner, Aura = this }, true);
+			//}
 		}
 
 		#endregion
@@ -1138,6 +1138,11 @@ namespace WCell.RealmServer.Spells.Auras
 		public ProcTriggerFlags ProcTriggerFlags
 		{
 			get { return m_spell.ProcTriggerFlags; }
+		}
+
+		public ProcHitFlags ProcHitFlags
+		{
+			get { return m_spell.ProcHitFlags; }
 		}
 
 		/// <summary>
