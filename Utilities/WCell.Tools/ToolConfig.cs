@@ -22,7 +22,7 @@ namespace WCell.Tools
 
 		[NotVariable]
 		public static string ToolsRoot = Path.GetFullPath("../../Utilities/WCell.Tools/");
-		public static readonly string ConfigFileName = "Tools.xml";
+		public static readonly string ConfigFileName = "ToolsConfig.xml";
 
 		public static string WCellRoot { get { return ToolsRoot + "../../"; } }
 		public static string CoreDir { get { return WCellRoot + "Core/"; } }
@@ -38,19 +38,23 @@ namespace WCell.Tools
 		public static string WMODir { get { return ContentDir + "Maps/"; } }
 		public static string M2Dir { get { return ContentDir + "Maps/"; } }
 
+#if DEBUG
 		public static string RealmServerRunDir { get { return RunDir + "Debug/"; } }
+#else
+		public static string RealmServerRunDir { get { return RunDir + "Release/"; } }
+#endif
 		public static string RealmServerDebugDir { get { return RunDir + "Debug/"; } }
 		/// <summary>
-		/// The location of WCell's executable in the Debug/ folder
+		/// The location of WCell's executable in the Debug/ or Release/ folder
 		/// </summary>
-		public static string WCellRealmServerConsoleExe { get { return  RealmServerDebugDir + "WCell.RealmServerConsole.exe"; } }
+		public static string WCellRealmServerConsoleExe { get { return  RealmServerRunDir + "WCell.RealmServerConsole.exe"; } }
 
 		public static string AddonDir { get { return "RealmServerAddons/"; } }
 		public static string AddonSourceDir { get { return WCellRoot + "Addons/"; } }
 		public static string DefaultAddonSourceDir { get { return AddonSourceDir + "WCell.DefaultAddon/"; } }
 
-		public static string LogFolder { get { return  WCellRoot + "../Logs/"; } }
-		public static string LogOutputFolder { get { return  WCellRoot + "../Logs/Converted/"; } }
+		public static string LogFolder { get { return  WCellRoot + "Logs/"; } }
+		public static string LogOutputFolder { get { return  WCellRoot + "Logs/Converted/"; } }
 		public static string PAToolLogFile { get { return  LogFolder + "PATool.xml"; } }
 		public static string PAToolDefaultDir { get { return  LogFolder; } }
 		public static string PAToolDefaultOutputFile { get { return  LogFolder + "PAToolOutput.txt"; } }
@@ -82,7 +86,7 @@ namespace WCell.Tools
 		{
 			if (s_instance == null)
 			{
-				var file = ToolsRoot + ConfigFileName;
+				var file = RealmServerRunDir + ConfigFileName;
 				if (File.Exists(file))
 				{
 					log.Info("Loading ToolConfig from {0}...", Path.GetFullPath(ConfigFileName));
