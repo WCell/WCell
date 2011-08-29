@@ -54,7 +54,8 @@ namespace WCell.Terrain.MPQ
 				return null;
 			}
 
-			adt.GenerateHeightVertexAndIndices();
+			//adt.GenerateMapWithTerraSimplification();
+            adt.GenerateMapWithNoSimplification();
 
 			return adt;
 		}

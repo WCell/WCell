@@ -68,9 +68,7 @@ namespace WCell.Terrain.GUI
 		{
 			Console.Write("Trying to load simple tile... ");
 			var tile = SimpleTerrain.LoadTile(map, x, y);
-
-
-
+		    
 			if (tile == null)
 			{
 				// load it the slow way

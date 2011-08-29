@@ -96,6 +96,8 @@ namespace WCell.Terrain.GUI
 		};
 
 		private LiquidRenderer LiquidRenderer;
+	    private WireframeNavMeshRenderer wireframeNavMeshRenderer;
+	    private SolidNavMeshRenderer solidNavMeshRenderer;
 		private float globalIlluminationLevel;
 		private TerrainTile m_Tile;
 
@@ -246,10 +248,13 @@ namespace WCell.Terrain.GUI
             environmentRenderer = new EnvironmentRenderer(this);
 			Components.Add(environmentRenderer);
 
+            wireframeNavMeshRenderer = new WireframeNavMeshRenderer(this);
+            solidNavMeshRenderer = new SolidNavMeshRenderer(this);
+
 			if (Tile.NavMesh != null)
 			{
-				Components.Add(new WireframeNavMeshRenderer(this));
-				Components.Add(new SolidNavMeshRenderer(this));
+				Components.Add(wireframeNavMeshRenderer);
+				Components.Add(solidNavMeshRenderer);
 			}
 			Components.Add(LiquidRenderer = new LiquidRenderer(this));
 
@@ -372,7 +377,7 @@ namespace WCell.Terrain.GUI
 		/// <param name="gameTime">Provides a snapshot of timing values.</param>
 		protected override void Draw(GameTime gameTime)
 		{
-			_graphics.GraphicsDevice.Clear(Color.DimGray);
+			_graphics.GraphicsDevice.Clear(Color.Black);
 
 			GraphicsDevice.DepthStencilState = defaultStencilState;
 			UpdateProjection();
@@ -831,8 +836,10 @@ namespace WCell.Terrain.GUI
 		private MainMenu menu;
 		private MenuItem renderingModeButton;
 	    private MenuItem toggleWaterButton;
+	    private MenuItem toggleNavMeshButton;
 		private bool solidRenderingMode = true;
 	    private bool liquidRenderingEnabled = true;
+	    private bool navMeshRenderingEnabled = false;
 		private TreeView treeView;
 		private TextBox waitingBox;
 		readonly BackgroundWorker worker = new BackgroundWorker();
@@ -905,6 +912,11 @@ namespace WCell.Terrain.GUI
 			menu.MenuItems.Add(toggleWaterButton);
             ClickedToggleWaterButton(null, null);
 
+		    toggleNavMeshButton = new MenuItem();
+		    toggleNavMeshButton.Click += ClickedToggleNavMeshButton;
+		    menu.MenuItems.Add(toggleNavMeshButton);
+		    ClickedToggleNavMeshButton(null, null);
+
 			//var exportRecastMeshButton = new MenuItem("Export Tile mesh");
 			//exportRecastMeshButton.Click += ExportRecastMesh;
 			//menu.MenuItems.Add(exportRecastMeshButton);
@@ -912,7 +924,7 @@ namespace WCell.Terrain.GUI
 			// build treeview asynchronously
 			treeView = new TreeView();
 			treeView.Dock = DockStyle.Left;
-			treeView.DoubleClick += ClickedTreeView;
+			treeView.DoubleClick += DoubleClickedTreeView;
 			treeView.Width = 200;
 
 			GetOrCreateWaitingBox("Loading zone list...").Visible = true;
@@ -1021,6 +1033,21 @@ namespace WCell.Terrain.GUI
             }
         }
 
+        private void ClickedToggleNavMeshButton(object sender, EventArgs e)
+        {
+            navMeshRenderingEnabled = !navMeshRenderingEnabled;
+            wireframeNavMeshRenderer.Enabled = navMeshRenderingEnabled;
+            solidNavMeshRenderer.Enabled = navMeshRenderingEnabled;
+            if (navMeshRenderingEnabled)
+            {
+                toggleNavMeshButton.Text = "NavMesh Off";
+            }
+            else
+            {
+                toggleNavMeshButton.Text = "NavMesh On";
+            }
+        }
+
 		private Control GetOrCreateWaitingBox(string text)
 		{
 			if (waitingBox == null)
@@ -1038,52 +1065,53 @@ namespace WCell.Terrain.GUI
 			return waitingBox;
 		}
 
-		private void ClickedTreeView(object sender, EventArgs e)
+		private void DoubleClickedTreeView(object sender, EventArgs e)
 		{
+            if (worker.IsBusy) return;
+
 			var node = treeView.SelectedNode;
-			if (node is TileTreeNode && !worker.IsBusy)
-			{
-				var tnode = ((TileTreeNode)node);
+		    if (!(node is TileTreeNode)) return;
+            
+            var tnode = node as TileTreeNode;
 
-				// GUI stuff
-				IsMenuVisible = false;
+		    // GUI stuff
+		    IsMenuVisible = false;
 
-				GetOrCreateWaitingBox("Loading tile - Please wait...").Visible = true;
-				worker.DoWork += (send0r, args) =>
-					{
+		    GetOrCreateWaitingBox("Loading tile - Please wait...").Visible = true;
+		    worker.DoWork += (send0r, args) =>
+		    {
 
-						// load new tile
-						Tile = TerrainViewerProgram.GetOrCreateTile(tnode.Map, tnode.Coords.X, tnode.Coords.Y);
-					};
+		        // load new tile
+		        Tile = TerrainViewerProgram.GetOrCreateTile(tnode.Map, tnode.Coords.X, tnode.Coords.Y);
+		    };
 
-				worker.RunWorkerCompleted += (a, b) =>
-					{
-						// update node
-						tnode.BackColor = System.Drawing.Color.White;
+		    worker.RunWorkerCompleted += (a, b) =>
+		    {
+		        // update node
+		        tnode.BackColor = System.Drawing.Color.White;
 
-						// reset renderers
-						foreach (var component in Components)
-						{
-							if (component is RendererBase)
-							{
-								((RendererBase)component).Clear();
-							}
-						}
+		        // reset renderers
+		        foreach (var component in Components)
+		        {
+		            if (component is RendererBase)
+		            {
+		                ((RendererBase)component).Clear();
+		            }
+		        }
 
-						// reset GUI
-						waitingBox.Visible = false;
+		        // reset GUI
+		        waitingBox.Visible = false;
 
-						// update avatar
-						var topRight = Tile.Bounds.TopRight;
-						var bottomLeft = Tile.Bounds.BottomLeft;
-						avatarPosition = new XVector3(topRight.X, topRight.Y, 200);
-						XNAUtil.TransformWoWCoordsToXNACoords(ref avatarPosition);
+		        // update avatar
+		        var topRight = Tile.Bounds.TopRight;
+		        var bottomLeft = Tile.Bounds.BottomLeft;
+		        avatarPosition = new XVector3(topRight.X, topRight.Y, 200);
+		        XNAUtil.TransformWoWCoordsToXNACoords(ref avatarPosition);
 
-						avatarYaw = 45;
-					};
+		        avatarYaw = 45;
+		    };
 
-				worker.RunWorkerAsync();
-			}
+		    worker.RunWorkerAsync();
 		}
 
 		class TransparentTextBox : TextBox

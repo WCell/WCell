@@ -92,8 +92,8 @@ namespace WCell.Terrain.Recast.NavMesh
 					var v1 = verts[indices[i]];
 					var v2 = verts[indices[i+1]];
 					var v3 = verts[indices[i+2]];
-					if (terrain.GetLiquidType(v1) != LiquidType.None ||
-						terrain.GetLiquidType(v2) != LiquidType.None ||
+					if (terrain.GetLiquidType(v1) != LiquidType.None &&
+						terrain.GetLiquidType(v2) != LiquidType.None &&
 						terrain.GetLiquidType(v3) != LiquidType.None)
 					{
 						continue;

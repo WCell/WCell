@@ -85,7 +85,7 @@ namespace WCell.Terrain.Recast.NavMesh
 			var i = 0;
 			foreach (var poly in Polygons)
 			{
-				// build indices
+                // build indices
 				for (var j = 2; j < poly.Indices.Length; j++)
 				{
 					indices.Add(poly.Indices[0]);
