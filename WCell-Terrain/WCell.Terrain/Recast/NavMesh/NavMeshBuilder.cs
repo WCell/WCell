@@ -92,14 +92,28 @@ namespace WCell.Terrain.Recast.NavMesh
 					var v1 = verts[indices[i]];
 					var v2 = verts[indices[i+1]];
 					var v3 = verts[indices[i+2]];
-					if (terrain.GetLiquidType(v1) != LiquidType.None &&
+					
+                    if (terrain.GetLiquidType(v1) != LiquidType.None &&
 						terrain.GetLiquidType(v2) != LiquidType.None &&
 						terrain.GetLiquidType(v3) != LiquidType.None)
 					{
-						continue;
+                        var triBottom = float.MaxValue;
+				        var triTop = float.MinValue;
+				        triBottom = Math.Min(triBottom, v1.Z);
+                        triBottom = Math.Min(triBottom, v2.Z);
+                        triBottom = Math.Min(triBottom, v3.Z);
+				        triTop = Math.Max(triTop, v1.Z);
+                        triTop = Math.Max(triTop, v2.Z);
+                        triTop = Math.Max(triTop, v3.Z);
+
+					    var triHeightAvg = (triTop - triBottom)*0.5f;
+                        var liqHeight = terrain.GetLiquidHeight(v1);
+					    var avgTriLiqDepth = liqHeight - triHeightAvg;
+                        
+                        if (avgTriLiqDepth > 1.0f) continue;
 					}
 
-					//file.WriteLine("f {0} {1} {2}", indices[i] + 1, indices[i + 1] + 1, indices[i + 2] + 1);
+				    //file.WriteLine("f {0} {1} {2}", indices[i] + 1, indices[i + 1] + 1, indices[i + 2] + 1);
 					file.WriteLine("f {0} {1} {2}", indices[i + 2] + 1, indices[i + 1] + 1, indices[i] + 1);
 				}
 			}

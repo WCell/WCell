@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using WCell.Terrain.GUI.Util;
+using WVector3 = WCell.Util.Graphics.Vector3;
 
 namespace WCell.Terrain.GUI.Renderers
 {
@@ -41,8 +42,8 @@ namespace WCell.Terrain.GUI.Renderers
 		protected override void BuildVerticiesAndIndicies()
 		{
 			var viewer = (TerrainViewer) Game;
-			var tile = viewer.Tile;
-
+			var tiles = viewer.Tiles;
+		    
 			List<int> indices;
 			using (LargeObjectPools.IndexListPool.Borrow(out indices))
 			{
@@ -50,23 +51,33 @@ namespace WCell.Terrain.GUI.Renderers
 				
 				using (LargeObjectPools.Vector3ListPool.Borrow(out vertices))
 				{
+				    indices.Clear();
+				    vertices.Clear();
+				    var tempIndices = new List<int>();
 					var tempVertices = new List<VertexPositionNormalColored>();
 
-					tile.GenerateLiquidMesh(indices, vertices);
+                    foreach (var tile in tiles)
+                    {
+                        tile.GenerateLiquidMesh(indices, vertices);
 
-					if (vertices != null)
-					{	
-						for (var v = 0; v < vertices.Count; v++)
-						{
-							var vertex = vertices[v];
-							var vertexPosNmlCol = new VertexPositionNormalColored(vertex.ToXna(),
-							                                                      WaterColor,
-							                                                      Vector3.Zero);
-							tempVertices.Add(vertexPosNmlCol);
-						}
-					}
+                        if (vertices.Count == 0) continue;
 
-					_cachedIndices = indices.ToArray();
+                        var offset = tempVertices.Count;
+                        foreach (var vertex in vertices)
+                        {
+                            var vertexPosNmlCol = new VertexPositionNormalColored(vertex.ToXna(),
+                                                                                  WaterColor,
+                                                                                  Vector3.Zero);
+                            tempVertices.Add(vertexPosNmlCol);
+                        }
+
+                        foreach (var index in indices)
+                        {
+                            tempIndices.Add(offset + index);
+                        }
+                    }
+
+				    _cachedIndices = tempIndices.ToArray();
 					_cachedVertices = tempVertices.ToArray();
 				}
 			}

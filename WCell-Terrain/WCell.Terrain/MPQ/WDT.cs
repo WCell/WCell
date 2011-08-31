@@ -18,6 +18,8 @@ namespace WCell.Terrain.MPQ
 	/// </summary>
 	public class WDT : Terrain
 	{
+        private const string baseDir = "WORLD\\MAPS\\";
+
 		public MapInfo Entry;
 
 		public int Version;
@@ -43,7 +45,21 @@ namespace WCell.Terrain.MPQ
 
 		public override void FillTileProfile()
 		{
-			// TODO: Fill tile profile based on raw MPQ information?
+			var mpqFinder = WCellTerrainSettings.GetDefaultMPQFinder();
+		    var filePath = GetMapMPQDir(MapId);
+		    var fileList = mpqFinder.GetAllFiles(Path.Combine(filePath, "*.adt"));
+
+            foreach(var file in fileList)
+            {
+                var fileName = Path.GetFileNameWithoutExtension(file);
+                if (string.IsNullOrEmpty(fileName)) continue;
+                
+                var parts = fileName.Split(new [] {'_'});
+                var y = int.Parse(parts[1]);
+                var x = int.Parse(parts[2]);
+
+                TileProfile[x, y] = true;
+            }
 		}
 
 		protected override TerrainTile LoadTile(int x, int y)
@@ -89,6 +105,12 @@ namespace WCell.Terrain.MPQ
 			wdt.TileProfile[x, y] = true;
 			return (ADT)wdt.LoadTile(x, y);
 		}
+
+        private static string GetMapMPQDir(MapId map)
+        {
+            var mapName = TileIdentifier.GetName(map);
+            return Path.Combine(baseDir, mapName);
+        }
 
 		//public void LoadZone(int zoneId)
 		//{

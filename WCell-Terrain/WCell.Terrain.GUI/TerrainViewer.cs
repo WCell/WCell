@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
 using System.Windows.Forms;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -16,6 +17,7 @@ using WCell.Terrain.GUI.UI;
 using WCell.Terrain.GUI.Renderers;
 using WCell.Terrain.MPQ.DBC;
 using WCell.Terrain.Pathfinding;
+using WCell.Terrain.Recast.NavMesh;
 using WCell.Terrain.Serialization;
 using WCell.Util;
 using WCell.Util.Graphics;
@@ -31,6 +33,7 @@ using XVector3 = Microsoft.Xna.Framework.Vector3;
 using WVector3 = WCell.Util.Graphics.Vector3;
 
 using MenuItem = System.Windows.Forms.MenuItem;
+using Point = System.Drawing.Point;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 
 namespace WCell.Terrain.GUI
@@ -95,17 +98,20 @@ namespace WCell.Terrain.GUI
 			DepthBufferEnable = false
 		};
 
+	    private AxisRenderer AxisRenderer;
 		private LiquidRenderer LiquidRenderer;
 	    private WireframeNavMeshRenderer wireframeNavMeshRenderer;
 	    private SolidNavMeshRenderer solidNavMeshRenderer;
 		private float globalIlluminationLevel;
-		private TerrainTile m_Tile;
+	    private World world;
+	    private SimpleWDTTerrain terrain;
+		private List<TerrainTile> m_Tiles;
 
 		/// <summary>
 		/// Constructor for the game.
 		/// <param name="tile">The tile to be displayed</param>
 		/// </summary>
-		public TerrainViewer(XVector3 avatarPosition, TerrainTile tile)
+		public TerrainViewer(XVector3 avatarPosition, World world, TileIdentifier tileId)
 		{
 			TerrainViewer.avatarPosition = avatarPosition;
 			_graphics = new GraphicsDeviceManager(this);
@@ -115,7 +121,12 @@ namespace WCell.Terrain.GUI
 			avatarYaw = 90;
 
 			Form = (Form)Control.FromHandle(Window.Handle);
-			Tile = tile;
+
+		    this.world = world;
+		    terrain = (SimpleWDTTerrain)world.WorldTerrain[tileId.MapId];
+		    var tile = terrain.Tiles[tileId.X, tileId.Y];
+
+		    m_Tiles = new List<TerrainTile> { tile };
 		}
 
 		#region Properties
@@ -133,28 +144,42 @@ namespace WCell.Terrain.GUI
 			}
 		}
 
-
-		public Terrain Terrain
+        public List<Terrain> Terrains
 		{
-			get { return Tile.Terrain; }
-		}
-
-		public TerrainTile Tile
-		{
-			get { return m_Tile; }
-			private set
+			get
 			{
-				m_Tile = value;
-				Form.Invoke(new Action(() =>
-					Form.Text = string.Format("TerrainViewer - {0} (Tile X={1}, Y={2})",
-									value.Terrain.MapId, value.TileX, value.TileY)));
+			    var retList = new List<Terrain>(m_Tiles.Count);
+			    foreach (var tile in m_Tiles)
+			    {
+			        retList.Add(tile.Terrain);
+			    }
+                return retList;
 			}
 		}
 
-		public IShape Shape
+		public List<TerrainTile> Tiles
 		{
-			get { return Tile.NavMesh; }
+			get { return m_Tiles; }
+			private set { m_Tiles = value; }
 		}
+
+		public List<IShape> Shapes
+		{
+            get
+            {
+                var retList = new List<IShape>(m_Tiles.Count);
+                foreach (var tile in m_Tiles)
+                {
+                    retList.Add(tile.NavMesh);
+                }
+                return retList;
+            }
+		}
+
+	    public TerrainTile ActiveTile
+	    {
+            get { return null; }
+	    }
 
 		/// <summary>
 		/// The form of this application
@@ -243,22 +268,12 @@ namespace WCell.Terrain.GUI
 			InitializeEffect();
 
 
-			Components.Add(new AxisRenderer(this));
-
-            environmentRenderer = new EnvironmentRenderer(this);
-			Components.Add(environmentRenderer);
-
-            wireframeNavMeshRenderer = new WireframeNavMeshRenderer(this);
-            solidNavMeshRenderer = new SolidNavMeshRenderer(this);
-
-			if (Tile.NavMesh != null)
-			{
-				Components.Add(wireframeNavMeshRenderer);
-				Components.Add(solidNavMeshRenderer);
-			}
+			Components.Add(AxisRenderer = new AxisRenderer(this));
+            Components.Add(environmentRenderer = new EnvironmentRenderer(this));
+            Components.Add(wireframeNavMeshRenderer = new WireframeNavMeshRenderer(this));
+			Components.Add(solidNavMeshRenderer = new SolidNavMeshRenderer(this));
 			Components.Add(LiquidRenderer = new LiquidRenderer(this));
-
-			Components.Add(TriangleSelectionRenderer = new GenericRenderer(this));
+            Components.Add(TriangleSelectionRenderer = new GenericRenderer(this));
 			Components.Add(LineSelectionRenderer = new GenericRenderer(this));
 
 			InitGUI();
@@ -396,7 +411,6 @@ namespace WCell.Terrain.GUI
 			//_spriteBatch.DrawString(_spriteFont, "Esc: Opens the console.",
 			//                        new Vector2(10, _graphics.GraphicsDevice.Viewport.Height - 30), Color.White);
 			//_spriteBatch.End();
-
 		}
 
 		void UpdateProjection()
@@ -440,30 +454,52 @@ namespace WCell.Terrain.GUI
 			}
 
 			// movement
-			if (keyboardState.IsKeyDown(Keys.A) || (gamePadState.DPad.Left == ButtonState.Pressed))
+			if (!IsMenuVisible 
+                && (keyboardState.IsKeyDown(Keys.A) 
+                    || (gamePadState.DPad.Left == ButtonState.Pressed)))
 			{
+			    var forwardSpeed = ForwardSpeed;
+                if (keyboardState.IsKeyDown(Keys.LeftShift) || keyboardState.IsKeyDown(Keys.RightShift))
+                {
+                    forwardSpeed *= 0.5f;
+                }
+
 				// move left
 				//avatarYaw += RotationSpeed;
 				var forwardMovement = Matrix.CreateRotationY(avatarYaw);
-				var v = new XVector3(1, 0, 0);
+				var v = new XVector3(1, 0, 0)*forwardSpeed;
 				v = XVector3.Transform(v, forwardMovement);
-				avatarPosition.X += v.X;
-				avatarPosition.Y += v.Y;
-				avatarPosition.Z += v.Z;
+				avatarPosition += v;
 			}
 
-			if (keyboardState.IsKeyDown(Keys.D) || (gamePadState.DPad.Right == ButtonState.Pressed))
+            if (!IsMenuVisible 
+                && (keyboardState.IsKeyDown(Keys.D) 
+                    || (gamePadState.DPad.Right == ButtonState.Pressed)))
 			{
+                var forwardSpeed = ForwardSpeed;
+                if (keyboardState.IsKeyDown(Keys.LeftShift) || keyboardState.IsKeyDown(Keys.RightShift))
+                {
+                    forwardSpeed *= 0.5f;
+                }
+
 				// move right
 				//avatarYaw -= RotationSpeed;
-
-				var forwardMovement = Matrix.CreateRotationY(avatarYaw);
-				var v = new XVector3(1, 0, 0);
-				avatarPosition -= XVector3.Transform(v, forwardMovement);
+                var forwardMovement = Matrix.CreateRotationY(avatarYaw);
+				var v = new XVector3(-1, 0, 0)*forwardSpeed;
+			    v = XVector3.Transform(v, forwardMovement);
+				avatarPosition += v;
 			}
 
-			if (keyboardState.IsKeyDown(Keys.W) || (gamePadState.DPad.Up == ButtonState.Pressed))
+            if (!IsMenuVisible 
+                && (keyboardState.IsKeyDown(Keys.W) 
+                    || (gamePadState.DPad.Up == ButtonState.Pressed)))
 			{
+                var forwardSpeed = ForwardSpeed;
+                if (keyboardState.IsKeyDown(Keys.LeftShift) || keyboardState.IsKeyDown(Keys.RightShift))
+                {
+                    forwardSpeed *= 0.5f;
+                }
+
 				//var forwardMovement = Matrix.CreateRotationY(avatarYaw);
 				//var v = new Vector3(0, 0, ForwardSpeed);
 				//v = Vector3.Transform(v, forwardMovement);
@@ -474,7 +510,7 @@ namespace WCell.Terrain.GUI
 				var v = new XVector3(avatarYaw.Sin() * horizontal, vertical, avatarYaw.Cos() * horizontal);
 				v.Normalize();
 
-				var newPos = avatarPosition + v * ForwardSpeed;
+			    var newPos = avatarPosition + v*forwardSpeed;
 				var canMove = true;
 				//Ray ray;
 				//if (GetRayToCursor(out ray))
@@ -493,23 +529,43 @@ namespace WCell.Terrain.GUI
 				}
 			}
 
-			if (keyboardState.IsKeyDown(Keys.S) || (gamePadState.DPad.Down == ButtonState.Pressed))
+			if (!IsMenuVisible 
+                && (keyboardState.IsKeyDown(Keys.S) 
+                    || (gamePadState.DPad.Down == ButtonState.Pressed)))
 			{
+                var forwardSpeed = ForwardSpeed;
+                if (keyboardState.IsKeyDown(Keys.LeftShift) || keyboardState.IsKeyDown(Keys.RightShift))
+                {
+                    forwardSpeed *= 0.5f;
+                }
+
 				var horizontal = avatarPitch.Cos();
 				var vertical = -avatarPitch.Sin();
 				var v = new XVector3(avatarYaw.Sin() * horizontal, vertical, avatarYaw.Cos() * horizontal);
 				v.Normalize();
-				avatarPosition -= v * ForwardSpeed;
+			    avatarPosition -= v*forwardSpeed;
 			}
 
-			if (keyboardState.IsKeyDown(Keys.F))
+			if (!IsMenuVisible && keyboardState.IsKeyDown(Keys.F))
 			{
-				avatarPosition.Y = avatarPosition.Y - 1;
+                var forwardSpeed = ForwardSpeed;
+                if (keyboardState.IsKeyDown(Keys.LeftShift) || keyboardState.IsKeyDown(Keys.RightShift))
+                {
+                    forwardSpeed *= 0.5f;
+                }
+				avatarPosition.Y = avatarPosition.Y - forwardSpeed;
 			}
 
-			if (keyboardState.IsKeyDown(Keys.R) || keyboardState.IsKeyDown(Keys.Space))
+			if (!IsMenuVisible 
+                && (keyboardState.IsKeyDown(Keys.R) 
+                    || keyboardState.IsKeyDown(Keys.Space)))
 			{
-				avatarPosition.Y = avatarPosition.Y + 1;
+                var forwardSpeed = ForwardSpeed;
+                if (keyboardState.IsKeyDown(Keys.LeftShift) || keyboardState.IsKeyDown(Keys.RightShift))
+                {
+                    forwardSpeed *= 0.5f;
+                }
+				avatarPosition.Y = avatarPosition.Y + forwardSpeed;
 			}
 
 
@@ -570,17 +626,22 @@ namespace WCell.Terrain.GUI
 				ClearSelection();
 			}
 
-            if (keyboardState.IsKeyDown(Keys.LeftControl) || keyboardState.IsKeyDown(Keys.RightControl))
+            if (!IsMenuVisible 
+                && (keyboardState.IsKeyDown(Keys.LeftControl) 
+                    || keyboardState.IsKeyDown(Keys.RightControl)))
             {
-                if (keyboardState.IsKeyDown(Keys.LeftAlt) || keyboardState.IsKeyDown(Keys.RightAlt))
+                if (keyboardState.IsKeyDown(Keys.LeftAlt) 
+                    || keyboardState.IsKeyDown(Keys.RightAlt))
                 {
                     environmentRenderer.Enabled = true;
                 }
-                else if (keyboardState.IsKeyDown(Keys.LeftShift) || keyboardState.IsKeyDown(Keys.RightShift))
+                else if (keyboardState.IsKeyDown(Keys.LeftShift) 
+                         || keyboardState.IsKeyDown(Keys.RightShift))
                 {
                     environmentRenderer.Enabled = true;
                 }
-                else if (keyboardState.IsKeyDown(Keys.LeftWindows) || keyboardState.IsKeyDown(Keys.RightWindows))
+                else if (keyboardState.IsKeyDown(Keys.LeftWindows) 
+                         || keyboardState.IsKeyDown(Keys.RightWindows))
                 {
                     environmentRenderer.Enabled = true;
                 }
@@ -599,7 +660,9 @@ namespace WCell.Terrain.GUI
             }
 
 			// mouse
-			if (mouseState.LeftButton == ButtonState.Pressed && !mouseLeftButtonDown)
+            if (!IsMenuVisible 
+                && mouseState.LeftButton == ButtonState.Pressed 
+                && !mouseLeftButtonDown)
 			{
 				// select polygon
 				mouseLeftButtonDown = true;
@@ -623,7 +686,9 @@ namespace WCell.Terrain.GUI
 				}
 			}
 
-			if (mouseState.LeftButton == ButtonState.Released && mouseLeftButtonDown)
+            if (!IsMenuVisible 
+                && mouseState.LeftButton == ButtonState.Released 
+                && mouseLeftButtonDown)
 			{
 				mouseLeftButtonDown = false;
 			}
@@ -644,25 +709,44 @@ namespace WCell.Terrain.GUI
 			Ray ray;
 			if (GetRayToCursor(out ray))
 			{
-				foreach (var trii in Shape.GetPotentialColliders(ray))
-				{
-					var tri = Shape.GetTriangle(trii);
-					foreach (var vert in tri.Vertices)
-					{
-						var pos = ray.Position;
-						if (vert.GetDistance(pos) < distance)
-						{
-							SelectTriangle(trii, true);
-						}
-					}
-				}
+                foreach (var shape in Shapes)
+                {
+                    foreach (var trii in shape.GetPotentialColliders(ray))
+                    {
+                        var tri = shape.GetTriangle(trii);
+                        foreach (var vert in tri.Vertices)
+                        {
+                            var pos = ray.Position;
+                            if (vert.GetDistance(pos) < distance)
+                            {
+                                SelectTriangle(shape, trii, true);
+                            }
+                        }
+                    }
+                }
 			}
 		}
 
+        private void UpdateAvatarPosition()
+        {
+            var topRight = Tiles[0].Bounds.TopRight; 
+            foreach (var tile in Tiles)
+            {
+                topRight = new WCell.Util.Graphics.Point
+                {
+                    X = Math.Max(topRight.X, tile.Bounds.TopRight.X),
+                    Y = Math.Max(topRight.Y, tile.Bounds.TopRight.Y)
+                };
+            }
+
+            avatarPosition = new XVector3(topRight.X, topRight.Y, 200);
+            XNAUtil.TransformWoWCoordsToXNACoords(ref avatarPosition);
+            avatarYaw = 45;
+        }
 		#endregion
 
 		#region Mouse selection
-		private readonly List<WVector3> selectedPoints = new List<WVector3>();
+		private readonly List<RegionalPoint> selectedPoints = new List<RegionalPoint>();
 
 		private void SelectOnPath()
 		{
@@ -673,51 +757,71 @@ namespace WCell.Terrain.GUI
 				return;
 			}
 
-			WCell.Util.Graphics.Vector3 v;
-			if (Shape.IntersectFirstTriangle(ray, out v) == -1) return;
+			WVector3 v = new WVector3(float.MinValue, float.MinValue, float.MinValue);
+		    IShape found = null;
+		    foreach (var shape in Shapes)
+		    {
+                if (shape.IntersectFirstTriangle(ray, out v) == -1) continue;
 
-			selectedPoints.Add(v);
+		        found = shape;
+                break;
+		    }
 
-			if (selectedPoints.Count > 1)
-			{
-				// highlight corridor and visited fringe
-				var start = selectedPoints[0];
-				var dest = selectedPoints[1];
-				var visited = new HashSet<int>();
-				var path = new Path();
-				var corridor = Tile.Pathfinder.FindCorridor(start, dest, out visited);
+            if (found == null) 
+                return;
 
-				if (corridor.IsNull) return;
+		    selectedPoints.Add(new RegionalPoint
+		    {
+                Shape = found,
+                Point = v
+		    });
 
-				// highlight fringe
-				/*foreach (var tri in visited)
+		    if (selectedPoints.Count <= 1) return;
+
+		    // highlight corridor and visited fringe
+		    var start = selectedPoints[0];
+            if (!(start.Shape is NavMesh)) return;
+            
+            var dest = selectedPoints[1];
+            if (!(dest.Shape is NavMesh)) return;
+
+            var visited = new HashSet<int>();
+		    var path = new Path();
+
+		    var corridor = (start.Shape as NavMesh).Tile.Pathfinder.FindCorridor(start.Point, dest.Point, out visited);
+
+		    if (corridor.IsNull) return;
+
+		    // highlight fringe
+		    /*foreach (var tri in visited)
 				{
 					SelectTriangle(tri, true, new Color(120, 10, 10, 128));
 				}*/
 
-				// highlight corridor
-				var current = corridor;
-				while (!current.IsNull)
-				{
-					//var tri = Tile.NavMesh.FindFirstTriangleUnderneath(curren);
-					SelectTriangle(current.Triangle, true);
-					current = current.Previous;
-				}
+		    // highlight corridor
+		    var current = corridor;
+		    while (!current.IsNull)
+		    {
+                // TODO: manage paths that cross tile boundaries.
+		        SelectTriangle(start.Shape, current.Triangle, true);
+		        current = current.Previous;
+		    }
 
-				// draw line to along the path
-				Tile.Pathfinder.FindPathStringPull(start, dest, corridor, path);
-			    var p = start;
-                LineSelectionRenderer.SelectPoint(start, Color.Black);
-				while (path.HasNext())
-				{
-					var q = path.Next();
-				    LineSelectionRenderer.SelectLine(p, q, Color.Green);
-                    LineSelectionRenderer.SelectPoint(q, Color.Black);
-				    p = q;
-				}
+		    // draw line to along the path
+		    (start.Shape as NavMesh).Tile.Pathfinder.FindPathStringPull(start.Point, dest.Point, corridor, path);
+		    
+            var p = start.Point;
+		    LineSelectionRenderer.SelectPoint(start.Point, Color.Black);
+		    while (path.HasNext())
+		    {
+		        var q = path.Next();
+		        LineSelectionRenderer.SelectLine(p, q, Color.Green);
+		        LineSelectionRenderer.SelectPoint(q, Color.Black);
+		        p = q;
+		    }
 
-				// highlight corners
-				/*current = corridor;
+		    // highlight corners
+		    /*current = corridor;
 				while (!current.IsNull)
 				{
 					//var tri = Tile.NavMesh.FindFirstTriangleUnderneath(curren);
@@ -733,7 +837,6 @@ namespace WCell.Terrain.GUI
 					}
 					current = current.Previous;
 				}*/
-			}
 		}
 
 		/// <summary>
@@ -750,35 +853,44 @@ namespace WCell.Terrain.GUI
 				return;
 			}
 
-			var index = Shape.FindFirstHitTriangle(ray);
+		    var index = -1;
+		    IShape found = null;
+            foreach(var shape in Shapes)
+            {
+                index = shape.FindFirstHitTriangle(ray);
+                if (index == -1) continue;
+                
+                found = shape;
+                break;
+            }
+
 			//var index = Utility.Random(Shape.Indices.Length-2);
-			if (index != -1)
-			{
-				// mark the selected triangle
-				SelectTriangle(index, add);
+		    if (found == null) return;
 
-				// also mark it's neighbors
-				var neighbors = Shape.GetNeighborsOf(index);
-				foreach (var neighbor in neighbors)
-				{
-					if (neighbor > 0)
-					{
-						SelectTriangle(neighbor * 3, true, Color.Red);
-					}
-				}
-			}
+		    // mark the selected triangle
+		    SelectTriangle(found, index, add);
+
+		    // also mark it's neighbors
+		    var neighbors = found.GetNeighborsOf(index);
+		    foreach (var neighbor in neighbors)
+		    {
+		        if (neighbor > 0)
+		        {
+		            SelectTriangle(found, neighbor*3, true, Color.Red);
+		        }
+		    }
 		}
 
-		private void SelectTriangle(int index, bool add)
+		private void SelectTriangle(IShape shape, int index, bool add)
 		{
-			SelectTriangle(index, add, new Color(120, 120, 20));
+			SelectTriangle(shape, index, add, new Color(120, 120, 20));
 		}
 
-		void SelectTriangle(int index, bool add, Color color)
+		void SelectTriangle(IShape shape, int index, bool add, Color color)
 		{
 			if (index == -1) return;
 
-			var triangle = Shape.GetTriangle(index);
+			var triangle = shape.GetTriangle(index);
 
 			// elevate them just a tiny bit, so they do not collide with the original triangle
 			triangle.Point1.Z += 0.0001f;
@@ -845,6 +957,14 @@ namespace WCell.Terrain.GUI
 		readonly BackgroundWorker worker = new BackgroundWorker();
 
 		private TextBox LiquidBox;
+	    private Button NorthWestButton;
+	    private Button NorthButton;
+	    private Button NorthEastButton;
+	    private Button EastButton;
+	    private Button SouthEastButton;
+	    private Button SouthButton;
+	    private Button SouthWestButton;
+	    private Button WestButton;
 
 		public bool IsMenuVisible
 		{
@@ -857,6 +977,7 @@ namespace WCell.Terrain.GUI
 				if (value == IsMenuVisible) return;
 
 				SetTreeViewVisible(value);
+			    SetButtonsVisible(value);
 				if (value)
 				{
 					Form.Menu = menu;
@@ -878,10 +999,39 @@ namespace WCell.Terrain.GUI
 				// did not add treeview yet
 				if (worker.IsBusy) return;		// did not finish treeview yet
 
-				Form.Controls.Add(treeView);
+			    Form.Controls.Add(treeView);
+
+			    treeView.Visible = false;
+			    treeView.Visible = true;
+                UpdateDirectionButtonPositions();
 			}
+
 			treeView.Visible = value;
 		}
+
+        private void SetButtonsVisible(bool value)
+        {
+            if (NorthWestButton.Parent == null)
+            {
+                // Add the buttons to the form
+                Form.Controls.Add(NorthWestButton);
+                Form.Controls.Add(NorthButton);
+                Form.Controls.Add(NorthEastButton);
+                Form.Controls.Add(EastButton);
+                Form.Controls.Add(SouthEastButton);
+                Form.Controls.Add(SouthButton);
+                Form.Controls.Add(SouthWestButton);
+                Form.Controls.Add(WestButton);
+            }
+            NorthWestButton.Visible = value;
+            NorthButton.Visible = value;
+            NorthEastButton.Visible = value;
+            EastButton.Visible = value;
+            SouthEastButton.Visible = value;
+            SouthButton.Visible = value;
+            SouthWestButton.Visible = value;
+            WestButton.Visible = value;
+        }
 
 		/// <summary>
 		/// Add some basic GUI controls
@@ -892,15 +1042,76 @@ namespace WCell.Terrain.GUI
 			Console.WriteLine("Help:");
 			Console.WriteLine("  Press ESCAPE to enter the menu");
 
-			LiquidBox = new TransparentTextBox();
-			LiquidBox.Dock = DockStyle.None;
-			LiquidBox.BackColor = System.Drawing.Color.Transparent;
-			LiquidBox.Location = new System.Drawing.Point(Form.Width - 60, 20);
-			LiquidBox.Width = 50;
-			TextBoxUtil.DisableDecoration(LiquidBox);
-			Form.Controls.Add(LiquidBox);
+		    LiquidBox = new TransparentTextBox
+		    {
+		        Dock = DockStyle.None,
+		        BackColor = System.Drawing.Color.Transparent,
+		        Location = new Point(Form.Width - 60, 40),
+		        Width = 50
+		    };
+		    TextBoxUtil.DisableDecoration(LiquidBox);
+		    Form.Controls.Add(LiquidBox);
 
-			menu = new MainMenu();
+		    NorthWestButton = new DirectionButton(Point2D.NorthWest)
+		    {
+		        Text = "NorthWest",
+		        Location = new Point(10, 10)
+		    };
+		    NorthWestButton.Click += ClickedDirectionButton;
+
+		    NorthButton = new DirectionButton(Point2D.North)
+		    {
+		        Text = "North"
+		    };
+		    NorthButton.Location = new Point((Form.Width - NorthButton.Size.Width)/2, 10);
+		    NorthButton.Click += ClickedDirectionButton;
+
+		    NorthEastButton = new DirectionButton(Point2D.NorthEast)
+		    {
+		        Text = "NorthEast"
+		    };
+		    NorthEastButton.Location = new Point(Form.Width - NorthEastButton.Size.Width - 10, 10);
+		    NorthEastButton.Click += ClickedDirectionButton;
+
+		    EastButton = new DirectionButton(Point2D.East)
+		    {
+		        Text = "East"
+		    };
+		    EastButton.Location = new Point(Form.Width - EastButton.Size.Width - 10,
+		                                    (Form.Height - EastButton.Size.Height)/2);
+		    EastButton.Click += ClickedDirectionButton;
+
+		    SouthEastButton = new DirectionButton(Point2D.SouthEast)
+		    {
+		        Text = "SouthEast"
+		    };
+		    SouthEastButton.Location = new Point(Form.Width - SouthEastButton.Size.Width - 10,
+		                                         Form.Height - SouthEastButton.Size.Height - 75);
+		    SouthEastButton.Click += ClickedDirectionButton;
+
+		    SouthButton = new DirectionButton(Point2D.South)
+		    {
+		        Text = "South"
+		    };
+		    SouthButton.Location = new Point((Form.Width - SouthButton.Size.Width)/2,
+		                                     Form.Height - SouthButton.Size.Height - 75);
+		    SouthButton.Click += ClickedDirectionButton;
+
+		    SouthWestButton = new DirectionButton(Point2D.SouthWest)
+		    {
+		        Text = "SouthWest"
+		    };
+		    SouthWestButton.Location = new Point(10, Form.Height - SouthWestButton.Size.Height - 75);
+		    SouthWestButton.Click += ClickedDirectionButton;
+
+		    WestButton = new DirectionButton(Point2D.West)
+		    {
+		        Text = "West"
+		    };
+		    WestButton.Location = new Point(10, (Form.Height - WestButton.Size.Height)/2);
+		    WestButton.Click += ClickedDirectionButton;
+
+		    menu = new MainMenu();
 
 			renderingModeButton = new MenuItem();
 			renderingModeButton.Click += ClickedRenderingModeButton;
@@ -922,9 +1133,11 @@ namespace WCell.Terrain.GUI
 			//menu.MenuItems.Add(exportRecastMeshButton);
 
 			// build treeview asynchronously
-			treeView = new TreeView();
-			treeView.Dock = DockStyle.Left;
-			treeView.DoubleClick += DoubleClickedTreeView;
+		    treeView = new TreeView
+		    {
+		        Dock = DockStyle.Left
+		    };
+		    treeView.DoubleClick += DoubleClickedTreeView;
 			treeView.Width = 200;
 
 			GetOrCreateWaitingBox("Loading zone list...").Visible = true;
@@ -932,6 +1145,8 @@ namespace WCell.Terrain.GUI
 			worker.RunWorkerCompleted += OnTreeViewBuilt;
 
 			worker.RunWorkerAsync();
+
+            UpdateFormText();
 		}
 
 		void DoBuildTreeView(object sender, DoWorkEventArgs e)
@@ -982,8 +1197,10 @@ namespace WCell.Terrain.GUI
 				}
 				else
 				{
-					treeView.Nodes.Add(new MapTreeNode((MapId)map, children.ToArray().TransformArray(tuple =>
-							new ZoneTreeNode((MapId)map, tuple.Item1, tuple.Item2))));
+				    treeView.Nodes.Add(new MapTreeNode((MapId) map, children.ToArray().TransformArray(tuple =>
+				                                                                                      new ZoneTreeNode((MapId) map,
+				                                                                                                       tuple.Item1,
+				                                                                                                       tuple.Item2))));
 				}
 			}
 		}
@@ -992,13 +1209,9 @@ namespace WCell.Terrain.GUI
 		{
 			// fix visibility
 			waitingBox.Visible = false;
-			treeView.Visible = IsMenuVisible;
-			if (IsMenuVisible)
-			{
-				Form.Controls.Add(treeView);
-			}
-
-			// remove events
+			SetTreeViewVisible(IsMenuVisible);
+			
+            // remove events
 			worker.DoWork -= DoBuildTreeView;
 			worker.RunWorkerCompleted -= OnTreeViewBuilt;
 		}
@@ -1048,7 +1261,15 @@ namespace WCell.Terrain.GUI
             }
         }
 
-		private Control GetOrCreateWaitingBox(string text)
+        private void ClickedDirectionButton(object sender, EventArgs e)
+        {
+            var button = (DirectionButton)sender;
+
+            var newCoords = ActiveTile.Coords + button.Direction;
+            ToggleDisplayedTile(terrain.MapId, newCoords);
+        }
+
+        private Control GetOrCreateWaitingBox(string text)
 		{
 			if (waitingBox == null)
 			{
@@ -1067,54 +1288,47 @@ namespace WCell.Terrain.GUI
 
 		private void DoubleClickedTreeView(object sender, EventArgs e)
 		{
-            if (worker.IsBusy) return;
-
-			var node = treeView.SelectedNode;
+            var node = treeView.SelectedNode;
 		    if (!(node is TileTreeNode)) return;
             
             var tnode = node as TileTreeNode;
 
-		    // GUI stuff
-		    IsMenuVisible = false;
-
-		    GetOrCreateWaitingBox("Loading tile - Please wait...").Visible = true;
-		    worker.DoWork += (send0r, args) =>
-		    {
-
-		        // load new tile
-		        Tile = TerrainViewerProgram.GetOrCreateTile(tnode.Map, tnode.Coords.X, tnode.Coords.Y);
-		    };
-
-		    worker.RunWorkerCompleted += (a, b) =>
-		    {
-		        // update node
-		        tnode.BackColor = System.Drawing.Color.White;
-
-		        // reset renderers
-		        foreach (var component in Components)
-		        {
-		            if (component is RendererBase)
-		            {
-		                ((RendererBase)component).Clear();
-		            }
-		        }
-
-		        // reset GUI
-		        waitingBox.Visible = false;
-
-		        // update avatar
-		        var topRight = Tile.Bounds.TopRight;
-		        var bottomLeft = Tile.Bounds.BottomLeft;
-		        avatarPosition = new XVector3(topRight.X, topRight.Y, 200);
-		        XNAUtil.TransformWoWCoordsToXNACoords(ref avatarPosition);
-
-		        avatarYaw = 45;
-		    };
-
-		    worker.RunWorkerAsync();
+		    tnode.BackColor = !ToggleDisplayedTile(tnode.Map, tnode.Coords)
+		                          ? TileTreeNode.NotLoadedColor
+		                          : TileTreeNode.LoadedColor;
 		}
 
-		class TransparentTextBox : TextBox
+	    private bool ToggleDisplayedTile(MapId map, Point2D coords)
+	    {
+            for (var i = 0; i < Tiles.Count; i++)
+	        {
+	            var tile = Tiles[i];
+	            if (tile.Map != map) continue;
+	            if (tile.Coords != coords) continue;
+
+	            Tiles.Remove(tile);
+	            
+	            UpdateTerrainViewer();
+	            IsMenuVisible = false;
+	            return false;
+	        }
+
+	        // GUI stuff
+            if (worker.IsBusy) return false;
+            
+            IsMenuVisible = false;
+            GetOrCreateWaitingBox("Loading tile - Please wait...").Visible = true;
+	        
+            worker.DoWork +=
+	            (send0r, args) => Tiles.Add(terrain.GetOrCreateTile(map, coords.X, coords.Y));
+
+	        worker.RunWorkerCompleted += ((a, b) => UpdateTerrainViewer());
+
+	        worker.RunWorkerAsync();
+	        return true;
+	    }
+
+	    class TransparentTextBox : TextBox
 		{
 			public TransparentTextBox()
 			{
@@ -1122,7 +1336,17 @@ namespace WCell.Terrain.GUI
 			}
 		}
 
-		public static class TextBoxUtil
+        class DirectionButton : Button
+        {
+            public readonly Point2D Direction;
+
+            public DirectionButton(Point2D direction)
+            {
+                Direction = direction;
+            }
+        }
+
+        public static class TextBoxUtil
 		{
 			public static void DisableDecoration(TextBox box)
 			{
@@ -1141,7 +1365,19 @@ namespace WCell.Terrain.GUI
 		void UpdateTexts()
 		{
 			var actualPos = avatarPosition.ToWCell();
-			var fluid = Tile.Terrain.GetLiquidType(actualPos);
+
+		    TerrainTile found = null;
+		    foreach (var tile in Tiles)
+		    {
+                if (!tile.Bounds.Contains(actualPos.X, actualPos.Y)) continue;
+
+		        found = tile;
+		        break;
+		    }
+
+            if (found == null) return;
+
+			var fluid = found.Terrain.GetLiquidType(actualPos);
 			if (fluid != LiquidType.None)
 			{
 				LiquidBox.Text = "In " + fluid;
@@ -1164,10 +1400,67 @@ namespace WCell.Terrain.GUI
 			}
 			else
 			{
-				LiquidBox.Text = "";
+				LiquidBox.Text = string.Empty;
 			}
 		}
-		#endregion
+
+        private void UpdateTerrainViewer()
+        {
+            UpdateFormText();
+
+            // reset renderers
+            foreach (var component in Components)
+            {
+                if (component is RendererBase)
+                {
+                    ((RendererBase)component).Clear();
+                }
+            }
+
+            // reset GUI
+            waitingBox.Visible = false;
+
+            // update avatar
+            UpdateAvatarPosition();
+        }
+
+        private void UpdateFormText()
+        {
+            var titleString = "TerrainViewer - ";
+            foreach (var tile in m_Tiles)
+            {
+                titleString += string.Format("{0} (Tile X={1}, Y={2}, ",
+                                    tile.Terrain.MapId, tile.TileX, tile.TileY);
+            }
+            titleString = titleString.TrimEnd(", ".ToCharArray());
+            titleString += ")";
+            Form.Text = titleString;
+        }
+
+        private void UpdateDirectionButtonPositions()
+        {
+            Form.Controls.Remove(NorthWestButton);
+            Form.Controls.Remove(NorthButton);
+            Form.Controls.Remove(SouthButton);
+            Form.Controls.Remove(SouthWestButton);
+            Form.Controls.Remove(WestButton);
+            
+            NorthWestButton.Location = new Point(NorthWestButton.Location.X + treeView.Size.Width, NorthWestButton.Location.Y);
+            NorthButton.Location = new Point(NorthButton.Location.X + treeView.Size.Width/2, NorthButton.Location.Y);
+            SouthButton.Location = new Point(SouthButton.Location.X + treeView.Size.Width/2, SouthButton.Location.Y);
+            SouthWestButton.Location = new Point(SouthWestButton.Location.X + treeView.Size.Width, SouthWestButton.Location.Y);
+            WestButton.Location = new Point(WestButton.Location.X + treeView.Size.Width, WestButton.Location.Y);
+            
+            Form.Controls.Add(NorthWestButton);
+            Form.Controls.Add(NorthButton);
+            Form.Controls.Add(SouthButton);
+            Form.Controls.Add(SouthWestButton);           
+            Form.Controls.Add(WestButton);
+
+            SetButtonsVisible(IsMenuVisible);
+        }
+
+	    #endregion
 
 		#region DrawBoundingBox
 		//private static void DrawBoundingBox(BoundingBox boundingBox, Color color, WMORoot currentWMO)
@@ -1273,5 +1566,11 @@ namespace WCell.Terrain.GUI
 		//    currentWMO.WmoIndices.Add(offset + 2);
 		//}
 		#endregion
+
+        private struct RegionalPoint
+        {
+            public IShape Shape;
+            public WVector3 Point;
+        }
 	}
 }
