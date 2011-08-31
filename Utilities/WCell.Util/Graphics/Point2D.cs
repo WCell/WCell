@@ -15,7 +15,7 @@ namespace WCell.Util.Graphics
         public static Point2D NorthEast = new Point2D(-1, 1);
         public static Point2D East = new Point2D(0, 1);
         public static Point2D SouthEast = new Point2D(1, 1);
-        public static Point2D South = new Point2D(0, -1);
+        public static Point2D South = new Point2D(1, 0);
         public static Point2D SouthWest = new Point2D(1, -1);
         public static Point2D West = new Point2D(0, -1);
         

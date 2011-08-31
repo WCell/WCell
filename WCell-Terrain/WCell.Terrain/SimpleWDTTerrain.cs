@@ -51,9 +51,7 @@ namespace WCell.Terrain
                 SimpleTileWriter.WriteADT((ADT)tile);
 
                 tile = LoadTile(x, y);
-                TileProfile[x, y] = true;
-                Tiles[x, y] = tile;
-
+                
                 Console.WriteLine("Done");
             }
             else
@@ -65,6 +63,9 @@ namespace WCell.Terrain
 
             tile.Map = map;
             tile.Coords = new Point2D(x, y);
+
+            TileProfile[x, y] = true;
+            Tiles[x, y] = tile;
 
             return tile;
         }

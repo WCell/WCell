@@ -207,11 +207,11 @@ namespace WCell.Terrain.MPQ
 			// TODO: Pool huge lists & arrays
 			List<Vector3> newVertices;
 
-			var indices = new List<int>();
+			List<int> indices;
 			terra.GenerateOutput(allHoleIndices, out newVertices, out indices);
 
 			// convert
-			for (int i = 0; i < newVertices.Count; i++)
+			for (var i = 0; i < newVertices.Count; i++)
 			{
 				var vertex = newVertices[i];
 				var xPos = TerrainConstants.CenterPoint - (TileX * TerrainConstants.TileSize) - (vertex.X * TerrainConstants.UnitSize);
@@ -219,7 +219,7 @@ namespace WCell.Terrain.MPQ
 				newVertices[i] = new Vector3(xPos, yPos, vertex.Z);
 			}
 
-			AppendWMOandM2Info(ref newVertices, ref indices);
+	        AppendWMOandM2Info(ref newVertices, ref indices);
 
 			TerrainIndices = indices.ToArray();
 			TerrainVertices = newVertices.ToArray();
@@ -499,6 +499,9 @@ namespace WCell.Terrain.MPQ
                 offset = verts.Count;
                 if (wmo.WmoVertices.Count > 0 && wmo.WmoIndices.Count > 0)
                 {
+                    //List<Vector3> newVertices;
+                    //List<int> newIndices;
+                    //var response = MeshClipper.ClipAgainst(wmo, Bounds, out newVertices, out newIndices);
                     verts.AddRange(wmo.WmoVertices);
                     foreach (var index in wmo.WmoIndices)
                     {

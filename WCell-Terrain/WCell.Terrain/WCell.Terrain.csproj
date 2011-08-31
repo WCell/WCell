@@ -125,6 +125,7 @@
     <Compile Include="Legacy\OCTree\OCTreeIntersectionType.cs" />
     <Compile Include="Legacy\OCTree\OCTreeNode.cs" />
     <Compile Include="LargeObjectPools.cs" />
+    <Compile Include="MeshClipper.cs" />
     <Compile Include="Pathfinding\NodeItem.cs" />
     <Compile Include="Pathfinding\PathExtensions.cs" />
     <Compile Include="Pathfinding\Pathfinder.cs" />

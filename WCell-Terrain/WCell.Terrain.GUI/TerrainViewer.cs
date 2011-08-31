@@ -125,8 +125,8 @@ namespace WCell.Terrain.GUI
 		    this.world = world;
 		    terrain = (SimpleWDTTerrain)world.WorldTerrain[tileId.MapId];
 		    var tile = terrain.Tiles[tileId.X, tileId.Y];
-
-		    m_Tiles = new List<TerrainTile> { tile };
+		    ActiveTile = tile;
+            m_Tiles = new List<TerrainTile> { tile };
 		}
 
 		#region Properties
@@ -176,10 +176,7 @@ namespace WCell.Terrain.GUI
             }
 		}
 
-	    public TerrainTile ActiveTile
-	    {
-            get { return null; }
-	    }
+        public TerrainTile ActiveTile { get; private set; }
 
 		/// <summary>
 		/// The form of this application
@@ -1011,18 +1008,15 @@ namespace WCell.Terrain.GUI
 
         private void SetButtonsVisible(bool value)
         {
-            if (NorthWestButton.Parent == null)
-            {
-                // Add the buttons to the form
-                Form.Controls.Add(NorthWestButton);
-                Form.Controls.Add(NorthButton);
-                Form.Controls.Add(NorthEastButton);
-                Form.Controls.Add(EastButton);
-                Form.Controls.Add(SouthEastButton);
-                Form.Controls.Add(SouthButton);
-                Form.Controls.Add(SouthWestButton);
-                Form.Controls.Add(WestButton);
-            }
+            if (NorthWestButton.Parent == null) Form.Controls.Add(NorthWestButton);
+            if (NorthButton.Parent == null) Form.Controls.Add(NorthButton);
+            if (NorthEastButton.Parent == null) Form.Controls.Add(NorthEastButton);
+            if (EastButton.Parent == null) Form.Controls.Add(EastButton);
+            if (SouthEastButton.Parent == null) Form.Controls.Add(SouthEastButton);
+            if (SouthButton.Parent == null) Form.Controls.Add(SouthButton);
+            if (SouthWestButton.Parent == null) Form.Controls.Add(SouthWestButton);
+            if (WestButton.Parent == null) Form.Controls.Add(WestButton);
+            
             NorthWestButton.Visible = value;
             NorthButton.Visible = value;
             NorthEastButton.Visible = value;
@@ -1265,7 +1259,10 @@ namespace WCell.Terrain.GUI
         {
             var button = (DirectionButton)sender;
 
-            var newCoords = ActiveTile.Coords + button.Direction;
+            var tile = ActiveTile;
+            if (tile == null) return;
+
+            var newCoords = tile.Coords + button.Direction;
             ToggleDisplayedTile(terrain.MapId, newCoords);
         }
 
@@ -1306,9 +1303,10 @@ namespace WCell.Terrain.GUI
 	            if (tile.Map != map) continue;
 	            if (tile.Coords != coords) continue;
 
+                GetOrCreateWaitingBox("Removing tile - Please wait...").Visible = true;
 	            Tiles.Remove(tile);
 	            
-	            UpdateTerrainViewer();
+	            UpdateTerrainViewer(false);
 	            IsMenuVisible = false;
 	            return false;
 	        }
@@ -1322,7 +1320,7 @@ namespace WCell.Terrain.GUI
             worker.DoWork +=
 	            (send0r, args) => Tiles.Add(terrain.GetOrCreateTile(map, coords.X, coords.Y));
 
-	        worker.RunWorkerCompleted += ((a, b) => UpdateTerrainViewer());
+	        worker.RunWorkerCompleted += ((a, b) => UpdateTerrainViewer(false));
 
 	        worker.RunWorkerAsync();
 	        return true;
@@ -1404,7 +1402,7 @@ namespace WCell.Terrain.GUI
 			}
 		}
 
-        private void UpdateTerrainViewer()
+        private void UpdateTerrainViewer(bool updateAvatar)
         {
             UpdateFormText();
 
@@ -1421,7 +1419,7 @@ namespace WCell.Terrain.GUI
             waitingBox.Visible = false;
 
             // update avatar
-            UpdateAvatarPosition();
+            if (updateAvatar) UpdateAvatarPosition();
         }
 
         private void UpdateFormText()
