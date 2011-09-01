@@ -22,7 +22,7 @@ namespace WCell.RealmServer.Instances
 		public static int DefaultInstanceTimeoutMillis = 30 * 60 * 1000;
 
 		private IInstanceHolderSet m_owner;
-		private DateTime m_expiryTime;
+		private DateTime m_expiryTime = default(DateTime);
 		internal MapDifficultyEntry difficulty;
 		private DateTime m_lastReset;
 		private TimerEntry m_timeoutTimer;
