@@ -76,15 +76,24 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// All specific SpellLines that are affected by this SpellEffect
 		/// </summary>
-		public IEnumerable<SpellLine> AffectedLines
+		public HashSet<SpellLine> AffectedLines
 		{
 			get
 			{
+				var spellLines = new HashSet<SpellLine>();
+				
 				if (Spell.ClassId != 0)
 				{
-					return SpellHandler.GetAffectedSpellLines(Spell.ClassId, AffectMask);
+					var extraLines = SpellHandler.GetAffectedSpellLines(Spell.ClassId, AffectMask);
+					spellLines.AddRange(extraLines);
 				}
-				return new SpellLine[0];
+
+				if (AffectSpellSet != null)
+				{
+					var extraLines = AffectSpellSet.Select(spell => spell.Line).Distinct();
+					spellLines.AddRange(extraLines);
+				}
+				return spellLines;
 			}
 		}
 
@@ -541,7 +550,7 @@ namespace WCell.RealmServer.Spells
 		#region Modify Effects
 		public void ClearAffectMask()
 		{
-			AffectMask = new uint[3];
+			AffectMask = new uint[SpellConstants.SpellClassMaskSize];
 		}
 
 		public void SetAffectMask(params SpellLineId[] abilities)
@@ -616,7 +625,7 @@ namespace WCell.RealmServer.Spells
 
 			// verification
 			var affectedLines = SpellHandler.GetAffectedSpellLines(Spell.ClassId, newMask);
-			if (affectedLines.Count() != abilities.Length)
+			if (affectedLines.Count != abilities.Length)
 			{
 				LogManager.GetCurrentClassLogger().Warn("[SPELL Inconsistency for {0}] " +
 					"Invalid affect mask affects a different set than the one intended: {1} (intended: {2}) - " +
@@ -708,10 +717,14 @@ namespace WCell.RealmServer.Spells
 				writer.WriteLine(indent + "MiscValueB: " + GetMiscStr(MiscValueBType, MiscValueB));
 			}
 
-			if (AffectMask[0] != 0 || AffectMask[1] != 0 || AffectMask[2] != 0)
+			var lines = AffectedLines;
+			if (lines.Count > 0)
 			{
-				var lines = AffectedLines;
-				writer.WriteLine(indent + "Affects: {0} ({1}{2}{3})", lines.Count() > 0 ? lines.ToString(", ") : "<Nothing>",
+				writer.WriteLine(indent + "Affects: {0}", lines.ToString(", "));
+			}
+			else if (AffectMask[0] != 0 || AffectMask[1] != 0 || AffectMask[2] != 0)
+			{
+				writer.WriteLine(indent + "Affects: <Nothing> ({0}{1}{2})",
 					AffectMask[0].ToString("X8"), AffectMask[1].ToString("X8"), AffectMask[2].ToString("X8"));
 			}
 
