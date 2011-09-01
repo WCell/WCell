@@ -109,9 +109,7 @@ namespace WCell.RealmServer.AI.Brains
 
 		#endregion
 
-        #region Creature Functions
-
-        #region Emote Functions
+        #region Emotes
         
 
         /// <summary>
@@ -203,12 +201,6 @@ namespace WCell.RealmServer.AI.Brains
 
             m_emoteData[Event].Add(pEmoteData);
         }
-
-        #endregion
-
-        #region Spell Functions
-        // todo!!!
-        #endregion 
 
         #endregion
 

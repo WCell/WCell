@@ -12,30 +12,49 @@ namespace WCell.Core.Paths
 	/// A nicely recyclable iterable Vector3 collection
 	/// </summary>
 	public class Path : IEnumerable<Vector3>
-	{
+    {
         private Vector3[] points;
-		private int last, index;
+        private int last, index;
 
-		public Path()
-		{
-		}
-
-        public static Path FromList(List<Vector3> list)
+        public Path()
         {
-            var path = new Path();
-            path.Reset(list.Count);
+        }
 
-            foreach (var point in list)
+        public Path(ICollection<Vector3> points)
+        {
+            Reset(points.Count);
+
+            foreach (var point in points)
             {
-                path.Add(point);
+                Add(point);
             }
+        }
 
-            return path;
+        /// <summary>
+        /// Creates a new path that re-uses the given array of points.
+        /// </summary>
+        /// <param name="points"></param>
+        public Path(Vector3[] points)
+        {
+            this.points = points;
+            last = points.Length;
+        }
+
+        public Path(Path path)
+        {
+            points = path.points;
+            index = path.index;
+            last = path.last;
         }
 
 		public Vector3 this[int i]
 		{
 			get { return points[i]; }
+		}
+
+		public Vector3 First
+		{
+			get { return points[0]; }
 		}
 
 		public Vector3 Next()
@@ -58,17 +77,18 @@ namespace WCell.Core.Paths
 			{
 				Array.Resize(ref points, newSize);
 			}
-			last = points.Length;
             
 		    for (var i = 0; i < points.Length; i++)
             {
                 points[i] = new Vector3(float.MinValue);
 		    }
+
+            last = points.Length;
 		}
 
-        /// <summary>
+	    /// <summary>
         /// Adds a new vector to the Path in reverse order
-        /// i.e. the first added vector goes onto the end of the array, the next goes onto (end - 1), etc.
+        /// i.e. the first added vector goes onto the end of the array, the next goes to (end - 1), etc.
         /// </summary>
         /// <param name="v"></param>
 		public void Add(Vector3 v)
@@ -90,22 +110,6 @@ namespace WCell.Core.Paths
             }
         }
 
-        /// <summary>
-        /// Trims any invalid vectors off the front and back of the Path.
-        /// </summary>
-        public void Trim()
-        {
-            var newList = new List<Vector3>();
-            foreach (var point in points)
-            {
-                if (point.X.NearlyEquals(float.MinValue)) continue;
-                newList.Add(point);
-            }
-            points = newList.ToArray();
-            last = 0;
-            index = 0;
-        }
-
         public IEnumerator<Vector3> GetEnumerator()
 		{
 			for (var i = last; i < points.Length; i++)
@@ -118,5 +122,10 @@ namespace WCell.Core.Paths
 		{
 			return GetEnumerator();
 		}
+
+        public Path Copy()
+        {
+            return new Path();
+        }
 	}
 }

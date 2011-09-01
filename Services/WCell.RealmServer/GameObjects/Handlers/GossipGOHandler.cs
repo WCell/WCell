@@ -4,7 +4,7 @@ using WCell.RealmServer.Gossips;
 namespace WCell.RealmServer.GameObjects.Handlers
 {
 	/// <summary>
-	/// Use this handler to attach a Gossip menu to a GO
+	/// If you want to attach a custom GossipMenu to a GO, simply use GameObject.GossipMenu and/or GOEntry.GossipMenu
 	/// </summary>
 	public class GossipGOHandler : GameObjectHandler
 	{

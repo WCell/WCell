@@ -51,19 +51,19 @@ namespace WCell.RealmServer.Global
 	{
 		public override void Convert(byte[] rawData)
 		{
-			var rgn = new MapTemplate();
+			var map = new MapTemplate();
 
-			rgn.Id = (MapId)GetUInt32(rawData, 0);
+			map.Id = (MapId)GetUInt32(rawData, 0);
 
 			int i = 2;
 			//rgn.InternalName = GetString(rawData, 1);
-			rgn.Type = (MapType)GetUInt32(rawData, i++);
+			map.Type = (MapType)GetUInt32(rawData, i++);
 			i++;
 
-			rgn.HasTwoSides = GetUInt32(rawData, i++) != 0;
+			map.HasTwoSides = GetUInt32(rawData, i++) != 0;
 
 
-			rgn.Name = GetString(rawData, i++);
+			map.Name = GetString(rawData, i++);
 			i += 16;
 
 			i++;
@@ -71,25 +71,25 @@ namespace WCell.RealmServer.Global
 			//rgn.MaxLevel = GetInt32(rawData, 22);
 			//rgn.MaxPlayerCount = GetInt32(rawData, 23);
 
-			rgn.AreaTableId = GetUInt32(rawData, i++);		// 22
+			map.AreaTableId = GetUInt32(rawData, i++);		// 22
 			//rgn.LoadScreen = GetUInt32(rawData, 56);
 
 			//rgn.HordeText = GetString(rawData, 22);
 			//rgn.AllianceText = GetString(rawData, 39);
 
-			rgn.ParentMapId = (MapId)GetUInt32(rawData, 59);
+			map.ParentMapId = (MapId)GetUInt32(rawData, 59);
 
-			rgn.RepopMapId = rgn.ParentMapId;
-			rgn.RepopPosition = new Vector3(GetFloat(rawData, 60), GetFloat(rawData, 61), 500);
+			map.RepopMapId = map.ParentMapId;
+			map.RepopPosition = new Vector3(GetFloat(rawData, 60), GetFloat(rawData, 61), 500);
 
-			rgn.RequiredClientId = (ClientId)GetUInt32(rawData, 63);
-			rgn.DefaultResetTime = GetInt32(rawData, 64);
-			rgn.MaxPlayerCount = GetInt32(rawData, 65);
+			map.RequiredClientId = (ClientId)GetUInt32(rawData, 63);
+			map.DefaultResetTime = GetInt32(rawData, 64);
+			map.MaxPlayerCount = GetInt32(rawData, 65);
 
 			//rgn.HeroicResetTime = GetUInt32(rawData, 113);
 			//rgn.RaidResetTime = GetUInt32(rawData, 112);
 
-			ArrayUtil.Set(ref World.s_MapTemplates, (uint)rgn.Id, rgn);
+			ArrayUtil.Set(ref World.s_MapTemplates, (uint)map.Id, map);
 		}
 	}
 

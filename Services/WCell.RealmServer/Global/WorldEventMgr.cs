@@ -237,7 +237,7 @@ namespace WCell.RealmServer.Global
 
                 if (worldEventNPC.Spawn)
                 {
-                    map.AddNPCSpawnPoolLater(spawnEntry.PoolTemplate);
+                    map.AddNPCSpawnPool(spawnEntry.PoolTemplate);
                 }
                 else
                 {
@@ -292,7 +292,7 @@ namespace WCell.RealmServer.Global
 
                 if (worldEventNPC.Spawn)
                 {
-                    map.RemoveNPCSpawnPoolLater(spawnEntry.PoolTemplate);
+                    map.RemoveNPCSpawnPool(spawnEntry.PoolTemplate);
                 }
                 else
                 {
@@ -317,7 +317,7 @@ namespace WCell.RealmServer.Global
 
                 if (worldEventGO.Spawn)
                 {
-                    map.RemoveGOSpawnPoolLater(spawnEntry.PoolTemplate);
+                    map.RemoveGOSpawnPool(spawnEntry.PoolTemplate);
                 }
                 else
                 {

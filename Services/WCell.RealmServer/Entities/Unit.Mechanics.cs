@@ -181,9 +181,9 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Whether the physical state of this Unit allows it to move.
+		/// Whether the physical state and permissions of this Unit allows it to move.
 		/// To stop a character from moving, use IncMechanicCount to increase Rooted or any other movement-effecting Mechanic-school.
-		/// Use HasPermissionToMove to also take Movement-controlling (eg by AI etc) into consideration.
+		/// Solyly use HasPermissionToMove to take Movement-controlling (eg. owner instructions etc.) into consideration.
 		/// </summary>
 		public bool CanMove
 		{
