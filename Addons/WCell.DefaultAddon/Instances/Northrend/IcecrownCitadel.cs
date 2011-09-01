@@ -50,7 +50,6 @@ namespace WCell.Addons.Default.Instances
             : base(marrowgar)
         {
             fbasespeed = m_owner.RunSpeed;
-            IntroDone = false;
         }
 
         // Spells
@@ -60,7 +59,7 @@ namespace WCell.Addons.Default.Instances
         private DateTime timeSinceLastInterval;
 
         private static float fbasespeed;
-        private static bool IntroDone;
+        //private static bool IntroDone;
         private static int interval = 1;
 
         private bool isBoneStorm;
