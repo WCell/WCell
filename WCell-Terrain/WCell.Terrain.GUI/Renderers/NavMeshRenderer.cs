@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using WCell.Terrain.GUI.Util;
 using WCell.Terrain.Recast.NavMesh;
 using WCell.Util;
-using Vector3 = WCell.Util.Graphics.Vector3;
+using WVector3 = WCell.Util.Graphics.Vector3;
 
 namespace WCell.Terrain.GUI.Renderers
 {
@@ -103,30 +103,40 @@ namespace WCell.Terrain.GUI.Renderers
 
 		protected override void BuildVerticiesAndIndicies()
 		{
-			var mesh = Viewer.Tile.NavMesh;
-			var vertices = mesh.Vertices;
+		    var tiles = Viewer.Tiles;
 
-			List<int> indices;
-			mesh.GetTriangles(out indices);
+            List<int> indices;
+            using (LargeObjectPools.IndexListPool.Borrow(out indices))
+            {
+                var tempIndices = new List<int>();
+                var tempVertices = new List<VertexPositionNormalColored>();
 
-			if (vertices.Length == 0 || indices.Count == 0) return;
+                foreach (var tile in tiles)
+                {
+                    indices.Clear();
 
-			_cachedVertices = new VertexPositionNormalColored[vertices.Length];
-			for (var i = 0; i < vertices.Length; i++)
-			{
-				var vertex = vertices[i];
-				_cachedVertices[i] = new VertexPositionNormalColored(vertex.ToXna(),
-																		RenderColor,
-																		Microsoft.Xna.Framework.Vector3.Zero);
-			}
+                    var mesh = tile.NavMesh;
+                    mesh.GetTriangles(indices);
 
-			_cachedIndices = new int[indices.Count];
-			for (int i = 0; i < indices.Count; i++)
-			{
-				_cachedIndices[i] = indices[i];
-			}
+                    if (mesh.Vertices.Length == 0 || indices.Count == 0) continue;
 
-			_renderCached = true;
+                    var offset = tempVertices.Count;
+                    foreach (var vertex in mesh.Vertices)
+                    {
+                        tempVertices.Add(new VertexPositionNormalColored(vertex.ToXna(), RenderColor, Vector3.Zero));
+                    }
+
+                    foreach (var index in indices)
+                    {
+                        tempIndices.Add(offset + index);
+                    }
+                }
+
+                _cachedIndices = tempIndices.ToArray();
+                _cachedVertices = tempVertices.ToArray();
+            }
+
+		    _renderCached = true;
 		}
 	}
 }

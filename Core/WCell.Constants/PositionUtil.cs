@@ -15,8 +15,8 @@ namespace WCell.Constants
 		/// <returns>True if the tile (X, Y) is valid.</returns>
 		public static bool GetTileXYForPos(Vector3 worldPos, out int tileX, out int tileY)
 		{
-			tileX = (int)GetTileFraction(worldPos.Y);
-			tileY = (int)GetTileFraction(worldPos.X);
+			tileX = (int)GetTileFraction(worldPos.X);
+			tileY = (int)GetTileFraction(worldPos.Y);
 
 			return VerifyTileCoords(tileX, tileY);
 		}

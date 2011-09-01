@@ -22,15 +22,12 @@ namespace WCell.Terrain.Pathfinding
 		static readonly IComparer<SearchItem> comparer = new SearchItemComparer();
 
 		public readonly TerrainTile Tile;
+	    public readonly NavMesh NavMesh;
 
 		public Pathfinder(TerrainTile tile)
 		{
 			Tile = tile;
-		}
-
-		public NavMesh NavMesh
-		{
-			get { return Tile.NavMesh; }
+		    NavMesh = tile.NavMesh;
 		}
 
 		public Path FindPath(Vector3 start, Vector3 destination)

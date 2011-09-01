@@ -90,15 +90,15 @@ namespace WCell.Terrain.MPQ
 
 		private static readonly bool[,] EmptyHolesArray = new bool[4, 4];
 
-        public void GenerateMapWithNoSimplification()
+        public void GenerateMapWithQSlimSimplification()
         {
             List<Vector3> tileVerts;
             List<int> tileIndices;
             GetTerrainMesh(out tileVerts, out tileIndices);
-            
+
             var slim = new QSlim.QSlim(tileVerts, tileIndices);
-            var numTris = (tileIndices.Count/3);
-            slim.Simplify(numTris/2);
+            var numTris = (tileIndices.Count / 3);
+            slim.Simplify(numTris / 2);
 
             List<Vector3> newVerts;
             List<int> newIdx;
@@ -107,9 +107,17 @@ namespace WCell.Terrain.MPQ
             AppendWMOandM2Info(ref newVerts, ref newIdx);
             TerrainIndices = newIdx.ToArray();
             TerrainVertices = newVerts.ToArray();
+        }
 
-            //TerrainIndices = tileIndices.ToArray();
-            //TerrainVertices = tileVerts.ToArray();
+	    public void GenerateMapWithNoSimplification()
+        {
+            List<Vector3> tileVerts;
+            List<int> tileIndices;
+            GetTerrainMesh(out tileVerts, out tileIndices);
+            
+            AppendWMOandM2Info(ref tileVerts, ref tileIndices);
+            TerrainIndices = tileIndices.ToArray();
+            TerrainVertices = tileVerts.ToArray();
         }
 
 	    public void GenerateMapWithTerraSimplification()
@@ -199,11 +207,11 @@ namespace WCell.Terrain.MPQ
 			// TODO: Pool huge lists & arrays
 			List<Vector3> newVertices;
 
-			var indices = new List<int>();
+			List<int> indices;
 			terra.GenerateOutput(allHoleIndices, out newVertices, out indices);
 
 			// convert
-			for (int i = 0; i < newVertices.Count; i++)
+			for (var i = 0; i < newVertices.Count; i++)
 			{
 				var vertex = newVertices[i];
 				var xPos = TerrainConstants.CenterPoint - (TileX * TerrainConstants.TileSize) - (vertex.X * TerrainConstants.UnitSize);
@@ -211,7 +219,7 @@ namespace WCell.Terrain.MPQ
 				newVertices[i] = new Vector3(xPos, yPos, vertex.Z);
 			}
 
-			AppendWMOandM2Info(ref newVertices, ref indices);
+	        AppendWMOandM2Info(ref newVertices, ref indices);
 
 			TerrainIndices = indices.ToArray();
 			TerrainVertices = newVertices.ToArray();
@@ -472,6 +480,11 @@ namespace WCell.Terrain.MPQ
                     tileIndices.Add(vertId9);
                 }
             }
+
+            foreach (var i in tileIndices)
+            {
+                var vert = tileVerts[i];
+            }
         }
 
 		private void AppendWMOandM2Info(ref List<Vector3> verts, ref List<int> indices)
@@ -480,25 +493,42 @@ namespace WCell.Terrain.MPQ
             if (indices == null) indices = new List<int>();
 
             // Add WMO & M2 vertices
-            foreach (var wmo in WMOs)
+		    int offset;
+		    foreach (var wmo in WMOs)
             {
-                var offset = verts.Count;
-                verts.AddRange(wmo.WmoVertices);
-                foreach (var index in wmo.WmoIndices)
+                offset = verts.Count;
+                if (wmo.WmoVertices.Count > 0 && wmo.WmoIndices.Count > 0)
+                {
+                    //List<Vector3> newVertices;
+                    //List<int> newIndices;
+                    //var response = MeshClipper.ClipAgainst(wmo, Bounds, out newVertices, out newIndices);
+                    verts.AddRange(wmo.WmoVertices);
+                    foreach (var index in wmo.WmoIndices)
+                    {
+                        indices.Add(offset + index);
+                    }
+                }
+
+                offset = verts.Count;
+                if (wmo.WmoM2Vertices.Count <= 0 || wmo.WmoM2Indices.Count <= 0) continue;
+                verts.AddRange(wmo.WmoM2Vertices);
+                foreach (var index in wmo.WmoM2Indices)
                 {
                     indices.Add(offset + index);
                 }
             }
 
-            foreach (var m2 in M2s)
-            {
-                var offset = verts.Count;
-                verts.AddRange(m2.Vertices);
-                foreach (var index in m2.Indices)
-                {
-                    indices.Add(offset + index);
-                }
-            }
+		    foreach (var m2 in M2s)
+		    {
+		        offset = verts.Count;
+		        if (m2.Vertices.Count == 0 || m2.Indices.Count == 0) continue;
+
+		        verts.AddRange(m2.Vertices);
+		        foreach (var index in m2.Indices)
+		        {
+		            indices.Add(offset + index);
+		        }
+		    }
 		}
         #endregion
 
@@ -665,11 +695,31 @@ namespace WCell.Terrain.MPQ
 
 		public override LiquidType GetLiquidType(Point2D chunkCoord)
 		{
-			var chunk = Chunks[chunkCoord.X, chunkCoord.Y];
+            var chunk = Chunks[chunkCoord.X, chunkCoord.Y];
 
 		    return (chunk.HasLiquid)
 		               ? chunk.LiquidType
 		               : LiquidType.None;
 		}
+
+        private static void EnsureClockwiseWinding(List<int> indices, List<Vector3> vertices)
+        {
+            if (indices == null || indices.Count < 3) return;
+            if (vertices == null || vertices.Count < 1) return;
+
+            for (var i = 0; i < indices.Count; i += 3)
+            {
+
+                var vert0 = vertices[indices[i + 0]];
+                var vert1 = vertices[indices[i + 1]];
+                var vert2 = vertices[indices[i + 2]];
+
+                if (!GeometryHelpers.IsCounterClockwiseXY(vert0, vert1, vert2)) continue;
+
+                var temp = indices[i + 1];
+                indices[i + 1] = indices[i + 2];
+                indices[i + 2] = temp;
+            }
+        }
     }
 }

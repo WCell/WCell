@@ -167,6 +167,18 @@ namespace WCell.Terrain
 			tile1.Pathfinder.FindPath(from, to, path);
 		}
 
+        public float GetLiquidHeight(Vector3 worldPos)
+        {
+            Point2D tileCoord;
+            Point2D chunkCoord;
+            var unitCoord = PositionUtil.GetHeightMapXYForPos(worldPos, out tileCoord, out chunkCoord);
+
+            var tile = GetTile(tileCoord.X, tileCoord.Y);
+            return (tile == null) 
+                    ? float.MinValue 
+                    : tile.GetLiquidHeight(chunkCoord, unitCoord);
+        }
+
 		public LiquidType GetLiquidType(Vector3 worldPos)
 		{
 			Point2D tileCoord;

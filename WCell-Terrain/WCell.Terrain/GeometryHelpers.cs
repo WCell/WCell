@@ -5,7 +5,7 @@ using System.Text;
 using WCell.Util.Graphics;
 using WCell.Util;
 
-namespace WCell.Terrain.Legacy
+namespace WCell.Terrain
 {
     internal static class GeometryHelpers
     {
@@ -22,6 +22,12 @@ namespace WCell.Terrain.Legacy
             return area;
         }
 
+        public static float TriAreaXY(Vector3 a, Vector3 b, Vector3 c)
+        {
+            var area = (b.X - a.X) * (c.Y - a.Y) - (b.Y - a.Y) * (c.X - a.X);
+            return area;
+        }
+
         /// <summary>
         /// Returns true if the winding order of Triangle ABC is CCW
         /// </summary>
@@ -30,11 +36,15 @@ namespace WCell.Terrain.Legacy
             return (TriArea(a, b, c) > 0.0f);
         }
 
+        public static bool IsCounterClockwiseXY(Vector3 a, Vector3 b, Vector3 c)
+        {
+            return (TriAreaXY(a, b, c) > 0.0f);
+        }
+
         public static bool IsCounterClockwiseOrColinear(Vector2 a, Vector2 b, Vector2 c)
         {
             var area = TriArea(a, b, c);
-            if (area > 0.0f) return true;
-            return area.IsWithinEpsilon(0.0f);
+            return (area > 0.0f) || area.IsWithinEpsilon(0.0f);
         }
 
         /// <summary>
