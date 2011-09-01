@@ -15,8 +15,8 @@ namespace WCell.Terrain.GUI.Renderers
 	public class SolidNavMeshRenderer : NavMeshRenderer
 	{
 
-		public SolidNavMeshRenderer(Game game)
-			: base(game)
+		public SolidNavMeshRenderer(Game game, TerrainTile tile)
+			: base(game, tile)
 		{
 		}
 
@@ -36,8 +36,8 @@ namespace WCell.Terrain.GUI.Renderers
 	/// </summary>
 	public class WireframeNavMeshRenderer : NavMeshRenderer
 	{
-		public WireframeNavMeshRenderer(Game game)
-			: base(game)
+		public WireframeNavMeshRenderer(Game game, TerrainTile tile)
+			: base(game, tile)
 		{
 		}
 
@@ -54,6 +54,7 @@ namespace WCell.Terrain.GUI.Renderers
 
 	public abstract class NavMeshRenderer : RendererBase
 	{
+	    private TerrainTile tile;
 		private RasterizerState rasterState;
 		readonly BlendState alphaBlendState = new BlendState()
 		{
@@ -65,9 +66,10 @@ namespace WCell.Terrain.GUI.Renderers
 		};
 
 
-		internal NavMeshRenderer(Game game)
+		internal NavMeshRenderer(Game game, TerrainTile tile)
 			: base(game)
 		{
+		    this.tile = tile;
 		}
 
 		protected abstract Color RenderColor { get; }
@@ -103,36 +105,24 @@ namespace WCell.Terrain.GUI.Renderers
 
 		protected override void BuildVerticiesAndIndicies()
 		{
-		    var tiles = Viewer.Tiles;
-
             List<int> indices;
             using (LargeObjectPools.IndexListPool.Borrow(out indices))
             {
-                var tempIndices = new List<int>();
                 var tempVertices = new List<VertexPositionNormalColored>();
+                
+                indices.Clear();
 
-                foreach (var tile in tiles)
+                var mesh = tile.NavMesh;
+                mesh.GetTriangles(indices);
+
+                if (mesh.Vertices.Length == 0 || indices.Count == 0) return;
+
+                foreach (var vertex in mesh.Vertices)
                 {
-                    indices.Clear();
-
-                    var mesh = tile.NavMesh;
-                    mesh.GetTriangles(indices);
-
-                    if (mesh.Vertices.Length == 0 || indices.Count == 0) continue;
-
-                    var offset = tempVertices.Count;
-                    foreach (var vertex in mesh.Vertices)
-                    {
-                        tempVertices.Add(new VertexPositionNormalColored(vertex.ToXna(), RenderColor, Vector3.Zero));
-                    }
-
-                    foreach (var index in indices)
-                    {
-                        tempIndices.Add(offset + index);
-                    }
+                    tempVertices.Add(new VertexPositionNormalColored(vertex.ToXna(), RenderColor, Vector3.Zero));
                 }
 
-                _cachedIndices = tempIndices.ToArray();
+                _cachedIndices = indices.ToArray();
                 _cachedVertices = tempVertices.ToArray();
             }
 

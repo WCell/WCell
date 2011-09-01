@@ -70,7 +70,6 @@ namespace WCell.Terrain.GUI
 		private Matrix _proj;
 
 		Effect effect;
-	    private EnvironmentRenderer environmentRenderer;
 
 		//private readonly ADTManager _manager;
 		/// <summary>
@@ -99,17 +98,13 @@ namespace WCell.Terrain.GUI
 		};
 
 	    private AxisRenderer AxisRenderer;
-		private LiquidRenderer LiquidRenderer;
-	    private WireframeNavMeshRenderer wireframeNavMeshRenderer;
-	    private SolidNavMeshRenderer solidNavMeshRenderer;
 		private float globalIlluminationLevel;
 	    private World world;
-	    private SimpleWDTTerrain terrain;
+	    private SimpleWDTTerrain activeTerrain;
 		private List<TerrainTile> m_Tiles;
 
 		/// <summary>
 		/// Constructor for the game.
-		/// <param name="tile">The tile to be displayed</param>
 		/// </summary>
 		public TerrainViewer(XVector3 avatarPosition, World world, TileIdentifier tileId)
 		{
@@ -123,10 +118,11 @@ namespace WCell.Terrain.GUI
 			Form = (Form)Control.FromHandle(Window.Handle);
 
 		    this.world = world;
-		    terrain = (SimpleWDTTerrain)world.WorldTerrain[tileId.MapId];
-		    var tile = terrain.Tiles[tileId.X, tileId.Y];
+		    activeTerrain = (SimpleWDTTerrain)world.WorldTerrain[tileId.MapId];
+		    var tile = activeTerrain.Tiles[tileId.X, tileId.Y];
 		    ActiveTile = tile;
             m_Tiles = new List<TerrainTile> { tile };
+            TileRenderers = new Dictionary<TileIdentifier, TileRenderer>((int)MapId.End);
 		}
 
 		#region Properties
@@ -144,24 +140,12 @@ namespace WCell.Terrain.GUI
 			}
 		}
 
-        public List<Terrain> Terrains
-		{
-			get
-			{
-			    var retList = new List<Terrain>(m_Tiles.Count);
-			    foreach (var tile in m_Tiles)
-			    {
-			        retList.Add(tile.Terrain);
-			    }
-                return retList;
-			}
-		}
-
-		public List<TerrainTile> Tiles
+        public List<TerrainTile> Tiles
 		{
 			get { return m_Tiles; }
 			private set { m_Tiles = value; }
 		}
+        public Dictionary<TileIdentifier, TileRenderer> TileRenderers; 
 
 		public List<IShape> Shapes
 		{
@@ -237,18 +221,18 @@ namespace WCell.Terrain.GUI
 			_graphics.IsFullScreen = false;
 
 			var device = _graphics.GraphicsDevice;
-			device.RasterizerState = solidRasterizerState =
-				new RasterizerState
-				{
-					CullMode = CullMode.None,
-					FillMode = FillMode.Solid
-				};
+		    device.RasterizerState = solidRasterizerState =
+		                             new RasterizerState
+		                             {
+		                                 CullMode = CullMode.None,
+		                                 FillMode = FillMode.Solid
+		                             };
 
-			frameRasterizerState = new RasterizerState()
-				{
-					CullMode = CullMode.None,
-					FillMode = FillMode.WireFrame
-				};
+		    frameRasterizerState = new RasterizerState()
+		    {
+		        CullMode = CullMode.None,
+		        FillMode = FillMode.WireFrame
+		    };
 
 			device.DepthStencilState = defaultStencilState;
 
@@ -266,12 +250,12 @@ namespace WCell.Terrain.GUI
 
 
 			Components.Add(AxisRenderer = new AxisRenderer(this));
-            Components.Add(environmentRenderer = new EnvironmentRenderer(this));
-            Components.Add(wireframeNavMeshRenderer = new WireframeNavMeshRenderer(this));
-			Components.Add(solidNavMeshRenderer = new SolidNavMeshRenderer(this));
-			Components.Add(LiquidRenderer = new LiquidRenderer(this));
             Components.Add(TriangleSelectionRenderer = new GenericRenderer(this));
 			Components.Add(LineSelectionRenderer = new GenericRenderer(this));
+
+		    var tileRenderer = new TileRenderer(this, ActiveTile);
+            TileRenderers.Add(ActiveTile.TileId, tileRenderer);
+            Components.Add(tileRenderer);
 
 			InitGUI();
 
@@ -630,30 +614,30 @@ namespace WCell.Terrain.GUI
                 if (keyboardState.IsKeyDown(Keys.LeftAlt) 
                     || keyboardState.IsKeyDown(Keys.RightAlt))
                 {
-                    environmentRenderer.Enabled = true;
+                    SetEnvironmentVisibility(true);
                 }
                 else if (keyboardState.IsKeyDown(Keys.LeftShift) 
                          || keyboardState.IsKeyDown(Keys.RightShift))
                 {
-                    environmentRenderer.Enabled = true;
+                    SetEnvironmentVisibility(true);
                 }
                 else if (keyboardState.IsKeyDown(Keys.LeftWindows) 
                          || keyboardState.IsKeyDown(Keys.RightWindows))
                 {
-                    environmentRenderer.Enabled = true;
+                    SetEnvironmentVisibility(true);
                 }
                 else if (keyboardState.IsKeyDown(Keys.PrintScreen))
                 {
-                    environmentRenderer.Enabled = true;
+                    SetEnvironmentVisibility(true);
                 }
                 else
                 {
-                    environmentRenderer.Enabled = false;
+                    SetEnvironmentVisibility(false);
                 }
             }
             else
             {
-                environmentRenderer.Enabled = true;
+                SetEnvironmentVisibility(true);
             }
 
 			// mouse
@@ -1227,8 +1211,11 @@ namespace WCell.Terrain.GUI
         private void ClickedToggleWaterButton(object sender, EventArgs e)
         {
             liquidRenderingEnabled = !liquidRenderingEnabled;
-            
-            LiquidRenderer.Enabled = liquidRenderingEnabled;
+
+            foreach (var renderer in TileRenderers.Values)
+            {
+                renderer.LiquidEnabled = liquidRenderingEnabled;
+            }
             
             if (liquidRenderingEnabled)
             {
@@ -1243,8 +1230,11 @@ namespace WCell.Terrain.GUI
         private void ClickedToggleNavMeshButton(object sender, EventArgs e)
         {
             navMeshRenderingEnabled = !navMeshRenderingEnabled;
-            wireframeNavMeshRenderer.Enabled = navMeshRenderingEnabled;
-            solidNavMeshRenderer.Enabled = navMeshRenderingEnabled;
+            foreach (var renderer in TileRenderers.Values)
+            {
+                renderer.NavMeshEnabled = navMeshRenderingEnabled;
+            }
+
             if (navMeshRenderingEnabled)
             {
                 toggleNavMeshButton.Text = "NavMesh Off";
@@ -1263,7 +1253,7 @@ namespace WCell.Terrain.GUI
             if (tile == null) return;
 
             var newCoords = tile.Coords + button.Direction;
-            ToggleDisplayedTile(terrain.MapId, newCoords);
+            ToggleDisplayedTile(activeTerrain.MapId, newCoords);
         }
 
         private Control GetOrCreateWaitingBox(string text)
@@ -1290,41 +1280,51 @@ namespace WCell.Terrain.GUI
             
             var tnode = node as TileTreeNode;
 
-		    tnode.BackColor = !ToggleDisplayedTile(tnode.Map, tnode.Coords)
+		    tnode.BackColor = (!ToggleDisplayedTile(tnode.Map, tnode.Coords))
 		                          ? TileTreeNode.NotLoadedColor
 		                          : TileTreeNode.LoadedColor;
 		}
 
+	    private DoWorkEventHandler addingTile;
+	    private RunWorkerCompletedEventHandler completedLoad;
 	    private bool ToggleDisplayedTile(MapId map, Point2D coords)
 	    {
-            for (var i = 0; i < Tiles.Count; i++)
-	        {
-	            var tile = Tiles[i];
-	            if (tile.Map != map) continue;
-	            if (tile.Coords != coords) continue;
-
-                GetOrCreateWaitingBox("Removing tile - Please wait...").Visible = true;
-	            Tiles.Remove(tile);
-	            
-	            UpdateTerrainViewer(false);
-	            IsMenuVisible = false;
-	            return false;
-	        }
-
+	        var tileId = new TileIdentifier(map, coords);
+            if (TileRenderers.ContainsKey(tileId))
+            {
+                RemoveTileFromDisplay(tileId);
+                IsMenuVisible = false;
+                return false;
+            }
+            
 	        // GUI stuff
             if (worker.IsBusy) return false;
             
             IsMenuVisible = false;
             GetOrCreateWaitingBox("Loading tile - Please wait...").Visible = true;
 	        
-            worker.DoWork +=
-	            (send0r, args) => Tiles.Add(terrain.GetOrCreateTile(map, coords.X, coords.Y));
+            addingTile = (sender, b) =>  AddTileToDisplay(tileId);
+            worker.DoWork += addingTile;
 
-	        worker.RunWorkerCompleted += ((a, b) => UpdateTerrainViewer(false));
+	        completedLoad = (sender, e) =>
+	        {
+	            UpdateTerrainViewer(false);
+	            worker.DoWork -= addingTile;
+	            worker.RunWorkerCompleted -= completedLoad;
+	        };
+	        worker.RunWorkerCompleted += completedLoad;
 
 	        worker.RunWorkerAsync();
 	        return true;
 	    }
+
+        private void SetEnvironmentVisibility(bool visible)
+        {
+            foreach (var renderer in TileRenderers.Values)
+            {
+                renderer.EnvironsEnabled = visible;
+            }
+        }
 
 	    class TransparentTextBox : TextBox
 		{
@@ -1402,18 +1402,33 @@ namespace WCell.Terrain.GUI
 			}
 		}
 
+        private void AddTileToDisplay(TileIdentifier tileId)
+        {
+            var terrain = world.GetOrLoadSimpleWDTTerrain(tileId.MapId);
+            var tile = terrain.GetOrCreateTile(tileId);
+            if (tile == null) return;
+
+            var renderer = new TileRenderer(this, tile);
+            TileRenderers.Add(tileId, renderer);
+            Tiles.Add(tile);
+            Components.Add(renderer);
+        }
+
+        private void RemoveTileFromDisplay(TileIdentifier tileId)
+        {
+            var renderer = TileRenderers[tileId];
+            TileRenderers.Remove(tileId);
+            Tiles.RemoveFirst(tile => (tile.TileId == tileId));
+            Components.Remove(renderer);
+            
+            renderer.Dispose();
+
+            UpdateTerrainViewer(false);
+        }
+
         private void UpdateTerrainViewer(bool updateAvatar)
         {
             UpdateFormText();
-
-            // reset renderers
-            foreach (var component in Components)
-            {
-                if (component is RendererBase)
-                {
-                    ((RendererBase)component).Clear();
-                }
-            }
 
             // reset GUI
             waitingBox.Visible = false;

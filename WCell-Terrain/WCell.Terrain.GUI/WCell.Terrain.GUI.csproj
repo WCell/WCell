@@ -127,6 +127,7 @@
     <Compile Include="Renderers\AxisRenderer.cs" />
     <Compile Include="Renderers\GenericRenderer.cs" />
     <Compile Include="Renderers\LiquidRenderer.cs" />
+    <Compile Include="Renderers\TileRenderer.cs" />
     <Compile Include="TerrainGUIConfig.cs" />
     <Compile Include="TerrainViewer.cs" />
     <Compile Include="Renderers\EnvironmentRenderer.cs" />

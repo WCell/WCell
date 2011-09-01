@@ -11,13 +11,11 @@ namespace WCell.Terrain.GUI.Renderers
 {
 	public class LiquidRenderer : RendererBase
 	{
-		private static Color WaterColor
-		{
-			//get { return Color.DarkSlateGray; }
-			get { return new Color(0, 0, 70, 50); }
-		}
+		private static Color WaterColor = new Color(0, 0, 70, 50);
+	    
+	    private TerrainTile tile;
 
-		readonly BlendState alphaBlendState = new BlendState()
+        readonly BlendState alphaBlendState = new BlendState()
 		{
 			AlphaBlendFunction = BlendFunction.Add,
 			AlphaSourceBlend = Blend.SourceAlpha,
@@ -26,8 +24,9 @@ namespace WCell.Terrain.GUI.Renderers
 			ColorDestinationBlend = Blend.InverseSourceAlpha
 		};
 
-		public LiquidRenderer(Game game) : base(game)
+		public LiquidRenderer(Game game, TerrainTile tile) : base(game)
 		{
+		    this.tile = tile;
 		}
 
 		public override void Draw(GameTime gameTime)
@@ -41,10 +40,7 @@ namespace WCell.Terrain.GUI.Renderers
 
 		protected override void BuildVerticiesAndIndicies()
 		{
-			var viewer = (TerrainViewer) Game;
-			var tiles = viewer.Tiles;
-		    
-			List<int> indices;
+		    List<int> indices;
 			using (LargeObjectPools.IndexListPool.Borrow(out indices))
 			{
 				List <WCell.Util.Graphics.Vector3> vertices;
@@ -53,34 +49,25 @@ namespace WCell.Terrain.GUI.Renderers
 				{
 				    indices.Clear();
 				    vertices.Clear();
-				    var tempIndices = new List<int>();
-					var tempVertices = new List<VertexPositionNormalColored>();
+				    var tempVertices = new List<VertexPositionNormalColored>();
+				    
+                    tile.GenerateLiquidMesh(indices, vertices);
 
-                    foreach (var tile in tiles)
-                    {
-                        tile.GenerateLiquidMesh(indices, vertices);
+				    if (vertices.Count == 0) return;
 
-                        if (vertices.Count == 0) continue;
+				    foreach (var vertex in vertices)
+				    {
+				        var vertexPosNmlCol = new VertexPositionNormalColored(vertex.ToXna(),
+				                                                              WaterColor,
+				                                                              Vector3.Zero);
+				        tempVertices.Add(vertexPosNmlCol);
+				    }
 
-                        var offset = tempVertices.Count;
-                        foreach (var vertex in vertices)
-                        {
-                            var vertexPosNmlCol = new VertexPositionNormalColored(vertex.ToXna(),
-                                                                                  WaterColor,
-                                                                                  Vector3.Zero);
-                            tempVertices.Add(vertexPosNmlCol);
-                        }
-
-                        foreach (var index in indices)
-                        {
-                            tempIndices.Add(offset + index);
-                        }
-                    }
-
-				    _cachedIndices = tempIndices.ToArray();
-					_cachedVertices = tempVertices.ToArray();
+				    _cachedIndices = indices.ToArray();
+				    _cachedVertices = tempVertices.ToArray();
 				}
 			}
+
 			_renderCached = true;
 		}
 	}

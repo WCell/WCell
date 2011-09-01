@@ -9,41 +9,35 @@ namespace WCell.Terrain.GUI.Renderers
 {
 	class EnvironmentRenderer : RendererBase
 	{
-		private static Color TerrainColor
-		{
-			get { return Color.DarkSlateGray; }
-			//get { return Color.Green; }
-		}
+	    private static Color TerrainColor = Color.DarkSlateGray;
 
+	    private TerrainTile tile;
 
-		public EnvironmentRenderer(Game game)
+		public EnvironmentRenderer(Game game, TerrainTile tile)
 			: base(game)
 		{
+		    this.tile = tile;
 		}
 
 		#region Build polygons
 		protected override void BuildVerticiesAndIndicies()
 		{
-		    var tiles = Viewer.Tiles;
 		    var tempIndices = new List<int>();
 		    var tempVertices = new List<VertexPositionNormalColored>();
 		    
-            foreach (var tile in tiles)
-            {
-                var offset = tempVertices.Count;
-		        foreach (var vertex in tile.TerrainVertices)
-		        {
-		            var vertexPosNmlCol1 = new VertexPositionNormalColored(vertex.ToXna(),
-		                                                                   TerrainColor,
-		                                                                   Vector3.Zero);
-		            tempVertices.Add(vertexPosNmlCol1);
-		        }
+            var offset = tempVertices.Count;
+		    foreach (var vertex in tile.TerrainVertices)
+		    {
+		        var vertexPosNmlCol1 = new VertexPositionNormalColored(vertex.ToXna(),
+		                                                               TerrainColor,
+		                                                               Vector3.Zero);
+		        tempVertices.Add(vertexPosNmlCol1);
+		    }
 
-                foreach (var index in tile.TerrainIndices)
-                {
-                    tempIndices.Add(offset + index);
-                }
-            }
+		    foreach (var index in tile.TerrainIndices)
+		    {
+		        tempIndices.Add(offset + index);
+		    }
 
 		    _cachedVertices = tempVertices.ToArray();
 		    _cachedIndices = tempIndices.ToArray();
