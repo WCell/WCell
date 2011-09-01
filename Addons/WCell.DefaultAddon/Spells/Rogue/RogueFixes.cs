@@ -25,9 +25,16 @@ namespace WCell.Addons.Default.Spells.Rogue
 				spell.GetEffect(AuraType.ProcTriggerSpell).AddAffectingSpells(SpellLineId.RogueDeadlyThrow);
 			});
 
-			// all combo point abilities: 2680070E0000010600000000
+			// All combo moves which can critical hit
 			SpellLineId.RogueAssassinationSealFate.Apply(
-				spell => spell.Effects[0].AffectMask = new uint[] { 0x2680070E, 0x00000106, 0x00000000 });
+				spell =>
+				{
+					var effect = spell.GetEffect(SpellEffectType.ApplyAura);
+					effect.ClearAffectMask();
+					effect.AddAffectingSpells(SpellLineId.RogueSinisterStrike, SpellLineId.RogueBackstab, SpellLineId.RogueAmbush,
+						SpellLineId.RogueAssassinationMutilate, SpellLineId.RogueSubtletyGhostlyStrike, SpellLineId.RogueSubtletyHemorrhage,
+						SpellLineId.RogueGouge, SpellLineId.RogueShiv, SpellLineId.RogueCombatRiposte);
+				});
 
 			// all finishing moves: RogueKidneyShot, RogueRupture, RogueEviscerate, RogueExposeArmor, RogueDeadlyThrow, RogueEnvenom (003A00000000000900000000)
 			SpellLineId.RogueAssassinationRuthlessness.Apply(

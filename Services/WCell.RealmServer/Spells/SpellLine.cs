@@ -115,6 +115,17 @@ namespace WCell.RealmServer.Spells
 			return Name;
 		}
 
+		public override bool Equals(object obj)
+		{
+			var line = obj as SpellLine;
+			return line != null && LineId.Equals(line.LineId);
+		}
+
+		public override int GetHashCode()
+		{
+			return LineId.GetHashCode();
+		}
+
 		public Spell BaseSpell
 		{
 			get { return FirstRank; }
