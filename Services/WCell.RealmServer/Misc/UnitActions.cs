@@ -811,7 +811,7 @@ namespace WCell.RealmServer.Misc
 
 				if (Attacker != null && Attacker.IsAlive)
 				{
-					Attacker.Proc(attackerProcTriggerFlags, Attacker, this, true, ProcHitFlags);
+					Attacker.Proc(attackerProcTriggerFlags, Victim, this, true, ProcHitFlags);
 				}
 
 				if (Victim != null && Victim.IsAlive)

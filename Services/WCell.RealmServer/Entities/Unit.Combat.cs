@@ -1209,7 +1209,7 @@ namespace WCell.RealmServer.Entities
 
 			if (action.IsDot)
 			{
-				action.Attacker.Proc(ProcTriggerFlags.DonePeriodicDamageOrHeal, action.Attacker, action, true, procHitFlags);
+				action.Attacker.Proc(ProcTriggerFlags.DonePeriodicDamageOrHeal, this, action, true, procHitFlags);
 				victimProcFlags |= ProcTriggerFlags.ReceivedPeriodicDamageOrHeal;
 			}
 

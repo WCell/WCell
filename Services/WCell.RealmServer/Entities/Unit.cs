@@ -934,7 +934,7 @@ namespace WCell.RealmServer.Entities
 			if (action.IsHot)
 			{
 				ProcHitFlags hitFlags = action.IsCritical ? ProcHitFlags.CriticalHit : ProcHitFlags.NormalHit;
-				action.Attacker.Proc(ProcTriggerFlags.DonePeriodicDamageOrHeal, action.Attacker, action, true, hitFlags);
+				action.Attacker.Proc(ProcTriggerFlags.DonePeriodicDamageOrHeal, this, action, true, hitFlags);
 				Proc(ProcTriggerFlags.ReceivedPeriodicDamageOrHeal, action.Attacker, action, true, hitFlags);
 			}
 		}

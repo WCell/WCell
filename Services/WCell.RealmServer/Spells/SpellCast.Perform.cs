@@ -987,7 +987,9 @@ namespace WCell.RealmServer.Spells
 				IsCritical = hitFlags.HasAnyFlag(ProcHitFlags.CriticalHit)
 			};
 
-			CasterUnit.Proc(flags, CasterUnit, casterAction, true, hitFlags);
+			var triggerer = Targets.OfType<Unit>().FirstOrDefault();
+
+			CasterUnit.Proc(flags, triggerer, casterAction, true, hitFlags);
 		}
 		#endregion
 		#endregion
