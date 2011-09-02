@@ -85,7 +85,8 @@ namespace WCell.RealmServer.NPCs
 						added = true;
 						break;
 					}
-					else if (cur.Value.Id == Id)
+					
+					if (cur.Value.Id == Id)
 					{
 						ContentMgr.OnInvalidDBData("Found multiple Waypoints with the same Id {0} for SpawnEntry {1}", Id, SpawnEntry);
 						return;

@@ -16,6 +16,25 @@ namespace WCell.RealmServer.AI.Actions.Movement
 		protected LinkedListNode<WaypointEntry> m_currentWaypoint;
 		protected LinkedListNode<WaypointEntry> m_targetWaypoint;
 
+
+		/// <summary>
+		/// The direction of movement on waypoints. True - moving backwards, false - moving forward
+		/// Only used for AIMovementType.ForwardThenBack
+		/// </summary>
+		protected bool m_goingBack;
+
+		/// <summary>
+		/// Whether we are staying on a waypoint (pause)
+		/// </summary>
+		protected bool m_stayingOnWaypoint;
+
+		/// <summary>
+		/// When to start moving again
+		/// </summary>
+		protected uint m_desiredStartMovingTime;
+
+		protected AIMovementType m_WPmovementType;
+
 		public AIWaypointMoveAction(Unit owner)
 			: this(owner, AIMovementType.ForwardThenStop)
 		{
@@ -44,25 +63,7 @@ namespace WCell.RealmServer.AI.Actions.Movement
 		}
 
 		/// <summary>
-		/// The direction of movement on waypoints. True - moving backwards, false - moving forward
-		/// Only used for AIMovementType.ForwardThenBack
-		/// </summary>
-		protected bool m_goingBack;
-
-		/// <summary>
-		/// Whether we are staying on a waypoint (pause)
-		/// </summary>
-		protected bool m_stayingOnWaypoint;
-
-		/// <summary>
-		/// When to start moving again
-		/// </summary>
-		protected uint m_desiredStartMovingTime;
-
-		protected AIMovementType m_WPmovementType;
-
-		/// <summary>
-		/// Amount of Waypoints in queue
+		/// Amount of Waypoints
 		/// </summary>
 		public int Count { get { return m_waypoints.Count; } }
 
@@ -126,7 +127,7 @@ namespace WCell.RealmServer.AI.Actions.Movement
 			if (m_targetWaypoint == null)
 			{
 				// there is no next Waypoint (usually means there are no waypoints at all)
-				m_owner.Movement.MoveTo(m_owner.Position, false);
+				//m_owner.Movement.MoveTo(m_owner.Position, false);
 			}
 			else
 			{

@@ -245,7 +245,7 @@ namespace WCell.RealmServer.Commands
 				}
 
 				// create & teleport
-				map.AddNPCSpawnPoolLater(spawnEntry.PoolTemplate);
+				map.AddNPCSpawnPool(spawnEntry.PoolTemplate);
 				if (trigger.Args.Target != null)
 				{
 					trigger.Args.Target.TeleportTo(map, spawnEntry.Position);

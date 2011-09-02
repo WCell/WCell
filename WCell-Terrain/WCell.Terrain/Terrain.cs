@@ -150,16 +150,16 @@ namespace WCell.Terrain
 			if (LoadOnDemand)
 			{
 				tile1 = GetTile(fromX, fromY);
-				//tile2 = GetOrLoadTile(toX, toY);
+                tile2 = GetTile(toX, toY);
 			}
 			else
 			{
 				tile1 = Tiles[fromX, fromY];
-				//tile2 = Tiles[toX, toY];
+				tile2 = Tiles[toX, toY];
 			}
 
 			// cannot traverse tiles yet
-			if (tile1 == null)
+			if (tile1 == null || tile1 != tile2)
 			{
 				return;
 			}

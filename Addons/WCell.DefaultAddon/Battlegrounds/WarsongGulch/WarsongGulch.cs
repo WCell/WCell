@@ -176,9 +176,9 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 		}
 
 
-		protected override void OnPrepare()
+		protected override void OnPrepareBegin()
 		{
-			base.OnPrepare();
+			base.OnPrepareBegin();
 
 			string time = RealmLocalizer.FormatTimeSecondsMinutes(PreparationTimeMillis / 1000);
 			Characters.SendSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.WSOnPrepare), time);

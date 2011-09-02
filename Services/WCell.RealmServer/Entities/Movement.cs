@@ -323,16 +323,18 @@ namespace WCell.RealmServer.Entities
 			}
 			m_currentQuery = null;
 
-			if (query.Path != null)
-			{
-				_currentPath = query.Path;
-
-				m_destination = _currentPath.Next();
-			}
-			MoveToDestination();
+		    FollowPath(query.Path);
 		}
 
-		/// <summary>
+	    public void FollowPath(Path path)
+	    {
+	        _currentPath = path;
+
+	        m_destination = _currentPath.Next();
+	        MoveToDestination();
+	    }
+
+	    /// <summary>
 		/// Updates position of unit
 		/// </summary>
 		/// <returns>true if target point is reached</returns>

@@ -246,9 +246,9 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
             Characters.SendSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.ABOnPrepareHalfTime), PreparationTimeMillis / 2000);
         }
 
-        protected override void OnPrepare()
+		protected override void OnPrepareBegin()
         {
-            base.OnPrepare();
+			base.OnPrepareBegin();
         	var time = RealmLocalizer.FormatTimeSecondsMinutes(PreparationTimeMillis/1000);
             Characters.SendSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.ABOnPrepare), time);
         }
