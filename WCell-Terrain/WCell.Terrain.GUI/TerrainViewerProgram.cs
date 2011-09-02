@@ -49,10 +49,13 @@ namespace WCell.Terrain.GUI
 			NativeMethods.InitAPI();
 
 			var defaultTileId = TileIdentifier.DefaultTileIdentifier;
+		    
+            var world = new World();
+		    var terrain = new SimpleWDTTerrain(defaultTileId.MapId, false);
+            world.WorldTerrain.Add(defaultTileId.MapId, terrain);
 
-			var tile = GetOrCreateTile(defaultTileId.MapId, defaultTileId.X, defaultTileId.Y);
-			
-
+            terrain.GetOrCreateTile(defaultTileId.MapId, defaultTileId.X, defaultTileId.Y);
+            
 			AvatarPosition = new Vector3(TerrainConstants.CenterPoint - (defaultTileId.X + 1)*TerrainConstants.TileSize,
 			                             TerrainConstants.CenterPoint - (defaultTileId.Y)*TerrainConstants.TileSize,
 			                             100.0f);
@@ -61,53 +64,14 @@ namespace WCell.Terrain.GUI
 			Console.WriteLine("All data has been loaded - Starting GUI...");
 
 			//new RecastRunner(TerrainManager).Start();
-			StartDefaultViewer(tile);
+			StartDefaultViewer(world, defaultTileId);
 		}
 
-		public static TerrainTile GetOrCreateTile(MapId map, int x, int y)
+		
+
+		private static void StartDefaultViewer(World world, TileIdentifier tileId)
 		{
-			Console.Write("Trying to load simple tile... ");
-			var tile = SimpleTerrain.LoadTile(map, x, y);
-
-
-
-			if (tile == null)
-			{
-				// load it the slow way
-
-				var start = DateTime.Now;
-				Console.WriteLine();
-				Console.Write("Tile could not be found - Decompressing...");
-				tile = WDT.LoadTile(map, x, y);
-				if (tile == null)
-				{
-					throw new ArgumentException(string.Format(
-						"Could not read tile (Map: {0} at ({1}, {2})",
-						map,
-						x,
-						y));
-				}
-
-				Console.WriteLine("Done - Loading time: {0:0.000}s", (DateTime.Now - start).TotalSeconds);
-
-				// write it back
-				Console.Write("Saving decompressed tile... ");
-				SimpleTileWriter.WriteADT((ADT)tile);
-				Console.WriteLine("Done");
-			}
-			else
-			{
-				Console.WriteLine("Done.");
-			}
-
-			tile.EnsureNavMeshLoaded();
-
-			return tile;
-		}
-
-		private static void StartDefaultViewer(TerrainTile tile)
-		{
-			using (var game = new TerrainViewer(AvatarPosition.ToXna(), tile))
+			using (var game = new TerrainViewer(AvatarPosition.ToXna(), world, tileId))
 			{
 				game.Run();
 			}

@@ -39,7 +39,7 @@ namespace WCell.Terrain.GUI.UI
 			{
 				if (!File.Exists(SimpleTileWriter.GetFileName(map, child.Coords.X, child.Coords.Y)))
 				{
-					child.BackColor = Color.Gray;
+					child.BackColor = TileTreeNode.NotLoadedColor;
 				}
 			}
 		}
@@ -47,6 +47,9 @@ namespace WCell.Terrain.GUI.UI
 
 	public class TileTreeNode : TreeNode
 	{
+	    public static Color NotLoadedColor = Color.Gray;
+	    public static Color LoadedColor = Color.White;
+
 		public MapId Map { get; set; }
 		public Point2D Coords { get; set; }
 

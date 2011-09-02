@@ -4,6 +4,7 @@ using System.IO;
 using NLog;
 using WCell.Constants;
 using WCell.MPQTool;
+using WCell.Terrain.Legacy;
 using WCell.Terrain.MPQ;
 using WCell.Terrain.MPQ.ADTs;
 using WCell.Terrain.MPQ.WMOs;
@@ -622,16 +623,21 @@ namespace WCell.Terrain.Serialization
 
 			var setIndices = new List<int> { 0 };
 			if (curDoodadSet > 0) setIndices.Add(curDoodadSet);
+		    var setDefs = new List<DoodadSet>(setIndices.Count);
+		    foreach (var index in setIndices)
+		    {
+		        setDefs.Add(wmoRoot.DoodadSets[index]);
+		    }
 
-			foreach (var index in setIndices)
+		    var m2List = new List<M2>();
+            foreach (var def in setDefs)
 			{
-				var doodadSetOffset = wmoRoot.DoodadSets[index].FirstInstanceIndex;
-				var doodadSetCount = wmoRoot.DoodadSets[index].InstanceCount;
-				wmoRoot.WMOM2s = new M2[(int)doodadSetCount];
+				var doodadSetOffset = def.FirstInstanceIndex;
+				var doodadSetCount = def.InstanceCount;
 				for (var i = doodadSetOffset; i < (doodadSetOffset + doodadSetCount); i++)
 				{
 					var curDoodadDef = wmoRoot.DoodadDefinitions[i];
-					var curM2 = M2Reader.ReadM2(librarian, curDoodadDef.FilePath);
+					var curM2 = M2Reader.ReadM2(librarian, curDoodadDef.FilePath, true);
 
 					var tempIndices = new List<int>();
 					for (var j = 0; j < curM2.BoundingTriangles.Length; j++)
@@ -644,10 +650,11 @@ namespace WCell.Terrain.Serialization
 					}
 
 					var rotatedM2 = TransformWMOM2(curM2, tempIndices, curDoodadDef);
-					wmoRoot.WMOM2s[i - doodadSetOffset] = rotatedM2;
+					m2List.Add(rotatedM2);
 				}
 			}
 
+		    wmoRoot.WMOM2s = m2List.ToArray();
 			TransformWMO(currentMODF, wmoRoot);
 
 			var bounds = new BoundingBox(wmoRoot.WmoVertices);
@@ -762,7 +769,7 @@ namespace WCell.Terrain.Serialization
 				var liqInfo = currentGroup.LiquidInfo;
 				var liqOrigin = liqInfo.BaseCoordinates;
 
-				offset = currentWMO.WmoVertices.Count;
+				offset = currentWMO.WmoLiquidVertices.Count;
 				for (var xStep = 0; xStep < liqInfo.XVertexCount; xStep++)
 				{
 					for (var yStep = 0; yStep < liqInfo.YVertexCount; yStep++)
@@ -812,7 +819,7 @@ namespace WCell.Terrain.Serialization
 			{
 				foreach (var currentM2 in currentWMO.WMOM2s)
 				{
-					offset = currentWMO.WmoVertices.Count;
+					offset = currentWMO.WmoM2Vertices.Count;
 					for (var i = 0; i < currentM2.Vertices.Count; i++)
 					{
 						var basePosition = currentM2.Vertices[i];
@@ -831,7 +838,7 @@ namespace WCell.Terrain.Serialization
 				}
 			}
 		}
-		private static M2 TransformWMOM2(M2Model model, IEnumerable<int> indicies, DoodadDefinition modd)
+		private static M2 TransformWMOM2(M2Model model, List<int> indices, DoodadDefinition modd)
 		{
 			var currentM2 = new M2();
 
@@ -881,8 +888,8 @@ namespace WCell.Terrain.Serialization
 				currentM2.Vertices.Add(finalPosVector);
 			}
 
-			currentM2.Indices.AddRange(indicies);
-			return currentM2;
+            currentM2.Indices.AddRange(indices);
+            return currentM2;
 		}
     }
 

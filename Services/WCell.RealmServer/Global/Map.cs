@@ -832,35 +832,35 @@ namespace WCell.RealmServer.Global
 			get { return m_gosSpawned; }
 		}
 
-        public void RemoveNPCSpawnPoolLater(NPCSpawnPoolTemplate templ)
-        {
-            AddMessage(() => RemoveNPCSpawnPoolNow(templ));
-        }
+		public void RemoveNPCSpawnPool(NPCSpawnPoolTemplate templ)
+		{
+			AddMessage(() => RemoveNPCSpawnPoolNow(templ));
+		}
 
-        public void RemoveNPCSpawnPoolNow(NPCSpawnPoolTemplate templ)
-        {
-            NPCSpawnPool existingPool;
-            if (m_npcSpawnPools.TryGetValue(templ.PoolId, out existingPool))
-            {
-                existingPool.RemovePoolNow();
-            }
-        }
+		public void RemoveNPCSpawnPoolNow(NPCSpawnPoolTemplate templ)
+		{
+			NPCSpawnPool existingPool;
+			if (m_npcSpawnPools.TryGetValue(templ.PoolId, out existingPool))
+			{
+				existingPool.RemovePoolNow();
+			}
+		}
 
-        public void RemoveGOSpawnPoolLater(GOSpawnPoolTemplate templ)
-        {
-            AddMessage(() => RemoveGOSpawnPoolNow(templ));
-        }
+		public void RemoveGOSpawnPool(GOSpawnPoolTemplate templ)
+		{
+			AddMessage(() => RemoveGOSpawnPoolNow(templ));
+		}
 
-        public void RemoveGOSpawnPoolNow(GOSpawnPoolTemplate templ)
-        {
-            GOSpawnPool existingPool;
-            if (m_goSpawnPools.TryGetValue(templ.PoolId, out existingPool))
-            {
-                existingPool.RemovePoolNow();
-            }
-        }
+		public void RemoveGOSpawnPoolNow(GOSpawnPoolTemplate templ)
+		{
+			GOSpawnPool existingPool;
+			if (m_goSpawnPools.TryGetValue(templ.PoolId, out existingPool))
+			{
+				existingPool.RemovePoolNow();
+			}
+		}
 
-		public void AddNPCSpawnPoolLater(NPCSpawnPoolTemplate templ)
+		public void AddNPCSpawnPool(NPCSpawnPoolTemplate templ)
 		{
 			AddMessage(() => AddNPCSpawnPoolNow(templ));
 		}
@@ -890,10 +890,10 @@ namespace WCell.RealmServer.Global
 			}
 		}
 
-        public void AddGOSpawnPoolLater(GOSpawnPoolTemplate templ)
-        {
-            AddMessage(() => AddGOSpawnPoolNow(templ));
-        }
+		public void AddGOSpawnPoolLater(GOSpawnPoolTemplate templ)
+		{
+			AddMessage(() => AddGOSpawnPoolNow(templ));
+		}
 
 		public GOSpawnPool AddGOSpawnPoolNow(GOSpawnPoolTemplate templ)
 		{
@@ -1374,7 +1374,7 @@ namespace WCell.RealmServer.Global
 					try
 					{
 						// Update Object
-						var minObjUpdateDelta = UpdatePriorityMillis[(int) priority];
+						var minObjUpdateDelta = UpdatePriorityMillis[(int)priority];
 						var objUpdateDelta = (updateStart - obj.LastUpdateTime).ToMilliSecondsInt();
 
 						if (objUpdateDelta >= minObjUpdateDelta)
@@ -1390,7 +1390,7 @@ namespace WCell.RealmServer.Global
 						// Fail-safe:
 						if (obj is Unit)
 						{
-							var unit = (Unit) obj;
+							var unit = (Unit)obj;
 							if (unit.Brain != null)
 							{
 								unit.Brain.IsRunning = false;
@@ -1398,7 +1398,7 @@ namespace WCell.RealmServer.Global
 						}
 						if (obj is Character)
 						{
-							((Character) obj).Client.Disconnect();
+							((Character)obj).Client.Disconnect();
 						}
 						else
 						{
@@ -1407,7 +1407,7 @@ namespace WCell.RealmServer.Global
 					}
 				}
 
-				if (m_tickCount%CharacterUpdateEnvironmentTicks == 0)
+				if (m_tickCount % CharacterUpdateEnvironmentTicks == 0)
 				{
 					UpdateCharacters();
 				}
@@ -1424,7 +1424,7 @@ namespace WCell.RealmServer.Global
 				var newUpdateDelta = updateEnd - updateStart;
 
 				// weigh old update-time 9 times and new update-time once
-				_avgUpdateTime = ((_avgUpdateTime*9) + (float) (newUpdateDelta).TotalMilliseconds)/10;
+				_avgUpdateTime = ((_avgUpdateTime * 9) + (float)(newUpdateDelta).TotalMilliseconds) / 10;
 
 				// make sure to unset the ID *before* enqueuing the task in the ThreadPool again
 				Interlocked.Exchange(ref m_currentThreadId, 0);
@@ -2548,13 +2548,24 @@ namespace WCell.RealmServer.Global
 
 		#region IGenericChatTarget Members
 
+		/// <summary>
+		/// Sends the given message to everyone
+		/// </summary>
 		public void SendMessage(string message)
 		{
-			AddMessage(new Message1<Map>(
-							this, rgn => ChatMgr.SendSystemMessage(rgn.m_characters, message)
-						));
+			ExecuteInContext(() =>
+			{
+				m_characters.SendSystemMessage(message);
+				ChatMgr.ChatNotify(null, message, ChatLanguage.Universal, ChatMsgType.System, this);
+			});
+		}
 
-			ChatMgr.ChatNotify(null, message, ChatLanguage.Universal, ChatMsgType.System, this);
+		/// <summary>
+		/// Sends the given message to everyone
+		/// </summary>
+		public void SendMessage(string message, params object[] args)
+		{
+			SendMessage(string.Format(message, args));
 		}
 
 		#endregion

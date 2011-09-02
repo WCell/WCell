@@ -423,7 +423,7 @@ namespace WCell.Terrain.Serialization
 				for (var i = 0; i < heightMapLen; i++)
 				{
 					water.HeightsArray[i] = fileReader.ReadSingle();
-					if (water.HeightsArray[i] == 0)
+					if (water.HeightsArray[i].IsWithinEpsilon(0.0f))
 					{
 						water.HeightsArray[i] = water.Header.HeightLevel1;
 					}

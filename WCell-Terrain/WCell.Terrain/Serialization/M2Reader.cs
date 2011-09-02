@@ -14,7 +14,7 @@ namespace WCell.Terrain.Serialization
 {
     public class M2Reader
     {
-        public static M2Model ReadM2(MpqLibrarian librarian, string filePath)
+        public static M2Model ReadM2(MpqLibrarian librarian, string filePath, bool isWMOM2)
         {
             if (!librarian.FileExists(filePath))
             {
@@ -50,7 +50,7 @@ namespace WCell.Terrain.Serialization
                 ReadTexUnits(br, model);
                 ReadTransLookup(br, model);
                 ReadUVAnimLookup(br, model);
-                ReadBoundingTriangles(br, model);
+                ReadBoundingTriangles(br, model, isWMOM2);
                 ReadBoundingVertices(br, model);
                 ReadBoundingNormals(br, model);
                 ReadAttachments(br, model);
@@ -207,7 +207,7 @@ namespace WCell.Terrain.Serialization
         static void ReadUVAnimLookup(BinaryReader br, M2Model model)
         {
         }
-        static void ReadBoundingTriangles(BinaryReader br, M2Model model)
+        static void ReadBoundingTriangles(BinaryReader br, M2Model model, bool isWMOM2)
         {
             var btInfo = model.Header.BoundingTriangles;
             model.BoundingTriangles = new Index3[btInfo.Count / 3];
@@ -216,11 +216,15 @@ namespace WCell.Terrain.Serialization
 
             for (var i = 0; i < model.BoundingTriangles.Length; i++)
             {
+                var index0 = br.ReadInt16();
+                var index1 = br.ReadInt16();
+                var index2 = br.ReadInt16();
+
                 model.BoundingTriangles[i] = new Index3
                 {
-                    Index2 = br.ReadInt16(),
-                    Index1 = br.ReadInt16(),
-                    Index0 = br.ReadInt16()
+                    Index0 = index2,
+                    Index1 = isWMOM2 ? index0 : index1,
+                    Index2 = isWMOM2 ? index1 : index0
                 };
 
             }
@@ -279,17 +283,8 @@ namespace WCell.Terrain.Serialization
 
 		public static M2 ReadM2(MpqLibrarian librarian, MapDoodadDefinition doodadDefinition)
 		{
-			var filePath = doodadDefinition.FilePath;
-			var ext = Path.GetExtension(filePath);
-
-			if (ext.Equals(".mdx") ||
-				ext.Equals(".mdl"))
-			{
-				filePath = Path.ChangeExtension(filePath, ".m2");
-			}
-
-			var model = M2Reader.ReadM2(librarian, doodadDefinition.FilePath);
-
+			var model = M2Reader.ReadM2(librarian, doodadDefinition.FilePath, false);
+		    
 			var tempIndices = new List<int>();
 			foreach (var tri in model.BoundingTriangles)
 			{
@@ -299,11 +294,9 @@ namespace WCell.Terrain.Serialization
 			}
 
 			var currentM2 = TransformM2(model, tempIndices, doodadDefinition);
-			var tempVertices = currentM2.Vertices;
-			var bounds = new BoundingBox(tempVertices.ToArray());
-			currentM2.Bounds = bounds;
+            currentM2.Bounds = new BoundingBox(currentM2.Vertices.ToArray());
 
-			return currentM2;
+            return currentM2;
 		}
 
 		static M2 TransformM2(M2Model model, IEnumerable<int> indicies, MapDoodadDefinition mddf)
@@ -352,5 +345,6 @@ namespace WCell.Terrain.Serialization
 			currentM2.Indices.AddRange(indicies);
 			return currentM2;
 		}
+        
     }
 }

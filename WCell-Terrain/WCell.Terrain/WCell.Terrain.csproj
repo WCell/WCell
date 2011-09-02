@@ -112,7 +112,7 @@
     <Compile Include="Legacy\AABB.cs" />
     <Compile Include="Legacy\BSPTree\BSPTree.cs" />
     <Compile Include="Legacy\CollisionUtil.cs" />
-    <Compile Include="Legacy\GeometryHelpers.cs" />
+    <Compile Include="GeometryHelpers.cs" />
     <Compile Include="Legacy\ICollidable.cs" />
     <Compile Include="Legacy\Intersection.cs" />
     <Compile Include="IShape.cs" />
@@ -125,10 +125,14 @@
     <Compile Include="Legacy\OCTree\OCTreeIntersectionType.cs" />
     <Compile Include="Legacy\OCTree\OCTreeNode.cs" />
     <Compile Include="LargeObjectPools.cs" />
+    <Compile Include="MeshClipper.cs" />
+    <Compile Include="Pathfinding\NodeItem.cs" />
+    <Compile Include="Pathfinding\PathExtensions.cs" />
     <Compile Include="Pathfinding\Pathfinder.cs" />
     <Compile Include="Pathfinding\SearchItem.cs" />
     <Compile Include="Recast\NavMesh\NavMeshBuilder.cs" />
     <Compile Include="Recast\RecastUtil.cs" />
+    <Compile Include="SimpleWDTTerrain.cs" />
     <Compile Include="TerrainLiquidChunk.cs" />
     <Compile Include="Tools\MapBoundaryUtil.cs" />
     <Compile Include="Tools\MapBoundaryWriter.cs" />
@@ -204,6 +208,7 @@
     <Compile Include="TerrainUtil.cs" />
     <Compile Include="WCellTerrainSettings.cs" />
     <Compile Include="TileIdentifier.cs" />
+    <Compile Include="World.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
@@ -226,6 +231,10 @@
     <ProjectReference Include="..\..\Utilities\WCell.Util\WCell.Util.csproj">
       <Project>{F753AF28-A251-4C12-9335-07E8236184F2}</Project>
       <Name>WCell.Util</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QSlim\QSlim.csproj">
+      <Project>{891B39C4-70E9-46E5-812D-D9CE70A25B07}</Project>
+      <Name>QSlim</Name>
     </ProjectReference>
     <ProjectReference Include="..\Terra\Terra.csproj">
       <Project>{1E90346C-7D04-4D97-8399-397B2E7DD0D6}</Project>

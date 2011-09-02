@@ -254,10 +254,30 @@ namespace WCell.Terrain
             }
         }
 
+        //public static bool TrianglesOverlap(this IShape shape, int tri1, int tri2)
+        //{
+        //    var triangle1 = shape.GetTriangle(tri1);
+        //    var triangle2 = shape.GetTriangle(tri2);
+
+        //    if (triangle1.CompletelyContainsPointXY(triangle2.Point1.XY)) return false;
+        //    if (triangle1.CompletelyContainsPointXY(triangle2.Point2.XY)) return false;
+        //    if (triangle1.CompletelyContainsPointXY(triangle2.Point3.XY)) return false;
+
+        //    if (triangle2.CompletelyContainsPointXY(triangle1.Point1.XY)) return false;
+        //    if (triangle2.CompletelyContainsPointXY(triangle1.Point2.XY)) return false;
+        //    if (triangle2.CompletelyContainsPointXY(triangle1.Point3.XY)) return false;
+        //}
+
         public static bool TriangleContainsPointXY(this IShape shape, int tri, Vector2 point)
         {
             var triangle = shape.GetTriangle(tri);
             return triangle.ContainsPointXY(point);
+        }
+
+        public static bool TriangleCompletelyContainsPointXY(this IShape shape, int tri, Vector2 point)
+        {
+            var triangle = shape.GetTriangle(tri);
+            return triangle.CompletelyContainsPointXY(point);
         }
 
         public static bool ContainsPointXY(this Triangle triangle, Vector2 point)
@@ -269,6 +289,19 @@ namespace WCell.Terrain
             if (!GeometryHelpers.IsRightOfOrOn(point, a, b)) return false;
             if (!GeometryHelpers.IsRightOfOrOn(point, b, c)) return false;
             if (!GeometryHelpers.IsRightOfOrOn(point, c, a)) return false;
+
+            return true;
+        }
+
+        public static bool CompletelyContainsPointXY(this Triangle triangle, Vector2 point)
+        {
+            var a = triangle.Point1.XY;
+            var b = triangle.Point2.XY;
+            var c = triangle.Point3.XY;
+
+            if (!GeometryHelpers.IsRightOf(point, a, b)) return false;
+            if (!GeometryHelpers.IsRightOf(point, b, c)) return false;
+            if (!GeometryHelpers.IsRightOf(point, c, a)) return false;
 
             return true;
         }

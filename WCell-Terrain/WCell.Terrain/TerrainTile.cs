@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Terra;
 using WCell.Constants;
+using WCell.Constants.World;
 using WCell.Terrain.Legacy;
 using WCell.Terrain.Legacy.OCTree;
 using WCell.Terrain.MPQ;
@@ -18,6 +19,9 @@ namespace WCell.Terrain
 	/// </summary>
 	public class TerrainTile : IShape
 	{
+	    public MapId Map;
+	    public Point2D Coords;
+
 		public int[] TerrainIndices;
 	    public Vector3[] TerrainVertices;
 
@@ -256,16 +260,91 @@ namespace WCell.Terrain
 		{
 			if (!HasLiquid) return;
 
-			var vertexCounter = 0;
-			for (var indexX = 0; indexX < TerrainConstants.ChunksPerTileSide; indexX++)
-			{
-				for (var indexY = 0; indexY < TerrainConstants.ChunksPerTileSide; indexY++)
-				{
-					var tempVertexCounter = GenerateLiquidVertices(indexX, indexY, vertices);
-					GenerateLiquidIndices(indexX, indexY, vertexCounter, indices);
-					vertexCounter += tempVertexCounter;
-				}
-			}
+            const int heightsPerTileSide = TerrainConstants.UnitsPerChunkSide * TerrainConstants.ChunksPerTileSide;
+            
+            var tileVertLocations = new int[heightsPerTileSide + 1, heightsPerTileSide + 1];
+            for (var i = 0; i < (heightsPerTileSide + 1); i++)
+            {
+                for (var j = 0; j < (heightsPerTileSide + 1); j++)
+                {
+                    tileVertLocations[i, j] = -1;
+                }
+            }
+
+		    vertices.Clear();
+
+            for (var x = 0; x < TerrainConstants.ChunksPerTileSide; x++)
+            {
+                for (var y = 0; y < TerrainConstants.ChunksPerTileSide; y++)
+                {
+                    var chunk = LiquidChunks[x, y];
+                    if (chunk == null) continue;
+
+                    var heights = chunk.Heights;
+                    
+                    // Add the height map values, inserting them into their correct positions
+                    for (var unitRow = chunk.OffsetX; unitRow < (chunk.OffsetX + chunk.Width); unitRow++)
+                    {
+                        for (var unitCol = chunk.OffsetY; unitCol < (chunk.OffsetY + chunk.Height); unitCol++)
+                        {
+                            var tileX = x*TerrainConstants.UnitsPerChunkSide + unitRow;
+                            var tileY = y*TerrainConstants.UnitsPerChunkSide + unitCol;
+
+                            var vertIndex = tileVertLocations[tileX, tileY];
+                            if (vertIndex == -1)
+                            {
+                                var xPos = TerrainConstants.CenterPoint
+                                           - (TileX * TerrainConstants.TileSize)
+                                           - (tileX * TerrainConstants.UnitSize);
+                                var yPos = TerrainConstants.CenterPoint
+                                           - (TileY * TerrainConstants.TileSize)
+                                           - (tileY * TerrainConstants.UnitSize);
+                                var zPos = heights[unitRow - chunk.OffsetX, unitCol - chunk.OffsetY];
+                                tileVertLocations[tileX, tileY] = vertices.Count;
+                                vertices.Add(new Vector3(xPos, yPos, zPos));
+                            }
+                        }
+                    }
+                }
+            }
+
+            indices.Clear();
+            for (var tileX = 0; tileX < heightsPerTileSide; tileX++)
+            {
+                for (var tileY = 0; tileY < heightsPerTileSide; tileY++)
+                {
+                    if (tileVertLocations[tileX, tileY] == -1) continue;
+                    
+                    /*This 3 index makes the top triangle
+                                *
+                                *0--1--2
+                                *| /| /
+                                *|/ |/ 
+                                *9  10 11
+                                */
+                    var vertId0 = tileVertLocations[tileX, tileY];
+                    var vertId1 = tileVertLocations[tileX, tileY + 1];
+                    if (vertId1 == -1) continue;
+                    var vertId9 = tileVertLocations[tileX + 1, tileY];
+                    if (vertId9 == -1) continue;
+                    indices.Add(vertId0);
+                    indices.Add(vertId1);
+                    indices.Add(vertId9);
+
+                    /*This 3 index makes the bottom triangle
+                                 *
+                                 *0  1   2
+                                 *  /|  /|
+                                 * / | / |
+                                 *9--10--11
+                                 */
+                    var vertId10 = tileVertLocations[tileX + 1, tileY + 1];
+                    if (vertId10 == -1) continue;
+                    indices.Add(vertId1);
+                    indices.Add(vertId10);
+                    indices.Add(vertId9);
+                }
+            }
 		}
 
 		/// <summary>
@@ -277,22 +356,9 @@ namespace WCell.Terrain
 		/// <returns>The number of vertices added.</returns>
 		public virtual int GenerateLiquidVertices(int indexX, int indexY, ICollection<Vector3> vertices)
 		{
-			//var clr = Color.Green;
-
-			//switch (mh2O.Header.Type)
-			//{
-			//    case FluidType.Water:
-			//        clr = Color.Blue;
-			//        break;
-			//    case FluidType.Lava:
-			//        clr = Color.Red;
-			//        break;
-			//    case FluidType.OceanWater:
-			//        clr = Color.Coral;
-			//        break;
-			//}
-
-			var count = 0;
+            vertices.Clear();
+			
+            var count = 0;
 			var chunk = LiquidChunks[indexX, indexY];
 
 			if (chunk == null) return count;
@@ -327,6 +393,8 @@ namespace WCell.Terrain
 		/// <param name="indices">The Collection to add the indices to.</param>
 		public virtual void GenerateLiquidIndices(int indexX, int indexY, int offset, List<int> indices)
 		{
+		    indices.Clear();
+
 			var chunk = LiquidChunks[indexX, indexY];
 
 			if (chunk == null) return;

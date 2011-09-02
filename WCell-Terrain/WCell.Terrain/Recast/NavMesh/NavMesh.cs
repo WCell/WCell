@@ -78,14 +78,15 @@ namespace WCell.Terrain.Recast.NavMesh
 		///  0, 3, 4
 		///  0, 4, 5
 		/// </summary>
-		public void GetTriangles(out List<int> indices)
+		public void GetTriangles(List<int> indices)
 		{
-			indices = new List<int>();
+            if (indices == null) indices = new List<int>();
+            indices.Clear();
 
 			var i = 0;
 			foreach (var poly in Polygons)
 			{
-				// build indices
+                // build indices
 				for (var j = 2; j < poly.Indices.Length; j++)
 				{
 					indices.Add(poly.Indices[0]);

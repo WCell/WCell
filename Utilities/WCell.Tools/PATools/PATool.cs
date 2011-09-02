@@ -22,7 +22,7 @@ namespace WCell.Tools.PATools
 		private LogParser m_LogParseHandler;
 		private GenericLogParser m_parser;
 
-		[XmlIgnore] public readonly List<FileInfo> SelectedFiles = new List<FileInfo>();
+		[XmlIgnore] public List<FileInfo> SelectedFiles = new List<FileInfo>();
 
 		public PATool() : this("")
 		{
@@ -398,8 +398,13 @@ namespace WCell.Tools.PATools
 		{
 			if (m_selectedDir == null)
 			{
-				SelectedDirPath = ToolConfig.PAToolDefaultDir;
+				m_selectedDir = new DirectoryInfo(ToolConfig.PAToolDefaultDir);
 			}
+			else
+			{
+				m_selectedDir = new DirectoryInfo(SelectedDirPath);
+			}
+			m_selectedDir.MKDirs();
 
 			if (OutputFilePath == null)
 			{
@@ -422,18 +427,16 @@ namespace WCell.Tools.PATools
 			{
 				OpCodeIncOrFilters = new List<string>();
 			}
-
-			foreach (var file in SelectedFiles.ToArray())
+			if (SelectedFiles == null)
 			{
-				if (!file.Exists)
-				{
-					SelectedFiles.Remove(file);
-				}
+				SelectedFiles = new List<FileInfo>();
 			}
 
-			m_selectedDir = new DirectoryInfo(SelectedDirPath);
-			m_selectedDir.MKDirs();
-
+			foreach (var file in SelectedFiles.ToArray().Where(file => !file.Exists))
+			{
+				SelectedFiles.Remove(file);
+			}
+			
 			m_parser = new GenericLogParser(m_LogParseHandler, new LogHandler(DefaultOpCodeValidator, HandlePackets, HandleUpdatePackets));
 
 			//if (needsSave)

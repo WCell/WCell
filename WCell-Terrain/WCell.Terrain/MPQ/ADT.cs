@@ -6,6 +6,7 @@ using WCell.Constants.World;
 using WCell.Terrain.MPQ.ADTs;
 using WCell.Util;
 using WCell.Util.Graphics;
+using QSlim;
 
 namespace WCell.Terrain.MPQ
 {
@@ -89,7 +90,37 @@ namespace WCell.Terrain.MPQ
 
 		private static readonly bool[,] EmptyHolesArray = new bool[4, 4];
 
-		public void GenerateHeightVertexAndIndices()
+        public void GenerateMapWithQSlimSimplification()
+        {
+            List<Vector3> tileVerts;
+            List<int> tileIndices;
+            GetTerrainMesh(out tileVerts, out tileIndices);
+
+            var slim = new QSlim.QSlim(tileVerts, tileIndices);
+            var numTris = (tileIndices.Count / 3);
+            slim.Simplify(numTris / 2);
+
+            List<Vector3> newVerts;
+            List<int> newIdx;
+            slim.GenerateOutput(out newVerts, out newIdx);
+
+            AppendWMOandM2Info(ref newVerts, ref newIdx);
+            TerrainIndices = newIdx.ToArray();
+            TerrainVertices = newVerts.ToArray();
+        }
+
+	    public void GenerateMapWithNoSimplification()
+        {
+            List<Vector3> tileVerts;
+            List<int> tileIndices;
+            GetTerrainMesh(out tileVerts, out tileIndices);
+            
+            AppendWMOandM2Info(ref tileVerts, ref tileIndices);
+            TerrainIndices = tileIndices.ToArray();
+            TerrainVertices = tileVerts.ToArray();
+        }
+
+	    public void GenerateMapWithTerraSimplification()
 		{
 			const int heightsPerTileSide = TerrainConstants.UnitsPerChunkSide * TerrainConstants.ChunksPerTileSide;
 			var tileHeights = new float[heightsPerTileSide + 1, heightsPerTileSide + 1];
@@ -102,7 +133,7 @@ namespace WCell.Terrain.MPQ
 				{
 					var chunk = Chunks[x, y];
 					var heights = chunk.Heights.GetLowResMapMatrix();
-					var holes = (chunk.HolesMask > 0) ? chunk.HolesMap : EmptyHolesArray;
+                    var holes = (chunk.HolesMask > 0) ? chunk.HolesMap : EmptyHolesArray;
 
 					// Add the height map values, inserting them into their correct positions
 					for (var unitRow = 0; unitRow <= TerrainConstants.UnitsPerChunkSide; unitRow++)
@@ -176,11 +207,11 @@ namespace WCell.Terrain.MPQ
 			// TODO: Pool huge lists & arrays
 			List<Vector3> newVertices;
 
-			var indices = new List<int>();
+			List<int> indices;
 			terra.GenerateOutput(allHoleIndices, out newVertices, out indices);
 
 			// convert
-			for (int i = 0; i < newVertices.Count; i++)
+			for (var i = 0; i < newVertices.Count; i++)
 			{
 				var vertex = newVertices[i];
 				var xPos = TerrainConstants.CenterPoint - (TileX * TerrainConstants.TileSize) - (vertex.X * TerrainConstants.UnitSize);
@@ -188,26 +219,7 @@ namespace WCell.Terrain.MPQ
 				newVertices[i] = new Vector3(xPos, yPos, vertex.Z);
 			}
 
-			// Add WMO & M2 vertices
-			foreach (var wmo in WMOs)
-			{
-				var offset = newVertices.Count;
-				newVertices.AddRange(wmo.WmoVertices);
-				foreach (var index in wmo.WmoIndices)
-				{
-					indices.Add(offset + index);
-				}
-			}
-
-			foreach (var m2 in M2s)
-			{
-				var offset = newVertices.Count;
-				newVertices.AddRange(m2.Vertices);
-				foreach (var index in m2.Indices)
-				{
-					indices.Add(offset + index);
-				}
-			}
+	        AppendWMOandM2Info(ref newVertices, ref indices);
 
 			TerrainIndices = indices.ToArray();
 			TerrainVertices = newVertices.ToArray();
@@ -320,8 +332,7 @@ namespace WCell.Terrain.MPQ
 			return new Vector3(xPos, yPos, zPos);
 		}
 
-
-		/// <summary>
+        /// <summary>
 		/// Adds the rendering indices to the provided list for the MapChunk given by:
 		/// </summary>
 		/// <param name="indexY">The y index of the map chunk.</param>
@@ -381,7 +392,145 @@ namespace WCell.Terrain.MPQ
 			}
 		}
 
-		#endregion
+        private void GetTerrainMesh(out List<Vector3> tileVerts, out List<int> tileIndices)
+        {
+            const int heightsPerTileSide = TerrainConstants.UnitsPerChunkSide * TerrainConstants.ChunksPerTileSide;
+            var tileVertLocations = new int[heightsPerTileSide + 1, heightsPerTileSide + 1];
+            var tileHolesMap = new bool[heightsPerTileSide + 1, heightsPerTileSide + 1];
+            tileVerts = new List<Vector3>();
+
+            for (var i = 0; i < (heightsPerTileSide + 1); i++)
+            {
+                for (var j = 0; j < (heightsPerTileSide + 1); j++)
+                {
+                    tileVertLocations[i, j] = -1;
+                }
+            }
+
+            for (var x = 0; x < TerrainConstants.ChunksPerTileSide; x++)
+            {
+                for (var y = 0; y < TerrainConstants.ChunksPerTileSide; y++)
+                {
+                    var chunk = Chunks[x, y];
+                    var heights = chunk.Heights.GetLowResMapMatrix();
+                    var holes = (chunk.HolesMask > 0) ? chunk.HolesMap : EmptyHolesArray;
+
+                    // Add the height map values, inserting them into their correct positions
+                    for (var unitRow = 0; unitRow <= TerrainConstants.UnitsPerChunkSide; unitRow++)
+                    {
+                        for (var unitCol = 0; unitCol <= TerrainConstants.UnitsPerChunkSide; unitCol++)
+                        {
+                            var tileX = x * TerrainConstants.UnitsPerChunkSide + unitRow;
+                            var tileY = y * TerrainConstants.UnitsPerChunkSide + unitCol;
+
+                            var vertIndex = tileVertLocations[tileX, tileY];
+                            if (vertIndex == -1)
+                            {
+                                var xPos = TerrainConstants.CenterPoint
+                                           - (TileX * TerrainConstants.TileSize)
+                                           - (tileX * TerrainConstants.UnitSize);
+                                var yPos = TerrainConstants.CenterPoint
+                                           - (TileY * TerrainConstants.TileSize)
+                                           - (tileY * TerrainConstants.UnitSize);
+                                var zPos = heights[unitCol, unitRow] + chunk.MedianHeight;
+                                tileVertLocations[tileX, tileY] = tileVerts.Count;
+                                tileVerts.Add(new Vector3(xPos, yPos, zPos));
+                            }
+
+
+                            if (unitCol == TerrainConstants.UnitsPerChunkSide) continue;
+                            if (unitRow == TerrainConstants.UnitsPerChunkSide) continue;
+
+                            tileHolesMap[tileX, tileY] = holes[unitRow / 2, unitCol / 2];
+                        }
+                    }
+                }
+            }
+
+            tileIndices = new List<int>();
+            for (var tileX = 0; tileX < heightsPerTileSide; tileX++)
+            {
+                for (var tileY = 0; tileY < heightsPerTileSide; tileY++)
+                {
+                    if (tileHolesMap[tileX, tileY]) continue;
+                    /*This 3 index makes the top triangle
+                                *
+                                *0--1--2
+                                *| /| /
+                                *|/ |/ 
+                                *9  10 11
+                                */
+                    var vertId0 = tileVertLocations[tileX, tileY];
+                    var vertId1 = tileVertLocations[tileX, tileY + 1];
+                    var vertId9 = tileVertLocations[tileX + 1, tileY];
+                    tileIndices.Add(vertId0);
+                    tileIndices.Add(vertId1);
+                    tileIndices.Add(vertId9);
+                    
+                    /*This 3 index makes the bottom triangle
+                                 *
+                                 *0  1   2
+                                 *  /|  /|
+                                 * / | / |
+                                 *9--10--11
+                                 */
+                    var vertId10 = tileVertLocations[tileX + 1, tileY + 1];
+                    tileIndices.Add(vertId1);
+                    tileIndices.Add(vertId10);
+                    tileIndices.Add(vertId9);
+                }
+            }
+
+            foreach (var i in tileIndices)
+            {
+                var vert = tileVerts[i];
+            }
+        }
+
+		private void AppendWMOandM2Info(ref List<Vector3> verts, ref List<int> indices)
+		{
+            if (verts == null) verts = new List<Vector3>();
+            if (indices == null) indices = new List<int>();
+
+            // Add WMO & M2 vertices
+		    int offset;
+		    foreach (var wmo in WMOs)
+            {
+                offset = verts.Count;
+                if (wmo.WmoVertices.Count > 0 && wmo.WmoIndices.Count > 0)
+                {
+                    //List<Vector3> newVertices;
+                    //List<int> newIndices;
+                    //var response = MeshClipper.ClipAgainst(wmo, Bounds, out newVertices, out newIndices);
+                    verts.AddRange(wmo.WmoVertices);
+                    foreach (var index in wmo.WmoIndices)
+                    {
+                        indices.Add(offset + index);
+                    }
+                }
+
+                offset = verts.Count;
+                if (wmo.WmoM2Vertices.Count <= 0 || wmo.WmoM2Indices.Count <= 0) continue;
+                verts.AddRange(wmo.WmoM2Vertices);
+                foreach (var index in wmo.WmoM2Indices)
+                {
+                    indices.Add(offset + index);
+                }
+            }
+
+		    foreach (var m2 in M2s)
+		    {
+		        offset = verts.Count;
+		        if (m2.Vertices.Count == 0 || m2.Indices.Count == 0) continue;
+
+		        verts.AddRange(m2.Vertices);
+		        foreach (var index in m2.Indices)
+		        {
+		            indices.Add(offset + index);
+		        }
+		    }
+		}
+        #endregion
 
 
 		public float GetInterpolatedHeight(Point2D chunkCoord, Point2D unitCoord, HeightMapFraction heightMapFraction)
@@ -546,12 +695,31 @@ namespace WCell.Terrain.MPQ
 
 		public override LiquidType GetLiquidType(Point2D chunkCoord)
 		{
-			var chunk = Chunks[chunkCoord.X, chunkCoord.Y];
+            var chunk = Chunks[chunkCoord.X, chunkCoord.Y];
 
-			if (!chunk.HasLiquid)
-				return chunk.LiquidType;
-
-			return chunk.LiquidType;
+		    return (chunk.HasLiquid)
+		               ? chunk.LiquidType
+		               : LiquidType.None;
 		}
+
+        private static void EnsureClockwiseWinding(List<int> indices, List<Vector3> vertices)
+        {
+            if (indices == null || indices.Count < 3) return;
+            if (vertices == null || vertices.Count < 1) return;
+
+            for (var i = 0; i < indices.Count; i += 3)
+            {
+
+                var vert0 = vertices[indices[i + 0]];
+                var vert1 = vertices[indices[i + 1]];
+                var vert2 = vertices[indices[i + 2]];
+
+                if (!GeometryHelpers.IsCounterClockwiseXY(vert0, vert1, vert2)) continue;
+
+                var temp = indices[i + 1];
+                indices[i + 1] = indices[i + 2];
+                indices[i + 2] = temp;
+            }
+        }
     }
 }

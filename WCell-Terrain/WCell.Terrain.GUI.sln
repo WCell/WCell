@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "C5", "..\Utilities\C5\C5\C5
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RecastRaw", "Recast\RecastDemo\Build\VC9\RecastRaw.vcxproj", "{7097CF5A-3389-45BD-93B3-EA9AB09286F4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSlim", "QSlim\QSlim.csproj", "{891B39C4-70E9-46E5-812D-D9CE70A25B07}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -317,6 +319,22 @@ Global
 		{7097CF5A-3389-45BD-93B3-EA9AB09286F4}.Release|x64.ActiveCfg = Release|x64
 		{7097CF5A-3389-45BD-93B3-EA9AB09286F4}.Release|x64.Build.0 = Release|x64
 		{7097CF5A-3389-45BD-93B3-EA9AB09286F4}.Release|x86.ActiveCfg = Release|x64
+		{891B39C4-70E9-46E5-812D-D9CE70A25B07}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{891B39C4-70E9-46E5-812D-D9CE70A25B07}.Debug|Itanium.ActiveCfg = Debug|x86
+		{891B39C4-70E9-46E5-812D-D9CE70A25B07}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{891B39C4-70E9-46E5-812D-D9CE70A25B07}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{891B39C4-70E9-46E5-812D-D9CE70A25B07}.Debug|Win32.ActiveCfg = Debug|x86
+		{891B39C4-70E9-46E5-812D-D9CE70A25B07}.Debug|x64.ActiveCfg = Debug|x86
+		{891B39C4-70E9-46E5-812D-D9CE70A25B07}.Debug|x86.ActiveCfg = Debug|x86
+		{891B39C4-70E9-46E5-812D-D9CE70A25B07}.Debug|x86.Build.0 = Debug|x86
+		{891B39C4-70E9-46E5-812D-D9CE70A25B07}.Release|Any CPU.ActiveCfg = Release|x86
+		{891B39C4-70E9-46E5-812D-D9CE70A25B07}.Release|Itanium.ActiveCfg = Release|x86
+		{891B39C4-70E9-46E5-812D-D9CE70A25B07}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{891B39C4-70E9-46E5-812D-D9CE70A25B07}.Release|Mixed Platforms.Build.0 = Release|x86
+		{891B39C4-70E9-46E5-812D-D9CE70A25B07}.Release|Win32.ActiveCfg = Release|x86
+		{891B39C4-70E9-46E5-812D-D9CE70A25B07}.Release|x64.ActiveCfg = Release|x86
+		{891B39C4-70E9-46E5-812D-D9CE70A25B07}.Release|x86.ActiveCfg = Release|x86
+		{891B39C4-70E9-46E5-812D-D9CE70A25B07}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -197,6 +197,7 @@
     <Compile Include="Achievements\AchievementProgressRecord.cs" />
     <Compile Include="Achievements\AchievementCriteriaRequirement.cs" />
     <Compile Include="Achievements\AchievementReward.cs" />
+    <Compile Include="AI\Actions\Movement\AIFollowPathAction.cs" />
     <Compile Include="AI\Brains\IAIEventsHandler.cs" />
     <Compile Include="Commands\WorldEventCommands.cs" />
     <Compile Include="Content\IModDataHolder.cs" />
