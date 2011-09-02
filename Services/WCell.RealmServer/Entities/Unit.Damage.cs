@@ -668,7 +668,7 @@ namespace WCell.RealmServer.Entities
 		{
 			if (YieldsXpOrHonor && killingAction.Attacker != null)
 			{
-				killingAction.Attacker.Proc(ProcTriggerFlags.KilledTargetThatYieldsExperienceOrHonor, killingAction.Attacker, killingAction, true);
+				killingAction.Attacker.Proc(ProcTriggerFlags.KilledTargetThatYieldsExperienceOrHonor, this, killingAction, true);
 			}
 
 			Proc(ProcTriggerFlags.Death, killingAction.Attacker, killingAction, true);
