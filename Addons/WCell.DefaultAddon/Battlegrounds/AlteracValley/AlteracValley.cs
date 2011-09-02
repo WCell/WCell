@@ -88,9 +88,9 @@ namespace WCell.Addons.Default.Battlegrounds.AlteracValley
         }
 
 
-        protected override void OnPrepare()
+        protected override void OnPrepareBegin()
         {
-            base.OnPrepare();
+			base.OnPrepareBegin();
 
 			var time = RealmLocalizer.FormatTimeSecondsMinutes(PreparationTimeMillis / 1000);
 			Characters.SendSystemMessage("The battle for Alterac Valley begins in {0}.", time);
