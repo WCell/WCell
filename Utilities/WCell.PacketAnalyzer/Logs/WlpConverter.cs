@@ -28,41 +28,43 @@ namespace WCell.PacketAnalysis.Logs
         public static void Extract(string logFile, params LogHandler[] handlers)
         {
             var file = File.Open(logFile, FileMode.Open, FileAccess.Read);
-            var reader = new BinaryReader(file);
+			using (var reader = new BinaryReader(file))
+			{
+				reader.ReadBytes(3);
+				reader.ReadBytes(2);
+				reader.ReadByte();
+				reader.ReadInt16();
+				reader.ReadBytes(4);
+				reader.ReadBytes(20);
+				reader.ReadBytes(64);
 
-            reader.ReadBytes(3);
-            reader.ReadBytes(2);
-            reader.ReadByte();
-            reader.ReadInt16();
-            reader.ReadBytes(4);
-            reader.ReadBytes(20);
-            reader.ReadBytes(64);
+				while (reader.BaseStream.Position != reader.BaseStream.Length)
+				{
+					var direction = reader.ReadByte() != 0xFF ? PacketSender.Client : PacketSender.Server;
+					var time = Utility.GetUTCTimeSeconds(reader.ReadUInt32());
+					var length = reader.ReadInt32();
+					var opcode = (RealmServerOpCode) (direction == PacketSender.Client
+					                                  	? reader.ReadInt32()
+					                                  	: reader.ReadInt16());
 
-            while (reader.BaseStream.Position != reader.BaseStream.Length)
-            {
-                var direction = reader.ReadByte() != 0xFF ? PacketSender.Client : PacketSender.Server;
-                var time = Utility.GetUTCTimeSeconds(reader.ReadUInt32());
-                var length = reader.ReadInt32();
-                var opcode = (RealmServerOpCode)(direction == PacketSender.Client ? reader.ReadInt32() :
-                    reader.ReadInt16());
+					var data = reader.ReadBytes(length - (direction == PacketSender.Client ? 4 : 2));
 
-                var data = reader.ReadBytes(length - (direction == PacketSender.Client ? 4 : 2));
+					var opcodeHandlers = handlers.Where(handler => handler.Validator(opcode)).ToList();
+					if (opcodeHandlers.Count() <= 0)
+						continue;
 
-                var opcodeHandlers = handlers.Where(handler => handler.Validator(opcode));
-                if (opcodeHandlers.Count() <= 0)
-                    continue;
+					if (!Enum.IsDefined(typeof (RealmServerOpCode), opcode))
+					{
+						Log.Warn("Packet had undefined Opcode: " + opcode);
+						continue;
+					}
 
-                if (!Enum.IsDefined(typeof(RealmServerOpCode), opcode))
-                {
-                    Log.Warn("Packet had undefined Opcode: " + opcode);
-                    continue;
-                }
-
-                var rawPacket = DisposableRealmPacketIn.Create(opcode, data);
-                if (rawPacket != null)
-                    foreach (var handler in opcodeHandlers)
-                        handler.PacketParser(new ParsablePacketInfo(rawPacket, direction, time));
-            }
+					var rawPacket = DisposableRealmPacketIn.Create(opcode, data);
+					if (rawPacket != null)
+						foreach (var handler in opcodeHandlers)
+							handler.PacketParser(new ParsablePacketInfo(rawPacket, direction, time));
+				}
+			}
         }
 
         /// <summary>

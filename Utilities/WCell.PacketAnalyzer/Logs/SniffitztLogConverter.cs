@@ -40,29 +40,25 @@ namespace WCell.PacketAnalysis.Logs
 			{
 				var pckt = packets[i];
 				var opCode = (RealmServerOpCode)pckt.Opcode;
-				var opcodeHandlers = handlers.Where(handler => handler.Validator(opCode));
-				if (opcodeHandlers.Count() > 0)
+				var opcodeHandlers = handlers.Where(handler => handler.Validator(opCode)).ToList();
+				if (opcodeHandlers.Count() <= 0) continue;
+				var timestamp = Utility.GetUTCTimeSeconds(pckt.Date);
+				var bytes = UpdateFieldsUtil.HexStringConverter.ToByteArray(pckt.Value);
+
+				if (!Enum.IsDefined(typeof (RealmServerOpCode), opCode))
 				{
-					var timestamp = Utility.GetUTCTimeSeconds(pckt.Date);
-					var bytes = UpdateFieldsUtil.HexStringConverter.ToByteArray(pckt.Value);
+					log.Warn("Packet #{0} had undefined Opcode: " + opCode, i);
+					continue;
+				}
 
-					if (!Enum.IsDefined(typeof (RealmServerOpCode), opCode))
-					{
-						log.Warn("Packet #{0} had undefined Opcode: " + opCode, i);
-						continue;
-					}
-
-					var rawPacket = DisposableRealmPacketIn.Create(opCode, bytes);
-					if (rawPacket != null)
-					{
-						packets.Initialize();
-						// UNCOMMENT TO GET PARTICULAR PACKETS PARSED
-						//if (paket.PacketID.ToString().Contains("_QUEST")){
-						foreach (var handler in opcodeHandlers)
-						{
-							handler.PacketParser(new ParsablePacketInfo(rawPacket, pckt.Sender, timestamp));
-						}
-					}
+				var rawPacket = DisposableRealmPacketIn.Create(opCode, bytes);
+				if (rawPacket == null) continue;
+				packets.Initialize();
+				// UNCOMMENT TO GET PARTICULAR PACKETS PARSED
+				//if (paket.PacketID.ToString().Contains("_QUEST")){
+				foreach (var handler in opcodeHandlers)
+				{
+					handler.PacketParser(new ParsablePacketInfo(rawPacket, pckt.Sender, timestamp));
 				}
 				//}
 			}
