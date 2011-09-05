@@ -1140,6 +1140,7 @@ namespace WCell.RealmServer.Entities
 		{
 			RealmServer.IOQueue.AddMessage(new Message(() =>
 			{
+				Record.LastLogout = DateTime.Now;
 				SaveNow();
 
 				var handler = ContextHandler;
