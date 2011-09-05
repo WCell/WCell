@@ -35,7 +35,7 @@ namespace WCell.PacketAnalysis.Logs
 					var opcode = (RealmServerOpCode) reader.ReadInt32();
 					var length = reader.ReadInt32();
 					var time = Utility.GetDateTimeFromUnixTime(reader.ReadUInt32());
-					var direction = reader.ReadBoolean() ? PacketSender.Client : PacketSender.Server;
+					var direction = reader.ReadBoolean() ? PacketSender.Server : PacketSender.Client;
 					var data = reader.ReadBytes(length);
 
 					var opcodeHandlers = handlers.Where(handler => handler.Validator(opcode)).ToList();
