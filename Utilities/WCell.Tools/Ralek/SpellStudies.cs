@@ -608,7 +608,7 @@ namespace WCell.Tools.Ralek
 
 				Console.WriteLine("PreventionType: {0}", spell.PreventionType);
 
-				Console.WriteLine("DefenseType: {0}", spell.DefenseType);
+				Console.WriteLine("DamageType: {0}", spell.DamageType);
 
 
 				Console.WriteLine();

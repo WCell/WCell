@@ -143,7 +143,7 @@ namespace WCell.Terrain.MPQ
 							var tileX = x * TerrainConstants.UnitsPerChunkSide + unitRow;
 							var tileY = y * TerrainConstants.UnitsPerChunkSide + unitCol;
 
-							tileHeights[tileX, tileY] = heights[unitCol, unitRow] + chunk.MedianHeight;
+							tileHeights[tileX, tileY] = heights[unitRow, unitCol] + chunk.MedianHeight;
 
 							if (unitCol == TerrainConstants.UnitsPerChunkSide) continue;
 							if (unitRow == TerrainConstants.UnitsPerChunkSide) continue;
@@ -327,7 +327,7 @@ namespace WCell.Terrain.MPQ
 			var yPos = TerrainConstants.CenterPoint - (TileY * TerrainConstants.TileSize) - (chunkY * TerrainConstants.ChunkSize) -
 					   (unitY * TerrainConstants.UnitSize);
 
-			var zPos = mcnk.Heights.GetLowResMapMatrix()[unitY, unitX] + mcnk.MedianHeight;
+			var zPos = mcnk.Heights.GetLowResMapMatrix()[unitX, unitY] + mcnk.MedianHeight;
 
 			return new Vector3(xPos, yPos, zPos);
 		}
@@ -416,12 +416,12 @@ namespace WCell.Terrain.MPQ
                     var holes = (chunk.HolesMask > 0) ? chunk.HolesMap : EmptyHolesArray;
 
                     // Add the height map values, inserting them into their correct positions
-                    for (var unitRow = 0; unitRow <= TerrainConstants.UnitsPerChunkSide; unitRow++)
+                    for (var unitX = 0; unitX <= TerrainConstants.UnitsPerChunkSide; unitX++)
                     {
-                        for (var unitCol = 0; unitCol <= TerrainConstants.UnitsPerChunkSide; unitCol++)
+                        for (var unitY = 0; unitY <= TerrainConstants.UnitsPerChunkSide; unitY++)
                         {
-                            var tileX = x * TerrainConstants.UnitsPerChunkSide + unitRow;
-                            var tileY = y * TerrainConstants.UnitsPerChunkSide + unitCol;
+                            var tileX = (x*TerrainConstants.UnitsPerChunkSide) + unitX;
+                            var tileY = (y*TerrainConstants.UnitsPerChunkSide) + unitY;
 
                             var vertIndex = tileVertLocations[tileX, tileY];
                             if (vertIndex == -1)
@@ -432,16 +432,16 @@ namespace WCell.Terrain.MPQ
                                 var yPos = TerrainConstants.CenterPoint
                                            - (TileY * TerrainConstants.TileSize)
                                            - (tileY * TerrainConstants.UnitSize);
-                                var zPos = heights[unitCol, unitRow] + chunk.MedianHeight;
+                                var zPos = (heights[unitX, unitY] + chunk.MedianHeight);
                                 tileVertLocations[tileX, tileY] = tileVerts.Count;
                                 tileVerts.Add(new Vector3(xPos, yPos, zPos));
                             }
 
 
-                            if (unitCol == TerrainConstants.UnitsPerChunkSide) continue;
-                            if (unitRow == TerrainConstants.UnitsPerChunkSide) continue;
+                            if (unitY == TerrainConstants.UnitsPerChunkSide) continue;
+                            if (unitX == TerrainConstants.UnitsPerChunkSide) continue;
 
-                            tileHolesMap[tileX, tileY] = holes[unitRow / 2, unitCol / 2];
+                            tileHolesMap[tileX, tileY] = holes[unitX / 2, unitY / 2];
                         }
                     }
                 }
@@ -479,11 +479,6 @@ namespace WCell.Terrain.MPQ
                     tileIndices.Add(vertId10);
                     tileIndices.Add(vertId9);
                 }
-            }
-
-            foreach (var i in tileIndices)
-            {
-                var vert = tileVerts[i];
             }
         }
 

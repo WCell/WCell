@@ -36,10 +36,10 @@
         /// </summary>
         public float[,] GetLowResMapMatrix()
         {
-			if (heightsMatrix != null)
-			{
-				return heightsMatrix;
-			}
+            if (heightsMatrix != null)
+            {
+                return heightsMatrix;
+            }
 
             // *  1    2    3    4    5    6    7    8    9       Row 0
             // *    10   11   12   13   14   15   16   17         Row 1
@@ -59,17 +59,19 @@
             // *   129  130  131  132  133  134  135  136         Row 15
             // * 137  138  139  140  141  142  143  144  145      Row 16
             // We only want even rows
-			heightsMatrix = new float[9, 9];
-            for (var x = 0; x < 17; x++)
+            heightsMatrix = new float[9,9];
+            
+            var index = 0;
+            for (var x = 0; x < 9; x++)
             {
-                if (x % 2 != 0) continue;
                 for (var y = 0; y < 9; y++)
                 {
-                    var count = ((x / 2) * 9) + ((x / 2) * 8) + y;
-					heightsMatrix[y, x / 2] = Heights[count];
+                    heightsMatrix[x, y] = Heights[index++];
                 }
+                index += 8;
             }
-			return heightsMatrix;
+
+            return heightsMatrix;
         }
     }
 }

@@ -20,19 +20,14 @@ namespace WCell.Addons.Default.Spells.Warrior
 
 			// Shield Spec is proc'ed when owner dodges, blocks or parries
 			SpellLineId.WarriorProtectionShieldSpecialization.Apply(spell =>
-			{
-				spell.AddProcHandler(new TriggerSpellProcHandlerTemplate(
-					SpellHandler.Get(SpellId.EffectShieldSpecializationRank1),
-					ProcTriggerFlags.MeleeHit | ProcTriggerFlags.RangedHit,
-					ProcHandler.DodgeBlockOrParryValidator,
-					spell.ProcChance
-					));
-			});
+				{
+					spell.ProcHitFlags = ProcHitFlags.Dodge | ProcHitFlags.Block | ProcHitFlags.Parry;
+				});
 
 			// Gag Order has a ProcTriggerSpell effect and is only trigged by bash and throw
 			SpellLineId.WarriorProtectionGagOrder.Apply(spell =>
 			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+				spell.ProcTriggerFlags = ProcTriggerFlags.DoneMeleeSpell | ProcTriggerFlags.DoneRangedSpell;
 
 				var effect = spell.GetEffect(AuraType.Dummy);
 				effect.AuraType = AuraType.ProcTriggerSpell;

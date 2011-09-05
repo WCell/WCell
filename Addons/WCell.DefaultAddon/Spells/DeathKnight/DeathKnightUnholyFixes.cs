@@ -45,7 +45,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			// Dirge is only triggered by "Death Strike, Plague Strike and Scourge Strike"
 			SpellLineId.DeathKnightUnholyDirge.Apply(spell =>
 			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+				spell.ProcTriggerFlags = ProcTriggerFlags.DoneMeleeSpell;
 
 				var effect = spell.GetEffect(AuraType.ProcTriggerSpellWithOverride);
 				effect.ClearAffectMask();

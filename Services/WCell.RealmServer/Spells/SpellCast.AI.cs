@@ -34,16 +34,16 @@ namespace WCell.RealmServer.Spells
 			// revalidate handlers again, later
 			var err = InitHandlers();
 
-			if (err == SpellFailedReason.Ok && m_targets.Count == 0)
+			if (err == SpellFailedReason.Ok && Targets.Count == 0)
 			{
 				// NPC must have targets
 				err = SpellFailedReason.NoValidTargets;
 			}
 
-			if (m_targets != null && m_targets.Count == 1)
+			if (Targets != null && Targets.Count == 1)
 			{
 				// look at single target
-				var target = m_targets.First() as Unit;
+				var target = Targets.First() as Unit;
 				if (target != null)
 				{
 					caster.Target = target;
@@ -62,7 +62,7 @@ namespace WCell.RealmServer.Spells
 			{
 				RevalidateAllTargets();
 
-				return m_targets.Count > 0;
+				return Targets.Count > 0;
 			}
 			return true;
 		}
@@ -70,11 +70,11 @@ namespace WCell.RealmServer.Spells
 		void RevalidateAllTargets()
 		{
 			// clear original target set
-			m_targets.Clear();
+			Targets.Clear();
 
 			// find all SpellTargetCollections to revalidate
 			var uniqueTargets = new HashSet<SpellTargetCollection>();
-			foreach (var handler in m_handlers)
+			foreach (var handler in Handlers)
 			{
 				uniqueTargets.Add(handler.Targets);
 			}
@@ -84,7 +84,7 @@ namespace WCell.RealmServer.Spells
 			{
 				// revalidate and then re-add to unique target set
 				targets.RevalidateAll();
-				m_targets.AddRange(targets);
+				Targets.AddRange(targets);
 			}
 		}
 
@@ -95,9 +95,9 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		void OnAICasted()
 		{
-			if (m_spell.AISettings.IdleTimeAfterCastMillis > 0)
+			if (Spell.AISettings.IdleTimeAfterCastMillis > 0)
 			{
-				CasterUnit.Idle(m_spell.AISettings.IdleTimeAfterCastMillis);
+				CasterUnit.Idle(Spell.AISettings.IdleTimeAfterCastMillis);
 			}
 		}
 	}

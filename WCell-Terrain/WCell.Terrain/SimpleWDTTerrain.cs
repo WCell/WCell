@@ -13,6 +13,11 @@ namespace WCell.Terrain
     {
         public WDT BackupTileSource;
 
+        public TerrainTile GetOrCreateTile(TileIdentifier tileId)
+        {
+            return GetOrCreateTile(tileId.MapId, tileId.X, tileId.Y);
+        }
+
         public TerrainTile GetOrCreateTile(MapId map, int x, int y)
         {
             Console.Write("Trying to load simple tile... ");
@@ -61,9 +66,8 @@ namespace WCell.Terrain
 
             tile.EnsureNavMeshLoaded();
 
-            tile.Map = map;
-            tile.Coords = new Point2D(x, y);
-
+            tile.TileId = new TileIdentifier(map, x, y);
+            
             TileProfile[x, y] = true;
             Tiles[x, y] = tile;
 

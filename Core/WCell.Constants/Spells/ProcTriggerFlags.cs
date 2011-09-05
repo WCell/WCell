@@ -1,196 +1,171 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace WCell.Constants.Spells
 {
 	/// <summary>
+	/// Indicates events that let this Spell proc (if it is a proc spell)
+	/// </summary>
+	/// <remarks>
 	/// Spells with ProcTriggerFlags have ProcTriggerSpell aura effects that are usually
 	/// missing the id of the Spell to be casted.
-	/// </summary>
+	/// </remarks>
 	[Flags]
 	public enum ProcTriggerFlags : uint
 	{
-		#region Generic
-		Flag0x1000000 = 0x1000000,
-		Flag0x2000000 = 0x2000000,
-		Flag0x4000000 = 0x4000000,
-		Flag0x8000000 = 0x8000000,
-
-		Flag0x10000000 = 0x10000000,
-		Flag0x20000000 = 0x20000000,
-		Flag0x40000000 = 0x40000000,
-		Flag0x80000000 = 0x80000000,
-		#endregion
-
 		None = 0x0,
-		/// <summary>
-		/// Seems useless
-		/// </summary>
-		AnyHostileAction = 0x1,
+
+		[Obsolete("Not used")]
+		ScriptedAction = 0x1,
+
+		KilledTargetThatYieldsExperienceOrHonor = 0x2,
+
+		DoneMeleeAutoAttack = 0x4,
+		ReceivedMeleeAutoAttack = 0x8,
 
 		/// <summary>
-		/// Triggered when killing a target that yields experience or honor
+		/// Done attack from spell with <see cref="DamageType.Melee"/>
 		/// </summary>
-		GainExperience = 0x2,
-		/// <summary>
-		/// We attack
-		/// </summary>
-		MeleeHitOther = 0x4,
-		/// <summary>
-		/// We are critically hit
-		/// </summary>
-		MeleeCriticalHit = 0x8,
+		DoneMeleeSpell = 0x10,
 
 		/// <summary>
-		/// We cast a damage spell.
-		/// If you want this to proc on non-damaging spells,
-		/// make sure to use Spell.AddCasterProcSpells.
+		/// Received attack from spell with <see cref="DamageType.Melee"/>
 		/// </summary>
-		SpellCast = 0x10,
+		ReceivedMeleeSpell = 0x20,
+
+		DoneRangedAutoAttack = 0x40,
+		ReceivedRangedAutoAttack = 0x80,
 
 		/// <summary>
-		/// We are attacked physically
+		/// Done attack from spell with <see cref="DamageType.Ranged"/>
 		/// </summary>
-		PhysicalAttack = 0x20,
-		/// <summary>
-		/// We hit someone with a ranged weapon's ammo
-		/// </summary>
-		RangedHitOther = 0x40,
-		/// <summary>
-		/// We are critcally hit with a ranged weapon
-		/// </summary>
-		RangedCriticalHit = 0x80,
+		DoneRangedSpell = 0x100,
 
 		/// <summary>
-		/// We physically attack someone else
+		/// Received attack from spell with <see cref="DamageType.Ranged"/>
 		/// </summary>
-		PhysicalAttackOther = 0x100,
-		/// <summary>
-		/// We are struck by a melee weapon
-		/// </summary>
-		MeleeHit = 0x200,
-		/// <summary>
-		/// We do something with someone else
-		/// </summary>
-		ActionOther = 0x400,
-		/// <summary>
-		/// Unused
-		/// </summary>
-		ProcTrigger0x800 = 0x800,
+		ReceivedRangedSpell = 0x200,
 
 		/// <summary>
-		/// We critically hit someone
+		/// Done <see cref="HarmType.Beneficial"/> spell with <see cref="DamageType.None"/>
 		/// </summary>
-		MeleeCriticalHitOther = 0x1000,
+		DoneBeneficialSpell = 0x400,
 
 		/// <summary>
-		/// We are hit by a ranged weapon
+		/// Received <see cref="HarmType.Beneficial"/> spell with <see cref="DamageType.None"/>
 		/// </summary>
-		RangedHit = 0x2000,
+		ReceivedBeneficialSpell = 0x800,
 
 		/// <summary>
-		/// We heal sb else
+		/// Done <see cref="HarmType.Harmful"/> spell with <see cref="DamageType.None"/>
 		/// </summary>
-		HealOther = 0x4000,
-		/// <summary>
-		/// We get healed
-		/// </summary>
-		Heal = 0x8000,
+		DoneHarmfulSpell = 0x1000,
 
 		/// <summary>
-		/// We cast a critical damage spell.
-		/// See SpellCast for reference.
+		/// Received <see cref="HarmType.Harmful"/> spell with <see cref="DamageType.None"/>
 		/// </summary>
-		SpellCastCritical = 0x10000,
+		ReceivedHarmfulSpell = 0x2000,
 
 		/// <summary>
-		/// We get hit by a damage spell
+		/// Done <see cref="HarmType.Beneficial"/> spell with <see cref="DamageType.Magic"/>
 		/// </summary>
-		SpellHit = 0x20000,
+		DoneBeneficialMagicSpell = 0x4000,
 
 		/// <summary>
-		/// We get critically hit by a damage spell
+		/// Received <see cref="HarmType.Beneficial"/> spell with <see cref="DamageType.Magic"/>
 		/// </summary>
-		SpellHitCritical = 0x40000,
-		ProcFlag0x80000 = 0x80000,
+		ReceivedBeneficialMagicSpell = 0x8000,
 
 		/// <summary>
-		/// We are hit by anything hostile
+		/// Done <see cref="HarmType.Harmful"/> spell with <see cref="DamageType.Magic"/>
 		/// </summary>
-		AnyHit = SpellHit | MeleeHit | RangedHit,
+		DoneHarmfulMagicSpell = 0x10000,
 
 		/// <summary>
-		/// Unused
+		/// Received <see cref="HarmType.Harmful"/> spell with <see cref="DamageType.Magic"/>
 		/// </summary>
-		_AnyDamage = 0x100000,
+		ReceivedHarmfulMagicSpell = 0x20000,
+
+		DonePeriodicDamageOrHeal = 0x40000,
+		ReceivedPeriodicDamageOrHeal = 0x80000,
+
+		ReceivedAnyDamage = 0x100000,
 
 		/// <summary>
 		/// Someone stepped in our trap
 		/// </summary>
 		TrapTriggered = 0x200000,
 
-		/// <summary>
-		/// Seems useless
-		/// </summary>
-		AutoShotHit = 0x400000,
-		/// <summary>
-		/// Seems useless, its set usually together with AutoShotHit on any kind of Proc
-		/// </summary>
-		Absorb = 0x800000,
+		[Obsolete("Not used")]
+		DoneMeleeAttackWithMainHandWeapon = 0x400000,
 
-		/*
-		 * Custom Flags
-		 * The Following effects were added to provide additional functionality:
-		 */
-		/// <summary>
-		/// Triggered for the caster, when an Aura is started on a target
-		/// </summary>
-		AuraStarted = 0x20000000,
+		[Obsolete("Not used")]
+		DoneMeleeAttackWithOffHandWeapon = 0x800000,
 
 		/// <summary>
-		/// Triggered for the caster, when an Aura gets removed
+		/// We have died
 		/// </summary>
-		AuraRemoved = 0x40000000,
+		Death = 0x01000000,
 
-		/// <summary>
-		/// Triggered when blocking damage
-		/// </summary>
-		Block = 0x80000000,
-
-
-		All = 0xFFFFFFFF
+		RequiringHitFlags = DoneMeleeAutoAttack | DoneMeleeSpell |
+									DoneRangedAutoAttack | DoneRangedSpell |
+									DoneHarmfulSpell | DoneHarmfulMagicSpell |
+									DoneBeneficialSpell | DoneBeneficialMagicSpell |
+									DonePeriodicDamageOrHeal | ReceivedPeriodicDamageOrHeal |
+									ReceivedMeleeAutoAttack | ReceivedMeleeSpell |
+									ReceivedRangedAutoAttack | ReceivedRangedSpell |
+									ReceivedHarmfulSpell | ReceivedHarmfulMagicSpell |
+									ReceivedBeneficialSpell | ReceivedBeneficialMagicSpell
 	}
 
-	/**
-	 
-	 * 	enum SpellProcFlags
+	/// <summary>
+	/// Contains information needed for ProcTriggerFlags depending on hit result
+	/// </summary>
+	[Flags]
+	public enum ProcHitFlags : uint
 	{
-		SCRIPT_ACTION									= 0x0000001,
-		KILLING_TARGET_THAT_GIVES_XP					= 0x0000002,
-		BEGIN_HIT_BY_MELEE_ATTACK_WHITE_DAMAGE_ONLY		= 0x0000008,
-		MELEE_ATTACK_YELLOW_DAMAGE_ONLY					= 0x0000010,
-		BEING_HIT_BY_MELEE_ATTACK_YELLOW_DAMAGE_ONLY	= 0x0000020,
-		RANGED_ATTACK_WHITE_DAMAGE_ONLY					= 0x0000040,
-		BEING_HIT_BY_RANGED_ATTACK_WHITE_DAMAGE_ONLY	= 0x0000080,
-		RANGED_ATTACK_YELLOW_DAMAGE_ONLY				= 0x0000100,
-		BEING_HIT_BY_RANGED_ATTACK_YELLOW_DAMAGE_ONLY	= 0x0000200,
-		CASTING_ANY_SPELL								= 0x0000400,
-		BEING_CAST_ANY_SPELL							= 0x0000800,
-		DEALING_DAMAGE									= 0x0001000,
-		TAKINNG_ANY_DAMAGE								= 0x0002000,
-		HEALING_ANY_TARGET								= 0x0004000,
-		BEING_HEALED									= 0x0008000,
-		DEALING_DIRECT_MAGIC_DAMAGE						= 0x0010000,	// mimo DOT
-		TAKING_DIRECT_MAGIC_DAMAGE						= 0x0020000,	// mimo DOT
-		DEALING_PERIODIC_MAGIC_DAMAGE					= 0x0040000,	// DOT
-		TAKING_PERIODIC_MAGIC_DAMAGE					= 0x0080000,	// DOT
-		LOSING_HEALTH									= 0x0100000,
-		TRAPING_TARGET									= 0x0200000,
-		MELEE_ATTACK_WITH_MH_WEAPON						= 0x0400000,
-		MELEE_ATTACK_WITH_OH_WEAPON						= 0x0800000,
-		DEATH											= 0x1000000,
-	};
-	 */
+		None = 0x00000000,
+		NormalHit = 0x00000001,
+		CriticalHit = 0x00000002,
+		Hit = NormalHit | CriticalHit,
+		Miss = 0x00000004,
+		Resist = 0x00000008,
+		Dodge = 0x00000010,
+		Parry = 0x00000020,
+		Block = 0x00000040,
+		Evade = 0x00000080,
+		Immune = 0x00000100,
+		Deflect = 0x00000200,
+		Absorb = 0x00000400,
+		Reflect = 0x00000800,
+		Interrupt = 0x00001000,
+		FullBlock = 0x00002000,
+		All = Hit | Miss | Resist | Dodge | Parry | Block | Evade | Immune | Deflect | Absorb | Reflect | Interrupt | FullBlock
+	}
+
+	/// <summary>
+	/// procEx flags from UDB's spell_proc_event database table
+	/// </summary>
+	public enum ProcFlagsExLegacy : uint
+	{
+		None = 0x00000000,
+		NormalHit = 0x00000001,
+		CriticalHit = 0x00000002,
+		Miss = 0x00000004,
+		Resist = 0x00000008,
+		Dodge = 0x00000010,
+		Parry = 0x00000020,
+		Block = 0x00000040,
+		Evade = 0x00000080,
+		Immune = 0x00000100,
+		Deflect = 0x00000200,
+		Absorb = 0x00000400,
+		Reflect = 0x00000800,
+		Interrupt = 0x00001000,
+		FullBlock = 0x00002000,
+		Reserved = 0x00004000,
+		NotActiveSpell = 0x00008000,
+		TriggerAlways = 0x00010000,
+		OneTimeTrigger = 0x00020000,
+		OnlyActiveSpell = 0x00040000,
+	}
 }

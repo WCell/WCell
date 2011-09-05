@@ -276,7 +276,7 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// Returns a list of all SpellLines that are affected by the given spell family set (very long bit field)
 		/// </summary>
-		public static IEnumerable<SpellLine> GetAffectedSpellLines(ClassId clss, uint[] mask)
+		public static HashSet<SpellLine> GetAffectedSpellLines(ClassId clss, uint[] mask)
 		{
 			var lines = SpellLines.GetLines(clss);
 			var affected = new HashSet<SpellLine>();
@@ -335,14 +335,7 @@ namespace WCell.RealmServer.Spells
 				SpellLines.InitSpellLines();
 
 				ContentMgr.Load<SpellProcEventEntry>();
-				foreach (var spell in ById)
-				{
-					if (spell != null)
-					{
-						// set custom proc settings
-						ProcEventHelper.PatchAffectMasks(spell);
-					}
-				}
+				ProcEventHelper.PatchSpells(ById);
 			}
 
 			if (init)

@@ -153,6 +153,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Packets", "Packets", "{D18C
 		Run\Content\Packets\Login.xml = Run\Content\Packets\Login.xml
 		Run\Content\Packets\Loot.xml = Run\Content\Packets\Loot.xml
 		Run\Content\Packets\Mail.xml = Run\Content\Packets\Mail.xml
+		Run\Content\Packets\Misc.xml = Run\Content\Packets\Misc.xml
 		Run\Content\Packets\Movement.xml = Run\Content\Packets\Movement.xml
 		Run\Content\Packets\Pets.xml = Run\Content\Packets\Pets.xml
 		Run\Content\Packets\Queries.xml = Run\Content\Packets\Queries.xml

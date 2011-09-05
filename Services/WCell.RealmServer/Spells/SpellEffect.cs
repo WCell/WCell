@@ -76,21 +76,30 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// All specific SpellLines that are affected by this SpellEffect
 		/// </summary>
-		public IEnumerable<SpellLine> AffectedLines
+		public HashSet<SpellLine> AffectedLines
 		{
 			get
 			{
+				var spellLines = new HashSet<SpellLine>();
+				
 				if (Spell.ClassId != 0)
 				{
-					return SpellHandler.GetAffectedSpellLines(Spell.ClassId, AffectMask);
+					var extraLines = SpellHandler.GetAffectedSpellLines(Spell.ClassId, AffectMask);
+					spellLines.AddRange(extraLines);
 				}
-				return new SpellLine[0];
+
+				if (AffectSpellSet != null)
+				{
+					var extraLines = AffectSpellSet.Select(spell => spell.Line).Distinct();
+					spellLines.AddRange(extraLines);
+				}
+				return spellLines;
 			}
 		}
 
 		public SpellEffect() { }
 
-		public SpellEffect(Spell spell, int index)
+		public SpellEffect(Spell spell, EffectIndex index)
 		{
 			Spell = spell;
 			EffectIndex = index;
@@ -446,26 +455,25 @@ namespace WCell.RealmServer.Spells
 					value += (SpellPowerValuePct * caster.GetDamageDoneMod(Spell.Schools[0]) + 50) / 100;
 				}
 			}
-			if (EffectIndex <= 2)
+
+			SpellModifierType type;
+			switch (EffectIndex)
 			{
-				SpellModifierType type;
-				switch (EffectIndex)
-				{
-					case 0:
-						type = SpellModifierType.EffectValue1;
-						break;
-					case 1:
-						type = SpellModifierType.EffectValue2;
-						break;
-					case 3:
-						type = SpellModifierType.EffectValue3;
-						break;
-					default:
-						type = SpellModifierType.EffectValue4AndBeyond;
-						break;
-				}
-				value = caster.Auras.GetModifiedInt(type, Spell, value);
+				case EffectIndex.Zero:
+					type = SpellModifierType.EffectValue1;
+					break;
+				case EffectIndex.One:
+					type = SpellModifierType.EffectValue2;
+					break;
+				case EffectIndex.Two:
+					type = SpellModifierType.EffectValue3;
+					break;
+				default:
+					type = SpellModifierType.EffectValue4AndBeyond;
+					break;
 			}
+
+			value = caster.Auras.GetModifiedInt(type, Spell, value);
 			value = caster.Auras.GetModifiedInt(SpellModifierType.AllEffectValues, Spell, value);
 
 			return value;
@@ -504,12 +512,14 @@ namespace WCell.RealmServer.Spells
 
 		public int GetMultipliedValue(Unit caster, int val, int currentTargetNo)
 		{
-			if (EffectIndex >= Spell.DamageMultipliers.Length || EffectIndex < 0 || currentTargetNo == 0)
+            int effectIndex = (int)EffectIndex;
+
+			if (effectIndex >= Spell.DamageMultipliers.Length || effectIndex < 0 || currentTargetNo == 0)
 			{
 				return val;
 			}
 
-			var dmgMod = Spell.DamageMultipliers[EffectIndex];
+			var dmgMod = Spell.DamageMultipliers[effectIndex];
 			if (caster != null)
 			{
 				dmgMod = caster.Auras.GetModifiedFloat(SpellModifierType.ChainValueFactor, Spell, dmgMod);
@@ -540,7 +550,7 @@ namespace WCell.RealmServer.Spells
 		#region Modify Effects
 		public void ClearAffectMask()
 		{
-			AffectMask = new uint[3];
+			AffectMask = new uint[SpellConstants.SpellClassMaskSize];
 		}
 
 		public void SetAffectMask(params SpellLineId[] abilities)
@@ -615,7 +625,7 @@ namespace WCell.RealmServer.Spells
 
 			// verification
 			var affectedLines = SpellHandler.GetAffectedSpellLines(Spell.ClassId, newMask);
-			if (affectedLines.Count() != abilities.Length)
+			if (affectedLines.Count != abilities.Length)
 			{
 				LogManager.GetCurrentClassLogger().Warn("[SPELL Inconsistency for {0}] " +
 					"Invalid affect mask affects a different set than the one intended: {1} (intended: {2}) - " +
@@ -653,7 +663,7 @@ namespace WCell.RealmServer.Spells
 
 		public void MakeProc(AuraEffectHandlerCreator creator, params SpellLineId[] exclusiveTriggers)
 		{
-			Spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+			//Spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
 
 			IsProc = true;
 			ClearAffectMask();
@@ -667,7 +677,7 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public void MakeProcWithMask(AuraEffectHandlerCreator creator, params SpellLineId[] exclusiveTriggers)
 		{
-			Spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+			//Spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast; 
 
 			IsProc = true;
 			SetAffectMask(exclusiveTriggers);
@@ -707,10 +717,14 @@ namespace WCell.RealmServer.Spells
 				writer.WriteLine(indent + "MiscValueB: " + GetMiscStr(MiscValueBType, MiscValueB));
 			}
 
-			if (AffectMask[0] != 0 || AffectMask[1] != 0 || AffectMask[2] != 0)
+			var lines = AffectedLines;
+			if (lines.Count > 0)
 			{
-				var lines = AffectedLines;
-				writer.WriteLine(indent + "Affects: {0} ({1}{2}{3})", lines.Count() > 0 ? lines.ToString(", ") : "<Nothing>",
+				writer.WriteLine(indent + "Affects: {0}", lines.ToString(", "));
+			}
+			else if (AffectMask[0] != 0 || AffectMask[1] != 0 || AffectMask[2] != 0)
+			{
+				writer.WriteLine(indent + "Affects: <Nothing> ({0}{1}{2})",
 					AffectMask[0].ToString("X8"), AffectMask[1].ToString("X8"), AffectMask[2].ToString("X8"));
 			}
 

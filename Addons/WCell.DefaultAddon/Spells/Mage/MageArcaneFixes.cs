@@ -26,7 +26,7 @@ namespace WCell.Addons.Default.Spells.Mage
 			SpellLineId.MageArcaneArcanePotency.Apply(spell =>
 			{
 				spell.GetEffect(AuraType.Dummy).AuraEffectHandlerCreator = () => new AddProcHandler(new ArcanePotencyProcHandler(
-					ProcTriggerFlags.HealOther | ProcTriggerFlags.SpellCast,
+					ProcTriggerFlags.DoneBeneficialMagicSpell,
 					spell.GetEffect(AuraType.Dummy).CalcEffectValue()));
 
 			});
@@ -146,8 +146,13 @@ namespace WCell.Addons.Default.Spells.Mage
 			}
 			public ProcTriggerFlags ProcTriggerFlags
 			{
-				get { return ProcTriggerFlags.HealOther | ProcTriggerFlags.SpellCast; }
+				get { return ProcTriggerFlags.DoneBeneficialMagicSpell; }
 			}
+
+            public ProcHitFlags ProcHitFlags
+            {
+                get { return ProcHitFlags.None; }
+            }
 
 			public void Dispose()
 			{

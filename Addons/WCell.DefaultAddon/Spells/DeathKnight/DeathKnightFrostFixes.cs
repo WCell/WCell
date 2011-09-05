@@ -67,8 +67,6 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			// Icy Talons applies a buff, when casting FrostFever
 			SpellLineId.DeathKnightFrostIcyTalons.Apply(spell =>
 			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
-
 				var effect = spell.GetEffect(AuraType.ProcTriggerSpellWithOverride);
 				effect.ClearAffectMask();
 				effect.AddAffectingSpells(SpellId.EffectFrostFever);
@@ -362,8 +360,6 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			// Rime should only proc on Obliterate
 			SpellLineId.DeathKnightFrostRime.Apply(spell =>
 			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
-
 				var effect = spell.GetEffect(AuraType.ProcTriggerSpell);
 				effect.ClearAffectMask();
 				effect.AddAffectingSpells(SpellLineId.DeathKnightObliterate);
@@ -381,7 +377,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			// Blade Barrier only procs under special circumstances
 			SpellLineId.DeathKnightBloodBladeBarrier.Apply(spell =>
 			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.AuraStarted | ProcTriggerFlags.SpellCast;
+				//spell.ProcTriggerFlags = ProcTriggerFlags.AuraStarted | ProcTriggerFlags.SpellCast;
 
 				var effect = spell.GetEffect(AuraType.ProcTriggerSpell);
 				effect.AuraEffectHandlerCreator = () => new BladeBarrierHandler();
@@ -411,7 +407,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			// Merciless Combat needs to be proc'ed and needs an extra check, so it only procs on "targets with less than 35% health"
 			SpellLineId.DeathKnightFrostMercilessCombat.Apply(spell =>
 			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+				spell.ProcTriggerFlags = ProcTriggerFlags.DoneHarmfulMagicSpell | ProcTriggerFlags.DoneMeleeSpell;
 
 				var effect = spell.GetEffect(AuraType.OverrideClassScripts);
 				effect.IsProc = true;
