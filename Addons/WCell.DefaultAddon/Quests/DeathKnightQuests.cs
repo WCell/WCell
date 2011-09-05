@@ -358,12 +358,30 @@ namespace WCell.Addons.Default.Quests
 			//Used by the summon ghouls spell
 			npcEntry = NPCMgr.GetEntry(NPCId.VengefulGhoul);
 			npcEntry.Activated += NewAvalonSpawnsActivated;
-			
+
+			//Add the red arrow above the quest objectives
+			npcEntry = NPCMgr.GetEntry(NPCId.NewAvalonForge);
+			npcEntry.Activated += NewAvalonSiphonMarkersActivated;
+			npcEntry = NPCMgr.GetEntry(NPCId.ScarletHold);
+			npcEntry.Activated += NewAvalonSiphonMarkersActivated;
+			npcEntry = NPCMgr.GetEntry(NPCId.NewAvalonTownHall);
+			npcEntry.Activated += NewAvalonSiphonMarkersActivated;
+			npcEntry = NPCMgr.GetEntry(NPCId.ChapelOfTheCrimsonFlame);
+			npcEntry.Activated += NewAvalonSiphonMarkersActivated;
 		}
 
 		private static void NewAvalonSpawnsActivated(WorldObject obj)
 		{
 			obj.Phase = 2;
+		}
+
+		private static void NewAvalonSiphonMarkersActivated(NPC npc)
+		{
+			npc.UnitFlags &= ~UnitFlags.SelectableNotAttackable;
+			npc.AddMessage(() =>
+			               	{
+			               		npc.SpellCast.TriggerSelf(SpellId.VisualFlash);
+			               	});
 		}
 
 		private static void EyeOfAcherusDeleted(NPC npc)
@@ -382,7 +400,6 @@ namespace WCell.Addons.Default.Quests
 			npc.SpellCast.TriggerSelf(SpellId.EyeOfAcherusVisual);
 			npc.Phase = 2;
 			
-			//TODO: Set the creator as the chr that used the eye of acherus control mechanism
 			var chr = npc.Map.GetObject(npc.Creator) as Character;
 			if (chr != null)
 			{
@@ -417,11 +434,60 @@ namespace WCell.Addons.Default.Quests
 			}
 		}
 
-		[Initialization(InitializationPass.Second)]
-		public static void FixEyeOfAcherusControlSpell()
+		//Has to be InitializationPass.Third or the RequiredTargetId change is overwritten
+		[Initialization(InitializationPass.Third)]
+		public static void FixEyeOfAcherusSpells()
 		{
 			var eyeSpell = SpellHandler.Get(SpellId.EffectTheEyeOfAcherus);
 			eyeSpell.AuraRemoved += EffectTheEyeOfAcherusRemoved;
+
+			var ghoulSpell = SpellHandler.Get(SpellId.SummonGhoulsOnScarletCrusade);
+			ghoulSpell.GetEffect(SpellEffectType.ScriptEffect).SpellEffectHandlerCreator =
+				(cast, effect) => new SummonGhoulsSpellEffectHandler(cast, effect);
+
+			var returnEyeSpell = SpellHandler.Get(SpellId.RecallEyeOfAcherus);
+			returnEyeSpell.GetEffect(SpellEffectType.ScriptEffect).SpellEffectHandlerCreator =
+				(cast, effect) => new ReturnEyeOfAcherusSpellEffectHandler(cast, effect);
+			
+			//Siphon spell should target self and then the effect channels to the target
+			//Pretty stupid limiting it to one npc anyway when there are
+			//five it needs to work with!
+			//SpellHandler.Apply(spell =>
+			//                    {
+			//                        spell.RequiredTargetId = 0;
+			//                    }, SpellId.SiphonOfAcherus);
+
+			var siphonSpell = SpellHandler.Get(SpellId.SiphonOfAcherus);
+			siphonSpell.RequiredTargetId = 0;
+			siphonSpell.OverrideCustomTargetDefinitions(
+				DefaultTargetAdders.AddAreaSource,
+				IsSiphonTriggerNPC);
+		}
+
+		/// <summary>
+		/// Custom filter to ensure the given spell only targets specific NPCs
+		/// </summary>
+		public static void IsSiphonTriggerNPC(SpellEffectHandler effectHandler, WorldObject target, ref SpellFailedReason failedReason)
+		{
+			if (!(target is NPC))
+			{
+				failedReason = SpellFailedReason.OutOfRange;
+				return;
+			}
+			var possibleIds = new List<NPCId>
+			                  	{
+			                  		NPCId.ScarletHold,
+			                  		NPCId.NewAvalonForge,
+			                  		NPCId.NewAvalonTownHall,
+			                  		NPCId.ChapelOfTheCrimsonFlame
+			                  	};
+			var entryid = (NPCId)target.EntryId;
+			if (possibleIds.Contains(entryid))
+			{
+				failedReason = SpellFailedReason.Ok;
+				return;
+			}
+			failedReason = SpellFailedReason.OutOfRange;
 		}
 
 		private static void EffectTheEyeOfAcherusRemoved(Aura obj)
@@ -440,7 +506,7 @@ namespace WCell.Addons.Default.Quests
 				CleanUpEyeOfAcherus(chr);
 		}
 
-		private static void CleanUpEyeOfAcherus(Character chr)
+		public static void CleanUpEyeOfAcherus(Character chr)
 		{
 			chr.UnPossess(chr.Charm);
 			chr.Auras.Remove(SpellId.EyeOfAcherusVisual);
@@ -451,7 +517,45 @@ namespace WCell.Addons.Default.Quests
 		#endregion
 	}
 
-		#region EmblazonRuneBladeAuraHandler
+	#region ReturnEyeOfAcherusSpellEffectHandler
+	public class ReturnEyeOfAcherusSpellEffectHandler : SpellEffectHandler
+	{
+		public ReturnEyeOfAcherusSpellEffectHandler(SpellCast cast, SpellEffect effect)
+			: base(cast, effect)
+		{
+		}
+
+		public override void Apply()
+		{
+			var charmer = Cast.CasterUnit.Charmer as Character;
+			if (charmer == null) return;
+			DeathKnightQuests.CleanUpEyeOfAcherus(charmer);
+			base.Apply();
+		}
+	}
+	#endregion
+
+	#region SummonGhoulsSpellEffectHandler
+	public class SummonGhoulsSpellEffectHandler : SpellEffectHandler
+	{
+		public SummonGhoulsSpellEffectHandler(SpellCast cast, SpellEffect effect)
+			: base(cast, effect)
+		{
+		}
+
+		public override void Apply()
+		{
+			var entry = NPCMgr.GetEntry(NPCId.VengefulGhoul);
+			foreach (var target in Targets.OfType<NPC>())
+			{
+				target.SpellCast.Trigger(SpellId.CallOfTheDead);
+			}
+			base.Apply();
+		}
+	}
+	#endregion
+
+	#region EmblazonRuneBladeAuraHandler
 	public class EmblazonRuneBladeAuraHandler : AuraEffectHandler
 	{
 		protected override void Apply()
