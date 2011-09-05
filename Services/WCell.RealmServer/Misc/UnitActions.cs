@@ -791,7 +791,7 @@ namespace WCell.RealmServer.Misc
 			TriggerProcOnStrike();
 		}
 
-		void TriggerProcOnStrike()
+		private void TriggerProcOnStrike()
 		{
 			if (Weapon != null && SpellEffect == null)
 			{

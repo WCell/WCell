@@ -1075,7 +1075,7 @@ namespace WCell.Constants.Spells
 	{
 		None = 0,
 		Miss = 1,
-		FullResist = 2,
+		Resist = 2,
 		Dodge = 3,
 		Parry = 4,
 		Block = 5,

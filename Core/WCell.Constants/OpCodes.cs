@@ -2102,7 +2102,7 @@ namespace WCell.Constants
 		/// byte
 		/// byte[12] (read as 12 bytes, could be vector3?)
 		/// </summary>
-		CMSG_MISSILE_UNKNOWN_1214 = 1214,
+		CMSG_UPDATE_MISSILE_POSITION = 1214,
 		/// <summary>
 		/// int64
 		/// byte

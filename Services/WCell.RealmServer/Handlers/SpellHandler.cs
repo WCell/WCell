@@ -10,6 +10,8 @@ using WCell.RealmServer.NPCs;
 using WCell.RealmServer.NPCs.Vehicles;
 using WCell.RealmServer.Network;
 using WCell.Util;
+using WCell.Util.Graphics;
+using WCell.Core;
 
 namespace WCell.RealmServer.Spells
 {
@@ -711,6 +713,21 @@ namespace WCell.RealmServer.Spells
 				chr.Send(packet);
 			}
 		}
+
+		public static void SendSetSpellMissilePosition(IPacketReceiver client, EntityId casterId, byte castCount, Vector3 position)
+		{
+			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_SET_PROJECTILE_POSITION, 21))
+			{
+				casterId.WritePacked(packet);
+				packet.WriteByte(castCount);
+				packet.WriteFloat(position.X);
+				packet.WriteFloat(position.Y);
+				packet.WriteFloat(position.Z);
+
+				client.Send(packet);
+			}
+		}
+
 		#endregion
 
 		#region IN Packets
@@ -809,6 +826,15 @@ namespace WCell.RealmServer.Spells
 			{
 				chr.SpellCast.Start(spellInfo.Spell, false);
 			}
+		}
+
+		[PacketHandler(RealmServerOpCode.CMSG_UPDATE_MISSILE_POSITION)]
+		public static void HandleUpdateMissilePosition(IRealmClient client, RealmPacketIn packet)
+		{
+			var casterGuid = packet.ReadPackedEntityId();
+			var spellId = (SpellId)packet.ReadInt32();
+			var castCount = packet.ReadByte();
+			var position = packet.ReadVector3();
 		}
 		#endregion
 

@@ -137,5 +137,15 @@ namespace WCell.Constants.Spells
 		public static readonly uint[] AllDamageSchoolSet = Utility.GetSetIndices((uint)DamageSchoolMask.AllSchools);
 
 		public static readonly uint[] MagicDamageSchoolSet = Utility.GetSetIndices((uint)DamageSchoolMask.MagicSchools);
+
+		#region HitChance
+		public const int MinHitChance = 0;
+		public const int CharacterMinHitChance = 1;
+		public const int MaxHitChance = 100;
+		public const int HitChanceForEqualLevel = 96;
+		public const int HitChancePerLevelPvP = 7;
+		public const int HitChancePerLevelPvE = 11;
+		#endregion
+
 	}
 }

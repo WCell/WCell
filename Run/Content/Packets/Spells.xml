@@ -1198,4 +1198,55 @@
       <SegmentType>WCell.Constants.Spells.SpellId</SegmentType>
     </Simple>
   </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_SET_PROJECTILE_POSITION">
+    <Simple>
+      <Name>Caster EntityId</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>Cast Count</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>Position X</Name>
+      <Type>Float</Type>
+    </Simple>
+    <Simple>
+      <Name>Position Y</Name>
+      <Type>Float</Type>
+    </Simple>
+    <Simple>
+      <Name>Position Z</Name>
+      <Type>Float</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_UPDATE_MISSILE_POSITION">
+    <Simple>
+      <Name>Caster EntityId</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>Spell id</Name>
+      <Type>UInt</Type>
+      <SegmentType>WCell.Constants.Spells.SpellId</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Cast Count</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>Position X</Name>
+      <Type>Float</Type>
+    </Simple>
+    <Simple>
+      <Name>Position Y</Name>
+      <Type>Float</Type>
+    </Simple>
+    <Simple>
+      <Name>Position Z</Name>
+      <Type>Float</Type>
+    </Simple>
+  </RealmPacket>
 </Definitions>

@@ -176,6 +176,8 @@ namespace WCell.RealmServer.Spells
 
 		public HashSet<WorldObject> Targets { get; private set; }
 
+		private IEnumerable<Unit> UnitTargets { get { return Targets.OfType<Unit>(); } }
+
 		public SpellTargetFlags TargetFlags { get; set; }
 
 		public Map TargetMap
@@ -989,32 +991,16 @@ namespace WCell.RealmServer.Spells
 			}
 		}
 
-		internal void CheckHitAndSendSpellGo(bool revalidateTargets, byte previousRuneMask)
+		internal void SendSpellGo(List<MissedTarget> missedTargets)
 		{
-			List<MissedTarget> missedTargets;
-			if (revalidateTargets)
-			{
-				// check whether targets were hit
-				missedTargets = CheckHit(Spell);
-			}
-			else
-			{
-				missedTargets = null;
-			}
-
 			if (!Spell.IsPassive && !Spell.Attributes.HasAnyFlag(SpellAttributes.InvisibleAura) &&
 				!Spell.HasEffectWith(effect => effect.EffectType == SpellEffectType.OpenLock) &&
 				Spell.ShouldShowToClient())
 			{
+				byte previousRuneMask = UsesRunes ? CasterChar.PlayerSpells.Runes.GetActiveRuneMask() : (byte)0;
 				// send the packet (so client sees the actual cast) if its not a passive spell
 				var caster2 = CasterItem ?? (IEntity)CasterReference;
 				SpellHandler.SendSpellGo(caster2, this, Targets, missedTargets, previousRuneMask);
-			}
-
-			if (missedTargets != null)
-			{
-				missedTargets.Clear();
-				CastMissListPool.Recycle(missedTargets);
 			}
 		}
 		#endregion
@@ -1106,45 +1092,106 @@ namespace WCell.RealmServer.Spells
 			return Spell.CheckItemRestrictions(TargetItem, caster.Inventory);
 		}
 
-		List<MissedTarget> CheckHit(Spell spell)
+		/// <summary>
+		/// Check if SpellCast hit the targets.
+		/// </summary>
+		/// <remarks>Never returns null</remarks>
+		private List<MissedTarget> CheckHit()
 		{
-			if (spell.HasHarmfulEffects && !IsPassive && !GodMode)
+			var missedTargets = CastMissListPool.Obtain();
+
+			if (GodMode || Spell.IsPassive || Spell.IsPhysicalAbility)	// physical abilities are handled in Strike
 			{
-				var missedTargets = CastMissListPool.Obtain();
-				Targets.RemoveWhere(target =>
-				{
-					if (!target.IsInWorld)
-					{
-						for (var i = 0; i < Handlers.Length; i++)
-						{
-							var handler = Handlers[i];
-							handler.m_targets.Remove(target);
-						}
-						return true;
-					}
-
-					if (target is Unit)
-					{
-						var missReason = CheckCastHit((Unit)target, spell);
-						if (missReason != CastMissReason.None)
-						{
-							// missed
-							missedTargets.Add(new MissedTarget(target, missReason));
-
-							// remove missed target from SpellEffectHandlers' target lists
-							for (var i = 0; i < Handlers.Length; i++)
-							{
-								var handler = Handlers[i];
-								handler.m_targets.Remove(target);
-							}
-							return true;
-						}
-					}
-					return false;
-				});
 				return missedTargets;
 			}
-			return null;
+
+			foreach (var target in UnitTargets)
+			{
+				CastMissReason missReason = CheckHit(target);
+
+				if (missReason != CastMissReason.None)
+				{
+					missedTargets.Add(new MissedTarget(target, missReason));
+				}
+			}
+
+			return missedTargets;
+		}
+
+		private CastMissReason CheckHit(Unit target)
+		{
+			if (target.IsEvading)
+			{
+				return CastMissReason.Evade;
+			}
+
+			if (Spell.IsAffactedByInvulnerability ||
+				(target is Character && ((Character)target).Role.IsStaff))
+			{
+				if (target.IsInvulnerable)
+				{
+					return CastMissReason.Immune_2;
+				}
+
+				if (!Spell.AttributesEx.HasAnyFlag(SpellAttributesEx.UnaffectedBySchoolImmunity) && Spell.Schools.All(target.IsImmune))
+				{
+					return CastMissReason.Immune;
+				}
+			}
+
+			if (Spell.CanMiss)
+			{
+				bool missed = CheckMiss(target);
+				if (missed)
+				{
+					return CastMissReason.Miss;
+				}
+			}
+
+			// TODO: Resist
+
+			return CastMissReason.None;
+		}
+
+		private bool CheckMiss(Unit target)
+		{
+			int hitChance = CalculateHitChance(target);
+			int roll = Utility.Random(SpellConstants.MinHitChance, SpellConstants.MaxHitChance + 1);
+			return hitChance < roll;
+		}
+
+		private int CalculateHitChance(Unit target)
+		{
+			// TODO: Include gear and talent contribution
+			int baseHitChance = CalculateBaseHitChance(target);
+			int hitChance = baseHitChance;
+			int minHitChance = target is Character ? SpellConstants.CharacterMinHitChance : SpellConstants.MinHitChance;
+
+			return MathUtil.ClampMinMax(hitChance, minHitChance, SpellConstants.MaxHitChance);
+		}
+
+		private int CalculateBaseHitChance(Unit target)
+		{
+			int levelDifference = target.Level - CasterLevel;
+
+			if (levelDifference < 3)
+			{
+				int baseHitChance = SpellConstants.HitChanceForEqualLevel - levelDifference;
+				return baseHitChance > SpellConstants.MaxHitChance ? SpellConstants.MaxHitChance : baseHitChance;
+			}
+
+			int unitFactor;
+
+			if (target is Character)
+			{
+				unitFactor = SpellConstants.HitChancePerLevelPvP;
+			}
+			else
+			{
+				unitFactor = SpellConstants.HitChancePerLevelPvE;
+			}
+
+			return 94 - (levelDifference - 2) * unitFactor;
 		}
 
 		/// <summary>
@@ -1254,53 +1301,6 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 			return true;
-		}
-
-		/// <summary>
-		/// Indicates whether a spell hit a target or not
-		/// TODO: Actually check whether a spell 'Misses' (CastMissReason.Miss)
-		/// </summary>
-		public CastMissReason CheckCastHit(Unit target, Spell spell)
-		{
-			if (CasterObject != null && CasterObject.MayAttack(target))
-			{
-				var school = target.GetLeastResistantSchool(spell);
-				// evasion
-				if (target.IsEvading)
-				{
-					return CastMissReason.Evade;
-				}
-				// immune & invul
-				if (!spell.Attributes.HasFlag(SpellAttributes.UnaffectedByInvulnerability) ||
-					(target is Character && ((Character)target).Role.IsStaff))
-				{
-					if (target.IsInvulnerable)
-					{
-						return CastMissReason.Immune_2;
-					}
-
-					if (!spell.AttributesEx.HasAnyFlag(SpellAttributesEx.UnaffectedBySchoolImmunity) && spell.Schools.All(target.IsImmune))
-					{
-						return CastMissReason.Immune;
-					}
-				}
-
-				//// avoid/miss
-				//var avoidance = target.GetSpellAvoidancePct(school);
-				//if (avoidance > 0 && Utility.Random(1, 101) < avoidance)
-				//{
-				//    return CastMissReason.Miss;
-				//}
-
-
-				// resist
-				if (target.CheckResist(CasterUnit, school, spell.Mechanic) && !spell.AttributesExB.HasFlag(SpellAttributesExB.CannotBeResisted))
-				{
-					return CastMissReason.FullResist;
-				}
-			}
-
-			return CastMissReason.None;
 		}
 
 		private void OnException(Exception e)
@@ -1852,6 +1852,32 @@ namespace WCell.RealmServer.Spells
 			{
 				CasterObject = null;
 				CasterUnit = null;
+			}
+		}
+
+		/// <summary>
+		/// Remove target from targets set and handler targets
+		/// </summary>
+		/// <param name="target"></param>
+		private void Remove(WorldObject target)
+		{
+			Targets.Remove(target);
+			RemoveFromHandlerTargets(target);
+		}
+
+		private void RemoveFromHandlerTargets(WorldObject target)
+		{
+			foreach (var handler in Handlers)
+			{
+				handler.m_targets.Remove(target);
+			}
+		}
+
+		private void RemoveFromHandlerTargets(List<MissedTarget> missedTargets)
+		{
+			foreach (var missInfo in missedTargets)
+			{
+				RemoveFromHandlerTargets(missInfo.Target);
 			}
 		}
 
