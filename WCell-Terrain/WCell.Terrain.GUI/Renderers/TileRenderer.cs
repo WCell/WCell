@@ -6,9 +6,10 @@ using Microsoft.Xna.Framework;
 
 namespace WCell.Terrain.GUI.Renderers
 {
-    public class TileRenderer : RendererBase
+    public class TileRenderer : GameComponent
     {
         private EnvironmentRenderer environs;
+        private WireframeNormalRenderer normals;
         private LiquidRenderer liquids;
         private WireframeNavMeshRenderer wiredNavMesh;
         private SolidNavMeshRenderer solidNavMesh;
@@ -56,17 +57,20 @@ namespace WCell.Terrain.GUI.Renderers
 
         public TileRenderer(Game game, TerrainTile tile) : base(game)
         {
-            game.Components.Add(environs = new EnvironmentRenderer(game, tile));
-            game.Components.Add(liquids = new LiquidRenderer(game, tile));
-            game.Components.Add(wiredNavMesh = new WireframeNavMeshRenderer(game, tile));
-            game.Components.Add(solidNavMesh = new SolidNavMeshRenderer(game, tile));
+            environs = new EnvironmentRenderer(game, tile);
+            normals = new WireframeNormalRenderer(game, environs);
+            liquids = new LiquidRenderer(game, tile);
+            solidNavMesh = new SolidNavMeshRenderer(game, tile);
+            wiredNavMesh = new WireframeNavMeshRenderer(game, tile);
 
+            Game.Components.Add(environs);
+            Game.Components.Add(normals);
+            Game.Components.Add(liquids);
+            Game.Components.Add(solidNavMesh);
+            Game.Components.Add(wiredNavMesh);
+            
             Disposed += (sender, args) => Cleanup();
             EnabledChanged += (sender, args) => EnabledToggled();
-        }
-
-        protected override void BuildVerticiesAndIndicies()
-        {
         }
 
         private void EnabledToggled()
@@ -99,10 +103,10 @@ namespace WCell.Terrain.GUI.Renderers
 
         private void RemoveSubComponents()
         {
-            Viewer.Components.Remove(environs);
-            Viewer.Components.Remove(liquids);
-            Viewer.Components.Remove(wiredNavMesh);
-            Viewer.Components.Remove(solidNavMesh);
+            Game.Components.Remove(environs);
+            Game.Components.Remove(liquids);
+            Game.Components.Remove(wiredNavMesh);
+            Game.Components.Remove(solidNavMesh);
         }
     }
 }

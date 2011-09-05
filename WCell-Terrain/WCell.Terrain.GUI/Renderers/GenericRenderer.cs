@@ -10,11 +10,11 @@ namespace WCell.Terrain.GUI.Renderers
 	{
 		public static Color SelectedTriangleColor = new Color(50, 90, 90);
 
-		private RasterizerState rasterState = new RasterizerState()
+		private RasterizerState rasterState = new RasterizerState
 		{
 			CullMode = CullMode.None,
 			FillMode = FillMode.Solid,
-			DepthBias = 1e-6f,
+			DepthBias = 1e-6f
 		};
 
 		public GenericRenderer(Game game)
@@ -125,14 +125,18 @@ namespace WCell.Terrain.GUI.Renderers
 		public override void Draw(GameTime gameTime)
 		{
 			var graphics = Game.GraphicsDevice;
+
+		    var oldBlendState = graphics.BlendState;
 			var oldRasterState = graphics.RasterizerState;
-			graphics.RasterizerState = rasterState;
+		    var oldDepthStencilState = graphics.DepthStencilState;
 
-			graphics.DepthStencilState = Viewer.disabledDepthStencilState;
+            graphics.RasterizerState = rasterState;
 
-			base.Draw(gameTime);
+            base.Draw(gameTime);
 
+		    graphics.BlendState = oldBlendState;
 			graphics.RasterizerState = oldRasterState;
+		    graphics.DepthStencilState = oldDepthStencilState;
 		}
 	}
 }

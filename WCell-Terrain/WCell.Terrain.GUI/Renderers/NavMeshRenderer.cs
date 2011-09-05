@@ -56,14 +56,15 @@ namespace WCell.Terrain.GUI.Renderers
 	{
 	    private TerrainTile tile;
 		private RasterizerState rasterState;
-		readonly BlendState alphaBlendState = new BlendState()
-		{
-			AlphaBlendFunction = BlendFunction.Add,
-			AlphaSourceBlend = Blend.SourceAlpha,
-			ColorSourceBlend = Blend.SourceAlpha,
-			AlphaDestinationBlend = Blend.InverseSourceAlpha,
-			ColorDestinationBlend = Blend.InverseSourceAlpha
-		};
+        //private readonly BlendState alphaBlendState = BlendState.Additive;
+        readonly BlendState alphaBlendState = new BlendState()
+        {
+            AlphaBlendFunction = BlendFunction.Add,
+            AlphaSourceBlend = Blend.SourceAlpha,
+            ColorSourceBlend = Blend.SourceAlpha,
+            AlphaDestinationBlend = Blend.InverseSourceAlpha,
+            ColorDestinationBlend = Blend.InverseSourceAlpha
+        };
 
 
 		internal NavMeshRenderer(Game game, TerrainTile tile)
@@ -89,18 +90,18 @@ namespace WCell.Terrain.GUI.Renderers
 
 		public override void Draw(GameTime gameTime)
 		{
-			var graphics = Game.GraphicsDevice;
+		    var oldDepthStencilState = GraphicsDevice.DepthStencilState;
+			var oldRasterState = GraphicsDevice.RasterizerState;
+			var oldBlendState = GraphicsDevice.BlendState;
 
-			var oldRasterState = graphics.RasterizerState;
-			var oldBlendState = graphics.BlendState;
-
-			graphics.RasterizerState = rasterState;
-			graphics.BlendState = alphaBlendState;
-
+            GraphicsDevice.RasterizerState = rasterState;
+			GraphicsDevice.BlendState = alphaBlendState;
+            
 			base.Draw(gameTime);
 
-			graphics.RasterizerState = oldRasterState;
-			graphics.BlendState = oldBlendState;
+		    GraphicsDevice.DepthStencilState = oldDepthStencilState;
+			GraphicsDevice.RasterizerState = oldRasterState;
+			GraphicsDevice.BlendState = oldBlendState;
 		}
 
 		protected override void BuildVerticiesAndIndicies()

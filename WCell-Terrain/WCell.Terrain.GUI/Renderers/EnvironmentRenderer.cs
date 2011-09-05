@@ -7,7 +7,7 @@ using Vector3 = Microsoft.Xna.Framework.Vector3;
 
 namespace WCell.Terrain.GUI.Renderers
 {
-	class EnvironmentRenderer : RendererBase
+    public class EnvironmentRenderer : RendererBase
 	{
 	    private static Color TerrainColor = Color.DarkSlateGray;
 
@@ -24,9 +24,8 @@ namespace WCell.Terrain.GUI.Renderers
 		{
 		    var tempIndices = new List<int>();
 		    var tempVertices = new List<VertexPositionNormalColored>();
-		    
-            var offset = tempVertices.Count;
-		    foreach (var vertex in tile.TerrainVertices)
+
+            foreach (var vertex in tile.TerrainVertices)
 		    {
 		        var vertexPosNmlCol1 = new VertexPositionNormalColored(vertex.ToXna(),
 		                                                               TerrainColor,
@@ -36,7 +35,7 @@ namespace WCell.Terrain.GUI.Renderers
 
 		    foreach (var index in tile.TerrainIndices)
 		    {
-		        tempIndices.Add(offset + index);
+		        tempIndices.Add(index);
 		    }
 
 		    _cachedVertices = tempVertices.ToArray();

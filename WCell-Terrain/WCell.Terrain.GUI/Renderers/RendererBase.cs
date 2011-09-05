@@ -67,24 +67,28 @@ namespace WCell.Terrain.GUI.Renderers
                 DoBuildVerticesAndIndices();
             }
 
-		    var vertices = vertBuffer;
-		    var indices = idxBuffer;
+            //if (_cachedVertices.IsNullOrEmpty()) return;
+            //if (_cachedIndices.IsNullOrEmpty()) return;
 
-		    if (vertices == null || vertices.VertexCount == 0) return;
-		    if (indices == null || indices.IndexCount == 0) return;
+            //GraphicsDevice.DrawUserIndexedPrimitives(PrimitiveType.TriangleList,
+            //    _cachedVertices, 0, _cachedVertices.Length,
+            //    _cachedIndices, 0, _cachedIndices.Length/3);
 
-		    // TODO: Replace this with a vertex buffer (we don't want to send the triangles to the GPU in every frame)
+            var vertices = vertBuffer;
+            var indices = idxBuffer;
+
+            if (vertices == null || vertices.VertexCount == 0) return;
+            if (indices == null || indices.IndexCount == 0) return;
 
             GraphicsDevice.Indices = idxBuffer;
             GraphicsDevice.SetVertexBuffer(vertBuffer);
-
-		    GraphicsDevice.DrawIndexedPrimitives(
-		        PrimitiveType.TriangleList,
-		        0, // the index of the base vertex, minVertexIndex and baseIndex are all relative to this
-		        0, // the first vertex position drawn 
-		        vertices.VertexCount, // number of vertices to draw
-		        0, // first index element to read
-		        indices.IndexCount/3); // the number of primitives to draw
+            GraphicsDevice.DrawIndexedPrimitives(
+                PrimitiveType.TriangleList,
+                0, // the index of the base vertex, minVertexIndex and baseIndex are all relative to this
+                0, // the first vertex position drawn 
+                vertices.VertexCount, // number of vertices to draw
+                0, // first index element to read
+                indices.IndexCount / 3); // the number of primitives to draw
 		    base.Draw(gameTime);
 		}
 
@@ -100,25 +104,29 @@ namespace WCell.Terrain.GUI.Renderers
             if (_cachedIndices.IsNullOrEmpty()) return;
 
 			// interpolate normals
-			for (var i = 0; i < _cachedIndices.Length; i += 3)
+			for (var i = 0; i < _cachedIndices.Length; )
 			{
-				var index1 = _cachedIndices[i];
-				var index2 = _cachedIndices[i + 1];
-				var index3 = _cachedIndices[i + 2];
+				var index1 = _cachedIndices[i++];
+				var index2 = _cachedIndices[i++];
+				var index3 = _cachedIndices[i++];
 
 				var vertex1 = _cachedVertices[index1];
 				var vertex2 = _cachedVertices[index2];
 				var vertex3 = _cachedVertices[index3];
 
-				var normal = Vector3.Cross(vertex2.Position - vertex1.Position, vertex3.Position - vertex1.Position);
+			    var edge1 = vertex2.Position - vertex1.Position;
+			    var edge2 = vertex3.Position - vertex1.Position;
+			    var normal = Vector3.Cross(edge2, edge1);
 
-				vertex1.Normal += normal;
-				vertex2.Normal += normal;
-				vertex3.Normal += normal;
+                if (normal.Y < 0.0f)
+                {
+                   // normal = -normal;
+                }
+                //var normal = Vector3.Up;
 
-				_cachedVertices[index1] = vertex1;
-				_cachedVertices[index2] = vertex2;
-				_cachedVertices[index3] = vertex3;
+                _cachedVertices[index1].Normal += normal;
+				_cachedVertices[index2].Normal += normal;
+				_cachedVertices[index3].Normal += normal;
 			}
 
 			for (var i = 0; i < _cachedVertices.Length; i++)

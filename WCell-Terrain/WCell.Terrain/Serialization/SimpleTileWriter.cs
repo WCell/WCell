@@ -82,12 +82,10 @@ namespace WCell.Terrain.Serialization
 						for (var yc = 0; yc < TerrainConstants.ChunksPerTileSide; yc++)
 						{
 							var chunk = adt.Chunks[xc, yc];
+                            if (!chunk.HasLiquid) continue;
 
-							if (chunk.HasLiquid)
-							{
-								hasLiquids = true;
-								break;
-							}
+						    hasLiquids = true;
+						    break;
 						}
 					}
 

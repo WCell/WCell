@@ -15,7 +15,7 @@ namespace WCell.Terrain.GUI.Renderers
 	    
 	    private TerrainTile tile;
 
-        readonly BlendState alphaBlendState = new BlendState()
+        readonly BlendState alphaBlendState = new BlendState
 		{
 			AlphaBlendFunction = BlendFunction.Add,
 			AlphaSourceBlend = Blend.SourceAlpha,
@@ -31,11 +31,18 @@ namespace WCell.Terrain.GUI.Renderers
 
 		public override void Draw(GameTime gameTime)
 		{
-			var oldBlendState = Game.GraphicsDevice.BlendState;
+		    var graphics = Game.GraphicsDevice;
+            var oldBlendState = graphics.BlendState;
+            var oldRasterState = graphics.RasterizerState;
+            var oldDepthStencilState = graphics.DepthStencilState;
 
-			Game.GraphicsDevice.BlendState = alphaBlendState;
-			base.Draw(gameTime);
-			Game.GraphicsDevice.BlendState = oldBlendState;
+			graphics.BlendState = alphaBlendState;
+			
+            base.Draw(gameTime);
+
+            graphics.BlendState = oldBlendState;
+            graphics.RasterizerState = oldRasterState;
+            graphics.DepthStencilState = oldDepthStencilState;
 		}
 
 		protected override void BuildVerticiesAndIndicies()
