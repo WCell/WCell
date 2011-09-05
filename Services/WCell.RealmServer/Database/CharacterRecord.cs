@@ -284,6 +284,7 @@ namespace WCell.RealmServer.Database
 		/// <summary>
 		/// Whether the Character that this Record belongs to is currently logged in.
 		/// </summary>
+		[Property(Access = PropertyAccess.ReadOnly)]
 		public bool IsOnline
 		{
 			get { return LastLogin != null && LastLogin > RealmServer.StartTime && (LastLogout == null || LastLogout < LastLogin); }
