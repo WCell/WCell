@@ -935,6 +935,11 @@ namespace WCell.RealmServer.Entities
 			{
 				this.IterateEnvironment(BroadcastRange, obj =>
 				{
+					if ((obj is NPC) && ((NPC)obj).CharmerCharacter != null)
+					{
+						(((NPC)obj).CharmerCharacter).Send(packet.GetFinalizedPacket());
+					}
+
 					if (obj is Character)
 					{
 						((Character)obj).Send(packet.GetFinalizedPacket());
@@ -956,6 +961,11 @@ namespace WCell.RealmServer.Entities
 			{
 				this.IterateEnvironment(radius, obj =>
 				{
+					if ((obj is NPC) && ((NPC)obj).CharmerCharacter != null)
+					{
+						(((NPC)obj).CharmerCharacter).Send(packet.GetFinalizedPacket());
+					}
+
 					if (obj is Character)
 					{
 						((Character)obj).Send(packet.GetFinalizedPacket());
@@ -983,9 +993,9 @@ namespace WCell.RealmServer.Entities
 			{
 				this.IterateEnvironment(BroadcastRange, obj =>
 				{
-					if ((obj is NPC) && ((NPC)obj).Charmer != null && (((NPC)obj).Charmer is Character))
+					if ((obj is NPC) && ((NPC)obj).CharmerCharacter != null)
 					{
-						((Character)(((NPC)obj).Charmer)).Send(packet.GetFinalizedPacket());
+						(((NPC)obj).CharmerCharacter).Send(packet.GetFinalizedPacket());
 					}
 
 					if (obj is Character)
@@ -994,16 +1004,6 @@ namespace WCell.RealmServer.Entities
 					}
 					return true;
 				});
-			}
-			else
-			{
-				if (!(this is NPC))
-					return;
-
-				if (((NPC)this).Charmer == null || !(((NPC)this).Charmer is Character))
-					return;
-
-				((Character)(((NPC)this).Charmer)).Send(packet.GetFinalizedPacket());
 			}
 		}
 

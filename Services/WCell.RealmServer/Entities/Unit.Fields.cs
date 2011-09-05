@@ -90,6 +90,12 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
+		public Character CharmerCharacter
+		{
+			get { return m_master as Character; }
+			set { Charmer = value; }
+		}
+
 		public bool IsCharmed
 		{
 			get { return m_master != null; }

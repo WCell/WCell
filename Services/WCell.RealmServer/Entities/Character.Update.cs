@@ -197,7 +197,7 @@ namespace WCell.RealmServer.Entities
 			{
 				Observing.IterateEnvironment(BroadcastRange, (obj) =>
 				{
-					if (!IsInPhase(obj))
+					if (!Observing.IsInPhase(obj))
 					{
 						return true;
 					}
@@ -207,7 +207,7 @@ namespace WCell.RealmServer.Entities
 
 					//ensure "this" never goes out of range
 					//if we are observing another units broadcasts
-					if (!CanSee(obj) && !ReferenceEquals(obj, this))
+					if (!Observing.CanSee(obj) && !ReferenceEquals(obj, this))
 					{
 						return true;
 					}
