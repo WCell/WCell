@@ -41,14 +41,8 @@ namespace WCell.Addons.Default.Spells.Paladin
 			// Improved Lay On Hands needs the lay on hands spell restriction and correct proc flags
 			SpellLineId.PaladinHolyImprovedLayOnHands.Apply(spell =>
 			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.ActionOther | ProcTriggerFlags.HealOther;
+                spell.ProcTriggerFlags = ProcTriggerFlags.DoneBeneficialMagicSpell;
 				spell.GetEffect(AuraType.ProcTriggerSpell).AddToAffectMask(SpellLineId.PaladinLayOnHands);
-			});
-
-			// Holy Shield only procs on block
-			SpellLineId.PaladinProtectionHolyShield.Apply(spell =>
-			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.Block;
 			});
 
 			// Sacred Cleansing should proc on Cleanse
@@ -98,7 +92,6 @@ namespace WCell.Addons.Default.Spells.Paladin
 			SpellLineId.PaladinSacredShield.Apply(spell =>
 			{
 				spell.ProcDelay = 6000;
-				spell.ProcTriggerFlags = ProcTriggerFlags.AnyHit;
 				var effect = spell.GetEffect(AuraType.Dummy);
 				effect.IsProc = true;
 				effect.AuraEffectHandlerCreator = () => new SacredShieldHandler();

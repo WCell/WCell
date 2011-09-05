@@ -77,7 +77,6 @@ namespace WCell.Addons.Default.Spells.Paladin
 			// Shield of the Templar should proc from Avenger's Shield
 			SpellLineId.PaladinProtectionShieldOfTheTemplar.Apply(spell =>
 			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
 				spell.GetEffect(AuraType.ProcTriggerSpell).AddToAffectMask(SpellLineId.PaladinProtectionAvengersShield);
 			});
 

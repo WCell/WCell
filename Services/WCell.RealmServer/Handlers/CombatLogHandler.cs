@@ -56,7 +56,7 @@ namespace WCell.RealmServer.Handlers
 		/// <summary>
 		/// Correct 3.0.9
 		/// </summary>
-		public static void SendSpellMiss(SpellCast cast, bool display, ICollection<CastMiss> missedTargets)
+		public static void SendSpellMiss(SpellCast cast, bool display, ICollection<MissedTarget> missedTargets)
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_SPELLLOGMISS, 34))
 			{

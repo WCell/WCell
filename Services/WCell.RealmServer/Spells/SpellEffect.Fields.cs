@@ -130,7 +130,7 @@ namespace WCell.RealmServer.Spells
 		/// 4. Special applications in some cases
 		/// </summary>
 		[Persistent(3)]
-		public uint[] AffectMask = new uint[3];
+		public uint[] AffectMask = new uint[SpellConstants.SpellClassMaskSize];
 		#endregion
 
 		#region Variables
@@ -259,7 +259,7 @@ namespace WCell.RealmServer.Spells
 		[NotPersistent]
 		public Spell Spell;
 
-		public int EffectIndex = -1;
+		public EffectIndex EffectIndex = EffectIndex.Custom;
 
 		[NotPersistent]
 		public int ValueMin, ValueMax;

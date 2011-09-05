@@ -341,10 +341,10 @@ namespace WCell.RealmServer.Spells
 		}
 
 		/// <summary>
-		/// Sent after spell start. Triggers the casting animation
+		/// Sent after spell start. Triggers the casting animation.
 		/// </summary>
 		public static void SendSpellGo(IEntity caster2, SpellCast cast,
-			ICollection<WorldObject> hitTargets, ICollection<CastMiss> missedTargets, byte previousRuneMask)
+			ICollection<WorldObject> hitTargets, ICollection<MissedTarget> missedTargets, byte previousRuneMask)
 		{
 			if (cast.CasterObject != null && !cast.CasterObject.IsAreaActive) return;
 

@@ -30,21 +30,20 @@ namespace WCell.RealmServer.Spells
 		[Persistent(3)]
 		public uint[] SpellFamilyMask2;
 
-		public ProcTriggerFlags ProcTriggerFlags;
-
-		public uint ProcEx; //proc Extend info
+		public ProcTriggerFlags ProcFlags;
+		public ProcFlagsExLegacy ProcFlagsEx; //proc Extend info
 		public float PpmRate;
 		public float CustomChance;
 		public uint Cooldown;
 		#endregion
 
-		public uint[] GetSpellFamilyMask(int index)
+		public uint[] GetSpellFamilyMask(EffectIndex index)
 		{
 			switch (index)
 			{
-				case 0: return SpellFamilyMask0;
-				case 1: return SpellFamilyMask1;
-				case 3: return SpellFamilyMask2;
+				case EffectIndex.Zero: return SpellFamilyMask0;
+				case EffectIndex.One: return SpellFamilyMask1;
+				case EffectIndex.Two: return SpellFamilyMask2;
 			}
 			return null;
 		}
@@ -84,67 +83,76 @@ namespace WCell.RealmServer.Spells
 	{
 		public static readonly Dictionary<SpellId, SpellProcEventEntry> Entries = new Dictionary<SpellId, SpellProcEventEntry>();
 
-		/// <summary>
-		/// Applies the correct AffectMasks from spell_proc_event to a given spell.
-		/// If the spell is part of a SpellLine, it applies the changes to all spells in that line too
-		/// </summary>
-		public static bool PatchAffectMasks(Spell spell)
-		{
-			SpellProcEventEntry spellprocentry;
-			if (!Entries.TryGetValue(spell.SpellId, out spellprocentry))
-			{
-				return false;
-			}
+        /// <summary>
+        /// Apply custom proc settings from SpellProcEventEntry to all spells
+        /// </summary>
+        public static void PatchSpells(Spell[] spells)
+        {
+            foreach (var spellId in Entries.Keys)
+            {
+                var spell = spells[(int)spellId];
 
-			if (spellprocentry.SchoolMask != 0)
-			{
-				spell.SchoolMask = spellprocentry.SchoolMask;
-			}
+                if (spell == null) continue;
 
-			if (spellprocentry.SpellClassSet != 0)
-			{
-				spell.SpellClassSet = spellprocentry.SpellClassSet;
-			}
+                var entry = Entries[spell.SpellId];
 
-			if (spellprocentry.ProcTriggerFlags != 0)
-			{
-				spell.ProcTriggerFlags = spellprocentry.ProcTriggerFlags;
-			}
+                if (spell.Line == null)
+                {
+                    PatchSpell(spell, entry);
+                }
+                else
+                {
+                    // Part of the spell line -> apply to all ranks
+                    spell.Line.LineId.Apply(spellToPatch => PatchSpell(spellToPatch, entry));
+                }
+            }
+        }
 
-			if (spellprocentry.CustomChance != 0)
-			{
-				// like the DBC, CustomChance only contains natural percentages
-				spell.ProcChance = (uint)spellprocentry.CustomChance;
-			}
+        /// <summary>
+        /// Apply custom proc settings from SpellProcEventEntry to a given spell
+        /// </summary>
+        private static void PatchSpell(Spell spell, SpellProcEventEntry procEntry)
+        {
+            if (procEntry.SchoolMask != 0)
+            {
+                spell.SchoolMask = procEntry.SchoolMask;
+            }
 
-			var line = spell.Line;
+            if (procEntry.SpellClassSet != 0)
+            {
+                spell.SpellClassSet = procEntry.SpellClassSet;
+            }
 
-			if (line != null)
-			{
-				line.LineId.Apply(spellh => PatchSpell(spellh, spellprocentry));
-			}
-			else
-			{
-				SpellHandler.Apply(spellh => PatchSpell(spellh, spellprocentry), spell.SpellId);
-			}
-			return true;
-		}
+            if (procEntry.ProcFlags != 0)
+            {
+                spell.ProcTriggerFlags = procEntry.ProcFlags;
+            }
 
-		static void PatchSpell(Spell spell, SpellProcEventEntry procEntry)
-		{
-			foreach (var effect in spell.Effects)
-			{
-				if (effect.AuraType == AuraType.ProcTriggerSpell)
-				{
-					if (effect.EffectIndex == -1) continue;	// custom effect
+            if (procEntry.ProcFlagsEx != 0)
+            {
+                // Take just hit flags we don't need others
+                spell.ProcHitFlags = (ProcHitFlags)procEntry.ProcFlagsEx & ProcHitFlags.All;
+            }
 
-					var mask = procEntry.GetSpellFamilyMask(effect.EffectIndex);
-					if (mask == null) continue;
-					
-					// copy AffectMask
-					effect.AffectMask = mask.ToArray();
-				}
-			}
-		}
+            if (procEntry.CustomChance != 0)
+            {
+                // like the DBC, CustomChance only contains natural percentages
+                spell.ProcChance = (uint)procEntry.CustomChance;
+            }
+
+            var procEffects = from effect in spell.Effects
+                              where effect.AuraType == AuraType.ProcTriggerSpell
+                              && effect.EffectIndex != EffectIndex.Custom
+                              select effect;
+
+            foreach (var procEffect in procEffects)
+            {
+                var mask = procEntry.GetSpellFamilyMask(procEffect.EffectIndex);
+                if (mask == null) continue;
+
+                // copy AffectMask
+                procEffect.AffectMask = mask.ToArray();
+            }
+        }
 	}
 }

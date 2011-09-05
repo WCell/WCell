@@ -79,7 +79,6 @@ namespace WCell.Addons.Default.Spells.Druid
 			// Earth and Moon: "Your Wrath and Starfire spells have a $h% chance to apply the Earth and Moon effect"
 			SpellLineId.DruidBalanceEarthAndMoon.Apply(spell =>
 			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
 				var effect = spell.GetEffect(AuraType.ProcTriggerSpell);
 
 				// retricted to Wrath and Starfire
@@ -92,7 +91,6 @@ namespace WCell.Addons.Default.Spells.Druid
 			// Each effect lasts $48518d and each has a separate $s1 sec cooldown.  Both effects cannot occur simultaneously."
 			SpellLineId.DruidBalanceEclipse.Apply(spell =>
 			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCastCritical;
 				var effect1 = spell.Effects[0];
 
 				// We set the original proc chance to that of of the more often occuring effect (Wrath) 
@@ -106,7 +104,7 @@ namespace WCell.Addons.Default.Spells.Druid
 			// Improved IS: Two different kinds of procs, dependent on spell being cast
 			SpellLineId.DruidBalanceImprovedInsectSwarm.Apply(spell =>
 			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+				spell.ProcTriggerFlags = ProcTriggerFlags.DoneHarmfulMagicSpell;
 
 				// "Increases your damage done by your Wrath spell to targets afflicted by your Insect Swarm by $s1%"
 				var effect1 = spell.Effects[0];

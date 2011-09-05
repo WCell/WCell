@@ -30,7 +30,12 @@ namespace WCell.RealmServer.Items
 		/// </summary>
 		public ProcTriggerFlags ProcTriggerFlags
 		{
-			get { return ProcTriggerFlags.RangedHitOther | ProcTriggerFlags.MeleeHitOther; }
+			get { return ProcTriggerFlags.DoneMeleeAutoAttack | ProcTriggerFlags.DoneRangedAutoAttack; }
+		}
+
+		public ProcHitFlags ProcHitFlags
+		{
+			get { return ProcHitFlags.Hit; }
 		}
 
 		/// <summary>

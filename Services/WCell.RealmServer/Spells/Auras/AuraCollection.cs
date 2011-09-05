@@ -157,7 +157,7 @@ namespace WCell.RealmServer.Spells.Auras
 			get
 			{
 				Aura aura;
-				if (spell.HarmType == HarmType.Beneficial || spell.HarmType == HarmType.Neutral)
+				if (spell.IsBeneficial || spell.IsNeutral)
 				{
 					aura = this[spell, true];
 				}
