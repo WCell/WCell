@@ -318,10 +318,13 @@ namespace WCell.AuthServer
 
 			if (acc == null)
 			{
+				//Resync accounts first
+				AccountMgr.Instance.Resync();
+
 				// Pass and username are identical so an Account can be auto-created
 				// the corresponding check happened before
 				s_log.Debug(resources.AutocreatingAccount, client.AccountName);
-
+				
 				if (AccountMgr.DoesAccountExist(client.AccountName))
 				{
 					// account was already created								

@@ -115,6 +115,9 @@ namespace WCell.AuthServer.Commands
 			{
 				var name = trigger.Text.NextWord();
 
+				//Resync accounts first
+				AccountMgr.Instance.Resync();
+
 				if (AccountMgr.DoesAccountExist(name))
 				{
 					trigger.Reply("The account \"{0}\" already exists!", name);
