@@ -492,7 +492,6 @@ namespace WCell.RealmServer.Spells
 			get;
 			set;
 		}
-
 		/// <summary>
 		/// The SpellEffect that triggered this cast (or null if not triggered)
 		/// </summary>
@@ -1105,7 +1104,8 @@ namespace WCell.RealmServer.Spells
 				return missedTargets;
 			}
 
-			foreach (var target in UnitTargets)
+			var hostileTargets = UnitTargets.Where(target => !Spell.IsBeneficialFor(CasterReference, target));
+			foreach (var target in hostileTargets)
 			{
 				CastMissReason missReason = CheckHit(target);
 
@@ -1133,19 +1133,16 @@ namespace WCell.RealmServer.Spells
 					return CastMissReason.Immune_2;
 				}
 
-				if (!Spell.AttributesEx.HasAnyFlag(SpellAttributesEx.UnaffectedBySchoolImmunity) && Spell.Schools.All(target.IsImmune))
+				if (Spell.IsAffactedByInvulnerability && Spell.Schools.All(target.IsImmune))
 				{
 					return CastMissReason.Immune;
 				}
 			}
 
-			if (Spell.CanMiss)
+			bool missed = CheckMiss(target);
+			if (missed)
 			{
-				bool missed = CheckMiss(target);
-				if (missed)
-				{
-					return CastMissReason.Miss;
-				}
+				return CastMissReason.Miss;
 			}
 
 			// TODO: Resist
@@ -1155,21 +1152,37 @@ namespace WCell.RealmServer.Spells
 
 		private bool CheckMiss(Unit target)
 		{
-			int hitChance = CalculateHitChance(target);
-			int roll = Utility.Random(SpellConstants.MinHitChance, SpellConstants.MaxHitChance + 1);
+			float hitChance = CalculateHitChance(target);
+			float roll = Utility.Random(SpellConstants.MinHitChance, SpellConstants.MaxHitChance + 1);
 			return hitChance < roll;
 		}
 
-		private int CalculateHitChance(Unit target)
+		/// <summary>
+		/// Calculate spell hit chance to hit the target in %
+		/// </summary>
+		private float CalculateHitChance(Unit target)
 		{
-			// TODO: Include gear and talent contribution
-			int baseHitChance = CalculateBaseHitChance(target);
-			int hitChance = baseHitChance;
-			int minHitChance = target is Character ? SpellConstants.CharacterMinHitChance : SpellConstants.MinHitChance;
+			float minHitChance = SpellConstants.MinHitChance;
+			float hitChance = CalculateBaseHitChance(target);
+			
+			if (CasterObject is Unit)
+			{
+				hitChance += CasterUnit.GetHighestSpellHitChanceMod(Spell.Schools);
+
+				if (CasterUnit is Character)
+				{
+					// Players many levels below their target will always have at least a 1% chance of landing a spell
+					minHitChance = SpellConstants.CharacterMinHitChance;
+					hitChance += CasterChar.SpellHitChanceFromHitRating;
+				}
+			}
 
 			return MathUtil.ClampMinMax(hitChance, minHitChance, SpellConstants.MaxHitChance);
 		}
 
+		/// <summary>
+		/// Calculate spell base hit chance to hit the target in %
+		/// </summary>
 		private int CalculateBaseHitChance(Unit target)
 		{
 			int levelDifference = target.Level - CasterLevel;

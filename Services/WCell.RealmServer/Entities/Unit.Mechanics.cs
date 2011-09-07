@@ -984,6 +984,19 @@ namespace WCell.RealmServer.Entities
 			return m_SpellHitChance != null ? m_SpellHitChance[(int)school] : 0;
 		}
 
+		public int GetHighestSpellHitChanceMod(DamageSchool[] schools)
+		{
+			if (m_SpellHitChance == null)
+			{
+				return 0;
+			}
+
+			var spellHitChanceMods = from school in schools
+									 select m_SpellHitChance[(int)school];
+
+			return spellHitChanceMods.Max();
+		}
+
 		/// <summary>
 		/// Spell avoidance
 		/// </summary>

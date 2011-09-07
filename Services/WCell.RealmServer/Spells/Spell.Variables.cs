@@ -384,16 +384,6 @@ namespace WCell.RealmServer.Spells
 		public bool HasAuraDependentEffects;
 		#endregion
 
-		public bool CanMiss
-		{
-			get { return !IsHealSpell; }
-		}
-
-		public bool IsAffactedByInvulnerability
-		{
-			get { return !Attributes.HasFlag(SpellAttributes.UnaffectedByInvulnerability); }
-		}
-
 		#region Spell Targets
 		[Persistent]
 		public RequiredSpellTargetType RequiredTargetType = RequiredSpellTargetType.Default;

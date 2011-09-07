@@ -993,6 +993,12 @@ namespace WCell.RealmServer.Spells
 			}
 			return millis;
 		}
+
+		public bool IsAffactedByInvulnerability
+		{
+			get { return !Attributes.HasFlag(SpellAttributes.UnaffectedByInvulnerability); }
+		}
+
 		#endregion
 
 		#region Verbose / Debug

@@ -861,6 +861,19 @@ namespace WCell.RealmServer.Entities
 			get;
 			internal set;
 		}
+
+		/// <summary>
+		/// Character spell hit chance bonus from hit rating in %
+		/// </summary>
+		public float SpellHitChanceFromHitRating
+		{
+			get
+			{
+				int spellHitRating = GetCombatRating(CombatRating.SpellHitChance);
+				float levelFactor = GameTables.CombatRatings[CombatRating.SpellHitChance][CasterLevel - 1];
+				return spellHitRating / levelFactor;
+			}
+		}
 		#endregion
 
 		#region Quest Fields

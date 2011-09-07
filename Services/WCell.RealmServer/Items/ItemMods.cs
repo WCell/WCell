@@ -267,6 +267,7 @@ namespace WCell.RealmServer.Modifiers
 		{
 			owner.ModCombatRating(CombatRating.MeleeHitChance, value);
 			owner.ModCombatRating(CombatRating.RangedHitChance, value);
+			owner.ModCombatRating(CombatRating.SpellHitChance, value);
 		}
 
 		static void AddCriticalStrikeRating(Character owner, int value)

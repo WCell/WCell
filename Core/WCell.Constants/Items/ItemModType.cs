@@ -37,6 +37,9 @@ namespace WCell.Constants.Items
 		/// Unused
 		/// </summary>
 		RangedHitRating = 17,
+		/// <summary>
+		/// Unused
+		/// </summary>
 		SpellHitRating = 18,
 		MeleeCriticalStrikeRating = 19,
 		RangedCriticalStrikeRating = 20,
@@ -69,7 +72,7 @@ namespace WCell.Constants.Items
 		RangedHasteRating = 29,
 		SpellHasteRating = 30,
 		/// <summary>
-		/// Melee and Ranged HitRating (no SpellHitRating)
+		/// Melee, Ranged and Spell HitRating
 		/// </summary>
 		HitRating = 31,
 
