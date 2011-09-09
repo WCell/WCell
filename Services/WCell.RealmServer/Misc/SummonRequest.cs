@@ -1,6 +1,6 @@
 using System;
-using WCell.RealmServer.Global;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Global;
 using WCell.Util.Graphics;
 
 namespace WCell.RealmServer.Misc

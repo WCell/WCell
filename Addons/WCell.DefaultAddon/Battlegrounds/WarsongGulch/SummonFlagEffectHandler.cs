@@ -1,4 +1,3 @@
-using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Spells;

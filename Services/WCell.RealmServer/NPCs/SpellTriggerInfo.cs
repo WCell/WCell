@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using WCell.Constants.Spells;
 using WCell.RealmServer.Spells;
 using WCell.Util.Data;
-using WCell.Constants.Spells;
 
 namespace WCell.RealmServer.NPCs
 {

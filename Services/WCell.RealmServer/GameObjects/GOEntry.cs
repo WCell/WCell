@@ -1,9 +1,13 @@
+using System;
 using System.Collections.Generic;
+using WCell.Constants;
+using WCell.Constants.Factions;
 using WCell.Constants.GameObjects;
 using WCell.Constants.Looting;
 using WCell.Constants.World;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Factions;
 using WCell.RealmServer.GameObjects.GOEntries;
 using WCell.RealmServer.GameObjects.Spawns;
 using WCell.RealmServer.Global;
@@ -12,14 +16,7 @@ using WCell.RealmServer.Lang;
 using WCell.RealmServer.Looting;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Quests;
-using WCell.Util;
 using WCell.Util.Data;
-using NLog;
-using System.Collections;
-using WCell.Constants;
-using System;
-using WCell.Constants.Factions;
-using WCell.RealmServer.Factions;
 using WCell.Util.Graphics;
 
 namespace WCell.RealmServer.GameObjects

@@ -1,4 +1,4 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: SecureRemotePassword.cs
  *   copyright		: (C) The WCell Team
@@ -19,7 +19,6 @@ using System.CodeDom.Compiler;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Security.Cryptography;
-using System.Text;
 
 namespace WCell.Core.Cryptography
 {

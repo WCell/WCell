@@ -1,15 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using WCell.Constants;
 using WCell.Constants.Factions;
 using WCell.RealmServer.Entities;
-using WCell.RealmServer.Instances;
-using WCell.RealmServer.Misc;
-using WCell.RealmServer.Network;
 using WCell.RealmServer.Handlers;
-using WCell.Core.Timers;
+using WCell.RealmServer.Misc;
 using WCell.Util.Graphics;
 
 namespace WCell.RealmServer.Battlegrounds

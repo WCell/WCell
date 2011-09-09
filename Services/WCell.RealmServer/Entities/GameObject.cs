@@ -15,7 +15,6 @@ using WCell.RealmServer.Gossips;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Looting;
 using WCell.RealmServer.Misc;
-using WCell.RealmServer.Network;
 using WCell.RealmServer.Quests;
 using WCell.RealmServer.UpdateFields;
 using WCell.Util;

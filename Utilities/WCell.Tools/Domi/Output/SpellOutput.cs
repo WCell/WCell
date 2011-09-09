@@ -16,27 +16,20 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
-using WCell.Core.Initialization;
-using WCell.RealmServer;
+using System.Linq;
+using System.Reflection;
+using WCell.Constants.Skills;
+using WCell.Constants.Spells;
 using WCell.RealmServer.Addons;
+using WCell.RealmServer.Content;
+using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Factions;
 using WCell.RealmServer.Items;
 using WCell.RealmServer.Spells;
-using System.Reflection;
-using WCell.RealmServer.Skills;
-using WCell.Constants.Skills;
-using WCell.Constants.Spells;
-using WCell.Util.Toolshed;
-using WCell.RealmServer.Content;
-using WCell.RealmServer.Database;
-using WCell.Constants.Items;
-using WCell.RealmServer.Spells.Auras;
-using WCell.RealmServer.Talents;
 using WCell.Util;
+using WCell.Util.Toolshed;
 
 namespace WCell.Tools.Domi.Output
 {

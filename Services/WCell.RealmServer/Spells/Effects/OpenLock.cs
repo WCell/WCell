@@ -14,17 +14,17 @@
  *
  *************************************************************************/
 
+using System;
 using NLog;
 using WCell.Constants;
 using WCell.Constants.GameObjects;
 using WCell.Constants.Skills;
 using WCell.Constants.Spells;
+using WCell.Constants.Updates;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Skills;
 using WCell.Util;
-using WCell.Constants.Updates;
-using System;
 
 namespace WCell.RealmServer.Spells.Effects
 {

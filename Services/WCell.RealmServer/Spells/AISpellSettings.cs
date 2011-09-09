@@ -1,7 +1,4 @@
-using System;
 using WCell.Constants.Spells;
-using WCell.RealmServer.Entities;
-using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Spells.Targeting;
 using WCell.Util;
 

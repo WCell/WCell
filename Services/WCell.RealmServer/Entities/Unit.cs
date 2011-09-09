@@ -44,7 +44,6 @@ using WCell.Util;
 using WCell.Util.Graphics;
 using WCell.Util.NLog;
 
-
 namespace WCell.RealmServer.Entities
 {
 	/// <summary>

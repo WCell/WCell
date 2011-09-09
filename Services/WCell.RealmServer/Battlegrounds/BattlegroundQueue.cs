@@ -1,14 +1,6 @@
-using System.Linq;
-using WCell.RealmServer.Entities;
-using WCell.RealmServer.Network;
-using WCell.RealmServer.Global;
-using WCell.Util.Collections;
-using WCell.RealmServer.Misc;
-using WCell.Constants.Factions;
-using WCell.RealmServer.Groups;
 using WCell.Constants;
 using WCell.Core;
-using System.Collections.Generic;
+using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Battlegrounds
 {

@@ -1,10 +1,5 @@
 using System;
-using System.Linq;
 using NLog;
-using WCell.Constants;
-using WCell.Constants.Items;
-using WCell.RealmServer.Entities;
-using WCell.RealmServer.GameObjects.GOEntries;
 using WCell.Constants.Looting;
 
 namespace WCell.RealmServer.Looting

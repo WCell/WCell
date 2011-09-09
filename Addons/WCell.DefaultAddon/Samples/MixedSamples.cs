@@ -1,17 +1,16 @@
 using WCell.Addons.Default.Lang;
-using WCell.RealmServer.NPCs;
-using WCell.Constants.NPCs;
-using WCell.Constants.Factions;
-using WCell.Core.Initialization;
-using WCell.RealmServer.Items;
-using WCell.Constants.Items;
 using WCell.Constants;
-using WCell.Util.Graphics;
-using WCell.Util.Variables;
+using WCell.Constants.Factions;
+using WCell.Constants.Items;
+using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
+using WCell.Core.Initialization;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Gossips;
-
+using WCell.RealmServer.Items;
+using WCell.RealmServer.NPCs;
+using WCell.Util.Graphics;
+using WCell.Util.Variables;
 
 namespace WCell.Addons.Default.Samples
 {

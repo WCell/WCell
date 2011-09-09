@@ -1,14 +1,11 @@
+using System.Collections.Generic;
 using System.Linq;
 using WCell.Constants;
-using WCell.Constants.World;
-using WCell.RealmServer.Battlegrounds;
-using WCell.RealmServer.Global;
-using WCell.Util.Commands;
-using WCell.RealmServer.Handlers;
-using WCell.RealmServer.Entities;
 using WCell.Constants.Spells;
-using System.Collections.Generic;
 using WCell.Constants.Updates;
+using WCell.RealmServer.Battlegrounds;
+using WCell.RealmServer.Entities;
+using WCell.Util.Commands;
 
 namespace WCell.RealmServer.Commands
 {

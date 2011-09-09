@@ -18,7 +18,6 @@ using System;
 using System.Threading;
 using WCell.AuthServer;
 using WCell.AuthServer.Commands;
-using WCell.Core;
 using WCell.Core.Database;
 
 namespace WCell.AuthServerConsole

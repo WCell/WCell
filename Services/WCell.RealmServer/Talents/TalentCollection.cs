@@ -21,15 +21,9 @@ using System.Linq;
 using NLog;
 using WCell.Constants;
 using WCell.Constants.Achievements;
-using WCell.Constants.NPCs;
-using WCell.Constants.Pets;
-using WCell.Constants.Spells;
 using WCell.Constants.Talents;
-using WCell.Constants.Updates;
-using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
-using WCell.RealmServer.NPCs.Pets;
 
 namespace WCell.RealmServer.Talents
 {

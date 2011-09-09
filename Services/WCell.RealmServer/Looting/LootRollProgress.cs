@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using WCell.Constants;
+using WCell.Constants.Looting;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
 using WCell.Util;
-using WCell.Constants.Looting;
 
 namespace WCell.RealmServer.Looting
 {

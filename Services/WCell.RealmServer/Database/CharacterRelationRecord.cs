@@ -15,8 +15,8 @@
  *************************************************************************/
 
 using Castle.ActiveRecord;
-using WCell.RealmServer.Interaction;
 using WCell.Core.Database;
+using WCell.RealmServer.Interaction;
 
 namespace WCell.RealmServer.Database
 {

@@ -1,11 +1,10 @@
 using System;
+using WCell.Constants;
 using WCell.Constants.World;
+using WCell.RealmServer.Entities;
 using WCell.RealmServer.Lang;
 using WCell.Util.Data;
-using WCell.RealmServer.Entities;
 using WCell.Util.Graphics;
-using WCell.Util.Variables;
-using WCell.Constants;
 
 namespace WCell.RealmServer.Global
 {

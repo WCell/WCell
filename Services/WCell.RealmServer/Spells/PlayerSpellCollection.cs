@@ -1,23 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using Castle.ActiveRecord;
-using Cell.Core;
 using NLog;
 using WCell.Constants.Spells;
+using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.GameObjects;
 using WCell.RealmServer.GameObjects.GOEntries;
 using WCell.RealmServer.Items;
-using WCell.RealmServer.Spells.Auras;
-using WCell.RealmServer.Spells.Auras.Misc;
-using WCell.RealmServer.Talents;
+using WCell.Util;
 using WCell.Util.ObjectPools;
 using WCell.Util.Threading;
-using WCell.RealmServer.Database;
-using WCell.Util;
-using WCell.RealmServer.Spells.Auras.Handlers;
 
 namespace WCell.RealmServer.Spells
 {

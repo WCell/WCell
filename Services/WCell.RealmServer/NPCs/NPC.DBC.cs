@@ -1,11 +1,11 @@
+using System;
 using System.Collections.Generic;
+using WCell.Constants;
 using WCell.Constants.NPCs;
 using WCell.Constants.Pets;
 using WCell.Core.DBC;
 using WCell.RealmServer.Skills;
 using WCell.RealmServer.Spells;
-using WCell.Constants;
-using System;
 using WCell.Util;
 using WCell.Util.Graphics;
 

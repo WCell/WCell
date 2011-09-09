@@ -7,7 +7,6 @@ using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Spells.Auras.Handlers;
 using WCell.RealmServer.Spells.Effects;
-using WCell.Constants;
 
 namespace WCell.Addons.Default.Spells.Warlock
 {

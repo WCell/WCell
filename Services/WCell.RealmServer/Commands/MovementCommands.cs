@@ -17,6 +17,7 @@
 using System;
 using System.Linq;
 using WCell.Constants.Spells;
+using WCell.Constants.Updates;
 using WCell.Constants.World;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
@@ -24,7 +25,6 @@ using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Lang;
 using WCell.Util.Commands;
 using WCell.Util.Graphics;
-using WCell.Constants.Updates;
 
 namespace WCell.RealmServer.Commands
 {

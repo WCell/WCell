@@ -1,6 +1,6 @@
-using WCell.Util.Commands;
 using WCell.MPQTool;
 using WCell.RealmServer;
+using WCell.Util.Commands;
 
 namespace WCell.Tools.Commands
 {

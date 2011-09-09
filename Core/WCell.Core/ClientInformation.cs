@@ -15,11 +15,11 @@
  *************************************************************************/
 
 using System;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 using Cell.Core;
 using WCell.Constants;
 using WCell.Core.Network;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 
 namespace WCell.Core
 {

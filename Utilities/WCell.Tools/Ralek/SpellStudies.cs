@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using WCell.RealmServer.Spells;
 using WCell.Constants.Spells;
+using WCell.RealmServer.Spells;
 
 namespace WCell.Tools.Ralek
 {

@@ -25,16 +25,13 @@ using WCell.Constants.Login;
 using WCell.Constants.Realm;
 using WCell.Core;
 using WCell.Core.Initialization;
-using WCell.Core.Variables;
-using WCell.RealmServer.Lang;
-using WCell.RealmServer.Privileges;
-using WCell.RealmServer.Res;
-using WCell.Util;
-using WCell.Util.Variables;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Handlers;
+using WCell.RealmServer.Lang;
+using WCell.RealmServer.Res;
+using WCell.Util;
 using WCell.Util.NLog;
-
+using WCell.Util.Variables;
 using RealmServ = WCell.RealmServer.RealmServer;
 
 namespace WCell.RealmServer

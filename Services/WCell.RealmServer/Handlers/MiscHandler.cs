@@ -14,14 +14,12 @@
  *
  *************************************************************************/
 
-
 using WCell.Constants;
 using WCell.Constants.Login;
 using WCell.Core.Network;
 using WCell.RealmServer.Entities;
-using WCell.RealmServer.Network;
-using WCell.Constants.World;
 using WCell.RealmServer.Global;
+using WCell.RealmServer.Network;
 
 namespace WCell.RealmServer.Handlers
 {

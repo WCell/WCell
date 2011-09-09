@@ -22,7 +22,6 @@ using NLog;
 using WCell.Constants;
 using WCell.Constants.Misc;
 using WCell.Constants.Spells;
-using WCell.Core;
 using WCell.Core.Timers;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;

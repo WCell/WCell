@@ -1,6 +1,5 @@
 using System;
 using WCell.Constants;
-using WCell.Constants.Achievements;
 using WCell.Constants.Factions;
 using WCell.Constants.Items;
 using WCell.Constants.Misc;
@@ -10,7 +9,6 @@ using WCell.RealmServer.Entities;
 using WCell.RealmServer.Lang;
 using WCell.RealmServer.Mail;
 using WCell.Util.Data;
-using WCell.Core.Database;
 
 namespace WCell.RealmServer.Achievements
 {

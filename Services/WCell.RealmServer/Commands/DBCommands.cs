@@ -1,7 +1,7 @@
 using WCell.Core.Database;
+using WCell.Intercommunication.DataTypes;
 using WCell.Util.Commands;
 using HibernateCfg = NHibernate.Cfg.Configuration;
-using WCell.Intercommunication.DataTypes;
 
 namespace WCell.RealmServer.Commands
 {

@@ -1,14 +1,12 @@
 using System.Linq;
 using WCell.Constants;
-using WCell.Constants.Pets;
-using WCell.RealmServer.Entities;
-using WCell.Core.Network;
 using WCell.Constants.NPCs;
 using WCell.Constants.Updates;
 using WCell.Core;
+using WCell.Core.Network;
+using WCell.RealmServer.Entities;
 using WCell.RealmServer.NPCs.Spawns;
 using WCell.Util.Graphics;
-
 
 namespace WCell.RealmServer.NPCs.Vehicles
 {

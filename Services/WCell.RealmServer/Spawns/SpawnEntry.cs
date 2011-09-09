@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Threading;
 using WCell.Constants.World;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;

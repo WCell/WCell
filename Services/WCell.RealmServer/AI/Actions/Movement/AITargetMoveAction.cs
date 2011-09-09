@@ -1,8 +1,6 @@
-using System;
 using NLog;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Entities;
-using WCell.Constants.NPCs;
 using WCell.Util.Graphics;
 
 namespace WCell.RealmServer.AI.Actions.Movement

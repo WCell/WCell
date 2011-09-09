@@ -8,8 +8,8 @@ using WCell.Constants.Misc;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
-using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Misc;
+using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Spells.Targeting;
 
 namespace WCell.RealmServer.Spells
@@ -388,76 +388,37 @@ namespace WCell.RealmServer.Spells
 				//    CasterChar.SendSystemMessage("SpellCast (PrePerform): {0} ms", sw2.ElapsedTicks / 10000d);
 				//}
 
+
+				List<MissedTarget> missedTargets = CheckHit();
+				RemoveFromHandlerTargets(missedTargets);
+
+				SendSpellGo(missedTargets);
+
 				// check whether impact is delayed
-				int delay;
-				if (spell.ProjectileSpeed > 0 && Targets.Count > 0)
-				{
-					float distance;
-					if (TriggerAction != null)
-					{
-						distance = TriggerAction.Attacker.GetDist(TriggerAction.Victim);
-					}
-					else if (CasterObject != null)
-					{
-						var target = Targets.First();
-						//var distance = target.GetDistance(Caster) + 10;
-						distance = target.GetDistance(CasterObject);
-					}
-					else
-					{
-						distance = 0;
-					}
-					delay = (int)((distance * 1000) / spell.ProjectileSpeed);
-				}
-				else
-				{
-					delay = 0;
-				}
+				int delay = CalculateImpactDelay();
+				var delayedImpactIsNoticable = delay > Map.UpdateDelay / 1000f;
 
-				var delayedImpact = delay > Map.UpdateDelay / 1000f; // only delay if its noticable
-
-				SpellFailedReason err;
-				if (delayedImpact)
+				if (delayedImpactIsNoticable)
 				{
-					// delayed impact
-					if (CasterObject != null)
-					{
-						CasterObject.CallDelayed(delay, DoDelayedImpact);
-						if (!Spell.IsChanneled && this == CasterObject.SpellCast)
-						{
-							// reset SpellCast so it cannot be cancelled anymore
-							CasterObject.SpellCast = null;
-						}
-					}
-					else
-					{
-						Map.CallDelayed(delay, () => DoDelayedImpact(null));
-					}
-					err = SpellFailedReason.Ok;
+					DoDelayedImpact(delay);
+					failReason = SpellFailedReason.Ok;
 				}
 				else
 				{
 					// instant impact
-					err = Impact(false);
+					failReason = Impact();
 				}
 
-				if (IsCasting)
+				if (IsCasting && CasterUnit != null)
 				{
-
-					var runeMask = UsesRunes ? CasterChar.PlayerSpells.Runes.GetActiveRuneMask() : (byte)0;
-					CheckHitAndSendSpellGo(false, runeMask);
-
-					if (CasterUnit != null)
-					{
-						OnCasted();
-					}
+					OnCasted();
 				}
 
-				if (IsCasting && !delayedImpact && !IsChanneling)
+				if (IsCasting && !delayedImpactIsNoticable && !IsChanneling)
 				{
 					Cleanup(true);
 				}
-				return err;
+				return failReason;
 			}
 			catch (Exception e)
 			{
@@ -466,12 +427,67 @@ namespace WCell.RealmServer.Spells
 			}
 		}
 
-		private void DoDelayedImpact(WorldObject obj)
+		private int CalculateImpactDelay()
 		{
+			if (Spell.ProjectileSpeed <= 0 || Targets.Count > 0)
+			{
+				return 0;
+			}
+
+			float distance;
+			if (TriggerAction != null)
+			{
+				distance = TriggerAction.Attacker.GetDist(TriggerAction.Victim);
+			}
+			else if (CasterObject != null)
+			{
+				var target = Targets.First();
+				//var distance = target.GetDistance(Caster) + 10;
+				distance = target.GetDistance(CasterObject);
+			}
+			else
+			{
+				return 0;
+			}
+
+			return (int)((distance * 1000) / Spell.ProjectileSpeed);
+		}
+
+		private void DoDelayedImpact(int delay)
+		{
+			if (CasterObject != null)
+			{
+				CasterObject.CallDelayed(delay, DelayedImpact);
+				if (!Spell.IsChanneled && this == CasterObject.SpellCast)
+				{
+					// reset SpellCast so it cannot be cancelled anymore
+					CasterObject.SpellCast = null;
+				}
+			}
+			else
+			{
+				Map.CallDelayed(delay, () => DelayedImpact(null));
+			}
+		}
+
+		private void DelayedImpact(WorldObject obj)
+		{
+			CheckCasterValidity();
+			foreach (var target in Targets.Where(target => !target.IsInWorld))
+			{
+				Remove(target);
+			}
 			try
 			{
+				Impact();
+
+				// clean it up
+				if (!Spell.IsChanneled && IsCasting)
+				{
+					Cleanup(true);
+				}
+
 				var caster = CasterObject;
-				Impact(true);
 				if (caster != null && caster.SpellCast == null && !IsPassive)
 				{
 					// recycle spell cast
@@ -491,23 +507,11 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// Validates targets and applies all SpellEffects
 		/// </summary>
-		public SpellFailedReason Impact(bool delayed)
+		public SpellFailedReason Impact()
 		{
 			if (!IsCasting)
 			{
 				return SpellFailedReason.Ok;
-			}
-
-			// figure out whether targets are still valid if delayed
-			List<MissedTarget> missedTargets;
-			if (delayed)
-			{
-				CheckCasterValidity();
-				missedTargets = CheckHit(Spell);
-			}
-			else
-			{
-				missedTargets = null;
 			}
 
 			// apply effects
@@ -530,7 +534,7 @@ namespace WCell.RealmServer.Spells
 			if (CasterObject is Unit && Spell.IsPhysicalAbility)
 			{
 				// strike at everyone
-				foreach (var target in Targets.OfType<Unit>())
+				foreach (var target in UnitTargets)
 				{
 					ProcHitFlags hitFlags = CasterUnit.Strike(GetWeapon(), target, this);
 					m_hitInfoByTarget[target] = hitFlags;
@@ -549,6 +553,7 @@ namespace WCell.RealmServer.Spells
 				return SpellFailedReason.Ok;
 			}
 
+			List<MissedTarget> missedTargets = null;
 			// create auras
 			List<IAura> auras = null;
 			if (m_auraApplicationInfos != null)
@@ -563,9 +568,9 @@ namespace WCell.RealmServer.Spells
 				{
 					// TODO: Flash message ontop of missed heads when impact is delayed
 					CombatLogHandler.SendSpellMiss(this, true, missedTargets);
+					missedTargets.Clear();
 				}
 
-				missedTargets.Clear();
 				CastMissListPool.Recycle(missedTargets);
 			}
 
@@ -639,11 +644,6 @@ namespace WCell.RealmServer.Spells
 			//    CasterChar.SendSystemMessage("SpellCast (Impact): {0} ms", sw1.ElapsedTicks / 10000d);
 			//}
 
-			// clean it up
-			if (delayed && !Spell.IsChanneled && IsCasting)
-			{
-				Cleanup(true);
-			}
 			return SpellFailedReason.Ok;
 		}
 		#endregion
@@ -987,7 +987,7 @@ namespace WCell.RealmServer.Spells
 				IsCritical = hitFlags.HasAnyFlag(ProcHitFlags.CriticalHit)
 			};
 
-			var triggerer = Targets.OfType<Unit>().FirstOrDefault();
+			var triggerer = UnitTargets.FirstOrDefault();
 
 			CasterUnit.Proc(flags, triggerer, casterAction, true, hitFlags);
 		}

@@ -1,13 +1,12 @@
 using System;
 using NLog;
 using WCell.Constants;
-using WCell.Core.Network;
 using WCell.Constants.Items;
-using WCell.RealmServer.Database;
+using WCell.Core.Network;
 using WCell.RealmServer.Entities;
-using WCell.RealmServer.Network;
 using WCell.RealmServer.NPCs;
 using WCell.RealmServer.NPCs.Auctioneer;
+using WCell.RealmServer.Network;
 
 namespace WCell.RealmServer.Handlers
 {

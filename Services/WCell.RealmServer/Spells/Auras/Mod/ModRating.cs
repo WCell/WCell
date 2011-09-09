@@ -1,4 +1,4 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: ModRating.cs
  *   copyright		: (C) The WCell Team
@@ -14,7 +14,6 @@
  *
  *************************************************************************/
 
-using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Auras.Handlers

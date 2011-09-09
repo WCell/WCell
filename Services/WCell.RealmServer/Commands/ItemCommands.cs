@@ -1,14 +1,14 @@
 using System;
 using System.Linq;
 using WCell.Constants.Items;
+using WCell.Constants.Updates;
+using WCell.Intercommunication.DataTypes;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Items;
 using WCell.RealmServer.Items.Enchanting;
 using WCell.RealmServer.Lang;
 using WCell.Util.Commands;
-using WCell.Intercommunication.DataTypes;
-using WCell.Constants.Updates;
 
 namespace WCell.RealmServer.Commands
 {

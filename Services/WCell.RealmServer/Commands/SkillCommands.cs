@@ -1,4 +1,4 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file			: SkillCommands.cs
  *   copyright		: (C) The WCell Team
@@ -14,7 +14,6 @@
  *
  *************************************************************************/
 
-using System;
 using WCell.Constants.Items;
 using WCell.Constants.Skills;
 using WCell.Constants.Updates;

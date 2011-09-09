@@ -15,17 +15,16 @@
  *************************************************************************/
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using WCell.Constants.Achievements;
 using WCell.Constants.NPCs;
 using WCell.Constants.Quests;
 using WCell.Constants.Updates;
+using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.NPCs;
-using WCell.RealmServer.Database;
-using WCell.Constants.Spells;
-using System.Collections.Generic;
 using WCell.Util.Data;
 
 namespace WCell.RealmServer.Quests

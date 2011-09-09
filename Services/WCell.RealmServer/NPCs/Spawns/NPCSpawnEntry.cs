@@ -1,16 +1,15 @@
 using System;
 using System.Collections.Generic;
-using NLog;
 using WCell.Constants.NPCs;
 using WCell.Constants.World;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Global;
 using WCell.RealmServer.Gossips;
 using WCell.RealmServer.Spawns;
 using WCell.RealmServer.Waypoints;
 using WCell.Util;
 using WCell.Util.Data;
-using WCell.RealmServer.Global;
 using WCell.Util.Graphics;
 
 namespace WCell.RealmServer.NPCs.Spawns

@@ -1,4 +1,4 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: SpellTargetCollection.cs
  *   copyright		: (C) The WCell Team
@@ -20,9 +20,6 @@ using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Spells.Targeting;
-using WCell.Util;
-using WCell.Util.Graphics;
-using Cell.Core;
 using WCell.Util.ObjectPools;
 
 namespace WCell.RealmServer.Spells

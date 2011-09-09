@@ -15,7 +15,6 @@
  *************************************************************************/
 
 using System.Security.Cryptography;
-using System.Text;
 using WCell.Core.Network;
 using WCell.Intercommunication.DataTypes;
 

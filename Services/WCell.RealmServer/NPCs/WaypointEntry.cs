@@ -17,14 +17,11 @@
 using System;
 using System.Collections.Generic;
 using WCell.Constants.Misc;
+using WCell.Constants.Spells;
 using WCell.Core.Paths;
 using WCell.RealmServer.Content;
-using WCell.Core.Terrain.Paths;
 using WCell.RealmServer.NPCs.Spawns;
 using WCell.Util.Data;
-using WCell.RealmServer.Gossips;
-using WCell.RealmServer.Entities;
-using WCell.Constants.Spells;
 using WCell.Util.Graphics;
 
 namespace WCell.RealmServer.NPCs

@@ -1,5 +1,3 @@
-using System;
-using WCell.Constants.Spells;
 using WCell.RealmServer.Misc;
 
 namespace WCell.RealmServer.Formulas

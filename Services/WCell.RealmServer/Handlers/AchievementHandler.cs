@@ -1,14 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 using NLog;
 using WCell.Constants;
-using WCell.Constants.Achievements;
 using WCell.Constants.Misc;
 using WCell.Core.Network;
-using WCell.PacketAnalysis;
 using WCell.RealmServer.Achievements;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;

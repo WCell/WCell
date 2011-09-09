@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using WCell.Constants;
 using WCell.Constants.Spells;

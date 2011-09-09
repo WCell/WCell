@@ -1,14 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.IO;
 using WCell.Constants;
-using WCell.Constants.Updates;
 using WCell.Core.Network;
 using WCell.PacketAnalysis.Logs;
-using WCell.PacketAnalysis.Updates;
-using WCell.RealmServer;
-using System.IO;
 using WCell.Util;
 using OF = WCell.Constants.Updates.ObjectFields;
 using GOF = WCell.Constants.Updates.GameObjectFields;

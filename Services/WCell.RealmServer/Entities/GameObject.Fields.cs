@@ -23,7 +23,6 @@ using WCell.RealmServer.Factions;
 using WCell.RealmServer.GameObjects;
 using WCell.RealmServer.GameObjects.Spawns;
 using WCell.RealmServer.Gossips;
-using WCell.RealmServer.Quests;
 
 namespace WCell.RealmServer.Entities
 {

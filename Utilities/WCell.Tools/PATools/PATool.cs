@@ -1,14 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
+using System.Linq;
 using System.Xml.Serialization;
-using WCell.PacketAnalysis.Updates;
-using WCell.Util;
+using WCell.Core.Network;
 using WCell.PacketAnalysis;
 using WCell.PacketAnalysis.Logs;
-using WCell.Core.Network;
+using WCell.PacketAnalysis.Updates;
+using WCell.Util;
 
 namespace WCell.Tools.PATools
 {

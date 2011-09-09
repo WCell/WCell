@@ -14,19 +14,13 @@
  *
  *************************************************************************/
 
-using System;
 using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Constants.Misc;
 using WCell.Constants.Skills;
-using WCell.Constants.Updates;
 using WCell.RealmServer.Entities;
-using WCell.RealmServer.Formulas;
-using WCell.RealmServer.Items;
 using WCell.RealmServer.NPCs.Pets;
-using WCell.RealmServer.RacesClasses;
 using WCell.Util;
-using System.Collections;
 
 namespace WCell.RealmServer.Modifiers
 {

@@ -19,10 +19,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Configuration;
-using System.Reflection;
+using System.IO;
 using NLog;
 using WCell.Core.Localization;
-using System.IO;
 
 namespace WCell.Core
 {

@@ -19,7 +19,6 @@ using System.Collections.Generic;
 using System.Text;
 using WCell.Constants;
 using WCell.Constants.Chat;
-using WCell.Constants.Factions;
 using WCell.Constants.Guilds;
 using WCell.Constants.Misc;
 using WCell.Core;
@@ -30,7 +29,6 @@ using WCell.RealmServer.Guilds;
 using WCell.RealmServer.Lang;
 using WCell.RealmServer.Network;
 using WCell.Util;
-using WCell.RealmServer.Groups;
 
 namespace WCell.RealmServer.Chat
 {

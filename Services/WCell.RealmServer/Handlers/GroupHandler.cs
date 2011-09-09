@@ -18,6 +18,8 @@ using System;
 using System.Linq;
 using WCell.Constants;
 using WCell.Constants.Items;
+using WCell.Constants.Looting;
+using WCell.Constants.World;
 using WCell.Core;
 using WCell.Core.Network;
 using WCell.RealmServer.Entities;
@@ -26,8 +28,6 @@ using WCell.RealmServer.Groups;
 using WCell.RealmServer.Interaction;
 using WCell.RealmServer.Network;
 using WCell.RealmServer.Spells.Auras;
-using WCell.Constants.World;
-using WCell.Constants.Looting;
 using WCell.Util;
 
 namespace WCell.RealmServer.Handlers

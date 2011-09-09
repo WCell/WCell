@@ -2,11 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
-using NLog;
+using WCell.Constants;
 using WCell.Constants.Factions;
-using WCell.Constants.Looting;
 using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
+using WCell.Constants.World;
 using WCell.Core;
 using WCell.Core.DBC;
 using WCell.Core.Initialization;
@@ -17,19 +17,15 @@ using WCell.RealmServer.Global;
 using WCell.RealmServer.Gossips;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Items;
-using WCell.RealmServer.Looting;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.NPCs.Auctioneer;
 using WCell.RealmServer.NPCs.Spawns;
 using WCell.RealmServer.NPCs.Trainers;
 using WCell.RealmServer.NPCs.Vendors;
-using WCell.RealmServer.Quests;
 using WCell.RealmServer.Spawns;
 using WCell.RealmServer.Spells;
 using WCell.Util;
 using WCell.Util.Variables;
-using WCell.Constants.World;
-using WCell.Constants;
 
 namespace WCell.RealmServer.NPCs
 {

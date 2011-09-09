@@ -14,14 +14,7 @@
  *
  *************************************************************************/
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Cell.Core;
-using WCell.Core;
-using WCell.Constants;
 using WCell.Core.Initialization;
-using WCell.Core.Network;
 
 namespace WCell.AuthServer
 {

@@ -18,9 +18,6 @@ using System;
 using System.Collections.Generic;
 using Castle.ActiveRecord;
 using NLog;
-using WCell.Util;
-using WCell.Util.Collections;
-using WCell.Constants;
 using WCell.Constants.Guilds;
 using WCell.Core;
 using WCell.Core.Initialization;
@@ -29,6 +26,8 @@ using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Interaction;
 using WCell.RealmServer.NPCs;
+using WCell.Util;
+using WCell.Util.Collections;
 
 namespace WCell.RealmServer.Guilds
 {

@@ -1,5 +1,3 @@
-using System;
-using WCell.Addons.Default.Battlegrounds.WarsongGulch;
 using WCell.Constants;
 using WCell.Constants.GameObjects;
 using WCell.RealmServer.Battlegrounds;

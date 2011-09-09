@@ -4,16 +4,15 @@ using NLog;
 using WCell.Constants.NPCs;
 using WCell.Constants.Pets;
 using WCell.Constants.Spells;
-using WCell.Constants.Talents;
 using WCell.Core;
 using WCell.Core.DBC;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Content;
+using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
 using WCell.Util;
 using WCell.Util.Variables;
-using WCell.RealmServer.Database;
 
 namespace WCell.RealmServer.NPCs.Pets
 {

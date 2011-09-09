@@ -1,10 +1,7 @@
-using System;
+using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.RealmServer.AI.Actions.Movement;
 using WCell.RealmServer.Entities;
-using WCell.RealmServer.Spells;
-using WCell.Constants.Spells;
-using WCell.RealmServer.Spells.Auras;
 
 namespace WCell.RealmServer.AI.Actions.Combat
 {

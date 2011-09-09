@@ -1,10 +1,6 @@
-using NLog;
-using WCell.Constants.GameObjects;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Entities;
-using WCell.RealmServer.GameObjects;
-using WCell.RealmServer.GameObjects.Handlers;
 
 namespace WCell.RealmServer.Spells.Effects
 {

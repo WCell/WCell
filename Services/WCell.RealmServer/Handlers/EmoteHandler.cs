@@ -1,11 +1,11 @@
 using WCell.Constants;
+using WCell.Constants.Chat;
 using WCell.Constants.Misc;
 using WCell.Core.Network;
 using WCell.RealmServer.Chat;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Network;
 using WCell.Util;
-using WCell.Constants.Chat;
 
 namespace WCell.RealmServer.Handlers
 {

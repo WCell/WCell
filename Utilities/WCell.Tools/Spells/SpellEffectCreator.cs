@@ -15,14 +15,9 @@
  *************************************************************************/
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
-using WCell.RealmServer.Spells;
-using WCell.RealmServer.Spells.Effects;
-using System.Diagnostics;
 using WCell.Constants.Spells;
+using WCell.RealmServer.Spells;
 
 namespace WCell.Tools.Spells
 {

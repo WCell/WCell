@@ -20,11 +20,11 @@ using System.Collections.Generic;
 using System.Linq;
 using NLog;
 using WCell.Constants.Spells;
+using WCell.RealmServer.Chat;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.Util;
 using WCell.Util.NLog;
-using WCell.RealmServer.Chat;
 
 namespace WCell.RealmServer.Spells.Auras
 {

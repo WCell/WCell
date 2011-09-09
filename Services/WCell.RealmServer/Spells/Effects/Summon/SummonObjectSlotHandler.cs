@@ -1,4 +1,3 @@
-using WCell.Constants.GameObjects;
 using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Effects

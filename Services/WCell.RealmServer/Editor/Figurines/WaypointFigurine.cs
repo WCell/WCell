@@ -1,4 +1,3 @@
-using System;
 using WCell.Constants.NPCs;
 using WCell.RealmServer.Editor.Menus;
 using WCell.RealmServer.Factions;

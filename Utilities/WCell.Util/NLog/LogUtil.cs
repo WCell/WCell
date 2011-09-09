@@ -1,10 +1,10 @@
 using System;
+using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using NLog;
 using NLog.Config;
 using NLog.Win32.Targets;
-using System.Threading;
-using System.Diagnostics;
 
 namespace WCell.Util.NLog
 {

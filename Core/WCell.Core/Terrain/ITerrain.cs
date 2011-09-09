@@ -1,4 +1,3 @@
-using WCell.Constants.World;
 using WCell.Core.Paths;
 using WCell.Util.Graphics;
 

@@ -1,7 +1,6 @@
 using WCell.Constants;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Content;
-using WCell.RealmServer.Entities;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Spells;
 using WCell.Util.Data;

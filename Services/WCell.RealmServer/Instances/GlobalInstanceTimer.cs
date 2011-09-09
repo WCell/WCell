@@ -1,10 +1,8 @@
+using System;
 using Castle.ActiveRecord;
 using WCell.Constants.World;
 using WCell.Core.Database;
-using System;
-using WCell.Util;
 using WCell.RealmServer.Global;
-using WCell.Constants;
 
 namespace WCell.RealmServer.Instances
 {

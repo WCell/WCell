@@ -19,8 +19,7 @@ using WCell.Core;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Network;
-using WCell.Util.Variables;
-using Utility=WCell.Util.Utility;
+using WCell.Util;
 
 namespace WCell.RealmServer.Stats
 {

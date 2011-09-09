@@ -1,14 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using WCell.Core;
-using WCell.Constants;
 using System.Net;
-using WCell.Core.Initialization;
-using WCell.Util.Threading;
 using System.Threading;
 using WCell.AuthServer.Database;
+using WCell.Core.Initialization;
 
 namespace WCell.AuthServer.Firewall
 {

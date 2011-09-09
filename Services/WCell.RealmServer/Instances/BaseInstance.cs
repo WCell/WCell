@@ -1,15 +1,8 @@
 using System;
-using System.Threading;
-using WCell.Constants;
 using WCell.Constants.Factions;
-using WCell.Constants.World;
 using WCell.Core.Timers;
-using WCell.RealmServer.Battlegrounds;
 using WCell.RealmServer.Entities;
-using WCell.RealmServer.Formulas;
 using WCell.RealmServer.Global;
-using WCell.RealmServer.Network;
-using WCell.RealmServer.Handlers;
 
 namespace WCell.RealmServer.Instances
 {

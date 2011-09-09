@@ -26,13 +26,10 @@ using WCell.Constants.Misc;
 using WCell.Constants.NPCs;
 using WCell.Constants.Skills;
 using WCell.Constants.Spells;
-using WCell.RealmServer.Content;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Spells.Auras.Handlers;
 using WCell.Util;
-using WCell.Util.Data;
-using WCell.RealmServer.Spells.Auras;
-using WCell.Util.NLog;
 
 namespace WCell.RealmServer.Spells
 {

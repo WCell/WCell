@@ -1,11 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using WCell.Constants.NPCs;
 using WCell.Constants.Pets;
-using PetAttackMode=WCell.Constants.Pets.PetAttackMode;
-using PetFlags=WCell.Constants.Pets.PetFlags;
 using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.NPCs.Pets

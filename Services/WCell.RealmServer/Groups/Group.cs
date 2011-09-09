@@ -18,11 +18,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using NLog;
 using WCell.Constants;
 using WCell.Constants.Achievements;
+using WCell.Constants.Factions;
 using WCell.Constants.Items;
+using WCell.Constants.Looting;
 using WCell.Constants.Misc;
 using WCell.Constants.Updates;
 using WCell.Core;
@@ -31,13 +32,11 @@ using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Instances;
+using WCell.RealmServer.Looting;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Network;
 using WCell.Util;
 using WCell.Util.NLog;
-using WCell.RealmServer.Looting;
-using WCell.Constants.Factions;
-using WCell.Constants.Looting;
 using WCell.Util.Threading;
 
 namespace WCell.RealmServer.Groups

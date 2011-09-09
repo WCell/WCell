@@ -1,8 +1,8 @@
 using WCell.Constants.Spells;
+using WCell.Constants.Updates;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Spells;
 using WCell.Util.Commands;
-using WCell.Constants.Updates;
 
 namespace WCell.RealmServer.Commands
 {

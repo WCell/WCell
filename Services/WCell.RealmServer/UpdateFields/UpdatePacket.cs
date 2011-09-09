@@ -15,14 +15,13 @@
  *************************************************************************/
 
 using System;
-using System.IO;
 using Cell.Core;
 using ICSharpCode.SharpZipLib.Zip.Compression;
+using NLog;
 using WCell.Constants;
 using WCell.Core;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Network;
-using NLog;
 
 namespace WCell.RealmServer.UpdateFields
 {

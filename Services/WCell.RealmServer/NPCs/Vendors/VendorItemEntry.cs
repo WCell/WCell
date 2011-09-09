@@ -3,11 +3,8 @@ using System.Collections.Generic;
 using WCell.Constants.Items;
 using WCell.Constants.NPCs;
 using WCell.RealmServer.Content;
-using WCell.RealmServer.Entities;
-using WCell.RealmServer.Factions;
 using WCell.RealmServer.Items;
 using WCell.Util.Data;
-using WCell.Constants.Factions;
 
 namespace WCell.RealmServer.NPCs.Vendors
 {

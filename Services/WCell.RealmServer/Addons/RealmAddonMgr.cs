@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
 using NLog;
 using WCell.Core.Addons;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Commands;
-using WCell.Util.Variables;
 
 namespace WCell.RealmServer.Addons
 {

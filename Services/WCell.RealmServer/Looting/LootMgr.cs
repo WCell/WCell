@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using NLog;
-using WCell.Constants;
 using WCell.Constants.Looting;
 using WCell.Constants.World;
 using WCell.Core.Initialization;
@@ -11,7 +10,6 @@ using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Items;
 using WCell.RealmServer.Misc;
-using WCell.RealmServer.NPCs;
 using WCell.Util;
 
 namespace WCell.RealmServer.Looting

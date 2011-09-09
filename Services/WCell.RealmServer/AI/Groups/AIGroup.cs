@@ -2,8 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using WCell.Constants.Updates;
-using WCell.RealmServer.Entities;
 using WCell.RealmServer.AI.Brains;
+using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.AI.Groups
 {

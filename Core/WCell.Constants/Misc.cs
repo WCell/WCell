@@ -1,6 +1,4 @@
 using System;
-using WCell.Constants.Items;
-using WCell.Constants.NPCs;
 
 namespace WCell.Constants
 {

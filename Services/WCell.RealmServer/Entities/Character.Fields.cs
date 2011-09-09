@@ -23,12 +23,14 @@ using WCell.Constants.Items;
 using WCell.Constants.Misc;
 using WCell.Constants.NPCs;
 using WCell.Constants.Quests;
-using WCell.Constants.Skills;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.Constants.World;
+using WCell.Core;
 using WCell.Core.Timers;
+using WCell.RealmServer.Achievements;
 using WCell.RealmServer.AreaTriggers;
+using WCell.RealmServer.Battlegrounds;
 using WCell.RealmServer.Battlegrounds.Arenas;
 using WCell.RealmServer.Chat;
 using WCell.RealmServer.Database;
@@ -56,13 +58,9 @@ using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Talents;
 using WCell.RealmServer.Taxi;
-using WCell.Core;
-using WCell.RealmServer.Battlegrounds;
-using WCell.RealmServer.NPCs.Vehicles;
+using WCell.RealmServer.Titles;
 using WCell.RealmServer.Trade;
 using WCell.Util.Graphics;
-using WCell.RealmServer.Achievements;
-using WCell.RealmServer.Titles;
 
 namespace WCell.RealmServer.Entities
 {
@@ -862,6 +860,19 @@ namespace WCell.RealmServer.Entities
 		{
 			get;
 			internal set;
+		}
+
+		/// <summary>
+		/// Character spell hit chance bonus from hit rating in %
+		/// </summary>
+		public float SpellHitChanceFromHitRating
+		{
+			get
+			{
+				int spellHitRating = GetCombatRating(CombatRating.SpellHitChance);
+				float levelFactor = GameTables.CombatRatings[CombatRating.SpellHitChance][CasterLevel - 1];
+				return spellHitRating / levelFactor;
+			}
 		}
 		#endregion
 

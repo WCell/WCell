@@ -1,9 +1,8 @@
-using NLog;
 using WCell.Constants.GameObjects;
+using WCell.Constants.Looting;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Looting;
-using WCell.Constants.Looting;
 
 namespace WCell.RealmServer.GameObjects.Handlers
 {

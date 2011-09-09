@@ -16,7 +16,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using NLog;
 using WCell.Intercommunication.DataTypes;
 using WCell.RealmServer.Commands;

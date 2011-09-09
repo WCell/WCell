@@ -6,15 +6,9 @@ using WCell.Constants.Pets;
 using WCell.Constants.Spells;
 using WCell.Constants.Talents;
 using WCell.Core.Network;
-using WCell.RealmServer.AI.Actions.Combat;
-using WCell.RealmServer.AI.Brains;
-using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
-using WCell.RealmServer.Network;
-using WCell.RealmServer.NPCs;
-using WCell.RealmServer.AI;
-using WCell.RealmServer.NPCs.Vehicles;
 using WCell.RealmServer.NPCs.Pets;
+using WCell.RealmServer.Network;
 using WCell.RealmServer.Spells;
 
 namespace WCell.RealmServer.Handlers

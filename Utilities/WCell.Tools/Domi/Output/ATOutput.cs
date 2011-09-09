@@ -1,12 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using WCell.RealmServer.Database;
-using WCell.RealmServer.GameObjects;
-using WCell.RealmServer.Spells;
 using WCell.RealmServer.AreaTriggers;
+using WCell.RealmServer.Database;
+using WCell.RealmServer.Spells;
 using WCell.Util;
 
 namespace WCell.Tools.Domi.Output

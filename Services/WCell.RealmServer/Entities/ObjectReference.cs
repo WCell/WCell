@@ -14,9 +14,7 @@
  *
  *************************************************************************/
 
-using System;
 using WCell.Core;
-using WCell.RealmServer.Factions;
 using WCell.RealmServer.Global;
 
 namespace WCell.RealmServer.Entities

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using WCell.RealmServer.Entities;
+﻿using WCell.RealmServer.Entities;
 using WCell.RealmServer.Items;
 
 namespace WCell.RealmServer.Spells.Auras.Misc

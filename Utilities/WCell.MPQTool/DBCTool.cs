@@ -20,11 +20,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Microsoft.Win32;
-//using MpqReader;
 using WCell.Constants;
-using WCell.MPQTool.StormLibWrapper;
 using WCell.MPQTool.DBC.Compare;
+using WCell.MPQTool.StormLibWrapper;
 using WCell.Util.NLog;
+	//using MpqReader;
 
 namespace WCell.MPQTool
 {

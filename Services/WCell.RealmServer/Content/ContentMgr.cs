@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Text;
 using Castle.ActiveRecord;
 using NLog;
 using WCell.Constants;
@@ -9,12 +10,11 @@ using WCell.Core.Database;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Database;
 using WCell.Util;
-using WCell.Util.Data;
-using WCell.Util.DB;
-using WCell.Util.Variables;
 using WCell.Util.Conversion;
-using System.Text;
+using WCell.Util.DB;
+using WCell.Util.Data;
 using WCell.Util.NLog;
+using WCell.Util.Variables;
 
 namespace WCell.RealmServer.Content
 {

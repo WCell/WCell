@@ -18,23 +18,19 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Castle.ActiveRecord;
-using Cell.Core;
 using NLog;
-using WCell.Constants;
 using WCell.Constants.Guilds;
-using WCell.Constants.NPCs;
 using WCell.Core;
+using WCell.RealmServer.Chat;
 using WCell.RealmServer.Database;
+using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Handlers;
+using WCell.Util;
+using WCell.Util.Collections;
+using WCell.Util.NLog;
 using WCell.Util.Synchronization;
 using WCell.Util.Threading;
-using WCell.RealmServer.Chat;
-using WCell.RealmServer.Entities;
-using WCell.Util;
-using WCell.Util.NLog;
-using WCell.Util.Collections;
 
 namespace WCell.RealmServer.Guilds
 {
