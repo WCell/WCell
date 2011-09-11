@@ -487,27 +487,32 @@ namespace WCell.Terrain.MPQ
             if (verts == null) verts = new List<Vector3>();
             if (indices == null) indices = new List<int>();
 
+            var clipper = new MeshClipper(Bounds);
+            List<Vector3> newVertices;
+            List<int> newIndices;
+		    
             // Add WMO & M2 vertices
 		    int offset;
 		    foreach (var wmo in WMOs)
-            {
+		    {
+		        clipper.ClipMesh(wmo.WmoVertices, wmo.WmoIndices, out newVertices, out newIndices);
+                
                 offset = verts.Count;
-                if (wmo.WmoVertices.Count > 0 && wmo.WmoIndices.Count > 0)
+                if (newVertices.Count > 0 && newIndices.Count > 0)
                 {
-                    //List<Vector3> newVertices;
-                    //List<int> newIndices;
-                    //var response = MeshClipper.ClipAgainst(wmo, Bounds, out newVertices, out newIndices);
-                    verts.AddRange(wmo.WmoVertices);
-                    foreach (var index in wmo.WmoIndices)
+                    verts.AddRange(newVertices);
+                    foreach (var index in newIndices)
                     {
                         indices.Add(offset + index);
                     }
                 }
 
+                clipper.ClipMesh(wmo.WmoM2Vertices, wmo.WmoM2Indices, out newVertices, out newIndices);
+
                 offset = verts.Count;
-                if (wmo.WmoM2Vertices.Count <= 0 || wmo.WmoM2Indices.Count <= 0) continue;
-                verts.AddRange(wmo.WmoM2Vertices);
-                foreach (var index in wmo.WmoM2Indices)
+                if (newVertices.Count <= 0 || newIndices.Count <= 0) continue;
+                verts.AddRange(newVertices);
+                foreach (var index in newIndices)
                 {
                     indices.Add(offset + index);
                 }
@@ -515,11 +520,13 @@ namespace WCell.Terrain.MPQ
 
 		    foreach (var m2 in M2s)
 		    {
-		        offset = verts.Count;
-		        if (m2.Vertices.Count == 0 || m2.Indices.Count == 0) continue;
+		        clipper.ClipMesh(m2.Vertices, m2.Indices, out newVertices, out newIndices);
 
-		        verts.AddRange(m2.Vertices);
-		        foreach (var index in m2.Indices)
+		        offset = verts.Count;
+		        if (newVertices.Count == 0 || newIndices.Count == 0) continue;
+
+		        verts.AddRange(newVertices);
+		        foreach (var index in newIndices)
 		        {
 		            indices.Add(offset + index);
 		        }
