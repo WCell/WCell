@@ -1,23 +1,19 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using WCell.Constants.Skills;
-using WCell.RealmServer.Database;
-using WCell.RealmServer.Skills;
-using WCell.RealmServer.Spells;
-using WCell.RealmServer.Talents;
-using WCell.Util;
-using WCell.Constants;
-using WCell.Constants.Spells;
-using WCell.Tools.Domi;
-using WCell.Util.Code;
-using WCell.Util.Toolshed;
 using NLog;
+using WCell.Constants;
+using WCell.Constants.Skills;
+using WCell.Constants.Spells;
+using WCell.RealmServer.Content;
+using WCell.RealmServer.Database;
+using WCell.RealmServer.Global;
 using WCell.RealmServer.NPCs;
 using WCell.RealmServer.RacesClasses;
-using WCell.RealmServer.Content;
-using WCell.RealmServer.Global;
+using WCell.RealmServer.Spells;
+using WCell.Tools.Domi;
+using WCell.Util;
+using WCell.Util.Code;
+using WCell.Util.Toolshed;
 
 namespace WCell.Tools.Spells
 {

@@ -1,4 +1,4 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: SkillOutput.cs
  *   copyright		: (C) The WCell Team
@@ -16,15 +16,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
-using WCell.Core;
+using System.Linq;
 using WCell.Constants;
-using WCell.RealmServer;
 using WCell.RealmServer.Skills;
-using WCell.RealmServer.Spells;
-using WCell.Tools.Domi;
 using WCell.Util.Toolshed;
 
 namespace WCell.Tools.Domi.Output

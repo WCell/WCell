@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using WCell.Constants;
-using WCell.Constants.Misc;
 using WCell.RealmServer.Lang;
 using WCell.Util.Data;
 

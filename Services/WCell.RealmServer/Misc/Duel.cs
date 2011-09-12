@@ -5,15 +5,14 @@ using WCell.Constants.GameObjects;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.Core;
-using WCell.RealmServer.Global;
-using WCell.RealmServer.Spells;
-using WCell.Util.Threading;
 using WCell.Core.Timers;
+using WCell.RealmServer.Battlegrounds;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.GameObjects.Handlers;
+using WCell.RealmServer.Global;
 using WCell.RealmServer.Handlers;
-using WCell.RealmServer.Battlegrounds;
+using WCell.Util.Threading;
 
 namespace WCell.RealmServer.Misc
 {

@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using NLog;
 using WCell.Constants;
 using WCell.Constants.Spells;
@@ -15,7 +12,6 @@ using WCell.RealmServer.Spells.Auras.Handlers;
 using WCell.RealmServer.Spells.Auras.Misc;
 using WCell.RealmServer.Spells.Effects;
 using WCell.Util;
-using WCell.Util.NLog;
 
 namespace WCell.Addons.Default.Spells.Druid
 {

@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Xml.Serialization;
-using WCell.Constants;
 using WCell.Util;
 
 namespace WCell.PacketAnalysis

@@ -9,7 +9,6 @@
 //using WCell.RealmServer.Races;
 //using WCell.RealmServer.World;
 //using WCell.Core;
-using WCell.Constants;
 
 //using System.Collections;
 

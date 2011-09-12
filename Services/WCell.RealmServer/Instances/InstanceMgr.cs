@@ -1,20 +1,18 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
+using NLog;
 using WCell.Constants;
+using WCell.Constants.World;
 using WCell.Core.Initialization;
+using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Groups;
 using WCell.RealmServer.Handlers;
-using NLog;
 using WCell.Util;
 using WCell.Util.DynamicAccess;
-using WCell.Constants.World;
 using WCell.Util.Graphics;
 using WCell.Util.Variables;
-using WCell.RealmServer.Database;
 
 namespace WCell.RealmServer.Instances
 {

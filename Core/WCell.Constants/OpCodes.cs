@@ -225,7 +225,7 @@ namespace WCell.Constants
 		SMSG_READ_ITEM_OK = 174,
 		SMSG_READ_ITEM_FAILED = 175,
 		SMSG_ITEM_COOLDOWN = 176,
-		CMSG_GAMEOBJ_USE_OLD = 177,
+        CMSG_GAMEOBJECT_USE = 177,
 		CMSG_DESTROY_ITEMS = 178,
 		SMSG_GAMEOBJECT_CUSTOM_ANIM = 179,
 		CMSG_AREATRIGGER = 180,
@@ -2102,7 +2102,7 @@ namespace WCell.Constants
 		/// byte
 		/// byte[12] (read as 12 bytes, could be vector3?)
 		/// </summary>
-		CMSG_MISSILE_UNKNOWN_1214 = 1214,
+		CMSG_UPDATE_MISSILE_POSITION = 1214,
 		/// <summary>
 		/// int64
 		/// byte

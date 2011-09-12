@@ -1,17 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using WCell.Constants.Spells;
 using WCell.Core.Paths;
-using WCell.Core.Terrain.Paths;
 using WCell.RealmServer.AI;
+using WCell.RealmServer.AI.Actions;
 using WCell.RealmServer.AI.Actions.Movement;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.NPCs;
 using WCell.RealmServer.NPCs.Spawns;
 using WCell.Util;
-using WCell.RealmServer.AI.Actions;
-using WCell.Constants.Spells;
 using WCell.Util.Graphics;
 
 namespace WCell.RealmServer.Entities

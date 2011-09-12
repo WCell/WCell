@@ -1,6 +1,3 @@
-using WCell.RealmServer.Entities;
-using System;
-
 namespace WCell.RealmServer.Gossips
 {
 	public delegate void GossipActionHandler(GossipConversation convo);

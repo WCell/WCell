@@ -1,11 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using WCell.Constants;
 using WCell.RealmServer.Entities;
-using WCell.RealmServer.Misc;
-using WCell.RealmServer.Spells.Auras.Misc;
 
 namespace WCell.RealmServer.Spells.Auras.Mod
 {

@@ -23,13 +23,11 @@ using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.Core;
 using WCell.Core.DBC;
-using WCell.Core.Initialization;
 using WCell.Core.Network;
 using WCell.RealmServer.Chat;
 using WCell.RealmServer.Network;
 using WCell.RealmServer.Spells;
 using WCell.Util;
-using WCell.RealmServer.Content;
 
 namespace WCell.RealmServer.Skills
 {

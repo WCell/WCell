@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using WCell.RealmServer.AI.Groups;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Spawns;
-using WCell.Util;
 
 namespace WCell.RealmServer.NPCs.Spawns
 {

@@ -1,8 +1,5 @@
 using System.Collections.Generic;
-using System.Linq;
 using WCell.Constants.Items;
-using WCell.RealmServer.Database;
-using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.NPCs.Auctioneer 
 {

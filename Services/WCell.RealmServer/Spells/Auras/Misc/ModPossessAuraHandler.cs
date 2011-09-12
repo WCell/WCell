@@ -1,16 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using WCell.Constants.Pets;
-using WCell.Core;
-using WCell.RealmServer.AI;
+﻿using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
-using WCell.Constants.Spells;
-using WCell.RealmServer.Handlers;
-using WCell.Constants;
-using WCell.Constants.Updates;
-using NLog;
 
 namespace WCell.RealmServer.Spells.Auras.Misc
 {

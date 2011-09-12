@@ -15,13 +15,12 @@
  *************************************************************************/
 
 using System.Collections.Generic;
-using WCell.Util.Collections;
 using WCell.Constants;
 using WCell.Core;
-using WCell.Core.Initialization;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Interaction;
+using WCell.Util.Collections;
 
 namespace WCell.RealmServer.Groups
 {

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using WCell.Constants.GameObjects;
 using WCell.Constants.Skills;
 using WCell.RealmServer.Database;

@@ -17,19 +17,17 @@
 using System.Linq;
 using WCell.Constants;
 using WCell.Constants.NPCs;
-using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.Constants.World;
-using WCell.RealmServer.AI.Brains;
+using WCell.RealmServer.AI;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Global;
 using WCell.RealmServer.Instances;
 using WCell.RealmServer.NPCs;
 using WCell.RealmServer.NPCs.Spawns;
-using WCell.Util.Commands;
-using WCell.Util;
-using WCell.RealmServer.AI;
 using WCell.RealmServer.NPCs.Vehicles;
-using WCell.RealmServer.Global;
+using WCell.Util;
+using WCell.Util.Commands;
 
 namespace WCell.RealmServer.Commands
 {

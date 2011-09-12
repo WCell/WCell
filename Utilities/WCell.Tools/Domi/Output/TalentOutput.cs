@@ -14,15 +14,9 @@
  *
  *************************************************************************/
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
-using WCell.Core;
 using WCell.Constants;
-using WCell.RealmServer.Entities;
-using WCell.RealmServer.Spells;
+using WCell.Core;
 using WCell.RealmServer.Talents;
 
 namespace WCell.Tools.Domi.Output

@@ -15,16 +15,14 @@
  *************************************************************************/
 
 using System;
-using System.Threading;
+using System.ServiceModel;
 using Cell.Core;
-using WCell.AuthServer.Accounts;
 using WCell.AuthServer.Network;
 using WCell.Constants;
 using WCell.Constants.Login;
 using WCell.Constants.Realm;
 using WCell.Core;
 using WCell.Core.Network;
-using System.ServiceModel;
 
 namespace WCell.AuthServer
 {

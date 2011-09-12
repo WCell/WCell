@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using NLog;
 using WCell.Constants;
 using WCell.PacketAnalysis.Updates;
-using WCell.RealmServer;
-using NLog;
 
 namespace WCell.PacketAnalysis.Logs
 {

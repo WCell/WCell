@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Castle.ActiveRecord;
 using Castle.ActiveRecord.Queries;
@@ -26,10 +25,8 @@ using WCell.RealmServer.NPCs;
 using WCell.RealmServer.NPCs.Pets;
 using WCell.RealmServer.RacesClasses;
 using WCell.RealmServer.Talents;
-using WCell.Util;
 using WCell.Util.NLog;
 using WCell.Util.Threading;
-
 using Alias = System.Collections.Generic.KeyValuePair<string, string>;
 
 

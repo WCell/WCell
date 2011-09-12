@@ -1,7 +1,4 @@
-﻿using WCell.RealmServer.Entities;
-using WCell.Constants.Updates;
-
-namespace WCell.RealmServer.Spells.Auras.Misc
+﻿namespace WCell.RealmServer.Spells.Auras.Misc
 {
 	public class MirrorImageHandler : AuraEffectHandler
 	{

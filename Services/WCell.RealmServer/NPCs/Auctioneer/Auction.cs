@@ -4,7 +4,6 @@ using Castle.ActiveRecord;
 using WCell.Constants;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Mail;
-using WCell.RealmServer.NPCs.Auctioneer;
 
 namespace WCell.RealmServer.NPCs.Auctioneer
 {

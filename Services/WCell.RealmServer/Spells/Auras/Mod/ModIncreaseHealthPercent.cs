@@ -14,9 +14,6 @@
  *
  *************************************************************************/
 
-using WCell.Constants;
-using WCell.RealmServer.Modifiers;
-
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
 	public class ModIncreaseHealthPercentHandler : AuraEffectHandler

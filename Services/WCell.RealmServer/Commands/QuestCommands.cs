@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using WCell.Constants.Quests;
 using WCell.Constants.Updates;
@@ -6,8 +7,6 @@ using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Quests;
 using WCell.Util;
 using WCell.Util.Commands;
-using WCell.Intercommunication.DataTypes;
-using System;
 
 namespace WCell.RealmServer.Commands
 {

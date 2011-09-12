@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using WCell.Util.Data;
-using WCell.Constants.Spells;
 using WCell.Constants;
+using WCell.Constants.Spells;
 using WCell.Util;
-using WCell.RealmServer.Misc;
+using WCell.Util.Data;
 
 namespace WCell.RealmServer.Spells
 {

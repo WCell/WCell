@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using WCell.Constants;
 using WCell.Constants.ArenaTeams;
+using WCell.Constants.Guilds;
 using WCell.Constants.Items;
 using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
@@ -9,17 +10,15 @@ using WCell.Constants.World;
 using WCell.Core;
 using WCell.Core.Network;
 using WCell.RealmServer.Battlegrounds.Arenas;
-using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Guilds;
 using WCell.RealmServer.Items;
-using WCell.RealmServer.Network;
 using WCell.RealmServer.NPCs;
 using WCell.RealmServer.NPCs.Armorer;
 using WCell.RealmServer.NPCs.Trainers;
 using WCell.RealmServer.NPCs.Vendors;
-using WCell.Constants.Guilds;
+using WCell.RealmServer.Network;
 
 namespace WCell.RealmServer.Handlers
 {

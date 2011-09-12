@@ -1,23 +1,18 @@
 using System;
+using System.Collections.Generic;
 using NLog;
+using WCell.Constants;
+using WCell.Constants.NPCs;
 using WCell.Core;
 using WCell.Core.Initialization;
-using WCell.RealmServer.Content;
-using WCell.RealmServer.Global;
-using WCell.RealmServer.Lang;
-using WCell.Util;
-using WCell.Util.Lang;
-using WCell.Util.Variables;
-using WCell.RealmServer.NPCs;
-using WCell.Constants.NPCs;
-using WCell.Constants;
-using WCell.RealmServer.Entities;
-using WCell.RealmServer.Taxi;
-using WCell.RealmServer.NPCs.Pets;
-using System.Collections;
-using System.Collections.Generic;
-using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Battlegrounds;
+using WCell.RealmServer.Content;
+using WCell.RealmServer.Entities;
+using WCell.RealmServer.Global;
+using WCell.RealmServer.Handlers;
+using WCell.RealmServer.Lang;
+using WCell.RealmServer.NPCs;
+using WCell.RealmServer.NPCs.Pets;
 
 namespace WCell.RealmServer.Gossips
 {

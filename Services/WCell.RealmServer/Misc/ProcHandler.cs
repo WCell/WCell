@@ -1,10 +1,8 @@
 using System;
+using WCell.Constants;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Spells;
-using WCell.Constants;
-using WCell.Util;
-
 using WeakRef = WCell.Util.WeakReference<WCell.RealmServer.Entities.Unit>;
 
 namespace WCell.RealmServer.Misc

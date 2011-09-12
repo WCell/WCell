@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using WCell.Constants.Misc;
-using WCell.Core.Network;
 using System.Xml.Serialization;
-using WCell.Core;
 using WCell.Constants;
+using WCell.Constants.Misc;
 using WCell.Constants.Spells;
+using WCell.Core.Network;
 using WCell.Util;
 
 namespace WCell.PacketAnalysis.Xml

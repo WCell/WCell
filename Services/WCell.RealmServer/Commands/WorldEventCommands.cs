@@ -3,7 +3,6 @@ using System.Linq;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Global;
 using WCell.Util.Commands;
-using WCell.Intercommunication.DataTypes;
 
 namespace WCell.RealmServer.Commands
 {

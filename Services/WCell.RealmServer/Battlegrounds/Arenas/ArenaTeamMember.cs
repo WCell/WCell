@@ -1,8 +1,4 @@
-﻿using System;
-using WCell.Constants;
-using WCell.Constants.ArenaTeams;
-using WCell.RealmServer.Database;
-using WCell.Util.Threading;
+﻿using WCell.Constants;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
 using WCell.Util;

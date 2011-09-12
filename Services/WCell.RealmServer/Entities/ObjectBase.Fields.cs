@@ -19,7 +19,6 @@ using WCell.Constants.Looting;
 using WCell.Constants.Updates;
 using WCell.Core;
 using WCell.RealmServer.Looting;
-using WCell.RealmServer.Misc;
 using WCell.RealmServer.Modifiers;
 
 namespace WCell.RealmServer.Entities

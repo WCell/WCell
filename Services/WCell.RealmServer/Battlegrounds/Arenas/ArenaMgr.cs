@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
 using WCell.Constants.ArenaTeams;
-using WCell.Core;
 using WCell.Core.Database;
-using WCell.Core.Initialization;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.NPCs;
 using WCell.Util.Collections;

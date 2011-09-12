@@ -1,16 +1,14 @@
-using System;
+using System.Collections.Generic;
 using NLog;
-using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Constants.Spells;
 using WCell.Core;
 using WCell.Core.DBC;
+using WCell.RealmServer.Content;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Modifiers;
 using WCell.RealmServer.Spells;
 using WCell.Util.Variables;
-using WCell.RealmServer.Content;
-using System.Collections.Generic;
 
 namespace WCell.RealmServer.Items.Enchanting
 {

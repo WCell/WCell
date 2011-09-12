@@ -1,4 +1,4 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: TalentHandler.cs
  *   copyright		: (C) The WCell Team
@@ -14,13 +14,10 @@
  *
  *************************************************************************/
 
-using System.Collections.Generic;
 using System.IO;
-using System.Xml.Serialization;
 using WCell.Constants;
 using WCell.Constants.Talents;
 using WCell.Core.Network;
-using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Network;
 using WCell.RealmServer.Talents;

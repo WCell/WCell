@@ -1,14 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Castle.ActiveRecord;
-using WCell.Constants;
-using WCell.Constants.NPCs;
-using WCell.Constants.Pets;
-using WCell.RealmServer.Entities;
-using WCell.Core;
 using WCell.RealmServer.Database;
+using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.NPCs.Pets
 {

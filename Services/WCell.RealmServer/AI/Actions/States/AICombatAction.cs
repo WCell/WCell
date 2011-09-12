@@ -1,11 +1,8 @@
-using System;
 using NLog;
 using WCell.Constants.NPCs;
 using WCell.Constants.Updates;
-using WCell.RealmServer.AI.Brains;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.NPCs;
-using WCell.Util;
 
 namespace WCell.RealmServer.AI.Actions.States
 {

@@ -15,18 +15,17 @@
  *************************************************************************/
 
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using NLog;
 using WCell.Constants;
+using WCell.Constants.Items;
 using WCell.Constants.Skills;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Entities;
-using WCell.RealmServer.Items;
 using WCell.RealmServer.Formulas;
-using WCell.Util;
-using WCell.Constants.Items;
 using WCell.RealmServer.Handlers;
+using WCell.RealmServer.Items;
+using WCell.Util;
 
 namespace WCell.RealmServer.Skills
 {

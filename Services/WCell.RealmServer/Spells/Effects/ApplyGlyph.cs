@@ -1,7 +1,5 @@
-﻿using WCell.RealmServer.Entities;
+﻿using WCell.Constants.Spells;
 using WCell.RealmServer.Talents;
-using WCell.RealmServer.Spells;
-using WCell.Constants.Spells;
 
 namespace WCell.RealmServer.Spells.Effects
 {

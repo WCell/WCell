@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using WCell.Constants.Items;
+using WCell.RealmServer.Content;
 using WCell.RealmServer.Items.Enchanting;
 using WCell.Util;
 using WCell.Util.Data;
-using WCell.RealmServer.Content;
 
 namespace WCell.RealmServer.Items
 {

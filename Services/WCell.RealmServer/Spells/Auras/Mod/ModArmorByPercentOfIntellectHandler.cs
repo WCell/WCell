@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace WCell.RealmServer.Spells.Auras.Mod
+﻿namespace WCell.RealmServer.Spells.Auras.Mod
 {
     class ModArmorByPercentOfIntellectHandler : AuraEffectHandler
     {

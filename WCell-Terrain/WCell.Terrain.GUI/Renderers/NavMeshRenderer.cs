@@ -57,7 +57,7 @@ namespace WCell.Terrain.GUI.Renderers
 	    private TerrainTile tile;
 		private RasterizerState rasterState;
         //private readonly BlendState alphaBlendState = BlendState.Additive;
-        readonly BlendState alphaBlendState = new BlendState()
+        readonly BlendState alphaBlendState = new BlendState
         {
             AlphaBlendFunction = BlendFunction.Add,
             AlphaSourceBlend = Blend.SourceAlpha,

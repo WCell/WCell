@@ -1,4 +1,3 @@
-using WCell.Constants;
 using WCell.Constants.Items;
 
 namespace WCell.RealmServer.Items

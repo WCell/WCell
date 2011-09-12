@@ -1,15 +1,15 @@
 using WCell.Constants.Factions;
+using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
 using WCell.Core.Initialization;
 using WCell.RealmServer.AI;
 using WCell.RealmServer.AI.Actions.States;
+using WCell.RealmServer.AI.Brains;
+using WCell.RealmServer.Entities;
 using WCell.RealmServer.NPCs;
-using WCell.Constants.NPCs;
+using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Targeting;
 using WCell.Util.Graphics;
-using WCell.RealmServer.AI.Brains;
-using WCell.RealmServer.Spells;
-using WCell.RealmServer.Entities;
 
 namespace WCell.Addons.Default.NPCs
 {

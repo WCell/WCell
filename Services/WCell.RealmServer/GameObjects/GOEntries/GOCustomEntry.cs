@@ -1,12 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using WCell.Constants.GameObjects;
+using WCell.Constants.Updates;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Spells;
-using WCell.Constants.Updates;
-using WCell.Util.Variables;
 using WCell.Util.Data;
 
 namespace WCell.RealmServer.GameObjects.GOEntries

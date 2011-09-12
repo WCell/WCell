@@ -1,11 +1,8 @@
-﻿using WCell.RealmServer.NPCs;
-using WCell.Addons.Default.Lang;
-using WCell.Core.Initialization;
-using WCell.Constants;
-using WCell.RealmServer.Gossips;
-using WCell.RealmServer.Handlers;
-using WCell.RealmServer.Spells;
+﻿using WCell.Addons.Default.Lang;
 using WCell.Constants.Spells;
+using WCell.Core.Initialization;
+using WCell.RealmServer.Gossips;
+using WCell.RealmServer.NPCs;
 
 namespace WCell.Addons.Default.Gossip.World_Gossip
 {

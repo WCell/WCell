@@ -16,7 +16,6 @@
 
 using System;
 using WCell.Constants.Spells;
-using WCell.RealmServer.Entities;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Spells.Auras.Misc;
 

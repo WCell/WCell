@@ -25,16 +25,16 @@ using WCell.Core;
 using WCell.Core.DBC;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Battlegrounds;
-using WCell.RealmServer.Lang;
-using WCell.Util.Graphics;
-using WCell.Util.Threading;
 using WCell.RealmServer.Chat;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Formulas;
-using WCell.Util;
-using WCell.Util.Variables;
 using WCell.RealmServer.Instances;
+using WCell.RealmServer.Lang;
+using WCell.Util;
+using WCell.Util.Graphics;
+using WCell.Util.Threading;
+using WCell.Util.Variables;
 
 namespace WCell.RealmServer.Global
 {

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Xml;
 using NLog;
 using WCell.Constants.NPCs;
 using WCell.Constants.Spells;

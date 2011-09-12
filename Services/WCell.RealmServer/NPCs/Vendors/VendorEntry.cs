@@ -4,7 +4,6 @@ using NLog;
 using WCell.Constants.Achievements;
 using WCell.Constants.Items;
 using WCell.Constants.Spells;
-using WCell.Core;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Items;

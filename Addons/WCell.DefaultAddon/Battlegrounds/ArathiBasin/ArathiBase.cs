@@ -1,16 +1,12 @@
+using WCell.Addons.Default.Lang;
 using WCell.Constants;
 using WCell.Constants.Battlegrounds;
-using WCell.Constants.Chat;
-using WCell.Constants.Misc;
 using WCell.Constants.World;
 using WCell.Core.Timers;
-using WCell.Addons.Default.Lang;
-using WCell.RealmServer.Chat;
 using WCell.RealmServer.Entities;
-using WCell.RealmServer.GameObjects;
+using WCell.RealmServer.GameObjects.Spawns;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Lang;
-using WCell.RealmServer.GameObjects.Spawns;
 using WCell.Util.Variables;
 
 namespace WCell.Addons.Default.Battlegrounds.ArathiBasin

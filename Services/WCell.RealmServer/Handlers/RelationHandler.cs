@@ -4,7 +4,6 @@ using WCell.Core;
 using WCell.Core.Network;
 using WCell.RealmServer.Interaction;
 using WCell.RealmServer.Network;
-using WCell.RealmServer.Misc;
 
 namespace WCell.RealmServer.Handlers
 {

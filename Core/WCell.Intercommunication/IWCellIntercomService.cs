@@ -14,9 +14,9 @@
  *
  *************************************************************************/
 
+using System;
 using System.CodeDom.Compiler;
 using System.ServiceModel;
-using System;
 using WCell.Constants;
 using WCell.Constants.Login;
 using WCell.Constants.Realm;

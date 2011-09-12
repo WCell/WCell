@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
 using WCell.Constants;
 using WCell.Constants.Items;
-using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Handlers;

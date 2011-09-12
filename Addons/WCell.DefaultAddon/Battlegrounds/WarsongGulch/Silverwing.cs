@@ -1,13 +1,7 @@
 using System;
 using WCell.Constants;
-using WCell.Constants.GameObjects;
 using WCell.Constants.Spells;
 using WCell.Constants.World;
-using WCell.Core.Timers;
-using WCell.RealmServer.Battlegrounds;
-using WCell.RealmServer.Entities;
-using WCell.RealmServer.GameObjects;
-using WCell.RealmServer.Global;
 
 namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 {

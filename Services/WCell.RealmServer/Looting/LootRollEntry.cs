@@ -1,5 +1,4 @@
 using System;
-using WCell.Constants;
 using WCell.Constants.Looting;
 
 namespace WCell.RealmServer.Looting

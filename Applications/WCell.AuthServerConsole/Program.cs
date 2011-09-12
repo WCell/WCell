@@ -1,4 +1,4 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: Program.cs
  *   copyright		: (C) The WCell Team
@@ -14,13 +14,9 @@
  *
  *************************************************************************/
 
-using System.Threading;
-using Cell.Core;
-using NLog;
-using System.Runtime;
-using WCell.AuthServer;
-using System.Diagnostics;
 using System;
+using System.Runtime;
+using NLog;
 
 namespace WCell.AuthServerConsole
 {

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using WCell.RealmServer.Editor.Figurines;
 using WCell.RealmServer.Editor.Menus;

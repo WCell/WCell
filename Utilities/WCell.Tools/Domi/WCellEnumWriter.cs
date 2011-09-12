@@ -22,11 +22,12 @@ using System.Text.RegularExpressions;
 using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Constants.NPCs;
-using WCell.Constants.Skills;
 using WCell.Constants.Spells;
 using WCell.Core;
 using WCell.Core.DBC;
+using WCell.RealmServer;
 using WCell.RealmServer.AreaTriggers;
+using WCell.RealmServer.Content;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Factions;
 using WCell.RealmServer.GameObjects;
@@ -40,11 +41,8 @@ using WCell.RealmServer.Talents;
 using WCell.Tools.Spells;
 using WCell.Util;
 using WCell.Util.Code;
-using WCell.Util.Toolshed;
-using WCell.RealmServer.Content;
-using WCell.RealmServer;
 using WCell.Util.NLog;
-
+using WCell.Util.Toolshed;
 
 namespace WCell.Tools.Domi
 {

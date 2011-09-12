@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using WCell.RealmServer.AI.Brains;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.NPCs;
 

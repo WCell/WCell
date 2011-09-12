@@ -1,4 +1,4 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: ServerBase.cs
  *   copyright		: (C) The WCell Team
@@ -19,12 +19,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Reflection;
+using Cell.Core.Exceptions;
 using Cell.Core.Localization;
 using NLog;
-using System.Net.NetworkInformation;
-using Cell.Core.Exceptions;
 
 namespace Cell.Core
 {

@@ -19,18 +19,17 @@ using System.Collections.Generic;
 using System.Reflection;
 using WCell.Constants;
 using WCell.Constants.Factions;
+using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.Constants.World;
 using WCell.Core;
+using WCell.Intercommunication.DataTypes;
+using WCell.RealmServer.Entities;
+using WCell.RealmServer.Global;
 using WCell.RealmServer.Lang;
-using WCell.RealmServer.Privileges;
 using WCell.RealmServer.Stats;
 using WCell.Util;
 using WCell.Util.Commands;
-using WCell.Intercommunication.DataTypes;
-using WCell.Constants.Spells;
-using WCell.RealmServer.Entities;
-using WCell.RealmServer.Global;
 using WCell.Util.Threading;
 
 namespace WCell.RealmServer.Commands

@@ -3,7 +3,6 @@ using WCell.Constants.GameObjects;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Factions;
 using WCell.RealmServer.Looting;
-using System;
 
 namespace WCell.RealmServer.GameObjects
 {

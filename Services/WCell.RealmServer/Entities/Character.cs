@@ -1,9 +1,9 @@
-/*************************************************************************
+ï»¿/*************************************************************************
  *
  *   file		: Character.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
- *   last changed	: $LastChangedDate: 2010-02-20 06:16:32 +0100 (lï¿? 20 feb 2010) $
+ *   last changed	: $LastChangedDate: 2010-02-20 06:16:32 +0100 (lï¿½? 20 feb 2010) $
 
  *   revision		: $Rev: 1257 $
  *
@@ -16,7 +16,6 @@
 
 using System;
 using System.Collections.Generic;
-using NLog;
 using WCell.Constants;
 using WCell.Constants.Achievements;
 using WCell.Constants.Factions;
@@ -25,7 +24,8 @@ using WCell.Constants.Misc;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.Constants.World;
-using WCell.RealmServer.Achievements;
+using WCell.Core.Timers;
+using WCell.RealmServer.Battlegrounds;
 using WCell.RealmServer.Chat;
 using WCell.RealmServer.Commands;
 using WCell.RealmServer.Factions;
@@ -35,7 +35,6 @@ using WCell.RealmServer.Groups;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Help.Tickets;
 using WCell.RealmServer.Instances;
-using WCell.RealmServer.Interaction;
 using WCell.RealmServer.Items;
 using WCell.RealmServer.Lang;
 using WCell.RealmServer.Looting;
@@ -45,16 +44,13 @@ using WCell.RealmServer.NPCs;
 using WCell.RealmServer.NPCs.Pets;
 using WCell.RealmServer.NPCs.Spawns;
 using WCell.RealmServer.Quests;
+using WCell.RealmServer.RacesClasses;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Talents;
 using WCell.RealmServer.Taxi;
 using WCell.Util;
 using WCell.Util.Commands;
-using WCell.RealmServer.Battlegrounds;
 using WCell.Util.Graphics;
-using WCell.RealmServer.Spells.Auras;
-using WCell.Core.Timers;
-using WCell.RealmServer.RacesClasses;
 
 namespace WCell.RealmServer.Entities
 {

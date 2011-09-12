@@ -1,5 +1,4 @@
 ﻿using WCell.Constants.ArenaTeams;
-using WCell.RealmServer.Database;
 
 namespace WCell.RealmServer.Battlegrounds.Arenas
 {

@@ -1,9 +1,7 @@
-using System;
 using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Constants.Misc;
 using WCell.Constants.Spells;
-using WCell.Core;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Items;
 
@@ -269,6 +267,7 @@ namespace WCell.RealmServer.Modifiers
 		{
 			owner.ModCombatRating(CombatRating.MeleeHitChance, value);
 			owner.ModCombatRating(CombatRating.RangedHitChance, value);
+			owner.ModCombatRating(CombatRating.SpellHitChance, value);
 		}
 
 		static void AddCriticalStrikeRating(Character owner, int value)

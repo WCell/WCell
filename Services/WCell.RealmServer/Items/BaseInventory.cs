@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using NLog;
 using WCell.Constants.Items;
 using WCell.Constants.Updates;

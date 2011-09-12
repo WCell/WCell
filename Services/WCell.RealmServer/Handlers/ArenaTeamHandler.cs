@@ -1,14 +1,10 @@
-﻿using System;
-using NLog;
+﻿using NLog;
 using WCell.Constants;
 using WCell.Constants.ArenaTeams;
-using WCell.Core;
 using WCell.Core.Network;
-using WCell.RealmServer.Database;
-using WCell.RealmServer.Network;
-using WCell.Util;
 using WCell.RealmServer.Battlegrounds.Arenas;
 using WCell.RealmServer.Global;
+using WCell.RealmServer.Network;
 
 namespace WCell.RealmServer.Handlers
 {

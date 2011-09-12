@@ -1,12 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using NLog;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
-using WCell.RealmServer.Handlers;
 using WCell.RealmServer.NPCs.Vehicles;
-using NLog;
 
 namespace WCell.RealmServer.Spells.Auras.Misc
 {

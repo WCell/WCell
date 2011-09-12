@@ -1,6 +1,5 @@
 using System;
 using WCell.Constants;
-using WCell.Constants.Misc;
 using WCell.Constants.Spells;
 using WCell.Core.Timers;
 using WCell.RealmServer.Formulas;
@@ -9,11 +8,9 @@ using WCell.RealmServer.Items;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Modifiers;
 using WCell.RealmServer.NPCs;
-using WCell.RealmServer.RacesClasses;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Effects;
 using WCell.Util;
-using WCell.Util.Variables;
 using WCell.Util.NLog;
 
 namespace WCell.RealmServer.Entities
@@ -526,35 +523,6 @@ namespace WCell.RealmServer.Entities
 			//Your average resistance can still be anywhere betweeen 0% and 75%. If your average resistance is maxed out, then there's a really good chance of having 75% of the spell's damage be resisted. 
 			//There's also a fairly good chance of having 100% of the spell's damage be resisted, a slightly lower chance of 50% of its damage being resisted, a small chances of only 25%, or even 0% of the damage being resisted. 
 			//It's a weighted average. Visualize it as a bell curve around your average resistance.
-		}
-
-		/// <summary>
-		/// Calculates the chance to hit the given defender with a spell of the given school
-		/// </summary>
-		/// <returns>The effective hitchance</returns>
-		public float CalcSpellHitChance(Unit defender, DamageSchool dmgSchool, float resistChance)
-		{
-			float res = GetResistance(dmgSchool);
-
-			if (this is Character && defender is Character) //pvp has diffrent values compared to pve
-			{
-				res += (float)(99.24f / (1 + 0.0281f * Math.Log((0.516f * (defender.Level - Level)), MathUtil.E)));
-			}
-			else
-			{
-				res += (float)(98.77f / (1 + 0.0215f * Math.Log((0.6862f * (defender.Level - Level)), MathUtil.E)));
-			}
-
-			res *= resistChance;
-
-			res -= defender.GetAttackerSpellHitChanceMod(dmgSchool);
-
-			if (res < 1)
-			{
-				res = 1;
-			}
-
-			return res;
 		}
 
 		public float GetBaseCritChance(DamageSchool dmgSchool, Spell spell, IWeapon weapon)

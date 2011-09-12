@@ -14,17 +14,12 @@
  *
  *************************************************************************/
 
+using NLog;
 using WCell.Constants.NPCs;
-using WCell.Constants.Pets;
-using WCell.Constants.Skills;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
-using WCell.RealmServer.Entities;
-using WCell.RealmServer.Handlers;
 using WCell.RealmServer.NPCs;
 using WCell.Util.Graphics;
-using NLog;
-
 
 namespace WCell.RealmServer.Spells.Effects
 {

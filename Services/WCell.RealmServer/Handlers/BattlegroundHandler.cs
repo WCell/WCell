@@ -1,10 +1,10 @@
 using System.Collections.Generic;
-using WCell.Core.Network;
 using WCell.Constants;
+using WCell.Constants.NPCs;
+using WCell.Core.Network;
 using WCell.RealmServer.Battlegrounds;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Network;
-using WCell.Constants.NPCs;
 
 namespace WCell.RealmServer.Handlers
 {

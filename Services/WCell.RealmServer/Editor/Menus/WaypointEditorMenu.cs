@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using WCell.RealmServer.Editor.Figurines;
+﻿using WCell.RealmServer.Editor.Figurines;
 using WCell.RealmServer.Gossips;
-using WCell.RealmServer.NPCs;
 using WCell.RealmServer.NPCs.Spawns;
 
 namespace WCell.RealmServer.Editor.Menus

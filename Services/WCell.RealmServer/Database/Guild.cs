@@ -1,14 +1,6 @@
 using System;
-using System.Collections.Generic;
 using Castle.ActiveRecord;
-using Castle.ActiveRecord.Queries;
-using WCell.Constants;
-using WCell.Core.Initialization;
-using WCell.Util.Threading;
 using WCell.RealmServer.Database;
-using WCell.RealmServer.Entities;
-using WCell.RealmServer.Global;
-using WCell.Util.NLog;
 
 namespace WCell.RealmServer.Guilds
 {

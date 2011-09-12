@@ -1,5 +1,3 @@
-using NLog;
-
 namespace WCell.RealmServer.GameObjects.GOEntries
 {
     public class GODungeonDifficultyEntry : GOEntry
