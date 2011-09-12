@@ -93,8 +93,9 @@ namespace WCell.Terrain
 
         public static void SetAllElementsTo(this List<int> list, int to)
         {
+			var count = list.Count;
             list.Clear();
-            for (var i = 0; i < list.Count; i++)
+            for (var i = 0; i < count; i++)
             {
                 list.Add(to);
             }
