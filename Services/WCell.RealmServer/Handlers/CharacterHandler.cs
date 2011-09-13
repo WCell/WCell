@@ -1365,7 +1365,7 @@ namespace WCell.RealmServer.Handlers
 			}
 		}
 
-		public static void SendProfiency(IPacketReceiver client, ItemClass itemClass, ItemSubClassMask value)
+		public static void SendProficiency(IPacketReceiver client, ItemClass itemClass, ItemSubClassMask value)
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_SET_PROFICIENCY, 5))
 			{

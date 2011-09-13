@@ -393,15 +393,7 @@ namespace WCell.RealmServer.Skills
 			{
 				m_owner.KnownLanguages.Add(skill.SkillLine.Language);
 			}
-			else if (skill.SkillLine.Category == SkillCategory.ArmorProficiency)
-			{
-				CharacterHandler.SendProfiency(m_owner, ItemClass.Armor, ArmorProficiency);
-			}
-			else if (skill.SkillLine.Category == SkillCategory.WeaponProficiency)
-			{
-				CharacterHandler.SendProfiency(m_owner, ItemClass.Weapon, WeaponProficiency);
-			}
-
+			
 			if (isNew)
 			{
 				skill.Push();
