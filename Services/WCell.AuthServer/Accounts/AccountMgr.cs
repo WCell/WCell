@@ -51,7 +51,23 @@ namespace WCell.AuthServer.Accounts
 		/// Interval in milliseconds between reloading the account cache from the database
 		/// if caching is enabled. Default is 180000ms == 3 minutes.
 		/// </summary>
-		public static int AccountReloadIntervalMs = 180000;
+		public static int AccountReloadIntervalMs
+		{
+			set
+			{
+				_accountReloadIntervalMs = value;
+
+				if (Instance._accountsReloadTimer == null)
+					return;
+
+				Instance._accountsReloadTimer.IntervalMillis = value;
+				Instance._accountsReloadTimer.Start();
+			}
+			
+			get { return _accountReloadIntervalMs; }
+		}
+
+		private static int _accountReloadIntervalMs = 180000;
 
 		private TimerEntry _accountsReloadTimer;
 
