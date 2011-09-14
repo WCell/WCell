@@ -26,16 +26,6 @@ namespace WCell.RealmServer.AI.Actions.States
 			base(owner, AIMovementType.ForwardThenBack, owner.Waypoints)
 		{
 			MinimumRoamSpellCastDelay = DefaultRoamSpellCastDelay;
-			var spawn = owner.SpawnPoint;
-			if (spawn != null)
-			{
-				var spawnEntry = spawn.SpawnEntry;
-
-				if (spawnEntry != null)
-				{
-					m_WPmovementType = spawnEntry.MoveType;
-				}
-			}
 		}
 
 		public override void Start()

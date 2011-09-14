@@ -481,7 +481,10 @@ namespace WCell.RealmServer.NPCs
 		#endregion
 
 		#region Movement & Speed
-		public MovementType MovementType;
+		//TODO: Rename to something more meaningful
+		public AIMotionGenerationType MovementType;
+
+		//public MovementType MovementType;
 
 		/// <summary>
 		/// The factor to be applied to the default speed for this kind of NPC
@@ -494,11 +497,6 @@ namespace WCell.RealmServer.NPCs
 
 		public float FlySpeed;
 
-		/// <summary>
-		/// Whether the spawns from this entry should roam on randomly generated WPs
-		/// </summary>
-		[NotPersistent]
-		public bool MovesRandomly = true;
 		#endregion
 
 		#region Loot
@@ -847,8 +845,6 @@ namespace WCell.RealmServer.NPCs
 
 			AggroBaseRange = AggroBaseRangeDefault;
 
-			MovesRandomly = NPCFlags == NPCFlags.None;
-
 			NPCId = (NPCId)Id;
 
 			DefaultDecayDelayMillis = _DefaultDecayDelayMillis;
@@ -863,7 +859,6 @@ namespace WCell.RealmServer.NPCs
 			{
 				IsEventTrigger = true;
 				IsIdle = false;
-				MovesRandomly = false;
 			}
 
 			if (Resistances == null)

@@ -19,6 +19,7 @@
     <Flat Name="EquipmentId" Column="equipment_id" />
     <Flat Name="IsDead" Column="DeathState" />
     <Flat Name="RespawnSeconds" Column="spawntimesecs" />
+    <Flat Name="RespawnRadius" Column="spawndist" />
 
     <Nested Name="AddonData">
       <Flat Name="AuraIdStr" Table="creature_addon" Column="auras" />
@@ -42,6 +43,6 @@
     curhealth
     curmana
     currenwaypoint
-    spawndist
+    
 -->
 </DataHolders>
