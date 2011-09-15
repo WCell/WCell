@@ -170,6 +170,7 @@
     <Compile Include="Items\InventorySlotType.cs" />
     <Compile Include="Items\ItemFlags.cs" />
     <Compile Include="Items\ItemSubClass.cs" />
+    <Compile Include="LFG\LFG.cs" />
     <Compile Include="Login\Extensions.cs" />
     <Compile Include="Login\Login.cs" />
     <Compile Include="Looting\LootingMiscEnums.cs" />
