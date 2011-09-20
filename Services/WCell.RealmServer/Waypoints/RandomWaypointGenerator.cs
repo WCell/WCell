@@ -28,9 +28,10 @@ namespace WCell.RealmServer.Waypoints
 
 		public Vector3[] GenerateWaypoints(ITerrain terrain, Vector3 lastPos, float radius)
 		{
-			var count = (int)(Math.Min(1.0f, radius) / 5) * 2;
+			var area = radius*radius;
+			var count = (int)(Math.Min(1.0f, area) / 5) * 2;
 			count = Math.Max(3, count);
-			return GenerateWaypoints(terrain, lastPos, 1, radius, count);
+			return GenerateWaypoints(terrain, lastPos, radius, count);
 		}
 
 		public Vector3[] GenerateWaypoints(ITerrain terrain, Vector3 lastPos, int min, int max, float minDist, float maxDist)
@@ -46,6 +47,24 @@ namespace WCell.RealmServer.Waypoints
 
 			var count = Utility.Random(min, max);
 			return GenerateWaypoints(terrain, lastPos, minDist, maxDist, count);
+		}
+
+		public Vector3[] GenerateWaypoints(ITerrain terrain, Vector3 centrePos, float radius, int count)
+		{
+			var wps = new Vector3[count];
+			for (var i = 0; i < count; i++)
+			{
+				var angle = Utility.RandomFloat() * MathUtil.TwoPI;
+				var dist = (float)Math.Sqrt(Utility.Random(0, radius));
+				var newPos = new Vector3();
+				newPos.X = centrePos.X + ((radius * dist) * (float)Math.Cos(angle));
+				newPos.Y = centrePos.Y + ((radius * dist) * (float)Math.Sin(angle));
+				newPos.Z = centrePos.Z;
+				//consider flying units
+				newPos.Z = terrain.GetGroundHeightUnderneath(newPos);
+				wps[i] = newPos;
+			}
+			return wps;
 		}
 
 		public static Vector3[] GenerateWaypoints(ITerrain terrain, Vector3 lastPos, float minDist, float maxDist, int count)
