@@ -135,16 +135,16 @@ namespace WCell.RealmServer.Entities
 			}
 			NativeDisplayId = DisplayId;
 
-			if (m_brain != null)
+			if (m_brain == null)
 			{
-				// overriding already existing entry
-			}
-			else
-			{
-				// new
-				m_Movement = new Movement(this);
+				// new brain
 				m_brain = m_entry.BrainCreator(this);
 				m_brain.IsRunning = true;
+			}
+
+			if (m_Movement == null)
+			{
+				m_Movement = new Movement(this);
 			}
 
 			// misc stuff

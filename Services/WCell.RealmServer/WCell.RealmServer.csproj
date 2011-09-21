@@ -478,7 +478,6 @@
     <Compile Include="Achievements\Achievements.DBC.cs" />
     <Compile Include="Addons\RealmAddonMgr.cs" />
     <Compile Include="AI\Actions\AIActionCollection.cs" />
-    <Compile Include="AI\Actions\AIActionCreatorCollection.cs" />
     <Compile Include="AI\Actions\AIAction.cs" />
     <Compile Include="AI\Actions\AIActionEnums.cs" />
     <Compile Include="AI\Actions\AIActionQueue.cs" />

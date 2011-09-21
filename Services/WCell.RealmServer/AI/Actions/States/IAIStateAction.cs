@@ -5,5 +5,6 @@ namespace WCell.RealmServer.AI.Actions.States
 	/// </summary>
 	public interface IAIStateAction : IAIAction
 	{
+		//AIAction Strategy { get; set; }
 	}
 }

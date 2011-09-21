@@ -78,6 +78,7 @@ namespace WCell.Terrain.GUI.Renderers
 		{
 			rasterState = new RasterizerState()
 			{
+				CullMode = CullMode.None,
 				DepthBias = 1e-6f,
 				FillMode = RenderMode
 			};

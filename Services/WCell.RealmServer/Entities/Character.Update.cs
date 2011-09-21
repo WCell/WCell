@@ -390,15 +390,7 @@ namespace WCell.RealmServer.Entities
 			{
 				return UpdateFieldFlags.Private | UpdateFieldFlags.OwnerOnly | UpdateFieldFlags.GroupOnly | UpdateFieldFlags.Public;
 			}
-			if (chr == m_master)
-			{
-				return UpdateFieldFlags.OwnerOnly | UpdateFieldFlags.Public;
-			}
-			if (IsAlliedWith(chr))
-			{
-				return UpdateFieldFlags.GroupOnly | UpdateFieldFlags.Public;
-			}
-			return UpdateFieldFlags.Public;
+			return base.GetUpdateFieldVisibilityFor(chr);
 		}
 
 		protected override UpdateType GetCreationUpdateType(UpdateFieldFlags flags)
