@@ -14,7 +14,6 @@
  *
  *************************************************************************/
 
-using WCell.Constants;
 using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;

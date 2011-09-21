@@ -1,16 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using WCell.Constants.Login;
-using WCell.Constants.NPCs;
-using WCell.Constants.Items;
-using WCell.Constants.GameObjects;
-using WCell.Constants.Spells;
-using WCell.Constants.Pets;
 using WCell.Constants.Talents;
-using WCell.Constants.Updates;
-using WCell.Util;
 
 namespace WCell.Constants.Pets
 {

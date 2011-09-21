@@ -1,16 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using WCell.Constants.Spells;
 using WCell.Core.Initialization;
+using WCell.RealmServer.Entities;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Spells;
-using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Spells.Auras.Handlers;
 using WCell.RealmServer.Spells.Auras.Misc;
 using WCell.RealmServer.Spells.Effects;
-using WCell.RealmServer.Entities;
 
 namespace WCell.Addons.Default.Spells.Paladin
 {
@@ -35,7 +32,6 @@ namespace WCell.Addons.Default.Spells.Paladin
 			// Judgements of The Wise procs spells on allies and self, upon damaging judgements
 			SpellLineId.PaladinRetributionJudgementsOfTheWise.Apply(spell =>
 			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
 				spell.MaxTargets = 10;
 
 				var effect1 = spell.AddAuraEffect(AuraType.ProcTriggerSpell, ImplicitSpellTargetType.PartyAroundCaster);
@@ -68,8 +64,6 @@ namespace WCell.Addons.Default.Spells.Paladin
 			// Righteous Vengeance procs on crit with Judgement, Crusader Strike and Divine Storm
 			SpellLineId.PaladinRetributionRighteousVengeance.Apply(spell =>
 			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCastCritical;
-
 				var effect = spell.GetEffect(AuraType.Dummy);
 				effect.AuraType = AuraType.ProcTriggerSpell;
 				effect.TriggerSpellId = SpellId.RighteousVengeance;
@@ -85,12 +79,6 @@ namespace WCell.Addons.Default.Spells.Paladin
 				effect.AuraEffectHandlerCreator = () => new ParameterizedPeriodicDamageHandler();
 			},
 			SpellId.RighteousVengeance);
-
-			// AoW should only proc on crit hit
-			SpellLineId.PaladinRetributionTheArtOfWar.Apply(spell =>
-			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.MeleeCriticalHitOther;
-			});
 
 			// TODO: PaladinRetributionSheathOfLight (similar to PaladinRetributionRighteousVengeance)
 

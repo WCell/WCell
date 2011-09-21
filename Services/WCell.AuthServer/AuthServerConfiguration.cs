@@ -15,20 +15,16 @@
  *************************************************************************/
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Reflection;
 using NLog;
 using WCell.AuthServer.Lang;
-using WCell.Core;
 using WCell.Constants;
-using WCell.Core.Addons;
-using System.Collections.Generic;
-using WCell.AuthServer.Privileges;
+using WCell.Core;
 using WCell.Core.Initialization;
-using WCell.Util;
-using WCell.Util.Variables;
 using WCell.Util.NLog;
+using WCell.Util.Variables;
 
 namespace WCell.AuthServer
 {

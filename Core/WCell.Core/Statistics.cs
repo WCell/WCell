@@ -18,11 +18,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
-using WCell.Core;
-using WCell.Core.Initialization;
 using NLog;
 using WCell.Util;
-using WCell.Util.Variables;
 
 namespace WCell.Core
 {

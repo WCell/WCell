@@ -137,6 +137,20 @@ namespace WCell.Terrain
         {
         }
 
+        public TileIdentifier(MapId mapId, Point2D coords) 
+            : this(mapId, coords.X, coords.Y)
+        {
+        }
+
+        public TileIdentifier(MapId mapId, int tileX, int tileY)
+        {
+            TileName = "";
+            MapName = GetName(mapId);
+            MapId = mapId;
+            X = tileX;
+            Y = tileY;
+        }
+
         public TileIdentifier(string tileName, MapId mapId, string mapName, int tileX, int tileY)
         {
             TileName = tileName;

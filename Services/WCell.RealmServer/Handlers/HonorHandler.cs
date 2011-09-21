@@ -1,4 +1,4 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: HonorHandler.cs
  *   copyright		: (C) The WCell Team
@@ -15,8 +15,6 @@
  *************************************************************************/
 
 using WCell.Constants;
-using WCell.Constants.Misc;
-using WCell.Core.Network;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Network;
 

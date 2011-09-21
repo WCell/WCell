@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using WCell.RealmServer.Spells;
 using WCell.Constants.Spells;
+using WCell.RealmServer.Spells;
 
 namespace WCell.Tools.Ralek
 {
@@ -608,7 +607,7 @@ namespace WCell.Tools.Ralek
 
 				Console.WriteLine("PreventionType: {0}", spell.PreventionType);
 
-				Console.WriteLine("DefenseType: {0}", spell.DefenseType);
+				Console.WriteLine("DamageType: {0}", spell.DamageType);
 
 
 				Console.WriteLine();

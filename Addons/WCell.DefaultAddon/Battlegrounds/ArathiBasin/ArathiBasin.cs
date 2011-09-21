@@ -6,8 +6,6 @@ using WCell.Constants.AreaTriggers;
 using WCell.Constants.Battlegrounds;
 using WCell.Constants.Factions;
 using WCell.Constants.GameObjects;
-using WCell.Constants.Misc;
-using WCell.Constants.Spells;
 using WCell.Constants.World;
 using WCell.Core.Initialization;
 using WCell.Core.Timers;

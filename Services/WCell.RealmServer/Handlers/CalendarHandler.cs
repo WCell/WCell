@@ -1,12 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using WCell.Constants;
-using WCell.Core.Network;
-using WCell.RealmServer.Network;
-using WCell.Util;
-
 namespace WCell.RealmServer.Handlers{}
 /*{
     public class CalendarHandler

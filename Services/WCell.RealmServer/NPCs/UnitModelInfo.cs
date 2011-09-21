@@ -1,12 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using WCell.RealmServer.Entities;
-using WCell.Util.Data;
-using WCell.Util;
-using WCell.RealmServer.Content;
 using WCell.Constants;
+using WCell.RealmServer.Content;
+using WCell.RealmServer.Entities;
+using WCell.Util;
+using WCell.Util.Data;
 
 namespace WCell.RealmServer.NPCs
 {

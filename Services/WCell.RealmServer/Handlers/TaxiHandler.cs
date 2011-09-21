@@ -4,8 +4,8 @@ using WCell.Core;
 using WCell.Core.Network;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
-using WCell.RealmServer.Network;
 using WCell.RealmServer.NPCs;
+using WCell.RealmServer.Network;
 using WCell.RealmServer.Taxi;
 using WCell.Util;
 

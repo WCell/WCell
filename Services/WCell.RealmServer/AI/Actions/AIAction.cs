@@ -1,7 +1,7 @@
-using WCell.Constants.Updates;
-using WCell.RealmServer.Entities;
 using System;
 using WCell.Constants.Spells;
+using WCell.Constants.Updates;
+using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.AI.Actions
 {

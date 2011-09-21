@@ -24,12 +24,11 @@ using WCell.Constants.World;
 using WCell.Core.Network;
 using WCell.Core.Paths;
 using WCell.RealmServer.Entities;
-using WCell.RealmServer.Network;
-using WCell.Core.Terrain.Paths;
-using WCell.Util;
-using WCell.RealmServer.Spells;
 using WCell.RealmServer.NPCs.Vehicles;
+using WCell.RealmServer.Network;
+using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
+using WCell.Util;
 using WCell.Util.Graphics;
 
 namespace WCell.RealmServer.Handlers

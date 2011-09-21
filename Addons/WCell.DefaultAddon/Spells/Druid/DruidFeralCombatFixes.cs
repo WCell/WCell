@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Constants.Spells;
@@ -37,7 +34,6 @@ namespace WCell.Addons.Default.Spells.Druid
 			// Primal Fury is triggered by critical hits and only active in "in Bear and Dire Bear Form"
 			SpellLineId.DruidFeralCombatPrimalFury.Apply(spell =>
 			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.MeleeCriticalHit | ProcTriggerFlags.RangedCriticalHit;
 				spell.RequiredShapeshiftMask = ShapeshiftMask.Bear | ShapeshiftMask.DireBear;
 			});
 
@@ -73,7 +69,7 @@ namespace WCell.Addons.Default.Spells.Druid
 				spell.ForeachEffect(effect => effect.Radius = 45);	// fix radius
 
 				// "heal themselves for $s1% of their total health when they critically hit with a melee or ranged attack"
-				spell.ProcTriggerFlags = ProcTriggerFlags.MeleeCriticalHitOther | ProcTriggerFlags.RangedCriticalHit;
+				spell.ProcTriggerFlags = ProcTriggerFlags.DoneMeleeSpell | ProcTriggerFlags.DoneMeleeAutoAttack | ProcTriggerFlags.DoneRangedAutoAttack | ProcTriggerFlags.DoneRangedSpell;
 
 				// "The healing effect cannot occur more than once every 6 sec"
 				spell.ProcDelay = 6000;
@@ -165,7 +161,7 @@ namespace WCell.Addons.Default.Spells.Druid
 				var triggerSpellEffect = spell.RemoveEffect(AuraType.ProcTriggerSpell);
 				spell.AddProcHandler(new TriggerSpellProcHandlerTemplate(
 					SpellHandler.Get(triggerSpellEffect.TriggerSpellId),
-					ProcTriggerFlags.MeleeHit | ProcTriggerFlags.RangedHit,
+					spell.ProcTriggerFlags,
 					ProcHandler.DodgeValidator
 					));
 
@@ -323,7 +319,6 @@ namespace WCell.Addons.Default.Spells.Druid
 			// Savage Defense has wrong trigger flags & it's buff has wrong effect type 
 			SpellLineId.DruidSavageDefense.Apply(spell =>
 			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.MeleeCriticalHitOther;
 				spell.RequiredShapeshiftMask = ShapeshiftMask.Bear | ShapeshiftMask.DireBear;
 			});
 			SpellHandler.Apply(spell =>
@@ -362,8 +357,6 @@ namespace WCell.Addons.Default.Spells.Druid
 		{
 			SpellLineId.DruidBloodFrenzy.Apply(spell =>
 			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.MeleeCriticalHitOther | ProcTriggerFlags.RangedCriticalHit |
-										 ProcTriggerFlags.SpellCastCritical;
 				spell.RequiredShapeshiftMask = ShapeshiftMask.Cat;
 
 				var effect = spell.GetEffect(AuraType.ProcTriggerSpell);

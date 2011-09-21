@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using Castle.ActiveRecord;
-using WCell.Constants;
 using WCell.Constants.Guilds;
 using WCell.Core.Database;
 using WCell.RealmServer.Database;

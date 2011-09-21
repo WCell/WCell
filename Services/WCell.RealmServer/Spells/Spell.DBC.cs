@@ -21,13 +21,13 @@ using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
+using WCell.Core;
 using WCell.Core.DBC;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Items;
+using WCell.RealmServer.Misc;
 using WCell.Util;
 using WCell.Util.Data;
-using WCell.RealmServer.Misc;
-using WCell.Core;
 
 namespace WCell.RealmServer.Spells
 {
@@ -181,7 +181,7 @@ namespace WCell.RealmServer.Spells
 
 				for (var r = 0; r < SpellConstants.StandardRuneTypeCount; r++)
 				{
-					entry.RequiredRuneAmount += entry.CostPerType[r] = GetInt32(rawData, r+1);
+					entry.RequiredRuneAmount += entry.CostPerType[r] = GetInt32(rawData, r + 1);
 				}
 
 				return entry;
@@ -361,7 +361,7 @@ namespace WCell.RealmServer.Spells
 					spell.SpellClassMask[2] = GetUInt32(rawData, currentIndex++);   // 134
 
 					spell.MaxTargets = GetUInt32(rawData, currentIndex++);          // 135
-					spell.DefenseType = (SpellDefenseType)GetUInt32(rawData, currentIndex++);   // 136
+					spell.DamageType = (DamageType)GetUInt32(rawData, currentIndex++);   // 136
 					spell.PreventionType = (SpellPreventionType)GetUInt32(rawData, currentIndex++); // 137
 					spell.StanceBarOrder = GetInt32(rawData, currentIndex++);  // 138
 
@@ -381,22 +381,22 @@ namespace WCell.RealmServer.Spells
 					}
 
 					spell.AreaGroupId = GetUInt32(rawData, currentIndex++);
-					spell.SchoolMask = (DamageSchoolMask)GetUInt32(rawData, currentIndex++);  
+					spell.SchoolMask = (DamageSchoolMask)GetUInt32(rawData, currentIndex++);
 
 					var runeCostId = GetInt32(rawData, currentIndex++);
 					if (runeCostId != 0)
 					{
 						mappeddbcRuneCostReader.Entries.TryGetValue(runeCostId, out spell.RuneCostEntry);
 					}
-					spell.MissileId = GetUInt32(rawData, currentIndex++);       
+					spell.MissileId = GetUInt32(rawData, currentIndex++);
 
 					// New 3.1.0. Id from PowerDisplay.dbc
-					spell.PowerDisplayId = GetInt32(rawData, currentIndex++);   
+					spell.PowerDisplayId = GetInt32(rawData, currentIndex++);
 
 					// 3.2.2 unk float (array?)
-					spell.Unk_322_4_1 = GetUInt32(rawData, currentIndex++);    
-					spell.Unk_322_4_2 = GetUInt32(rawData, currentIndex++);  
-					spell.Unk_322_4_3 = GetUInt32(rawData, currentIndex++);   
+					spell.Unk_322_4_1 = GetUInt32(rawData, currentIndex++);
+					spell.Unk_322_4_2 = GetUInt32(rawData, currentIndex++);
+					spell.Unk_322_4_3 = GetUInt32(rawData, currentIndex++);
 
 					// 3.2.2
 					spell.spellDescriptionVariablesID = GetUInt32(rawData, currentIndex++);
@@ -431,7 +431,7 @@ namespace WCell.RealmServer.Spells
 
 			private SpellEffect ReadEffect(Spell spell, byte[] rawData, int effectStartIndex, int effectNum, out int currentIndex)
 			{
-				var effect = new SpellEffect(spell, effectNum);
+				var effect = new SpellEffect(spell, (EffectIndex)effectNum);
 
 				currentIndex = effectStartIndex + effectNum;
 

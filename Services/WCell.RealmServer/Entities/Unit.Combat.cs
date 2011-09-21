@@ -1,6 +1,5 @@
 using System;
 using WCell.Constants;
-using WCell.Constants.Misc;
 using WCell.Constants.Spells;
 using WCell.Core.Timers;
 using WCell.RealmServer.Formulas;
@@ -9,11 +8,9 @@ using WCell.RealmServer.Items;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Modifiers;
 using WCell.RealmServer.NPCs;
-using WCell.RealmServer.RacesClasses;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Effects;
 using WCell.Util;
-using WCell.Util.Variables;
 using WCell.Util.NLog;
 
 namespace WCell.RealmServer.Entities
@@ -189,18 +186,16 @@ namespace WCell.RealmServer.Entities
 		#region Standard Attack
 
 		/// <summary>
-		/// Use the given weapon to strike
+		/// Strike using mainhand weapon
 		/// </summary>
-		/// <param name="weapon"></param>
 		public void Strike()
 		{
 			Strike(MainWeapon);
 		}
 
 		/// <summary>
-		/// Use the given weapon to strike
+		/// Strike using given weapon
 		/// </summary>
-		/// <param name="weapon"></param>
 		public void Strike(IWeapon weapon)
 		{
 			var action = GetUnusedAction();
@@ -210,40 +205,29 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Do a single attack using the given weapon on the given target.
+		/// Strike the target using mainhand weapon
 		/// </summary>
-		/// <param name="weapon"></param>
-		/// <param name="action"></param>
 		public void Strike(Unit target)
 		{
 			Strike(MainWeapon, target);
 		}
 
 		/// <summary>
-		/// Do a single attack using the given weapon on the given target.
+		/// Strike the target using given weapon
 		/// </summary>
-		/// <param name="weapon"></param>
-		/// <param name="action"></param>
 		public void Strike(IWeapon weapon, Unit target)
 		{
 			Strike(weapon, GetUnusedAction(), target);
 		}
 
-		/// <summary>
-		/// Do a single attack using the given Weapon and AttackAction.
-		/// </summary>
-		/// <param name="weapon"></param>
-		/// <param name="action"></param>
 		public void Strike(DamageAction action, Unit target)
 		{
 			Strike(MainWeapon, action, target);
 		}
 
 		/// <summary>
-		/// Do a single attack using the given Weapon and AttackAction.
+		/// Do a single attack using the given weapon and action on the target
 		/// </summary>
-		/// <param name="weapon"></param>
-		/// <param name="action"></param>
 		public void Strike(IWeapon weapon, DamageAction action, Unit target)
 		{
 			IsInCombat = true;
@@ -258,37 +242,35 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Do a single attack using the given Weapon and AttackAction.
+		/// Do a single attack on the target using given weapon and ability.
 		/// </summary>
-		/// <param name="weapon"></param>
-		/// <param name="action"></param>
-		public bool Strike(IWeapon weapon, Unit target, SpellCast ability)
+		public ProcHitFlags Strike(IWeapon weapon, Unit target, SpellCast ability)
 		{
 			return Strike(weapon, GetUnusedAction(), target, ability);
 		}
 
 		/// <summary>
-		/// Do a single attack using the given Weapon and AttackAction.
+		/// Do a single attack on the target using given weapon, ability and action.
 		/// </summary>
-		/// <param name="weapon"></param>
-		/// <param name="action"></param>
-		public bool Strike(IWeapon weapon, DamageAction action, Unit target, SpellCast ability)
+		public ProcHitFlags Strike(IWeapon weapon, DamageAction action, Unit target, SpellCast ability)
 		{
+			ProcHitFlags procHitFlags = ProcHitFlags.None;
+
 			EnsureContext();
 			if (!IsAlive)
 			{
-				return false;
+				return procHitFlags;
 			}
 
 			if (!target.IsInContext || !target.IsAlive)
 			{
-				return false;
+				return procHitFlags;
 			}
 
 			if (weapon == null)
 			{
 				log.Error("Trying to strike without weapon: " + this);
-				return false;
+				return procHitFlags;
 			}
 
 			//if (IsMovementControlled)
@@ -303,7 +285,6 @@ namespace WCell.RealmServer.Entities
 			action.Attacker = this;
 			action.Weapon = weapon;
 
-			bool hit;
 			if (ability != null)
 			{
 				action.Schools = ability.Spell.SchoolMask;
@@ -311,13 +292,13 @@ namespace WCell.RealmServer.Entities
 
 				// calc damage
 				GetWeaponDamage(action, weapon, ability);
-				hit = action.DoAttack();
+				procHitFlags = action.DoAttack();
 				if (ability.Spell.AttributesExC.HasFlag(SpellAttributesExC.RequiresTwoWeapons) && m_offhandWeapon != null)
 				{
 					// also strike with offhand
 					action.Reset(this, target, m_offhandWeapon);
 					GetWeaponDamage(action, m_offhandWeapon, ability);
-					action.DoAttack();
+					procHitFlags |= action.DoAttack();
 					m_lastOffhandStrike = Environment.TickCount;
 				}
 			}
@@ -325,7 +306,6 @@ namespace WCell.RealmServer.Entities
 			{
 				// no combat ability
 				m_extraAttacks += 1;
-				hit = false;
 				do
 				{
 					// calc damage
@@ -338,11 +318,11 @@ namespace WCell.RealmServer.Entities
 					}
 
 					// normal attack
-					hit = hit || action.DoAttack();
+					action.DoAttack();
 				} while (--m_extraAttacks > 0);
 			}
 			action.OnFinished();
-			return hit;
+			return procHitFlags;
 		}
 
 		/// <summary>
@@ -543,35 +523,6 @@ namespace WCell.RealmServer.Entities
 			//Your average resistance can still be anywhere betweeen 0% and 75%. If your average resistance is maxed out, then there's a really good chance of having 75% of the spell's damage be resisted. 
 			//There's also a fairly good chance of having 100% of the spell's damage be resisted, a slightly lower chance of 50% of its damage being resisted, a small chances of only 25%, or even 0% of the damage being resisted. 
 			//It's a weighted average. Visualize it as a bell curve around your average resistance.
-		}
-
-		/// <summary>
-		/// Calculates the chance to hit the given defender with a spell of the given school
-		/// </summary>
-		/// <returns>The effective hitchance</returns>
-		public float CalcSpellHitChance(Unit defender, DamageSchool dmgSchool, float resistChance)
-		{
-			float res = GetResistance(dmgSchool);
-
-			if (this is Character && defender is Character) //pvp has diffrent values compared to pve
-			{
-				res += (float)(99.24f / (1 + 0.0281f * Math.Log((0.516f * (defender.Level - Level)), MathUtil.E)));
-			}
-			else
-			{
-				res += (float)(98.77f / (1 + 0.0215f * Math.Log((0.6862f * (defender.Level - Level)), MathUtil.E)));
-			}
-
-			res *= resistChance;
-
-			res -= defender.GetAttackerSpellHitChanceMod(dmgSchool);
-
-			if (res < 1)
-			{
-				res = 1;
-			}
-
-			return res;
 		}
 
 		public float GetBaseCritChance(DamageSchool dmgSchool, Spell spell, IWeapon weapon)
@@ -1112,6 +1063,7 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
+		#region OnDamageReceived
 		/// <summary>
 		/// Is called whenever this Unit receives any kind of damage
 		/// 
@@ -1124,10 +1076,6 @@ namespace WCell.RealmServer.Entities
 			if (action is DamageAction && action.Attacker != null)
 			{
 				var aaction = (DamageAction)action;
-
-				// Get the flags now, so they won't be changed by anything that happens afterwards
-				var attackerProcTriggerFlags = action.AttackerProcTriggerFlags;
-				var targetProcTriggerFlags = action.TargetProcTriggerFlags;
 
 				if (IsAlive)
 				{
@@ -1157,82 +1105,88 @@ namespace WCell.RealmServer.Entities
 					AuraState = AuraStateMask.None;
 				}
 
-				if (action.ActualDamage > 0)
+				if (action.ActualDamage <= 0)
 				{
-					if (!action.IsDot)
+					return;
+				}
+
+				if (!action.IsDot)
+				{
+					var attacker = action.Attacker;
+					var weapon = action.Weapon;
+					var weaponAttack = weapon != null && !attacker.IsPvPing;
+
+					// Remove damage-sensitive Auras
+					m_auras.RemoveByFlag(AuraInterruptFlags.OnDamage);
+					attacker.m_lastCombatTime = attacker.m_lastUpdateTime;
+
+					if (attacker is Character && weaponAttack)
 					{
-						var attacker = action.Attacker;
-						var weapon = action.Weapon;
-						var weaponAttack = weapon != null && !attacker.IsPvPing;
+						((Character)attacker).Skills.GainWeaponSkill(action.Victim.Level, weapon);
+					}
 
-						// Remove damage-sensitive Auras
-						m_auras.RemoveByFlag(AuraInterruptFlags.OnDamage);
-						attacker.m_lastCombatTime = attacker.m_lastUpdateTime;
+					// stand up when hit
+					StandState = StandState.Stand;
 
-						if (attacker is Character && weaponAttack)
+					// Generate Rage
+					if (attacker.IsAlive && attacker.PowerType == PowerType.Rage)
+					{
+						RageGenerator.GenerateAttackerRage(aaction);
+					}
+
+					if (IsAlive)
+					{
+						if (PowerType == PowerType.Rage)
 						{
-							((Character)attacker).Skills.GainWeaponSkill(action.Victim.Level, weapon);
+							RageGenerator.GenerateTargetRage(aaction);
 						}
 
-						// stand up when hit
-						StandState = StandState.Stand;
+						// aggro'd -> Enter combat mode and update combat-time
+						IsInCombat = true;
+						m_lastCombatTime = m_lastUpdateTime;
 
-						// Generate Rage
-						if (attacker.IsAlive && attacker.PowerType == PowerType.Rage)
+						// during pvp one does not gain any weapon skill
+						if (this is Character)
 						{
-							RageGenerator.GenerateAttackerRage(aaction);
-						}
-
-						if (IsAlive)
-						{
-							if (PowerType == PowerType.Rage)
+							if (weaponAttack)
 							{
-								RageGenerator.GenerateTargetRage(aaction);
-							}
-
-							// aggro'd -> Enter combat mode and update combat-time
-							IsInCombat = true;
-							m_lastCombatTime = m_lastUpdateTime;
-
-							// during pvp one does not gain any weapon skill
-							if (this is Character)
-							{
-								if (weaponAttack)
-								{
-									((Character)this).Skills.GainDefenseSkill(action.Attacker.Level);
-								}
-							}
-						}
-
-						// Pushback SpellCast
-						if (IsUsingSpell)
-						{
-							if (SpellCast.Spell.InterruptFlags.HasFlag(InterruptFlags.OnTakeDamage))
-							{
-								SpellCast.Cancel();
-							}
-							else
-							{
-								SpellCast.Pushback();
+								((Character)this).Skills.GainDefenseSkill(action.Attacker.Level);
 							}
 						}
 					}
 
-					// Procs
-					if (action.Weapon == null || action.Weapon != OffHandWeapon)
+					// Pushback SpellCast
+					if (IsUsingSpell)
 					{
-						var gainExpProc = !IsAlive && YieldsXpOrHonor && action.Attacker is Character && action.Attacker.YieldsXpOrHonor;
-						if (gainExpProc)
+						if (SpellCast.Spell.InterruptFlags.HasFlag(InterruptFlags.OnTakeDamage))
 						{
-							attackerProcTriggerFlags |= ProcTriggerFlags.GainExperience;
+							SpellCast.Cancel();
 						}
-
-						action.Attacker.Proc(attackerProcTriggerFlags, this, action, true);
-						Proc(targetProcTriggerFlags, action.Attacker, action, false);
+						else
+						{
+							SpellCast.Pushback();
+						}
 					}
 				}
+
+				TriggerProcOnDamageReceived(action);
 			}
 		}
+
+		void TriggerProcOnDamageReceived(IDamageAction action)
+		{
+			var procHitFlags = action.IsCritical ? ProcHitFlags.CriticalHit : ProcHitFlags.None;
+			var victimProcFlags = ProcTriggerFlags.ReceivedAnyDamage;
+
+			if (action.IsDot)
+			{
+				action.Attacker.Proc(ProcTriggerFlags.DonePeriodicDamageOrHeal, this, action, true, procHitFlags);
+				victimProcFlags |= ProcTriggerFlags.ReceivedPeriodicDamageOrHeal;
+			}
+
+			Proc(victimProcFlags, action.Attacker, action, true, procHitFlags);
+		}
+		#endregion
 		#endregion
 
 		#region Range Checks

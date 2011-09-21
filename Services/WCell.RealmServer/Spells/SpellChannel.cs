@@ -16,7 +16,6 @@
 
 using System;
 using System.Collections.Generic;
-using Cell.Core;
 using NLog;
 using WCell.Constants.Spells;
 using WCell.Core.Timers;

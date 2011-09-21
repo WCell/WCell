@@ -16,12 +16,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using WCell.RealmServer.Lang;
-using WCell.RealmServer.NPCs;
-using WCell.RealmServer.NPCs.Pets;
-using WCell.Util.Collections;
-using NLog;
+using WCell.Constants;
 using WCell.Constants.Spells;
 using WCell.Core;
 using WCell.Core.DBC;
@@ -30,14 +25,16 @@ using WCell.RealmServer.Content;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Items;
+using WCell.RealmServer.Lang;
+using WCell.RealmServer.NPCs.Pets;
 using WCell.RealmServer.Skills;
-using WCell.RealmServer.Spells.Effects;
-using WCell.Util;
-using WCell.Util.Variables;
 using WCell.RealmServer.Spells.Auras;
-using WCell.Constants;
+using WCell.RealmServer.Spells.Effects;
 using WCell.RealmServer.Spells.Effects.Auras;
 using WCell.RealmServer.Talents;
+using WCell.Util;
+using WCell.Util.Collections;
+using WCell.Util.Variables;
 
 namespace WCell.RealmServer.Spells
 {
@@ -276,7 +273,7 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// Returns a list of all SpellLines that are affected by the given spell family set (very long bit field)
 		/// </summary>
-		public static IEnumerable<SpellLine> GetAffectedSpellLines(ClassId clss, uint[] mask)
+		public static HashSet<SpellLine> GetAffectedSpellLines(ClassId clss, uint[] mask)
 		{
 			var lines = SpellLines.GetLines(clss);
 			var affected = new HashSet<SpellLine>();
@@ -335,14 +332,7 @@ namespace WCell.RealmServer.Spells
 				SpellLines.InitSpellLines();
 
 				ContentMgr.Load<SpellProcEventEntry>();
-				foreach (var spell in ById)
-				{
-					if (spell != null)
-					{
-						// set custom proc settings
-						ProcEventHelper.PatchAffectMasks(spell);
-					}
-				}
+				ProcEventHelper.PatchSpells(ById);
 			}
 
 			if (init)

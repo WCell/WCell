@@ -1,4 +1,4 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: NPC.cs
  *   copyright		: (C) The WCell Team
@@ -28,6 +28,7 @@ using WCell.Constants.Updates;
 using WCell.Core;
 using WCell.Core.Timers;
 using WCell.RealmServer.AI;
+using WCell.RealmServer.AI.Groups;
 using WCell.RealmServer.Chat;
 using WCell.RealmServer.Factions;
 using WCell.RealmServer.Formulas;
@@ -36,24 +37,20 @@ using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Items;
 using WCell.RealmServer.Looting;
 using WCell.RealmServer.Misc;
-using WCell.RealmServer.Modifiers;
-using WCell.RealmServer.Network;
 using WCell.RealmServer.NPCs;
 using WCell.RealmServer.NPCs.Auctioneer;
 using WCell.RealmServer.NPCs.Pets;
 using WCell.RealmServer.NPCs.Spawns;
 using WCell.RealmServer.NPCs.Trainers;
 using WCell.RealmServer.NPCs.Vendors;
+using WCell.RealmServer.Network;
 using WCell.RealmServer.Quests;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Talents;
 using WCell.RealmServer.Taxi;
 using WCell.Util;
-using WCell.RealmServer.AI.Groups;
 using WCell.Util.Graphics;
-
-
 
 namespace WCell.RealmServer.Entities
 {

@@ -1,14 +1,13 @@
-using System;
 using NLog;
 using WCell.Constants.Updates;
 using WCell.RealmServer.AI.Actions;
+using WCell.RealmServer.AI.Actions.States;
 using WCell.RealmServer.AI.Groups;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.NPCs;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
-using WCell.RealmServer.AI.Actions.States;
 using WCell.Util.Graphics;
 
 namespace WCell.RealmServer.AI.Brains

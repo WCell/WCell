@@ -14,16 +14,13 @@
  *
  *************************************************************************/
 
-using System;
-using System.Collections.Generic;
 using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Items;
-using WCell.Util.Data;
 using WCell.RealmServer.Misc;
-using WCell.Util.Graphics;
+using WCell.Util.Data;
 
 namespace WCell.RealmServer.Spells
 {
@@ -128,10 +125,38 @@ namespace WCell.RealmServer.Spells
 		public InterruptFlags InterruptFlags;//25
 		public AuraInterruptFlags AuraInterruptFlags;//26
 		public ChannelInterruptFlags ChannelInterruptFlags;//27
+
+		private ProcTriggerFlags _procTriggerFlags;//28
+
 		/// <summary>
-		/// Indicates the events that let this Spell proc (if it is a proc spell)
+		/// Indicates events which cause this spell to trigger its proc effect 
 		/// </summary>
-		public ProcTriggerFlags ProcTriggerFlags;//28
+		/// <remarks>
+		/// This spell must be a proc <see cref="IsProc"/>
+		/// </remarks>
+		public ProcTriggerFlags ProcTriggerFlags
+		{
+			get { return _procTriggerFlags; }
+			set
+			{
+				_procTriggerFlags = value;
+
+				if (_procTriggerFlags.RequireHitFlags() && ProcHitFlags == ProcHitFlags.None)
+				{
+					// Default proc on hit
+					ProcHitFlags = ProcHitFlags.Hit;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Contains information needed for ProcTriggerFlags depending on hit result
+		/// </summary>
+		/// <remarks> 
+		/// This spell must be a proc <see cref="IsProc"/>
+		/// </remarks>
+		public ProcHitFlags ProcHitFlags { get; set; }
+
 		public uint ProcChance;//29
 		public int ProcCharges;//30
 		public int MaxLevel;//31
@@ -272,7 +297,7 @@ namespace WCell.RealmServer.Spells
 		[Persistent(3)]
 		public uint[] SpellClassMask = new uint[SpellConstants.SpellClassMaskSize];
 		public uint MaxTargets;                      //199 
-		public SpellDefenseType DefenseType;
+		public DamageType DamageType;
 		public SpellPreventionType PreventionType;
 		public int StanceBarOrder;
 		/// <summary>

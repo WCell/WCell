@@ -21,8 +21,6 @@ using WCell.Constants;
 using WCell.Constants.Login;
 using WCell.Core;
 using WCell.Core.Cryptography;
-using WCell.RealmServer.Res;
-using WCell.Util.Threading;
 using WCell.Intercommunication.DataTypes;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
@@ -30,8 +28,9 @@ using WCell.RealmServer.Global;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Network;
 using WCell.RealmServer.Privileges;
-
+using WCell.RealmServer.Res;
 using WCell.Util.NLog;
+using WCell.Util.Threading;
 
 namespace WCell.RealmServer
 {

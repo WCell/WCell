@@ -1,7 +1,5 @@
-﻿using WCell.RealmServer.Entities;
+﻿using WCell.Constants.Spells;
 using WCell.RealmServer.Talents;
-using WCell.RealmServer.Spells;
-using WCell.Constants.Spells;
 
 namespace WCell.RealmServer.Spells.Effects
 {
@@ -13,11 +11,11 @@ namespace WCell.RealmServer.Spells.Effects
 		}
 		public override void Initialize(ref SpellFailedReason fail)
 		{
-			if (m_cast.m_glyphSlot != 0)
+			if (m_cast.GlyphSlot != 0)
 			{
 				var glyph = (uint)m_cast.Spell.Effects[0].MiscValue;
 				var properties = GlyphInfoHolder.GetPropertiesEntryForGlyph(glyph);
-				var slot = GlyphInfoHolder.GetGlyphSlotEntryForGlyphSlotId(m_cast.CasterChar.GetGlyphSlot((byte)m_cast.m_glyphSlot));
+				var slot = GlyphInfoHolder.GetGlyphSlotEntryForGlyphSlotId(m_cast.CasterChar.GetGlyphSlot((byte)m_cast.GlyphSlot));
 				if (properties.TypeFlags != slot.TypeFlags)
 				{
 					fail =  SpellFailedReason.InvalidGlyph;
@@ -27,7 +25,7 @@ namespace WCell.RealmServer.Spells.Effects
 		public override void Apply()
 		{
 			var chr = m_cast.CasterChar;
-			chr.ApplyGlyph((byte)m_cast.m_glyphSlot, GlyphInfoHolder.GetPropertiesEntryForGlyph((uint)m_cast.Spell.Effects[0].MiscValue));
+			chr.ApplyGlyph((byte)m_cast.GlyphSlot, GlyphInfoHolder.GetPropertiesEntryForGlyph((uint)m_cast.Spell.Effects[0].MiscValue));
 		}
 	}
 }

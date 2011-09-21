@@ -1,6 +1,5 @@
-using WCell.RealmServer.Battlegrounds;
-using WCell.RealmServer.Entities;
 using WCell.RealmServer;
+using WCell.RealmServer.Battlegrounds;
 
 namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 {

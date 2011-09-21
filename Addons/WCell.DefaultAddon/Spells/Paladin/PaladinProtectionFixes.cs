@@ -1,14 +1,10 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using WCell.Constants.Spells;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
-using WCell.RealmServer.Spells.Auras.Misc;
 using WCell.RealmServer.Spells.Effects;
 
 namespace WCell.Addons.Default.Spells.Paladin
@@ -77,7 +73,6 @@ namespace WCell.Addons.Default.Spells.Paladin
 			// Shield of the Templar should proc from Avenger's Shield
 			SpellLineId.PaladinProtectionShieldOfTheTemplar.Apply(spell =>
 			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
 				spell.GetEffect(AuraType.ProcTriggerSpell).AddToAffectMask(SpellLineId.PaladinProtectionAvengersShield);
 			});
 

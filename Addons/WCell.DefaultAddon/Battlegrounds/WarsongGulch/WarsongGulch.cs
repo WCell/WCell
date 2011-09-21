@@ -12,11 +12,8 @@ using WCell.RealmServer.Chat;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.GameObjects;
 using WCell.RealmServer.GameObjects.GOEntries;
-using WCell.RealmServer.Global;
 using WCell.RealmServer.Lang;
 using WCell.RealmServer.Spells;
-using WCell.RealmServer.Spells.Auras;
-using WCell.Core.Timers;
 using WCell.Util.Graphics;
 using WCell.Util.Variables;
 

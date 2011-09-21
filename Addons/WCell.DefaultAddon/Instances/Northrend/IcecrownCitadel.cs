@@ -1,20 +1,14 @@
-using WCell.Constants.Misc;
+using System;
 using WCell.Constants.NPCs;
+using WCell.Constants.Spells;
 using WCell.Core.Initialization;
+using WCell.RealmServer.AI.Actions.Combat;
 using WCell.RealmServer.AI.Brains;
-using WCell.RealmServer.GameObjects;
+using WCell.RealmServer.Entities;
 using WCell.RealmServer.Instances;
 using WCell.RealmServer.NPCs;
 using WCell.RealmServer.Spells;
-using WCell.RealmServer.Entities;
-using WCell.Constants.Spells;
-using WCell.Constants;
-using WCell.Constants.GameObjects;
-using WCell.RealmServer.AI.Actions.Combat;
-using System;
 using WCell.Util;
-using WCell.Util.Graphics;
-
 
 namespace WCell.Addons.Default.Instances
 {
@@ -50,7 +44,6 @@ namespace WCell.Addons.Default.Instances
             : base(marrowgar)
         {
             fbasespeed = m_owner.RunSpeed;
-            IntroDone = false;
         }
 
         // Spells
@@ -60,7 +53,7 @@ namespace WCell.Addons.Default.Instances
         private DateTime timeSinceLastInterval;
 
         private static float fbasespeed;
-        private static bool IntroDone;
+        //private static bool IntroDone;
         private static int interval = 1;
 
         private bool isBoneStorm;

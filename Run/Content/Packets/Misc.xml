@@ -199,7 +199,7 @@
   <RealmPacket OpCode="SMSG_DEATH_RELEASE_LOC" Sender="Server">
     <Simple>
       <Name>SHRegion</Name>
-      <Type>UInt</Type>
+      <Type>Int</Type>
       <SegmentType>World.MapId</SegmentType>
     </Simple>
     <Simple>

@@ -17,34 +17,29 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using WCell.Core.Paths;
-using WCell.RealmServer.Lang;
-using WCell.RealmServer.Looting;
-using WCell.RealmServer.NPCs;
-using WCell.Util.Collections;
 using NLog;
 using WCell.Constants;
 using WCell.Constants.Factions;
 using WCell.Constants.Misc;
+using WCell.Constants.Spells;
 using WCell.Constants.Updates;
+using WCell.Constants.World;
+using WCell.Core.Paths;
+using WCell.RealmServer.Chat;
 using WCell.RealmServer.Factions;
 using WCell.RealmServer.Global;
+using WCell.RealmServer.Handlers;
+using WCell.RealmServer.Lang;
 using WCell.RealmServer.Misc;
+using WCell.RealmServer.NPCs;
 using WCell.RealmServer.Network;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
 using WCell.Util;
-using WCell.Constants.World;
+using WCell.Util.Collections;
 using WCell.Util.Graphics;
 using WCell.Util.ObjectPools;
 using WCell.Util.Threading;
-using WCell.Constants.NPCs;
-using WCell.Constants.GameObjects;
-using WCell.RealmServer.Chat;
-using WCell.RealmServer.Handlers;
-using WCell.Constants.Spells;
-using WCell.Core.Terrain.Paths;
-using Cell.Core;
 
 namespace WCell.RealmServer.Entities
 {
@@ -935,6 +930,11 @@ namespace WCell.RealmServer.Entities
 			{
 				this.IterateEnvironment(BroadcastRange, obj =>
 				{
+					if ((obj is NPC) && ((NPC)obj).CharmerCharacter != null)
+					{
+						(((NPC)obj).CharmerCharacter).Send(packet.GetFinalizedPacket());
+					}
+
 					if (obj is Character)
 					{
 						((Character)obj).Send(packet.GetFinalizedPacket());
@@ -956,6 +956,11 @@ namespace WCell.RealmServer.Entities
 			{
 				this.IterateEnvironment(radius, obj =>
 				{
+					if ((obj is NPC) && ((NPC)obj).CharmerCharacter != null)
+					{
+						(((NPC)obj).CharmerCharacter).Send(packet.GetFinalizedPacket());
+					}
+
 					if (obj is Character)
 					{
 						((Character)obj).Send(packet.GetFinalizedPacket());
@@ -983,9 +988,9 @@ namespace WCell.RealmServer.Entities
 			{
 				this.IterateEnvironment(BroadcastRange, obj =>
 				{
-					if ((obj is NPC) && ((NPC)obj).Charmer != null && (((NPC)obj).Charmer is Character))
+					if ((obj is NPC) && ((NPC)obj).CharmerCharacter != null)
 					{
-						((Character)(((NPC)obj).Charmer)).Send(packet.GetFinalizedPacket());
+						(((NPC)obj).CharmerCharacter).Send(packet.GetFinalizedPacket());
 					}
 
 					if (obj is Character)
@@ -994,16 +999,6 @@ namespace WCell.RealmServer.Entities
 					}
 					return true;
 				});
-			}
-			else
-			{
-				if (!(this is NPC))
-					return;
-
-				if (((NPC)this).Charmer == null || !(((NPC)this).Charmer is Character))
-					return;
-
-				((Character)(((NPC)this).Charmer)).Send(packet.GetFinalizedPacket());
 			}
 		}
 

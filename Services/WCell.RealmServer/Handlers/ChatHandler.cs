@@ -16,7 +16,6 @@
 
 using WCell.Constants;
 using WCell.Constants.Misc;
-using WCell.Core;
 using WCell.Core.Network;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Network;

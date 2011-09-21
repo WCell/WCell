@@ -18,7 +18,6 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text;
 using WCell.Constants;
 using WCell.Util;
 using WCell.Util.Data;

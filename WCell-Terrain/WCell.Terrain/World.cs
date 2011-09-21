@@ -11,7 +11,7 @@ namespace WCell.Terrain
     {
         public Dictionary<MapId, Terrain> WorldTerrain;
 
-        public Terrain GetOrLoadSimple(MapId map)
+        public SimpleTerrain GetOrLoadSimpleTerrain(MapId map)
         {
             Terrain terrain;
             if (!WorldTerrain.TryGetValue(map, out terrain))
@@ -20,7 +20,19 @@ namespace WCell.Terrain
                 terrain.FillTileProfile();
                 WorldTerrain.Add(map, terrain);
             }
-            return terrain;
+            return (SimpleTerrain)terrain;
+        }
+
+        public SimpleWDTTerrain GetOrLoadSimpleWDTTerrain(MapId map)
+        {
+            Terrain terrain;
+            if (!WorldTerrain.TryGetValue(map, out terrain))
+            {
+                terrain = new SimpleWDTTerrain(map, false);
+                terrain.FillTileProfile();
+                WorldTerrain.Add(map, terrain);
+            }
+            return (SimpleWDTTerrain)terrain;
         }
 
         public World()

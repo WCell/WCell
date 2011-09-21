@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using WCell.Constants;
-using WCell.Core.Initialization;
 using WCell.Constants.Spells;
 
 namespace WCell.RealmServer.Spells

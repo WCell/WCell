@@ -4,7 +4,6 @@ using WCell.Constants.Pathing;
 using WCell.Constants.World;
 using WCell.Core.DBC;
 using WCell.Core.Paths;
-using WCell.Core.Terrain.Paths;
 using WCell.RealmServer.Taxi;
 using WCell.Util.Graphics;
 

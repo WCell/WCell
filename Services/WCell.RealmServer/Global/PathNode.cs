@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Cell.Core;
 using WCell.Constants.NPCs;
 using WCell.Constants.World;
 using WCell.Core.DBC;

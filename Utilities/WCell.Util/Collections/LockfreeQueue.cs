@@ -1,4 +1,4 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file			: LockfreeQueue.cs
  *   copyright		: (C) 2004 Julian M Bucknall 
@@ -15,8 +15,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 
 namespace WCell.Util.Collections

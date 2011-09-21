@@ -1,17 +1,7 @@
-using System.Collections.Generic;
-using WCell.Constants;
-using WCell.Constants.Misc;
-using WCell.Constants.NPCs;
-using WCell.Constants.Updates;
 using WCell.RealmServer.Editor.Menus;
 using WCell.RealmServer.Entities;
-using WCell.RealmServer.Factions;
-using WCell.RealmServer.Gossips;
-using WCell.RealmServer.NPCs;
 using WCell.RealmServer.NPCs.Spawns;
-using WCell.RealmServer.Spells.Auras;
 using WCell.Util.Variables;
-using WCell.Constants.Factions;
 
 namespace WCell.RealmServer.Editor.Figurines
 {

@@ -14,11 +14,9 @@
  *
  *************************************************************************/
 
-using System.IO;
 using Cell.Core;
-using WCell.Core.Network;
-using System;
 using WCell.Constants;
+using WCell.Core.Network;
 
 namespace WCell.AuthServer
 {

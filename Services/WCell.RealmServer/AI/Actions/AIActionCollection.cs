@@ -1,4 +1,3 @@
-using WCell.RealmServer.AI.Brains;
 using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.AI.Actions

@@ -1,12 +1,10 @@
-using WCell.Constants;
 using WCell.Constants.World;
+using WCell.Intercommunication.DataTypes;
 using WCell.RealmServer.GameObjects;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Lang;
 using WCell.RealmServer.NPCs;
 using WCell.Util.Commands;
-using WCell.Intercommunication.DataTypes;
-using WCell.RealmServer.Battlegrounds;
 
 namespace WCell.RealmServer.Commands
 {

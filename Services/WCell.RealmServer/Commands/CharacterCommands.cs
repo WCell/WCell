@@ -1,7 +1,6 @@
 using WCell.Constants.Updates;
 using WCell.Constants.World;
 using WCell.RealmServer.Entities;
-using WCell.RealmServer.Formulas;
 using WCell.Util.Commands;
 
 namespace WCell.RealmServer.Commands

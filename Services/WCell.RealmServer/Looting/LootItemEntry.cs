@@ -3,7 +3,6 @@ using WCell.Constants.Items;
 using WCell.Constants.Looting;
 using WCell.RealmServer.Items;
 using WCell.Util.Data;
-using System.Collections;
 
 namespace WCell.RealmServer.Looting
 {

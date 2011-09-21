@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Diagnostics;
 using System.Reflection;
 using NLog;
 using WCell.Util;
@@ -173,7 +171,7 @@ namespace WCell.Core.Addons
 			{
 				asm = Assembly.LoadFrom(path);
 			}
-			catch (BadImageFormatException e)
+			catch (BadImageFormatException)
 			{
 				LogManager.GetCurrentClassLogger().Error("Failed to load Assembly \"{0}\" because it has the wrong format - Make sure that you only load .NET assemblies that are compiled for the correct target platform: {1}", 
 						file.Name,

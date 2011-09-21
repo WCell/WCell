@@ -1,8 +1,8 @@
 using WCell.RealmServer.Chat;
+using WCell.RealmServer.Entities;
 using WCell.RealmServer.Help.Tickets;
 using WCell.RealmServer.Lang;
 using WCell.Util.Commands;
-using WCell.RealmServer.Entities;
 using WCell.Util.Graphics;
 
 namespace WCell.RealmServer.Commands

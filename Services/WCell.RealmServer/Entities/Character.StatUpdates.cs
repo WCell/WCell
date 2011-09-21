@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using WCell.Constants;
+﻿using WCell.Constants;
 using WCell.Constants.Misc;
-using WCell.Constants.Updates;
 using WCell.RealmServer.Modifiers;
 
 namespace WCell.RealmServer.Entities

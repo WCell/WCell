@@ -1,15 +1,8 @@
 using System;
-using System.Threading;
-using WCell.Constants;
 using WCell.Constants.Factions;
-using WCell.Constants.World;
 using WCell.Core.Timers;
-using WCell.RealmServer.Battlegrounds;
 using WCell.RealmServer.Entities;
-using WCell.RealmServer.Formulas;
 using WCell.RealmServer.Global;
-using WCell.RealmServer.Network;
-using WCell.RealmServer.Handlers;
 
 namespace WCell.RealmServer.Instances
 {
@@ -29,7 +22,7 @@ namespace WCell.RealmServer.Instances
 		public static int DefaultInstanceTimeoutMillis = 30 * 60 * 1000;
 
 		private IInstanceHolderSet m_owner;
-		private DateTime m_expiryTime;
+		private DateTime m_expiryTime = default(DateTime);
 		internal MapDifficultyEntry difficulty;
 		private DateTime m_lastReset;
 		private TimerEntry m_timeoutTimer;

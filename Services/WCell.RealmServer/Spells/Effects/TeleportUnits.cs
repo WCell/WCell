@@ -14,13 +14,10 @@
  *
  *************************************************************************/
 
-using WCell.Constants;
-using WCell.Constants.NPCs;
+using System;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Entities;
-using WCell.RealmServer.Global;
-using System;
 
 namespace WCell.RealmServer.Spells.Effects
 {

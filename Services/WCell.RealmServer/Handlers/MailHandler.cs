@@ -2,15 +2,13 @@ using System;
 using System.Collections.Generic;
 using NLog;
 using WCell.Constants;
+using WCell.Constants.GameObjects;
 using WCell.Constants.Items;
-using WCell.Core;
 using WCell.Core.Network;
-using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Items.Enchanting;
 using WCell.RealmServer.Mail;
 using WCell.RealmServer.Network;
-using WCell.RealmServer.Items.Enchanting;
-using WCell.Constants.GameObjects;
 
 namespace WCell.RealmServer.Handlers
 {

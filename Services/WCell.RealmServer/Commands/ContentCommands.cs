@@ -1,7 +1,7 @@
 using WCell.Constants.Updates;
+using WCell.Intercommunication.DataTypes;
 using WCell.RealmServer.Content;
 using WCell.Util.Commands;
-using WCell.Intercommunication.DataTypes;
 
 namespace WCell.RealmServer.Commands
 {

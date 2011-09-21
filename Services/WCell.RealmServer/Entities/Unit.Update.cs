@@ -19,7 +19,6 @@ using WCell.Constants.Updates;
 using WCell.Core.Network;
 using WCell.RealmServer.UpdateFields;
 using WCell.Util;
-using WCell.Constants.Spells;
 using WCell.Util.Graphics;
 
 namespace WCell.RealmServer.Entities

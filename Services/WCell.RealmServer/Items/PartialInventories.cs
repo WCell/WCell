@@ -6,8 +6,6 @@ using WCell.Constants.Achievements;
 using WCell.Constants.Items;
 using WCell.Constants.Skills;
 using WCell.Constants.Updates;
-using WCell.Core;
-using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.NPCs;

@@ -15,19 +15,14 @@
  *************************************************************************/
 
 using System;
-using System.Runtime.InteropServices;
-using System.Linq;
-using System.Security;
-using System.Reflection;
-using System.IO;
-using System.Text;
-using System.Runtime.CompilerServices;
-using System.Collections.Generic;
-using System.Threading;
-using System.Net;
 using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
 using System.Net.Sockets;
-using WCell.Util.Strings;
+using System.Reflection;
+using System.Threading;
 
 namespace WCell.Util
 {
@@ -1074,7 +1069,7 @@ namespace WCell.Util
 
 		public static long MakeLong(int low, int high)
 		{
-			return low | ((long)high << 32);
+			return (uint)low | ((long)high << 32);
 		}
 	}
 

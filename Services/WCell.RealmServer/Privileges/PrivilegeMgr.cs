@@ -17,11 +17,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using WCell.Core;
-using WCell.Core.Initialization;
 using WCell.Intercommunication.DataTypes;
-using WCell.RealmServer.Misc;
 
 namespace WCell.RealmServer.Privileges
 {

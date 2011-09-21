@@ -14,9 +14,7 @@
  *
  *************************************************************************/
 
-using System;
 using NLog;
-using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Effects

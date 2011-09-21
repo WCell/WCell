@@ -1,8 +1,8 @@
 using WCell.Constants;
 using WCell.Core.Network;
 using WCell.RealmServer.Entities;
-using WCell.RealmServer.Network;
 using WCell.RealmServer.NPCs.Vehicles;
+using WCell.RealmServer.Network;
 
 namespace WCell.RealmServer.Handlers {
     public static class VehicleHandler {

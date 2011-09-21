@@ -1,14 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using WCell.Util.Commands;
-using WCell.AuthServer.Database;
 using WCell.AuthServer.Accounts;
+using WCell.AuthServer.Privileges;
 using WCell.Constants;
 using WCell.Core.Cryptography;
-using WCell.AuthServer.Privileges;
 using WCell.Util;
+using WCell.Util.Commands;
 
 namespace WCell.AuthServer.Commands
 {
@@ -114,6 +111,9 @@ namespace WCell.AuthServer.Commands
 			public override void Process(CmdTrigger<AuthServerCmdArgs> trigger)
 			{
 				var name = trigger.Text.NextWord();
+
+				//Resync accounts first
+				AccountMgr.Instance.Resync();
 
 				if (AccountMgr.DoesAccountExist(name))
 				{

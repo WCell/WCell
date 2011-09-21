@@ -7,7 +7,7 @@ namespace WCell.Terrain.GUI
     /// <summary>
     /// Struct outlining our custom vertex
     /// </summary>
-    public struct VertexPositionNormalColored
+    public struct VertexPositionNormalColored : IVertexType
     {
         /// <summary>
         /// Vector3 Position for this vertex
@@ -42,9 +42,16 @@ namespace WCell.Terrain.GUI
         /// VertexElement array (used for rendering)
         /// </summary>
         public static readonly VertexElement[] VertexElements = new[] {
-                                                                          new VertexElement( 0, VertexElementFormat.Vector3, VertexElementUsage.Position, 0 ),
-                                                                          new VertexElement( sizeof(float) * 3, VertexElementFormat.Color, VertexElementUsage.Color, 0 ),
-                                                                          new VertexElement( sizeof(float) * 4, VertexElementFormat.Vector3, VertexElementUsage.Normal, 0 ),
+                                                                          new VertexElement(0, VertexElementFormat.Vector3, VertexElementUsage.Position, 0),
+                                                                          new VertexElement(sizeof(float) * 3, VertexElementFormat.Color, VertexElementUsage.Color, 0 ),
+                                                                          new VertexElement(sizeof(float) * 4, VertexElementFormat.Vector3, VertexElementUsage.Normal, 0 ),
                                                                       };
+        
+        private static VertexDeclaration declaration = new VertexDeclaration(VertexElements);
+        
+        public VertexDeclaration VertexDeclaration
+        {
+            get { return declaration; }
+        }
     }
 }

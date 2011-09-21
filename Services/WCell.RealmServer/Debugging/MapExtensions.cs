@@ -1,4 +1,3 @@
-using NLog;
 using WCell.RealmServer.Global;
 
 namespace WCell.RealmServer.Debugging

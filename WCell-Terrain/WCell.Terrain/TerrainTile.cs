@@ -19,8 +19,17 @@ namespace WCell.Terrain
 	/// </summary>
 	public class TerrainTile : IShape
 	{
-	    public MapId Map;
-	    public Point2D Coords;
+        public TileIdentifier TileId { get; set; }
+	    
+	    public MapId Map
+	    {
+	        get { return TileId.MapId; }
+	    }
+
+	    public Point2D Coords
+	    {
+            get { return new Point2D(TileId.X, TileId.Y); }
+	    }
 
 		public int[] TerrainIndices;
 	    public Vector3[] TerrainVertices;

@@ -1,18 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
+using System.Text.RegularExpressions;
 using NHibernate.Criterion;
 using NLog;
 using WCell.AuthServer.Database;
-using WCell.Util;
-using resources = WCell.AuthServer.Res.WCell_AuthServer;
 using WCell.Constants;
-using WCell.Core;
 using WCell.Core.Cryptography;
 using WCell.Core.Initialization;
-using WCell.Intercommunication.DataTypes;
+using WCell.Core.Timers;
+using WCell.Util;
 using WCell.Util.NLog;
+using resources = WCell.AuthServer.Res.WCell_AuthServer;
 
 namespace WCell.AuthServer.Accounts
 {
@@ -47,6 +46,30 @@ namespace WCell.AuthServer.Accounts
 		readonly Dictionary<string, Account> m_cachedAccsByName;
 		bool m_IsCached;
 		private DateTime m_lastResyncTime;
+
+		/// <summary>
+		/// Interval in milliseconds between reloading the account cache from the database
+		/// if caching is enabled. Default is 180000ms == 3 minutes.
+		/// </summary>
+		public static int AccountReloadIntervalMs
+		{
+			set
+			{
+				_accountReloadIntervalMs = value;
+
+				if (Instance._accountsReloadTimer == null)
+					return;
+
+				Instance._accountsReloadTimer.IntervalMillis = value;
+				Instance._accountsReloadTimer.Start();
+			}
+			
+			get { return _accountReloadIntervalMs; }
+		}
+
+		private static int _accountReloadIntervalMs = 180000;
+
+		private TimerEntry _accountsReloadTimer;
 
 		protected AccountMgr()
 		{
@@ -444,6 +467,17 @@ namespace WCell.AuthServer.Accounts
 			{
 				IsCached = AuthServerConfiguration.CacheAccounts;
 
+				//I would have liked this to be a readonly field but it must be
+				//initialised here otherwise in the ctor AccountReloadIntervalMs
+				//wont have been init'd which would mean we cant customise the timer easily
+				_accountsReloadTimer = new TimerEntry(0, AccountReloadIntervalMs, delay =>
+				{
+					if (Instance.IsCached)
+						Instance.Resync();
+				});
+				_accountsReloadTimer.Start();
+				AuthenticationServer.IOQueue.RegisterUpdatable(_accountsReloadTimer);
+
 				if (Count == 0)
 				{
 					log.Info("Detected empty Account-database.");
@@ -460,13 +494,20 @@ namespace WCell.AuthServer.Accounts
 			}
 			return true;
 		}
+
+		protected bool Stop()
+		{
+			_accountsReloadTimer.Stop();
+			AuthenticationServer.IOQueue.UnregisterUpdatable(_accountsReloadTimer);
+			return true;
+		}
 		#endregion
 
 		/// <summary>
-		/// TODO: Improve name-verification
+		/// Validates the name against the stored Regex <see cref="DefaultNameValidationRegex"/>
 		/// </summary>
-		/// <param name="name"></param>
-		/// <returns></returns>
+		/// <param name="name">The name to be validated</param>
+		/// <returns>A Boolean value true is the name is valid; otherwise false</returns>
 		public static bool ValidateNameDefault(ref string name)
 		{
 			// Account-names are always upper case
@@ -474,20 +515,13 @@ namespace WCell.AuthServer.Accounts
 
 			if (name.Length >= MinAccountNameLen && name.Length <= MaxAccountNameLen)
 			{
-				foreach (var c in name)
-				{
-					if (c < '0' || c > 'z')
-					{
-						return false;
-					}
-				}
-				return true;
+				return DefaultNameValidationRegex.IsMatch(name);
 			}
 			return false;
 		}
 
 		public delegate bool NameValidationHandler(ref string name);
-
+		public static readonly Regex DefaultNameValidationRegex = new Regex("^[A-Za-z0-9]+$");
 		public static NameValidationHandler NameValidator = ValidateNameDefault;
 	}
 }

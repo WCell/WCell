@@ -15,11 +15,10 @@
  *************************************************************************/
 
 using System.Collections.Generic;
+using WCell.AuthServer.Network;
 using WCell.Core;
 using WCell.Core.Initialization;
-using WCell.AuthServer.Network;
-using WCell.Util.Variables;
-using Utility=WCell.Util.Utility;
+using WCell.Util;
 
 namespace WCell.AuthServer.Stats
 {

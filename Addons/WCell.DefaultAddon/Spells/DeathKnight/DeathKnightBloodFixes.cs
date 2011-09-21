@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using WCell.Constants;
-using WCell.Constants.Misc;
+﻿using WCell.Constants;
 using WCell.Constants.Spells;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
-using WCell.RealmServer.Spells.Auras.Handlers;
 using WCell.RealmServer.Spells.Auras.Misc;
 using WCell.RealmServer.Spells.Effects;
 using WCell.Util;
@@ -31,22 +25,11 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 				effect.AuraEffectHandlerCreator = () => new ProcEnergizeHandler();
 			});
 
-			// Bloody Vengeance has wrong trigger flags
-			SpellLineId.DeathKnightBloodBloodyVengeance.Apply(spell =>
-			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCastCritical |
-											ProcTriggerFlags.MeleeCriticalHitOther |
-											ProcTriggerFlags.RangedCriticalHit;
-			});
-
 			FixScentOfBlood();
 
 			// Mark of Blood only has Dummy and None effects
 			SpellLineId.DeathKnightBloodMarkOfBlood.Apply(spell =>
 			{
-				// "Whenever the marked enemy deals damage to a target"
-				spell.ProcTriggerFlags = ProcTriggerFlags.MeleeHitOther | ProcTriggerFlags.RangedHitOther | ProcTriggerFlags.SpellCast;
-
 				// "that target is healed for $49005s2% of its maximum health"
 				var effect2 = spell.Effects[1];
 				effect2.IsProc = true;
@@ -70,8 +53,6 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			// Sudden Doom: "Your Blood Strikes and Heart Strikes have a $h% chance to launch a free Death Coil at your target."
 			SpellLineId.DeathKnightBloodSuddenDoom.Apply(spell =>
 			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
-
 				// only one dummy -> Trigger highest level of death coil that the caster has instead
 				// set correct trigger spells
 				var effect = spell.GetEffect(AuraType.Dummy);
@@ -200,10 +181,11 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 				var triggerSpellEffect = spell.GetEffect(AuraType.ProcTriggerSpell);
 				spell.ClearEffects();												// remove all effects
 
+                spell.ProcHitFlags = ProcHitFlags.Dodge | ProcHitFlags.Parry | ProcHitFlags.Block;
 				// create custom handler
 				var handler = new TriggerSpellProcHandlerTemplate(
 					SpellHandler.Get(triggerSpellEffect.TriggerSpellId),
-					ProcTriggerFlags.MeleeHit | ProcTriggerFlags.RangedHit,
+					spell.ProcTriggerFlags,
 					(target, action) =>
 					{
 						var daction = action as DamageAction;

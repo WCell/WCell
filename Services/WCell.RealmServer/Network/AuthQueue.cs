@@ -17,10 +17,10 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using WCell.Util.Collections;
 using WCell.Constants;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Stats;
+using WCell.Util.Collections;
 using WCell.Util.NLog;
 
 namespace WCell.RealmServer.Network

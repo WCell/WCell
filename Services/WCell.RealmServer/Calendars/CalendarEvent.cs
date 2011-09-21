@@ -1,11 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using WCell.Constants;
-using WCell.Core;
-using WCell.RealmServer.Entities;
-
 namespace WCell.RealmServer.Calendars
 {
     class CalendarEvent

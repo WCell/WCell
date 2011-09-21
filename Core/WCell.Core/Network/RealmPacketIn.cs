@@ -18,7 +18,6 @@ using System;
 using Cell.Core;
 using WCell.Constants;
 using WCell.Core.Network;
-using System.Diagnostics;
 
 namespace WCell.RealmServer
 {

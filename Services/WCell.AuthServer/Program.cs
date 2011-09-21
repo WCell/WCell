@@ -15,8 +15,6 @@
  *************************************************************************/
 
 using NLog;
-using System;
-using WCell.Core.Database;
 
 namespace WCell.AuthServer
 {
@@ -25,9 +23,7 @@ namespace WCell.AuthServer
     /// </summary>
     public class Program
     {
-    	public static int[] TestArray = new []{ 1, 4, 10 };
-
-        private static readonly Logger log = LogManager.GetCurrentClassLogger();
+		private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// Starts up the authentication server.

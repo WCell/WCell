@@ -1,10 +1,8 @@
 using System;
+using WCell.Constants;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Spells;
-using WCell.Constants;
-using WCell.Util;
-
 using WeakRef = WCell.Util.WeakReference<WCell.RealmServer.Entities.Unit>;
 
 namespace WCell.RealmServer.Misc
@@ -26,6 +24,11 @@ namespace WCell.RealmServer.Misc
 		}
 
 		ProcTriggerFlags ProcTriggerFlags
+		{
+			get;
+		}
+
+		ProcHitFlags ProcHitFlags
 		{
 			get;
 		}
@@ -99,7 +102,7 @@ namespace WCell.RealmServer.Misc
 		public static ProcValidator StunValidator = (target, action) =>
 		{
 			var aaction = action as DamageAction;
-			if (aaction == null || aaction.Spell == null || 
+			if (aaction == null || aaction.Spell == null ||
 				!aaction.Spell.IsAura || !action.Attacker.MayAttack(action.Victim))
 			{
 				return false;
@@ -139,6 +142,11 @@ namespace WCell.RealmServer.Misc
 		public ProcTriggerFlags ProcTriggerFlags
 		{
 			get { return Template.ProcTriggerFlags; }
+		}
+
+		public ProcHitFlags ProcHitFlags
+		{
+			get { return Template.ProcHitFlags; }
 		}
 
 		public Spell ProcSpell
@@ -205,18 +213,20 @@ namespace WCell.RealmServer.Misc
 		{
 		}
 
-		public ProcHandlerTemplate(ProcTriggerFlags triggerFlags, ProcCallback procAction, uint procChance = 100u, int stackCount = 0)
+		public ProcHandlerTemplate(ProcTriggerFlags triggerFlags, ProcHitFlags hitFlags, ProcCallback procAction, uint procChance = 100u, int stackCount = 0)
 		{
 			ProcTriggerFlags = triggerFlags;
+			ProcHitFlags = hitFlags;
 			ProcChance = procChance;
 			Validator = null;
 			ProcAction = procAction;
 			m_stackCount = stackCount;
 		}
 
-		public ProcHandlerTemplate(ProcTriggerFlags triggerFlags, ProcCallback procAction, ProcValidator validator = null, uint procChance = 100u, int stackCount = 0)
+		public ProcHandlerTemplate(ProcTriggerFlags triggerFlags, ProcHitFlags hitFlags, ProcCallback procAction, ProcValidator validator = null, uint procChance = 100u, int stackCount = 0)
 		{
 			ProcTriggerFlags = triggerFlags;
+			ProcHitFlags = hitFlags;
 			ProcChance = procChance;
 			Validator = validator;
 			ProcAction = procAction;
@@ -241,6 +251,12 @@ namespace WCell.RealmServer.Misc
 		}
 
 		public ProcTriggerFlags ProcTriggerFlags
+		{
+			get;
+			set;
+		}
+
+		public ProcHitFlags ProcHitFlags
 		{
 			get;
 			set;
@@ -271,14 +287,14 @@ namespace WCell.RealmServer.Misc
 	public class TriggerSpellProcHandlerTemplate : ProcHandlerTemplate
 	{
 		public Spell Spell { get; set; }
-		
-		public TriggerSpellProcHandlerTemplate(Spell spell, ProcTriggerFlags triggerFlags, uint procChance = 100u, int stackCount = 0)
-			: this(spell, triggerFlags, null, procChance, stackCount)
+
+		public TriggerSpellProcHandlerTemplate(Spell spell, ProcTriggerFlags triggerFlags, ProcHitFlags hitFlags = ProcHitFlags.None, uint procChance = 100u, int stackCount = 0)
+			: this(spell, triggerFlags, null, hitFlags, procChance, stackCount)
 		{
 		}
 
-		public TriggerSpellProcHandlerTemplate(Spell spell, ProcTriggerFlags triggerFlags, ProcValidator validator = null, uint procChance = 100u, int stackCount = 0)
-			: base(triggerFlags, null, validator, procChance, stackCount)
+		public TriggerSpellProcHandlerTemplate(Spell spell, ProcTriggerFlags triggerFlags, ProcValidator validator = null, ProcHitFlags hitFlags = ProcHitFlags.None, uint procChance = 100u, int stackCount = 0)
+			: base(triggerFlags, hitFlags, null, validator, procChance, stackCount)
 		{
 			Spell = spell;
 			ProcAction = ProcSpell;

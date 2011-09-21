@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
 using WCell.Constants;
 using WCell.Constants.Items;
-using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Handlers;
@@ -638,20 +636,12 @@ namespace WCell.RealmServer.Entities
 					m_brain.OnDamageReceived(action);
 				}
 
-				if (action.Attacker !=null && action.Attacker.Brain != null)
+				if (action.Attacker != null && action.Attacker.Brain != null)
 				{
 					action.Attacker.m_brain.OnDamageDealt(action);
 				}
 
-				var health = Health;
-
-				if (dmg >= health)
-				{
-					// kill
-					LastKiller = action.Attacker;
-				}
-
-				Health = health - dmg;
+				Health -= dmg;
 
 				if (!IsAlive)
 				{
@@ -660,8 +650,27 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
+		#region OnKilled
+		/// <summary>
+		/// Called after this unit has been killed by damage action
+		/// </summary>
+		/// <param name="action">Action which killed this unit</param>
 		protected virtual void OnKilled(IDamageAction action)
 		{
+			TriggerProcOnKilled(action);
+
+			LastKiller = action.Attacker;
 		}
+
+		private void TriggerProcOnKilled(IDamageAction killingAction)
+		{
+			if (YieldsXpOrHonor && killingAction.Attacker != null)
+			{
+				killingAction.Attacker.Proc(ProcTriggerFlags.KilledTargetThatYieldsExperienceOrHonor, this, killingAction, true);
+			}
+
+			Proc(ProcTriggerFlags.Death, killingAction.Attacker, killingAction, true);
+		}
+		#endregion
 	}
 }

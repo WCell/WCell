@@ -15,16 +15,10 @@
  *************************************************************************/
 
 using System;
-using System.Net.Security;
 using System.ServiceModel;
-using System.ServiceModel.Description;
 using NLog;
-using resources = WCell.AuthServer.Res.WCell_AuthServer;
-using WCell.Core;
-using WCell.Constants;
-using WCell.Core.Initialization;
 using WCell.Intercommunication;
-using WCell.AuthServer;
+using resources = WCell.AuthServer.Res.WCell_AuthServer;
 
 namespace WCell.AuthServer.IPC
 {

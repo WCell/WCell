@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using WCell.Constants.Spells;
-using WCell.RealmServer.Misc;
+﻿using WCell.RealmServer.Misc;
 using WCell.RealmServer.Spells.Auras.Handlers;
 
 namespace WCell.RealmServer.Spells.Auras.Misc
@@ -13,7 +8,7 @@ namespace WCell.RealmServer.Spells.Auras.Misc
 		public override bool CanProcBeTriggeredBy(IUnitAction action)
 		{
 			// only allow auto attack to trigger this
-			return action.Spell == null || action.Spell.AttributesExB.HasFlag(SpellAttributesExB.AutoRepeat);
+			return action.Spell == null || action.Spell.IsAutoRepeating;
 		}
 	}
 }

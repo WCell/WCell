@@ -20,7 +20,6 @@ using WCell.Constants.Chat;
 using WCell.Constants.Factions;
 using WCell.Constants.World;
 using WCell.Core.Initialization;
-using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Misc;
 

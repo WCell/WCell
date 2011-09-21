@@ -1,4 +1,4 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: Talent.cs
  *   copyright		: (C) The WCell Team
@@ -15,7 +15,6 @@
  *************************************************************************/
 
 using WCell.Constants.Talents;
-using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Spells;
 

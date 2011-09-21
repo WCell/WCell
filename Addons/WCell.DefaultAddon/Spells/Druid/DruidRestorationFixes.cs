@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using NLog;
 using WCell.Constants;
 using WCell.Constants.Spells;
@@ -15,7 +12,6 @@ using WCell.RealmServer.Spells.Auras.Handlers;
 using WCell.RealmServer.Spells.Auras.Misc;
 using WCell.RealmServer.Spells.Effects;
 using WCell.Util;
-using WCell.Util.NLog;
 
 namespace WCell.Addons.Default.Spells.Druid
 {
@@ -67,8 +63,6 @@ namespace WCell.Addons.Default.Spells.Druid
 			// Natural perfection only procs on crit
 			SpellLineId.DruidRestorationNaturalPerfection.Apply(spell =>
 			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.MeleeCriticalHit | ProcTriggerFlags.RangedCriticalHit;
-
 				var proc = spell.GetEffect(AuraType.ProcTriggerSpell);
 				proc.ClearAffectMask();									// no spell restrictions for the proc
 			});
@@ -160,9 +154,6 @@ namespace WCell.Addons.Default.Spells.Druid
 			// "Your Rejuvenation and Wild Growth spells have a $s1% chance to restore $48540s1 Energy, $/10;48541s1 Rage, $48542s1% Mana or $/10;48543s1 Runic Power per tick."
 			SpellLineId.DruidRestorationRevitalize.Apply(spell =>
 			{
-				// make the Spell proc on heal
-				spell.ProcTriggerFlags = ProcTriggerFlags.HealOther;
-
 				var effect = spell.GetEffect(AuraType.OverrideClassScripts);
 				effect.IsProc = true;
 				effect.AddToAffectMask(SpellLineId.DruidRejuvenation, SpellLineId.DruidRestorationWildGrowth);

@@ -1,13 +1,7 @@
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using WCell.Constants;
-using WCell.Util;
-using WCell.Core.Initialization;
 using System.Xml.Serialization;
 using WCell.Constants.World;
+using WCell.Util;
 
 namespace WCell.RealmServer.Instances
 {

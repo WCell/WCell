@@ -18,8 +18,6 @@ using System;
 using System.Reflection;
 using NLog;
 using WCell.Constants;
-using WCell.Constants.Items;
-using WCell.Core;
 using WCell.Core.Initialization;
 using WCell.Core.Network;
 using WCell.PacketAnalysis;

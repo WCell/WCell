@@ -1,4 +1,3 @@
-using NLog;
 using WCell.Constants;
 using WCell.Constants.Misc;
 using WCell.Constants.Spells;

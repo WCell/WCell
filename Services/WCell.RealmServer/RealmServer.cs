@@ -23,19 +23,18 @@ using Cell.Core;
 using WCell.Constants;
 using WCell.Constants.Login;
 using WCell.Core;
-using WCell.RealmServer.Content;
-using WCell.RealmServer.Res;
-using WCell.Util.Graphics;
-using WCell.Util.Threading;
+using WCell.Core.Initialization;
 using WCell.Intercommunication.DataTypes;
 using WCell.RealmServer.Chat;
 using WCell.RealmServer.Global;
+using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Network;
 using WCell.RealmServer.Privileges;
+using WCell.RealmServer.Res;
 using WCell.Util;
-using WCell.Core.Initialization;
+using WCell.Util.Graphics;
+using WCell.Util.Threading;
 using WCell.Util.Variables;
-using WCell.RealmServer.Handlers;
 
 namespace WCell.RealmServer
 {
@@ -44,7 +43,7 @@ namespace WCell.RealmServer
 	/// connections and verifies authentication with the 
 	/// authentication server 
 	/// </summary>
-	[VariableClassAttribute(true)]
+	[VariableClass(true)]
 	public sealed class RealmServer : ServerApp<RealmServer>
 	{
 		public event Action<RealmStatus> StatusChanged;

@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using WCell.Constants.World;
 using WCell.Util;
 
 namespace WCell.RealmServer.Global

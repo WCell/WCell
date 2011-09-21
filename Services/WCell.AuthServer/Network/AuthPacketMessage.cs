@@ -1,6 +1,6 @@
 using System;
-using WCell.Util.Threading;
 using WCell.Util.NLog;
+using WCell.Util.Threading;
 
 namespace WCell.AuthServer.Network
 {

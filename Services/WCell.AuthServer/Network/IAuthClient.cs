@@ -1,4 +1,4 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: AuthClient.cs
  *   copyright		: (C) The WCell Team
@@ -14,11 +14,10 @@
  *
  *************************************************************************/
 
-using System;
 using Cell.Core;
+using WCell.AuthServer.Accounts;
 using WCell.Core;
 using WCell.Core.Cryptography;
-using WCell.AuthServer.Accounts;
 
 namespace WCell.AuthServer.Network
 {

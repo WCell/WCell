@@ -1,16 +1,16 @@
+using System;
 using NLog;
 using WCell.Constants;
 using WCell.Constants.Updates;
 using WCell.Core.Cryptography;
+using WCell.Intercommunication.DataTypes;
 using WCell.RealmServer.Chat;
-using WCell.Util.Graphics;
-using WCell.Util.Threading;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
 using WCell.Util;
 using WCell.Util.Commands;
-using WCell.Intercommunication.DataTypes;
-using System;
+using WCell.Util.Graphics;
+using WCell.Util.Threading;
 using WCell.Util.Variables;
 
 // Commands used on Character-objects

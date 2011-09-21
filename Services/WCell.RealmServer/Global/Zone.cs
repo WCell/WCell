@@ -15,15 +15,13 @@
  *************************************************************************/
 
 using System;
+using System.Collections.Generic;
 using WCell.Constants;
 using WCell.Constants.Factions;
 using WCell.Constants.Login;
 using WCell.Constants.World;
-using WCell.Core.DBC;
-using WCell.RealmServer.Entities;
-using WCell.Util.Data;
 using WCell.RealmServer.Chat;
-using System.Collections.Generic;
+using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
 
 namespace WCell.RealmServer.Global

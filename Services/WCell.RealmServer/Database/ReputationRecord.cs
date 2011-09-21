@@ -1,4 +1,3 @@
-using System;
 using Castle.ActiveRecord;
 using WCell.Constants.Factions;
 

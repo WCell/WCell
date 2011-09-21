@@ -1,4 +1,4 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: ModBaseResistancePercent.cs
  *   copyright		: (C) The WCell Team
@@ -15,6 +15,7 @@
  *************************************************************************/
 
 using WCell.Constants;
+
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
 	public class ModBaseResistancePercentHandler : AuraEffectHandler

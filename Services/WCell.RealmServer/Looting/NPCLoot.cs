@@ -1,12 +1,5 @@
-using System.Collections.Generic;
-using System.Linq;
-using WCell.Constants;
-using WCell.Constants.Items;
-using WCell.RealmServer.Entities;
-using WCell.RealmServer.Groups;
-using WCell.RealmServer.Handlers;
-using WCell.RealmServer.Items;
 using WCell.Constants.Looting;
+using WCell.RealmServer.Items;
 
 namespace WCell.RealmServer.Looting
 {

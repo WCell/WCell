@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using WCell.Constants;
-
-namespace WCell.RealmServer.Spells.Auras.Handlers
+﻿namespace WCell.RealmServer.Spells.Auras.Handlers
 {
     public class ModDeflectChanceHandler : AuraEffectHandler
     {

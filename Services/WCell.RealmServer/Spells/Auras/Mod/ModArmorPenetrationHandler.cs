@@ -1,15 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using WCell.Constants;
-using WCell.Constants.Items;
 using WCell.Constants.Misc;
 using WCell.RealmServer.Entities;
-using WCell.RealmServer.Misc;
-using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
-using WCell.RealmServer.Spells.Auras.Misc;
 
 namespace WCell.RealmServer.Auras.Effects
 {

@@ -1,9 +1,9 @@
 using System;
 using WCell.Constants.World;
-using WCell.RealmServer.Global;
-using WCell.Util.Graphics;
-using WCell.Util;
 using WCell.Core.Terrain;
+using WCell.RealmServer.Global;
+using WCell.Util;
+using WCell.Util.Graphics;
 
 namespace WCell.RealmServer.Waypoints
 {

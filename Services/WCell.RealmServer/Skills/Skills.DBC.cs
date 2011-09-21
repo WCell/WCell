@@ -16,7 +16,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using Cell.Core;
 using WCell.Constants;
 using WCell.Constants.Skills;
 using WCell.Constants.Spells;
@@ -24,7 +23,6 @@ using WCell.Core;
 using WCell.Core.DBC;
 using WCell.RealmServer.Spells;
 using WCell.Util;
-using System;
 
 namespace WCell.RealmServer.Skills
 {

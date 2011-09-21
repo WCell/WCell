@@ -1,9 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using WCell.Constants;
-using WCell.Constants.Misc;
 using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
@@ -12,7 +8,6 @@ using WCell.RealmServer.Entities;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.NPCs;
 using WCell.RealmServer.Spells;
-using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Spells.Auras.Handlers;
 using WCell.RealmServer.Spells.Auras.Misc;
 using WCell.RealmServer.Spells.Effects;
@@ -45,7 +40,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			// Dirge is only triggered by "Death Strike, Plague Strike and Scourge Strike"
 			SpellLineId.DeathKnightUnholyDirge.Apply(spell =>
 			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+				spell.ProcTriggerFlags = ProcTriggerFlags.DoneMeleeSpell;
 
 				var effect = spell.GetEffect(AuraType.ProcTriggerSpellWithOverride);
 				effect.ClearAffectMask();

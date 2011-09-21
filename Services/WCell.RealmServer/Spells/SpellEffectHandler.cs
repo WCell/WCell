@@ -14,14 +14,10 @@
  *
  *************************************************************************/
 
-using System;
-using System.Collections.Generic;
 using NLog;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Entities;
-using WCell.RealmServer.Spells.Auras;
-using WCell.Util;
 
 namespace WCell.RealmServer.Spells
 {

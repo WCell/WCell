@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using WCell.Constants;
 using WCell.Constants.Misc;
 using WCell.Constants.Spells;
@@ -36,7 +32,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 		{
 			line.Apply(spell =>
 			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+				spell.ProcTriggerFlags = ProcTriggerFlags.DoneHarmfulMagicSpell | ProcTriggerFlags.DoneMeleeSpell;
 
 				var effect = spell.GetEffect(AuraType.Dummy2);
 				// should not have an amplitude 

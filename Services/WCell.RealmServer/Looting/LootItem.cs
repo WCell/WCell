@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using WCell.Constants;
-using WCell.RealmServer.Items;
 using WCell.Constants.Looting;
+using WCell.RealmServer.Items;
 
 namespace WCell.RealmServer.Looting
 {

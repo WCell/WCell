@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using WCell.Constants.Spells;
 using WCell.Core.Initialization;
-using WCell.RealmServer.Spells;
-using WCell.RealmServer.Misc;
-using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Misc;
+using WCell.RealmServer.Spells;
+using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Spells.Auras.Handlers;
 using WCell.RealmServer.Spells.Auras.Misc;
-using WCell.RealmServer.Spells.Effects;
 
 namespace WCell.Addons.Default.Spells.Mage
 {
@@ -26,7 +22,7 @@ namespace WCell.Addons.Default.Spells.Mage
 			SpellLineId.MageArcaneArcanePotency.Apply(spell =>
 			{
 				spell.GetEffect(AuraType.Dummy).AuraEffectHandlerCreator = () => new AddProcHandler(new ArcanePotencyProcHandler(
-					ProcTriggerFlags.HealOther | ProcTriggerFlags.SpellCast,
+					ProcTriggerFlags.DoneBeneficialMagicSpell,
 					spell.GetEffect(AuraType.Dummy).CalcEffectValue()));
 
 			});
@@ -146,8 +142,13 @@ namespace WCell.Addons.Default.Spells.Mage
 			}
 			public ProcTriggerFlags ProcTriggerFlags
 			{
-				get { return ProcTriggerFlags.HealOther | ProcTriggerFlags.SpellCast; }
+				get { return ProcTriggerFlags.DoneBeneficialMagicSpell; }
 			}
+
+            public ProcHitFlags ProcHitFlags
+            {
+                get { return ProcHitFlags.None; }
+            }
 
 			public void Dispose()
 			{

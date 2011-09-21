@@ -1,14 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using WCell.Constants.Spells;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
-using WCell.RealmServer.Spells.Effects;
 
 namespace WCell.Addons.Default.Spells.Warrior
 {
@@ -56,7 +51,7 @@ namespace WCell.Addons.Default.Spells.Warrior
 			{
 				spell.AddProcHandler(new TriggerSpellProcHandlerTemplate(
 					SpellHandler.Get(SpellId.ClassSkillSecondWindRank1),
-					ProcTriggerFlags.SpellHit,
+					spell.ProcTriggerFlags,
 					ProcHandler.StunValidator
 				));
 			}, SpellId.WarriorArmsSecondWindRank1);
@@ -64,16 +59,10 @@ namespace WCell.Addons.Default.Spells.Warrior
 			{
 				spell.AddProcHandler(new TriggerSpellProcHandlerTemplate(
 					SpellHandler.Get(SpellId.ClassSkillSecondWindRank2),
-					ProcTriggerFlags.SpellHit,
+					spell.ProcTriggerFlags,
 					ProcHandler.StunValidator
 				));
 			}, SpellId.WarriorArmsSecondWindRank2);
-
-			// Trauma should only proc on crit hit
-			SpellLineId.WarriorArmsTrauma.Apply(spell =>
-			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.MeleeCriticalHitOther;
-			});
 
 			// Taste for blood only triggers once every 6 seconds
 			SpellLineId.WarriorArmsTasteForBlood.Apply(spell =>

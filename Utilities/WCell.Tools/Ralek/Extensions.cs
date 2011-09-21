@@ -1,4 +1,4 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: Extensions.cs
  *   copyright		: (C) The WCell Team
@@ -15,9 +15,8 @@
  *************************************************************************/
 
 using System.IO;
-using System.Text;
 using System.Runtime.InteropServices;
-using System;
+using System.Text;
 
 namespace WCell.Tools.Ralek
 {
