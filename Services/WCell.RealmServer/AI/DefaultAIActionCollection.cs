@@ -1,5 +1,7 @@
+using WCell.Constants.NPCs;
 using WCell.RealmServer.AI.Actions;
 using WCell.RealmServer.AI.Actions.Combat;
+using WCell.RealmServer.AI.Actions.Movement;
 using WCell.RealmServer.AI.Actions.States;
 using WCell.RealmServer.Entities;
 
@@ -21,7 +23,10 @@ namespace WCell.RealmServer.AI
 			this[BrainState.Dead] = this[BrainState.Idle];
 
 			this[BrainState.Evade] = new AIEvadeAction(owner);
-			this[BrainState.Roam] = new AIRoamAction(owner);
+			this[BrainState.Roam] = new AIRoamAction(owner)
+			{
+				Strategy = new AIWaypointMoveAction(owner, AIMovementType.ForwardThenBack, owner.Waypoints)
+			};
 
 			this[BrainState.Follow] = new AIFollowMasterAction(owner);
 			this[BrainState.Guard] = new AIGuardMasterAction(owner);

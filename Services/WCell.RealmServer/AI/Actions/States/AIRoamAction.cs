@@ -10,9 +10,25 @@ namespace WCell.RealmServer.AI.Actions.States
 	/// <summary>
 	/// AI movemement action for roaming
 	/// </summary>
-	public class AIRoamAction : AIWaypointMoveAction, IAIStateAction
+	public class AIRoamAction : AIAction, IAIStateAction
 	{
-		public static int DefaultRoamSpellCastDelay = 60000;
+		public static int DefaultRoamSpellCastDelay = 30000;
+
+		private DateTime lastSpellCast;
+
+		private AIAction _strategy;
+
+		public AIRoamAction(Unit owner)
+			: base(owner)
+		{
+			MinimumRoamSpellCastDelay = DefaultRoamSpellCastDelay;
+		}
+
+		public AIRoamAction(Unit owner, AIAction roamAction) :
+			base(owner)
+		{
+			Strategy = roamAction;
+		}
 
 		public int MinimumRoamSpellCastDelay
 		{
@@ -20,12 +36,16 @@ namespace WCell.RealmServer.AI.Actions.States
 			set;
 		}
 
-		private DateTime lastSpellCast;
-
-		public AIRoamAction(Unit owner) :
-			base(owner, AIMovementType.ForwardThenBack, owner.Waypoints)
+		/// <summary>
+		/// The strategy to be used while roaming
+		/// </summary>
+		public AIAction Strategy
 		{
-			MinimumRoamSpellCastDelay = DefaultRoamSpellCastDelay;
+			get { return _strategy; }
+			set
+			{
+				_strategy = value;
+			}
 		}
 
 		public override void Start()
@@ -33,7 +53,7 @@ namespace WCell.RealmServer.AI.Actions.States
 			// make sure we don't have Target nor Attacker
 			m_owner.FirstAttacker = null;
 			m_owner.Target = null;
-			base.Start();
+			Strategy.Start();
 		}
 
 		public override void Update()
@@ -50,8 +70,13 @@ namespace WCell.RealmServer.AI.Actions.States
 					}
 				}
 
-				base.Update();
+				Strategy.Update();
 			}
+		}
+
+		public override void Stop()
+		{
+			Strategy.Stop();
 		}
 
 		/// <summary>

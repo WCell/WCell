@@ -33,24 +33,24 @@ namespace WCell.RealmServer.AI.Actions.Movement
 		/// </summary>
 		protected uint m_desiredStartMovingTime;
 
-		protected AIMovementType m_WPmovementType;
+		protected AIMovementType _waypointSequence;
 
 		public AIWaypointMoveAction(Unit owner)
 			: this(owner, AIMovementType.ForwardThenStop)
 		{
 		}
 
-		public AIWaypointMoveAction(Unit owner, AIMovementType wpMovementType)
+		public AIWaypointMoveAction(Unit owner, AIMovementType waypointSequence)
 			: base(owner)
 		{
 			m_waypoints = new LinkedList<WaypointEntry>();
 
-			m_WPmovementType = wpMovementType;
+			_waypointSequence = waypointSequence;
 		}
 
-		public AIWaypointMoveAction(Unit owner, AIMovementType wpMovementType,
+		public AIWaypointMoveAction(Unit owner, AIMovementType waypointSequence,
 			LinkedList<WaypointEntry> waypoints)
-			: this(owner, wpMovementType)
+			: this(owner, waypointSequence)
 		{
 			if (waypoints == null)
 			{
@@ -146,7 +146,7 @@ namespace WCell.RealmServer.AI.Actions.Movement
 			if (m_currentWaypoint == null)
 				return m_waypoints.First;
 
-			switch (m_WPmovementType)
+			switch (_waypointSequence)
 			{
 				case AIMovementType.ForwardThenStop:
 					return m_currentWaypoint.Next;

@@ -42,6 +42,10 @@ namespace WCell.RealmServer.Entities
 			{
 				return UpdateFieldFlags.OwnerOnly | UpdateFieldFlags.Public;
 			}
+			if (IsAlliedWith(chr))
+			{
+				return UpdateFieldFlags.GroupOnly | UpdateFieldFlags.Public;
+			}
 			return UpdateFieldFlags.Public;
 		}
 

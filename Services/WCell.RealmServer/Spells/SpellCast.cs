@@ -1643,7 +1643,8 @@ namespace WCell.RealmServer.Spells
 			else if (target != null)
 			{
 				if (spell.IsAreaSpell ||
-					(spell.IsHarmfulFor(CasterReference, target)))
+					CasterObject == null ||
+					spell.IsHarmfulFor(CasterReference, target) != target.IsHostileWith(CasterObject))
 				{
 					targets = null;
 				}
