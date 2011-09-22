@@ -16,6 +16,7 @@ namespace WCell.RealmServer.Handlers
 			var image = client.ActiveCharacter.Map.GetObject(guid) as NPC;
 			SendMirrorImageData(client, image);
 		}
+
 		public static void SendMirrorImageData(IRealmClient client, NPC mirrorimage)
 		{
 			var owner = mirrorimage.PlayerOwner;

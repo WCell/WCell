@@ -1300,7 +1300,15 @@ namespace WCell.RealmServer.Entities
 
 		public ShapeshiftMask ShapeshiftMask
 		{
-			get { return (ShapeshiftMask)(1 << (int)(ShapeshiftForm - 1)); }
+			get
+			{
+				// TODO: Employ unconditional function instead
+				if (ShapeshiftForm == ShapeshiftForm.Normal)
+				{
+					return ShapeshiftMask.None;
+				}
+				return (ShapeshiftMask)(1 << (int)(ShapeshiftForm - 1));
+			}
 		}
 		#endregion
 

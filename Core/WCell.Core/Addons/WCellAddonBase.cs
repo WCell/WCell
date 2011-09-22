@@ -63,7 +63,6 @@ namespace WCell.Core.Addons
 		{
 			var cfg = new VariableConfiguration<WCellVariableDefinition>(OnError);
 			cfg.FilePath = Path.Combine(Context.File.DirectoryName, GetType().Name + "Config.xml");
-			cfg.AutoSave = true;
 			cfg.AddVariablesOfAsm<VariableAttribute>(GetType().Assembly);
 			return cfg;
 		}
@@ -96,7 +95,7 @@ namespace WCell.Core.Addons
 			if (UseConfig)
 			{
 				config = CreateConfig();
-				if (config.Load())
+				if (!config.Load())
 				{
 					try
 					{
