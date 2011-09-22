@@ -275,4 +275,29 @@ namespace WCell.Constants
 		SpiritOfRedemption = 32,
 		End
 	}
+
+	[Flags]
+	public enum ShapeshiftMask : uint
+	{
+		None = 0,
+		Cat = 1,
+		TreeOfLife = 2,
+		Travel = 4,
+		Aqua = 8,
+		Bear = 0x000000010,
+		Ambient = 0x000000020,
+		Ghoul = 0x000000040,
+		DireBear = 0x00000080,
+		CreatureBear = 0x00004000,
+		CreatureCat = 0x00008000,
+		GhostWolf = 0x00010000,
+		BattleStance = 0x00020000,
+		DefensiveStance = 0x00040000,
+		BerserkerStance = 0x00080000,
+		EpicFlightForm = 0x08000000,
+		Shadow = 0x10000000,
+		Stealth = 0x20000000,
+		Moonkin = 0x40000000,
+		SpiritOfRedemption = 0x80000000
+	}
 }

@@ -154,6 +154,7 @@ namespace WCell.Addons.Default.Spells.Warlock
                 return base.InitializeTarget(target);
             }
         }
+
 		#region ApplyImmolateStateHandler
 		public class ApplyImmolateStateHandler : DummyHandler
 		{
