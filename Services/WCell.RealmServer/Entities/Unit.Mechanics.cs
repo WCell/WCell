@@ -373,6 +373,7 @@ namespace WCell.RealmServer.Entities
 						{
 							SpellCast.Cancel();
 						}
+                        StopMoving();
 					}
 
 					// interaction
