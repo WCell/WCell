@@ -149,7 +149,7 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Wheter the Unit is allowed to attack and use physical abilities
+		/// Whether the Unit is allowed to attack and use physical abilities
 		/// </summary>
 		public bool CanDoPhysicalActivity
 		{
@@ -336,7 +336,7 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Increase the mechnanic modifier count for the given SpellMechanic
+        /// Increase the mechanic modifier count for the given SpellMechanic
 		/// </summary>
 		public void IncMechanicCount(SpellMechanic mechanic, bool isCustom = false)
 		{
@@ -383,7 +383,7 @@ namespace WCell.RealmServer.Entities
 						//UnitFlags |= UnitFlags.UnInteractable;
 					}
 
-					// harmfulnes
+					// harmfulness
 					if (m_canHarm && SpellConstants.HarmPreventionMechanics[(int)mechanic])
 					{
 						SetCanHarmState();
@@ -444,7 +444,7 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Decrease the mechnanic modifier count for the given SpellMechanic
+        /// Decrease the mechanic modifier count for the given SpellMechanic
 		/// </summary>
 		public void DecMechanicCount(SpellMechanic mechanic, bool isCustom = false)
 		{
