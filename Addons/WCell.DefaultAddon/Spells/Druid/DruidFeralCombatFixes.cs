@@ -350,6 +350,12 @@ namespace WCell.Addons.Default.Spells.Druid
             }, SpellLineId.DruidFaerieFire, SpellLineId.DruidFaerieFireFeral);
 
 			FixBloodFrenzy();
+
+            // Dash should only be usable while in cat form
+            SpellLineId.DruidDash.Apply(spell =>
+            {
+                spell.RequiredShapeshiftMask = ShapeshiftMask.Cat;
+            });
 		}
 
 		#region Blood Frenzy
