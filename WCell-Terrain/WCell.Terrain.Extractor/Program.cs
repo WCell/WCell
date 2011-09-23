@@ -11,20 +11,25 @@ namespace WCell.Terrain.Extractor
         {
 			// TODO: Re-use existing config
 
-        	throw new NotImplementedException("Terrain serialization is currently under re-construction.");
+        	//throw new NotImplementedException("Terrain serialization is currently under re-construction.");
 			
             LogUtil.SetupConsoleLogging();
             //WCellTerrainSettings.Initialize();
 
             NativeMethods.StormLibFolder = WCellTerrainSettings.LibDir;
-            NativeMethods.InitAPI();
+            //NativeMethods.InitAPI();
+
+			
 
 			// TODO: Load tiles one by one and write them to disk
             //SimpleADTWriter.WriteAllWDTs();
+			Extractizzle.DoShit();
         }
 
         static Program()
         {
+			var cfg = ExtractorConfiguration.Instance;
+			WCellTerrainSettings.Config = cfg;
             new TileIdentifier();
         }
     }

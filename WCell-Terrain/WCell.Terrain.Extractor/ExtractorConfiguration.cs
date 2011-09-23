@@ -7,21 +7,21 @@ using WCell.Util.Variables;
 
 //using WCell.MPQTool;
 
-namespace WCell.Addons.Terrain
+namespace WCell.Terrain.Extractor
 {
-	public class TerrainAddonConfiguration : TerrainConfiguration<TerrainAddonConfiguration>
+	public class ExtractorConfiguration : TerrainConfiguration<ExtractorConfiguration>
 	{
 		private static readonly Logger log = LogManager.GetCurrentClassLogger();
-		public static readonly string ConfigFileName = "WCell.Addons.Terrain.Config.xml";
+		public static readonly string ConfigFileName = "WCell.Terrain.Extractor.Config.xml";
 
-		public static readonly string WCellRoot = "../../";
+		public static readonly string WCellRoot = "../../../";
 
 		public override string RootFolder
 		{
 			get { return WCellRoot; }
 		}
 
-		public TerrainAddonConfiguration()
+		public ExtractorConfiguration()
 		{
 			ErrorHandler = OnError;
 			RootNodeName = "TerrainAddonConfiguration";
@@ -35,10 +35,10 @@ namespace WCell.Addons.Terrain
 			if (!Loaded)
 			{
 				Loaded = true;
-				FilePath = Path.Combine(CollisionAddon.Instance.Context.File.DirectoryName,
+				FilePath = Path.Combine(WCellRoot,
 					ConfigFileName);
 				AutoSave = true;
-				AddVariablesOfAsm<VariableAttribute>(typeof(TerrainAddonConfiguration).Assembly);
+				AddVariablesOfAsm<VariableAttribute>(typeof(ExtractorConfiguration).Assembly);
 
 				try
 				{
