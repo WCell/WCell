@@ -69,24 +69,24 @@ namespace WCell.Terrain
             // The Rect is in a screen coordinate system with (0,0) in the upper left and x-pos-right, y-pos-down
             // The left edge of the bounds (plane y = bounds.Left)
             // normal points into the bounds (negative y direction)
-            var westPos = Math.Max(bounds.Top, bounds.Bottom);
+            var westPos = bounds.Left;
             var westPlane = new Plane(0.0f, -1.0f, 0.0f, westPos);
             var response = Clip(westPlane);
             if (response == ClipperResponse.AllClipped) return response;
 
-            var eastPos = Math.Min(bounds.Top, bounds.Bottom);
+            var eastPos = bounds.Right;
             var eastPlane = new Plane(0.0f, 1.0f, 0.0f, -eastPos);
             var newResponse = Clip(eastPlane);
             if (newResponse == ClipperResponse.AllClipped) return newResponse;
             if (response == ClipperResponse.NoneClipped) response = newResponse;
 
-            var northPos = Math.Max(bounds.Left, bounds.Right);
+            var northPos = bounds.Top;
             var northPlane = new Plane(-1.0f, 0.0f, 0.0f, northPos);
             newResponse = Clip(northPlane);
             if (newResponse == ClipperResponse.AllClipped) return newResponse;
             if (response == ClipperResponse.NoneClipped) response = newResponse;
 
-            var southPos = Math.Min(bounds.Left, bounds.Right);
+            var southPos = bounds.Bottom;
             var southPlane = new Plane(1.0f, 0.0f, 0.0f, -southPos);
             newResponse = Clip(southPlane);
             if (newResponse == ClipperResponse.AllClipped) return newResponse;

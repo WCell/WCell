@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 
 using WCell.Terrain.MPQ;
+using WCell.Terrain.MPQ.WMOs;
 using WCell.Util;
 using WCell.Util.Graphics;
 
@@ -109,6 +110,11 @@ namespace WCell.Terrain
             var temp = list[idx1];
             list[idx1] = list[idx2];
             list[idx2] = temp;
+        }
+
+        public static bool HasAnyFlag(this MOPY.MaterialFlags flags, MOPY.MaterialFlags otherFlags)
+        {
+            return (flags & otherFlags) != 0;
         }
 	}
 }

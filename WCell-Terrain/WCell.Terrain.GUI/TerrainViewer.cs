@@ -217,7 +217,7 @@ namespace WCell.Terrain.GUI
 		protected override void Initialize()
 		{
             // reset mouse, so we don't suddenly pan off to the sides
-			Form.Activated += (sender, args) => RecenterMouse();
+			Form.GotFocus += (sender, args) => RecenterMouse();
             
 			IsMouseVisible = true;
 			_graphics.PreferredBackBufferWidth = 1024;
@@ -338,6 +338,8 @@ namespace WCell.Terrain.GUI
 
 		private void RecenterMouse()
 		{
+            if (!Form.Focused || !IsActive) return;
+
             var bounds = Window.ClientBounds;
             var x = Mouse.GetState().X;
 		    if (x < 0 || x > bounds.Width) return;

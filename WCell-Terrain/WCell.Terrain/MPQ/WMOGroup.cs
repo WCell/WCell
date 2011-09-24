@@ -110,6 +110,27 @@ namespace WCell.Terrain.MPQ
 
 
         #endregion
+
+        internal void DumpMOPYInfo()
+        {
+            using (var f = new StreamWriter(Path.Combine("C:\\Users\\Nate\\Desktop\\MOPY\\", 
+                string.Format("{0}{1}", Name , ".mopy.txt"))))
+            {
+                for (var i = 0; i < TriangleMaterials.Length; i++)
+                {
+                    var mopy = TriangleMaterials[i];
+                    if (!mopy.Flags.HasAnyFlag(MOPY.MaterialFlags.CollisionMask)) continue;
+                    if (mopy.Flags.HasAnyFlag(MOPY.MaterialFlags.NoCollision)) continue;
+
+                    f.WriteLine("MOPY: " + i);
+                    f.WriteLine(string.Format("\t{0}{1}", "Flags: ", mopy.Flags));
+                    f.WriteLine(string.Format("\t{0}{1}", "MatId: ", mopy.MaterialIndex));
+                    f.WriteLine();
+
+
+                }
+            }
+        }
     }
 
 

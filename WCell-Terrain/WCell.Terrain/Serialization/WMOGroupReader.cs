@@ -612,11 +612,19 @@ namespace WCell.Terrain.Serialization
                 n.TriIndices = new List<Index3>(n.nFaces);
                 for (var j = 0; j < n.nFaces; j++)
                 {
-                    var triIndex = group.Indices[group.MOBR[n.faceStart + j]];
+                    var index = group.MOBR[n.faceStart + j];
+                    var mopy = group.TriangleMaterials[index];
+
+                    //if (!mopy.Flags.HasAnyFlag(MOPY.MaterialFlags.CollisionMask | MOPY.MaterialFlags.Detail)) continue;
+                    //if (mopy.Flags.HasAnyFlag(MOPY.MaterialFlags.NoCollision)) continue;
+
+                    var triIndex = group.Indices[index];
+                    
                     n.TriIndices.Add(triIndex);
                 }
             }
 
+            //group.DumpMOPYInfo();
             //group.DumpBSPNodes();
         }
 
