@@ -56,6 +56,14 @@
     <Filter Include="WCellRecast">
       <UniqueIdentifier>{c024936a-1a04-49eb-b0d0-8e2032091c65}</UniqueIdentifier>
     </Filter>
+    <Filter Include="boost-thread">
+      <UniqueIdentifier>{7f4e17d4-115f-4c82-9258-429d767ae835}</UniqueIdentifier>
+      <ParseFiles>false</ParseFiles>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+    <Filter Include="boost-thread\boost">
+      <UniqueIdentifier>{0a05f61a-e9ed-4d97-aac0-ec234a1750ed}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Recast\Include\Recast.h">
@@ -132,6 +140,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\WCellRecast\WCellRecast.h">
       <Filter>WCellRecast</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost-thread\boost\thread.hpp">
+      <Filter>boost-thread\boost</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

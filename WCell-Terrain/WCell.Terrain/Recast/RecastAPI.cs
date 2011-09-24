@@ -84,8 +84,8 @@ namespace WCell.Terrain.Recast
 		public static extern int BuildMeshFromFile(int userId,
 			byte[] inputFilename,
 			byte[] navMeshFilename,
-			[MarshalAs(UnmanagedType.FunctionPtr)] BuildMeshCallback callback
-			);
+			[MarshalAs(UnmanagedType.FunctionPtr)] BuildMeshCallback callback,
+			int numCores);
 
 
 		internal static int BuildMesh(int id, string inputFilename, string navMeshFilename, BuildMeshCallback callback)
@@ -94,7 +94,8 @@ namespace WCell.Terrain.Recast
 			navMeshFilename += "\0";
 			var inputFilenameBytes = Encoding.ASCII.GetBytes(inputFilename);
 			var navMeshFilenameBytes = Encoding.ASCII.GetBytes(navMeshFilename);
-			return BuildMeshFromFile(id, inputFilenameBytes, navMeshFilenameBytes, callback);
+            //Console.WriteLine(string.Format("The number of processors on the system is: {0}", Environment.ProcessorCount));
+			return BuildMeshFromFile(id, inputFilenameBytes, navMeshFilenameBytes, callback, Environment.ProcessorCount);
 		}
 	}
 }
