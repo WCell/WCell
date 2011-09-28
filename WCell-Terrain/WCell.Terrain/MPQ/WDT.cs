@@ -70,7 +70,7 @@ namespace WCell.Terrain.MPQ
 				return null;
 			}
 
-			//adt.GenerateMapWithTerraSimplification();
+            //adt.GenerateMapWithTerraSimplification();
             adt.GenerateMapWithNoSimplification();
 
 			return adt;

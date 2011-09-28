@@ -11,8 +11,6 @@ using WCell.Terrain.Serialization;
 using WCell.Util.Graphics;
 using WCell.Util.NLog;
 
-using Terrain = WCell.Terrain.Terrain;
-
 namespace WCell.Terrain.GUI
 {
 	public static class TerrainViewerProgram
@@ -55,8 +53,8 @@ namespace WCell.Terrain.GUI
             world.WorldTerrain.Add(defaultTileId.MapId, terrain);
 
             terrain.GetOrCreateTile(defaultTileId.MapId, defaultTileId.X, defaultTileId.Y);
-            
-			AvatarPosition = new Vector3(TerrainConstants.CenterPoint - (defaultTileId.X + 1)*TerrainConstants.TileSize,
+
+		    AvatarPosition = new Vector3(TerrainConstants.CenterPoint - (defaultTileId.X + 1)*TerrainConstants.TileSize,
 			                             TerrainConstants.CenterPoint - (defaultTileId.Y)*TerrainConstants.TileSize,
 			                             100.0f);
 

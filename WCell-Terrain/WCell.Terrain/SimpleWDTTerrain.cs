@@ -32,21 +32,13 @@ namespace WCell.Terrain
 
                 if (!BackupTileSource.TileProfile[x, y])
                 {
-                    throw new ArgumentException(String.Format(
-                        "Could not read tile (Map: {0} at ({1}, {2})",
-                        map,
-                        x,
-                        y));
+                    throw new ArgumentException(String.Format("Could not read tile (Map: {0} at ({1}, {2})", map, x, y));
                 }
 
                 tile = BackupTileSource.GetTile(x, y);
                 if (tile == null)
                 {
-                    throw new ArgumentException(String.Format(
-                        "Could not read tile (Map: {0} at ({1}, {2})",
-                        map,
-                        x,
-                        y));
+                    throw new ArgumentException(String.Format("Could not read tile (Map: {0} at ({1}, {2})", map, x, y));
                 }
 
                 Console.WriteLine("Done - Loading time: {0:0.000}s", (DateTime.Now - start).TotalSeconds);

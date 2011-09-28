@@ -1067,7 +1067,12 @@ namespace WCell.Util
 			return ((val <= (otherVal + Epsilon)) && (val >= (otherVal - Epsilon)));
 		}
 
-		public static long MakeLong(int low, int high)
+        public static bool IsLessOrNearlyEqual(this float val, float otherVal)
+        {
+            return ((val < otherVal) || val.IsWithinEpsilon(otherVal));
+        }
+
+	    public static long MakeLong(int low, int high)
 		{
 			return (uint)low | ((long)high << 32);
 		}

@@ -9,7 +9,7 @@
 	if (mesh != 0) { dtFreeNavMesh(mesh); } \
 	}
 
-int __cdecl buildMeshFromFile(int userId, const char* inputFilename, const char* navmeshFilename, BuildMeshCallback callback) 
+int __cdecl buildMeshFromFile(int userId, const char* inputFilename, const char* navmeshFilename, BuildMeshCallback callback, int numCores) 
 {
 	WCellBuildContext ctx;
 	dtNavMesh* mesh = NULL;
@@ -30,7 +30,7 @@ int __cdecl buildMeshFromFile(int userId, const char* inputFilename, const char*
 		}
 
 		// build nav-mesh
-		mesh = buildMesh(&geom, &ctx);
+		mesh = buildMesh(&geom, &ctx, numCores);
 		if (!mesh) {
 			// building failed
 			return 0;
@@ -183,8 +183,7 @@ int __cdecl buildMeshFromFile(int userId, const char* inputFilename, const char*
 }
 
 float walkableRadius = 1;
-
-dtNavMesh* buildMesh(InputGeom* geom, WCellBuildContext* ctx)
+dtNavMesh* buildMesh(InputGeom* geom, WCellBuildContext* ctx, int numCores)
 {
 	dtNavMesh* mesh;
 
@@ -205,21 +204,26 @@ dtNavMesh* buildMesh(InputGeom* geom, WCellBuildContext* ctx)
 
 	// setup some default parameters
 	rcConfig cfg;
-
 	memset(&cfg, 0, sizeof(rcConfig));
-	
-	cfg.cs = 0.3;							// cell size is a sort of resolution -> the bigger the faster
-	cfg.ch = 0.27f;							// cell height -> distance from mesh to ground, if too low, recast will not build essential parts of the mesh for some reason
-	cfg.walkableSlopeAngle = 60;			// max climbable slope, bigger values won't make much of a change
-	cfg.walkableClimb = 2.0f;				// how high the agent can climb in one step
-	cfg.walkableHeight = 1.0f;				// minimum space to ceiling
-	walkableRadius = 0.7f;					// minimum distance to objects
-	cfg.tileSize = 256;
-	cfg.maxEdgeLen = 20.0f / cfg.cs;
+	const float agentHeight = 2.1f;				// most character toons are about this tall
+	const float agentRadius = 0.6f;				// most character toons are about this big around
+	const float agentClimb = 1.0f;				// character toons can step up this far. Seems ridiculously high ...
+	const float tileSize = 1600.0f/3.0f/16.0f;	// The size of one chunk
+
+	cfg.cs = 0.1f;										// cell size is a sort of resolution -> the bigger the faster
+	cfg.ch = 0.05f;										// cell height -> distance from mesh to ground, if too low, recast will not build essential parts of the mesh for some reason
+	cfg.walkableSlopeAngle = 50.0f;						// max climbable slope, bigger values won't make much of a change
+	cfg.walkableHeight = (int)ceilf(agentHeight/cfg.ch);// minimum space to ceiling
+	cfg.walkableClimb = (int)floorf(agentClimb/cfg.ch); // how high the agent can climb in one step
+	cfg.walkableRadius = (int)ceilf(agentRadius/cfg.cs);// minimum distance to objects
+	cfg.tileSize = (int)(tileSize/cfg.cs + 0.5f);
+	cfg.maxEdgeLen = cfg.tileSize/2;;
+	cfg.borderSize = cfg.walkableRadius + 3;
+	cfg.width = cfg.tileSize + cfg.borderSize*2;
+	cfg.height = cfg.tileSize + cfg.borderSize*2;	
 	cfg.maxSimplificationError = 1.3f;
 	cfg.minRegionArea = (int)rcSqr(8);		// Note: area = size*size
 	cfg.mergeRegionArea = (int)rcSqr(20);	// Note: area = size*size
-	//cfg.maxVertsPerPoly = 6;
 	cfg.maxVertsPerPoly = 3;
 	cfg.detailSampleDist = cfg.cs * 9;
 	cfg.detailSampleMaxError = cfg.ch * 1.0f;
@@ -227,11 +231,10 @@ dtNavMesh* buildMesh(InputGeom* geom, WCellBuildContext* ctx)
 	// default calculations - for some reason not included in basic recast
 	const float* bmin = geom->getMeshBoundsMin();
 	const float* bmax = geom->getMeshBoundsMax();
-
-	char text[64];
+	
 	int gw = 0, gh = 0;
 	rcCalcGridSize(bmin, bmax, cfg.cs, &gw, &gh);
-	const int ts = (int)cfg.tileSize;
+	const int ts = cfg.tileSize;
 	const int tw = (gw + ts-1) / ts;
 	const int th = (gh + ts-1) / ts;
 
@@ -260,59 +263,37 @@ dtNavMesh* buildMesh(InputGeom* geom, WCellBuildContext* ctx)
 		return false;
 	}
 	
-	/*
-	dtNavMeshQuery* navQuery = dtAllocNavMeshQuery();
-	status = navQuery->init(mesh, 2048);
-	if (dtStatusFailed(status))
-	{
-		CleanupAfterBuild();
-		ctx->log(RC_LOG_ERROR, "buildTiledNavigation: Could not init Detour navmesh query");
-		return false;
-	}*/
-	
 	// start building
 	const float tcs = cfg.tileSize*cfg.cs;
-
 	ctx->startTimer(RC_TIMER_TEMP);
 	
-	// fix some configuration values
-	cfg.walkableHeight = (int)ceilf(cfg.walkableHeight / cfg.ch);
-	cfg.walkableClimb = (int)floorf(cfg.walkableClimb / cfg.ch);
-	cfg.walkableRadius = (int)ceilf(walkableRadius / cfg.cs);
+	//QuadrantTiler Tiler1, Tiler2, Tiler3, Tiler4, Tiler5, Tiler6;
+	TileAdder Adder;
+	rcContext dummyCtx;
 
-	cfg.borderSize = cfg.walkableRadius + 3;				// Reserve enough padding.
-	cfg.width = cfg.tileSize + cfg.borderSize*2;
-	cfg.height = cfg.tileSize + cfg.borderSize*2;
-	
-	// start building individual tiles
-	for (int y = 0; y < th; ++y)
+	dispatcher.maxHeight = th;
+	dispatcher.maxWidth = tw;
+
+	int numThreads = 0;
+	numThreads = std::min(2*numCores, 8);
+
+	boost::thread *threads[8];
+	for(int i = 0; i < numThreads; ++i)
 	{
-		for (int x = 0; x < tw; ++x)
-		{
-			float tileBmin[3], tileBmax[3];
-			tileBmin[0] = bmin[0] + x*tcs;
-			tileBmin[1] = bmin[1];
-			tileBmin[2] = bmin[2] + y*tcs;
-			
-			tileBmax[0] = bmin[0] + (x+1)*tcs;
-			tileBmax[1] = bmax[1];
-			tileBmax[2] = bmin[2] + (y+1)*tcs;
-			
-			int dataSize = 0;
-			unsigned char* data = buildTileMesh(x, y, tileBmin, tileBmax, dataSize, geom, cfg, ctx);
-			if (data)
-			{
-				// Remove any previous data (navmesh owns and deletes the data).
-				mesh->removeTile(mesh->getTileRefAt(x,y,0),0,0);
-
-				// Let the navmesh own the data.
-				dtStatus status = mesh->addTile(data,dataSize,DT_TILE_FREE_DATA,0,0);
-				if (dtStatusFailed(status))
-					dtFree(data);
-			}
-		}
+		QuadrantTiler newTiler;
+		newTiler.geom = geom;
+		newTiler.cfg = cfg;
+		newTiler.ctx = ctx;
+		boost::thread newThread(boost::ref(newTiler));
+		threads[i] = &newThread;
 	}
 	
+	Adder.mesh = mesh;
+	Adder.numThreads = numThreads;
+	boost::thread AdderThread(boost::ref(Adder));
+	
+	AdderThread.join();
+
 	// Start the build process.	
 	ctx->stopTimer(RC_TIMER_TEMP);
 
@@ -332,7 +313,7 @@ dtNavMesh* buildMesh(InputGeom* geom, WCellBuildContext* ctx)
 unsigned char* buildTileMesh(const int tx, const int ty, 
 	const float* bmin, const float* bmax, int& dataSize,
 	InputGeom* geom,
-	rcConfig& cfg,
+	rcConfig cfg,
 	rcContext* ctx)
 {
 	const float* verts = geom->getMesh()->getVerts();
@@ -670,8 +651,6 @@ void saveMesh(const char* path, const dtNavMesh* mesh)
 	fclose(fp);
 }
 
-
-
 dtNavMesh* loadMesh(const char* path)
 {
 	FILE* fp = fopen(path, "rb");
@@ -744,5 +723,4 @@ dtNavMesh* loadMesh(const char* path)
 //
 //	////navMeshQuery->
 //}
-
 #endif

@@ -52,6 +52,7 @@ namespace WCell.Terrain.GUI.Renderers
                 if (!Enabled) return;
 
                 environs.Enabled = value;
+                normals.Enabled = value;
             }
         }
 
@@ -78,6 +79,7 @@ namespace WCell.Terrain.GUI.Renderers
             if (Enabled)
             {
                 environs.Enabled = environsWereEnabled;
+                normals.Enabled = environsWereEnabled;
                 wiredNavMesh.Enabled = navMeshWasEnabled;
                 solidNavMesh.Enabled = navMeshWasEnabled;
                 liquids.Enabled = liquidsWereEnabled;
@@ -85,6 +87,7 @@ namespace WCell.Terrain.GUI.Renderers
             else
             {
                 environs.Enabled = Enabled;
+                normals.Enabled = Enabled;
                 wiredNavMesh.Enabled = Enabled;
                 solidNavMesh.Enabled = Enabled;
                 liquids.Enabled = Enabled;
@@ -96,6 +99,7 @@ namespace WCell.Terrain.GUI.Renderers
             RemoveSubComponents();
 
             environs.Dispose();
+            normals.Dispose();
             liquids.Dispose();
             wiredNavMesh.Dispose();
             solidNavMesh.Dispose();
@@ -104,6 +108,7 @@ namespace WCell.Terrain.GUI.Renderers
         private void RemoveSubComponents()
         {
             Game.Components.Remove(environs);
+            Game.Components.Remove(normals);
             Game.Components.Remove(liquids);
             Game.Components.Remove(wiredNavMesh);
             Game.Components.Remove(solidNavMesh);

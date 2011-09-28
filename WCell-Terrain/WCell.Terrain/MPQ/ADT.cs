@@ -534,30 +534,154 @@ namespace WCell.Terrain.MPQ
 		}
         #endregion
 
+        public Vector3 GetSurfaceNormal(Point2D chunkCoord, Point2D unitCoord, HeightMapFraction heightMapFraction)
+        {
+            if (Chunks == null) return Vector3.Zero;
+
+            var chunk = Chunks[chunkCoord.X, chunkCoord.Y];
+            if (chunk == null) return Vector3.Zero;
+
+            if (chunk.HolesMap[unitCoord.X / 2, unitCoord.Y / 2]) return Vector3.Zero;
+
+            if (chunk.IsFlat) return Vector3.Up;
+
+            var outerHeights = chunk.Heights.GetLowResMapMatrix();
+            var innerHeights = chunk.Heights.GetHighResMapMatrix();
+            var v12 = new Vector3(0.5f, 0.5f, innerHeights[unitCoord.X, unitCoord.Y]);
+            var x = heightMapFraction.FractionX;
+            var y = heightMapFraction.FractionY;
+
+            Vector3 a,b;
+            if (y < x)
+            {
+                if (y < (1.0f - x))
+                {
+                    // Upper triangle <h00, h01, h12>
+                    var v00 = new Vector3(0.0f, 0.0f, outerHeights[unitCoord.X, unitCoord.Y]);
+                    var v01 = new Vector3(0.0f, 1.0f, outerHeights[unitCoord.X + 1, unitCoord.Y]);
+                    a = v00 - v12;
+                    b = v01 - v12;
+                }
+                else
+                {
+                    // Right triangle <h01, h11, h12>
+                    var v01 = new Vector3(0.0f, 1.0f, outerHeights[unitCoord.X + 1, unitCoord.Y]);
+                    var v11 = new Vector3(1.0f, 1.0f, outerHeights[unitCoord.X + 1, unitCoord.Y + 1]);
+                    a = v01 - v12;
+                    b = v11 - v12;
+                }
+            }
+            else
+            {
+                if (y < (1.0f - x))
+                {
+                    // Left triangle <h10, h00, h12>
+                    var v10 = new Vector3(1.0f, 0.0f, outerHeights[unitCoord.X + 1, unitCoord.Y]);
+                    var v00 = new Vector3(0.0f, 0.0f, outerHeights[unitCoord.Y, unitCoord.Y]);
+                    a = v10 - v12;
+                    b = v00 - v12;
+                }
+                else
+                {
+                    // Bottom triangle <h11, h10, h12>
+                    var v11 = new Vector3(1.0f, 1.0f, outerHeights[unitCoord.Y + 1, unitCoord.Y + 1]);
+                    var v10 = new Vector3(1.0f, 0.0f, outerHeights[unitCoord.X + 1, unitCoord.Y]);
+                    a = v11 - v12;
+                    b = v10 - v12;
+                }
+            }
+
+            var nml = Vector3.Cross(b, a);
+            nml.Normalize();
+            return nml;
+        }
 
 		public float GetInterpolatedHeight(Point2D chunkCoord, Point2D unitCoord, HeightMapFraction heightMapFraction)
 		{
 			// Height stored as: h5 - its v8 grid, h1-h4 - its v9 grid
-			// +--------------> X
-			// | h1--------h2   Coordinates are:
-			// | |    |    |     h1 0,0
-			// | |  1 |  2 |     h2 0,1
-			// | |----h5---|     h3 1,0
-			// | |  3 |  4 |     h4 1,1
-			// | |    |    |     h5 1/2,1/2
-			// | h3--------h4
-			// V Y
+			// h00------h01   Coordinates are:
+			// | \      / |     h00 0,0
+			// |  \  1 /  |     h01 0,1
+			// |   \  /   |
+            // | 4  h12 2 |     h10 1,0
+			// |   /  \   |     h11 1,1
+			// |  / 3  \  |     h12 1/2,1/2
+            // | /      \ |
+			// h10------h11
 			if (Chunks == null) return float.NaN;
 
 			var chunk = Chunks[chunkCoord.X, chunkCoord.Y];
 			if (chunk == null) return float.NaN;
 
+            if (chunk.HolesMap[unitCoord.X / 2, unitCoord.Y / 2]) return float.NaN;
+
 			var medianHeight = chunk.MedianHeight;
 			if (chunk.IsFlat) return medianHeight;
 
+            // Using simplified Barycentric Coordinate coordinates, this actually becomes quite simple.
+		    var outerHeights = chunk.Heights.GetLowResMapMatrix();
+		    var innerHeights = chunk.Heights.GetHighResMapMatrix();
+            var h12 = innerHeights[unitCoord.X, unitCoord.Y];
+		    var x = heightMapFraction.FractionX;
+		    var y = heightMapFraction.FractionY;
 
-			// TODO: Fix interpolated height
-			return medianHeight;
+		    float heightOffset;
+            if (y < x)
+            {
+                if (y < (1.0f - x))
+                {
+                    // Upper triangle <h00, h01, h12>
+                    var h00 = outerHeights[unitCoord.X, unitCoord.Y];
+                    var h01 = outerHeights[unitCoord.X + 1, unitCoord.Y];
+
+                    var alpha = 1 - x - y;
+                    var beta  = (y - x);
+                    var gamma = 1.0f - alpha - beta;
+
+                    heightOffset = (alpha*h00 + beta*h01 + gamma*h12);
+                }
+                else
+                {
+                    // Right triangle <h01, h11, h12>
+                    var h01 = outerHeights[unitCoord.X + 1, unitCoord.Y];
+                    var h11 = outerHeights[unitCoord.X + 1, unitCoord.Y + 1];
+
+                    var alpha = (y - x);
+                    var beta  = (x + y - 1.0f);
+                    var gamma = 1.0f - alpha - beta;
+
+                    heightOffset = (alpha*h01 + beta*h11 + gamma*h12);
+                }
+            }
+            else
+            {
+                if (y < (1.0f - x))
+                {
+                    // Left triangle <h10, h00, h12>
+                    var h10 = outerHeights[unitCoord.X + 1, unitCoord.Y];
+                    var h00 = outerHeights[unitCoord.X, unitCoord.Y];
+
+                    var alpha = x - y;
+                    var beta = 1.0f - x - y;
+                    var gamma = 1.0f - alpha - beta;
+
+                    heightOffset = (alpha*h10 + beta*h00 + gamma*h12);
+                }
+                else
+                {
+                    // Bottom triangle <h11, h10, h12>
+                    var h11 = outerHeights[unitCoord.X + 1, unitCoord.Y + 1];
+                    var h10 = outerHeights[unitCoord.X + 1, unitCoord.Y];
+
+                    var alpha = (x + y - 1.0f);
+                    var beta  = x - y;
+                    var gamma = 1.0f - alpha - beta;
+
+                    heightOffset = (alpha*h11 + beta*h10 + gamma*h12);
+                }
+            }
+
+			return medianHeight + heightOffset;
 
 			//// Fixme:  Indexing is backwards.
 			//var heightX = (unitCoord.Y == TerrainConstants.UnitsPerChunkSide)
@@ -691,8 +815,9 @@ namespace WCell.Terrain.MPQ
 
 			var liquidHeights = chunk.LiquidHeights;
 
-			return (liquidHeights == null) ? float.MinValue
-											: liquidHeights[unitCoord.X, unitCoord.Y];
+		    return (liquidHeights == null)
+		               ? float.MinValue
+		               : liquidHeights[unitCoord.X, unitCoord.Y];
 		}
 
 		public override LiquidType GetLiquidType(Point2D chunkCoord)
