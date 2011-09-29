@@ -23,7 +23,9 @@ namespace WCell.Terrain.Extractor
 
 			// TODO: Load tiles one by one and write them to disk
             //SimpleADTWriter.WriteAllWDTs();
-			Extractizzle.DoShit();
+			//Extractor.ExtractAllADTs();
+        	Extractor.CreateAndWriteAllMeshes();
+        	//Extractor.ExtractAndWriteAll();
         }
 
         static Program()
