@@ -185,13 +185,13 @@ int __cdecl buildMeshFromFile(int userId, const char* inputFilename, const char*
 float walkableRadius = 1;
 dtNavMesh* buildMesh(InputGeom* geom, WCellBuildContext* ctx, int numCores)
 {
-	dtNavMesh* mesh;
+	dtNavMesh* mesh = 0;
 
 	if (!geom || !geom->getMesh())
 	{
 		CleanupAfterBuild();
 		ctx->log(RC_LOG_ERROR, "buildTiledNavigation: No vertices and triangles.");
-		return false;
+		return 0;
 	}
 	
 	mesh = dtAllocNavMesh();
@@ -199,7 +199,7 @@ dtNavMesh* buildMesh(InputGeom* geom, WCellBuildContext* ctx, int numCores)
 	{
 		CleanupAfterBuild();
 		ctx->log(RC_LOG_ERROR, "buildTiledNavigation: Could not allocate navmesh.");
-		return false;
+		return 0;
 	}
 
 	// setup some default parameters
@@ -260,7 +260,7 @@ dtNavMesh* buildMesh(InputGeom* geom, WCellBuildContext* ctx, int numCores)
 	{
 		CleanupAfterBuild();
 		ctx->log(RC_LOG_ERROR, "buildTiledNavigation: Could not init navmesh.");
-		return false;
+		return 0;
 	}
 	
 	// start building
@@ -535,7 +535,7 @@ unsigned char* buildTileMesh(const int tx, const int ty,
 
 			// The vertex indices are ushorts, and cannot point to more than 0xffff vertices.
 			ctx->log(RC_LOG_ERROR, "Too many vertices per tile %d (max: %d).", m_pmesh->nverts, 0xffff);
-			return false;
+			return 0;
 		}
 		
 		// Update poly flags from areas.

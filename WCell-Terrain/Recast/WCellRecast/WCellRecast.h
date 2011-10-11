@@ -294,11 +294,14 @@ struct TileAdder
 	void operator()()
 	{
 		int numThreadsCompleted = 0;
+		std::cout << "Working";
 		while(numThreadsCompleted < numThreads)
 		{
 			//std::cout << "**Waiting for tile data...**\n";
 			TileData data = tileQueue.PopWait();
 			//std::cout << "**TileData found: ";
+			//Give the user some progress indicator in case of large data sets
+			std::cout << "\r" << data.X << ", " << data.Y << "    ";
 			if (data.X == INVALID_TILE && data.Y == INVALID_TILE)
 			{
 				//std::cout << "Invalid Data, one of the threads has completed**\n";
@@ -316,8 +319,8 @@ struct TileAdder
 			if (dtStatusFailed(status))
 				dtFree(data.Data);
 		}
-
-		std::cout << "All quadrants finished.\n";
+		std::cout << std::endl;
+		std::cout << "All quadrants finished" << std::endl;
 	}
 };
 
