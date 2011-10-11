@@ -131,7 +131,7 @@ int __cdecl buildMeshFromFile(int userId, const char* inputFilename, const char*
 							idx = tilePolyIndexOffsets[neigTile] + neiPoly;
 
 							//const dtMeshTile* t = ((const dtNavMesh*)mesh)->getTile(neigTile);
-							assert(neigTile < maxTiles-1 && idx < tilePolyIndexOffsets[neigTile+1]);
+							assert(neigTile < maxTiles-1 || idx < tilePolyIndexOffsets[neigTile+1]);
 							//idx = (unsigned int)-1;
 						}
 					}
@@ -271,6 +271,7 @@ dtNavMesh* buildMesh(InputGeom* geom, WCellBuildContext* ctx, int numCores)
 	TileAdder Adder;
 	rcContext dummyCtx;
 
+	dispatcher.Reset();
 	dispatcher.maxHeight = th;
 	dispatcher.maxWidth = tw;
 
