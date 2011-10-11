@@ -38,11 +38,11 @@ namespace WCell.RealmServer.Waypoints
 		{
 			if (min < 1)
 			{
-				throw new ArgumentException("The minimum point count must be greater than 1", "min");
+				throw new ArgumentException(@"The minimum point count must be greater than 1", "min");
 			}
 			if (max < min)
 			{
-				throw new ArgumentException("The maximum point count must be greater than the minimum", "max");
+				throw new ArgumentException(@"The maximum point count must be greater than the minimum", "max");
 			}
 
 			var count = Utility.Random(min, max);
@@ -71,7 +71,7 @@ namespace WCell.RealmServer.Waypoints
 		{
 			if(maxDist < minDist)
 			{
-				throw new ArgumentException("The maximum waypoint distance must be greater than the minimum", "maxDist");
+				throw new ArgumentException(@"The maximum waypoint distance must be greater than the minimum", "maxDist");
 			}
 
 			var wps = new Vector3[count];

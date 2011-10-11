@@ -167,8 +167,8 @@ namespace WCell.RealmServer.NPCs.Spawns
 
             }
 
-			if(MoveType == AIMotionGenerationType.RandomMotion)
-				CreateRandomWaypoints();
+			//if(MoveType == AIMotionGenerationType.RandomMotion)
+				//CreateRandomWaypoints();
 
 			// finished initializing, now call the hooks
 			foreach (var handler in Entry.SpawnTypeHandlers)

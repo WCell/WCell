@@ -20,6 +20,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.RealmServer", "..\Services\WCell.RealmServer\WCell.RealmServer.csproj", "{A38FAA6D-86B5-4429-85D0-BC93EB5E2C56}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.Terrain.Extractor", "WCell.Terrain.Extractor\WCell.Terrain.Extractor.csproj", "{B02815C5-A0CB-443F-A005-8AC8F8F2D3EB}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7097CF5A-3389-45BD-93B3-EA9AB09286F4} = {7097CF5A-3389-45BD-93B3-EA9AB09286F4}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.Addons.Terrain", "..\Addons\WCell.Addons.Terrain\WCell.Addons.Terrain.csproj", "{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}"
 EndProject

@@ -23,10 +23,21 @@ namespace WCell.RealmServer.AI
 			this[BrainState.Dead] = this[BrainState.Idle];
 
 			this[BrainState.Evade] = new AIEvadeAction(owner);
-			this[BrainState.Roam] = new AIRoamAction(owner)
+
+			if (owner is NPC && ((NPC)owner).SpawnEntry.MoveType == AIMotionGenerationType.RandomMotion)
 			{
-				Strategy = new AIWaypointMoveAction(owner, AIMovementType.ForwardThenBack, owner.Waypoints)
-			};
+				this[BrainState.Roam] = new AIRoamAction(owner)
+				{
+					Strategy = new AIWanderMoveAction(owner as NPC, AIMovementType.ForwardThenBack, owner.Waypoints)
+				};
+			}
+			else
+			{
+				this[BrainState.Roam] = new AIRoamAction(owner)
+				{
+					Strategy = new AIWaypointMoveAction(owner, AIMovementType.ForwardThenBack, owner.Waypoints)
+				};
+			}
 
 			this[BrainState.Follow] = new AIFollowMasterAction(owner);
 			this[BrainState.Guard] = new AIGuardMasterAction(owner);

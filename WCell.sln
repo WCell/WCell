@@ -170,6 +170,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Packets", "Packets", "{D18C
 		Run\Content\Packets\World.xml = Run\Content\Packets\World.xml
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IRCAddon", "Addons\WCell.IrcAddon\IRCAddon.csproj", "{E8F36B44-3596-42A5-9380-4386CF04EDD6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -422,6 +424,16 @@ Global
 		{5F96293A-1276-4515-8048-EBC49CD81D71}.Release|x64.Build.0 = Release|x64
 		{5F96293A-1276-4515-8048-EBC49CD81D71}.Release|x86.ActiveCfg = Release|x86
 		{5F96293A-1276-4515-8048-EBC49CD81D71}.Release|x86.Build.0 = Release|x86
+		{E8F36B44-3596-42A5-9380-4386CF04EDD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8F36B44-3596-42A5-9380-4386CF04EDD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E8F36B44-3596-42A5-9380-4386CF04EDD6}.Debug|Itanium.ActiveCfg = Debug|Any CPU
+		{E8F36B44-3596-42A5-9380-4386CF04EDD6}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E8F36B44-3596-42A5-9380-4386CF04EDD6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E8F36B44-3596-42A5-9380-4386CF04EDD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E8F36B44-3596-42A5-9380-4386CF04EDD6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E8F36B44-3596-42A5-9380-4386CF04EDD6}.Release|Itanium.ActiveCfg = Release|Any CPU
+		{E8F36B44-3596-42A5-9380-4386CF04EDD6}.Release|x64.ActiveCfg = Release|Any CPU
+		{E8F36B44-3596-42A5-9380-4386CF04EDD6}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -441,6 +453,7 @@ Global
 		{42F497A4-0347-491D-8FA8-50E4D8AD19EB} = {372CB0F3-1BA6-4157-8CCB-E10D0912AD02}
 		{71AB07AD-4D94-4693-8560-47862E5B6E61} = {372CB0F3-1BA6-4157-8CCB-E10D0912AD02}
 		{38846B91-92C5-4ED0-A77C-5480FA06EDBE} = {A5244776-5B87-4499-A1BA-4CC318FDAAE0}
+		{E8F36B44-3596-42A5-9380-4386CF04EDD6} = {A5244776-5B87-4499-A1BA-4CC318FDAAE0}
 		{F753AF28-A251-4C12-9335-07E8236184F2} = {E858B607-246D-4056-A56E-A27312A4FDEE}
 		{009B84F0-3E1E-4674-9318-7B6BECF748E1} = {352C7D18-D5CA-41EA-815F-65DECA33D17E}
 		{22AD2989-C47E-499D-B4EB-72A2D43EF5B7} = {352C7D18-D5CA-41EA-815F-65DECA33D17E}
@@ -450,9 +463,9 @@ Global
 		{B6E8E045-B27D-47A8-A2F1-94B7BB351A80} = {009B84F0-3E1E-4674-9318-7B6BECF748E1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		UnLocked = True
-		Locked = False
 		ISWCFSolution = True
+		Locked = False
+		UnLocked = True
 	EndGlobalSection
 	GlobalSection(TextTemplating) = postSolution
 		TextTemplating = 1

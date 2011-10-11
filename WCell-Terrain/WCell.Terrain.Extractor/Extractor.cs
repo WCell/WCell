@@ -118,6 +118,7 @@ namespace WCell.Terrain.Extractor
 
 		public static void CreateAndWriteAllMeshes()
 		{
+			GC.AddMemoryPressure(int.MaxValue);
 			foreach (MapId mapId in Enum.GetValues(typeof(MapId)))
 			{
 				var name = TileIdentifier.GetName(mapId);
@@ -143,13 +144,14 @@ namespace WCell.Terrain.Extractor
 							var adt = WDT.LoadTile(mapId, tileX, tileY);
 							if (adt != null)
 							{
-								// try loading again
+								// try loading
 								Console.WriteLine(@"Loading extracted tile and generating Navigation mesh...");
 								terrain.ForceLoadTile(tileX, tileY);
 
 								if (terrain.IsAvailable(tileX, tileY))
 								{
 									Console.WriteLine(@"Done. Tile ({0}, {1}) in Map {2} has been loaded successfully.", tileX, tileY, mapId);
+									terrain.Tiles[tileX, tileY] = null;
 									continue;
 								}
 							}
@@ -157,11 +159,18 @@ namespace WCell.Terrain.Extractor
 						catch (ArgumentException)
 						{
 						}
+						catch(OutOfMemoryException)
+						{
+							GC.Collect();
+							tileY--;
+							continue;
+						}
 
 						Console.WriteLine(@"Extracting FAILED: Tile ({0}, {1}) in Map {2} could not be loaded", tileX, tileY, mapId);
 					}
 				}
 			}
+			GC.RemoveMemoryPressure(int.MaxValue);
 		}
 	}
 }
