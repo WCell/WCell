@@ -118,7 +118,7 @@ namespace WCell.Terrain.Extractor
 
 		public static void CreateAndWriteAllMeshes()
 		{
-			GC.AddMemoryPressure(int.MaxValue);
+			GC.AddMemoryPressure(1*1024*1024*1024);
 			foreach (MapId mapId in Enum.GetValues(typeof(MapId)))
 			{
 				var name = TileIdentifier.GetName(mapId);
@@ -159,18 +159,12 @@ namespace WCell.Terrain.Extractor
 						catch (ArgumentException)
 						{
 						}
-						catch(OutOfMemoryException)
-						{
-							GC.Collect();
-							tileY--;
-							continue;
-						}
 
 						Console.WriteLine(@"Extracting FAILED: Tile ({0}, {1}) in Map {2} could not be loaded", tileX, tileY, mapId);
 					}
 				}
 			}
-			GC.RemoveMemoryPressure(int.MaxValue);
+			GC.RemoveMemoryPressure(1*1024*1024*1024);
 		}
 	}
 }
