@@ -2571,7 +2571,7 @@ namespace WCell.RealmServer.Global
 		/// <param name="action"></param>
 		protected internal virtual void OnPlayerDeath(IDamageAction action)
 		{
-			if (action.Attacker.IsPvPing)
+            if (action.Attacker != null && action.Attacker.IsPvPing)
 			{
 				if (action.Victim.YieldsXpOrHonor)
 				{
@@ -2580,21 +2580,24 @@ namespace WCell.RealmServer.Global
 					OnHonorableKill(action);
 				}
 			}
-			if (action.Victim is Character)
-			{
-				var chr = action.Victim as Character;
-				chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.DeathAtMap, (uint)MapId, 1);
 
-				if (action.Attacker is Character)
-				{
-					var killer = action.Attacker as Character;
-					chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.KilledByPlayer, (uint)killer.FactionGroup, 1);
-				}
-				else
-				{
-					chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.KilledByCreature, action.Attacker.EntryId, 1);
-				}
-			}
+		    if (!(action.Victim is Character))
+                return;
+
+		    var chr = action.Victim as Character;
+		    chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.DeathAtMap, (uint)MapId, 1);
+
+            if (action.Attacker == null)
+                return;
+
+		    if (action.Attacker is Character)
+		    {
+                chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.KilledByPlayer, (uint)action.Attacker.FactionGroup, 1);
+		    }
+		    else
+		    {
+		        chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.KilledByCreature, action.Attacker.EntryId, 1);
+		    }
 		}
 
 		/// <summary>

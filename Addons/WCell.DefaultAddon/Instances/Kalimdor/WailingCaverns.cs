@@ -224,7 +224,6 @@ namespace WCell.Addons.Default.Instances.Kalimdor
 		public class LordCobrahnAttackAction : AIAttackAction
 		{
 			internal static Spell CobrahnSerpentForm, DruidsSlumber, LightningBolt, Poison;
-			private bool _isCastCobrahnSerpentForm;
 			private int _phase;
 
 			public LordCobrahnAttackAction(NPC lordCobrahn)
