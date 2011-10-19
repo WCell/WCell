@@ -7,7 +7,7 @@ REM ############################################################################
 REM #########################################
 REM # server - Base Table host
 REM # user - MySQL username
-REM # pass - MySQL login password
+REM # pass - MySQL login password or "" for an empty password
 REM # wdb  -  Database name
 REM # udbdir  - Main UDB directory on your harddisk (note the trailing backslash!, for example C:\Users\Villem\Documents\Kood\UDB\)
 REM # The folder should contain 2 folders: Updates and Full_DB
@@ -16,7 +16,7 @@ REM #########################################
 
 set user=changeme
 set pass=changeme
-set wdb=wcellrealmserver
+set wdb=WCellRealmServer
 set udbdir="changeme"
 set rusdbdir=changeme
 
@@ -28,4 +28,4 @@ REM ############################################################################
 
 set server=localhost
 set port=3306
-set udb-main=UDB_0.12.1.393_mangos_10545_SD2_1833
+set udb-main=UDB_0.12.2_mangos_11792_SD2_2279
