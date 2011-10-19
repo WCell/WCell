@@ -156,9 +156,6 @@ namespace WCell.AuthServer.Accounts
 		{
 			using (m_lock.EnterReadLock())
 			{
-				var accs = new List<Account>();
-				var more = false;
-
 				foreach (var acc in AccountsById.Values)
 				{
 					action(acc);

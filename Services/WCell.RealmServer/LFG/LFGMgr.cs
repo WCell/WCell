@@ -7,8 +7,10 @@ namespace WCell.RealmServer.LFG
 {
 	public static class LFGMgr
 	{
-		private static SpellId DungeonDeserter = SpellId.DungeonDeserter;
-		private static SpellId DungeonCooldown = SpellId.DungeonCooldown;
-		private static SpellId LuckOfTheDraw = SpellId.LuckOfTheDraw;
+        /*
+		SpellId.DungeonDeserter;
+		SpellId.DungeonCooldown;
+		SpellId.LuckOfTheDraw;
+        */
 	}
 }
