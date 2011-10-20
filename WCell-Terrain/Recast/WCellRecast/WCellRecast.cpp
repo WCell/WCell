@@ -267,9 +267,7 @@ dtNavMesh* buildMesh(InputGeom* geom, WCellBuildContext* ctx, int numCores)
 	const float tcs = cfg.tileSize*cfg.cs;
 	ctx->startTimer(RC_TIMER_TEMP);
 	
-	//QuadrantTiler Tiler1, Tiler2, Tiler3, Tiler4, Tiler5, Tiler6;
 	TileAdder Adder;
-	rcContext dummyCtx;
 
 	dispatcher.Reset();
 	dispatcher.maxHeight = th;
