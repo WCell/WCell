@@ -192,6 +192,14 @@ class TileDispatcher : boost::noncopyable
 public:
 	int maxWidth, maxHeight;
 	
+	void Reset()
+	{
+		nextWidth = 0;
+		maxWidth = 0;
+		nextHeight = 0;
+		maxHeight = 0;
+	}
+
 	void GetNextNeededTile(int &x, int &y)
 	{
 		boost::mutex::scoped_lock lock(dispatchMutex);
@@ -215,10 +223,7 @@ public:
 
 	TileDispatcher()
 	{
-		nextWidth = 0;
-		maxWidth = 0;
-		nextHeight = 0;
-		maxHeight = 0;
+		Reset();
 	}
 
 private:
