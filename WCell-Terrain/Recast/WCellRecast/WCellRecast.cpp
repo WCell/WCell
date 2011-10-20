@@ -183,14 +183,14 @@ int __cdecl buildMeshFromFile(int userId, const char* inputFilename, const char*
 }
 
 float walkableRadius = 1;
-dtNavMesh* buildMesh(InputGeom* geom, WCellBuildContext* ctx, int numCores)
+dtNavMesh* buildMesh(InputGeom* geom, WCellBuildContext* wcellContext, int numCores)
 {
 	dtNavMesh* mesh = 0;
 
 	if (!geom || !geom->getMesh())
 	{
 		CleanupAfterBuild();
-		ctx->log(RC_LOG_ERROR, "buildTiledNavigation: No vertices and triangles.");
+		wcellContext->log(RC_LOG_ERROR, "buildTiledNavigation: No vertices and triangles.");
 		return 0;
 	}
 	
@@ -198,7 +198,7 @@ dtNavMesh* buildMesh(InputGeom* geom, WCellBuildContext* ctx, int numCores)
 	if (!mesh)
 	{
 		CleanupAfterBuild();
-		ctx->log(RC_LOG_ERROR, "buildTiledNavigation: Could not allocate navmesh.");
+		wcellContext->log(RC_LOG_ERROR, "buildTiledNavigation: Could not allocate navmesh.");
 		return 0;
 	}
 
@@ -259,13 +259,13 @@ dtNavMesh* buildMesh(InputGeom* geom, WCellBuildContext* ctx, int numCores)
 	if (dtStatusFailed(status))
 	{
 		CleanupAfterBuild();
-		ctx->log(RC_LOG_ERROR, "buildTiledNavigation: Could not init navmesh.");
+		wcellContext->log(RC_LOG_ERROR, "buildTiledNavigation: Could not init navmesh.");
 		return 0;
 	}
 	
 	// start building
 	const float tcs = cfg.tileSize*cfg.cs;
-	ctx->startTimer(RC_TIMER_TEMP);
+	wcellContext->startTimer(RC_TIMER_TEMP);
 	
 	TileAdder Adder;
 
@@ -282,7 +282,7 @@ dtNavMesh* buildMesh(InputGeom* geom, WCellBuildContext* ctx, int numCores)
 		QuadrantTiler newTiler;
 		newTiler.geom = geom;
 		newTiler.cfg = cfg;
-		newTiler.ctx = ctx;
+		newTiler.ctx = *wcellContext;
 		boost::thread newThread(boost::ref(newTiler));
 		threads[i] = &newThread;
 	}
@@ -294,7 +294,7 @@ dtNavMesh* buildMesh(InputGeom* geom, WCellBuildContext* ctx, int numCores)
 	AdderThread.join();
 
 	// Start the build process.	
-	ctx->stopTimer(RC_TIMER_TEMP);
+	wcellContext->stopTimer(RC_TIMER_TEMP);
 
 	return mesh;
 }

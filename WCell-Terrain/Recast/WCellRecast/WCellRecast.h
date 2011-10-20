@@ -66,7 +66,7 @@ extern "C" {
 
 class WCellBuildContext;
 
-dtNavMesh* buildMesh(InputGeom* geom, WCellBuildContext* ctx, int numCores);
+dtNavMesh* buildMesh(InputGeom* geom, WCellBuildContext* wcellContext, int numCores);
 
 unsigned char* buildTileMesh(const int tx, const int ty, 
 	const float* bmin, const float* bmax, int& dataSize,
