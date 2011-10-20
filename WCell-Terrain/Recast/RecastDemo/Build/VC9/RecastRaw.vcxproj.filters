@@ -144,6 +144,9 @@
     <ClInclude Include="..\..\..\boost-thread\boost\thread.hpp">
       <Filter>boost-thread\boost</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Detour\Include\DetourNavMesh.Extern.h">
+      <Filter>Detour\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Recast\Source\Recast.cpp">
@@ -232,6 +235,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Source\MeshLoaderObj.cpp">
       <Filter>Demo\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Detour\Source\DetourNavMesh.Extern.cpp">
+      <Filter>Detour\Source</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
