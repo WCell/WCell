@@ -160,6 +160,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\boost-thread\boost\thread.hpp" />
+    <ClInclude Include="..\..\..\Detour\Include\DetourNavMesh.Extern.h" />
     <ClInclude Include="..\..\..\Recast\Include\Recast.h" />
     <ClInclude Include="..\..\..\Recast\Include\RecastAlloc.h" />
     <ClInclude Include="..\..\..\Recast\Include\RecastAssert.h" />
@@ -187,6 +188,7 @@
     <ClInclude Include="..\..\..\DetourTileCache\Include\DetourTileCacheBuilder.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\Detour\Source\DetourNavMesh.Extern.cpp" />
     <ClCompile Include="..\..\..\Recast\Source\Recast.cpp" />
     <ClCompile Include="..\..\..\Recast\Source\RecastAlloc.cpp" />
     <ClCompile Include="..\..\..\Recast\Source\RecastArea.cpp" />
