@@ -580,9 +580,9 @@ unsigned char* buildTileMesh(const int tx, const int ty,
 		params.offMeshConFlags = geom->getOffMeshConnectionFlags();
 		params.offMeshConUserID = geom->getOffMeshConnectionId();
 		params.offMeshConCount = geom->getOffMeshConnectionCount();
-		params.walkableHeight = cfg.walkableHeight;
-		params.walkableRadius = cfg.walkableRadius;
-		params.walkableClimb = cfg.walkableClimb;
+		params.walkableHeight = (float)cfg.walkableHeight;
+		params.walkableRadius = (float)cfg.walkableRadius;
+		params.walkableClimb = (float)cfg.walkableClimb;
 		params.tileX = tx;
 		params.tileY = ty;
 		params.tileLayer = 0;

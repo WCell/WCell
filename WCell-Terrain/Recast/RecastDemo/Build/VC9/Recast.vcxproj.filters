@@ -205,6 +205,9 @@
     <ClInclude Include="..\..\..\WCellRecast\WCellRecast.h">
       <Filter>WCellRecast</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Include\NavmeshPruneTool.h">
+      <Filter>Demo\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Recast\Source\Recast.cpp">
@@ -359,6 +362,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\WCellRecast\WCellRecast.cpp">
       <Filter>WCellRecast</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\NavmeshPruneTool.cpp">
+      <Filter>Demo\Source</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

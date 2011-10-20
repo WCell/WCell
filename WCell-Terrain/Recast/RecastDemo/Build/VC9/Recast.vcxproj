@@ -208,6 +208,7 @@ xcopy /Y ..\..\..\Bin\DroidSans.ttf $(OutDir)</Command>
     <ClInclude Include="..\..\Include\imguiRenderGL.h" />
     <ClInclude Include="..\..\Include\InputGeom.h" />
     <ClInclude Include="..\..\Include\MeshLoaderObj.h" />
+    <ClInclude Include="..\..\Include\NavmeshPruneTool.h" />
     <ClInclude Include="..\..\Include\NavMeshTesterTool.h" />
     <ClInclude Include="..\..\Include\OffMeshConnectionTool.h" />
     <ClInclude Include="..\..\Include\PerfTimer.h" />
@@ -263,6 +264,7 @@ xcopy /Y ..\..\..\Bin\DroidSans.ttf $(OutDir)</Command>
     <ClCompile Include="..\..\Source\InputGeom.cpp" />
     <ClCompile Include="..\..\Source\main.cpp" />
     <ClCompile Include="..\..\Source\MeshLoaderObj.cpp" />
+    <ClCompile Include="..\..\Source\NavmeshPruneTool.cpp" />
     <ClCompile Include="..\..\Source\NavMeshTesterTool.cpp" />
     <ClCompile Include="..\..\Source\OffMeshConnectionTool.cpp" />
     <ClCompile Include="..\..\Source\PerfTimer.cpp" />
