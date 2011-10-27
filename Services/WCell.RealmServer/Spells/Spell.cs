@@ -994,7 +994,7 @@ namespace WCell.RealmServer.Spells
 			return millis;
 		}
 
-		public bool IsAffactedByInvulnerability
+		public bool IsAffectedByInvulnerability
 		{
 			get { return !Attributes.HasFlag(SpellAttributes.UnaffectedByInvulnerability); }
 		}

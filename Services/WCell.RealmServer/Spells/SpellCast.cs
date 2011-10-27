@@ -1125,7 +1125,7 @@ namespace WCell.RealmServer.Spells
 				return CastMissReason.Evade;
 			}
 
-			if (Spell.IsAffactedByInvulnerability ||
+			if (Spell.IsAffectedByInvulnerability ||
 				(target is Character && ((Character)target).Role.IsStaff))
 			{
 				if (target.IsInvulnerable)
@@ -1133,7 +1133,7 @@ namespace WCell.RealmServer.Spells
 					return CastMissReason.Immune_2;
 				}
 
-				if (Spell.IsAffactedByInvulnerability && Spell.Schools.All(target.IsImmune))
+				if (Spell.IsAffectedByInvulnerability && Spell.Schools.All(target.IsImmune))
 				{
 					return CastMissReason.Immune;
 				}
