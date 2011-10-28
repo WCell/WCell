@@ -23,6 +23,7 @@ using WCell.Constants.Looting;
 using WCell.Constants.NPCs;
 using WCell.Constants.Quests;
 using WCell.Constants.Updates;
+using WCell.Constants;
 using WCell.Core;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
@@ -619,6 +620,13 @@ namespace WCell.RealmServer.Quests
 						if (interaction.TemplateId.Contains(npc.Entry.Id))
 						{
 							UpdateInteractionCount(quest, interaction, npc);
+						}
+						for (i = 0; i < UnitConstants.MaxKillCredits; i++)
+						{
+							if (interaction.TemplateId.Contains(npc.Entry.KillCreditIds[i]))
+							{
+								UpdateInteractionCount(quest, interaction, npc);
+							}
 						}
 					}
 				}

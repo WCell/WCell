@@ -136,6 +136,12 @@ namespace WCell.RealmServer.NPCs
 		}
 
 		/// <summary>
+		/// Ids of creatures which simulate a death when this entry die
+		/// </summary>
+		[Persistent(2)]
+		public uint[] KillCreditIds = new uint[UnitConstants.MaxKillCredits];
+
+		/// <summary>
 		/// Ids of quests that this NPC is responsible for (sent in a packet)
 		/// </summary>
 		[Persistent(4)]
@@ -276,6 +282,10 @@ namespace WCell.RealmServer.NPCs
 		public int MinMana;
 
 		public int MaxMana;
+
+		public float ModHealth;
+
+		public float ModMana;
 
 		public DamageSchool DamageSchool;
 
@@ -497,6 +507,7 @@ namespace WCell.RealmServer.NPCs
 
 		public float FlySpeed;
 
+		public uint MovementId;
 		#endregion
 
 		#region Loot
@@ -1255,6 +1266,26 @@ namespace WCell.RealmServer.NPCs
 				}
 				writer.WriteLine("DifficultyOverrides: {0}", parts.ToString("; "));
 			}
+
+			if (KillCreditIds != null && KillCreditIds.Any(id => id != 0))
+			{
+				var parts = new List<string>(2);
+				for (var i = 0u; i < UnitConstants.MaxKillCredits; i++)
+				{
+					var id = KillCreditIds[i];
+					if (id != 0)
+					{
+						var entry = NPCMgr.GetEntry(id);
+						if (entry != null)
+						{
+							parts.Add(id + " (" + (uint)id + ")");
+						}
+					}
+				}
+				writer.WriteLine("KillCredits: {0}", parts.ToString("; "));
+			}
+
+
 			//if (inclFaction)	
 			//{
 			//    writer.WriteLineNotDefault(DefaultFactionId, "Faction: " + DefaultFactionId);
