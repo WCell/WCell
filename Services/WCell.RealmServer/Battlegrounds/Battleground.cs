@@ -48,6 +48,7 @@ namespace WCell.RealmServer.Battlegrounds
 		protected InstanceBattlegroundQueue _instanceQueue;
 		protected GlobalBattlegroundQueue _parentQueue;
 		private Spell _preparationSpell;
+		private Spell _healingReductionSpell;
 		protected TimerEntry _queueTimer;
 		protected TimerEntry _shutdownTimer;
 		protected DateTime _startTime;
@@ -128,6 +129,11 @@ namespace WCell.RealmServer.Battlegrounds
 		public virtual SpellId PreparationSpellId
 		{
 			get { return SpellId.Preparation; }
+		}
+
+		public virtual SpellId HealingReductionSpellId
+		{
+			get { return SpellId.BattlegroundDampening; }
 		}
 
 		/// <summary>
@@ -572,6 +578,7 @@ namespace WCell.RealmServer.Battlegrounds
 			BattlegroundMgr.Instances.AddInstance(Template.Id, this);
 
 			_preparationSpell = SpellHandler.Get(PreparationSpellId);
+			_healingReductionSpell = SpellHandler.Get(HealingReductionSpellId);
 
 			if (HasQueue)
 			{
@@ -664,6 +671,9 @@ namespace WCell.RealmServer.Battlegrounds
 			// stop cancel timer
 			chr.RemoveUpdateAction(invitation.CancelTimer);
 
+			// Cast the spell "10% Healing Reduction in BG/Arenas"
+			chr.SpellCast.TriggerSelf(_healingReductionSpell);
+
 			// join team
 			JoinTeam(chr, team);
 
@@ -733,6 +743,8 @@ namespace WCell.RealmServer.Battlegrounds
 					// flag as deserter
 					chr.Auras.CreateSelf(BattlegroundMgr.DeserterSpell);
 				}
+
+				chr.Auras.Remove(_healingReductionSpell);
 
 				// check if the BG is too empty to continue
 				CheckShutdown();
