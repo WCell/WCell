@@ -306,7 +306,15 @@ namespace WCell.Constants
 	public enum ZoneFlags : uint
 	{
 		None = 0,
-		Flag_0x40 = 0x40,
+		Unk_0x1 = 0x1,
+		Unk_0x2 = 0x2,		// Only used by Naxxramas (3456) and Razorfen Downs (722)
+		Unk_0x4 = 0x4,		// Only used by Dragonblight (65), Zul'Drak (66), Icecrown (210), Crystalsong Forest (2817) 
+							//	and Hrothgar's Landing (4742)
+		Capital = 0x8,		// Used by capitals (Ironforge, Darnassus, Orgrimmar, Thunder Bluff, Stormwind, Silvermoon City, etc...)
+		Unk_0x10 = 0x10,	// Used by playable faction capitals and Strand Of The Ancients (4384)
+		Capital2 = 0x20,	// Used by capitals and its subzones (like Hall Of Legends (2917) and Champions' Hall (2918))
+
+		Duel = 0x40,		// Duels are allowed
 
 		/// <summary>
 		/// Let's fight!
@@ -316,10 +324,10 @@ namespace WCell.Constants
 		/// <summary>
 		/// 
 		/// </summary>
-		CapitalCity = 0x100,
-		Flag_0x200 = 0x200,
+		CapitalCity = 0x100, // Used by capitals
+		Unk_0x200 = 0x200, // Used by only one zone named City (3459). It doesn't have a map so where is it ?
 
-		CanFly = 0x400,
+		CanFly = 0x400, // Used by Outland and Northrend zones
 
 		/// <summary>
 		/// No harm in this zone
@@ -330,18 +338,25 @@ namespace WCell.Constants
 		/// Areas with this flag are up on in the air. when you die you respawn alive at the graveyard
 		/// </summary>
 		RespawnNoCorpse = 0x1000,
+		Unk_0x4000 = 0x4000,
 
 		/// <summary>
-		/// More fight!
+		/// Unused in 3.3.5a (was PVPObjectiveArea before)
 		/// </summary>
-		PVPObjectiveArea = 0x8000,
+		Unused_0x8000 = 0x8000,
 
+		InstancedArena = 0x10000, // Used only by instanced arenas
 		/// <summary>
-		/// Ignores FactionMask
+		/// Unused in 3.5.5a (was AlwaysContested)
 		/// </summary>
-		AlwaysContested = 0x40000,
+		Unused_0x40000 = 0x40000,
+		PlayableFactionCapital = 0x200000, // Used by playable faction capitals (Orgrimmar, Stormwind, etc)
+		OutdoorPvP = 0x1000000, // Used only by Wintergrasp (4917) in 3.3.5a
+		Unk_0x2000000 = 0x2000000,
+		Unk_0x4000000 = 0x4000000, // Used by four maps (Ahn'Qiraj, Dalaran Arena, The Ring Of Valor and Undercity)
 
-		CanHearthAndResurrectFromArea = 0x8000000
+		CanHearthAndResurrectFromArea = 0x8000000, // Used only by Wintergrasp (4917)
+		CannotFly = 0x20000000 // Used by Dalaran (4395)
 	}
 
 	public enum EnviromentalDamageType : uint

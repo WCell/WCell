@@ -497,7 +497,9 @@ namespace WCell.RealmServer.Entities
 		{
 			get
 			{
-				return (m_Map.CanFly && (m_zone == null || m_zone.Flags.HasFlag(ZoneFlags.CanFly))) || Role.IsStaff;
+				return (m_Map.CanFly && (m_zone == null || 
+					m_zone.Flags.HasFlag(ZoneFlags.CanFly) && !m_zone.Flags.HasFlag(ZoneFlags.CannotFly))
+					|| Role.IsStaff);
 			}
 		}
 
