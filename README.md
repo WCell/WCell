@@ -9,11 +9,11 @@ WCell focuses on a high degree of maintainability and customizability. It's clea
 
 ###Strong points
 
-* Very powerful subsystems (see <a href="http://wiki.wcell.org/index.php?title=WCell_API">WCell API</a> for a simple overview over the API)  .
+* Very powerful subsystems (see [WCell API](http://wiki.wcell.org/index.php?title=WCell_API) for a simple overview over the API)  .
      * [Spells](http://wiki.wcell.org/index.php?title=API:Spells).
      * [Instances](http://wiki.wcell.org/index.php?title=API:Instances).
      * [Gossip Menus](http://wiki.wcell.org/index.php?title=API:Gossip_Menus).
-     * [Addons](http://wiki.wcell.org/WCell_Addons).
+     * [Addons](http://wiki.wcell.org/index.php?title=WCell_Addons).
      * [More](http://wiki.wcell.org/index.php?title=API:World).
 * The simple but yet easily extendable command system.  
 * The good support  
