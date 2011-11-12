@@ -90,6 +90,7 @@
     <Flat Name="ModHealth" Column="unk16" />
     <Flat Name="ModMana" Column="unk17" />
     <Flat Name="IsLeader" Column="RacialLeader" />
+    <FlatArray Name="QuestItems" Pattern="questItem{#}" Offset="1" />
 	<Flat Name="MovementId" Column="movementId" />
     <Flat Name="Regenerates" Column="RegenHealth" />
     <Flat Name="EquipmentId" Column="equipment_id" />

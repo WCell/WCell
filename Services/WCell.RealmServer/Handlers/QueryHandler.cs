@@ -176,7 +176,7 @@ namespace WCell.RealmServer.Handlers
 
 				for (i = 0; i < 6; i++)
 				{
-					pkt.Write(entry.QuestIds[i]);
+					pkt.Write(entry.QuestItems[i]);
 				}
 				pkt.Write(entry.MovementId); // id from CreatureMovementInfo.dbc
 

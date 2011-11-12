@@ -142,10 +142,10 @@ namespace WCell.RealmServer.NPCs
 		public uint[] KillCreditIds = new uint[UnitConstants.MaxKillCredits];
 
 		/// <summary>
-		/// Ids of quests that this NPC is responsible for (sent in a packet)
+		/// Ids of items this NPC drops in relation to quests (sent in a packet)
 		/// </summary>
-		[Persistent(4)]
-		public uint[] QuestIds = new uint[4];
+		[Persistent(6)]
+		public uint[] QuestItems = new uint[6];
 
 		[NotPersistent]
 		public bool GeneratesXp;
