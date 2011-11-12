@@ -1432,6 +1432,12 @@ namespace WCell.RealmServer.Entities
 			// must not be moving or logging out when being teleported
 			CancelMovement();
 			CancelAllActions();
+
+            // reset movement flags otherwise
+            // the unit will continue move with these flags after teleport
+            MovementFlags = MovementFlags.None;
+            MovementFlags2 = MovementFlags2.None;
+
 			if (this is Character)
 			{
 			    MovementHandler.SendStopMovementPacket(this);
