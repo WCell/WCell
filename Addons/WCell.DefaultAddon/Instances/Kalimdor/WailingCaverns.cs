@@ -917,13 +917,13 @@ namespace WCell.Addons.Default.Instances
                 {
                     m_owner.Brain.State = BrainState.Evade;
                 }
-
                 
-
                 //if (m_owner.IsEvading)
                 //{
-                //    _phase = 0;
-                //    m_owner.Say("Moving to Phase {0}", _phase);
+                //    _phase = 4;
+#if PEPSI_DEBUG
+                    //m_owner.Say("Moving to Phase {0}", _phase);
+#endif
                 //    m_owner.Spells.Clear();
                 //}
 
