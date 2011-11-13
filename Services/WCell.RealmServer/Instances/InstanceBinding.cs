@@ -7,9 +7,18 @@ using WCell.Util;
 
 namespace WCell.RealmServer.Instances
 {
+    [ActiveRecord(Access = PropertyAccess.Property)]
 	public class InstanceBinding : WCellRecord<InstanceBinding>, IMapId
 	{
-		private int m_DifficultyIndex;
+		private int _difficultyIndex;
+
+        public InstanceBinding()
+        {
+            BindTime = DateTime.Now;
+            DifficultyIndex = 0;
+            InstanceId = 0;
+            MapId = MapId.None;
+        }
 
 		public InstanceBinding(uint id, MapId mapId, uint difficultyIndex)
 		{
@@ -21,29 +30,31 @@ namespace WCell.RealmServer.Instances
 
 		public uint InstanceId
 		{
-			get { return (uint)_InstanceId; }
-			set { _InstanceId = (int)value; }
+			get { return (uint)_instanceId; }
+			set { _instanceId = (int)value; }
 		}
 
-		[PrimaryKey]
-		public MapId MapId
-		{
-			get;
-			set;
-		}
+        [PrimaryKey]
+        public long Guid
+        {
+            get { return Utility.MakeLong((int) MapId, _instanceId); }
+            set
+            {
+                int mapId = 0;
+                Utility.UnpackLong(value, ref mapId, ref _instanceId);
+                MapId = (MapId) mapId;
+            }
+        }
 
-		[PrimaryKey]
-		private int _InstanceId
-		{
-			get;
-			set;
-		}
+        public MapId MapId { get; set; }
+
+        private int _instanceId;
 
 		[Property(NotNull = true)]
 		public uint DifficultyIndex
 		{
-			get { return (uint)m_DifficultyIndex; }
-			set { m_DifficultyIndex = (int)value; }
+			get { return (uint)_difficultyIndex; }
+			set { _difficultyIndex = (int)value; }
 		}
 
 		[Property(NotNull = true)]
@@ -88,7 +99,7 @@ namespace WCell.RealmServer.Instances
 				return ReferenceEquals(right, null);
 			}
 			return !ReferenceEquals(right, null) &&
-				left.m_DifficultyIndex == right.m_DifficultyIndex &&
+				left._difficultyIndex == right._difficultyIndex &&
 				left.MapId == right.MapId &&
 				left.InstanceId == right.InstanceId;
 		}
@@ -102,7 +113,7 @@ namespace WCell.RealmServer.Instances
 		{
 			if (ReferenceEquals(null, obj)) return false;
 			if (ReferenceEquals(this, obj)) return true;
-			return obj.m_DifficultyIndex == m_DifficultyIndex && obj.BindTime.Equals(BindTime) && Equals(obj.MapId, MapId) && obj.InstanceId == InstanceId;
+			return obj._difficultyIndex == _difficultyIndex && obj.BindTime.Equals(BindTime) && Equals(obj.MapId, MapId) && obj.InstanceId == InstanceId;
 		}
 
 		public override bool Equals(object obj)
@@ -117,7 +128,7 @@ namespace WCell.RealmServer.Instances
 		{
 			unchecked
 			{
-				var result = m_DifficultyIndex;
+				var result = _difficultyIndex;
 				result = (result * 397) ^ BindTime.GetHashCode();
 				result = (result * 397) ^ MapId.GetHashCode();
 				result = (result * 397) ^ InstanceId.GetHashCode();

@@ -131,6 +131,7 @@ namespace WCell.RealmServer.Instances
 					// set faction & leader
 					instance.m_OwningFaction = creator.FactionGroup;
 					instance.Owner = creator.InstanceLeader;
+				    instance.IsActive = true;
 				}
 				instance.InitMap(template.MapTemplate);
 				Instances.AddInstance(instance.MapId, instance);
@@ -204,7 +205,7 @@ namespace WCell.RealmServer.Instances
 					}
 				}
 			}
-			else
+			else if(!chr.GodMode)
 			{
 				if (!CheckFull(instance, chr))
 				{
@@ -214,6 +215,12 @@ namespace WCell.RealmServer.Instances
 				// Check that the Raid member has the same instance as the leader
 				if (isRaid)
 				{
+                    if(group == null)
+                    {
+                        MovementHandler.SendTransferFailure(chr.Client, instance.Id, MapTransferError.TRANSFER_ABORT_NEED_GROUP);
+                        return false;
+                    }
+
 					var leaderRaid = group.InstanceLeaderCollection.GetBinding(mapTemplate.Id, BindingType.Hard);
 					var playerRaid = instances.GetBinding(mapTemplate.Id, BindingType.Hard);
 
