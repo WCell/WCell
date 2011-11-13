@@ -20,6 +20,6 @@ WCell focuses on a high degree of maintainability and customizability. It's clea
    * Post a question at our [forum](http://wcell.org/forum/).  
    * Or join us on [IRC](http://wiki.wcell.org/WCell_Wiki:Community_Portal).
 
-###Feature completeness
+###Feature completeness 
 
 All features are implemented up to a certain degree where some work very well and some are untested (but probably can be easily made fit, once tested).
