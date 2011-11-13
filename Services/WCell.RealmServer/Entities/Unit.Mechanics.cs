@@ -1433,16 +1433,10 @@ namespace WCell.RealmServer.Entities
 			CancelMovement();
 			CancelAllActions();
 
-            // reset movement flags otherwise
-            // the unit will continue move with these flags after teleport
-            MovementFlags = MovementFlags.None;
-            MovementFlags2 = MovementFlags2.None;
-
 			if (this is Character)
 			{
-			    MovementHandler.SendStopMovementPacket(this);
-
-				((Character)this).CancelLogout();
+			    //MovementHandler.SendStopMovementPacket(this);
+                ((Character)this).CancelLogout();
 			}
 
 			if (ownerMap == map)
@@ -1456,6 +1450,11 @@ namespace WCell.RealmServer.Entities
 					{
 						var chr = ((Character)this);
 						chr.LastPosition = pos;
+
+                        // reset movement flags otherwise
+                        // the unit will continue move with these flags after teleport
+                        MovementFlags = MovementFlags.None;
+                        MovementFlags2 = MovementFlags2.None;
 
 						MovementHandler.SendMoved(chr);
 					}
@@ -1480,6 +1479,10 @@ namespace WCell.RealmServer.Entities
 						var chr = ((Character)this);
 						chr.LastPosition = pos;
 
+                        // reset movement flags otherwise
+                        // the unit will continue move with these flags after teleport
+                        MovementFlags = MovementFlags.None;
+                        MovementFlags2 = MovementFlags2.None;
 						MovementHandler.SendNewWorld(chr.Client, map.Id, ref pos, Orientation);
 					}
 				}
