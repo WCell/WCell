@@ -62,8 +62,7 @@ namespace WCell.RealmServer.Achievements
 			}
 			set
 			{
-				_characterGuid = (int)value;
-				_achievementCriteriaId = (int)(value >> 32);
+                Utility.UnpackLong(value, ref _characterGuid, ref _achievementCriteriaId);
 			}
 		}
 
