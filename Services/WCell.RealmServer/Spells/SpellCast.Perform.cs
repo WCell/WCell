@@ -386,6 +386,7 @@ namespace WCell.RealmServer.Spells
 				//if (CasterChar != null)
 				//{
 				//    CasterChar.SendSystemMessage("SpellCast (PrePerform): {0} ms", sw2.ElapsedTicks / 10000d);
+                //    sw2.Stop();
 				//}
 
 
@@ -396,7 +397,7 @@ namespace WCell.RealmServer.Spells
 
 				// check whether impact is delayed
 				int delay = CalculateImpactDelay();
-				var delayedImpactIsNoticable = delay > Map.UpdateDelay / 1000f;
+				var delayedImpactIsNoticable = delay > Map.UpdateDelay;
 
 				if (delayedImpactIsNoticable)
 				{
@@ -427,9 +428,13 @@ namespace WCell.RealmServer.Spells
 			}
 		}
 
+        /// <summary>
+        /// Calculates the delay until a spell impacts its target in milliseconds
+        /// </summary>
+        /// <returns>delay in ms</returns>
 		private int CalculateImpactDelay()
 		{
-			if (Spell.ProjectileSpeed <= 0 || Targets.Count > 0)
+			if (Spell.ProjectileSpeed <= 0 || Targets.Count == 0)
 			{
 				return 0;
 			}
@@ -442,7 +447,6 @@ namespace WCell.RealmServer.Spells
 			else if (CasterObject != null)
 			{
 				var target = Targets.First();
-				//var distance = target.GetDistance(Caster) + 10;
 				distance = target.GetDistance(CasterObject);
 			}
 			else
@@ -450,7 +454,8 @@ namespace WCell.RealmServer.Spells
 				return 0;
 			}
 
-			return (int)((distance * 1000) / Spell.ProjectileSpeed);
+            //projectile speed is distance per second
+			return (int)( (distance / Spell.ProjectileSpeed) * 1000);
 		}
 
 		private void DoDelayedImpact(int delay)
