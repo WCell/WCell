@@ -1,19 +1,14 @@
 using System;
 using System.Collections.Generic;
-using WCell.Constants.GameObjects;
 using WCell.Constants.Pathing;
-using WCell.Constants.Updates;
 using WCell.Constants.World;
-using WCell.Core.Network;
+using WCell.Core.Terrain.Paths;
 using WCell.RealmServer.GameObjects;
 using WCell.RealmServer.GameObjects.GOEntries;
 using WCell.RealmServer.GameObjects.Spawns;
-using WCell.RealmServer.Misc;
-using WCell.Core.Paths;
 using WCell.RealmServer.Paths;
 using WCell.RealmServer.Taxi;
 using WCell.RealmServer.Transports;
-using WCell.Util;
 using WCell.Util.Graphics;
 
 namespace WCell.RealmServer.Entities

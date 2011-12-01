@@ -3,8 +3,8 @@
  *   file		: ModDamageDonePercent.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
- *   last changed	: $LastChangedDate: 2010-01-10 13:00:10 +0100 (sø, 10 jan 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+ *   last changed	: $LastChangedDate: 2010-01-10 13:00:10 +0100 (s? 10 jan 2010) $
+
  *   revision		: $Rev: 1185 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -13,8 +13,6 @@
  *   (at your option) any later version.
  *
  *************************************************************************/
-
-using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {

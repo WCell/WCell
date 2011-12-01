@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading;
 using Cell.Core;
 using NLog;
+using WCell.Core.Addons;
 using WCell.Core.Database;
 using WCell.Core.Initialization;
 using WCell.Core.Localization;
@@ -12,7 +13,6 @@ using WCell.Core.Timers;
 using WCell.Util;
 using WCell.Util.NLog;
 using WCell.Util.Variables;
-using WCell.Core.Addons;
 
 namespace WCell.Core
 {
@@ -117,7 +117,7 @@ namespace WCell.Core
 				if (asm != null)
 				{
 					var ver = asm.GetName().Version;
-					return string.Format("{0}.{1} ({2}#{3})", ver.Major, ver.Minor, ver.Build, ver.Revision);
+					return string.Format("{0}.{1}.{2}.{3})", ver.Major, ver.Minor, ver.Build, ver.Revision);
 				}
 				return string.Format("[Cannot get AssemblyVersion]");
 			}
@@ -173,7 +173,7 @@ namespace WCell.Core
 			get;
 		}
 
-		protected void UpdateTitle()
+		public void UpdateTitle()
 		{
 			SetTitle(ToString());
 		}
@@ -183,6 +183,14 @@ namespace WCell.Core
 			if (ConsoleActive)
 			{
 				Console.Title = title;
+			}
+		}
+
+		public void SetTitle(string title, params object[] args)
+		{
+			if (ConsoleActive)
+			{
+				Console.Title = string.Format(title, args);
 			}
 		}
 

@@ -1,10 +1,10 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: PrimitiveWriter.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2009-03-21 10:17:04 +0100 (lø, 21 mar 2009) $
- *   last author	: $LastChangedBy: dominikseifert $
+ 
  *   revision		: $Rev: 818 $
  *
  *   This program is free software; you can redistribute it and/or modify

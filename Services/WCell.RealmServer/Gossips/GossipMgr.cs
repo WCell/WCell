@@ -1,22 +1,18 @@
 using System;
+using System.Collections.Generic;
 using NLog;
+using WCell.Constants;
+using WCell.Constants.NPCs;
 using WCell.Core;
 using WCell.Core.Initialization;
-using WCell.RealmServer.Content;
-using WCell.RealmServer.Global;
-using WCell.RealmServer.Lang;
-using WCell.Util;
-using WCell.Util.Lang;
-using WCell.Util.Variables;
-using WCell.RealmServer.NPCs;
-using WCell.Constants.NPCs;
-using WCell.Constants;
-using WCell.RealmServer.Entities;
-using WCell.RealmServer.Taxi;
-using System.Collections;
-using System.Collections.Generic;
-using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Battlegrounds;
+using WCell.RealmServer.Content;
+using WCell.RealmServer.Entities;
+using WCell.RealmServer.Global;
+using WCell.RealmServer.Handlers;
+using WCell.RealmServer.Lang;
+using WCell.RealmServer.NPCs;
+using WCell.RealmServer.NPCs.Pets;
 
 namespace WCell.RealmServer.Gossips
 {
@@ -80,32 +76,6 @@ namespace WCell.RealmServer.Gossips
 		//        return m_gossipConversations;
 		//    }
 		//}
-		#endregion
-
-		#region Start/Stop System
-
-		protected override bool InternalStart()
-		{
-			return true;
-		}
-
-		protected override bool InternalStop()
-		{
-			Dispose();
-
-			return true;
-		}
-
-		protected override bool InternalRestart(bool forced)
-		{
-			if (State == ManagerStates.Error)
-			{
-				InternalStop();
-			}
-
-			return InternalStart();
-		}
-
 		#endregion
 
 		#region IDisposable
@@ -239,7 +209,7 @@ namespace WCell.RealmServer.Gossips
 						{
 							menu.AddItem(new LocalizedGossipMenuItem(convo =>
 							{
-								convo.Character.SendSystemMessage(RealmLangKey.FeatureNotYetImplemented);
+								PetMgr.ListStabledPets(convo.Character, ((NPC)convo.Speaker));
 							}, RealmLangKey.GossipOptionStableMaster));
 						}
 						if (entry.NPCFlags.HasAnyFlag(NPCFlags.AnyTrainer))

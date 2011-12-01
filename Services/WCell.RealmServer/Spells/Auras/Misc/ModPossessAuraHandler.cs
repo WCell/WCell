@@ -1,16 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using WCell.Constants.Pets;
-using WCell.Core;
-using WCell.RealmServer.AI;
+﻿using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
-using WCell.Constants.Spells;
-using WCell.RealmServer.Handlers;
-using WCell.Constants;
-using WCell.Constants.Updates;
-using NLog;
 
 namespace WCell.RealmServer.Spells.Auras.Misc
 {
@@ -64,25 +53,11 @@ namespace WCell.RealmServer.Spells.Auras.Misc
             var chr = caster as Character;
             if (chr != null)
             {
-                if (target is NPC)
-                {
-                    chr.Enslave((NPC) target, duration);
-                    target.Brain.State = BrainState.Idle;
-                    PetHandler.SendSpells(chr, (NPC)target, PetAction.Stay);
-                    chr.SetMover(target, true);
-                    target.UnitFlags |= UnitFlags.Possessed;
-                }
-                else if(target is Character)
-                {
-                    PetHandler.SendPlayerPossessedPetSpells(chr, (Character)target);
-                    chr.SetMover(target, true);
-                }
-                
-                chr.FarSight = target.EntityId;
+            	chr.Possess(duration, target);
             }
         }
 
-        protected override void Remove(bool cancelled)
+    	protected override void Remove(bool cancelled)
         {
             var caster = (Unit)m_aura.CasterUnit;
             var target = m_aura.Auras.Owner;
@@ -91,17 +66,10 @@ namespace WCell.RealmServer.Spells.Auras.Misc
             var chr = caster as Character;
             if (chr != null)
             {
-                chr.SetMover(chr, true);
-                chr.ResetMover();
-                chr.FarSight = EntityId.Zero;
-                PetHandler.SendEmptySpells(chr);
-                target.UnitFlags &= ~UnitFlags.Possessed;
-                if (target is NPC)
-                {
-                    target.Brain.EnterDefaultState();
-                    ((NPC) target).RemainingDecayDelayMillis = 1;
-                }
+                chr.UnPossess(target);
             }
         }
+
+    	
     }
 }

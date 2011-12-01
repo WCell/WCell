@@ -1,6 +1,4 @@
-using NLog;
 using WCell.RealmServer.Entities;
-using WCell.RealmServer.GameObjects.GOEntries;
 
 namespace WCell.RealmServer.GameObjects
 {

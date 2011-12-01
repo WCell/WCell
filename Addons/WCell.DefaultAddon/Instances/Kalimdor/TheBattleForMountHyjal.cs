@@ -7,7 +7,7 @@ using WCell.RealmServer.Instances;
 
 namespace WCell.Addons.Default.Instances
 {
-	public class TheBattleForMountHyjal : DungeonInstance
+	public class TheBattleForMountHyjal : BaseInstance
 	{
 	}
 

@@ -4,7 +4,6 @@ using WCell.Core;
 using WCell.Core.ClientDB;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Entities;
-using WCell.RealmServer.Factions;
 using WCell.RealmServer.Network;
 
 namespace WCell.RealmServer.NPCs.Armorer

@@ -1,10 +1,10 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: GroupMember.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2010-01-23 20:40:40 +0100 (lø, 23 jan 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 1211 $
  *
  *   This program is free software; you can redistribute it and/or modify

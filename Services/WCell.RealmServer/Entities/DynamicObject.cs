@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2010-01-14 13:00:53 +0100 (to, 14 jan 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 1192 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -22,9 +22,9 @@ using WCell.Core;
 using WCell.Core.Network;
 using WCell.RealmServer.Factions;
 using WCell.RealmServer.Global;
-using WCell.RealmServer.Network;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.UpdateFields;
+using WCell.Util;
 using WCell.Util.Graphics;
 
 namespace WCell.RealmServer.Entities
@@ -116,27 +116,6 @@ namespace WCell.RealmServer.Entities
 				//throw new Exception("Faction of DynamicObject cannot be set.");
 			}
 		}
-
-		public override bool IsHostileWith(IFactionMember opponent)
-		{
-			return m_master.IsHostileWith(opponent);
-		}
-
-		public override bool IsAlliedWith(IFactionMember opponent)
-		{
-			return m_master.IsAlliedWith(opponent);
-		}
-
-		public override bool IsFriendlyWith(IFactionMember opponent)
-		{
-			return m_master.IsFriendlyWith(opponent);
-		}
-
-        public override bool IsNeutralWith(IFactionMember opponent)
-		{
-            return m_master.IsNeutralWith(opponent);
-		}
-        
 		#endregion
 
 		public override ObjectTypeId ObjectTypeId

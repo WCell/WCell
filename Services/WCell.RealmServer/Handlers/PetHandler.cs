@@ -6,15 +6,10 @@ using WCell.Constants.Pets;
 using WCell.Constants.Spells;
 using WCell.Constants.Talents;
 using WCell.Core.Network;
-using WCell.RealmServer.AI.Actions.Combat;
-using WCell.RealmServer.AI.Brains;
-using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
-using WCell.RealmServer.Network;
-using WCell.RealmServer.NPCs;
-using WCell.RealmServer.AI;
-using WCell.RealmServer.NPCs.Vehicles;
 using WCell.RealmServer.NPCs.Pets;
+using WCell.RealmServer.Network;
+using WCell.RealmServer.Spells;
 
 namespace WCell.RealmServer.Handlers
 {
@@ -196,6 +191,40 @@ namespace WCell.RealmServer.Handlers
 #endif
 		}
 
+		[PacketHandler(RealmServerOpCode.CMSG_PET_CAST_SPELL)]
+		public static void HandlePetCastSpell(IRealmClient client, RealmPacketIn packet)
+		{
+			var petId = packet.ReadEntityId();
+			var chr = client.ActiveCharacter;
+			var pet = chr.Map.GetObject(petId) as NPC;
+
+			if (pet != null)
+			{
+				//TODO: Add (pet as Vehicle).GetDriver() == chr;
+				if (pet == chr.ActivePet || chr.Vehicle == pet || chr.Charm == pet || chr.GodMode)
+				{
+					var castCount = packet.ReadByte();
+					var spellId = packet.ReadUInt32();
+					var unkFlags = packet.ReadByte();
+
+					//TODO: Fix this
+					//var spell = pet.Spells[spellId];
+					var spell = SpellHandler.Get(spellId);
+					if (spell != null)
+					{
+						var cast = pet.SpellCast;
+						cast.Start(spell, packet, castCount, unkFlags);
+					}
+				}
+			}
+#if DEBUG
+			else
+			{
+				chr.SendSystemMessage("You sent CMSG_PET_CAST_SPELL for a pet that does not exist in the same Map.");
+			}
+#endif
+		}
+
 		[PacketHandler(RealmServerOpCode.CMSG_PET_CANCEL_AURA)]
 		public static void HandleCancelAura(IRealmClient client, RealmPacketIn packet)
 		{
@@ -239,13 +268,6 @@ namespace WCell.RealmServer.Handlers
 				chr.SendSystemMessage("You sent CMSG_PET_STOP_ATTACK for a pet that does not exist in the same Map.");
 			}
 #endif
-		}
-
-		[PacketHandler(RealmServerOpCode.CMSG_TOTEM_DESTROYED)]
-		public static void HandleDestroyTotem(IRealmClient client, RealmPacketIn packet)
-		{
-			var totemSlot = packet.ReadUInt32();
-			log.Debug("Received CMSG_TOTEM_DESTROYED for Slot {0}", totemSlot);
 		}
 		#endregion
 
@@ -389,23 +411,28 @@ namespace WCell.RealmServer.Handlers
 			}
 		}
 
-		public static void SendVehicleSpells(IPacketReceiver receiver, Vehicle vehicle)
+		public static void SendVehicleSpells(IPacketReceiver receiver, NPC vehicle)
 		{
+		    var actions = vehicle.BuildVehicleActionBar();
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PET_SPELLS, 18))
 			{
 				packet.Write(vehicle.EntityId);
-				packet.Write((short)0);
-				packet.Write(0);
-				packet.Write(0x00000101);
+				packet.Write((ushort)CreatureFamilyId.None);
+				packet.Write(0); //duration
+                packet.Write((byte)PetAttackMode.Defensive);
+                packet.Write((byte)PetAction.Follow);
+                packet.Write((ushort)PetFlags.None);
 
-				for (var i = 0; i < 10; i++)
-				{
-					packet.Write((short)0);
-					packet.Write((byte)0);
-					packet.Write((byte)i + 8);
-				}
+                //action bar
+                for (var i = 0; i < PetConstants.PetActionCount; i++)
+                {
+                    var action = actions[i];
+                    packet.Write(action);
+                }
 
-				packet.Write((short)0);
+                packet.Write((byte)0); // No Spells
+
+                packet.Write((byte)0); // No Cooldowns
 
 				receiver.Send(packet);
 			}
@@ -596,7 +623,7 @@ namespace WCell.RealmServer.Handlers
 		/// <param name="stableMaster">The stable the client is interacting with.</param>
 		/// <param name="numStableSlots">The number of stable slots the character owns.</param>
 		/// <param name="pets">An array of NPCs containing the ActivePet and the StabledPets</param>
-		public static void SendStabledPetsList(IPacketReceiver receiver, NPC stableMaster, byte numStableSlots,
+		public static void SendStabledPetsList(IPacketReceiver receiver, Unit stableMaster, byte numStableSlots,
 			List<PermanentPetRecord> pets)
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.MSG_LIST_STABLED_PETS))
@@ -622,7 +649,7 @@ namespace WCell.RealmServer.Handlers
 					}
 					else if (!pet.IsActivePet && pet.Flags.HasFlag(PetFlags.Stabled))
 					{
-						packet.Write((byte)(0x02 + count));
+						packet.Write((byte)(0x02));
 						count++;
 					}
 					else
@@ -639,23 +666,24 @@ namespace WCell.RealmServer.Handlers
 
 		#region Talents
 
-		[PacketHandler(RealmServerOpCode.CMSG_PET_LEARN_TALENT)]
-		public static void HandlePetLearnTalent(IRealmClient client, RealmPacketIn packet)
-		{
-			var petGuid = packet.ReadEntityId();
-			var talentId = (TalentId)packet.ReadInt32();
-			var rank = packet.ReadInt32();						// 0 based rank
+        [PacketHandler(RealmServerOpCode.CMSG_PET_LEARN_TALENT)]
+        public static void HandlePetLearnTalent(IRealmClient client, RealmPacketIn packet)
+        {
+            var petId = packet.ReadEntityId();
 
-			var chr = client.ActiveCharacter;
-			var pet = chr.Map.GetObject(petGuid) as NPC;
+            var chr = client.ActiveCharacter;
+            var pet = chr.Map.GetObject(petId) as NPC;
 
-			if (pet != null)
-			{
-				if (chr.ActivePet != pet) return;
+            if (pet == null || !pet.IsAlive) return;
+            if (pet != chr.ActivePet) return;
 
-				pet.Talents.Learn(talentId, rank);
-			}
-		}
+            var talents = pet.Talents;
+            var talentId = (TalentId)packet.ReadUInt32();
+            var rank = packet.ReadInt32();
+            talents.Learn(talentId, rank);
+
+            TalentHandler.SendTalentGroupList(talents);
+        }
 
 		[PacketHandler(RealmServerOpCode.CMSG_PET_UNLEARN)]
 		public static void HandlePetUnlearn(IRealmClient client, RealmPacketIn packet)
@@ -670,6 +698,34 @@ namespace WCell.RealmServer.Handlers
 				pet.Talents.ResetTalents();
 			}
 		}
+
+        [PacketHandler(RealmServerOpCode.CMSG_LEARN_PREVIEW_TALENTS_PET)]
+        public static void SavePetTalentChanges(IRealmClient client, RealmPacketIn packet)
+        {
+            var petId = packet.ReadEntityId();
+
+            var chr = client.ActiveCharacter;
+            var pet = chr.Map.GetObject(petId) as NPC;
+
+            if (pet != null && pet.IsAlive)
+            {
+                if (pet == chr.ActivePet)
+                {
+                    var count = packet.ReadInt32();
+
+                    var talents = pet.Talents;
+                    for (var i = 0; i < count; i++)
+                    {
+                        var talentId = (TalentId)packet.ReadUInt32();
+                        var rank = packet.ReadInt32();
+
+                        talents.Learn(talentId, rank);
+                    }
+
+                    TalentHandler.SendTalentGroupList(talents);
+                }
+            }
+        }
 
 		#endregion
 	}

@@ -15,14 +15,14 @@
  *************************************************************************/
 
 using System;
+using System.Net;
 using Castle.ActiveRecord;
 using NLog;
+using WCell.AuthServer.Commands;
 using WCell.AuthServer.Network;
 using WCell.Constants;
 using WCell.Core.Database;
 using WCell.Intercommunication.DataTypes;
-using WCell.AuthServer.Commands;
-using System.Net;
 using WCell.RealmServer.Database;
 using WCell.Util;
 

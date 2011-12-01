@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2010-01-28 05:18:24 +0100 (to, 28 jan 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 1229 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using Cell.Core;
 using WCell.Constants;
 using WCell.Constants.Skills;
 using WCell.Constants.Spells;
@@ -24,7 +23,6 @@ using WCell.Core;
 using WCell.Core.ClientDB;
 using WCell.RealmServer.Spells;
 using WCell.Util;
-using System;
 
 namespace WCell.RealmServer.Skills
 {

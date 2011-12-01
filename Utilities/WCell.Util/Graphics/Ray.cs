@@ -1,9 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace WCell.Util.Graphics
 {
@@ -15,7 +12,8 @@ namespace WCell.Util.Graphics
         public Ray(Vector3 position, Vector3 direction)
         {
             Position = position;
-            Direction = direction.NormalizedCopy();
+            //Direction = direction.NormalizedCopy();
+        	Direction = direction;
         }
 
         public bool Equals(Ray other)
@@ -55,26 +53,39 @@ namespace WCell.Util.Graphics
             box.Intersects(ref this, out result);
         }
 
-        
-        public float? Intersects(Plane plane)
-        {
-            float num2 = ((plane.Normal.X * this.Direction.X) + (plane.Normal.Y * this.Direction.Y)) + (plane.Normal.Z * this.Direction.Z);
-            if (Math.Abs(num2) < 1E-05f)
-            {
-                return null;
-            }
-            float num3 = ((plane.Normal.X * this.Position.X) + (plane.Normal.Y * this.Position.Y)) + (plane.Normal.Z * this.Position.Z);
-            float num = (-plane.D - num3) / num2;
-            if (num < 0f)
-            {
-                if (num < -1E-05f)
-                {
-                    return null;
-                }
-                num = 0f;
-            }
-            return new float?(num);
-        }
+
+		public float? Intersects(Plane plane)
+		{
+			float num2 = ((plane.Normal.X * this.Direction.X) + (plane.Normal.Y * this.Direction.Y)) + (plane.Normal.Z * this.Direction.Z);
+			if (Math.Abs(num2) < 1E-05f)
+			{
+				return null;
+			}
+			float num3 = ((plane.Normal.X * this.Position.X) + (plane.Normal.Y * this.Position.Y)) + (plane.Normal.Z * this.Position.Z);
+			float num = (-plane.D - num3) / num2;
+			if (num < 0f)
+			{
+				if (num < -1E-05f)
+				{
+					return null;
+				}
+				num = 0f;
+			}
+			return new float?(num);
+		}
+
+		public float Intersect(Plane plane)
+		{
+			float num2 = Vector3.Dot(plane.Normal, Direction);
+			if (Math.Abs(num2) < 1E-05f)
+			{
+				// plane is parallel to this ray
+				return float.NaN;
+			}
+			float num3 = Vector3.Dot(plane.Normal, Position);
+			float num = (-plane.D - num3) / num2;
+			return num;
+		}
 
         public void Intersects(ref Plane plane, out float? result)
         {

@@ -2,28 +2,21 @@
 // Developer: FeRus (Rivera team)
 // info: http://world-rivera.ru
 
-using System;
-using WCell.Constants.Misc;
-using WCell.Constants.NPCs;
-using WCell.Core.Initialization;
-using WCell.Constants.Spells;
-using WCell.Constants;
 using WCell.Constants.GameObjects;
-using WCell.RealmServer.AI.Actions.Combat;
+using WCell.Constants.NPCs;
+using WCell.Constants.Spells;
+using WCell.Core.Initialization;
 using WCell.RealmServer.AI.Brains;
+using WCell.RealmServer.Entities;
 using WCell.RealmServer.GameObjects;
 using WCell.RealmServer.Instances;
-using WCell.RealmServer.NPCs;
 using WCell.RealmServer.Misc;
+using WCell.RealmServer.NPCs;
 using WCell.RealmServer.Spells;
-using WCell.RealmServer.Spells.Auras;
-using WCell.RealmServer.Entities;
-using WCell.Util.Graphics;
-
 
 namespace WCell.Addons.Default.Instances
 {
-    public class ShadowfangKeep : RaidInstance
+    public class ShadowfangKeep : BaseInstance
     {
 
         #region Setup Content

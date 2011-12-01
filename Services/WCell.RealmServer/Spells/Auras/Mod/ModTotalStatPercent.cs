@@ -15,7 +15,9 @@
  *************************************************************************/
 
 using WCell.Constants;
-using WCell.RealmServer.Modifiers;
+using WCell.Constants.Items;
+using WCell.RealmServer.Entities;
+using WCell.Util.Variables;
 
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
@@ -25,9 +27,38 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	/// </summary>
 	public class ModTotalStatPercentHandler : ModStatPercentHandler
 	{
-		//protected override int GetStatValue(StatType stat)
-		//{
-			
-		//}
+		[NotVariable]
+		public static readonly ItemModType[] StatTypeToItemModType = new[]
+		                                                    	{
+		                                                    		ItemModType.Strength,
+		                                                    		ItemModType.Agility,
+		                                                    		ItemModType.Stamina,
+		                                                    		ItemModType.Intellect,
+		                                                    		ItemModType.Spirit
+		                                                    	};
+ 		protected override int GetStatValue(StatType stat)
+		{
+			var val = Owner.GetUnmodifiedBaseStatValue(stat);
+
+			var chr = Owner as Character;
+			if(chr != null)
+			{
+				var items = chr.Inventory.Equipment.Items; //All equipped items
+				for(int i = 0; i < items.Length; i++)
+				{
+					if(items[i] != null)
+					{
+						var itemMods = items[i].Template.Mods; //All mods of the item
+						for(int j = 0; j < itemMods.Length; j++)
+						{
+							var mod = itemMods[j];
+							if (mod.Type == StatTypeToItemModType[(int)stat]) //Mod with given stat
+								val += mod.Value;
+						}
+					}
+				}
+			}
+			return val;
+		}
 	}
 };

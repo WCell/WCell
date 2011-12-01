@@ -6,14 +6,14 @@ using WCell.Constants.Achievements;
 using WCell.Constants.Factions;
 using WCell.Constants.Items;
 using WCell.Core;
-using WCell.Util.Threading;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Factions;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Handlers;
-using WCell.RealmServer.Items;
 using WCell.RealmServer.Interaction;
+using WCell.RealmServer.Items;
+using WCell.Util.Threading;
 
 namespace WCell.RealmServer.Mail
 {
@@ -117,6 +117,12 @@ namespace WCell.RealmServer.Mail
 
 			if (!m_chr.GodMode)
 			{
+                if (stationary == MailStationary.GM)
+                {
+                    MailHandler.SendResult(m_chr.Client, 0, MailResult.MailSent, MailError.INTERNAL_ERROR);
+                    return MailError.INTERNAL_ERROR;
+                }
+
 				// Can't send to people who ignore you
 				if (RelationMgr.IsIgnoring(recipientRecord.EntityLowId, m_chr.EntityId.Low))
 				{

@@ -19,7 +19,6 @@ using WCell.Core.Network;
 using WCell.RealmServer.Chat;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Network;
-using WCell.Core;
 
 namespace WCell.RealmServer.Handlers
 {

@@ -1,4 +1,3 @@
-using NLog;
 using WCell.Constants.GameObjects;
 using WCell.RealmServer.Misc;
 using WCell.Util;

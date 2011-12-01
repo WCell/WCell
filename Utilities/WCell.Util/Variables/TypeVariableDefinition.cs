@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
@@ -61,6 +60,12 @@ namespace WCell.Util.Variables
 				return m_readOnly;
 			}
 			internal set { m_readOnly = value; }
+		}
+
+		public bool IsFileOnly
+		{
+			get;
+			internal set;
 		}
 
 		public MemberInfo Member
@@ -151,7 +156,7 @@ namespace WCell.Util.Variables
 		static object TryParse(string strValue, Type type)
 		{
 			object valueObj = null;
-			if (Utility.Parse(strValue, type, ref valueObj))
+			if (StringParser.Parse(strValue, type, ref valueObj))
 			{
 				return valueObj;
 			}

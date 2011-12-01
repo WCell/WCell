@@ -1,7 +1,4 @@
-using System;
 using WCell.Constants.Spells;
-using WCell.RealmServer.Entities;
-using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Spells.Targeting;
 using WCell.Util;
 
@@ -154,7 +151,7 @@ namespace WCell.RealmServer.Spells
 	{
 		public static AISpellCooldownCategory GetAISpellCooldownCategory(this Spell spell)
 		{
-			var beneficial = spell.HarmType == HarmType.Beneficial;
+			var beneficial = spell.IsBeneficial;
 			if (spell.IsAura)
 			{
 				return beneficial ? AISpellCooldownCategory.AuraBeneficial : AISpellCooldownCategory.AuraHarmful;

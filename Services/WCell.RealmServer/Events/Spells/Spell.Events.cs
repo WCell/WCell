@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using WCell.Constants.Spells;
 using WCell.RealmServer.NPCs;
 using WCell.RealmServer.Spells.Auras;

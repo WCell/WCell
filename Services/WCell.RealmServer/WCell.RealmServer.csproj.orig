@@ -127,41 +127,57 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Castle.ActiveRecord, Version=1.0.3.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Libraries\Source\Castle\bin\Castle.ActiveRecord.dll</HintPath>
+    <Reference Include="Antlr3.Runtime">
+      <HintPath>..\..\Libraries\Binaries\Castle.ActiveRecord\Antlr3.Runtime.dll</HintPath>
     </Reference>
-    <Reference Include="Castle.Components.Validator, Version=1.0.3.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+    <Reference Include="Castle.ActiveRecord, Version=2.1.2.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Libraries\Source\Castle\bin\Castle.Components.Validator.dll</HintPath>
+      <HintPath>..\..\Libraries\Binaries\Castle.ActiveRecord\Castle.ActiveRecord.dll</HintPath>
     </Reference>
-    <Reference Include="Castle.Core, Version=1.0.3.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+    <Reference Include="Castle.Components.Validator, Version=1.1.1.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Libraries\Source\Castle\bin\Castle.Core.dll</HintPath>
+      <HintPath>..\..\Libraries\Binaries\Castle.ActiveRecord\Castle.Components.Validator.dll</HintPath>
     </Reference>
-    <Reference Include="Castle.DynamicProxy, Version=2.0.3.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+    <Reference Include="Castle.Core, Version=1.2.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Libraries\Source\Castle\bin\Castle.DynamicProxy.dll</HintPath>
+      <HintPath>..\..\Libraries\Binaries\Castle.ActiveRecord\Castle.Core.dll</HintPath>
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.85.5.452, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Libraries\Binaries\Release\ICSharpCode\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
-    <Reference Include="Iesi.Collections, Version=1.0.0.3, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
+    <Reference Include="Iesi.Collections, Version=1.0.1.0, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Libraries\Source\Castle\bin\Iesi.Collections.dll</HintPath>
+      <HintPath>..\..\Libraries\Binaries\Castle.ActiveRecord\Iesi.Collections.dll</HintPath>
+    </Reference>
+<<<<<<< HEAD
+    <Reference Include="JetBrains.Annotations">
+      <HintPath>..\..\Libraries\Binaries\JetBrains\JetBrains.Annotations.dll</HintPath>
     </Reference>
     <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Libraries\Source\Castle\bin\log4net.dll</HintPath>
+      <HintPath>..\..\Libraries\Binaries\Castle.ActiveRecord\log4net.dll</HintPath>
     </Reference>
+=======
+>>>>>>> 1140e8eb8cf69aef256c3d0c21daae66f31b02b5
     <Reference Include="MySql.Data, Version=6.0.4.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Libraries\Binaries\Release\MySql\MySql.Data.dll</HintPath>
     </Reference>
+    <Reference Include="NHibernate, Version=2.1.2.4000, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Libraries\Binaries\Castle.ActiveRecord\NHibernate.dll</HintPath>
+    </Reference>
+    <Reference Include="NHibernate.ByteCode.Castle, Version=2.1.2.4000, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Libraries\Binaries\Castle.ActiveRecord\NHibernate.ByteCode.Castle.dll</HintPath>
+    </Reference>
     <Reference Include="NLog, Version=1.0.0.505, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Libraries\Source\NLog\bin\Debug\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="Remotion.Data.Linq">
+      <HintPath>..\..\Libraries\Binaries\Castle.ActiveRecord\Remotion.Data.Linq.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -184,10 +200,149 @@
     <Compile Include="..\..\Utilities\WCell.SolutionItems\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
+    <Compile Include="Achievements\AchievementCriteria.cs" />
+    <Compile Include="Achievements\AchievementCategoryEntry.cs" />
+    <Compile Include="Achievements\AchievementCollection.cs" />
+    <Compile Include="Achievements\AchievementRecord.cs" />
+    <Compile Include="Achievements\AchievementProgressRecord.cs" />
+    <Compile Include="Achievements\AchievementCriteriaRequirement.cs" />
+    <Compile Include="Achievements\AchievementReward.cs" />
+    <Compile Include="AI\Actions\Movement\AIFollowPathAction.cs" />
+    <Compile Include="AI\Actions\Movement\AIWanderMoveAction.cs" />
+    <Compile Include="AI\Brains\IAIEventsHandler.cs" />
+    <Compile Include="Commands\WorldEventCommands.cs" />
+    <Compile Include="Content\IModDataHolder.cs" />
+    <Compile Include="Editor\Commands\EditorCommand.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\EditorArchitectInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\Figurines\EditorFigurine.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\Figurines\FigurineBase.cs" />
+    <Compile Include="Editor\Figurines\SpawnPointFigurine.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\Figurines\WaypointFigurine.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\MapEditor.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\Menus\MapEditorMenu.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\MapEditorMgr.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\Menus\SpawnEditorMenu.cs" />
+    <Compile Include="Editor\Menus\WaypointEditorMenu.cs" />
+    <Compile Include="Editor\NPCSpawnEditor.cs" />
+    <Compile Include="Editor\Menus\SpawnPointEditorMenu.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Entities\Character.BaseInfo.DBC.cs" />
+    <Compile Include="Entities\Character.StartOutfit.DBC.cs" />
+    <Compile Include="Gossips\GossipTextHelper.cs" />
+    <Compile Include="Handlers\MirrorImageHandler.cs" />
+    <Compile Include="Handlers\TotemHandler.cs" />
+    <Compile Include="Handlers\WorldStateHandler.cs" />
+<<<<<<< HEAD
+    <Compile Include="NPCs\NPCBaseStats.cs" />
+=======
+    <Compile Include="Instances\DungeonInstanceSettings.cs" />
+    <Compile Include="Instances\InstanceProgress.cs" />
+    <Compile Include="Instances\RaidInstanceSettings.cs" />
+    <Compile Include="LFG\LFGMgr.cs" />
+    <Compile Include="NPCs\Trainers\TrainerSpellTemplate.cs" />
+    <Compile Include="Spells\Auras\Misc\CallStabledPetHandler.cs" />
+>>>>>>> 1140e8eb8cf69aef256c3d0c21daae66f31b02b5
+    <Compile Include="Spells\Auras\Misc\FearHandler.cs" />
+    <Compile Include="Spells\Auras\Misc\ModConfuseHandler.cs" />
+    <Compile Include="Spells\Auras\Misc\ModPossessAuraHandler.cs" />
+    <Compile Include="Spells\Auras\Passive\ArenaPreparation.cs" />
+    <Compile Include="Spells\Auras\Passive\ForceAutoRunForward.cs" />
+    <Compile Include="Spells\Auras\PeriodicallyUpdatedAuraEffectHandler.cs" />
+    <Compile Include="Spells\Effects\ApplyGlyph.cs" />
+    <Compile Include="Spells\Effects\ClearQuest.cs" />
+    <Compile Include="Spells\Effects\Inebriate.cs" />
+    <Compile Include="Spells\SpellEffectsCollection.cs" />
+    <Compile Include="Spells\Effects\KillCreditPersonal.cs" />
+    <Compile Include="Spells\Auras\Misc\MirrorImageHandler.cs" />
+    <Compile Include="Spells\Effects\PlayMusic.cs" />
+    <Compile Include="Spells\Effects\ScriptEffect.cs" />
+    <Compile Include="Spells\Effects\SummonAllTotems.cs" />
+    <Compile Include="Spells\Effects\TeachFlightPath.cs" />
+    <Compile Include="Spells\Effects\TradeSkill.cs" />
+    <Compile Include="Spells\Effects\TriggerSpellFromTargetWithCasterAsTarget.cs" />
+    <Compile Include="Spells\Effects\WMOChange.cs" />
+    <Compile Include="Spells\Effects\WMODamage.cs" />
+    <Compile Include="Spells\Effects\WMORepair.cs" />
+    <Compile Include="Spells\Targeting\AISpellTargetCollection.cs" />
+    <Compile Include="Battlegrounds\Arenas\ArenaTeam.cs" />
+    <Compile Include="Battlegrounds\Arenas\ArenaTeamMember.cs" />
+    <Compile Include="Battlegrounds\Arenas\ArenaTeamStats.cs" />
+    <Compile Include="Battlegrounds\PvPDifficulty.cs" />
+    <Compile Include="Commands\AchievementCommands.cs" />
     <Compile Include="Commands\Extensions.cs" />
+    <Compile Include="Commands\GossipCommand.cs" />
     <Compile Include="Commands\LocalizerCommand.cs" />
-    <Compile Include="Lang\LangKey.cs" />
+    <Compile Include="Database\ArenaTeamMember.cs" />
+    <Compile Include="Database\ArenaTeamStats.cs" />
+    <Compile Include="Entities\Character.Mechanics.cs" />
+    <Compile Include="Entities\Character.StatUpdates.cs" />
+    <Compile Include="Entities\ObjectTemplate.cs" />
+    <Compile Include="Entities\NPC.Mechanics.cs" />
+    <Compile Include="Entities\NPC.StatUpdates.cs" />
+    <Compile Include="Entities\Targeting.cs" />
+    <Compile Include="Entities\Unit.StatUpdates.cs" />
+    <Compile Include="Events\Spells\Spell.Events.cs" />
+    <Compile Include="Formulas\RegenerationFormulas.cs" />
+    <Compile Include="GameObjects\Spawns\GOSpawnEntry.cs" />
+    <Compile Include="GameObjects\Spawns\GOSpawnPoint.cs" />
+    <Compile Include="GameObjects\Spawns\GOSpawnPool.cs" />
+    <Compile Include="GameObjects\Spawns\GOSpawnPoolTemplate.cs" />
+    <Compile Include="Global\WorldInstanceCollection.cs" />
+    <Compile Include="Global\WorldEvent.cs" />
+    <Compile Include="Global\WorldEventMgr.cs" />
+    <Compile Include="Global\WorldMapOverlayEntry.cs" />
+    <Compile Include="Global\WorldMapOverlayId.cs" />
+    <Compile Include="Handlers\ArenaTeamHandler.cs" />
+    <Compile Include="Handlers\TitleHandler.cs" />
+    <Compile Include="Items\IItemEquipmentEventHandler.cs" />
+    <Compile Include="Items\ScalingStats.cs" />
+    <Compile Include="Lang\RealmLangKey.cs" />
     <Compile Include="Lang\RealmLocalizer.cs" />
+    <Compile Include="Lang\TranslatableItem.cs" />
+    <Compile Include="Misc\ActionBar.cs" />
+    <Compile Include="Misc\BugReport.cs" />
+    <Compile Include="NPCs\Spawns\NPCSpawnPool.cs" />
+    <Compile Include="NPCs\Spawns\NPCSpawnPoolTemplate.cs" />
+    <Compile Include="Quests\QuestHonor.cs" />
+    <Compile Include="Spawns\SpawnEntry.cs" />
+    <Compile Include="Spawns\SpawnMgr.cs" />
+    <Compile Include="Spawns\SpawnPoint.cs" />
+    <Compile Include="Spawns\SpawnPoolTemplate.cs" />
+    <Compile Include="Spawns\SpawnPool.cs" />
+    <Compile Include="Spawns\SpawnPoolTemplateEntry.cs" />
+    <Compile Include="Spells\Auras\Mod\ModArmorByPercentOfIntellectHandler.cs" />
+    <Compile Include="Spells\Auras\Misc\AddProcHandler.cs" />
+    <Compile Include="Spells\Auras\Mod\ModAttackerSpellCritChanceHandler.cs" />
+    <Compile Include="Spells\SpellCast.AI.cs" />
+    <Compile Include="Spells\SpellProcEventEntry.cs" />
+    <Compile Include="Spells\Targeting\DefaultTargetAdders.cs" />
+    <Compile Include="Spells\Targeting\DefaultTargetDefinitions.cs" />
+    <Compile Include="Spells\Targeting\DefaultTargetEvaluators.cs" />
+    <Compile Include="Spells\Targeting\DefaultTargetFilters.cs" />
+    <Compile Include="Spells\Targeting\TargetDefinition.cs" />
+    <Compile Include="Talents\Glyphs.DBC.cs" />
+    <Compile Include="Titles\CharacterTitleEntry.cs" />
+    <Compile Include="NPCs\INPCDataHolder.cs" />
+    <Compile Include="NPCs\NPCAddonData.cs" />
+    <Compile Include="NPCs\Pets\PetLevelStatInfo.cs" />
+    <Compile Include="Quests\QuestRewRep.cs" />
     <Compile Include="RealmAccount.cs" />
     <Compile Include="Network\AuthQueue.cs" />
     <Compile Include="RacesClasses\BaseClass.cs" />
@@ -217,20 +372,45 @@
     <Compile Include="Groups\PartyGroup.cs" />
     <Compile Include="Groups\RaidGroup.cs" />
     <Compile Include="Database\CharacterRelationRecord.cs" />
-    <Compile Include="Interaction\CharacterSearch.cs" />
-    <Compile Include="Interaction\RelationMgr.cs" />
-    <Compile Include="Interaction\WhoList.cs" />
-    <Compile Include="Interaction\WhoSearch.cs" />
+    <Compile Include="Social\CharacterSearch.cs" />
+    <Compile Include="Social\RelationMgr.cs" />
+    <Compile Include="Social\WhoList.cs" />
+    <Compile Include="Social\WhoSearch.cs" />
     <Compile Include="Entities\Character.cs" />
     <Compile Include="Chat\ChatChannel.cs" />
     <Compile Include="Chat\ChatChannelGroup.cs" />
-    <Compile Include="Privileges\ClientConsoleCommands.cs" />
+    <Compile Include="Handlers\ClientConsoleCommandHandler.cs" />
     <Compile Include="Chat\LangHandler.cs" />
     <Compile Include="Chat\ChatMgr.cs" />
     <Compile Include="Res\Resources.cs" />
     <Compile Include="Res\WCell.RealmServer.Designer.cs" />
     <Compile Include="Spells\Auras\DamagePctAmplifierHandler.cs" />
+    <Compile Include="Spells\Auras\Misc\AddEffectToPassiveAuraHandler.cs" />
     <Compile Include="Spells\Auras\Misc\AttackModifierHandler.cs" />
+    <Compile Include="Spells\Auras\Misc\ProcTriggerSpellOnAutoAttackHandler.cs" />
+    <Compile Include="Spells\Auras\Misc\CritCreatureMaskHandler.cs" />
+    <Compile Include="Spells\Auras\Misc\ItemEquipmentEventAuraHandler.cs" />
+    <Compile Include="Spells\Auras\Misc\LifeLeechPercentAuraHandler.cs" />
+    <Compile Include="Spells\Auras\Misc\ProcEnergizeHandler.cs" />
+    <Compile Include="Spells\Auras\Misc\ProcTriggerSpellOnCritHandler.cs" />
+    <Compile Include="Spells\Auras\Misc\ModAllRuneCooldownsPercentHandler.cs" />
+    <Compile Include="Spells\Auras\Misc\ToggleAuraHandler.cs" />
+    <Compile Include="Spells\Auras\Misc\TriggerDelayedEffectHandler.cs" />
+    <Compile Include="Spells\Auras\Mod\ModMeleeAttackPowerByPercentOfStatHandler.cs" />
+    <Compile Include="Spells\Auras\Mod\EnableCriticalHandler.cs" />
+    <Compile Include="Spells\Auras\Mod\ModAOEDamagePercentHandler.cs" />
+    <Compile Include="Spells\Auras\Mod\ModDamageTaken.cs" />
+    <Compile Include="Spells\Auras\Mod\ModDeflectChanceHandler.cs" />
+    <Compile Include="Spells\Auras\Mod\ModDetectRangeHandler.cs" />
+    <Compile Include="Spells\Auras\Mod\ModIncreaseHealth.cs" />
+    <Compile Include="Spells\Auras\Mod\DamageShieldEffectHandler.cs" />
+    <Compile Include="Spells\Auras\Mod\ModQuestXpPctHandler.cs" />
+    <Compile Include="Spells\Auras\Mod\ModReputationGainHandler.cs" />
+    <Compile Include="Spells\Auras\Mod\ModSpeedMountedFlightHandler.cs" />
+    <Compile Include="Spells\Auras\Mod\ModSpellHitChance.cs" />
+    <Compile Include="Spells\Auras\Mod\ModAPByArmorHandler.cs" />
+    <Compile Include="Spells\Auras\Mod\CriticalBlockPctHandler.cs" />
+    <Compile Include="Spells\Auras\Mod\ModDamageDoneVersusCreatureTypeHandler.cs" />
     <Compile Include="Spells\Auras\Mod\ModRageFromDamageDealtPercentHandler.cs" />
     <Compile Include="Spells\Auras\Mod\ModHitChanceHandler.cs" />
     <Compile Include="Spells\Auras\Mod\ModArmorPenetrationHandler.cs" />
@@ -238,16 +418,27 @@
     <Compile Include="Spells\Auras\Mod\ModExpertiseHandler.cs" />
     <Compile Include="Spells\Auras\Mod\ModMeleeCritDamageBonusHandler.cs" />
     <Compile Include="Spells\Auras\Mod\ModOffhandDamagePercentHandler.cs" />
+    <Compile Include="Spells\Auras\Mod\ModAvoidances.cs" />
+    <Compile Include="Spells\Auras\Mod\ModSpellPowerByAPPctHandler.cs" />
+    <Compile Include="Spells\Auras\Mod\ModKillXpPctHandler.cs" />
     <Compile Include="Spells\Auras\NPCAuraCollection.cs" />
+    <Compile Include="Spells\Auras\Passive\Unattackable.cs" />
     <Compile Include="Spells\Auras\PlayerAuraCollection.cs" />
+    <Compile Include="Spells\Effects\CreateManaGemEffectHandler.cs" />
+    <Compile Include="Spells\Effects\Custom\RemoveCooldownEffectHandler.cs" />
+    <Compile Include="Spells\Effects\RemoveImpairingEffects.cs" />
     <Compile Include="Spells\InvalidSpellDataException.cs" />
+    <Compile Include="Spells\RuneCostEntry.cs" />
+    <Compile Include="Spells\RuneSet.cs" />
+    <Compile Include="Spells\SpellException.cs" />
+    <Compile Include="Spells\SpellExtensions.cs" />
     <Compile Include="Stats\RealmStatsExtended.cs" />
     <Compile Include="Stats\RealmStats.cs" />
     <Compile Include="Global\World.cs" />
     <Compile Include="Entities\ObjectBase.cs" />
     <Compile Include="RacesClasses\BaseRace.cs" />
     <Compile Include="RealmServerConfiguration.cs" />
-    <Compile Include="Global\Region.cs" />
+    <Compile Include="Global\Map.cs" />
     <Compile Include="Global\Zone.cs" />
     <Compile Include="Global\ZoneSpacePartitionNode.cs" />
     <Compile Include="Network\RealmPacketMgr.cs" />
@@ -255,6 +446,9 @@
     <Compile Include="Network\RealmClient.cs" />
     <Compile Include="RealmServer.cs" />
     <Compile Include="Entities\Unit.cs" />
+    <Compile Include="Titles\TitleMgr.cs" />
+    <Compile Include="Trade\TradeMgr.cs" />
+    <Compile Include="Trade\TradeWindow.cs" />
     <Compile Include="UpdateFields\UpdateMask.cs" />
     <Compile Include="UpdateFields\UpdatePacket.cs" />
     <Compile Include="UpdateFields\UpdateFieldHandler.cs" />
@@ -285,11 +479,6 @@
       <Name>WCell.Intercommunication</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\Libraries\Source\NHibernate\NHibernate-3.5.csproj">
-      <Project>{5909BFE7-93CF-4E5F-BE22-6293368AF01D}</Project>
-      <Name>NHibernate-3.5</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\Utilities\WCell.PacketAnalyzer\WCell.PacketAnalyzer.csproj">
       <Project>{65B2B094-13BB-4685-95AD-402FC9A4473A}</Project>
       <Name>WCell.PacketAnalyzer</Name>
@@ -302,12 +491,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Achievement\AchievementEntry.cs" />
-    <Compile Include="Achievement\AchievementMgr.cs" />
-    <Compile Include="Achievement\Achievements.DBC.cs" />
+    <Compile Include="Achievements\AchievementEntry.cs" />
+    <Compile Include="Achievements\AchievementMgr.cs" />
+    <Compile Include="Achievements\Achievements.DBC.cs" />
     <Compile Include="Addons\RealmAddonMgr.cs" />
     <Compile Include="AI\Actions\AIActionCollection.cs" />
-    <Compile Include="AI\Actions\AIActionCreatorCollection.cs" />
     <Compile Include="AI\Actions\AIAction.cs" />
     <Compile Include="AI\Actions\AIActionEnums.cs" />
     <Compile Include="AI\Actions\AIActionQueue.cs" />
@@ -368,10 +556,9 @@
     <Compile Include="Events\Chat.cs" />
     <Compile Include="Events\Entities\GOEvents.cs" />
     <Compile Include="Events\Entities\NPCEvents.cs" />
-    <Compile Include="Events\Global\RegionEvents.cs" />
+    <Compile Include="Events\Global\MapEvents.cs" />
     <Compile Include="Events\Global\ZoneEvents.cs" />
     <Compile Include="Events\QuestEvents.cs" />
-    <Compile Include="Events\RealmServerEvents.cs" />
     <Compile Include="GameObjects\GOPortalEntry.cs" />
     <Compile Include="GameObjects\Handlers\GossipGOHandler.cs" />
     <Compile Include="GameObjects\Portal.cs" />
@@ -411,10 +598,8 @@
     <Compile Include="Content\NHibernateConverterProvider.cs" />
     <Compile Include="Content\NHibernateDbWrapper.cs" />
     <Compile Include="Database\AccountDataRecord.cs" />
-    <Compile Include="Database\ActionbarRecords.cs" />
     <Compile Include="Database\EquipmentSet.cs" />
     <Compile Include="Database\EquipmentSetItemMapping.cs" />
-    <Compile Include="Database\GlyphRecords.cs" />
     <Compile Include="Database\GuildBankTab.cs" />
     <Compile Include="Database\GuildBankTabItemMapping.cs" />
     <Compile Include="Database\GuildBankTabRights.cs" />
@@ -425,7 +610,6 @@
     <Compile Include="NPCs\Pets\PetRecordBase.cs" />
     <Compile Include="NPCs\Pets\PetTalentSpellRecord.cs" />
     <Compile Include="Database\QuestRecord.cs" />
-    <Compile Include="Database\TalentRecords.cs" />
     <Compile Include="Entities\Character.Maintenance.cs" />
     <Compile Include="Entities\CharacterInformation.cs" />
     <Compile Include="Entities\MoveControl.cs" />
@@ -441,9 +625,9 @@
     <Compile Include="GameObjects\GOEntries\GOCustomEntry.cs" />
     <Compile Include="GameObjects\GOEntries\GOFlagEntry.cs" />
     <Compile Include="GameObjects\GOEntries\IGOLootableEntry.cs" />
-    <Compile Include="Global\InstancedRegion.cs" />
-    <Compile Include="Global\IRegionId.cs" />
-    <Compile Include="Global\ZoneInfo.cs" />
+    <Compile Include="Global\InstancedMap.cs" />
+    <Compile Include="Global\IMapId.cs" />
+    <Compile Include="Global\ZoneTemplate.cs" />
     <Compile Include="Gossips\GossipMenuItem.cs" />
     <Compile Include="Handlers\AccountDataHandler.cs" />
     <Compile Include="Guilds\GuildBank.cs" />
@@ -468,12 +652,9 @@
     <Compile Include="Misc\SummonRequest.cs" />
     <Compile Include="NPCs\Auctioneer\AuctionSearch.cs" />
     <Compile Include="NPCs\CreatureFamily.cs" />
-    <Compile Include="Misc\Trade.cs" />
+    <Compile Include="Trade\Trade.cs" />
     <Compile Include="Network\CompressedPacket.cs" />
-    <Compile Include="NPCs\Figurines\Figurine.cs" />
-    <Compile Include="NPCs\Figurines\WaypointFigurine.cs" />
     <Compile Include="NPCs\Pets\SummonedPetRecord.cs" />
-    <Compile Include="NPCs\SpawnGossips.cs" />
     <Compile Include="NPCs\SpellTriggerInfo.cs" />
     <Compile Include="NPCs\VehicleEntry.cs" />
     <Compile Include="NPCs\Vehicles\Vehicle.cs" />
@@ -492,7 +673,6 @@
     <Compile Include="Battlegrounds\BattlegroundQueue.cs" />
     <Compile Include="Battlegrounds\BattlegroundTemplate.cs" />
     <Compile Include="Battlegrounds\BattlegroundMgr.cs" />
-    <Compile Include="Battlegrounds\Battlegroup.cs" />
     <Compile Include="Chat\ChatUtility.cs" />
     <Compile Include="Chat\IChatTarget.cs" />
     <Compile Include="Chat\ChannelMember.cs" />
@@ -510,12 +690,12 @@
     <Compile Include="Commands\QuestCommands.cs" />
     <Compile Include="Commands\RealmServerCmdArgs.cs" />
     <Compile Include="Commands\RealmServerCommand.cs" />
-    <Compile Include="Commands\RegionCommands.cs" />
+    <Compile Include="Commands\MapCommands.cs" />
     <Compile Include="Commands\TicketCommands.cs" />
     <Compile Include="Commands\Triggers.cs" />
     <Compile Include="Commands\WorldCommand.cs" />
     <Compile Include="Content\ContentException.cs" />
-    <Compile Include="Content\ContentHandler.cs" />
+    <Compile Include="Content\ContentMgr.cs" />
     <Compile Include="Database\AuraRecord.cs" />
     <Compile Include="Database\Guild.cs" />
     <Compile Include="Database\GuildEventLogEntry.cs" />
@@ -525,7 +705,7 @@
     <Compile Include="Database\ReputationRecord.cs" />
     <Compile Include="Database\SkillRecord.cs" />
     <Compile Include="Database\SpellRecord.cs" />
-    <Compile Include="Debugging\RegionExtensions.cs" />
+    <Compile Include="Debugging\MapExtensions.cs" />
     <Compile Include="Misc\Duel.cs" />
     <Compile Include="Entities\IEntity.cs" />
     <Compile Include="Entities\IWorldLocation.cs" />
@@ -535,7 +715,6 @@
     <Compile Include="Events\AccountEvents.cs" />
     <Compile Include="Events\Global\World.cs" />
     <Compile Include="Events\Help\Tickets\Ticket.cs" />
-    <Compile Include="Events\Spells\SpellCast.cs" />
     <Compile Include="Events\Spells\SpellChannel.cs" />
     <Compile Include="Extensions.cs">
       <SubType>Code</SubType>
@@ -582,7 +761,7 @@
     <Compile Include="GameObjects\Handlers\MailBoxHandler.cs" />
     <Compile Include="GameObjects\Handlers\MiscHandlers.cs" />
     <Compile Include="GameObjects\Handlers\TrapHandler.cs" />
-    <Compile Include="Global\RegionInfo.cs" />
+    <Compile Include="Global\MapTemplate.cs" />
     <Compile Include="Gossips\GossipEntry.cs" />
     <Compile Include="Guilds\Guild.cs" />
     <Compile Include="Guilds\GuildEventLog.cs" />
@@ -605,7 +784,7 @@
     <Compile Include="Help\Tickets\Ticket.cs" />
     <Compile Include="Instances\BaseInstance.cs" />
     <Compile Include="Instances\InstanceAttribute.cs" />
-    <Compile Include="Interaction\GuildInviteRelation.cs" />
+    <Compile Include="Social\GuildInviteRelation.cs" />
     <Compile Include="Items\DamageInfo.cs" />
     <Compile Include="Items\Enchanting\EnchantMgr.cs" />
     <Compile Include="Items\Enchanting\ItemEnchantment.cs" />
@@ -627,8 +806,7 @@
     <Compile Include="Looting\LootRollProgress.cs" />
     <Compile Include="Misc\CfgCategories.cs" />
     <Compile Include="Instances\InstanceBinding.cs" />
-    <Compile Include="Instances\RaidInstance.cs" />
-    <Compile Include="Interaction\IBaseRelation.cs" />
+    <Compile Include="Social\IBaseRelation.cs" />
     <Compile Include="Looting\ILootable.cs" />
     <Compile Include="Looting\Loot.cs" />
     <Compile Include="Looting\LooterEntry.cs" />
@@ -649,7 +827,6 @@
     <Compile Include="Handlers\TaxiHandler.cs" />
     <Compile Include="Handlers\GossipHandler.cs" />
     <Compile Include="Handlers\TutorialHandler.cs" />
-    <Compile Include="Instances\DungeonInstance.cs" />
     <Compile Include="Instances\InstanceCollection.cs" />
     <Compile Include="Instances\InstanceMgr.cs" />
     <Compile Include="Handlers\InstanceHandler.cs" />
@@ -667,7 +844,7 @@
     <Compile Include="Lang\ArrayLocalizer.cs" />
     <Compile Include="Formulas\RestGenerator.cs" />
     <Compile Include="Misc\ExtraInfo.cs" />
-    <Compile Include="NPCs\PetMgr.cs" />
+    <Compile Include="NPCs\Pets\PetMgr.cs" />
     <Compile Include="NPCs\Pets\PetSpell.cs" />
     <Compile Include="NPCs\Vendors\VendorEntry.cs" />
     <Compile Include="Paths\PathVertex.cs" />
@@ -732,34 +909,31 @@
     <Compile Include="Spells\ISpellParameters.cs" />
     <Compile Include="Spells\ITickedTimer.cs" />
     <Compile Include="Spells\Spell.Aura.cs" />
-    <Compile Include="Spells\Spell.Overrides.cs" />
-    <Compile Include="Spells\SpellAIBehavior.cs" />
+    <Compile Include="Spells\Spell.Variables.cs" />
+    <Compile Include="Spells\AISpellSettings.cs" />
     <Compile Include="Spells\SpellCast.Aura.cs" />
     <Compile Include="Spells\SpellCast.Perform.cs" />
     <Compile Include="Spells\SpellGroup.cs" />
     <Compile Include="Spells\SpellLine.cs" />
     <Compile Include="Spells\SpellLines.cs" />
     <Compile Include="Spells\SpellLines.Def.cs" />
-    <Compile Include="Spells\SpellSummonHandlers.cs" />
+    <Compile Include="Spells\SpellSummons.cs" />
     <Compile Include="Talents\CharacterSpecProfile.cs" />
-    <Compile Include="Talents\CharacterTalentCollection.cs" />
-    <Compile Include="Talents\IHasTalents.cs" />
+    <Compile Include="Talents\PlayerTalentCollection.cs" />
     <Compile Include="Talents\PetSpecProfile.cs" />
     <Compile Include="Talents\PetTalentCollection.cs" />
     <Compile Include="Talents\PetTalentSpecProfile.cs" />
     <Compile Include="Talents\SpecProfile.cs" />
-    <Compile Include="Talents\TalentSpec.cs" />
     <Compile Include="Talents\TalentSpecProfile.cs" />
     <Compile Include="Taxi\TaxiPath.cs" />
     <Compile Include="Transports\TransportEntry.cs" />
     <Compile Include="Transports\TransportMgr.cs" />
     <Compile Include="Formulas\XpGenerator.cs" />
-    <Compile Include="Misc\NamedWorldZoneLocation.cs" />
-    <Compile Include="Modifiers\ItemMods.cs" />
+    <Compile Include="Global\NamedWorldZoneLocation.cs" />
+    <Compile Include="Items\ItemMods.cs" />
     <Compile Include="Network\FakeRealmClient.cs" />
     <Compile Include="Network\FakePacketMgr.cs" />
     <Compile Include="Network\IRealmClient.cs" />
-    <Compile Include="Network\NetworkExtensions.cs" />
     <Compile Include="Network\PacketMessage.cs" />
     <Compile Include="NPCs\Armorer\ArmorerMgr.cs" />
     <Compile Include="NPCs\Armorer\DurabilityCost.cs" />
@@ -785,7 +959,7 @@
     <Compile Include="Commands\TestCommands.cs" />
     <Compile Include="Database\CharacterRecord.cs" />
     <Compile Include="Database\ItemRecord.cs" />
-    <Compile Include="Database\RealmDBUtil.cs" />
+    <Compile Include="Database\RealmDBMgr.cs" />
     <Compile Include="Mail\MailMessage.cs" />
     <Compile Include="Items\Item.DBC.cs" />
     <Compile Include="Entities\Unit.Damage.cs" />
@@ -796,7 +970,6 @@
     <Compile Include="Misc\TutorialFlags.cs" />
     <Compile Include="GameObjects\GOEntry.cs" />
     <Compile Include="GameObjects\GOMgr.cs" />
-    <Compile Include="GameObjects\GOTemplate.cs" />
     <Compile Include="Gossips\IGossipAction.cs" />
     <Compile Include="Gossips\GossipConversation.cs" />
     <Compile Include="Gossips\GossipMenu.cs" />
@@ -822,7 +995,7 @@
     <Compile Include="Handlers\MovementHandler.cs" />
     <Compile Include="Handlers\TradeHandler.cs" />
     <Compile Include="Help\Tickets\TicketMgr.cs" />
-    <Compile Include="Server\AuthenticationClient.cs" />
+    <Compile Include="Network\AuthenticationClient.cs" />
     <Compile Include="Items\ContainerInventory.cs" />
     <Compile Include="Items\BaseInventory.cs" />
     <Compile Include="Items\ItemTemplate.cs" />
@@ -830,9 +1003,8 @@
     <Compile Include="NPCs\NPC.DBC.cs" />
     <Compile Include="NPCs\NPCMgr.cs" />
     <Compile Include="NPCs\NPCEntry.cs" />
-    <Compile Include="NPCs\SpawnEntry.cs" />
-    <Compile Include="NPCs\Figurines\SpawnFigurine.cs" />
-    <Compile Include="NPCs\SpawnPoint.cs" />
+    <Compile Include="NPCs\Spawns\NPCSpawnEntry.cs" />
+    <Compile Include="NPCs\Spawns\NPCSpawnPoint.cs" />
     <Compile Include="NPCs\Trainers\TrainerEntry.cs" />
     <Compile Include="NPCs\Trainers\TrainerSpellEntry.cs" />
     <Compile Include="NPCs\Vendors\VendorItemEntry.cs" />
@@ -847,12 +1019,12 @@
     <Compile Include="Entities\Item.cs" />
     <Compile Include="Entities\Item.Fields.cs" />
     <Compile Include="Entities\Unit.Update.cs" />
-    <Compile Include="Interaction\BaseRelation.cs" />
-    <Compile Include="Interaction\GroupInviteRelation.cs" />
-    <Compile Include="Interaction\MutedRelation.cs" />
-    <Compile Include="Interaction\IgnoredRelation.cs" />
-    <Compile Include="Interaction\FriendRelation.cs" />
-    <Compile Include="Interaction\PersistedRelation.cs" />
+    <Compile Include="Social\BaseRelation.cs" />
+    <Compile Include="Social\GroupInviteRelation.cs" />
+    <Compile Include="Social\MutedRelation.cs" />
+    <Compile Include="Social\IgnoredRelation.cs" />
+    <Compile Include="Social\FriendRelation.cs" />
+    <Compile Include="Social\PersistedRelation.cs" />
     <Compile Include="Handlers\QuestHandler.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -866,7 +1038,7 @@
     <Compile Include="Skills\SkillCollection.cs" />
     <Compile Include="Skills\SkillLine.cs" />
     <Compile Include="Skills\SkillHandler.cs" />
-    <Compile Include="Skills\SkillTier.cs" />
+    <Compile Include="Skills\SkillTiers.cs" />
     <Compile Include="Spells\Auras\AreaAura.cs" />
     <Compile Include="Spells\Auras\Aura.cs">
       <SubType>Code</SubType>
@@ -880,7 +1052,7 @@
     <Compile Include="Spells\Auras\AuraHandler.cs" />
     <Compile Include="Spells\Auras\AuraIndexId.cs" />
     <Compile Include="Spells\Auras\IAura.cs" />
-    <Compile Include="Spells\CasterInfo.cs" />
+    <Compile Include="Entities\ObjectReference.cs" />
     <Compile Include="Spells\Auras\Mod\ModAllCooldownDuration.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -899,7 +1071,7 @@
     <Compile Include="Spells\Auras\Mod\ModBlockPercent.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Spells\Auras\Mod\ModBlockSkill.cs">
+    <Compile Include="Spells\Auras\Mod\ModCritHealValuePctHandler.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Spells\Auras\Mod\ModCastingSpeed.cs">
@@ -929,7 +1101,7 @@
     <Compile Include="Spells\Auras\Mod\ModHaste.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Spells\Auras\Mod\ModHealingTaken.cs">
+    <Compile Include="Spells\Auras\Mod\ModHealingDonePct.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Spells\Auras\Mod\ModHealthRegenInCombat.cs">
@@ -992,7 +1164,7 @@
     <Compile Include="Spells\Auras\Mod\ModPowerRegenPercent.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Spells\Auras\Mod\ModRangedAttackPowerByPercentOfIntellect.cs">
+    <Compile Include="Spells\Auras\Mod\ModRangedAttackPowerByPercentOfStatHandler.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Spells\Auras\Mod\ModRating.cs">
@@ -1046,7 +1218,7 @@
     <Compile Include="Spells\Auras\Mod\ModThreat.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Spells\Auras\Mod\ModTimeBetweenAttacks.cs">
+    <Compile Include="Spells\Auras\Mod\ModHastePct.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Spells\Auras\Passive\AddCasterHitTrigger.cs">
@@ -1158,7 +1330,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Spells\Effects\Custom\Cannibalize.cs" />
-    <Compile Include="Spells\Effects\NotImplementedEffect.cs" />
+    <Compile Include="Spells\Effects\NotImplementedEffectHandler.cs" />
     <Compile Include="Spells\Effects\UnusedEffectHandler.cs" />
     <Compile Include="Spells\NPCSpellCollection.cs" />
     <Compile Include="Spells\NPCSpell.cs" />
@@ -1235,7 +1407,7 @@
     <Compile Include="Spells\SpellEffect.Fields.cs" />
     <Compile Include="Spells\SpellEffect.cs" />
     <Compile Include="Spells\SpellHandler.cs" />
-    <Compile Include="Spells\SpellTargetCollection.cs" />
+    <Compile Include="Spells\Targeting\SpellTargetCollection.cs" />
     <Compile Include="Stats\ExtendedPacketInfo.cs" />
     <Compile Include="Stats\PerformanceCounters.cs" />
     <Compile Include="Talents\Talent.cs" />
@@ -1251,18 +1423,17 @@
     <Compile Include="Handlers\VoiceChatHandler.cs" />
     <Compile Include="Transports\TransportMovement.cs" />
     <Compile Include="UpdateFields\SerializedFields.cs" />
-    <Compile Include="Global\Region.Tasks.cs" />
+    <Compile Include="Global\Map.Tasks.cs" />
     <Compile Include="Global\WorldZoneLocation.cs" />
     <Compile Include="Global\WorldLocationMgr.cs" />
     <Compile Include="Waypoints\RandomWaypointGenerator.cs" />
     <Compile Include="Waypoints\WaypointGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
-<<<<<<< HEAD
-    <None Include="ClassDiagram1.cd" />
-=======
     <EmbeddedResource Include="Res\WCell.RealmServer.resx" />
->>>>>>> 37c6addf058bb56405fc13f6a10e10edd6cb8c0b
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="AI\Spells\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

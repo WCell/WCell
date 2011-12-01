@@ -1,9 +1,9 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: ImmutableDictionary.cs
  *   copyright		: (C) 2008 Wilco Bauwer
  *   last changed	: $LastChangedDate: 2009-09-20 22:05:05 +0200 (sø, 20 sep 2009) $
- *   last author	: $LastChangedBy: dominikseifert $
+ 
  *   revision		: $Rev: 1110 $
  *
  *   Written by/rights held by Wilco Bauwer (wilcob.com)
@@ -12,10 +12,8 @@
  *************************************************************************/
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Collections;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace WCell.Util.Collections

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
@@ -288,7 +287,7 @@ namespace WCell.PacketAnalysis
 			var longLen = (long)len;
 			var expr = LengthSegmentExpr.Replace(LenExprVarName, len.ToString());
 			object err = null;
-			if (!Utility.Eval(typeof(int), ref longLen, expr, ref err, false))
+			if (!StringParser.Eval(typeof(int), ref longLen, expr, ref err, false))
 			{
 				throw new Exception("Unable to evaluate expression (" + expr + ") in Segment: " + this + " - " + err);
 			}

@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2010-04-23 15:13:50 +0200 (fr, 23 apr 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 1282 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -15,17 +15,16 @@
  *************************************************************************/
 
 using System.Collections.Generic;
-using WCell.RealmServer.GameObjects.Spawns;
-using WCell.Util.Collections;
 using WCell.Constants.GameObjects;
 using WCell.Constants.Spells;
+using WCell.Constants.Updates;
+using WCell.Intercommunication.DataTypes;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.GameObjects;
-using WCell.Util.Commands;
-using WCell.Intercommunication.DataTypes;
-using WCell.Constants.World;
+using WCell.RealmServer.GameObjects.Spawns;
 using WCell.RealmServer.Global;
-using WCell.Constants.Updates;
+using WCell.Util.Collections;
+using WCell.Util.Commands;
 
 namespace WCell.RealmServer.Commands
 {
@@ -317,7 +316,7 @@ namespace WCell.RealmServer.Commands
 				{
 					var state = trigger.Text.HasNext ? trigger.Text.NextBool() : !go.IsEnabled;
 					go.IsEnabled = state;
-					trigger.Reply("{0} is now {1}", go, state);
+					trigger.Reply("{0} is now {1}", go, state == true ? "enabled" : "disabled");
 				}
 			}
 		}

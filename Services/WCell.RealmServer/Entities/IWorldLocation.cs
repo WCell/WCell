@@ -4,7 +4,6 @@ using WCell.Core.Paths;
 using WCell.RealmServer.Global;
 using WCell.Util.Data;
 using WCell.Util.Graphics;
-using Zone = WCell.RealmServer.Global.Zone;
 
 namespace WCell.RealmServer.Entities
 {

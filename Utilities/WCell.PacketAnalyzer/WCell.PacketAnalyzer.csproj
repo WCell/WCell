@@ -152,8 +152,10 @@
     <Compile Include="Enums.cs" />
     <Compile Include="IParsedPacket.cs" />
     <Compile Include="Logs\KSnifferLogConverter.cs" />
+    <Compile Include="Logs\KSnifferZorLogConverter.cs" />
     <Compile Include="Logs\LogHandler.cs" />
     <Compile Include="Logs\BioAndAokromesLogConverter.cs" />
+    <Compile Include="Logs\WlpConverter.cs" />
     <Compile Include="Logs\ZorLogConverter.cs" />
     <Compile Include="PacketDirection.cs" />
     <Compile Include="PacketParser.cs" />

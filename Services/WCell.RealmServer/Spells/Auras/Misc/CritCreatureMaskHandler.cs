@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using WCell.Constants.NPCs;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Misc;

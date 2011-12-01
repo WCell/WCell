@@ -1,9 +1,9 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file			: LockfreeQueue.cs
  *   copyright		: (C) 2004 Julian M Bucknall 
  *   last changed	: $LastChangedDate: 2009-09-20 22:05:05 +0200 (sø, 20 sep 2009) $
- *   last author	: $LastChangedBy: dominikseifert $
+ 
  *   revision		: $Rev: 1110 $
  *
  *   Written by/rights held by Julian M Bucknall (boyet.com)
@@ -15,8 +15,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 
 namespace WCell.Util.Collections

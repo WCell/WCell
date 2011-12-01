@@ -1,10 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using WCell.Constants.Items;
 using WCell.Core.Initialization;
-using WCell.RealmServer.Entities;
 using WCell.RealmServer.Items;
 
 namespace WCell.Addons.Default.Items
@@ -15,7 +10,7 @@ namespace WCell.Addons.Default.Items
 	public static class PlayerAbilityItemFixes
 	{
 		/// <summary>
-		/// This must not be called *after* items have been loaded!
+		/// This must NOT be called *after* items have been loaded!
 		/// </summary>
 		[Initialization(InitializationPass.First)]
 		public static void FixMe()

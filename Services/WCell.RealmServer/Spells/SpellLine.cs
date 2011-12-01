@@ -1,11 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using WCell.Constants;
 using WCell.Constants.Spells;
-using WCell.Util;
 
 namespace WCell.RealmServer.Spells
 {
@@ -116,6 +113,17 @@ namespace WCell.RealmServer.Spells
 		public override string ToString()
 		{
 			return Name;
+		}
+
+		public override bool Equals(object obj)
+		{
+			var line = obj as SpellLine;
+			return line != null && LineId.Equals(line.LineId);
+		}
+
+		public override int GetHashCode()
+		{
+			return LineId.GetHashCode();
 		}
 
 		public Spell BaseSpell

@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2008-06-08 00:55:09 +0800 (Sun, 08 Jun 2008) $
- *   last author	: $LastChangedBy: dominikseifert $
+ 
  *   revision		: $Rev: 458 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -18,11 +18,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
-using WCell.Core;
-using WCell.Core.Initialization;
 using NLog;
 using WCell.Util;
-using WCell.Util.Variables;
 
 namespace WCell.Core
 {

@@ -1,14 +1,16 @@
+using System;
 using NLog;
 using WCell.Constants;
 using WCell.Constants.Updates;
 using WCell.Core.Cryptography;
-using WCell.Util.Threading;
+using WCell.Intercommunication.DataTypes;
+using WCell.RealmServer.Chat;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
 using WCell.Util;
 using WCell.Util.Commands;
-using WCell.Intercommunication.DataTypes;
-using System;
+using WCell.Util.Graphics;
+using WCell.Util.Threading;
 using WCell.Util.Variables;
 
 // Commands used on Character-objects
@@ -248,6 +250,13 @@ namespace WCell.RealmServer.Commands
 			trigger.Reply("Map: " + obj.Map + ", Zone: " + zoneStr);
 			trigger.Reply("Position X: " + obj.Position.X + ", Y: " + obj.Position.Y + ", Z: " + obj.Position.Z + ", O: " + obj.Orientation +
 				"(" + Math.Abs(obj.Position.Z - height) + " yds from Ground)");
+
+			int tileX, tileY;
+			PositionUtil.GetTileXYForPos(obj.Position, out tileX, out tileY);
+			trigger.ReplyFormat("Tile: X={0}, Y={1} (Collision Data {2})", tileX, tileY, 
+				obj.Map.Terrain.IsAvailable(tileX, tileY) ? 
+					ChatUtility.Colorize("Available", Color.Green) :
+					ChatUtility.Colorize("Unavailable", Color.Red));
 		}
 
 		public override ObjectTypeCustom TargetTypes

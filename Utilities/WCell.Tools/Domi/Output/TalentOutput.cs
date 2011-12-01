@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2009-06-06 18:09:15 +0200 (lø, 06 jun 2009) $
- *   last author	: $LastChangedBy: dominikseifert $
+ 
  *   revision		: $Rev: 950 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -14,15 +14,9 @@
  *
  *************************************************************************/
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
-using WCell.Core;
 using WCell.Constants;
-using WCell.RealmServer.Entities;
-using WCell.RealmServer.Spells;
+using WCell.Core;
 using WCell.RealmServer.Talents;
 
 namespace WCell.Tools.Domi.Output

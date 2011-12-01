@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
-using WCell.Constants;
 using WCell.Core;
 using WCell.Core.ClientDB;
-using NLog;
 
 namespace WCell.RealmServer.Talents
 {

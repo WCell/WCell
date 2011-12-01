@@ -12,11 +12,8 @@ using WCell.RealmServer.Chat;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.GameObjects;
 using WCell.RealmServer.GameObjects.GOEntries;
-using WCell.RealmServer.Global;
 using WCell.RealmServer.Lang;
 using WCell.RealmServer.Spells;
-using WCell.RealmServer.Spells.Auras;
-using WCell.Core.Timers;
 using WCell.Util.Graphics;
 using WCell.Util.Variables;
 
@@ -176,9 +173,9 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 		}
 
 
-		protected override void OnPrepare()
+		protected override void OnPrepareBegin()
 		{
-			base.OnPrepare();
+			base.OnPrepareBegin();
 
 			string time = RealmLocalizer.FormatTimeSecondsMinutes(PreparationTimeMillis / 1000);
 			Characters.SendSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.WSOnPrepare), time);

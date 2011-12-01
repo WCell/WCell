@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2008-06-08 00:55:09 +0800 (Sun, 08 Jun 2008) $
- *   last author	: $LastChangedBy: dominikseifert $
+ 
  *   revision		: $Rev: 458 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -15,16 +15,10 @@
  *************************************************************************/
 
 using System;
-using System.Net.Security;
 using System.ServiceModel;
-using System.ServiceModel.Description;
 using NLog;
-using resources = WCell.AuthServer.Res.WCell_AuthServer;
-using WCell.Core;
-using WCell.Constants;
-using WCell.Core.Initialization;
 using WCell.Intercommunication;
-using WCell.AuthServer;
+using resources = WCell.AuthServer.Res.WCell_AuthServer;
 
 namespace WCell.AuthServer.IPC
 {

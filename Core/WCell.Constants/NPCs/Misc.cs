@@ -11,7 +11,27 @@ namespace WCell.Constants.NPCs
 		Totem,
 		Guardian
 	}
+	
+	public enum AIMotionGenerationType
+	{
+		IdleMotion = 0,					// IdleMovementGenerator
+		RandomMotion = 1,				// RandomMovementGenerator
+		WaypointMotion = 2,				// WaypointMovementGenerator
+		MaxDBMotion = 3,				// *** this and below motion types can't be set in DB.
 
+		ConfusedMotion = 4,				// ConfusedMovementGenerator
+		ChaseMotion = 5,				// TargetedMovementGenerator
+		HomeMotion = 6,					// HomeMovementGenerator
+		FlightMotion = 7,				// WaypointMovementGenerator
+		PointMotion = 8,				// PointMovementGenerator
+		FleeingMotion = 9,				// FleeingMovementGenerator
+		DistractMotion = 10,			// IdleMovementGenerator
+		AssistanceMotion = 11,			// PointMovementGenerator (first part of flee for assistance)
+		AssistanceDistractMotion = 12,	// IdleMovementGenerator (second part of flee for assistance)
+		TimedFleeingMotion = 13,		// FleeingMovementGenerator (alt.second part of flee for assistance)
+		FollowMotion = 14				// TargetedMovementGenerator
+	}
+	
 	public enum AIMovementType
 	{
 		ForwardThenBack,

@@ -1,20 +1,16 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using WCell.Constants;
 using WCell.Constants.Spells;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Misc;
-using WCell.RealmServer.NPCs;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Spells.Auras.Handlers;
 using WCell.RealmServer.Spells.Auras.Misc;
 using WCell.RealmServer.Spells.Effects;
 using WCell.Util;
-using WCell.Util.Graphics;
 
 namespace WCell.Addons.Default.Spells.Druid
 {
@@ -80,7 +76,6 @@ namespace WCell.Addons.Default.Spells.Druid
 			// Earth and Moon: "Your Wrath and Starfire spells have a $h% chance to apply the Earth and Moon effect"
 			SpellLineId.DruidBalanceEarthAndMoon.Apply(spell =>
 			{
-				spell.SpellAuraOptions.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
 				var effect = spell.GetEffect(AuraType.ProcTriggerSpell);
 
 				// retricted to Wrath and Starfire
@@ -93,7 +88,6 @@ namespace WCell.Addons.Default.Spells.Druid
             //// Each effect lasts $48518d and each has a separate $s1 sec cooldown.  Both effects cannot occur simultaneously."
             //SpellLineId.DruidBalanceEclipse.Apply(spell =>
             //{
-            //    spell.ProcTriggerFlags = ProcTriggerFlags.SpellCastCritical;
             //    var effect1 = spell.Effects[0];
 
             //    // We set the original proc chance to that of of the more often occuring effect (Wrath) 

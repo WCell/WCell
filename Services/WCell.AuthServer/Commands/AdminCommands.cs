@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using WCell.AuthServer.Accounts;
+using WCell.AuthServer.Firewall;
 using WCell.AuthServer.Privileges;
 using WCell.Core;
-using WCell.Util.Commands;
-using WCell.AuthServer.Accounts;
 using WCell.Core.Database;
-using WCell.AuthServer.Firewall;
 using WCell.Util;
+using WCell.Util.Commands;
 
 namespace WCell.AuthServer.Commands
 {
@@ -165,15 +165,22 @@ namespace WCell.AuthServer.Commands
 
 		public override void Process(CmdTrigger<AuthServerCmdArgs> trigger)
 		{
-			var cached = (trigger.Text.HasNext && trigger.Text.NextBool()) || !AccountMgr.Instance.IsCached;
-			if (cached == AccountMgr.Instance.IsCached)
+			if (!(trigger.Text.HasNext))
 			{
-				trigger.Reply("Caching was already " + (cached ? "On" : "Off"));
+				trigger.Reply("{0} caching...", (AccountMgr.Instance.IsCached ? "Deactivating" : "Activating"));
+				AccountMgr.Instance.IsCached = !AccountMgr.Instance.IsCached;
+				return;
+			}
+
+			var turnCachingOn = trigger.Text.NextBool();
+			if (turnCachingOn == AccountMgr.Instance.IsCached)
+			{
+				trigger.Reply("Caching was already " + (turnCachingOn ? "On" : "Off"));
 			}
 			else
 			{
-				trigger.Reply("{0} caching...", (cached ? "Activating" : "Deactivating"));
-				AccountMgr.Instance.IsCached = true;
+				trigger.Reply("{0} caching...", (turnCachingOn ? "Activating" : "Deactivating"));
+				AccountMgr.Instance.IsCached = turnCachingOn;
 				trigger.Reply("Done.");
 			}
 		}

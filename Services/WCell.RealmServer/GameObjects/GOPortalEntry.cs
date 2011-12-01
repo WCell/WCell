@@ -1,12 +1,7 @@
-using WCell.RealmServer.Entities;
-using WCell.RealmServer.GameObjects;
-using WCell.RealmServer.GameObjects.GOEntries;
-using WCell.Constants.World;
-using WCell.RealmServer.Global;
-using System;
-using WCell.Util.Data;
 using WCell.Constants.Factions;
 using WCell.Constants.GameObjects;
+using WCell.RealmServer.Entities;
+using WCell.RealmServer.GameObjects.GOEntries;
 
 namespace WCell.RealmServer.GameObjects
 {

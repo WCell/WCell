@@ -1,20 +1,18 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
+using NLog;
 using WCell.Constants;
+using WCell.Constants.World;
 using WCell.Core.Initialization;
+using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Groups;
 using WCell.RealmServer.Handlers;
-using NLog;
 using WCell.Util;
 using WCell.Util.DynamicAccess;
-using WCell.Constants.World;
 using WCell.Util.Graphics;
 using WCell.Util.Variables;
-using WCell.RealmServer.Database;
 
 namespace WCell.RealmServer.Instances
 {
@@ -42,14 +40,14 @@ namespace WCell.RealmServer.Instances
 
 		public const int MaxInstanceDifficulties = (int)RaidDifficulty.End;
 
-		public static readonly Dictionary<uint, InstanceCollection> OfflinePlayers = new Dictionary<uint, InstanceCollection>();
+		public static readonly Dictionary<uint, InstanceCollection> OfflineLogs = new Dictionary<uint, InstanceCollection>();
 
 		public static readonly List<MapTemplate> InstanceInfos = new List<MapTemplate>();
 
 		[NotVariable]
 		public static GlobalInstanceTimer[] GlobalResetTimers;
 
-		private static readonly ReaderWriterLockSlim s_syncLock = new ReaderWriterLockSlim();
+		private static readonly ReaderWriterLockWrapper syncLock = new ReaderWriterLockWrapper();
 
 		public static readonly WorldInstanceCollection<MapId, BaseInstance> Instances = new WorldInstanceCollection<MapId, BaseInstance>(MapId.End);
 
@@ -125,11 +123,15 @@ namespace WCell.RealmServer.Instances
 		{
 			if (instance != null)
 			{
-				instance.m_difficulty = template.MapTemplate.GetDifficulty(difficultyIndex) ?? template.MapTemplate.Difficulties[0];
+				instance.difficulty = template.MapTemplate.GetDifficulty(difficultyIndex) ?? template.MapTemplate.Difficulties[0];
+
 
 				if (creator != null)
 				{
+					// set faction & leader
+					instance.m_OwningFaction = creator.FactionGroup;
 					instance.Owner = creator.InstanceLeader;
+				    instance.IsActive = true;
 				}
 				instance.InitMap(template.MapTemplate);
 				Instances.AddInstance(instance.MapId, instance);
@@ -151,7 +153,7 @@ namespace WCell.RealmServer.Instances
 
 			var isRaid = (mapTemplate.Type == MapType.Raid);
 			var group = chr.Group;
-            if (isRaid && !chr.Role.IsStaff && !group.Flags.HasFlag(GroupFlags.Raid))
+			if (isRaid && !chr.Role.IsStaff && !group.Flags.HasFlag(GroupFlags.Raid))
 			{
 				InstanceHandler.SendRequiresRaid(chr.Client, 0);
 				return false;
@@ -203,7 +205,7 @@ namespace WCell.RealmServer.Instances
 					}
 				}
 			}
-			else
+			else if(!chr.GodMode)
 			{
 				if (!CheckFull(instance, chr))
 				{
@@ -213,6 +215,12 @@ namespace WCell.RealmServer.Instances
 				// Check that the Raid member has the same instance as the leader
 				if (isRaid)
 				{
+                    if(group == null)
+                    {
+                        MovementHandler.SendTransferFailure(chr.Client, instance.Id, MapTransferError.TRANSFER_ABORT_NEED_GROUP);
+                        return false;
+                    }
+
 					var leaderRaid = group.InstanceLeaderCollection.GetBinding(mapTemplate.Id, BindingType.Hard);
 					var playerRaid = instances.GetBinding(mapTemplate.Id, BindingType.Hard);
 
@@ -282,23 +290,28 @@ namespace WCell.RealmServer.Instances
 		/// <returns></returns>
 		public static InstanceCollection GetOfflineInstances(uint lowId, bool autoCreate, bool remove)
 		{
+			using (syncLock.EnterReadLock())
+			{
+				return GetOfflineInstancesUnlocked(lowId, autoCreate, remove);
+			}
+		}
+
+		private static InstanceCollection GetOfflineInstancesUnlocked(uint lowId, bool autoCreate, bool remove)
+		{
 			InstanceCollection instanceCollection = null;
 
-			if (OfflinePlayers.ContainsKey(lowId))
+			if (OfflineLogs.ContainsKey(lowId))
 			{
-				instanceCollection = OfflinePlayers[lowId];
+				instanceCollection = OfflineLogs[lowId];
 				if (remove)
-					OfflinePlayers.Remove(lowId);
+					OfflineLogs.Remove(lowId);
 
 			}
 
 			if (autoCreate)
 			{
 				instanceCollection = new InstanceCollection(lowId);
-				if (!remove)
-				{
-					OfflinePlayers.Add(lowId, instanceCollection);
-				}
+				OfflineLogs.Add(lowId, instanceCollection);
 			}
 
 			return instanceCollection;
@@ -311,19 +324,14 @@ namespace WCell.RealmServer.Instances
 		/// <param name="character"></param>
 		internal static void RetrieveInstances(Character character)
 		{
-			s_syncLock.EnterReadLock();
-			try
+			using (syncLock.EnterReadLock())
 			{
-				var instances = GetOfflineInstances(character.EntityId.Low, false, true);
+				var instances = GetOfflineInstancesUnlocked(character.EntityId.Low, false, true);
 				if (instances != null)
 				{
 					instances.Character = character;
 					character.Instances = instances;
 				}
-			}
-			finally
-			{
-				s_syncLock.ExitReadLock();
 			}
 		}
 
@@ -334,17 +342,11 @@ namespace WCell.RealmServer.Instances
 			{
 				return;
 			}
-			s_syncLock.EnterWriteLock();
 
-			try
+			using (syncLock.EnterWriteLock())
 			{
 				character.Instances.Character = null;
-
-				OfflinePlayers[character.EntityId.Low] = character.Instances;
-			}
-			finally
-			{
-				s_syncLock.ExitWriteLock();
+				OfflineLogs[character.EntityId.Low] = character.Instances;
 			}
 		}
 		#endregion

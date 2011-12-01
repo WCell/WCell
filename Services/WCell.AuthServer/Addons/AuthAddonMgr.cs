@@ -1,7 +1,7 @@
+using NLog;
 using WCell.AuthServer.Commands;
 using WCell.Core.Addons;
 using WCell.Core.Initialization;
-using NLog;
 
 namespace WCell.AuthServer.Addons
 {
@@ -61,7 +61,7 @@ namespace WCell.AuthServer.Addons
 				// init config
 				if (addon is WCellAddonBase)
 				{
-					((WCellAddonBase)addon).InitConfig(context);
+					((WCellAddonBase)addon).InitAddon(context);
 				}
 			}
 		}

@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2008-08-10 05:18:25 +0800 (Sun, 10 Aug 2008) $
- *   last author	: $LastChangedBy: dominikseifert $
+ 
  *   revision		: $Rev: 585 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -15,18 +15,14 @@
  *************************************************************************/
 
 using System;
-using System.Runtime.InteropServices;
-using System.Linq;
-using System.Security;
-using System.Reflection;
-using System.IO;
-using System.Text;
-using System.Runtime.CompilerServices;
-using System.Collections.Generic;
-using System.Threading;
-using System.Net;
 using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
 using System.Net.Sockets;
+using System.Reflection;
+using System.Threading;
 
 namespace WCell.Util
 {
@@ -54,18 +50,6 @@ namespace WCell.Util
 				InitEnums(asm);
 			}
 			AppDomain.CurrentDomain.AssemblyLoad += CurrentDomain_AssemblyLoad;
-			// init all operators
-
-			// "|" is an escape character for the WoW client, they always get doubled
-			IntOperators["||"] = BinaryOrHandler;
-
-			IntOperators["|"] = BinaryOrHandler;
-			IntOperators["^"] = BinaryXOrHandler;
-			IntOperators["&"] = BinaryAndHandler;
-			IntOperators["+"] = PlusHandler;
-			IntOperators["-"] = MinusHandler;
-			IntOperators["*"] = DivideHandler;
-			IntOperators["/"] = MultiHandler;
 
 			TypeMap.Add("UInt32", typeof(uint));
 			TypeMap.Add("UInt64", typeof(ulong));
@@ -108,7 +92,7 @@ namespace WCell.Util
 						if (type.IsValueType)
 						{
 							TypeMap[type.FullName] = type;
-							if (type.IsEnum)
+							if (type.IsEnum && !type.IsNested)
 							{
 								var values = Enum.GetValues(type);
 								//if (values.Length >= 100)
@@ -499,6 +483,14 @@ namespace WCell.Util
 
 		private static long holdrand = DateTime.Now.Ticks;
 
+		/// <summary>
+		/// Random bool value
+		/// </summary>
+		public static bool HeadsOrTails()
+		{
+			return Random(2) == 0;
+		}
+
 		public static int Random()
 		{
 			return (int)(((holdrand = holdrand * 214013L + 2531011L) >> 16) & 0x7fff);
@@ -587,106 +579,25 @@ namespace WCell.Util
 			return from > to ? RandomFloat() * (from - to) + to : RandomFloat() * (to - from) + from;
 		}
 
-		#endregion
+		private static readonly Random rnd = new Random();
 
-		#region Simple Arbitrary String Parsing
-
-		public static Dictionary<Type, Func<string, object>> TypeParsers =
-			new Func<Dictionary<Type, Func<string, object>>>(() =>
-			{
-				var parsers =
-					new Dictionary<Type, Func<string, object>>();
-
-				parsers.Add(typeof(int),
-							strVal => int.Parse(strVal));
-
-				parsers.Add(typeof(float),
-							strVal => float.Parse(strVal));
-
-				parsers.Add(typeof(long),
-							strVal => long.Parse(strVal));
-
-				parsers.Add(typeof(ulong),
-							strVal => ulong.Parse(strVal));
-
-				parsers.Add(typeof(bool),
-							strVal =>
-							strVal.Equals("true",
-										  StringComparison.
-											  InvariantCultureIgnoreCase) ||
-							strVal.Equals("1",
-										  StringComparison.
-											  InvariantCultureIgnoreCase) ||
-							strVal.Equals("yes",
-										  StringComparison.
-											  InvariantCultureIgnoreCase));
-
-				parsers.Add(typeof(double),
-							strVal => double.Parse(strVal));
-
-				parsers.Add(typeof(uint),
-							strVal => uint.Parse(strVal));
-
-				parsers.Add(typeof(short),
-							strVal => short.Parse(strVal));
-
-				parsers.Add(typeof(ushort),
-							strVal => short.Parse(strVal));
-
-				parsers.Add(typeof(byte),
-							strVal => byte.Parse(strVal));
-
-				parsers.Add(typeof(char), strVal => strVal[0]);
-
-				return parsers;
-			})();
-
-		public static object Parse(string stringVal, Type type)
+		public static void Shuffle<T>(ICollection<T> col)
 		{
-			object obj = null;
-			if (!Parse(stringVal, type, ref obj))
+			var arr = col.ToArray();
+			var b = new byte[arr.Length];
+			rnd.NextBytes(b);
+			Array.Sort(b, arr);
+			col.Clear();
+			for (var i = 0; i < arr.Length; i++)
 			{
-				throw new Exception(string.Format("Unable to parse string-Value \"{0}\" as Type \"{1}\"", stringVal,
-												  type));
+				var item = arr[i];
+				col.Add(item);
 			}
-			return obj;
 		}
 
-		public static bool Parse(string str, Type type, ref object obj)
+		public static O GetRandom<O>(this IList<O> os)
 		{
-			if (type == typeof(string))
-			{
-				obj = str;
-			}
-			else if (type.IsEnum)
-			{
-				try
-				{
-					obj = Enum.Parse(type, str, true);
-				}
-				catch
-				{
-					return false;
-				}
-			}
-			else
-			{
-				Func<string, object> parser;
-				if (TypeParsers.TryGetValue(type, out parser))
-				{
-					try
-					{
-						obj = parser(str);
-						return obj != null;
-					}
-					catch
-					{
-						return false;
-					}
-				}
-				return false;
-			}
-			return true;
+			return os.Count == 0 ? default(O) : os[Random(0, os.Count)];
 		}
 
 		#endregion
@@ -834,83 +745,6 @@ namespace WCell.Util
 			return /*sqDistance != 0 &&*/ sqDistance <= max * max;
 		}
 
-		#region Evaluate etc
-
-		public delegate T OperatorHandler<T>(T x, T y);
-
-		public static readonly OperatorHandler<long> BinaryOrHandler =
-			(x, y) => x | y;
-
-		public static readonly OperatorHandler<long> BinaryXOrHandler =
-			(x, y) => x & ~y;
-
-		public static readonly OperatorHandler<long> BinaryAndHandler =
-			(x, y) => x & y;
-
-		public static readonly OperatorHandler<long> PlusHandler =
-			(x, y) => x + y;
-
-		public static readonly OperatorHandler<long> MinusHandler =
-			(x, y) => x - y;
-
-		public static readonly OperatorHandler<long> DivideHandler =
-			(x, y) => x / y;
-
-		public static readonly OperatorHandler<long> MultiHandler =
-			(x, y) => x * y;
-
-		public static readonly Dictionary<string, OperatorHandler<long>> IntOperators =
-			new Dictionary<string, OperatorHandler<long>>();
-
-		/// <summary>
-		/// Evaluates the given (simple) expression
-		/// 
-		/// TODO: Use Polish Notation to allow more efficiency and complexity
-		/// TODO: Add operator priority
-		/// </summary>
-		public static bool Eval(Type valType, ref long val, string expr, ref object error, bool startsWithOperator)
-		{
-			// syntax: <val> <op> <value> [<op> <value> [<op> <value>...]]
-			var args = expr.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-			var isOp = startsWithOperator;
-			OperatorHandler<long> op = null;
-			foreach (var argument in args)
-			{
-				var arg = argument.Trim();
-				if (isOp)
-				{
-					if (!IntOperators.TryGetValue(arg, out op))
-					{
-						error = "Invalid operator: " + arg;
-						return false;
-					}
-				}
-				else
-				{
-					object argVal = null;
-					if (!Parse(arg, valType, ref argVal))
-					{
-						error = "Could not convert value \"" + arg + "\" to Type \"" + valType + "\"";
-						return false;
-					}
-
-					var longVal = (long)Convert.ChangeType(argVal, typeof(long));
-					if (op != null)
-					{
-						val = op(val, longVal);
-					}
-					else
-					{
-						val = longVal;
-					}
-				}
-				isOp = !isOp;
-			}
-			return true;
-		}
-
-		#endregion
-
 		public static string GetAbsolutePath(string file)
 		{
 			return new DirectoryInfo(file).FullName;
@@ -966,11 +800,6 @@ namespace WCell.Util
 								 time.Second, time.Millisecond);
 		}
 		#endregion
-
-		public static O GetRandom<O>(this IList<O> os)
-		{
-			return os.Count == 0 ? default(O) : os[Random(0, os.Count)];
-		}
 
 		/// <summary>
 		/// Checks whether the given mail-address is valid.
@@ -1231,26 +1060,34 @@ namespace WCell.Util
 		}
 		#endregion
 
-		public static long MakeLong(int low, int high)
+		public const float Epsilon = 1e-6f;
+
+		public static bool IsWithinEpsilon(this float val, float otherVal)
 		{
-			return low | ((long)high << 32);
+			return ((val <= (otherVal + Epsilon)) && (val >= (otherVal - Epsilon)));
 		}
 
-		private static readonly Random rnd = new Random();
+        public static bool IsLessOrNearlyEqual(this float val, float otherVal)
+        {
+            return ((val < otherVal) || val.IsWithinEpsilon(otherVal));
+        }
 
-		public static void Shuffle<T>(ICollection<T> col)
+	    public static long MakeLong(int low, int high)
 		{
-			var arr = col.ToArray();
-			var b = new byte[arr.Length];
-			rnd.NextBytes(b);
-			Array.Sort(b, arr);
-			col.Clear();
-			for (var i = 0; i < arr.Length; i++)
-			{
-				var item = arr[i];
-				col.Add(item);
-			}
+			return (uint)low | ((long)high << 32);
 		}
+
+        /// <summary>
+        /// Unpacks a long that was packed with <see cref="MakeLong"></see> into two ints
+        /// </summary>
+        /// <param name="val">The packed long</param>
+        /// <param name="low">the low part to unpack into</param>
+        /// <param name="high">the high part to unpack into</param>
+        public static void UnpackLong(long val, ref int low, ref int high)
+        {
+            low = (int)val;
+            high = (int)(val >> 32);
+        }
 	}
 
 	#region SingleEnumerator

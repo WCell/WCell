@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using NLog;
 using WCell.Constants;
 using WCell.Constants.Achievements;
 using WCell.Constants.NPCs;
@@ -13,8 +12,8 @@ using WCell.Core.Initialization;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Handlers;
-using WCell.RealmServer.Network;
 using WCell.RealmServer.NPCs;
+using WCell.RealmServer.Network;
 using WCell.RealmServer.Paths;
 using WCell.Util;
 using WCell.Util.Graphics;

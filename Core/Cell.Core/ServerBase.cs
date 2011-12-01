@@ -1,10 +1,10 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: ServerBase.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2010-01-16 21:33:51 +0100 (lø, 16 jan 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+ 
  *   revision		: $Rev: 1197 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -19,12 +19,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Reflection;
+using Cell.Core.Exceptions;
 using Cell.Core.Localization;
 using NLog;
-using System.Net.NetworkInformation;
-using Cell.Core.Exceptions;
 
 namespace Cell.Core
 {

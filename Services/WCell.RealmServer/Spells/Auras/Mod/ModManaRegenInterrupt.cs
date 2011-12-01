@@ -1,4 +1,4 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: ModManaRegenInterrupt.cs
  *   copyright		: (C) The WCell Team
@@ -14,6 +14,9 @@
  *
  *************************************************************************/
 
+using WCell.Constants;
+using WCell.RealmServer.Modifiers;
+
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
 	/// <summary>
@@ -24,12 +27,12 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	{
 		protected override void Apply()
 		{
-			Owner.ManaRegenPerTickInterruptedPct += EffectValue; 
+			m_aura.Auras.Owner.ChangeModifier(StatModifierInt.ManaRegenInterruptPct, EffectValue); 
 		}
 
 		protected override void Remove(bool cancelled)
 		{
-			Owner.ManaRegenPerTickInterruptedPct -= EffectValue;
+			m_aura.Auras.Owner.ChangeModifier(StatModifierInt.ManaRegenInterruptPct, -EffectValue);
 		}
 	}
 };

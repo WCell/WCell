@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using WCell.Constants;
 using WCell.RealmServer.Entities;
 
@@ -82,11 +79,7 @@ namespace WCell.RealmServer.Formulas
 		{
 			// default mana generation
 			// see: http://www.wowwiki.com/Mana_regeneration
-            var regen = (int)((0.001f + unit.Spirit * (float)Math.Sqrt(unit.Intellect) * GameTables.BaseRegen[unit.Level]) * 0.6f + 0.9f);  // rounded up
-			if (unit.IsManaRegenInterrupted)
-			{
-				regen = (regen * unit.ManaRegenPerTickInterruptedPct + 50) / 100;
-			}
+			var regen = (int)((0.001f + unit.Spirit * (float)Math.Sqrt(unit.Intellect) * GameTables.GetBaseRegenForLevel(unit.Level)) * 0.6f + 0.9f);  // rounded up
 			return regen * RegenRateFactor;
 		}
 

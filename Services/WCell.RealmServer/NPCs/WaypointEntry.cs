@@ -17,13 +17,11 @@
 using System;
 using System.Collections.Generic;
 using WCell.Constants.Misc;
-using WCell.RealmServer.Content;
+using WCell.Constants.Spells;
 using WCell.Core.Paths;
+using WCell.RealmServer.Content;
 using WCell.RealmServer.NPCs.Spawns;
 using WCell.Util.Data;
-using WCell.RealmServer.Gossips;
-using WCell.RealmServer.Entities;
-using WCell.Constants.Spells;
 using WCell.Util.Graphics;
 
 namespace WCell.RealmServer.NPCs
@@ -44,6 +42,9 @@ namespace WCell.RealmServer.NPCs
 
 		public float Orientation { get; set; }
 
+		/// <summary>
+		/// Time to wait at this point in milliseconds
+		/// </summary>
 		public uint WaitTime { get; set; }
 
 		public float GetDistanceToNext()
@@ -84,7 +85,8 @@ namespace WCell.RealmServer.NPCs
 						added = true;
 						break;
 					}
-					else if (cur.Value.Id == Id)
+					
+					if (cur.Value.Id == Id)
 					{
 						ContentMgr.OnInvalidDBData("Found multiple Waypoints with the same Id {0} for SpawnEntry {1}", Id, SpawnEntry);
 						return;

@@ -19,12 +19,12 @@ namespace WCell.RealmServer.Spells
             if(!SpellEffectsById.TryGetValue(effect.SpellId, out spellEffects))
             {
                 spellEffects = new SpellEffect[3];
-                spellEffects[effect.EffectIndex] = effect;
+                spellEffects[(int)effect.EffectIndex] = effect;
                 SpellEffectsById.Add(effect.SpellId, spellEffects);
             }
             else
             {
-                spellEffects[effect.EffectIndex] = effect;
+                spellEffects[(int)effect.EffectIndex] = effect;
                 SpellEffectsById[effect.SpellId] = spellEffects;
             }
         }

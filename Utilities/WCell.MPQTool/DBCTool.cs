@@ -16,14 +16,15 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Microsoft.Win32;
-//using MpqReader;
 using WCell.Constants;
-using WCell.MPQTool.StormLibWrapper;
 using WCell.MPQTool.DBC.Compare;
+using WCell.MPQTool.StormLibWrapper;
 using WCell.Util.NLog;
+	//using MpqReader;
 
 namespace WCell.MPQTool
 {
@@ -182,7 +183,7 @@ namespace WCell.MPQTool
 		/// <exception cref="Exception">If dir could not be found</exception>
 		public static string FindWowDir(string wowDir)
 		{
-			if (wowDir != null)
+			if (wowDir != null && Directory.Exists(wowDir))
 			{
 				return wowDir;
 			}
@@ -192,6 +193,16 @@ namespace WCell.MPQTool
 				return Path.GetFullPath(m_wowDir);
 			}
 			return null;
+		}
+
+		public static string FindWowDirOrThrow(string wowDir)
+		{
+			var dir = FindWowDir(wowDir);
+			if (dir == null)
+			{
+				throw new Exception("Could not find WoW directory - Did you install it?");
+			}
+			return dir;
 		}
 
 		public void Dump()
@@ -264,7 +275,38 @@ namespace WCell.MPQTool
 				}
 				while (!response.StartsWith("y"));
 
-				do
+                Console.WriteLine("");
+                Console.WriteLine("Checking installed WoW client version.");
+			    var wowExeFilePath = Path.Combine(m_wowDir, "Wow.exe");
+                if (File.Exists(wowExeFilePath))
+                {
+                    var info = FileVersionInfo.GetVersionInfo(wowExeFilePath);
+                    var versionString = info.FileVersion.Replace(", ", ".");
+                    Console.WriteLine("Installed client is version: {0}", versionString);
+                    Console.WriteLine("    Expected client version: {0}", WCellInfo.RequiredVersion);
+                    Console.WriteLine("If the above don't match, you may wish to exit now and update your client.");
+                    Console.WriteLine("");
+
+                    Console.WriteLine("Exit now? [y/n]");
+                    var exitNow = Console.ReadLine();
+                    if (exitNow == null)
+                    {
+                        // program shutdown
+                        return;
+                    }
+
+                    if (exitNow.StartsWith("y"))
+                    {
+                        Console.WriteLine("Exiting...");
+                        return;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Unable to find Wow.exe at the given path. Not to worry, we'll try extracting anyway.");
+                }
+
+			    do
 				{
 					var outputDir = new DirectoryInfo(DBCOutputDir);
 					Console.WriteLine("Output Directory: {0} ({1})", outputDir.FullName, outputDir.Exists ? "already exists" : "does not exist");

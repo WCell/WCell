@@ -15,7 +15,6 @@ using WCell.RealmServer.Gossips;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Looting;
 using WCell.RealmServer.Misc;
-using WCell.RealmServer.Network;
 using WCell.RealmServer.Quests;
 using WCell.RealmServer.UpdateFields;
 using WCell.Util;
@@ -84,6 +83,10 @@ namespace WCell.RealmServer.Entities
 			}
 			go.Phase = where.Phase;
 			var pos = where.Position;
+			if (spawnPoint == null)
+			{
+				pos.Z = where.Map.Terrain.GetGroundHeightUnderneath(pos);
+			}
 			where.Map.AddObject(go, ref pos);
 
 			go.MarkUpdate(GameObjectFields.DYNAMIC);
@@ -253,6 +256,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public bool CanBeUsedBy(Character chr)
 		{
+			// TODO: Check distance
 			if (IsEnabled)
 			{
 				return !Flags.HasFlag(GameObjectFlags.ConditionalInteraction) || chr.QuestLog.IsRequiredForAnyQuest(this);

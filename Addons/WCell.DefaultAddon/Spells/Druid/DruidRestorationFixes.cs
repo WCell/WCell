@@ -88,12 +88,6 @@ namespace WCell.Addons.Default.Spells.Druid
 				spell.GetEffect(AuraType.Dummy).AuraEffectHandlerCreator = () => new LifebloomHandler();
 			});
 
-			// Dash: Cat form only
-			SpellLineId.DruidDash.Apply(spell =>
-			{
-                spell.SpellShapeshift = new SpellShapeshift { RequiredShapeshiftMask = ShapeshiftMask.Cat };
-			});
-
             SpellLineId.DruidRevive.Apply(spell =>
             {
                 var effect = spell.GetEffect(SpellEffectType.Resurrect);

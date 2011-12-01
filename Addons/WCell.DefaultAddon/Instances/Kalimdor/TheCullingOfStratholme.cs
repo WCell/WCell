@@ -7,7 +7,7 @@ using WCell.RealmServer.Instances;
 
 namespace WCell.Addons.Default.Instances
 {
-	public class TheCullingOfStratholme : DungeonInstance
+	public class TheCullingOfStratholme : BaseInstance
 	{
 	}
 

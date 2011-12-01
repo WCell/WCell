@@ -1,8 +1,8 @@
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Waypoints;
+using WCell.Util;
 using WCell.Util.Commands;
 using WCell.Util.Graphics;
-using WCell.Util;
 
 namespace WCell.Tools.Commands
 {

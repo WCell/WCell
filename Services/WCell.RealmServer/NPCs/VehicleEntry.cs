@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using WCell.Constants.NPCs;
 using WCell.Util.Graphics;
 
@@ -17,7 +13,7 @@ namespace WCell.RealmServer.NPCs
 		/// <summary>
 		/// flag, position 1
 		/// </summary>
-		public uint Flags;
+		public VehicleFlags Flags;
 
 		/// <summary>
 		/// turn speed, position 2
@@ -33,7 +29,7 @@ namespace WCell.RealmServer.NPCs
 
 		public float PitchMax;
 
-		public VehicleSeatEntry[] Seats; //6-13
+		public VehicleSeatEntry[] Seats = new VehicleSeatEntry[8]; //6-13
 
 		public float MouseLookOffsetPitch; //14
 
@@ -43,41 +39,39 @@ namespace WCell.RealmServer.NPCs
 
 		public float CameraPitchOffset; //17
 
-		public int[] PowerType; //18-20
+		public float FacingLimitRight; //18
 
-		public int[] PowerToken; //21-23
+		public float FacingLimitLeft; //19
 
-		public float FacingLimitRight; //24
+		public float TurnLingering; //20
 
-		public float FacingLimitLeft; //25
+		public float PitchLingering; //21
 
-		public float TurnLingering; //26
+		public float MouseLingering; //22
 
-		public float PitchLingering; //27
+		public float EndOpacity; //23
 
-		public float MouseLingering; //28
+		public float ArcSpeed; //24
 
-		public float EndOpacity; //29
+		public float ArcRepeat; //25
 
-		public float ArcSpeed; //30
+		public float ArcWidth; //26
 
-		public float ArcRepeat; //31
-
-		public float ArcWidth; //32
-
-		public float[] ImpactRadius; //33-34
-
+		public float[] ImpactRadius; //27-28
+		
+		public VehiclePowerType PowerType; //37
 
 		// custom
-
 		public int SeatCount;
+
+	    public bool IsMinion;
 	}
 
 	public class VehicleSeatEntry
 	{
 		public uint Id; //0
 
-		public uint Flags; //1
+		public VehicleSeatFlags Flags; //1
 
 		public int AttachmentId; //2
 
@@ -161,8 +155,10 @@ namespace WCell.RealmServer.NPCs
 
 		public int SkinId; //44
 
-		public uint FlagB; //45
+		public VehicleSeatFlagsB FlagsB; //45
 
+        // custom
 
+	    public uint PassengerNPCId;
 	}
 }

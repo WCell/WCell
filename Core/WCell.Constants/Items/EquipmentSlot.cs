@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 namespace WCell.Constants.Items
 {
 	public enum EquipmentSlot
@@ -35,5 +30,20 @@ namespace WCell.Constants.Items
 		Bag3 = 21,
 		Bag4 = 22,
 		End
+	}
+	//the ones you can see on your character
+	public enum VisibleEquipmentSlot
+	{
+		Head = 0,
+		Shoulder = 2,
+		Shirt = 3,
+		Chest = 4,
+		Belt = 5,
+		Pants = 6,
+		Boots = 7,
+		Wrist = 8,
+		Gloves = 9,
+		Back = 14,
+		Tabard = 18
 	}
 }

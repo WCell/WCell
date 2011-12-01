@@ -4,9 +4,9 @@ using WCell.Constants;
 using WCell.Constants.World;
 using WCell.Core.Network;
 using WCell.RealmServer.Entities;
-using WCell.RealmServer.Network;
 using WCell.RealmServer.Groups;
 using WCell.RealmServer.Instances;
+using WCell.RealmServer.Network;
 
 namespace WCell.RealmServer.Handlers
 {

@@ -30,7 +30,11 @@
     </Item>
 
     <Item Key="XRealmsConnected">
-      <Value>{0} Realms connected</Value>
+      <Value>{0} Realm(s) connected</Value>
+    </Item>
+
+    <Item Key="Initializing">
+      <Value>Initializing</Value>
     </Item>
 
     <Item Key="FeatureNotYetImplemented">

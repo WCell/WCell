@@ -1,18 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Data;
-using System.Linq;
 using System.Text;
 using System.Xml;
 using WCell.RealmServer;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Database;
-using WCell.Tools.Code;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Instances;
-using WCell.Constants;
+using WCell.Util.Code;
 using WCell.Util.Toolshed;
-using System.IO;
 
 namespace WCell.Tools.Domi
 {
@@ -31,7 +29,7 @@ namespace WCell.Tools.Domi
 			foreach (var instance in InstanceMgr.InstanceInfos)
 			{
 				var className = instance.Id.ToString();
-				var baseClass = instance.Type == MapType.Raid ? typeof(RaidInstance).Name : typeof(DungeonInstance).Name;
+				var baseClass = typeof(BaseInstance).Name;
 				var file = dir + className + ".cs";
 				if (!File.Exists(file))
 				{
@@ -231,11 +229,19 @@ namespace WCell.Tools.Domi
                     try
                     {
                         File.Delete(oldPath);
+                        
+                    }
+                    catch (Exception)
+                    {
+                        Console.WriteLine(@"Instances.old.xml deletion failed.");
+                    }
+                    try
+                    {
                         File.Delete(newPath);
                     }
                     catch (Exception)
                     {
-                        Console.WriteLine("Instances.old.xml and/or Instances.new.xml deletion failed.");
+                        Console.WriteLine(@"Instances.new.xml deletion failed.");
                     }
 
                 }

@@ -50,7 +50,7 @@
     </List>
 
     <Switch CompareWith="HitFlags">
-      <Case And="Absorb_1, Absorb_2">
+      <Case And="AbsorbType1, AbsorbType2">
         <List LengthSegment="DamageCount">
           <Name>Absorb_1</Name>
           <Simple>
@@ -70,7 +70,7 @@
       </Case-->
     </Switch>
     <Switch CompareWith="HitFlags">
-      <Case And="Resist_1, Resist_2">
+      <Case And="ResistType1, ResistType2">
         <List LengthSegment="DamageCount">
           <Name>Resist_1</Name>
           <Simple>

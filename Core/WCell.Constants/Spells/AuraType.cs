@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace WCell.Constants.Spells
 {
@@ -218,7 +215,7 @@ namespace WCell.Constants.Spells
 		AddCreatureImmunity = 147,
 		RetainComboPoints = 148,
 		ModResistSpellInterruptionPercent = 149,                      //    Resist Pushback
-		ModShieldBlockvaluePct = 150,
+		ModShieldBlockValuePct = 150,
 		TrackStealthed = 151,                      //    Track Stealthed
 		/// <summary>
 		/// 32926
@@ -351,7 +348,7 @@ namespace WCell.Constants.Spells
 		/// <summary>
 		/// 32727 Arena Preparation
 		/// </summary>
-		Aura_215 = 215,
+		ArenaPreparation = 215,
 		ModSpellHastePercent = 216,
 		Unused_217 = 217,
 		/// <summary>
@@ -425,7 +422,7 @@ namespace WCell.Constants.Spells
 		/// <summary>
 		/// Noggenfogger Elixir (Id: 16595)
 		/// </summary>
-		Aura_239 = 239,
+		ModScale2 = 239,
 		/// <summary>
 		/// Apparently adds boni to weapon skills, see http://www.wowwiki.com/Expertise
 		/// </summary>
@@ -433,7 +430,7 @@ namespace WCell.Constants.Spells
 		/// <summary>
 		/// Brewfest Racing Ram Aura [DND] (Id: 42146)
 		/// </summary>
-		Aura_241 = 241,
+		ForceAutoRunForward = 241,
 		/// <summary>
 		/// Increases your spell damage and healing by % of your total Intellect.
 		/// </summary>
@@ -451,7 +448,7 @@ namespace WCell.Constants.Spells
 		/// Used in Pure of Heart and Master Poisoner
 		/// </summary>
 		ModPoisonDurationPct = 246,
-		Aura_247 = 247,
+		MirrorImage = 247,
 		ModChanceTargetDodgesAttackPercent = 248,
 		ConvertRune = 249,
 		Aura_250 = 250,
@@ -544,7 +541,10 @@ namespace WCell.Constants.Spells
 		/// Always with ModXpPct (no apparent effect)
 		/// </summary>
 		ModQuestXpPct = 291,
-		Aura_292 = 292,
+		/// <summary>
+		/// Used by spell ClassSkillCallStabledPet (62757)
+		/// </summary>
+		CallStabledPet = 292,
 		Aura_293 = 293,
         Aura_294 = 294,
         Aura_295 = 295,

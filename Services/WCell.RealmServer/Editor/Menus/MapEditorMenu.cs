@@ -1,5 +1,4 @@
-﻿using System;
-using WCell.RealmServer.Entities;
+﻿using WCell.RealmServer.Entities;
 using WCell.RealmServer.GameObjects;
 using WCell.RealmServer.Gossips;
 using WCell.RealmServer.Lang;

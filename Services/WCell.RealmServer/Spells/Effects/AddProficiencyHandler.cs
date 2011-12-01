@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using NLog;
+using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Entities;
-using NLog;
 using WCell.RealmServer.Handlers;
 
 namespace WCell.RealmServer.Spells.Effects
@@ -22,6 +19,21 @@ namespace WCell.RealmServer.Spells.Effects
 		protected override void Apply(WorldObject target)
 		{
 			var chr = (Character)target;
+
+		    ItemClass requiredItemClass = Effect.Spell.SpellEquippedItems != null ? Effect.Spell.SpellEquippedItems.RequiredItemClass : ItemClass.None;
+            //Effect.Spell.SpellEquippedItems is implicitly non null if requiredItemClass != ItemClass.None; see the above line;
+            if (requiredItemClass == ItemClass.Weapon && !chr.Skills.WeaponProficiency.HasAnyFlag(Effect.Spell.SpellEquippedItems.RequiredItemSubClassMask))
+			{
+                chr.Skills.WeaponProficiency |= Effect.Spell.SpellEquippedItems.RequiredItemSubClassMask;
+				CharacterHandler.SendProficiency(chr, ItemClass.Weapon, chr.Skills.WeaponProficiency);
+				
+			}
+            else if (requiredItemClass == ItemClass.Armor && !chr.Skills.ArmorProficiency.HasAnyFlag(Effect.Spell.SpellEquippedItems.RequiredItemSubClassMask))
+			{
+                chr.Skills.ArmorProficiency |= Effect.Spell.SpellEquippedItems.RequiredItemSubClassMask;
+				CharacterHandler.SendProficiency(chr, ItemClass.Armor, chr.Skills.ArmorProficiency);
+			}
+
 			if (Effect.Spell.Ability == null)
 			{
 				log.Warn("Spell {0} had Handler for Proficiency but Spell has no Skill associated with it.", Effect.Spell);
@@ -31,14 +43,7 @@ namespace WCell.RealmServer.Spells.Effects
 				chr.Skills.Add(Effect.Spell.Ability.Skill, false);
 			}
 
-			if (Effect.Spell.SpellEquippedItems.RequiredItemClass == ItemClass.Weapon)
-			{
-                chr.Skills.WeaponProficiency |= Effect.Spell.SpellEquippedItems.RequiredItemSubClassMask;
-			}
-            else if (Effect.Spell.SpellEquippedItems.RequiredItemClass == ItemClass.Armor)
-			{
-                chr.Skills.ArmorProficiency |= Effect.Spell.SpellEquippedItems.RequiredItemSubClassMask;
-			}
+
 		}
 
 		public override ObjectTypes TargetType

@@ -7,7 +7,7 @@ using WCell.RealmServer.Instances;
 
 namespace WCell.Addons.Default.Instances
 {
-	public class TheObsidianSanctum : DungeonInstance
+	public class TheObsidianSanctum : BaseInstance
 	{
 	}
 

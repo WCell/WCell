@@ -1,14 +1,11 @@
 using System;
 using NLog;
 using WCell.Constants;
-using WCell.Constants.Misc;
 using WCell.Constants.Skills;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Items;
-using WCell.RealmServer.Modifiers;
-using WCell.RealmServer.RacesClasses;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
 using WCell.Util;
@@ -78,16 +75,6 @@ namespace WCell.RealmServer.Misc
 			get;
 		}
 
-		ProcTriggerFlags TargetProcTriggerFlags
-		{
-			get;
-		}
-
-		ProcTriggerFlags AttackerProcTriggerFlags
-		{
-			get;
-		}
-
 		IWeapon Weapon
 		{
 			get;
@@ -137,6 +124,15 @@ namespace WCell.RealmServer.Misc
 	public class HealAction : SimpleUnitAction
 	{
 		public int Value
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Heal over time
+		/// </summary>
+		public bool IsHot
 		{
 			get;
 			set;
@@ -235,16 +231,6 @@ namespace WCell.RealmServer.Misc
 		public DamageSchool UsedSchool
 		{
 			get { return DamageSchool.Physical; }
-		}
-
-		public ProcTriggerFlags TargetProcTriggerFlags
-		{
-			get { return ProcTriggerFlags.None; }
-		}
-
-		public ProcTriggerFlags AttackerProcTriggerFlags
-		{
-			get { return ProcTriggerFlags.None; }
 		}
 
 		public IWeapon Weapon
@@ -376,6 +362,8 @@ namespace WCell.RealmServer.Misc
 
 		public HitFlags HitFlags;
 
+		private ProcHitFlags ProcHitFlags;
+
 		/// <summary>
 		/// Actions that are marked in use, will not be recycled
 		/// </summary>
@@ -433,7 +421,7 @@ namespace WCell.RealmServer.Misc
 			get
 			{
 				return Weapon != null && SpellEffect != null &&
-					SpellEffect.Spell.AttributesExB.HasFlag(SpellAttributesExB.AutoRepeat);
+					SpellEffect.Spell.IsAutoRepeating;
 			}
 		}
 
@@ -479,116 +467,29 @@ namespace WCell.RealmServer.Misc
 		}
 		#endregion
 
-		#region Proc Flags
-		public ProcTriggerFlags TargetProcTriggerFlags
-		{
-			get
-			{
-				var flags = ProcTriggerFlags.AnyHostileAction;
-				if (SpellEffect != null)
-				{
-					if (SpellEffect.IsProc)
-					{
-						// procs can't trigger procs
-						return ProcTriggerFlags.None;
-					}
-				}
-				else
-				{
-					flags |= ProcTriggerFlags.SpellHit;
-					if (IsCritical)
-					{
-						flags |= ProcTriggerFlags.SpellHitCritical;
-					}
-				}
-
-				if (IsRangedAttack)
-				{
-					flags |= ProcTriggerFlags.RangedHit | ProcTriggerFlags.PhysicalAttack;
-					if (IsCritical)
-					{
-						flags |= ProcTriggerFlags.RangedCriticalHit;
-					}
-				}
-				else if (IsMeleeAttack)
-				{
-					flags |= ProcTriggerFlags.MeleeHit | ProcTriggerFlags.PhysicalAttack;
-					if (IsCritical)
-					{
-						flags |= ProcTriggerFlags.MeleeCriticalHit;
-					}
-				}
-				if (Blocked > 0)
-				{
-					flags |= ProcTriggerFlags.Block;
-				}
-				return flags;
-			}
-		}
-
-		public ProcTriggerFlags AttackerProcTriggerFlags
-		{
-			get
-			{
-				var flags = ProcTriggerFlags.ActionOther;
-				if (SpellEffect != null)
-				{
-					if (SpellEffect.IsProc)
-					{
-						// procs can't trigger procs
-						return ProcTriggerFlags.None;
-					}
-					flags |= ProcTriggerFlags.SpellCast;
-					if (IsCritical)
-					{
-						flags |= ProcTriggerFlags.SpellCastCritical;
-					}
-				}
-
-				if (IsRangedAttack)
-				{
-					flags |= ProcTriggerFlags.RangedHitOther;
-					if (IsCritical)
-					{
-						//flags |= ProcTriggerFlags.RangedCriticalHit;
-					}
-				}
-				else if (IsMeleeAttack)
-				{
-					flags |= ProcTriggerFlags.MeleeHitOther;
-					if (IsCritical)
-					{
-						flags |= ProcTriggerFlags.MeleeCriticalHitOther;
-					}
-				}
-				return flags;
-			}
-		}
-		#endregion
-
 		#region Attack
 		/// <summary>
-		/// Does a melee/ranged/wand physical attack. (Not spells)
+		/// Does a melee/ranged/wand physical attack.
 		/// Calculates resistances/attributes (resilience, hit chance) and takes them into account.
 		/// </summary>
-		/// <returns>Whether the attack hit</returns>
-		public bool DoAttack()
+		/// <returns>ProcHitFlags containing hit result</returns>
+		public ProcHitFlags DoAttack()
 		{
 			if (Victim == null)
 			{
 				LogManager.GetCurrentClassLogger().Error("{0} tried to attack with no Target selected.", Attacker);
-				return false;
+				return ProcHitFlags;
 			}
 
 			if (Victim.IsEvading)
 			{
 				Evade();
-				return false;
+				return ProcHitFlags;
 			}
 			else if (Victim.IsImmune(UsedSchool) || Victim.IsInvulnerable)
 			{
 				MissImmune();
-				return false;
+				return ProcHitFlags;
 			}
 
 			//foreach (var mod in Attacker.AttackModifiers)
@@ -599,7 +500,7 @@ namespace WCell.RealmServer.Misc
 			if (CanCrit && Victim.StandState != StandState.Stand)
 			{
 				StrikeCritical();
-				return true;
+				return ProcHitFlags;
 			}
 
 			//hitinfo declarations
@@ -610,7 +511,7 @@ namespace WCell.RealmServer.Misc
 			{
 				// missed the target
 				Miss();
-				return false;
+				return ProcHitFlags;
 			}
 			else
 			{
@@ -626,13 +527,13 @@ namespace WCell.RealmServer.Misc
 					{
 						// dodge
 						Dodge();
-						return false;
+						return ProcHitFlags;
 					}
 					else if (random > (hitChance - dodge - parry))
 					{
 						// parry
 						Parry();
-						return false;
+						return ProcHitFlags;
 					}
 				}
 				else
@@ -646,7 +547,7 @@ namespace WCell.RealmServer.Misc
 				{
 					// TODO: glancing blow
 					StrikeGlancing();
-					return true;
+					return ProcHitFlags;
 				}
 				else
 				{
@@ -657,13 +558,13 @@ namespace WCell.RealmServer.Misc
 					{
 						//crushing blow
 						StrikeCrushing();
-						return true;
+						return ProcHitFlags;
 					}
 					else if (random > (hitChance - dodgeParry - glancingblow - crushingblow - critical))
 					{
 						// critical hit
 						StrikeCritical();
-						return true;
+						return ProcHitFlags;
 					}
 					else
 					{
@@ -671,13 +572,13 @@ namespace WCell.RealmServer.Misc
 						{
 							// block
 							Block();
-							return false;
+							return ProcHitFlags;
 						}
 						else
 						{
 							// normal attack
 							StrikeNormal();
-							return true;
+							return ProcHitFlags;
 						}
 					}
 				}
@@ -690,12 +591,14 @@ namespace WCell.RealmServer.Misc
 		{
 			Damage = 0;
 			VictimState = VictimState.Immune;
+			ProcHitFlags |= ProcHitFlags.Immune;
 			DoStrike();
 		}
 
 		public void Miss()
 		{
 			Damage = 0;
+			ProcHitFlags |= ProcHitFlags.Miss;
 			DoStrike();
 		}
 
@@ -704,6 +607,7 @@ namespace WCell.RealmServer.Misc
 			Damage = 0;
 			VictimState = VictimState.Dodge;
 			HitFlags = HitFlags.Miss;
+			ProcHitFlags |= ProcHitFlags.Dodge;
 			Blocked = 0;
 			IsCritical = false;
 			DoStrike();
@@ -711,9 +615,14 @@ namespace WCell.RealmServer.Misc
 
 		public void Block()
 		{
-			HitFlags = HitFlags.NormalSwingAnim | HitFlags.Block;
+			HitFlags = HitFlags.PlayWoundAnimation | HitFlags.Block;
 			VictimState = VictimState.Block;
+			ProcHitFlags |= ProcHitFlags.Block;
 			Blocked = CalcBlockDamage();
+			if (Damage == Blocked)
+			{
+				ProcHitFlags |= ProcHitFlags.FullBlock;
+			}
 			IsCritical = false;
 			DoStrike();
 		}
@@ -722,6 +631,7 @@ namespace WCell.RealmServer.Misc
 		{
 			Damage = 0;
 			VictimState = VictimState.Evade;
+			ProcHitFlags |= ProcHitFlags.Evade;
 			DoStrike();
 		}
 
@@ -730,6 +640,7 @@ namespace WCell.RealmServer.Misc
 			Damage = 0;
 			VictimState = VictimState.Parry;
 			HitFlags = HitFlags.Miss;
+			ProcHitFlags |= ProcHitFlags.Parry;
 			Blocked = 0;
 			IsCritical = false;
 			DoStrike();
@@ -738,8 +649,9 @@ namespace WCell.RealmServer.Misc
 		public void StrikeCrushing()
 		{
 			Damage = (Damage * 10 + 5) / 15;		// == Damage * 1.5f
-			HitFlags = HitFlags.NormalSwingAnim | HitFlags.Crushing;
+			HitFlags = HitFlags.PlayWoundAnimation | HitFlags.Crushing;
 			VictimState = VictimState.Wound;
+			ProcHitFlags |= ProcHitFlags.NormalHit;
 			Blocked = 0;
 			IsCritical = false;
 			DoStrike();
@@ -749,8 +661,9 @@ namespace WCell.RealmServer.Misc
 		{
 			IsCritical = Victim.StandState == StandState.Stand;
 			SetCriticalDamage();
-			HitFlags = HitFlags.NormalSwingAnim | HitFlags.Resist_1 | HitFlags.Resist_2 | HitFlags.CriticalStrike;
+			HitFlags = HitFlags.PlayWoundAnimation | HitFlags.ResistType1 | HitFlags.ResistType2 | HitFlags.CriticalStrike;
 			VictimState = VictimState.Wound;
+			ProcHitFlags |= ProcHitFlags.CriticalHit;
 			Blocked = 0;
 			// Automatic double damage against sitting target - but doesn't proc crit abilities
 			DoStrike();
@@ -765,7 +678,8 @@ namespace WCell.RealmServer.Misc
 		{
 			Damage = (int)(Damage * CalcGlancingBlowDamageFactor());
 			VictimState = VictimState.Wound;
-			HitFlags = HitFlags.NormalSwingAnim | HitFlags.Glancing;
+			HitFlags = HitFlags.PlayWoundAnimation | HitFlags.Glancing;
+			ProcHitFlags |= ProcHitFlags.NormalHit;
 			Blocked = 0;
 			IsCritical = false;
 			DoStrike();
@@ -773,8 +687,9 @@ namespace WCell.RealmServer.Misc
 
 		public void StrikeNormal()
 		{
-			HitFlags = HitFlags.NormalSwingAnim;
+			HitFlags = HitFlags.PlayWoundAnimation;
 			VictimState = VictimState.Wound;
+			ProcHitFlags |= ProcHitFlags.NormalHit;
 			Blocked = 0;
 			IsCritical = false;
 			DoStrike();
@@ -792,6 +707,8 @@ namespace WCell.RealmServer.Misc
 
 				if (res > 0)
 				{
+					ProcHitFlags |= ProcHitFlags.Resist;
+
 					// This formula only applies for armor
 					if (UsedSchool == DamageSchool.Physical)
 					{
@@ -837,7 +754,8 @@ namespace WCell.RealmServer.Misc
 					Resisted = MathUtil.RoundInt(ResistPct * Damage / 100f);
 					if (Absorbed > 0)
 					{
-						HitFlags |= HitFlags.Absorb_1 | HitFlags.Absorb_2;
+						HitFlags |= HitFlags.AbsorbType1 | HitFlags.AbsorbType2;
+						ProcHitFlags |= ProcHitFlags.Absorb;
 					}
 					else
 					{
@@ -846,7 +764,7 @@ namespace WCell.RealmServer.Misc
 
 					if (Weapon == Attacker.OffHandWeapon)
 					{
-						HitFlags |= HitFlags.LeftSwing;
+						HitFlags |= HitFlags.OffHand;
 					}
 
 					Victim.DoRawDamage(this);
@@ -869,8 +787,39 @@ namespace WCell.RealmServer.Misc
 			{
 				CombatHandler.SendAttackerStateUpdate(this);
 			}
+
+			TriggerProcOnStrike();
 		}
 
+		private void TriggerProcOnStrike()
+		{
+			if (Weapon != null && SpellEffect == null)
+			{
+				var attackerProcTriggerFlags = ProcTriggerFlags.None;
+				var victimProcTriggerFlags = ProcTriggerFlags.None;
+
+				if (Weapon.IsMelee)
+				{
+					attackerProcTriggerFlags |= ProcTriggerFlags.DoneMeleeAutoAttack;
+					victimProcTriggerFlags |= ProcTriggerFlags.ReceivedMeleeAutoAttack;
+				}
+				else if (Weapon.IsRanged)
+				{
+					attackerProcTriggerFlags |= ProcTriggerFlags.DoneRangedAutoAttack;
+					victimProcTriggerFlags |= ProcTriggerFlags.ReceivedRangedAutoAttack;
+				}
+
+				if (Attacker != null && Attacker.IsAlive)
+				{
+					Attacker.Proc(attackerProcTriggerFlags, Victim, this, true, ProcHitFlags);
+				}
+
+				if (Victim != null && Victim.IsAlive)
+				{
+					Victim.Proc(victimProcTriggerFlags, Attacker, this, true, ProcHitFlags);
+				}
+			}
+		}
 		#endregion
 
 		#region Chances
@@ -1100,14 +1049,14 @@ namespace WCell.RealmServer.Misc
 		/// We use basic laws of probability:
 		/// P(CritWithBonus | NoCrit) = 
 		/// P(CritWithBonus) / P(NoCrit) =
-		/// critBonus / (1 - origCritChance)
+		/// critBonus / (10000 - origCritChance)
 		/// </summary>
 		public void AddBonusCritChance(int critBonusPct)
 		{
 			if (IsCritical) return;
 
 			var origCritChance = CalcCritChance();	// 0-10000
-			var critChance = (critBonusPct * 100) / (1 - origCritChance);
+			var critChance = ((critBonusPct * 100) * 10000) / (10000 - origCritChance);
 
 			IsCritical = Utility.Random(0, 10000) < critChance;
 			if (IsCritical)
@@ -1319,6 +1268,7 @@ namespace WCell.RealmServer.Misc
 			Attacker = attacker;
 			Victim = target;
 			Weapon = weapon;
+			ProcHitFlags = ProcHitFlags.None;
 		}
 
 		internal void OnFinished()

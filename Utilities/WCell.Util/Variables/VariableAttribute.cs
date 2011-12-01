@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace WCell.Util.Variables
 {
@@ -15,6 +12,11 @@ namespace WCell.Util.Variables
 		public bool Serialized = DefaultSerialized;
 
 		public bool IsReadOnly;
+
+		/// <summary>
+		/// If set to false, cannot get or set this variable through any command
+		/// </summary>
+		public bool IsFileOnly;
 
 		public VariableAttribute()
 		{

@@ -19,7 +19,6 @@ using System.Collections.Generic;
 using System.Text;
 using WCell.Constants;
 using WCell.Constants.Chat;
-using WCell.Constants.Factions;
 using WCell.Constants.Guilds;
 using WCell.Constants.Misc;
 using WCell.Core;
@@ -30,7 +29,6 @@ using WCell.RealmServer.Guilds;
 using WCell.RealmServer.Lang;
 using WCell.RealmServer.Network;
 using WCell.Util;
-using WCell.RealmServer.Groups;
 
 namespace WCell.RealmServer.Chat
 {
@@ -645,6 +643,23 @@ namespace WCell.RealmServer.Chat
 			using (var chatPacket = CreateCharChatMessage(ChatMsgType.WhisperInform, sender.SpokenLanguage, sender, receiver, null, message))
 			{
 				sender.Send(chatPacket);
+			}
+		}
+
+		/// <summary>
+		/// Sends a whisper from one player to another.
+		/// </summary>
+		/// <param name="sender">the sender of the whisper</param>
+		/// <param name="receiver">the target of the whisper</param>
+		/// <param name="message">the message to send</param>
+		public static void SendRaidBossWhisper(WorldObject sender, IChatter receiver, string message)
+		{
+			if (message.Length == 0)
+				return;
+
+			using (var chatPacket = CreateCharChatMessage(ChatMsgType.RaidBossWhisper, ChatLanguage.Universal, sender.EntityId, receiver.EntityId, sender.Name, message, ChatTag.None))
+			{
+				receiver.Send(chatPacket);
 			}
 		}
 

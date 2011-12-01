@@ -5,7 +5,6 @@ using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Constants.Looting;
 using WCell.Constants.Updates;
-using WCell.Core;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Items;
@@ -133,7 +132,8 @@ namespace WCell.RealmServer.Entities
 			// set charges to max
 			if (m_template.UseSpell != null && m_template.UseSpell.HasCharges)
 			{
-				SpellCharges = m_template.UseSpell.Charges;
+				m_record.Charges = m_template.UseSpell.Charges;
+				SetSpellCharges(m_template.UseSpell.Index, m_template.UseSpell.Charges);
 			}
 
 			var randomEnchants = m_template.RandomPrefixes;
@@ -193,7 +193,7 @@ namespace WCell.RealmServer.Entities
 
 			if (m_template.UseSpell != null)
 			{
-				SetSpellCharges(m_template.UseSpell.Index, (uint)record.Charges);
+				SetSpellCharges(m_template.UseSpell.Index, (int)record.Charges);
 			}
 			MaxDurability = m_template.MaxDurability;
 
@@ -692,6 +692,14 @@ namespace WCell.RealmServer.Entities
 
 			if (enchant.Duration != 0)
 			{
+				var timeLeft = (int)enchant.RemainingTime.TotalMilliseconds;
+				owner.CallDelayed(timeLeft, obj =>
+				{
+					if (!IsDeleted && Owner == owner)
+					{
+						RemoveEnchant(enchant);
+					}
+				});
 				ItemHandler.SendEnchantTimeUpdate(owner, this, enchant.Duration);
 			}
 		}
@@ -1273,21 +1281,21 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		internal void OnUse()
 		{
-			m_template.NotifyUsed(this);
-
 			if (m_template.BondType == ItemBondType.OnUse)
 			{
 				Flags |= ItemFlags.Soulbound;
 			}
 
-            if (m_template.UseSpell != null)
+			if (m_template.UseSpell != null)
 			{
 				// consume a charge
-				if (m_template.Class == ItemClass.Consumable)
+				if (m_template.UseSpell.HasCharges)
 				{
-					SpellCharges--;
+					SpellCharges = SpellCharges < 0 ? SpellCharges+1 : SpellCharges-1;
 				}
 			}
+
+			m_template.NotifyUsed(this);
 		}
 
 		#endregion
@@ -1369,7 +1377,7 @@ namespace WCell.RealmServer.Entities
 
 		public override string ToString()
 		{
-			return string.Format("{0}{1} in Slot {4} (Templ: {2}, Id: {3})", 
+			return string.Format("{0}{1} in Slot {4} (Templ: {2}, Id: {3})",
 				Amount != 1 ? Amount + "x " : "", Template.DefaultName, m_template.Id, EntityId, Slot);
 		}
 

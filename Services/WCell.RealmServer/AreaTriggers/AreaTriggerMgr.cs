@@ -1,5 +1,6 @@
 using NLog;
 using WCell.Constants;
+using WCell.Constants.AreaTriggers;
 using WCell.Core;
 using WCell.Core.ClientDB;
 using WCell.Core.Initialization;
@@ -7,10 +8,9 @@ using WCell.RealmServer.Content;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Instances;
+using WCell.RealmServer.Quests;
 using WCell.Util;
 using WCell.Util.Variables;
-using WCell.RealmServer.Quests;
-using WCell.Constants.AreaTriggers;
 
 namespace WCell.RealmServer.AreaTriggers
 {

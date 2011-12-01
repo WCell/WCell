@@ -16,15 +16,10 @@
 
 using WCell.Constants;
 using WCell.Constants.Factions;
-using WCell.Constants.Spells;
-using WCell.Constants.World;
-using WCell.Core;
-using WCell.RealmServer.Content;
-using WCell.RealmServer.Factions;
-using WCell.RealmServer.Global;
-using WCell.Util.Data;
-using WCell.RealmServer.NPCs;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Factions;
+using WCell.RealmServer.NPCs;
+using WCell.Util.Data;
 
 namespace WCell.RealmServer.RacesClasses
 {

@@ -1,32 +1,8 @@
 @ECHO off
+CALL CONFIGURATION.bat
 REM ############################################################################
 REM #
-REM #      B A S I C   U S E R   C O N F I G U R A T I O N   A R E A
-REM #
-REM ############################################################################
-REM #########################################
-REM # server - Base Table host
-REM # user - MySQL username
-REM # pass - MySQL login password
-REM # wdb  -  Database name
-REM # rusdbdir  - directory on your harddisk with localized DB (RUSDB - Russia (https://sourceforge.net/projects/rusdb/), GMDB - Germany (https://sourceforge.net/projects/gm-db/), etc) (for example d:\RUSDB\trunk\)
-REM #########################################
-
-set user=changeme
-set pass=changeme
-set wdb=changeme
-set rusdbdir=changeme
-
-REM ############################################################################
-REM #
-REM #    A D V A N C E D   U S E R   C O N F I G U R A T I O N   A R E A
-REM #
-REM ############################################################################
-set server=localhost
-set port=3306
-REM ############################################################################
-REM #
-REM #     D O   N O T   M O D I F Y   B E Y O N D   T H I S   P O I N T
+REM #     D O   N O T   M O D I F Y
 REM #
 REM ############################################################################
 if %user% == changeme GOTO error2
@@ -122,3 +98,12 @@ PAUSE
 GOTO quit
 
 :quit
+REM Clear all set environment variables
+set user=""
+set pass=""
+set wdb=""
+set udbdir=""
+set server=""
+set port=""
+set udb-main=""
+set rusdbdir=""

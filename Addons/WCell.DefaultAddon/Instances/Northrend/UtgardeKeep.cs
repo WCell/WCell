@@ -1,25 +1,17 @@
-using System.Collections.Generic;
 using System.Linq;
-using WCell.Constants.Misc;
 using WCell.Constants.NPCs;
+using WCell.Constants.Spells;
+using WCell.Constants.World;
 using WCell.Core.Initialization;
-using WCell.Core.Timers;
+using WCell.RealmServer.AI.Actions.Combat;
 using WCell.RealmServer.AI.Brains;
-using WCell.RealmServer.AI.Groups;
-using WCell.RealmServer.GameObjects;
+using WCell.RealmServer.Entities;
 using WCell.RealmServer.Instances;
 using WCell.RealmServer.NPCs;
 using WCell.RealmServer.NPCs.Spawns;
 using WCell.RealmServer.Spells;
-using WCell.RealmServer.Entities;
-using WCell.Constants.Spells;
-using WCell.Constants.World;
-using WCell.Constants.GameObjects;
-using WCell.RealmServer.AI.Actions.Combat;
-using System;
 using WCell.Util;
 using WCell.Util.Graphics;
-
 
 ///
 /// This file was automatically created, using WCell's CodeFileWriter
@@ -28,7 +20,7 @@ using WCell.Util.Graphics;
 
 namespace WCell.Addons.Default.Instances
 {
-	public class UtgardeKeep : DungeonInstance
+	public class UtgardeKeep : BaseInstance
 	{
 		#region Static Settings
 		private static NPCEntry princeKelesethEntry;

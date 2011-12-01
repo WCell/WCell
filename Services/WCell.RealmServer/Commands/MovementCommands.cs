@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2010-02-01 14:22:25 +0100 (ma, 01 feb 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 1240 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -17,6 +17,7 @@
 using System;
 using System.Linq;
 using WCell.Constants.Spells;
+using WCell.Constants.Updates;
 using WCell.Constants.World;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
@@ -24,7 +25,6 @@ using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Lang;
 using WCell.Util.Commands;
 using WCell.Util.Graphics;
-using WCell.Constants.Updates;
 
 namespace WCell.RealmServer.Commands
 {

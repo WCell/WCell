@@ -65,7 +65,7 @@ namespace WCell.RealmServer.Handlers
 				foreach (Character character in characters)
 				{
 					packet.WriteCString(character.Name);
-                    packet.WriteCString(character.Guild != null ? character.Guild.Name : string.Empty); //TODO: Add Guild name here
+                    packet.WriteCString(character.Guild != null ? character.Guild.Name : string.Empty);
 					packet.Write(character.Level);
 					packet.WriteUInt((byte)character.Class);
 					packet.WriteUInt((byte)character.Race);

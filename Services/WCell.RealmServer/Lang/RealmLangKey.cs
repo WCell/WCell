@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 namespace WCell.RealmServer.Lang
 {
 	/// <summary>
@@ -25,6 +20,10 @@ namespace WCell.RealmServer.Lang
 		PlayerNotOnline,
 		NoValidTarget,
 		InvalidSelection,
+
+		// ########################################################################
+		// Server
+		Initializing,
 
 		// ########################################################################
 		// Time

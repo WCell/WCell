@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using WCell.Constants.World;
 using WCell.Core.Timers;
 using WCell.RealmServer.Entities;
@@ -161,11 +158,11 @@ namespace WCell.RealmServer.Spawns
 		}
 
 		/// <summary>
-		/// Inactive and autospawns
+		/// Pool active, but spawn inactive and npc autospawns
 		/// </summary>
 		public bool IsReadyToSpawn
 		{
-            get { return !IsActive && m_spawnEntry.AutoSpawns && WorldEventMgr.IsEventActive(m_spawnEntry.EventId); }
+            get { return Pool.IsActive && !IsActive && m_spawnEntry.AutoSpawns && WorldEventMgr.IsEventActive(m_spawnEntry.EventId); }
 		}
 
 		/// <summary>

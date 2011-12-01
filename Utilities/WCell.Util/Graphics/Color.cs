@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Runtime.InteropServices;
 
 namespace WCell.Util.Graphics
@@ -169,5 +165,10 @@ namespace WCell.Util.Graphics
 
 		[FieldOffset(1)]
 		public byte B;
+
+		public string Hex
+		{
+			get { return ARGBValue.ToString("X"); }
+		}
 	}
 }

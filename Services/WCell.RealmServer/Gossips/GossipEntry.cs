@@ -1,14 +1,9 @@
-using System;
-using System.Linq;
-using WCell.Constants;
-using WCell.Constants.Misc;
-using WCell.Constants.NPCs;
-using WCell.RealmServer.Entities;
-using WCell.RealmServer.NPCs;
-using WCell.Util;
-using WCell.Util.Data;
 using System.Collections.Generic;
+using System.Linq;
+using WCell.Constants.Misc;
 using WCell.RealmServer.Content;
+using WCell.RealmServer.NPCs;
+using WCell.Util.Data;
 
 namespace WCell.RealmServer.Gossips
 {
@@ -375,20 +370,17 @@ namespace WCell.RealmServer.Gossips
 			}
 			else
 			{
-				// for now, assume that all spawns share the same gossip menu
 				var entry = spawn.Entry;
-				if (entry.DefaultGossip == null)
+				if (spawn.DefaultGossip == null)
 				{
-					var menu = new GossipMenu(gossipEntry);
-
-					entry.DefaultGossip = menu;
+					spawn.DefaultGossip = new GossipMenu(gossipEntry);
 				}
 				else
 				{
-					entry.DefaultGossip.GossipEntry = gossipEntry;
+					spawn.DefaultGossip.GossipEntry = gossipEntry;
 				}
 
-				entry.NPCFlags |= NPCFlags.Gossip;
+				//entry.NPCFlags |= NPCFlags.Gossip;
 			}
 		}
 

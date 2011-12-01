@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Diagnostics;
 using System.Reflection;
 using NLog;
 using WCell.Util;
@@ -95,7 +93,7 @@ namespace WCell.Core.Addons
 		public static void LoadAddons(string folderName, string ignoreString)
 		{
 			var folder = new DirectoryInfo(folderName);
-			var ignores = ignoreString.Split(new[] { ';' }).TransformArray(s => s.ToLower().Trim().Replace(".dll", ""));
+			var ignores = ignoreString.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).TransformArray(s => s.ToLower().Trim().Replace(".dll", ""));
 
 			LoadAddons(folder, ignores);
 		}
@@ -168,7 +166,18 @@ namespace WCell.Core.Addons
 			// debugger won't attach in that case
 			//var bytes = File.ReadAllBytes(path);
 			//var asm = Assembly.Load(bytes);
-			var asm = Assembly.LoadFrom(path);
+			Assembly asm;
+			try
+			{
+				asm = Assembly.LoadFrom(path);
+			}
+			catch (BadImageFormatException)
+			{
+				LogManager.GetCurrentClassLogger().Error("Failed to load Assembly \"{0}\" because it has the wrong format - Make sure that you only load .NET assemblies that are compiled for the correct target platform: {1}", 
+						file.Name,
+						Environment.Is64BitProcess ? "xx64" : "x86");
+				return null;
+			}
 			var context = new WCellAddonContext(file, asm);
 
 			Contexts.Add(context);
@@ -210,7 +219,10 @@ namespace WCell.Core.Addons
 		public WCellAddonContext LoadAndInitAddon(FileInfo file)
 		{
 			var context = LoadAddon(file);
-			context.InitAddon();
+			if (context != null)
+			{
+				context.InitAddon();
+			}
 			return context;
 		}
 		#endregion

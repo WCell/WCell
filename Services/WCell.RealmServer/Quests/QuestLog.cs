@@ -1,4 +1,4 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: QuestLog.cs
  *   copyright		: (C) The WCell Team
@@ -17,19 +17,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using NHibernate.SqlCommand;
-using WCell.Constants.GameObjects;
+using NLog;
 using WCell.Constants.Items;
 using WCell.Constants.Looting;
+using WCell.Constants.NPCs;
 using WCell.Constants.Quests;
 using WCell.Constants.Updates;
+using WCell.Constants;
 using WCell.Core;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Handlers;
-using WCell.Constants.NPCs;
-using NLog;
 using WCell.RealmServer.Items;
 using WCell.RealmServer.Looting;
 using WCell.RealmServer.Spells;
@@ -319,6 +318,21 @@ namespace WCell.RealmServer.Quests
 				}
 			}
 
+            if (quest.CollectedSourceItems != null)
+            {
+                if(!m_RequireItemsQuests.Contains(quest))
+                    m_RequireItemsQuests.Add(quest);
+                for (var i = 0; i < quest.Template.CollectableSourceItems.Length; i++)
+                {
+                    var item = quest.Template.CollectableSourceItems[i];
+                    if (item.ItemId != ItemId.None)
+                    {
+                        // find items that are already there
+                        quest.CollectedSourceItems[i] = m_Owner.Inventory.GetAmount(item.ItemId);
+                    }
+                }
+            }
+
 			quest.UpdateStatus();
 
 			qt.NotifyStarted(quest);
@@ -395,6 +409,17 @@ namespace WCell.RealmServer.Quests
 					m_Owner.Inventory.Consume((uint)quest.Template.CollectableItems[i].ItemId, true, quest.CollectedItems[i]);
 				}
 			}
+
+            if (quest.CollectedSourceItems != null)
+            {
+                m_RequireItemsQuests.Remove(quest);
+                var amt = quest.Template.CollectableSourceItems.Length;
+                for (var i = 0; i < amt; i++)
+                {
+                    // remove all source Items
+                    m_Owner.Inventory.Consume((uint)quest.Template.CollectableSourceItems[i].ItemId, true, quest.CollectedSourceItems[i]);
+                }
+            }
 
 			// remove all provided Items
 			if (quest.Template.ProvidedItems.Count > 0)
@@ -592,9 +617,16 @@ namespace WCell.RealmServer.Quests
 					for (var i = 0; i < quest.Template.NPCInteractions.Length; i++)
 					{
 						var interaction = quest.Template.NPCInteractions[i];
-						if (interaction.TemplateId == npc.Entry.Id)
+						if (interaction.TemplateId.Contains(npc.Entry.Id))
 						{
 							UpdateInteractionCount(quest, interaction, npc);
+						}
+						for (i = 0; i < UnitConstants.MaxKillCredits; i++)
+						{
+							if (interaction.TemplateId.Contains(npc.Entry.KillCreditIds[i]))
+							{
+								UpdateInteractionCount(quest, interaction, npc);
+							}
 						}
 					}
 				}
@@ -612,7 +644,7 @@ namespace WCell.RealmServer.Quests
 				for (var i = 0; i < quest.Template.NPCInteractions.Length; i++)
 				{
 					var interaction = quest.Template.NPCInteractions[i];
-					if (interaction.TemplateId == (uint)npc)
+					if (interaction.TemplateId.Contains((uint)npc))
 					{
 						return quest;
 					}
@@ -636,7 +668,7 @@ namespace WCell.RealmServer.Quests
 					for (var i = 0; i < quest.Template.GOInteractions.Length; i++)
 					{
 						var interaction = quest.Template.GOInteractions[i];
-						if (interaction.TemplateId == go.Entry.Id)
+						if (interaction.TemplateId.Contains(go.Entry.Id))
 						{
 							UpdateInteractionCount(quest, interaction, go);
 						}
@@ -685,7 +717,7 @@ namespace WCell.RealmServer.Quests
 				for (var i = 0; i < quest.Template.GOInteractions.Length; i++)
 				{
 					var interaction = quest.Template.GOInteractions[i];
-					if (interaction.TemplateId == go.EntryId)
+					if (interaction.TemplateId.Contains(go.EntryId))
 					{
 						return true;
 					}
@@ -726,6 +758,25 @@ namespace WCell.RealmServer.Quests
 						break;
 					}
 				}
+                for (var i = 0; i < quest.Template.CollectableSourceItems.Length; i++)
+                {
+                    var requiredItem = quest.Template.CollectableSourceItems[i];
+                    if (requiredItem.ItemId == item.Template.ItemId)
+                    {
+                        var amount = quest.CollectedSourceItems[i];
+                        var newAmount = amount + delta;
+
+                        var needsUpdate = amount < requiredItem.Amount || newAmount < requiredItem.Amount;
+
+                        quest.CollectedSourceItems[i] = newAmount;
+                        if (needsUpdate)
+                        {
+                            QuestHandler.SendUpdateItems(item.Template.ItemId, delta, m_Owner);
+                            quest.UpdateStatus();
+                        }
+                        break;
+                    }
+                }
 			}
 		}
 
@@ -745,6 +796,14 @@ namespace WCell.RealmServer.Quests
 						return quest;
 					}
 				}
+                for (var i = 0; i < quest.Template.CollectableSourceItems.Length; i++)
+                {
+                    var requiredItem = quest.Template.CollectableSourceItems[i];
+                    if (requiredItem.ItemId == item)
+                    {
+                        return quest;
+                    }
+                }
 			}
 			return null;
 		}
@@ -767,6 +826,14 @@ namespace WCell.RealmServer.Quests
 						return quest.CollectedItems[i] < requiredItem.Amount;
 					}
 				}
+                for (var i = 0; i < quest.Template.CollectableSourceItems.Length; i++)
+                {
+                    var collectableSourceItem = quest.Template.CollectableSourceItems[i];
+                    if (collectableSourceItem.ItemId == item)
+                    {
+                        return quest.CollectedSourceItems[i] < collectableSourceItem.Amount;
+                    }
+                }
 			}
 			return false;
 		}
@@ -787,7 +854,7 @@ namespace WCell.RealmServer.Quests
 							{
 								case ObjectTypeId.GameObject:
 									// GO
-									var go = cast.Targets.FirstOrDefault(target => target is GameObject && target.EntryId == interaction.TemplateId);
+									var go = cast.Targets.FirstOrDefault(target => target is GameObject && interaction.TemplateId.Contains(target.EntryId));
 									if (go != null)
 									{
 										UpdateInteractionCount(q, interaction, go);
@@ -795,7 +862,7 @@ namespace WCell.RealmServer.Quests
 									break;
 								case ObjectTypeId.Unit:
 									// NPC
-									var npc = cast.Targets.FirstOrDefault(target => target is NPC && target.EntryId == interaction.TemplateId);
+									var npc = cast.Targets.FirstOrDefault(target => target is NPC && interaction.TemplateId.Contains(target.EntryId));
 									if (npc != null)
 									{
 										UpdateInteractionCount(q, interaction, npc);

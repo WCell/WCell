@@ -1,14 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using WCell.Constants.Spells;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
-using WCell.RealmServer.Spells.Effects;
 
 namespace WCell.Addons.Default.Spells.Warrior
 {
@@ -43,7 +38,7 @@ namespace WCell.Addons.Default.Spells.Warrior
 			{
 				spell.AddProcHandler(new TriggerSpellProcHandlerTemplate(
 					SpellHandler.Get(SpellId.ClassSkillSecondWindRank1),
-					ProcTriggerFlags.SpellHit,
+					spell.SpellAuraOptions.ProcTriggerFlags,
 					ProcHandler.StunValidator
 				));
 			}, SpellId.WarriorArmsSecondWindRank1);
@@ -51,7 +46,7 @@ namespace WCell.Addons.Default.Spells.Warrior
 			{
 				spell.AddProcHandler(new TriggerSpellProcHandlerTemplate(
 					SpellHandler.Get(SpellId.ClassSkillSecondWindRank2),
-					ProcTriggerFlags.SpellHit,
+                    spell.SpellAuraOptions.ProcTriggerFlags,
 					ProcHandler.StunValidator
 				));
 			}, SpellId.WarriorArmsSecondWindRank2);
@@ -85,7 +80,39 @@ namespace WCell.Addons.Default.Spells.Warrior
 			SpellLineId.WarriorShatteringThrow.Apply(spell =>
 			{
 				spell.Effects[0].APValueFactor = 0.5f;
+				spell.GetEffect(SpellEffectType.ScriptEffect).SpellEffectHandlerCreator = (cast, effct) => new ShatteringThrowHandler(cast, effct);
+				spell.Visual = 13222;
 			});
+		}
+	}
+
+	public class ShatteringThrowHandler : SpellEffectHandler
+	{
+		public ShatteringThrowHandler(SpellCast cast, SpellEffect effect)
+			: base(cast, effect)
+		{
+		}
+		protected override void Apply(WorldObject target)
+		{
+			var unit = ((Unit)target);
+			var removedInvul = false;
+			unit.Auras.RemoveWhere(aura =>
+			{
+				if (aura.Spell.SpellCategories.Mechanic == SpellMechanic.Invulnerable2)
+				{
+					return removedInvul = true;
+				}
+				return false;
+			});
+
+			if (!removedInvul)
+			{
+				var caster = Cast.CasterChar;
+				if (caster != null)
+				{
+					caster.SpellCast.Trigger(SpellId.ClassSkillShatteringThrow);
+				}
+			}
 		}
 	}
 

@@ -1,4 +1,4 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: QuestMgr.cs
  *   copyright		: (C) The WCell Team
@@ -15,25 +15,21 @@
  *************************************************************************/
 
 using System;
+using System.Collections.Generic;
 using NLog;
-using WCell.Constants;
 using WCell.Constants.Quests;
 using WCell.Core;
 using WCell.Core.ClientDB;
 using WCell.Core.Initialization;
-using WCell.Core.Network;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.GameObjects;
+using WCell.RealmServer.Global;
+using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Items;
 using WCell.RealmServer.NPCs;
 using WCell.Util;
 using WCell.Util.Variables;
-using System.Collections.Generic;
-using WCell.RealmServer.Handlers;
-using WCell.RealmServer.Global;
-using WCell.RealmServer.Spells;
-using WCell.Constants.Spells;
 
 namespace WCell.RealmServer.Quests
 {

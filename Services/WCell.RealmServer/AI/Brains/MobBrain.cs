@@ -109,9 +109,7 @@ namespace WCell.RealmServer.AI.Brains
 
 		#endregion
 
-        #region Creature Functions
-
-        #region Emote Functions
+        #region Emotes
         
 
         /// <summary>
@@ -206,12 +204,6 @@ namespace WCell.RealmServer.AI.Brains
 
         #endregion
 
-        #region Spell Functions
-        // todo!!!
-        #endregion 
-
-        #endregion
-
         public override void OnHeal(Unit healer, Unit healed, int amtHealed)
 		{
 			if (m_owner is NPC && m_owner.IsInCombat && m_owner.CanBeAggroedBy(healer))
@@ -288,7 +280,7 @@ namespace WCell.RealmServer.AI.Brains
 				return;
 			}
 
-			if (m_owner is NPC && m_owner.CanBeAggroedBy(action.Attacker))
+			if (m_owner is NPC)
 			{
 				((NPC)m_owner).ThreatCollection[action.Attacker] += action.Attacker.GetGeneratedThreat(action);
 			}

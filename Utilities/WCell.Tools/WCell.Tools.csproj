@@ -142,6 +142,9 @@
     <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>wcell_tool_icon.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Castle.ActiveRecord, Version=2.1.2.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -180,11 +183,10 @@
     <Compile Include="..\..\Utilities\WCell.SolutionItems\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="Code\CodeFileWriter.cs" />
     <Compile Include="Commands\DBCCommand.cs" />
     <Compile Include="Commands\PacketAnalyzerCommand.cs" />
+    <Compile Include="Commands\PepsiFactionStudiesCommand.cs" />
     <Compile Include="Commands\RalekSpellStudiesCommand.cs" />
-    <Compile Include="Commands\TerrainCommand.cs" />
     <Compile Include="Commands\ToolCommandHandler.cs" />
     <Compile Include="Commands\LocaleCommand.cs" />
     <Compile Include="Commands\WPCommands.cs" />
@@ -192,54 +194,6 @@
     <Compile Include="Domi\Output\ATOutput.cs" />
     <Compile Include="Domi\Output\QuestOutput.cs" />
     <Compile Include="Commands\DumpCommands.cs" />
-    <Compile Include="Maps\Parsing\WMO\Components\DoodadSet.cs" />
-    <Compile Include="Maps\Parsing\WMO\Components\Fog.cs" />
-    <Compile Include="Maps\Parsing\WMO\Components\GroupHeader.cs" />
-    <Compile Include="Maps\Parsing\WMO\Components\GroupInformation.cs" />
-    <Compile Include="Maps\Parsing\WMO\Components\LightInformation.cs" />
-    <Compile Include="Maps\Parsing\WMO\Components\LiquidInfo.cs" />
-    <Compile Include="Maps\Parsing\WMO\Components\MapPoly.cs" />
-    <Compile Include="Maps\Parsing\WMO\Components\PortalInformation.cs" />
-    <Compile Include="Maps\Parsing\WMO\Components\PortalRelation.cs" />
-    <Compile Include="Maps\Parsing\WMO\Components\RenderBatch.cs" />
-    <Compile Include="Maps\Parsing\WMO\Components\RootHeader.cs" />
-    <Compile Include="Maps\Parsing\WMO\Components\WMOGroupFlags.cs" />
-    <Compile Include="Maps\Structures\Index3.cs" />
-    <Compile Include="Maps\Utils\Extensions.cs" />
-    <Compile Include="Maps\MapTileExtractor.cs" />
-    <Compile Include="Maps\Parsing\ADT\ADT.cs" />
-    <Compile Include="Maps\Parsing\ADT\ADTChunk.cs" />
-    <Compile Include="Maps\Parsing\ADT\ADTChunkParser.cs" />
-    <Compile Include="Maps\Parsing\ADT\Components\MapChunkHeader.cs" />
-    <Compile Include="Maps\Parsing\ADT\Components\MapVertices.cs" />
-    <Compile Include="Maps\Structures\Color4.cs" />
-    <Compile Include="Maps\Parsing\M2s\M2.cs" />
-    <Compile Include="Maps\Structures\OffsetLocation.cs" />
-    <Compile Include="Maps\Constants\TerrainConstants.cs" />
-    <Compile Include="Maps\Structures\VertexSpan.cs" />
-    <Compile Include="Maps\Parsing\WMO\WMO.cs" />
-    <Compile Include="Maps\Utils\MathHelper.cs" />
-    <Compile Include="Maps\WorldObjectExtractor.cs" />
-    <Compile Include="Maps\Parsing\ADT\ADTParser.cs" />
-    <Compile Include="Maps\Parsing\ADT\Components\MapChunkInfo.cs" />
-    <Compile Include="Maps\Parsing\ADT\Components\MapDoodadDefinition.cs" />
-    <Compile Include="Maps\Parsing\ADT\Components\MapHeader.cs" />
-    <Compile Include="Maps\Parsing\ADT\Components\MapObjectDefinition.cs" />
-    <Compile Include="Maps\Parsing\ADT\Components\MH2O.cs" />
-    <Compile Include="Maps\Structures\DBCMapEntry.cs" />
-    <Compile Include="Maps\Parsing\M2s\Components\ModelHeader.cs" />
-    <Compile Include="Maps\Parsing\M2s\Components\ModelVertices.cs" />
-    <Compile Include="Maps\Parsing\M2s\M2Model.cs" />
-    <Compile Include="Maps\Parsing\M2s\M2ModelParser.cs" />
-    <Compile Include="Maps\Parsing\WDT\WDTFile.cs" />
-    <Compile Include="Maps\Parsing\WDT\WDTParser.cs" />
-    <Compile Include="Maps\Structures\BSPNode.cs" />
-    <Compile Include="Maps\Parsing\WMO\Components\DoodadDefinition.cs" />
-    <Compile Include="Maps\Parsing\WMO\WMOGroup.cs" />
-    <Compile Include="Maps\Parsing\WMO\WMOGroupParser.cs" />
-    <Compile Include="Maps\Parsing\WMO\WMORoot.cs" />
-    <Compile Include="Maps\Parsing\WMO\WMORootParser.cs" />
-    <Compile Include="Maps\MapBoundaryUtil.cs" />
     <Compile Include="Domi\WCellEnumWriter.cs" />
     <Compile Include="Domi\Output\ClassesRaces.cs" />
     <Compile Include="Domi\Output\GOOutput.cs" />
@@ -247,13 +201,9 @@
     <Compile Include="Domi\Output\MiscOutput.cs" />
     <Compile Include="Domi\Output\NPCOutput.cs" />
     <Compile Include="Domi\Output\TalentOutput.cs" />
-    <Compile Include="Maps\MapBoundaryWriter.cs" />
-    <Compile Include="Maps\Structures\Signatures.cs" />
-    <Compile Include="Maps\ObjectFileReader.cs" />
-    <Compile Include="Maps\ZoneTileSetReader.cs" />
-    <Compile Include="Maps\ZoneGridWriter.cs" />
     <Compile Include="Misc\LineConverter.cs" />
     <Compile Include="Mokrago\CombatRatingsOutput.cs" />
+    <Compile Include="Pepsi\FactionStudies.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Spells\SpellEffectCreator.cs" />
     <Compile Include="Domi\Output\SkillOutput.cs" />
@@ -333,7 +283,9 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="wcell_tool_icon.ico" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

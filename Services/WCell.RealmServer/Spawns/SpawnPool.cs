@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
 using WCell.Util;
@@ -94,7 +92,7 @@ namespace WCell.RealmServer.Spawns
 					}
 					else
 					{
-						// stop all spawning but don't remove spwaned NPCs from pool
+						// stop all spawning but don't remove spawned NPCs from pool
 						foreach (var spawn in m_spawnPoints)
 						{
 							spawn.StopTimer();

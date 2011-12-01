@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2009-12-21 18:48:36 +0100 (ma, 21 dec 2009) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 1149 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -21,15 +21,9 @@ using System.Linq;
 using NLog;
 using WCell.Constants;
 using WCell.Constants.Achievements;
-using WCell.Constants.NPCs;
-using WCell.Constants.Pets;
-using WCell.Constants.Spells;
 using WCell.Constants.Talents;
-using WCell.Constants.Updates;
-using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
-using WCell.RealmServer.NPCs.Pets;
 
 namespace WCell.RealmServer.Talents
 {

@@ -18,9 +18,7 @@ using System;
 using System.Linq;
 using WCell.Constants;
 using WCell.Constants.Guilds;
-using WCell.Util.Threading;
 using WCell.RealmServer.Entities;
-using WCell.RealmServer.Global;
 using WCell.Util;
 
 namespace WCell.RealmServer.Guilds
@@ -233,11 +231,6 @@ namespace WCell.RealmServer.Guilds
         #endregion
 
         #region Methods
-        internal void Init(Guild guild)
-		{
-			Init(guild, World.GetCharacter((uint)CharacterLowId));
-        }
-
 		internal void Init(Guild guild, Character chr)
 		{
 			Guild = guild;

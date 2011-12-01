@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2010-02-11 11:41:10 +0100 (to, 11 feb 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 1254 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -16,12 +16,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using WCell.RealmServer.Lang;
-using WCell.RealmServer.NPCs;
-using WCell.RealmServer.NPCs.Pets;
-using WCell.Util.Collections;
-using NLog;
+using WCell.Constants;
 using WCell.Constants.Spells;
 using WCell.Core;
 using WCell.Core.ClientDB;
@@ -30,14 +25,16 @@ using WCell.RealmServer.Content;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Items;
+using WCell.RealmServer.Lang;
+using WCell.RealmServer.NPCs.Pets;
 using WCell.RealmServer.Skills;
-using WCell.RealmServer.Spells.Effects;
-using WCell.Util;
-using WCell.Util.Variables;
 using WCell.RealmServer.Spells.Auras;
-using WCell.Constants;
+using WCell.RealmServer.Spells.Effects;
 using WCell.RealmServer.Spells.Effects.Auras;
 using WCell.RealmServer.Talents;
+using WCell.Util;
+using WCell.Util.Collections;
+using WCell.Util.Variables;
 
 namespace WCell.RealmServer.Spells
 {
@@ -67,7 +64,7 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// All spells by id.
 		/// </summary>
-		public static Spell[] ById = new Spell[97000];
+		public static Spell[] ById = new Spell[(int)SpellId.End];
 
 		public static uint HighestId
 		{
@@ -275,7 +272,7 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// Returns a list of all SpellLines that are affected by the given spell family set (very long bit field)
 		/// </summary>
-		public static IEnumerable<SpellLine> GetAffectedSpellLines(ClassId clss, uint[] mask)
+		public static HashSet<SpellLine> GetAffectedSpellLines(ClassId clss, uint[] mask)
 		{
 			var lines = SpellLines.GetLines(clss);
 			var affected = new HashSet<SpellLine>();
@@ -334,14 +331,7 @@ namespace WCell.RealmServer.Spells
 				SpellLines.InitSpellLines();
 
 				ContentMgr.Load<SpellProcEventEntry>();
-				foreach (var spell in ById)
-				{
-					if (spell != null)
-					{
-						// set custom proc settings
-						ProcEventHelper.PatchAffectMasks(spell);
-					}
-				}
+				ProcEventHelper.PatchSpells(ById);
 			}
 
 			if (init)
@@ -490,6 +480,7 @@ namespace WCell.RealmServer.Spells
 			SpellEffectCreators[(int)SpellEffectType.InterruptCast] = (cast, effect) => new InterruptCastEffectHandler(cast, effect);							// 68
 			SpellEffectCreators[(int)SpellEffectType.Distract] = (cast, effect) => new DistractEffectHandler(cast, effect);										// 69
 			SpellEffectCreators[(int)SpellEffectType.ApplyGlyph] = (cast, effect) => new ApplyGlyphEffectHandler(cast, effect);									// 74
+			SpellEffectCreators[(int)SpellEffectType.ScriptEffect] = (cast, effect) => new ScriptEffectHandler(cast, effect);									// 77
 			SpellEffectCreators[(int)SpellEffectType.Sanctuary] = (cast, effect) => new RemoveImpairingEffectsHandler(cast, effect);							// 79
 			SpellEffectCreators[(int)SpellEffectType.AddComboPoints] = (cast, effect) => new AddComboPointsEffectHandler(cast, effect);							// 80
 			SpellEffectCreators[(int)SpellEffectType.Duel] = (cast, effect) => new DuelEffectHandler(cast, effect);												// 83
@@ -501,6 +492,7 @@ namespace WCell.RealmServer.Spells
 			SpellEffectCreators[(int)SpellEffectType.SelfResurrect] = (cast, effect) => new SelfResurrectEffectHandler(cast, effect);							// 94
 			SpellEffectCreators[(int)SpellEffectType.Skinning] = (cast, effect) => new SkinningEffectHandler(cast, effect);										// 95
 			SpellEffectCreators[(int)SpellEffectType.Charge] = (cast, effect) => new ChargeEffectHandler(cast, effect);											// 96
+			SpellEffectCreators[(int)SpellEffectType.SummonAllTotems] = (cast, effect) => new SummonAllTotemsHandler(cast, effect);								// 97
 			SpellEffectCreators[(int)SpellEffectType.KnockBack] = (cast, effect) => new KnockBackEffectHandler(cast, effect);									// 98
 			SpellEffectCreators[(int)SpellEffectType.Disenchant] = (cast, effect) => new DisenchantEffectHandler(cast, effect);									// 99
 			SpellEffectCreators[(int)SpellEffectType.Inebriate] = (cast, effect) => new Inebriate(cast, effect);												// 100
@@ -516,11 +508,15 @@ namespace WCell.RealmServer.Spells
 			SpellEffectCreators[(int)SpellEffectType.Prospecting] = (cast, effect) => new ProspectingEffectHandler(cast, effect);								// 127
 			SpellEffectCreators[(int)SpellEffectType.ApplyStatAura] = (cast, effect) => new ApplyStatAuraEffectHandler(cast, effect);							// 128
 			SpellEffectCreators[(int)SpellEffectType.ApplyStatAuraPercent] = (cast, effect) => new ApplyStatAuraPercentEffectHandler(cast, effect);				// 129
+			SpellEffectCreators[(int)SpellEffectType.PlayMusic] = (cast, effect) => new PlayMusicEffectHandler(cast, effect);									// 132
 			SpellEffectCreators[(int)SpellEffectType.ForgetSpecialization] = (cast, effect) => new ForgetSpecializationEffectHandler(cast, effect);				// 133
 			SpellEffectCreators[(int)SpellEffectType.RestoreHealthPercent] = (cast, effect) => new RestoreHealthPercentEffectHandler(cast, effect);				// 136
 			SpellEffectCreators[(int)SpellEffectType.RestoreManaPercent] = (cast, effect) => new RestoreManaPercentEffectHandler(cast, effect);					// 137
+			SpellEffectCreators[(int)SpellEffectType.ClearQuest] = (cast, effect) => new ClearQuestEffectHandler(cast, effect);									// 139
+			SpellEffectCreators[(int)SpellEffectType.TriggerSpellFromTargetWithCasterAsTarget] = (cast, effect) => new TriggerSpellFromTargetWithCasterAsTargetHandler(cast, effect);					//140
 			SpellEffectCreators[(int)SpellEffectType.ApplyAuraToMaster] = (cast, effect) => new ApplyAuraToMasterEffectHandler(cast, effect);					// 143
 			SpellEffectCreators[(int)SpellEffectType.TriggerRitualOfSummoning] = (cast, effect) => new TriggerRitualOfSummoningEffectHandler(cast, effect);		// 151
+			SpellEffectCreators[(int)SpellEffectType.TeachFlightPath] = (cast, effect) => new TeachFlightPathEffectHandler(cast, effect);						// 154
 			SpellEffectCreators[(int)SpellEffectType.FeedPet] = (cast, effect) => new FeedPetEffectHandler(cast, effect);										// 101
 			SpellEffectCreators[(int)SpellEffectType.SummonObjectSlot1] = (cast, effect) => new SummonObjectSlot1Handler(cast, effect);							// 104
 			SpellEffectCreators[(int)SpellEffectType.SummonObjectSlot2] = (cast, effect) => new SummonObjectSlot2Handler(cast, effect);							// 105
@@ -544,7 +540,6 @@ namespace WCell.RealmServer.Spells
 			UnsetHandler(SpellEffectType.Defense);
 			UnsetHandler(SpellEffectType.SpellDefense);
 			UnsetHandler(SpellEffectType.Block);
-			UnsetHandler(SpellEffectType.ScriptEffect);
 			UnsetHandler(SpellEffectType.Detect);
 			UnsetHandler(SpellEffectType.Dummy);
 			UnsetHandler(SpellEffectType.Parry);
@@ -568,7 +563,8 @@ namespace WCell.RealmServer.Spells
 
 		public static readonly SpellSummonHandler
 			DefaultSummonHandler = new SpellSummonHandler(),
-			PetSummonHandler = new SpellSummonPetHandler();
+			PetSummonHandler = new SpellSummonPetHandler(),
+			PossesedSummonHandler = new SpellSummonPossessedHandler();
 
 		static void InitSummonHandlers()
 		{
@@ -590,7 +586,7 @@ namespace WCell.RealmServer.Spells
 					switch (entry.Group)
 					{
 						case SummonGroup.Controllable:
-							entry.Handler = DefaultSummonHandler;
+							entry.Handler = PossesedSummonHandler;
 							break;
 						case SummonGroup.Friendly:
 							entry.Handler = DefaultSummonHandler;

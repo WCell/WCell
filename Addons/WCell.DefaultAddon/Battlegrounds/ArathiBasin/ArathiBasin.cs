@@ -6,8 +6,6 @@ using WCell.Constants.AreaTriggers;
 using WCell.Constants.Battlegrounds;
 using WCell.Constants.Factions;
 using WCell.Constants.GameObjects;
-using WCell.Constants.Misc;
-using WCell.Constants.Spells;
 using WCell.Constants.World;
 using WCell.Core.Initialization;
 using WCell.Core.Timers;
@@ -246,9 +244,9 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
             Characters.SendSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.ABOnPrepareHalfTime), PreparationTimeMillis / 2000);
         }
 
-        protected override void OnPrepare()
+		protected override void OnPrepareBegin()
         {
-            base.OnPrepare();
+			base.OnPrepareBegin();
         	var time = RealmLocalizer.FormatTimeSecondsMinutes(PreparationTimeMillis/1000);
             Characters.SendSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.ABOnPrepare), time);
         }

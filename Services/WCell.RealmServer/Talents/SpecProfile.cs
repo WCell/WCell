@@ -1,17 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using Castle.ActiveRecord;
+using NHibernate.Criterion;
 using NLog;
-using WCell.Constants.Spells;
-using WCell.Constants.Talents;
 using WCell.Core.Database;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
-using WCell.RealmServer.Global;
-using WCell.RealmServer.Handlers;
-using NHibernate.Criterion;
-using Castle.ActiveRecord;
 using WCell.Util;
 
 namespace WCell.RealmServer.Talents
@@ -113,8 +107,9 @@ namespace WCell.RealmServer.Talents
 			}
 			set
 			{
-				_characterGuid = (int)value;
-				SpecIndex = (int)(value >> 32);
+			    int specIndex = 0;
+                Utility.UnpackLong(value, ref _characterGuid, ref specIndex);
+			    SpecIndex = specIndex;
 			}
 		}
 

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Castle.ActiveRecord;
 using Castle.ActiveRecord.Queries;
@@ -26,10 +25,8 @@ using WCell.RealmServer.NPCs;
 using WCell.RealmServer.NPCs.Pets;
 using WCell.RealmServer.RacesClasses;
 using WCell.RealmServer.Talents;
-using WCell.Util;
 using WCell.Util.NLog;
 using WCell.Util.Threading;
-
 using Alias = System.Collections.Generic.KeyValuePair<string, string>;
 
 
@@ -40,7 +37,6 @@ namespace WCell.RealmServer.Database
 	{
 		#region Static
 		private static readonly Logger s_log = LogManager.GetCurrentClassLogger();
-		private static readonly Order CreatedOrder = new Order("Created", true);
 
 		public static readonly CharacterRecord[] EmptyArray = new CharacterRecord[] { };
 
@@ -285,6 +281,7 @@ namespace WCell.RealmServer.Database
 		/// <summary>
 		/// Whether the Character that this Record belongs to is currently logged in.
 		/// </summary>
+		[Property(Access = PropertyAccess.ReadOnly)]
 		public bool IsOnline
 		{
 			get { return LastLogin != null && LastLogin > RealmServer.StartTime && (LastLogout == null || LastLogout < LastLogin); }

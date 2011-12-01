@@ -1,14 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using WCell.Constants.Achievements;
-using WCell.Constants.Login;
-using WCell.Constants.NPCs;
-using WCell.Constants.Items;
 using WCell.Constants.GameObjects;
-using WCell.Constants.Spells;
-using WCell.Constants.Pets;
+using WCell.Constants.Items;
+using WCell.Constants.NPCs;
 using WCell.Constants.Updates;
 using WCell.Util;
 
@@ -36,6 +31,11 @@ namespace WCell.Constants
 				entryStr = id + " (" + id + ")";
 			}
 			return entryStr;
+		}
+
+		public static string ToString(this ObjectTypeId type, IEnumerable<uint> ids, string conj)
+		{
+			return ids.Aggregate("", (current, id) => current + (type.ToString(id) + conj));
 		}
 
 		public static string ToString(this GOEntryId id)

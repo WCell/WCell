@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2009-12-23 20:07:17 +0100 (on, 23 dec 2009) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 1151 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,6 @@
 using WCell.Constants;
 using WCell.Constants.Factions;
 using WCell.Core.ClientDB;
-using WCell.Util;
 
 namespace WCell.RealmServer.Factions
 {
@@ -32,7 +31,7 @@ namespace WCell.RealmServer.Factions
 		public RaceMask[] RaceMask;
 	    public ClassMask[] ClassMask;
 		public int[] BaseRepValue;
-        public int[] BaseFlags;
+        public FactionFlags[] BaseFlags;
 		public FactionId ParentId;
 		public string Name;
 	}
@@ -46,27 +45,27 @@ namespace WCell.RealmServer.Factions
             entry.FactionIndex = (FactionReputationIndex)GetInt32(rawData, 1);
 
             entry.RaceMask = new RaceMask[4];
-            for (int i = 0; i < entry.RaceMask.Length; i++)
+            for (var i = 0; i < entry.RaceMask.Length; i++)
             {
                 entry.RaceMask[i] = (RaceMask)GetUInt32(rawData, 2 + i);
             }
 
             entry.ClassMask = new ClassMask[4];
-            for (int i = 0; i < entry.ClassMask.Length; i++)
+            for (var i = 0; i < entry.ClassMask.Length; i++)
             {
                 entry.ClassMask[i] = (ClassMask)GetUInt32(rawData, 6 + i);
             }
 
             entry.BaseRepValue = new int[4];
-            for (int i = 0; i < entry.BaseRepValue.Length; i++)
+            for (var i = 0; i < entry.BaseRepValue.Length; i++)
             {
                 entry.BaseRepValue[i] = GetInt32(rawData, 10 + i);
             }
 
-            entry.BaseFlags = new int[4];
-            for (int i = 0; i < entry.BaseFlags.Length; i++)
+            entry.BaseFlags = new FactionFlags[4];
+            for (var i = 0; i < entry.BaseFlags.Length; i++)
             {
-                entry.BaseFlags[i] = GetInt32(rawData, 14 + i);
+                entry.BaseFlags[i] = (FactionFlags)GetInt32(rawData, 14 + i);
             }
 
             entry.ParentId = (FactionId)GetUInt32(rawData, 18);
@@ -82,7 +81,7 @@ namespace WCell.RealmServer.Factions
 	{
 		public uint Id;
 		public FactionId FactionId;
-		public uint Flags;
+		public FactionTemplateFlags Flags;
         /// <summary>
         /// The Faction-Group mask of this faction.
         /// </summary>
@@ -104,10 +103,10 @@ namespace WCell.RealmServer.Factions
 		public override FactionTemplateEntry ConvertTo(byte[] rawData, ref int id)
 		{
 			var entry = new FactionTemplateEntry();
-			int x = 0;
+			var x = 0;
 			id = (int)(entry.Id = GetUInt32(rawData, x++));
 			entry.FactionId = (FactionId)GetUInt32(rawData, x++);
-			entry.Flags = GetUInt32(rawData, x++);
+			entry.Flags = (FactionTemplateFlags)GetUInt32(rawData, x++);
             entry.FactionGroup = (FactionGroupMask)GetUInt32(rawData, x++);
 			entry.FriendGroup = (FactionGroupMask)GetUInt32(rawData, x++);
 			entry.EnemyGroup = (FactionGroupMask)GetUInt32(rawData, x++);

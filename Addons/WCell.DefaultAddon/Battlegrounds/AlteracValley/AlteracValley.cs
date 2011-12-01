@@ -1,9 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using WCell.Addons.Default.Battlegrounds.WarsongGulch;
 using WCell.Constants;
 using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
@@ -15,7 +9,6 @@ using WCell.RealmServer.Entities;
 using WCell.RealmServer.GameObjects;
 using WCell.RealmServer.Lang;
 using WCell.RealmServer.NPCs;
-
 
 namespace WCell.Addons.Default.Battlegrounds.AlteracValley
 {
@@ -88,9 +81,9 @@ namespace WCell.Addons.Default.Battlegrounds.AlteracValley
         }
 
 
-        protected override void OnPrepare()
+        protected override void OnPrepareBegin()
         {
-            base.OnPrepare();
+			base.OnPrepareBegin();
 
 			var time = RealmLocalizer.FormatTimeSecondsMinutes(PreparationTimeMillis / 1000);
 			Characters.SendSystemMessage("The battle for Alterac Valley begins in {0}.", time);

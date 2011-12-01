@@ -2,23 +2,23 @@ using System.Collections.Generic;
 using System.Linq;
 using WCell.Constants;
 using WCell.Constants.ArenaTeams;
+using WCell.Constants.Guilds;
 using WCell.Constants.Items;
 using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
 using WCell.Constants.World;
 using WCell.Core;
 using WCell.Core.Network;
-using WCell.RealmServer.ArenaTeams;
+using WCell.RealmServer.Battlegrounds.Arenas;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Guilds;
 using WCell.RealmServer.Items;
-using WCell.RealmServer.Network;
 using WCell.RealmServer.NPCs;
 using WCell.RealmServer.NPCs.Armorer;
 using WCell.RealmServer.NPCs.Trainers;
 using WCell.RealmServer.NPCs.Vendors;
-using WCell.Constants.Guilds;
+using WCell.RealmServer.Network;
 
 namespace WCell.RealmServer.Handlers
 {
@@ -245,12 +245,12 @@ namespace WCell.RealmServer.Handlers
 						default:
 							return;
 					}
-                    if (!ArenaTeamMgr.IsValidArenaTeamName(name))
+                    if (!ArenaMgr.IsValidArenaTeamName(name))
                     {
                         ArenaTeamHandler.SendResult(chr, ArenaTeamCommandId.CREATE, name, string.Empty, ArenaTeamResult.NAME_INVALID);
                         return;
                     }
-                    else if (ArenaTeamMgr.DoesArenaTeamExist(name))
+                    else if (ArenaMgr.DoesArenaTeamExist(name))
                     {
                         ArenaTeamHandler.SendResult(chr, ArenaTeamCommandId.CREATE, name, string.Empty, ArenaTeamResult.NAME_EXISTS);
                         return;
@@ -334,12 +334,12 @@ namespace WCell.RealmServer.Handlers
                 }
                 else
                 {
-                    if (!ArenaTeamMgr.IsValidArenaTeamName(newName))
+                    if (!ArenaMgr.IsValidArenaTeamName(newName))
                     {
                         ArenaTeamHandler.SendResult(chr, ArenaTeamCommandId.CREATE, newName, string.Empty, ArenaTeamResult.NAME_INVALID);
                         return;
                     }
-                    else if (ArenaTeamMgr.DoesArenaTeamExist(newName))
+                    else if (ArenaMgr.DoesArenaTeamExist(newName))
                     {
                         ArenaTeamHandler.SendResult(chr, ArenaTeamCommandId.CREATE, newName, string.Empty, ArenaTeamResult.NAME_EXISTS);
                         return;
@@ -391,7 +391,7 @@ namespace WCell.RealmServer.Handlers
             }
             else 
             {
-                if (player.ArenaTeamMember[(uint)ArenaTeamMgr.GetSlotByType((uint)petition.Type)] != null)
+                if (player.ArenaTeamMember[(uint)ArenaMgr.GetSlotByType((uint)petition.Type)] != null)
                 {
                     ArenaTeamHandler.SendResult(client, ArenaTeamCommandId.CREATE, string.Empty, namePlayer, ArenaTeamResult.ALREADY_IN_ARENA_TEAM_S);
                     return;
@@ -411,6 +411,8 @@ namespace WCell.RealmServer.Handlers
 		{
             var petitionGuid = packet.ReadEntityId();
             var petition = client.ActiveCharacter.Inventory.GetItem(petitionGuid) as PetitionCharter;
+			if (petition == null) return;
+
             var name = petition.Petition.Name;
             var type = petition.Petition.Type;
 
@@ -424,7 +426,7 @@ namespace WCell.RealmServer.Handlers
                 SendPetitionTurnInResults(client, PetitionTurns.ALREADY_IN_GUILD);
                 return;
             }
-            else if (client.ActiveCharacter.ArenaTeamMember[(uint)ArenaTeamMgr.GetSlotByType((uint)type)] != null)
+            else if (client.ActiveCharacter.ArenaTeamMember[(uint)ArenaMgr.GetSlotByType((uint)type)] != null)
             {
                 ArenaTeamHandler.SendResult(client, ArenaTeamCommandId.CREATE, name, string.Empty, ArenaTeamResult.ALREADY_IN_ARENA_TEAM);
                 return;
@@ -434,7 +436,7 @@ namespace WCell.RealmServer.Handlers
                 GuildHandler.SendResult(client, GuildCommandId.CREATE, name, GuildResult.NAME_EXISTS);
                 return;
             }
-            else if (ArenaTeamMgr.DoesArenaTeamExist(name))
+            else if (ArenaMgr.DoesArenaTeamExist(name))
             {
                 ArenaTeamHandler.SendResult(client, ArenaTeamCommandId.CREATE, name, string.Empty, ArenaTeamResult.NAME_EXISTS);
                 return;
@@ -727,34 +729,49 @@ namespace WCell.RealmServer.Handlers
 		/// <param name="itemsForSale">An array of items to send to the client.</param>
 		public static void SendVendorInventoryList(Character buyer, NPC vendor, List<VendorItemEntry> itemsForSale)
 		{
-			var numItems = (itemsForSale.Count <= 0xFF) ? itemsForSale.Count : 0xFF;
-
-			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_LIST_INVENTORY, 10 + (28 * numItems)))
+			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_LIST_INVENTORY, 10 + (28 * itemsForSale.Count())))
 			{
 				packet.Write(vendor.EntityId);
-				packet.Write((byte)numItems);
-				if (numItems == 0)
+				var countPos = packet.Position;
+				packet.WriteByte(0);
+				var count = 0;
+				foreach(var item in itemsForSale.Where(item => item != null))
 				{
-					packet.Write((byte)VendorInventoryError.NoInventory);
-				}
-				else
-				{
-					for (var i = 0; i < numItems; ++i)
+					
+					// Exclude items that the buyer may never purchase
+					if(!buyer.GodMode)
 					{
-						// Write in the item number (1 - 256)
-						packet.Write(i + 1);
+						if(!item.Template.RequiredClassMask.HasAnyFlag(buyer.Class) &&  item.Template.BondType == ItemBondType.OnPickup)
+							continue;
+						if (item.Template.Flags2.HasAnyFlag(ItemFlags2.HordeOnly) && buyer.Faction.IsAlliance)
+							continue;
 
-						var item = itemsForSale[i];
-						var price = buyer.Reputations.GetDiscountedCost(vendor.Faction.ReputationIndex, item.Template.BuyPrice);
-
-						packet.Write(item.Template.Id);
-						packet.Write(item.Template.DisplayId);
-						packet.Write(item.RemainingStockAmount);
-						packet.Write(price);
-						packet.Write(item.Template.MaxDurability);
-						packet.Write(item.BuyStackSize);
-						packet.Write(item.ExtendedCostId);
+						if (item.Template.Flags2.HasAnyFlag(ItemFlags2.AllianceOnly) && buyer.Faction.IsHorde)
+							continue;
 					}
+
+					count++;
+					if (count > 0xFF)
+						break;
+					// Write in the item number (1 - 256)
+					packet.Write(count);
+
+					var price = buyer.Reputations.GetDiscountedCost(vendor.Faction.ReputationIndex, item.Template.BuyPrice);
+
+					packet.Write(item.Template.Id);
+					packet.Write(item.Template.DisplayId);
+					packet.Write(item.RemainingStockAmount);
+					packet.Write(price);
+					packet.Write(item.Template.MaxDurability);
+					packet.Write(item.BuyStackSize);
+					packet.Write(item.ExtendedCostId);
+				}
+
+				packet.Position = countPos;
+				packet.WriteByte(count);
+				if (count == 0)
+				{
+					packet.Write((byte) VendorInventoryError.NoInventory);
 				}
 				buyer.Send(packet);
 			}
@@ -861,7 +878,8 @@ namespace WCell.RealmServer.Handlers
 				var spellCount = 0;
 				foreach (var trainerSpell in spells)
 				{
-					if (!chr.CanLearn(trainerSpell))
+					//if (!chr.CanLearn(trainerSpell))
+					if (trainerSpell.Spell == null)
 					{
 						continue;
 					}
@@ -877,7 +895,7 @@ namespace WCell.RealmServer.Handlers
 					packet.Write((byte)trainerSpell.GetTrainerSpellState(chr));
 					packet.Write(trainerSpell.GetDiscountedCost(chr, trainer));
 					packet.Write(spell.Talent != null ? 1u : 0u);						// talent cost
-					packet.Write(trainerSpell.Spell.IsProfession && trainerSpell.Spell.TeachesApprenticeAbility ? 1 : 0);	// Profession cost
+					packet.Write(trainerSpell.Spell.IsProfession && spell.TeachesApprenticeAbility ? 1 : 0);	// Profession cost
 					packet.Write((byte)trainerSpell.RequiredLevel);
 					packet.Write((uint)trainerSpell.RequiredSkillId);
 					packet.Write(trainerSpell.RequiredSkillAmount);

@@ -2,13 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using WCell.Constants.Items;
+using WCell.Constants.Looting;
 using WCell.Constants.Updates;
 using WCell.Constants.World;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Groups;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Items;
-using WCell.Constants.Looting;
 using WCell.Util.NLog;
 
 namespace WCell.RealmServer.Looting

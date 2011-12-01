@@ -6,6 +6,7 @@ obj
 *.vs10x
 *.bak
 
+changes
 Run/Content/dbc*
 Run/Content/Maps/*
 Run/Debug/*
@@ -21,3 +22,7 @@ Recast/
 WCell-Terrain/
 *.docstates
 TestResults/
+*.svn
+/Logs
+/Utilities/WCell.Tools/output
+/.code_swarm

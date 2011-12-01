@@ -17,25 +17,20 @@
 using System;
 using System.Linq;
 using WCell.Constants;
-using WCell.Constants.Items;
 using WCell.Constants.Misc;
-using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
-using WCell.RealmServer.Modifiers;
-using WCell.Util.Graphics;
-using WCell.Util.Threading;
+using WCell.Constants.World;
+using WCell.Core.Initialization;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Misc;
+using WCell.RealmServer.Modifiers;
 using WCell.RealmServer.Spells;
 using WCell.Util;
-using WCell.Constants.World;
-using WCell.RealmServer.Spells.Auras.Handlers;
-using System.Collections.Generic;
-using WCell.RealmServer.Items;
+using WCell.Util.Graphics;
+using WCell.Util.Threading;
 using WCell.Util.Variables;
-using WCell.Core.Initialization;
 
 namespace WCell.RealmServer.Entities
 {
@@ -154,7 +149,7 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Wheter the Unit is allowed to attack and use physical abilities
+		/// Whether the Unit is allowed to attack and use physical abilities
 		/// </summary>
 		public bool CanDoPhysicalActivity
 		{
@@ -181,9 +176,9 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Whether the physical state of this Unit allows it to move.
-		/// To stop a character from moving, use IncMechanicCount to increase Rooted or any other movement-effecting Mechanic-school.
-		/// Use HasPermissionToMove to also take Movement-controlling (eg by AI etc) into consideration.
+		/// Whether the physical state and permissions of this Unit allows it to move.
+		/// To control whether a unit is physically capable of moving, use IncMechanicCount/DecMechanicCount to change <see cref="SpellMechanic.Rooted">Rooted</cref> or any other movement-effecting Mechanic.
+		/// However to control it's actual desire/permission to move, use <see cref="HasPermissionToMove"/>.
 		/// </summary>
 		public bool CanMove
 		{
@@ -341,9 +336,9 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Increase the mechnanic modifier count for the given SpellMechanic
+        /// Increase the mechanic modifier count for the given SpellMechanic
 		/// </summary>
-		public void IncMechanicCount(SpellMechanic mechanic)
+		public void IncMechanicCount(SpellMechanic mechanic, bool isCustom = false)
 		{
 			if (m_mechanics == null)
 			{
@@ -353,62 +348,68 @@ namespace WCell.RealmServer.Entities
 			var val = m_mechanics[(int)mechanic];
 			if (val == 0)
 			{
-				// movement
-				if (m_canMove && SpellConstants.MoveMechanics[(int)mechanic])
+				if (isCustom == false)
 				{
-					m_canMove = false;
-					if (!IsPlayer)
+					// movement
+					if (m_canMove && SpellConstants.MoveMechanics[(int)mechanic])
 					{
-						// NPCs need to unset their target, or else the client will keep display them rotating
-						Target = null;
+						m_canMove = false;
+						if (!IsPlayer)
+						{
+							// NPCs need to unset their target, or else the client will keep display them rotating
+							Target = null;
+						}
+						UnitFlags |= UnitFlags.Stunned;
+
+						// can't fly while stunned
+						CancelTaxiFlight();
+
+						if (this is Character)
+						{
+							MovementHandler.SendRooted((Character)this, 1);
+						}
+						//UnitFlags |= UnitFlags.Influenced;
+						if (IsUsingSpell && SpellCast.Spell.SpellInterrupts.InterruptFlags.HasFlag(InterruptFlags.OnStunned))
+						{
+							SpellCast.Cancel();
+						}
+                        StopMoving();
 					}
-					UnitFlags |= UnitFlags.Stunned;
 
-					// can't fly while stunned
-					CancelTaxiFlight();
-
-					if (this is Character)
+					// interaction
+					if (m_canInteract && SpellConstants.InteractMechanics[(int)mechanic])
 					{
-						MovementHandler.SendRooted((Character)this, 1);
+						m_canInteract = false;
+						//UnitFlags |= UnitFlags.UnInteractable;
 					}
-					//UnitFlags |= UnitFlags.Influenced;
-					if (IsUsingSpell && SpellCast.Spell.SpellInterrupts.InterruptFlags.HasFlag(InterruptFlags.OnStunned))
-					{
-						SpellCast.Cancel();
-					}
-				}
 
-				// interaction
-				if (m_canInteract && SpellConstants.InteractMechanics[(int)mechanic])
-				{
-					m_canInteract = false;
-					//UnitFlags |= UnitFlags.UnInteractable;
-				}
-
-				// harmfulnes
-				if (m_canHarm && SpellConstants.HarmPreventionMechanics[(int)mechanic])
-				{
-					SetCanHarmState();
-				}
-
-				// check if we can still cast spells
-				if (m_canCastSpells && SpellConstants.SpellCastPreventionMechanics[(int)mechanic])
-				{
-					// check if we can still cast spells
-					m_canCastSpells = false;
-					if (IsUsingSpell && SpellCast.Spell.SpellInterrupts.InterruptFlags.HasFlag(InterruptFlags.OnSilence))
+					// harmfulness
+					if (m_canHarm && SpellConstants.HarmPreventionMechanics[(int)mechanic])
 					{
-						SpellCast.Cancel();
-					}
-					if (!m_canDoPhysicalActivity && m_canHarm)
-					{
-						// no spells and no physical activities -> No harm
 						SetCanHarmState();
 					}
-				}
 
+					// check if we can still cast spells
+					if (m_canCastSpells && SpellConstants.SpellCastPreventionMechanics[(int)mechanic])
+					{
+						// check if we can still cast spells
+						m_canCastSpells = false;
+						if (IsUsingSpell && SpellCast.Spell.SpellInterrupts.InterruptFlags.HasFlag(InterruptFlags.OnSilence))
+						{
+							SpellCast.Cancel();
+						}
+						if (!m_canDoPhysicalActivity && m_canHarm)
+						{
+							// no spells and no physical activities -> No harm
+							SetCanHarmState();
+						}
+					}
+				}
 				switch (mechanic)
 				{
+					case SpellMechanic.Custom_Immolate:
+						AuraState |= AuraStateMask.Immolate;
+						break;
 					case SpellMechanic.Frozen:
 						AuraState |= AuraStateMask.Frozen;
 						break;
@@ -443,9 +444,9 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Decrease the mechnanic modifier count for the given SpellMechanic
+        /// Decrease the mechanic modifier count for the given SpellMechanic
 		/// </summary>
-		public void DecMechanicCount(SpellMechanic mechanic)
+		public void DecMechanicCount(SpellMechanic mechanic, bool isCustom = false)
 		{
 			if (m_mechanics == null)
 			{
@@ -459,43 +460,48 @@ namespace WCell.RealmServer.Entities
 
 				if (val == 1)
 				{
-					// All of this Mechanic's influences have been removed
-
-					if (!m_canMove && SpellConstants.MoveMechanics[(int)mechanic] && !IsAnySetNoCheck(SpellConstants.MoveMechanics))
+						// All of this Mechanic's influences have been removed
+					if (isCustom == false)
 					{
-						m_canMove = true;
-						UnitFlags &= ~UnitFlags.Stunned;
-						m_lastMoveTime = Environment.TickCount;
 
-						//UnitFlags &= ~UnitFlags.Influenced;
-						if (this is Character)
-							MovementHandler.SendUnrooted((Character)this);
-					}
-
-					if (!m_canInteract && SpellConstants.InteractMechanics[(int)mechanic] && !IsAnySetNoCheck(SpellConstants.InteractMechanics))
-					{
-						m_canInteract = true;
-						//UnitFlags &= ~UnitFlags.UnInteractable;
-					}
-
-					if (!m_canHarm && SpellConstants.HarmPreventionMechanics[(int)mechanic])
-					{
-						SetCanHarmState();
-					}
-
-					if (!m_canCastSpells && SpellConstants.SpellCastPreventionMechanics[(int)mechanic] &&
-						!IsAnySetNoCheck(SpellConstants.SpellCastPreventionMechanics))
-					{
-						m_canCastSpells = true;
-						if (!m_canDoPhysicalActivity && !m_canHarm)
+						if (!m_canMove && SpellConstants.MoveMechanics[(int)mechanic] && !IsAnySetNoCheck(SpellConstants.MoveMechanics))
 						{
-							// can do spells and no physical activities -> Can harm
+							m_canMove = true;
+							UnitFlags &= ~UnitFlags.Stunned;
+							m_lastMoveTime = Environment.TickCount;
+
+							//UnitFlags &= ~UnitFlags.Influenced;
+							if (this is Character)
+								MovementHandler.SendUnrooted((Character)this);
+						}
+
+						if (!m_canInteract && SpellConstants.InteractMechanics[(int)mechanic] && !IsAnySetNoCheck(SpellConstants.InteractMechanics))
+						{
+							m_canInteract = true;
+							//UnitFlags &= ~UnitFlags.UnInteractable;
+						}
+
+						if (!m_canHarm && SpellConstants.HarmPreventionMechanics[(int)mechanic])
+						{
 							SetCanHarmState();
 						}
-					}
 
+						if (!m_canCastSpells && SpellConstants.SpellCastPreventionMechanics[(int)mechanic] &&
+							!IsAnySetNoCheck(SpellConstants.SpellCastPreventionMechanics))
+						{
+							m_canCastSpells = true;
+							if (!m_canDoPhysicalActivity && !m_canHarm)
+							{
+								// can do spells and no physical activities -> Can harm
+								SetCanHarmState();
+							}
+						}
+					}
 					switch (mechanic)
 					{
+						case SpellMechanic.Custom_Immolate:
+							AuraState ^= AuraStateMask.Immolate;
+							break;
 						case SpellMechanic.Frozen:
 							AuraState ^= AuraStateMask.Frozen;
 							break;
@@ -569,7 +575,9 @@ namespace WCell.RealmServer.Entities
 		{
 			get
 			{
-				return m_mechanics != null && m_mechanics[(int)SpellMechanic.Invulnerable] > 0;
+				return m_mechanics != null && 
+					(m_mechanics[(int)SpellMechanic.Invulnerable] > 0 || 
+					m_mechanics[(int)SpellMechanic.Invulnerable2] > 0);
 			}
 			set
 			{
@@ -708,7 +716,7 @@ namespace WCell.RealmServer.Entities
 					aura.Spell != exclude &&
 					(aura.Spell.TargetTriggerSpells == null || !aura.Spell.TargetTriggerSpells.Contains(exclude)) &&
 					(aura.Spell.CasterTriggerSpells == null || !aura.Spell.CasterTriggerSpells.Contains(exclude)) &&
-					((mechanic != SpellMechanic.Invulnerable && mechanic != SpellMechanic.Invulnerable_2) || !aura.Spell.Attributes.HasFlag(SpellAttributes.UnaffectedByInvulnerability)));
+					((mechanic != SpellMechanic.Invulnerable && mechanic != SpellMechanic.Invulnerable2) || !aura.Spell.Attributes.HasFlag(SpellAttributes.UnaffectedByInvulnerability)));
 			}
 
 			m_mechanicImmunities[(int)mechanic]++;
@@ -975,6 +983,19 @@ namespace WCell.RealmServer.Entities
 		public int GetSpellHitChanceMod(DamageSchool school)
 		{
 			return m_SpellHitChance != null ? m_SpellHitChance[(int)school] : 0;
+		}
+
+		public int GetHighestSpellHitChanceMod(DamageSchool[] schools)
+		{
+			if (m_SpellHitChance == null)
+			{
+				return 0;
+			}
+
+			var spellHitChanceMods = from school in schools
+									 select m_SpellHitChance[(int)school];
+
+			return spellHitChanceMods.Max();
 		}
 
 		/// <summary>
@@ -1411,11 +1432,11 @@ namespace WCell.RealmServer.Entities
 			// must not be moving or logging out when being teleported
 			CancelMovement();
 			CancelAllActions();
+
 			if (this is Character)
 			{
-			    MovementHandler.SendStopMovementPacket(this);
-
-				((Character)this).CancelLogout();
+			    //MovementHandler.SendStopMovementPacket(this);
+                ((Character)this).CancelLogout();
 			}
 
 			if (ownerMap == map)
@@ -1429,6 +1450,11 @@ namespace WCell.RealmServer.Entities
 					{
 						var chr = ((Character)this);
 						chr.LastPosition = pos;
+
+                        // reset movement flags otherwise
+                        // the unit will continue move with these flags after teleport
+                        MovementFlags = MovementFlags.None;
+                        MovementFlags2 = MovementFlags2.None;
 
 						MovementHandler.SendMoved(chr);
 					}
@@ -1453,6 +1479,10 @@ namespace WCell.RealmServer.Entities
 						var chr = ((Character)this);
 						chr.LastPosition = pos;
 
+                        // reset movement flags otherwise
+                        // the unit will continue move with these flags after teleport
+                        MovementFlags = MovementFlags.None;
+                        MovementFlags2 = MovementFlags2.None;
 						MovementHandler.SendNewWorld(chr.Client, map.Id, ref pos, Orientation);
 					}
 				}
@@ -1512,7 +1542,7 @@ namespace WCell.RealmServer.Entities
 			set { m_movementFlags2 = value; }
 		}
 
-		public bool IsMovementConrolled
+		public bool IsMovementControlled
 		{
 			get { return m_Movement != null; }
 		}

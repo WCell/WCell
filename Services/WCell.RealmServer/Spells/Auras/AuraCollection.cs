@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2010-02-20 06:16:32 +0100 (l? 20 feb 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 1257 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,11 @@ using System.Collections.Generic;
 using System.Linq;
 using NLog;
 using WCell.Constants.Spells;
+using WCell.RealmServer.Chat;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.Util;
 using WCell.Util.NLog;
-using WCell.RealmServer.Chat;
 
 namespace WCell.RealmServer.Spells.Auras
 {
@@ -157,7 +157,7 @@ namespace WCell.RealmServer.Spells.Auras
 			get
 			{
 				Aura aura;
-				if (spell.HarmType == HarmType.Beneficial || spell.HarmType == HarmType.Neutral)
+				if (spell.IsBeneficial || spell.IsNeutral)
 				{
 					aura = this[spell, true];
 				}

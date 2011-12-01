@@ -1,5 +1,5 @@
-using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Spells.Auras;
 
 namespace WCell.RealmServer.Spells
 {

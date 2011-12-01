@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2010-02-03 04:37:17 +0100 (on, 03 feb 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+ 
  *   revision		: $Rev: 1243 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -22,7 +22,6 @@ using NLog;
 using WCell.Constants;
 using WCell.Constants.Misc;
 using WCell.Constants.Spells;
-using WCell.Core;
 using WCell.Core.Timers;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
@@ -195,7 +194,7 @@ namespace WCell.RealmServer.Spells.Auras
 			for (var i = Math.Min(m_handlers.Count - 1, 2); i >= 0; i--)
 			{
 				var handler = m_handlers[i];
-				var index = handler.SpellEffect.EffectIndex;
+				var index = (int)handler.SpellEffect.EffectIndex;
 				if (index >= 0)
 				{
 					m_auraFlags |= (AuraFlags)(1 << index);
@@ -582,18 +581,18 @@ namespace WCell.RealmServer.Spells.Auras
 			}
 
 			CanBeSaved = this != m_auras.GhostAura &&
-			             !m_spell.AttributesExC.HasFlag(SpellAttributesExC.HonorlessTarget) &&
-			             UsedItem == null;
+						 !m_spell.AttributesExC.HasFlag(SpellAttributesExC.HonorlessTarget) &&
+						 UsedItem == null;
 
 			m_auras.OnAuraChange(this);
 
 			var caster = CasterUnit;
 			var owner = Owner;
-			if (caster != null)
-			{
-				caster.Proc(ProcTriggerFlags.AuraStarted, owner,
-					new AuraAction { Attacker = caster, Victim = owner, Aura = this }, true);
-			}
+			//if (caster != null)
+			//{
+			//    caster.Proc(ProcTriggerFlags.AuraStarted, owner,
+			//        new AuraAction { Attacker = caster, Victim = owner, Aura = this }, true);
+			//}
 		}
 
 		#endregion
@@ -1140,6 +1139,11 @@ namespace WCell.RealmServer.Spells.Auras
             get { return m_spell.SpellAuraOptions.ProcTriggerFlags; }
 		}
 
+		public ProcHitFlags ProcHitFlags
+		{
+            get { return Spell.SpellAuraOptions.ProcHitFlags; }
+		}
+
 		/// <summary>
 		/// Spell to be triggered (if any)
 		/// </summary>
@@ -1298,7 +1302,7 @@ namespace WCell.RealmServer.Spells.Auras
 		public override string ToString()
 		{
 			return "Aura " + m_spell + ": " + (IsBeneficial ? "Beneficial" : "Harmful") +
-				" [TimeLeft: " + TimeSpan.FromMilliseconds(TimeLeft) + "]" +
+				(HasTimeout ? " [TimeLeft: " + TimeSpan.FromMilliseconds(TimeLeft) + "]" : "") +
 				(m_controller != null ? (" Controlled by: " + m_controller) : "");
 		}
 

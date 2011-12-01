@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using WCell.Constants.Spells;
 using WCell.Core.Initialization;
+using WCell.RealmServer.Entities;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Spells;
-using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Spells.Auras.Handlers;
 using WCell.RealmServer.Spells.Auras.Misc;
 using WCell.RealmServer.Spells.Effects;
@@ -35,7 +33,6 @@ namespace WCell.Addons.Default.Spells.Paladin
 			// Judgements of The Wise procs spells on allies and self, upon damaging judgements
 			SpellLineId.PaladinJudgementsOfTheWise .Apply(spell =>
 			{
-				spell.SpellAuraOptions.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
 			    spell.SpellTargetRestrictions = new SpellTargetRestrictions {MaxTargets = 10};
 
 				var effect1 = spell.AddAuraEffect(AuraType.ProcTriggerSpell, ImplicitSpellTargetType.PartyAroundCaster);
@@ -70,7 +67,6 @@ namespace WCell.Addons.Default.Spells.Paladin
             //SpellLineId.PaladinRetributionRighteousVengeance.Apply(spell =>
             //{
             //    spell.ProcTriggerFlags = ProcTriggerFlags.SpellCastCritical;
-
             //    var effect = spell.GetEffect(AuraType.Dummy);
             //    effect.AuraType = AuraType.ProcTriggerSpell;
             //    effect.TriggerSpellId = SpellId.RighteousVengeance;
@@ -88,12 +84,6 @@ namespace WCell.Addons.Default.Spells.Paladin
             //},
             //SpellId.RighteousVengeance);
 
-			// AoW should only proc on crit hit
-			SpellLineId.PaladinRetributionTheArtOfWar.Apply(spell =>
-			{
-                spell.SpellAuraOptions.ProcTriggerFlags = ProcTriggerFlags.MeleeCriticalHitOther;
-			});
-
 			// TODO: PaladinRetributionSheathOfLight (similar to PaladinRetributionRighteousVengeance)
 
 			// Hammer of Wrath "strikes an enemy for ${$m1+0.15*$SPH+0.15*$AP} to ${$M1+0.15*$SPH+0.15*$AP} Holy damage"
@@ -103,9 +93,51 @@ namespace WCell.Addons.Default.Spells.Paladin
 				dmgEffect.APValueFactor = 0.15f;
 				dmgEffect.SpellPowerValuePct = 15;
 			});
+
+            // Divine Storm Heal Effect
+            SpellLineId.PaladinRetributionDivineStorm.Apply(spell =>
+            {
+                spell.GetEffect(SpellEffectType.WeaponPercentDamage).SpellEffectHandlerCreator =
+                    (cast, eff) => new DivineStormHealHandler(cast, eff);
+      
+            });
 		}
 	}
 
+    public class DivineStormHealHandler : WeaponDamageEffectHandler
+    {
+        public DivineStormHealHandler(SpellCast cast, SpellEffect eff)
+            : base(cast, eff) { }
+
+        public override void OnHit(DamageAction action)
+        {
+            var chr = action.Attacker as Character;
+            if (chr != null)
+            {
+                if (chr.Group != null)
+                {
+                    List<Character> origGroup = new List<Character>(chr.Group.GetAllCharacters());
+                    List<Character> scrambledGroup = new List<Character>();
+
+                    Random randNum = new Random();
+                    int i = -1;
+                    foreach (Character groupMember in origGroup)
+                    {
+                        i++;
+                        if (groupMember == chr)
+                            continue;
+                        if (randNum.NextDouble() < (3 - scrambledGroup.Count / origGroup.Count - i))
+                            scrambledGroup.Add(groupMember);
+                    }
+                    var effect = SpellHandler.Get(SpellId.DivineStorm_2).GetEffect(SpellEffectType.Heal);
+                    foreach (Character target in scrambledGroup)
+                        target.Heal(action.GetDamagePercent(25), chr, effect);
+                }
+            }
+            base.OnHit(action);
+        }
+
+    }
 	/// <summary>
 	/// Reflects damage, but caps at 50% of wearer's max health
 	/// </summary>

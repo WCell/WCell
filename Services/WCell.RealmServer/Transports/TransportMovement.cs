@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using WCell.Constants.World;
 using WCell.RealmServer.GameObjects.GOEntries;
 using WCell.RealmServer.Paths;

@@ -1,4 +1,3 @@
-using System;
 using WCell.Constants.NPCs;
 using WCell.RealmServer.Editor.Menus;
 using WCell.RealmServer.Factions;
@@ -44,7 +43,7 @@ namespace WCell.RealmServer.Editor.Figurines
 
 		public override Faction Faction
 		{
-			get { return m_SpawnPoint.SpawnEntry.Entry.Faction; }
+			get { return m_SpawnPoint.SpawnEntry.Entry.RandomFaction; }
 			set { }
 		}
 	}

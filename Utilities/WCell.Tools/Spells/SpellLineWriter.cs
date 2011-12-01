@@ -1,23 +1,19 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using WCell.Constants.Skills;
-using WCell.RealmServer.Database;
-using WCell.RealmServer.Skills;
-using WCell.RealmServer.Spells;
-using WCell.RealmServer.Talents;
-using WCell.Tools.Code;
-using WCell.Util;
-using WCell.Constants;
-using WCell.Constants.Spells;
-using WCell.Tools.Domi;
-using WCell.Util.Toolshed;
 using NLog;
+using WCell.Constants;
+using WCell.Constants.Skills;
+using WCell.Constants.Spells;
+using WCell.RealmServer.Content;
+using WCell.RealmServer.Database;
+using WCell.RealmServer.Global;
 using WCell.RealmServer.NPCs;
 using WCell.RealmServer.RacesClasses;
-using WCell.RealmServer.Content;
-using WCell.RealmServer.Global;
+using WCell.RealmServer.Spells;
+using WCell.Tools.Domi;
+using WCell.Util;
+using WCell.Util.Code;
+using WCell.Util.Toolshed;
 
 namespace WCell.Tools.Spells
 {
@@ -34,7 +30,7 @@ namespace WCell.Tools.Spells
 
 		private static HashSet<SkillId> LineSkills = new HashSet<SkillId>();
 
-		[Tool]
+		[Tool("Lines")]
 		public static void WriteSpellLines()
 		{
 			WriteSpellLines(ToolConfig.RealmServerRoot + "Spells/SpellLines.Def.cs");
@@ -338,12 +334,12 @@ namespace WCell.Tools.Spells
 
 				 // don't add weird copies or unknown anonymous triggered effects
 				if (line.Any(spll => spell.Rank == spll.Rank &&
-					(spll.Description.Contains(spell.Id.ToString()) || spll.SpellCooldowns == null || spll.SpellCooldowns.CategoryCooldownTime > 0)))
+					(spll.Description.Contains(spell.Id.ToString()) || spll.SpellCooldowns == null || spll.SpellCooldowns.CategoryCooldownTime > 0 || (spll.CastDelay >0 && spell.CastDelay == 0))))
 				{
 					return;
 				}
 				line.RemoveWhere(spll => spell.Rank == spll.Rank &&
-                    (spell.Description.Contains(spll.Id.ToString()) || spll.SpellCooldowns == null || spll.SpellCooldowns.CategoryCooldownTime == 0));
+                    (spell.Description.Contains(spll.Id.ToString()) || spll.SpellCooldowns == null || spll.SpellCooldowns.CategoryCooldownTime == 0 || (spll.CastDelay > 0 && spell.CastDelay == 0)));
 			}
 
 			line.Add(spell);

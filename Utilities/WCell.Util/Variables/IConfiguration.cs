@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace WCell.Util.Variables
 {
@@ -9,7 +6,7 @@ namespace WCell.Util.Variables
     {
         bool Load();
 
-        void Save(bool backup, bool auto);
+        void Save(bool backup = true, bool auto = true);
 
         bool Contains(string name);
 

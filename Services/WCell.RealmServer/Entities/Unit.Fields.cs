@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2010-02-17 05:08:19 +0100 (on, 17 feb 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+ 
  *   revision		: $Rev: 1256 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -17,6 +17,7 @@
 using System;
 using WCell.Constants;
 using WCell.Constants.Factions;
+using WCell.Constants.Items;
 using WCell.Constants.Misc;
 using WCell.Constants.NPCs;
 using WCell.Constants.Pets;
@@ -25,16 +26,15 @@ using WCell.Constants.Updates;
 using WCell.Core;
 using WCell.RealmServer.Factions;
 using WCell.RealmServer.Formulas;
-using WCell.RealmServer.Modifiers;
 using WCell.RealmServer.Handlers;
+using WCell.RealmServer.Modifiers;
+using WCell.RealmServer.NPCs;
 using WCell.RealmServer.NPCs.Vehicles;
 using WCell.RealmServer.RacesClasses;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Talents;
 using WCell.Util;
-using WCell.RealmServer.NPCs;
-using WCell.Constants.Items;
 using WCell.Util.Graphics;
 
 namespace WCell.RealmServer.Entities
@@ -88,6 +88,12 @@ namespace WCell.RealmServer.Entities
 				SetEntityId(UnitFields.CHARMEDBY, value != null ? value.EntityId : EntityId.Zero);
 				Master = value;
 			}
+		}
+
+		public Character CharmerCharacter
+		{
+			get { return m_master as Character; }
+			set { Charmer = value; }
 		}
 
 		public bool IsCharmed
@@ -1022,7 +1028,29 @@ namespace WCell.RealmServer.Entities
 				}
 			}
 		}
-
+		/// <summary>
+		/// Helper function for Aurastate related fix and Conflagrate spell.
+		/// see UpdateFieldHandler/Warlockfixes
+		/// </summary>
+		public SpellId GetStrongestImmolate()
+		{
+			var immolate = this.Auras[SpellLineId.WarlockImmolate];
+			var shadowflamerank1 = this.Auras[SpellId.Shadowflame_3];
+			var shadowflamerank2 = this.Auras[SpellId.Shadowflame_5];
+			if (immolate != null)
+			{
+				return immolate.Spell.SpellId;
+			}
+			else if (shadowflamerank2 != null)
+			{
+				return shadowflamerank2.Spell.SpellId;
+			}
+			else if (shadowflamerank1 != null)
+			{
+				return shadowflamerank1.Spell.SpellId;
+			}
+			return SpellId.None;
+		}
 
 		#region UNIT_FIELD_BYTES_0
 
@@ -1272,7 +1300,15 @@ namespace WCell.RealmServer.Entities
 
 		public ShapeshiftMask ShapeshiftMask
 		{
-			get { return (ShapeshiftMask)(1 << (int)(ShapeshiftForm - 1)); }
+			get
+			{
+				// TODO: Employ unconditional function instead
+				if (ShapeshiftForm == ShapeshiftForm.Normal)
+				{
+					return ShapeshiftMask.None;
+				}
+				return (ShapeshiftMask)(1 << (int)(ShapeshiftForm - 1));
+			}
 		}
 		#endregion
 
@@ -1419,7 +1455,12 @@ namespace WCell.RealmServer.Entities
 			get { return GetInt32(UnitFields.MAXHEALTH); }
 			internal set
 			{
-				SetInt32(UnitFields.MAXHEALTH, value);
+                if (Health > value)
+                {
+                    Health = value;
+                }
+
+			    SetInt32(UnitFields.MAXHEALTH, value);
 			}
 		}
 
@@ -1456,6 +1497,19 @@ namespace WCell.RealmServer.Entities
 				return (100 * Health + (max >> 1)) / max;
 			}
 			set { Health = ((value * MaxHealth) + 50) / 100; }
+		}
+
+		/// <summary>
+		/// Current amount of power in percent
+		/// </summary>
+		public int PowerPct
+		{
+			get
+			{
+				var max = MaxPower;
+				return (100 * Power + (max >> 1)) / max;
+			}
+			set { Power = ((value * MaxPower) + 50) / 100; }
 		}
 
 		/// <summary>
@@ -1562,7 +1616,7 @@ namespace WCell.RealmServer.Entities
 		protected float internalPower;
 		internal void UpdatePower(int delayMillis)
 		{
-			internalPower += (m_PowerRegenPerTick * delayMillis) / (float)RegenerationFormulas.RegenTickDelayMillis;	// rounding
+			internalPower += (PowerRegenPerTickActual * delayMillis) / (float)RegenerationFormulas.RegenTickDelayMillis;	// rounding
 			internalPower = MathUtil.ClampMinMax(internalPower, 0, MaxPower);
 			//SetInt32(UnitFields.POWER1 + (int)PowerType, (int)(val + 0.5f));
 		}

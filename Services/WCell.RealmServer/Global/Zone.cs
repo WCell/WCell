@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2008-06-15 22:27:33 +0800 (Sun, 15 Jun 2008) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 500 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -15,15 +15,14 @@
  *************************************************************************/
 
 using System;
+using System.Collections.Generic;
 using WCell.Constants;
 using WCell.Constants.Factions;
 using WCell.Constants.Login;
 using WCell.Constants.World;
 using WCell.Core.ClientDB;
-using WCell.RealmServer.Entities;
-using WCell.Util.Data;
 using WCell.RealmServer.Chat;
-using System.Collections.Generic;
+using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
 
 namespace WCell.RealmServer.Global
@@ -225,11 +224,11 @@ namespace WCell.RealmServer.Global
 
             if (!Template.Flags.HasFlag(ZoneFlags.Arena))
 			{
-                if (!Template.Flags.HasFlag(ZoneFlags.AlwaysContested))
-				{
-					AllianceChatChannels.Add(m_allianceLocalDefenseChannel = alliance.CreateLocalDefenseChannel(Template));
-					HordeChatChannels.Add(m_hordeLocalDefenseChannel = horde.CreateLocalDefenseChannel(Template));
-				}
+                //if (!Template.Flags.HasFlag(ZoneFlags.AlwaysContested))
+				//{
+				AllianceChatChannels.Add(m_allianceLocalDefenseChannel = alliance.CreateLocalDefenseChannel(Template));
+				HordeChatChannels.Add(m_hordeLocalDefenseChannel = horde.CreateLocalDefenseChannel(Template));
+				//}
 
 				AllianceChatChannels.Add(m_allianceGeneralChannel = alliance.CreateGeneralChannel(Template));
 				HordeChatChannels.Add(m_hordeGeneralChannel = horde.CreateGeneralChannel(Template));

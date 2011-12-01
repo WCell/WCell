@@ -1,10 +1,10 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: NPC.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2010-02-20 06:16:32 +0100 (lø, 20 feb 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 1257 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -28,6 +28,7 @@ using WCell.Constants.Updates;
 using WCell.Core;
 using WCell.Core.Timers;
 using WCell.RealmServer.AI;
+using WCell.RealmServer.AI.Groups;
 using WCell.RealmServer.Chat;
 using WCell.RealmServer.Factions;
 using WCell.RealmServer.Formulas;
@@ -36,24 +37,20 @@ using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Items;
 using WCell.RealmServer.Looting;
 using WCell.RealmServer.Misc;
-using WCell.RealmServer.Modifiers;
-using WCell.RealmServer.Network;
 using WCell.RealmServer.NPCs;
 using WCell.RealmServer.NPCs.Auctioneer;
 using WCell.RealmServer.NPCs.Pets;
 using WCell.RealmServer.NPCs.Spawns;
 using WCell.RealmServer.NPCs.Trainers;
 using WCell.RealmServer.NPCs.Vendors;
+using WCell.RealmServer.Network;
 using WCell.RealmServer.Quests;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Talents;
 using WCell.RealmServer.Taxi;
 using WCell.Util;
-using WCell.RealmServer.AI.Groups;
 using WCell.Util.Graphics;
-
-
 
 namespace WCell.RealmServer.Entities
 {
@@ -135,21 +132,20 @@ namespace WCell.RealmServer.Entities
 			}
 			NativeDisplayId = DisplayId;
 
-			if (m_brain != null)
+			if (m_brain == null)
 			{
-				// overriding already existing entry
-			}
-			else
-			{
-				// new
-				m_Movement = new Movement(this);
+				// new brain
 				m_brain = m_entry.BrainCreator(this);
 				m_brain.IsRunning = true;
 			}
 
+			if (m_Movement == null)
+			{
+				m_Movement = new Movement(this);
+			}
+
 			// misc stuff
 			Name = m_entry.DefaultName;
-			Faction = entry.Faction;
 			NPCFlags = entry.NPCFlags;
 			UnitFlags = entry.UnitFlags;
 			DynamicFlags = entry.DynamicFlags;
@@ -157,6 +153,20 @@ namespace WCell.RealmServer.Entities
 			Race = entry.RaceId;
 			YieldsXpOrHonor = entry.GeneratesXp;
 			SheathType = SheathType.Melee;
+
+			// decide which faction
+			if (m_spawnPoint != null)
+			{
+				var map = m_spawnPoint.Map;
+				if (map != null)
+				{
+					Faction = DefaultFaction;
+				}
+			}
+			if (Faction == null)
+			{
+				Faction = entry.RandomFaction;
+			}
 
 			// speeds
 			m_runSpeed = entry.RunSpeed;
@@ -176,7 +186,9 @@ namespace WCell.RealmServer.Entities
 			// Set model after Scale
 			Model = m_entry.GetRandomModel();
 
-			GossipMenu = entry.DefaultGossip; // set gossip menu
+			GossipMenu = (m_spawnPoint != null && m_spawnPoint.SpawnEntry.DefaultGossip != null) ? 
+								m_spawnPoint.SpawnEntry.DefaultGossip : 
+								entry.DefaultGossip;
 
 			// TODO: Init stats
 			//for (int i = 0; i < 5; i++)
@@ -225,7 +237,7 @@ namespace WCell.RealmServer.Entities
 
 			if (PowerType == PowerType.Mana)
 			{
-				ManaRegenPerTickInterruptedPct = 20;
+				ManaRegenPerTickInterrupted = 20;
 			}
 
 			UpdateUnitState();
@@ -422,7 +434,14 @@ namespace WCell.RealmServer.Entities
 
 		public override Faction DefaultFaction
 		{
-			get { return m_entry.Faction; }
+			get
+			{
+				if (Map != null)
+				{
+					return m_entry.GetFaction(Map.OwningFaction);
+				}
+				return m_entry.HordeFaction;				// just return anything... this should never be relevant anyway
+			}
 		}
 
 		public ThreatCollection ThreatCollection
@@ -588,6 +607,12 @@ namespace WCell.RealmServer.Entities
 				return 0;
 			}
 		}
+
+		public override bool IsRegenerating
+		{
+			get { return IsAreaActive && base.IsRegenerating; }
+		}
+
 		#endregion
 
 		#region NPC-specific Fields
@@ -860,6 +885,7 @@ namespace WCell.RealmServer.Entities
 
 			m_entry.NotifyActivated(this);
 		}
+
 		#endregion
 
 		/// <summary>

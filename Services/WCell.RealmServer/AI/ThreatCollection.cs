@@ -1,9 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using WCell.RealmServer.Entities;
 using WCell.RealmServer.AI.Groups;
-
+using WCell.RealmServer.Entities;
 using AggressorPair = System.Collections.Generic.KeyValuePair<WCell.RealmServer.Entities.Unit, int>;
 
 namespace WCell.RealmServer.AI
@@ -196,6 +195,11 @@ namespace WCell.RealmServer.AI
 		}
 
 		#region Getters
+		public bool HasAggressor(Unit unit)
+		{
+			return this[unit] >= 0;
+		}
+
 		public AggressorPair GetThreat(Unit unit)
 		{
 			foreach (var aggressor in AggressorPairs)

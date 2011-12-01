@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2010-01-28 16:34:36 +0100 (to, 28 jan 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 1231 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -15,18 +15,17 @@
  *************************************************************************/
 
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using NLog;
 using WCell.Constants;
+using WCell.Constants.Items;
 using WCell.Constants.Skills;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Entities;
-using WCell.RealmServer.Items;
 using WCell.RealmServer.Formulas;
-using WCell.Util;
-using WCell.Constants.Items;
 using WCell.RealmServer.Handlers;
+using WCell.RealmServer.Items;
+using WCell.Util;
 
 namespace WCell.RealmServer.Skills
 {
@@ -178,6 +177,10 @@ namespace WCell.RealmServer.Skills
 			if (skill.CanLearnTier(tier))
 			{
 				skill.MaxValue = (ushort)skill.SkillLine.Tiers.GetMaxValue(tier);
+				if (id == SkillId.Riding)
+				{
+					skill.CurrentValue = skill.MaxValue;
+				}
 			}
 			return true;
 		}
@@ -202,7 +205,8 @@ namespace WCell.RealmServer.Skills
 			{
 				return false;
 			}
-			else if (amount > 0 && skill.ActualValue < amount)
+			
+            if (amount > 0 && skill.ActualValue < amount)
 			{
 				return false;
 			}
@@ -389,15 +393,7 @@ namespace WCell.RealmServer.Skills
 			{
 				m_owner.KnownLanguages.Add(skill.SkillLine.Language);
 			}
-			else if (skill.SkillLine.Category == SkillCategory.ArmorProficiency)
-			{
-				CharacterHandler.SendProfiency(m_owner, ItemClass.Armor, ArmorProficiency);
-			}
-			else if (skill.SkillLine.Category == SkillCategory.WeaponProficiency)
-			{
-				CharacterHandler.SendProfiency(m_owner, ItemClass.Weapon, WeaponProficiency);
-			}
-
+			
 			if (isNew)
 			{
 				skill.Push();

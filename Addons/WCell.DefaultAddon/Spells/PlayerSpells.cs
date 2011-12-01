@@ -1,20 +1,10 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using WCell.Constants;
-using WCell.Core.Initialization;
-using WCell.RealmServer.Spells;
 using WCell.Constants.Spells;
-using WCell.RealmServer.Skills;
-using WCell.RealmServer.Spells.Auras.Handlers;
-using WCell.Util;
-using WCell.RealmServer.Misc;
-using WCell.RealmServer.Spells.Auras;
+using WCell.Core.Initialization;
 using WCell.RealmServer.Entities;
-using WCell.Constants.Misc;
-using WCell.Util.Graphics;
-using WCell.Constants.Skills;
+using WCell.RealmServer.Spells;
+using WCell.RealmServer.Spells.Auras.Handlers;
 
 namespace WCell.Addons.Default.Spells
 {

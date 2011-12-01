@@ -18,21 +18,19 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Castle.ActiveRecord;
-using Cell.Core;
 using NLog;
-using WCell.Constants;
 using WCell.Constants.Guilds;
-using WCell.Constants.NPCs;
 using WCell.Core;
-using WCell.RealmServer.Database;
-using WCell.RealmServer.Handlers;
-using WCell.Util.Threading;
 using WCell.RealmServer.Chat;
+using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Global;
+using WCell.RealmServer.Handlers;
 using WCell.Util;
-using WCell.Util.NLog;
 using WCell.Util.Collections;
+using WCell.Util.NLog;
+using WCell.Util.Synchronization;
+using WCell.Util.Threading;
 
 namespace WCell.RealmServer.Guilds
 {
@@ -41,22 +39,14 @@ namespace WCell.RealmServer.Guilds
 		#region Fields
 		private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-		private SpinWaitLock m_syncRoot;
+		internal SimpleLockWrapper syncRoot;
 		private GuildMember m_leader;
 		private ImmutableList<GuildRank> m_ranks;
 
-		public readonly ImmutableDictionary<uint, GuildMember> Members = new ImmutableDictionary<uint, GuildMember>();
+		public readonly IDictionary<uint, GuildMember> Members = new Dictionary<uint, GuildMember>();
 		#endregion
 
 		#region Properties
-		/// <summary>
-		/// The SyncRoot against which to synchronize this guild (when iterating over it or making certain changes)
-		/// </summary>
-		public SpinWaitLock SyncRoot
-		{
-			get { return m_syncRoot; }
-		}
-
 		/// <summary>
 		/// Id of this guild
 		/// </summary>
@@ -90,7 +80,7 @@ namespace WCell.RealmServer.Guilds
 				_MOTD = value;
 
 				GuildHandler.SendGuildRosterToGuildMembers(this);
-			    GuildHandler.SendEventToGuild(this, GuildEvents.MOTD);
+				GuildHandler.SendEventToGuild(this, GuildEvents.MOTD);
 				this.UpdateLater();
 			}
 		}
@@ -177,6 +167,9 @@ namespace WCell.RealmServer.Guilds
 		#endregion
 
 		#region Constructors
+		/// <summary>
+		/// Constructor is implicitely called when Guild is loaded from DB
+		/// </summary>
 		public Guild()
 			: this(false)
 		{
@@ -184,7 +177,7 @@ namespace WCell.RealmServer.Guilds
 
 		protected Guild(bool isNew)
 		{
-			m_syncRoot = new SpinWaitLock();
+			syncRoot = new SimpleLockWrapper();
 			EventLog = new GuildEventLog(this, isNew);
 			Bank = new GuildBank(this, isNew);
 		}
@@ -212,10 +205,11 @@ namespace WCell.RealmServer.Guilds
 			Register();
 
 			m_leader = AddMember(leader);
-            //Set the leader as guild master rank
-		    m_leader.RankId = 0;
-		    
-			RealmServer.IOQueue.AddMessage(Create);
+
+			//Set the leader as guild master rank
+			m_leader.RankId = 0;
+
+			this.CreateLater();						// save to DB, asynchronously
 		}
 		#endregion
 
@@ -242,17 +236,17 @@ namespace WCell.RealmServer.Guilds
 				rank.InitRank();
 			}
 
-			var members = GuildMember.FindAll(this);
+			var members = GuildMember.FindAll(Id);
 			foreach (var gm in members)
 			{
-				gm.Init(this);
+				gm.Init(this, World.GetCharacter((uint)gm.CharacterLowId));
 				Members.Add(gm.Id, gm);
 			}
 
 			m_leader = this[LeaderLowId];
 			if (m_leader == null)
 			{
-				OnLeaderDeleted();
+				OnNoLeaderFound();
 			}
 			if (m_leader != null)
 			{
@@ -291,8 +285,7 @@ namespace WCell.RealmServer.Guilds
 		{
 			GuildMember newMember;
 
-			SyncRoot.Enter();
-			try
+			using (syncRoot.Enter())
 			{
 				if (Members.TryGetValue(chr.EntityLowId, out newMember))
 				{
@@ -301,15 +294,6 @@ namespace WCell.RealmServer.Guilds
 				newMember = new GuildMember(chr, this, m_ranks.Last());
 				Members.Add(newMember.Id, newMember);
 				newMember.Create();
-			}
-			catch (Exception e)
-			{
-				LogUtil.ErrorException(e, string.Format("Could not add member {0} to guild {1}", chr, this));
-				return null;
-			}
-			finally
-			{
-				SyncRoot.Exit();
 			}
 
 			GuildMgr.Instance.RegisterGuildMember(newMember);
@@ -361,27 +345,16 @@ namespace WCell.RealmServer.Guilds
 
 			if (update && member == m_leader)
 			{
-                Disband();
-                return true;
+				Disband();
+				return true;
 			}
 
-			m_syncRoot.Enter();
-			try
+			using (syncRoot.Enter())
 			{
 				if (!Members.Remove(member.Id))
 				{
 					return false;
 				}
-			}
-			catch (Exception e)
-			{
-				LogUtil.ErrorException(e, string.Format("Could not delete member {0} from guild {1}", member.Name,
-					this));
-				return false;
-			}
-			finally
-			{
-				m_syncRoot.Exit();
 			}
 
 			if (update)
@@ -415,10 +388,9 @@ namespace WCell.RealmServer.Guilds
 			}
 		}
 
-		private void OnLeaderDeleted()
+		private void OnNoLeaderFound()
 		{
 			// leader was deleted
-            /*
 			var highestRank = int.MaxValue;
 			GuildMember highestMember = null;
 			foreach (var member in Members.Values)
@@ -434,7 +406,6 @@ namespace WCell.RealmServer.Guilds
 			{
 				Disband();
 			}
-             */
 		}
 		#endregion
 
@@ -470,36 +441,24 @@ namespace WCell.RealmServer.Guilds
 		/// <returns>new rank</returns>
 		public GuildRank AddRank(string name, GuildPrivileges privileges, bool update)
 		{
-			foreach (var gRank in m_ranks)
-			{
-				if (gRank.Name == name)
-					return null;
-			}
-
 			GuildRank rank;
-
-			m_syncRoot.Enter();
-			try
+			using (syncRoot.Enter())
 			{
+				foreach (var gRank in m_ranks)
+				{
+					if (gRank.Name == name)
+						return null;
+				}
+
 				if (m_ranks.Count >= GuildMgr.MAX_GUILD_RANKS)
 					return null;
 
 				rank = new GuildRank(this, name, privileges, m_ranks.Count);
 				m_ranks.Add(rank);
-
-				rank.SaveLater();
-			}
-			catch (Exception e)
-			{
-				LogUtil.ErrorException(e, string.Format("Could not add rank {0} to guild {1}", name,
-					this));
-				return null;
-			}
-			finally
-			{
-				m_syncRoot.Exit();
 			}
 
+
+			rank.SaveLater();
 			if (update)
 			{
 				GuildHandler.SendGuildQueryToGuildMembers(this);
@@ -659,8 +618,7 @@ namespace WCell.RealmServer.Guilds
 		/// <param name="update">if true, sends event to the guild</param>
 		public void Disband()
 		{
-			m_syncRoot.Enter();
-			try
+			using (syncRoot.Enter())
 			{
 				GuildHandler.SendEventToGuild(this, GuildEvents.DISBANDED);
 
@@ -674,10 +632,6 @@ namespace WCell.RealmServer.Guilds
 				GuildMgr.Instance.UnregisterGuild(this);
 				RealmServer.IOQueue.AddMessage(() => Delete());
 			}
-			finally
-			{
-				m_syncRoot.Exit();
-			}
 		}
 
 		/// <summary>
@@ -690,14 +644,17 @@ namespace WCell.RealmServer.Guilds
 			if (newLeader.Guild != this)
 				return;
 
-			var currentLeader = Leader;
-
-			if (currentLeader != null)
+			GuildMember currentLeader;
+			using (syncRoot.Enter())
 			{
-				currentLeader.RankId = 1;
+				currentLeader = Leader;
+				if (currentLeader != null)
+				{
+					currentLeader.RankId = 1;
+				}
+				newLeader.RankId = 0;
+				Leader = newLeader;
 			}
-			newLeader.RankId = 0;
-			Leader = newLeader;
 
 			RealmServer.IOQueue.AddMessage(new Message(() =>
 			{
@@ -717,33 +674,36 @@ namespace WCell.RealmServer.Guilds
 
 		public void TrySetTabard(GuildMember member, NPC vendor, GuildTabard tabard)
 		{
-			if (!vendor.IsTabardVendor || !vendor.CheckVendorInteraction(member.Character))
+			var chr = member.Character;
+			if (chr == null) return;
+
+			if (!vendor.IsTabardVendor || !vendor.CheckVendorInteraction(chr))
 			{
 				//"That's not an emblem vendor!"
-				GuildHandler.SendTabardResult(member.Character, GuildTabardResult.InvalidVendor);
+				GuildHandler.SendTabardResult(chr, GuildTabardResult.InvalidVendor);
 				return;
 			}
 
 			if (!member.IsLeader)
 			{
 				//"Only guild leaders can create emblems."
-				GuildHandler.SendTabardResult(member.Character, GuildTabardResult.NotGuildMaster);
+				GuildHandler.SendTabardResult(chr, GuildTabardResult.NotGuildMaster);
 				return;
 			}
 
-			if (member.Character.Money < GuildMgr.GuildTabardCost)
+			if (chr.Money < GuildMgr.GuildTabardCost)
 			{
 				//"You can't afford to do that."
-				GuildHandler.SendTabardResult(member.Character, GuildTabardResult.NotEnoughMoney);
+				GuildHandler.SendTabardResult(chr, GuildTabardResult.NotEnoughMoney);
 				return;
 			}
 
-			member.Character.Money -= GuildMgr.GuildTabardCost;
+			chr.Money -= GuildMgr.GuildTabardCost;
 			Tabard = tabard;
 
 			//"Guild Emblem saved."
-			GuildHandler.SendTabardResult(member.Character, GuildTabardResult.Success);
-			GuildHandler.SendGuildQueryResponse(member.Character, this);
+			GuildHandler.SendTabardResult(chr, GuildTabardResult.Success);
+			GuildHandler.SendGuildQueryResponse(chr, this);
 		}
 
 		#endregion
@@ -925,7 +885,7 @@ namespace WCell.RealmServer.Guilds
 			var member = character.GuildMember;
 			if (member == null)
 			{
-				GuildHandler.SendResult(character.Client, commandId, GuildResult.PLAYER_NOT_IN_GUILD);
+				GuildHandler.SendResult(character, commandId, GuildResult.PLAYER_NOT_IN_GUILD);
 				return null;
 			}
 			else
@@ -935,7 +895,7 @@ namespace WCell.RealmServer.Guilds
 					var requester = member.Character;
 					if (requester != null)
 					{
-						GuildHandler.SendResult(requester.Client, commandId, GuildResult.PERMISSIONS);
+						GuildHandler.SendResult(requester, commandId, GuildResult.PERMISSIONS);
 					}
 					return null;
 				}
@@ -997,7 +957,7 @@ namespace WCell.RealmServer.Guilds
 				return GuildResult.SUCCESS;
 			}
 
-			GuildHandler.SendResult(reqChar.Client, cmd, targetName, err);
+			GuildHandler.SendResult(reqChar, cmd, targetName, err);
 			return err;
 		}
 		#endregion
@@ -1006,18 +966,12 @@ namespace WCell.RealmServer.Guilds
 
 		public IEnumerator<GuildMember> GetEnumerator()
 		{
-			foreach (GuildMember member in Members.Values)
-			{
-				yield return member;
-			}
+			return GetMembers().GetEnumerator();
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()
 		{
-			foreach (GuildMember member in Members.Values)
-			{
-				yield return member;
-			}
+			return GetMembers().GetEnumerator();
 		}
 
 		#endregion
@@ -1038,7 +992,7 @@ namespace WCell.RealmServer.Guilds
 		/// <param name="ignoredCharacter">the <see cref="Character" /> that won't receive the packet</param>
 		public void Broadcast(RealmPacketOut packet, Character ignoredCharacter)
 		{
-			foreach (var member in Members.Values)
+			foreach (var member in GetMembers())
 			{
 				var character = member.Character;
 
@@ -1051,9 +1005,12 @@ namespace WCell.RealmServer.Guilds
 
 		public void ForeachMember(Action<GuildMember> callback)
 		{
-			foreach (var member in Members.Values)
+			using (syncRoot.Enter())
 			{
-				callback(member);
+				foreach (var member in Members.Values)
+				{
+					callback(member);
+				}
 			}
 		}
 
@@ -1069,17 +1026,17 @@ namespace WCell.RealmServer.Guilds
 
 		public void SendSystemMsg(string msg)
 		{
-			foreach (var member in Members.Values)
+			foreach (var chr in GetCharacters())
 			{
-				if (member.Character != null)
-					member.Character.SendSystemMessage(msg);
+				chr.SendSystemMessage(msg);
 			}
 		}
 
 		public void SendMessage(string message)
 		{
-			// TODO: What to do if there is no chatter argument?
-			throw new NotImplementedException();
+			// TODO: No chatter argument
+			//throw new NotImplementedException();
+			LogManager.GetCurrentClassLogger().Warn("Tried to send message to guild {0} but Guild.SendMessage(string) is not implemented yet: {1}", Name, message);
 			//ChatMgr.SendGuildMessage(sender, this, message);
 		}
 
@@ -1092,16 +1049,33 @@ namespace WCell.RealmServer.Guilds
 		}
 
 		/// <summary>
-		/// All online characters
+		/// All members. 
+		/// Looping over this enumeration is synchronized.
+		/// </summary>
+		public IEnumerable<GuildMember> GetMembers()
+		{
+			using (syncRoot.Enter())
+			{
+				foreach (var member in Members.Values)
+				{
+					yield return member;
+				}
+			}
+		}
+
+		/// <summary>
+		/// All online characters.
+		/// Looping over this enumeration is synchronized.
 		/// </summary>
 		public IEnumerable<Character> GetCharacters()
 		{
-			SyncRoot.Enter();
-
-			foreach (var member in Members.Values)
+			foreach (var member in GetMembers())
 			{
-				if (member.Character != null)
-					yield return member.Character;
+				var chr = member.Character;
+				if (chr != null)
+				{
+					yield return chr;
+				}
 			}
 		}
 
@@ -1119,12 +1093,15 @@ namespace WCell.RealmServer.Guilds
 		/// <summary>
 		/// All online chat listeners
 		/// </summary>
-		private IEnumerable<Character> GetChatListeners()
+		public IEnumerable<Character> GetCharacters(GuildPrivileges requiredPrivs)
 		{
-			foreach (var member in Members.Values)
+			foreach (var member in GetMembers())
 			{
-				if (member.Character != null && member.HasRight(GuildPrivileges.GCHATLISTEN))
-					yield return member.Character;
+				var chr = member.Character;
+				if (chr != null && member.HasRight(requiredPrivs))
+				{
+					yield return chr;
+				}
 			}
 		}
 
@@ -1133,21 +1110,9 @@ namespace WCell.RealmServer.Guilds
 		/// </summary>
 		public void SendToChatListeners(RealmPacketOut packet)
 		{
-			foreach (var chr in GetChatListeners())
+			foreach (var chr in GetCharacters(GuildPrivileges.GCHATLISTEN))
 			{
-				chr.Client.Send(packet);
-			}
-		}
-
-		/// <summary>
-		/// All online officers
-		/// </summary>
-		public IEnumerable<Character> GetOfficerCharacters()
-		{
-			foreach (var member in Members.Values)
-			{
-				if (member.Character != null && member.HasRight(GuildPrivileges.OFFCHATLISTEN))
-					yield return member.Character;
+				chr.Send(packet);
 			}
 		}
 
@@ -1156,7 +1121,7 @@ namespace WCell.RealmServer.Guilds
 		/// </summary>
 		public void SendToOfficers(RealmPacketOut packet)
 		{
-			foreach (var chr in GetOfficerCharacters())
+			foreach (var chr in GetCharacters(GuildPrivileges.OFFCHATLISTEN))
 			{
 				chr.Client.Send(packet);
 			}

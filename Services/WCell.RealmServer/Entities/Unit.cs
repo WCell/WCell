@@ -44,7 +44,6 @@ using WCell.Util;
 using WCell.Util.Graphics;
 using WCell.Util.NLog;
 
-
 namespace WCell.RealmServer.Entities
 {
 	/// <summary>
@@ -317,6 +316,14 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
+		public bool IsDead
+		{
+			get
+			{
+				return !IsAlive;
+			}
+		}
+
 		/// <summary>
 		/// Whether this is a ghost
 		/// </summary>
@@ -354,7 +361,7 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-        /// Different from <see cref="WCell.RealmServer.Entities.Unit.Kill()"/> which actively kills the Unit.
+		/// Different from <see cref="WCell.RealmServer.Entities.Unit.Kill()"/> which actively kills the Unit.
 		/// Is called when this Unit dies, i.e. Health gets smaller than 1.
 		/// </summary>
 		protected void Die(bool force)
@@ -556,7 +563,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public bool Regenerates
 		{
-			get{return m_regenerates;}
+			get { return m_regenerates; }
 			set
 			{
 				if (value != m_regenerates)
@@ -592,11 +599,19 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
+		/// <summary>
+		/// The real amount of Power that is added per regen-tick
+		/// </summary>
+		public int PowerRegenPerTickActual
+		{
+			get;
+			internal set;
+		}
 		private int m_PowerRegenPerTick;
 
 		/// <summary>
 		/// The amount of Power to add per regen-tick (while not being "interrupted").
-		/// Value is automatically set, depending on Spirit
+		/// Value is automatically set, depending on stats
 		/// </summary>
 		public int PowerRegenPerTick
 		{
@@ -616,18 +631,22 @@ namespace WCell.RealmServer.Entities
 			get { return m_PowerRegenPerTick / (float)RegenerationFormulas.RegenTickDelayMillis; }
 		}
 
-		private int m_ManaRegenPerTickInterruptedPct;
+		private int _manaRegenPerTickInterrupted;
 
 		/// <summary>
-		/// The precentage of power to be generated during combat per regen tick (while being "interrupted")
+		/// The amount of power to be generated during combat per regen tick (while being "interrupted")
+		/// Only used for PowerType.Mana units
 		/// </summary>
-		public int ManaRegenPerTickInterruptedPct
+		public int ManaRegenPerTickInterrupted
 		{
-			get { return m_ManaRegenPerTickInterruptedPct; }
+			get { return _manaRegenPerTickInterrupted; }
 			internal set
 			{
-				m_ManaRegenPerTickInterruptedPct = value;
-				this.UpdatePowerRegen();
+				if (_manaRegenPerTickInterrupted != value)
+				{
+					_manaRegenPerTickInterrupted = value;
+					SetFloat(UnitFields.POWER_REGEN_INTERRUPTED_FLAT_MODIFIER + (int)PowerType, value);
+				}
 			}
 		}
 
@@ -682,14 +701,14 @@ namespace WCell.RealmServer.Entities
 
 			//if (IsManaRegenInterrupted)
 			//{
-			//    power = MathUtil.Divide(power * ManaRegenPerTickInterruptedPct, 100);
+			//    power = MathUtil.Divide(power * ManaRegenPerTickInterrupted, 100);
 			//}
 
 			// TODO: Find out when client is in interrupted mode
 
 
 			// Power is interpolated automagically
-		    this.UpdatePowerRegen();
+			this.UpdatePowerRegen();
 			UpdatePower(dt);
 		}
 
@@ -878,32 +897,48 @@ namespace WCell.RealmServer.Entities
 					Victim = this,
 					Spell = effect != null ? effect.Spell : null,
 					IsCritical = crit,
-					Value = value
+					IsHot = effect.IsPeriodic,
+					Value = value,
 				};
-				healer.Proc(ProcTriggerFlags.HealOther, this, action, true);
-				Proc(ProcTriggerFlags.Heal, healer, action, false);
 
-				OnHeal(healer, effect, value);
+				OnHeal(action);
 			}
 		}
 
+		#region OnHeal
 		/// <summary>
 		/// This method is called whenever a heal is placed on a Unit by another Unit
 		/// </summary>
 		/// <param name="healer">The healer</param>
 		/// <param name="value">The amount of points healed</param>
-		protected virtual void OnHeal(Unit healer, SpellEffect effect, int value)
+		protected virtual void OnHeal(HealAction action)
 		{
+			if (action.Value > 0)
+			{
+				TriggerProcOnHeal(action);
+			}
+
 			// TODO: Remove method and instead trigger map-wide event (a lot more efficient than this)
 			this.IterateEnvironment(40.0f, obj =>
 			{
 				if (obj is Unit && ((Unit)obj).m_brain != null)
 				{
-					((Unit)obj).m_brain.OnHeal(healer, this, value);
+					((Unit)obj).m_brain.OnHeal(action.Attacker, this, action.Value);
 				}
 				return true;
 			});
 		}
+
+		private void TriggerProcOnHeal(HealAction action)
+		{
+			if (action.IsHot)
+			{
+				ProcHitFlags hitFlags = action.IsCritical ? ProcHitFlags.CriticalHit : ProcHitFlags.NormalHit;
+				action.Attacker.Proc(ProcTriggerFlags.DonePeriodicDamageOrHeal, this, action, true, hitFlags);
+				Proc(ProcTriggerFlags.ReceivedPeriodicDamageOrHeal, action.Attacker, action, true, hitFlags);
+			}
+		}
+		#endregion
 
 		/// <summary>
 		/// Leeches the given amount of health from this Unit and adds it to the receiver (if receiver != null and is Unit).
@@ -1109,7 +1144,7 @@ namespace WCell.RealmServer.Entities
 			}
 
 			if (this is Character && ((Character)this).Role.IsStaff && (!(obj is Character) || ((Character)obj).Role < ((Character)this).Role))
-			{	
+			{
 				// GMs see everything (just don't display the Spirit Healer to the living - because it is too confusing)
 				return !(obj is Unit) || !((Unit)obj).IsSpiritHealer || !IsAlive;
 			}
@@ -1159,7 +1194,7 @@ namespace WCell.RealmServer.Entities
 				return IsGhost;
 			}
 
-			return HandleStealthDetection(unit);	
+			return HandleStealthDetection(unit);
 
 		}
 		public bool HandleStealthDetection(Unit unit)
@@ -1168,7 +1203,7 @@ namespace WCell.RealmServer.Entities
 			if (val > 0)
 			{
 				// stealthed Unit
-				// TODO: Calc detection, based on Stealth value, boni, detection, detection boni, distance and viewing angle
+				// TODO: Calc detection, based on Stealth value, bonuses, detection, detection bonuses, distance and viewing angle
 
 				//if we are stunned we don't see anything
 				if ((this.UnitFlags & UnitFlags.Stunned) != 0)
@@ -1183,7 +1218,7 @@ namespace WCell.RealmServer.Entities
 					return false;
 
 				bool HasStealthDetection = false;
-				
+
 				//check if we have a stealth detection aura
 				if (Auras.GetTotalAuraModifier(AuraType.Aura_228) > 0)
 					HasStealthDetection = true;
@@ -1744,7 +1779,7 @@ namespace WCell.RealmServer.Entities
 		/// Trigger all procs that can be triggered by the given action
 		/// </summary>
 		/// <param name="active">Whether the triggerer is the attacker/caster (true), or the victim (false)</param>
-		public void Proc(ProcTriggerFlags flags, Unit triggerer, IUnitAction action, bool active)
+		public void Proc(ProcTriggerFlags flags, Unit triggerer, IUnitAction action, bool active, ProcHitFlags hitFlags = ProcHitFlags.None)
 		{
 			if (m_brain != null && m_brain.CurrentAction != null && m_brain.CurrentAction.InterruptFlags.HasAnyFlag(flags))
 			{
@@ -1757,7 +1792,7 @@ namespace WCell.RealmServer.Entities
 				return;
 			}
 
-			if (flags == ProcTriggerFlags.None) // || !action.CanProc)
+			if (flags == ProcTriggerFlags.None)
 			{
 				return;
 			}
@@ -1776,9 +1811,14 @@ namespace WCell.RealmServer.Entities
 					// In case that the list was changed during iteration
 					continue;
 				}
+
 				var proc = m_procHandlers[i];
+				bool procFlagsMatch = proc.ProcTriggerFlags.HasAnyFlag(flags);
+				bool procHitFlagsMatch = flags.RequireHitFlags() ? proc.ProcHitFlags.HasAnyFlag(hitFlags) : true;
+
 				if (proc.NextProcTime <= now &&
-					proc.ProcTriggerFlags.HasAnyFlag(flags) &&
+					procFlagsMatch &&
+					procHitFlagsMatch &&
 					proc.CanBeTriggeredBy(triggerer, action, active))
 				{
 					var chance = (int)proc.ProcChance;
@@ -1874,7 +1914,7 @@ namespace WCell.RealmServer.Entities
 				m_brain.Dispose();
 				m_brain = null;
 			}
-			
+
 			m_spells.Recycle();
 			m_spells = null;
 

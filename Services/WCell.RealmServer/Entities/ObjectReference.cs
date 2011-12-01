@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2010-02-17 05:08:19 +0100 (on, 17 feb 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 1256 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -14,9 +14,7 @@
  *
  *************************************************************************/
 
-using System;
 using WCell.Core;
-using WCell.RealmServer.Factions;
 using WCell.RealmServer.Global;
 
 namespace WCell.RealmServer.Entities

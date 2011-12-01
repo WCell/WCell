@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2008-10-21 23:23:09 +0800 (Tue, 21 Oct 2008) $
- *   last author	: $LastChangedBy: dominikseifert $
+ 
  *   revision		: $Rev: 635 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -15,14 +15,9 @@
  *************************************************************************/
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
-using WCell.RealmServer.Spells;
-using WCell.RealmServer.Spells.Effects;
-using System.Diagnostics;
 using WCell.Constants.Spells;
+using WCell.RealmServer.Spells;
 
 namespace WCell.Tools.Spells
 {

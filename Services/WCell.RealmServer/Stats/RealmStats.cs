@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2008-06-08 00:55:09 +0800 (Sun, 08 Jun 2008) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 458 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -19,8 +19,7 @@ using WCell.Core;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Network;
-using WCell.Util.Variables;
-using Utility=WCell.Util.Utility;
+using WCell.Util;
 
 namespace WCell.RealmServer.Stats
 {

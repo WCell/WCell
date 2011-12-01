@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using WCell.Util;
-using WCell.Util.Data;
 using WCell.Constants;
 using WCell.RealmServer.Content;
+using WCell.Util;
+using WCell.Util.Data;
 
 namespace WCell.RealmServer.RacesClasses
 {

@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2010-01-28 05:18:24 +0100 (to, 28 jan 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 1229 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -23,13 +23,11 @@ using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.Core;
 using WCell.Core.ClientDB;
-using WCell.Core.Initialization;
 using WCell.Core.Network;
 using WCell.RealmServer.Chat;
 using WCell.RealmServer.Network;
 using WCell.RealmServer.Spells;
 using WCell.Util;
-using WCell.RealmServer.Content;
 
 namespace WCell.RealmServer.Skills
 {

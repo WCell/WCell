@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using NLog;
+﻿using NLog;
 using WCell.Constants;
 using WCell.Constants.Spells;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Spells;
-using WCell.RealmServer.Spells.Auras.Handlers;
 using WCell.RealmServer.Spells.Auras.Misc;
 using WCell.RealmServer.Spells.Effects;
 
@@ -74,6 +69,12 @@ namespace WCell.Addons.Default.Spells.Mage
 			{
 				spell.Effects[0].SpellEffectHandlerCreator = (cast, effect) => new IceLanceHandler(cast, effect);
 			});
+
+			// Summon Water Elemental is missing a spell trigger
+            //SpellLineId.MageFrostSummonWaterElemental.Apply(spell =>
+            //{
+            //    spell.AddTriggerSpellEffect(SpellId.SummonWaterElemental_6);
+            //});
 		}
 
 		#region ColdSnap

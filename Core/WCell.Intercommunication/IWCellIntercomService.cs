@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2009-09-02 18:37:54 +0800 (Wed, 02 Sep 2009) $
- *   last author	: $LastChangedBy: dominikseifert $
+ 
  *   revision		: $Rev: 1070 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -14,9 +14,9 @@
  *
  *************************************************************************/
 
+using System;
 using System.CodeDom.Compiler;
 using System.ServiceModel;
-using System;
 using WCell.Constants;
 using WCell.Constants.Login;
 using WCell.Constants.Realm;

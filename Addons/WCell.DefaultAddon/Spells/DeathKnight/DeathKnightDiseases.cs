@@ -1,17 +1,11 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using NLog;
-using WCell.Constants;
-using WCell.Constants.Misc;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Spells;
-using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Spells.Auras.Handlers;
 using WCell.RealmServer.Spells.Auras.Misc;
 using WCell.RealmServer.Spells.Effects;
@@ -140,7 +134,6 @@ namespace WCell.Addons.Default.Spells.DeathKnight
             //SpellLineId.DeathKnightUnholyWanderingPlague.Apply(spell =>
             //{
             //    spell.SpellAuraOptions.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
-
             //    var effect = spell.GetEffect(AuraType.Dummy);
             //    effect.IsProc = true;
             //    effect.AuraEffectHandlerCreator = () => new WanderingPlagueProcHandler();
@@ -295,8 +288,6 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			// Unholy Blight needs to proc an Aura when Death Coil is casted
 			SpellLineId.DeathKnightUnholyUnholyBlight.Apply(spell =>
 			{
-                spell.SpellAuraOptions.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
-
 				var effect = spell.GetEffect(AuraType.Dummy);
 				effect.AuraType = AuraType.ProcTriggerSpell;
 				effect.AddToAffectMask(SpellLineId.DeathKnightDeathCoil);

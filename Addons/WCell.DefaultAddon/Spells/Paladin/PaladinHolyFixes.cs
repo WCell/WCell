@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using NLog;
-using WCell.Constants;
 using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
 using WCell.Core.Initialization;
@@ -80,6 +75,10 @@ namespace WCell.Addons.Default.Spells.Paladin
             //    effect.MiscValue = (int)SpellModifierType.CritChance;
             //    effect.AddToAffectMask(SpellLineId.PaladinFlashOfLight);
             //}, SpellId.EffectSacredShieldRank1);
+
+			// Only one seal active at a time
+			AuraHandler.AddAuraGroup(SpellLineId.PaladinSealOfInsight, SpellLineId.PaladinSealOfTruth,
+			                         SpellLineId.PaladinSealOfRighteousness, SpellLineId.PaladinSealOfJustice);
 		}
 	}
 

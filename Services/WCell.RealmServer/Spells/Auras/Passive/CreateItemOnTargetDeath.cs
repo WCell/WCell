@@ -1,10 +1,10 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: CreateItemOnTargetDeath.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2010-01-24 17:50:44 +0100 (sø, 24 jan 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 1216 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -37,7 +37,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
             var procFlags = m_aura.Spell.SpellAuraOptions.ProcTriggerFlags;
 			var owner = m_aura.Auras.Owner;
 			if (!owner.IsAlive && 
-				(!procFlags.HasFlag(ProcTriggerFlags.GainExperience) || owner.YieldsXpOrHonor))
+				(!procFlags.HasFlag(ProcTriggerFlags.KilledTargetThatYieldsExperienceOrHonor) || owner.YieldsXpOrHonor))
 			{
 				var item = ItemMgr.GetTemplate(SpellEffect.ItemId);
 				if (item == null)

@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using WCell.Constants;
+using WCell.Constants.Achievements;
 using WCell.Constants.Items;
 using WCell.Constants.Misc;
 using WCell.Constants.NPCs;
@@ -12,12 +10,10 @@ using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Interaction;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Modifiers;
-using WCell.RealmServer.NPCs.Pets;
 using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Trade;
 using WCell.Util;
 using WCell.Util.Graphics;
-using WCell.Constants.Achievements;
 
 namespace WCell.RealmServer.Entities
 {
@@ -227,7 +223,7 @@ namespace WCell.RealmServer.Entities
 				if (!IsInRadius(ref LastPosition, maxDistance))
 				{
 					// most certainly a speed hacker
-					log.Warn("WARNING: Possible speedhacker [{0}] moved {1} yards in {2} milliseconds (Latency: {3}, Tollerance: {4})",
+					log.Warn("WARNING: Possible speedhacker [{0}] moved {1} yards in {2} milliseconds (Latency: {3}, Tolerance: {4})",
 							 this, GetDistance(ref LastPosition), delay, latency, SpeedHackToleranceFactor);
 				}
 
@@ -242,14 +238,7 @@ namespace WCell.RealmServer.Entities
 			MoveControl.Mover = mover ?? this;
 			MoveControl.CanControl = canControl;
 
-			if (mover == null)
-			{
-				CharacterHandler.SendControlUpdate(this, this, canControl);
-			}
-			else
-			{
-				CharacterHandler.SendControlUpdate(this, mover, canControl);
-			}
+			CharacterHandler.SendControlUpdate(this, MoveControl.Mover, canControl);
 		}
 
 		public void ResetMover()
@@ -339,7 +328,7 @@ namespace WCell.RealmServer.Entities
 				KnownObjects.Remove(obj);
 
 				// send the destroy packet
-				obj.SendDestroyToPlayer(this);
+				//obj.SendDestroyToPlayer(this);
 			}
 		}
 
@@ -508,7 +497,9 @@ namespace WCell.RealmServer.Entities
 		{
 			get
 			{
-				return (m_Map.CanFly && (m_zone == null || m_zone.Flags.HasFlag(ZoneFlags.CanFly))) || Role.IsStaff;
+				return (m_Map.CanFly && (m_zone == null || 
+					m_zone.Flags.HasFlag(ZoneFlags.CanFly) && !m_zone.Flags.HasFlag(ZoneFlags.CannotFly))
+					|| Role.IsStaff);
 			}
 		}
 

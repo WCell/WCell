@@ -519,6 +519,17 @@
     </Simple>
   </RealmPacket>
 
+  <RealmPacket OpCode="SMSG_CLIENT_CONTROL_UPDATE">
+    <Simple>
+      <Name>Mover</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>CanControl</Name>
+      <Type>Byte</Type>
+    </Simple>
+  </RealmPacket>
+
   <RealmPacket OpCode="SMSG_STANDSTATE_UPDATE">
     <Simple>
       <Name>Stand State</Name>
@@ -541,7 +552,7 @@
   <RealmPacket OpCode="CMSG_FORCE_MOVE_ROOT_ACK">
     <Simple>
       <Name>Character</Name>
-      <Type>Guid</Type>
+      <Type>PackedGuid</Type>
     </Simple>
     <Simple>
       <Name>Unknown UInt1</Name>
@@ -565,6 +576,33 @@
     </Simple>
     <Simple>
       <Name>Orientation</Name>
+      <Type>Float</Type>
+    </Simple>
+  </RealmPacket>
+  <RealmPacket OpCode="SMSG_FLIGHT_SPLINE_SYNC">
+    <Simple>
+      <Name>Time?</Name>
+      <Type>Float</Type>
+    </Simple>
+    <Simple>
+      <Name>EntityId</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+  </RealmPacket>
+  <RealmPacket>
+    <OpCodes>
+      <OpCode>SMSG_SPLINE_SET_RUN_SPEED</OpCode>
+      <OpCode>SMSG_SPLINE_SET_RUN_BACK_SPEED</OpCode>
+      <OpCode>SMSG_SPLINE_SET_SWIM_SPEED</OpCode>
+      <OpCode>SMSG_SPLINE_SET_FLIGHT_SPEED</OpCode>
+      <OpCode>SMSG_SPLINE_SET_WALK_SPEED</OpCode>
+    </OpCodes>
+    <Simple>
+      <Name>EntityId</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>Speed</Name>
       <Type>Float</Type>
     </Simple>
   </RealmPacket>

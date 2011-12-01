@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2010-01-02 17:46:41 +0100 (lø, 02 jan 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 1166 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -15,14 +15,13 @@
  *************************************************************************/
 
 using System;
-using System.IO;
 using Cell.Core;
 using ICSharpCode.SharpZipLib.Zip.Compression;
+using NLog;
 using WCell.Constants;
 using WCell.Core;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Network;
-using NLog;
 
 namespace WCell.RealmServer.UpdateFields
 {

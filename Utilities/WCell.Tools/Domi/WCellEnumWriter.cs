@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2008-09-16 03:10:51 +0800 (Tue, 16 Sep 2008) $
- *   last author	: $LastChangedBy: dominikseifert $
+ 
  *   revision		: $Rev: 628 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -22,11 +22,12 @@ using System.Text.RegularExpressions;
 using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Constants.NPCs;
-using WCell.Constants.Skills;
 using WCell.Constants.Spells;
 using WCell.Core;
 using WCell.Core.ClientDB;
+using WCell.RealmServer;
 using WCell.RealmServer.AreaTriggers;
+using WCell.RealmServer.Content;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Factions;
 using WCell.RealmServer.GameObjects;
@@ -37,14 +38,11 @@ using WCell.RealmServer.NPCs;
 using WCell.RealmServer.Skills;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Talents;
-using WCell.Tools.Code;
 using WCell.Tools.Spells;
 using WCell.Util;
-using WCell.Util.Toolshed;
-using WCell.RealmServer.Content;
-using WCell.RealmServer;
+using WCell.Util.Code;
 using WCell.Util.NLog;
-
+using WCell.Util.Toolshed;
 
 namespace WCell.Tools.Domi
 {

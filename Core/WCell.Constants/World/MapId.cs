@@ -6,8 +6,9 @@
 
 namespace WCell.Constants.World
 {
-	public enum MapId  : uint
+	public enum MapId
 	{
+        None = -1,
 		EasternKingdoms = 0,
 		Kalimdor = 1,
 		Testing = 13,

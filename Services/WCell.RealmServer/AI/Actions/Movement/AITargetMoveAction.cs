@@ -1,8 +1,6 @@
-using System;
 using NLog;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Entities;
-using WCell.Constants.NPCs;
 using WCell.Util.Graphics;
 
 namespace WCell.RealmServer.AI.Actions.Movement
@@ -49,10 +47,10 @@ namespace WCell.RealmServer.AI.Actions.Movement
 			set { m_target = value; }
 		}
 
-		public virtual bool IsInRange(Unit target)
+		public virtual bool IsInRange(WorldObject target)
 		{
-			return m_owner.IsInRadiusSq(target, DistanceMax * DistanceMax) &&
-				(DistanceMin == 0 || !m_owner.IsInRadiusSq(target, DistanceMin * DistanceMin));
+			var distSq = m_owner.GetDistanceSq(target);
+			return distSq < DistanceMax * DistanceMax && distSq > DistanceMin * DistanceMin;
 		}
 
 		public override void Start()

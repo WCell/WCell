@@ -1,7 +1,5 @@
 using System;
 using System.Linq;
-using System.Collections.Generic;
-using WCell.Util.Collections;
 using WCell.Constants;
 using WCell.Constants.Spells;
 using WCell.Core;
@@ -10,9 +8,8 @@ using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Handlers;
-using WCell.RealmServer.Items;
 using WCell.RealmServer.Looting;
-using WCell.RealmServer.Mail;
+using WCell.Util.Collections;
 
 namespace WCell.RealmServer.NPCs.Auctioneer
 {
@@ -62,11 +59,7 @@ namespace WCell.RealmServer.NPCs.Auctioneer
 			Instance.Start();
 		}
 
-		protected AuctionMgr()
-		{
-		}
-
-		protected override bool InternalStart()
+		protected bool Start()
 		{
 			_auctionedItems = new SynchronizedDictionary<uint, ItemRecord>(10000);
 
@@ -97,6 +90,10 @@ namespace WCell.RealmServer.NPCs.Auctioneer
 			}
 #endif
 			return true;
+		}
+
+		protected AuctionMgr()
+		{
 		}
 
 		private void FetchAuctions()
@@ -150,14 +147,6 @@ namespace WCell.RealmServer.NPCs.Auctioneer
 					_hasItemLoaded = true;
 				}
 			}
-		}
-
-		protected override bool InternalStop()
-		{
-			AllianceAuctions = null;
-			HordeAuctions = null;
-			NeutralAuctions = null;
-			return true;
 		}
 
 		public SynchronizedDictionary<uint, ItemRecord> AuctionItems

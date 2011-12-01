@@ -1,18 +1,16 @@
 using NLog;
 using WCell.Constants;
-using WCell.Core;
 using WCell.Core.Network;
-using WCell.Util.Threading;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Gossips;
 using WCell.RealmServer.Lang;
-using WCell.RealmServer.Network;
-using WCell.RealmServer.NPCs;
-using WCell.Util;
 using WCell.RealmServer.Misc;
-
+using WCell.RealmServer.NPCs;
+using WCell.RealmServer.Network;
+using WCell.Util;
+using WCell.Util.Threading;
 
 namespace WCell.RealmServer.Handlers
 {
@@ -158,20 +156,20 @@ namespace WCell.RealmServer.Handlers
 				pkt.Write((byte)0); // Name4
 				pkt.WriteCString(title);
 				pkt.WriteCString(entry.InfoString);
-                pkt.WriteUInt((uint)entry.EntryFlags);
-                pkt.WriteUInt((uint)entry.Type);
-                pkt.WriteUInt((uint)entry.FamilyId);
-                pkt.WriteUInt((uint)entry.Rank);
+				pkt.Write((uint)entry.EntryFlags);
+				pkt.Write((uint)entry.Type);
+				pkt.Write((uint)entry.FamilyId);
+				pkt.Write((uint)entry.Rank);
                 pkt.WriteUInt(0); // UInt1
                 pkt.WriteUInt(entry.SpellGroupId);
 				var i = 0;
-				for (; i < entry.DisplayIds.Length; i++)
+				for (; i < entry.KillCreditIds.Length; i++)
 				{
-                    pkt.WriteUInt(entry.DisplayIds[i]);
+					pkt.Write(entry.KillCreditIds[i]);
 				}
-				for (; i < 4; i++)
+				for (i = 0; i < entry.DisplayIds.Length; i++)
 				{
-					pkt.Write(0);
+					pkt.Write(entry.DisplayIds[i]);
 				}
 
 				pkt.WriteFloat(entry.HealthModifier);						// hp mod?
@@ -180,9 +178,9 @@ namespace WCell.RealmServer.Handlers
 
 				for (i = 0; i < 6; i++)
 				{
-					pkt.Write(entry.QuestItemIds[i]);
+					pkt.Write(entry.QuestItems[i]);
 				}
-                pkt.WriteUInt(0); // id from CreatureMovement.dbc
+				pkt.Write(entry.MovementId); // id from CreatureMovementInfo.dbc
                 pkt.WriteUInt(entry.Expansion);
 
 				client.Send(pkt);

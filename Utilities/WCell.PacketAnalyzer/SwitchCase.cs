@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Xml.Serialization;
-using WCell.Constants;
 using WCell.Util;
 
 namespace WCell.PacketAnalysis
@@ -398,7 +396,7 @@ namespace WCell.PacketAnalysis
 		{
 			long val = 0;
 			object error = null;
-			if (!Utility.Eval(segmentType, ref val, input, ref error, false))
+			if (!StringParser.Eval(segmentType, ref val, input, ref error, false))
 			{
 				throw new Exception(string.Format("Could not parse conditional Value {0}: {1}",
 					input, error));

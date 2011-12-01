@@ -16,14 +16,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using NLog;
-using WCell.Util;
 using WCell.Util.DynamicAccess;
 using WCell.Util.Strings;
 using WCell.Util.Toolshed;
-using System.IO;
 
 namespace WCell.Util.Commands
 {
@@ -823,7 +822,7 @@ namespace WCell.Util.Commands
 						{
 							var paramType = exec.ParameterTypes[i];
 							var str = (i == len - 1) ? txt.Remainder : txt.NextWord(); // check for last argument
-							Utility.Parse(str, paramType, ref value);
+							StringParser.Parse(str, paramType, ref value);
 							args[i] = value;
 						}
 						exec.Exec(args);

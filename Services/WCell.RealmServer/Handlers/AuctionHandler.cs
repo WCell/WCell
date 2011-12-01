@@ -1,13 +1,12 @@
 using System;
 using NLog;
 using WCell.Constants;
-using WCell.Core.Network;
 using WCell.Constants.Items;
-using WCell.RealmServer.Database;
+using WCell.Core.Network;
 using WCell.RealmServer.Entities;
-using WCell.RealmServer.Network;
 using WCell.RealmServer.NPCs;
 using WCell.RealmServer.NPCs.Auctioneer;
+using WCell.RealmServer.Network;
 
 namespace WCell.RealmServer.Handlers
 {
@@ -104,7 +103,11 @@ namespace WCell.RealmServer.Handlers
 		{
 			var chr = client.ActiveCharacter;
 			var auctioneerId = packet.ReadEntityId();
-
+		    var outbiddedCount = packet.ReadUInt32();
+            for(var i = 0; i < outbiddedCount; i++)
+            {
+                //packet.ReadUInt32(); //auction id
+            }
 			var auctioneer = chr.Map.GetObject(auctioneerId) as NPC;
 			AuctionMgr.Instance.AuctionListBidderItems(chr, auctioneer);
 		}

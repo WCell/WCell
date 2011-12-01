@@ -17,4 +17,15 @@
       <Type>Guid</Type>
     </Simple>
   </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_GAMEOBJECT_CUSTOM_ANIM">
+    <Simple>
+      <Name>ObjectId</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>AnimId?</Name>
+      <Type>Int</Type>
+    </Simple>
+  </RealmPacket>
 </Definitions>

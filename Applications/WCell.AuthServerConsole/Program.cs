@@ -1,10 +1,10 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: Program.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2009-09-26 23:15:07 +0200 (lø, 26 sep 2009) $
- *   last author	: $LastChangedBy: dominikseifert $
+ 
  *   revision		: $Rev: 1115 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -14,13 +14,9 @@
  *
  *************************************************************************/
 
-using System.Threading;
-using Cell.Core;
-using NLog;
-using System.Runtime;
-using WCell.AuthServer;
-using System.Diagnostics;
 using System;
+using System.Runtime;
+using NLog;
 
 namespace WCell.AuthServerConsole
 {

@@ -73,6 +73,11 @@ namespace WCell.RealmServer.Items
         {
             public ItemId Id;
             public int Cost;
+
+        	public ItemTemplate Template
+        	{
+        		get { return ItemMgr.GetTemplate(Id); }
+        	}
         }
     }
 

@@ -48,6 +48,13 @@
     </Simple>
   </RealmPacket>
 
+  <RealmPacket OpCode="SMSG_PLAY_MUSIC">
+	<Simple>
+	  <Name>Sound</Name>
+	  <Type>UInt</Type>
+	</Simple>
+  </RealmPacket>
+  
   <RealmPacket OpCode="CMSG_AREATRIGGER">
     <Simple>
       <Name>AreaTrigger</Name>
@@ -139,15 +146,15 @@
 
   <RealmPacket OpCode="MSG_SET_DUNGEON_DIFFICULTY">
     <Simple>
-      <Name>Int 1</Name>
-      <Type>Int</Type>
+      <Name>DifficultyIndex</Name>
+      <Type>UInt</Type>
     </Simple>
     <Simple>
       <Name>Int 2</Name>
       <Type>Int</Type>
     </Simple>
     <Simple>
-      <Name>Int 3</Name>
+      <Name>IsInGroup</Name>
       <Type>Int</Type>
     </Simple>
   </RealmPacket>
@@ -192,7 +199,7 @@
   <RealmPacket OpCode="SMSG_DEATH_RELEASE_LOC" Sender="Server">
     <Simple>
       <Name>SHRegion</Name>
-      <Type>UInt</Type>
+      <Type>Int</Type>
       <SegmentType>World.MapId</SegmentType>
     </Simple>
     <Simple>
@@ -379,4 +386,12 @@
       <Type>Int</Type>
     </Simple>
   </RealmPacket>
+	
+	<RealmPacket OpCode="CMSG_GET_MIRRORIMAGE_DATA">
+		<Simple>
+			<Name>Entity</Name>
+			<Type>Guid</Type>
+		</Simple>
+	</RealmPacket>
+
 </Definitions>

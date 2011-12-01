@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2008-06-19 00:10:11 +0800 (Thu, 19 Jun 2008) $
- *   last author	: $LastChangedBy: dominikseifert $
+ 
  *   revision		: $Rev: 515 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -15,16 +15,14 @@
  *************************************************************************/
 
 using System;
-using System.Threading;
+using System.ServiceModel;
 using Cell.Core;
-using WCell.AuthServer.Accounts;
 using WCell.AuthServer.Network;
 using WCell.Constants;
 using WCell.Constants.Login;
 using WCell.Constants.Realm;
 using WCell.Core;
 using WCell.Core.Network;
-using System.ServiceModel;
 
 namespace WCell.AuthServer
 {
@@ -46,6 +44,11 @@ namespace WCell.AuthServer
         }
 
         #region Properties
+    	public bool IsOnline
+    	{
+    		get { return !Flags.HasFlag(RealmFlags.Offline); }
+    	}
+
         public DateTime LastUpdate
         {
             get;
@@ -238,23 +241,8 @@ namespace WCell.AuthServer
         /// Also removes all logged in accounts.
         /// </summary>
         internal void SetOffline(bool remove)
-        {
-            var serv = AuthenticationServer.Instance;
-
-            serv.ClearAccounts(ChannelId);
-
-            //m_maintenanceTimer.Change(Timeout.Infinite, Timeout.Infinite);
-			//m_maintenanceTimer.Dispose();
-
-			if (remove)
-			{
-				AuthenticationServer.RemoveRealm(this);
-			}
-			else
-			{
-				Flags = RealmFlags.Offline;
-				Status = RealmStatus.Locked;
-			}
+		{
+			AuthenticationServer.RemoveRealm(this, remove);
         }
 
         #region Send + Receive

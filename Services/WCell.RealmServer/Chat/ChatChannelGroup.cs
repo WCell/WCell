@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2008-08-20 04:35:29 +0800 (Wed, 20 Aug 2008) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 605 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,6 @@ using WCell.Constants.Chat;
 using WCell.Constants.Factions;
 using WCell.Constants.World;
 using WCell.Core.Initialization;
-using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Misc;
 

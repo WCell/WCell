@@ -32,12 +32,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.PostBuild", "Utilitie
 		{65B2B094-13BB-4685-95AD-402FC9A4473A} = {65B2B094-13BB-4685-95AD-402FC9A4473A}
 		{4515099C-386E-4CF2-9441-B683481549DB} = {4515099C-386E-4CF2-9441-B683481549DB}
 		{08E1A2AF-DF71-42C1-8375-D4AF278E068A} = {08E1A2AF-DF71-42C1-8375-D4AF278E068A}
-		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8} = {6C52AEC1-2920-4E34-83A2-93E6E719D1B8}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.DefaultAddon", "Addons\WCell.DefaultAddon\WCell.DefaultAddon.csproj", "{38846B91-92C5-4ED0-A77C-5480FA06EDBE}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.Collision", "Addons\WCell.Collision\WCell.Collision.csproj", "{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.Constants", "Core\WCell.Constants\WCell.Constants.csproj", "{42F497A4-0347-491D-8FA8-50E4D8AD19EB}"
 EndProject
@@ -123,8 +120,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UDB", "UDB", "{22AD2989-C47
 		Run\Content\Impl\UDB\Data\SpellEffect.xml = Run\Content\Impl\UDB\Data\SpellEffect.xml
 		Run\Content\Impl\UDB\Data\SpellLearnRelation.xml = Run\Content\Impl\UDB\Data\SpellLearnRelation.xml
 		Run\Content\Impl\UDB\Data\SpellProcEventEntry.xml = Run\Content\Impl\UDB\Data\SpellProcEventEntry.xml
-		Run\Content\Impl\UDB\Data\TrainerEntry.xml = Run\Content\Impl\UDB\Data\TrainerEntry.xml
 		Run\Content\Impl\UDB\Data\TrainerSpellEntry.xml = Run\Content\Impl\UDB\Data\TrainerSpellEntry.xml
+		Run\Content\Impl\UDB\Data\TrainerSpellTemplate.xml = Run\Content\Impl\UDB\Data\TrainerSpellTemplate.xml
 		Run\Content\Impl\UDB\Data\TransportEntry.xml = Run\Content\Impl\UDB\Data\TransportEntry.xml
 		Run\Content\Impl\UDB\Data\UnitModelInfo.xml = Run\Content\Impl\UDB\Data\UnitModelInfo.xml
 		Run\Content\Impl\UDB\Data\VendorItemEntry.xml = Run\Content\Impl\UDB\Data\VendorItemEntry.xml
@@ -436,22 +433,6 @@ Global
 		{38846B91-92C5-4ED0-A77C-5480FA06EDBE}.Release|x64.Build.0 = Release|x64
 		{38846B91-92C5-4ED0-A77C-5480FA06EDBE}.Release|x86.ActiveCfg = Release|x86
 		{38846B91-92C5-4ED0-A77C-5480FA06EDBE}.Release|x86.Build.0 = Release|x86
-		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}.Debug|Itanium.ActiveCfg = Debug|Itanium
-		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}.Debug|Itanium.Build.0 = Debug|Itanium
-		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}.Debug|x64.ActiveCfg = Debug|x64
-		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}.Debug|x64.Build.0 = Debug|x64
-		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}.Debug|x86.ActiveCfg = Debug|x86
-		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}.Debug|x86.Build.0 = Debug|x86
-		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}.Release|Itanium.ActiveCfg = Release|Itanium
-		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}.Release|Itanium.Build.0 = Release|Itanium
-		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}.Release|x64.ActiveCfg = Release|x64
-		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}.Release|x64.Build.0 = Release|x64
-		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}.Release|x86.ActiveCfg = Release|x86
-		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}.Release|x86.Build.0 = Release|x86
 		{42F497A4-0347-491D-8FA8-50E4D8AD19EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{42F497A4-0347-491D-8FA8-50E4D8AD19EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{42F497A4-0347-491D-8FA8-50E4D8AD19EB}.Debug|Itanium.ActiveCfg = Debug|Itanium
@@ -500,6 +481,22 @@ Global
 		{5F96293A-1276-4515-8048-EBC49CD81D71}.Release|x64.Build.0 = Release|x64
 		{5F96293A-1276-4515-8048-EBC49CD81D71}.Release|x86.ActiveCfg = Release|x86
 		{5F96293A-1276-4515-8048-EBC49CD81D71}.Release|x86.Build.0 = Release|x86
+		{33CF6371-AC7C-4245-AF3A-42C2DA34002D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33CF6371-AC7C-4245-AF3A-42C2DA34002D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33CF6371-AC7C-4245-AF3A-42C2DA34002D}.Debug|Itanium.ActiveCfg = Debug|Itanium
+		{33CF6371-AC7C-4245-AF3A-42C2DA34002D}.Debug|Itanium.Build.0 = Debug|Itanium
+		{33CF6371-AC7C-4245-AF3A-42C2DA34002D}.Debug|x64.ActiveCfg = Debug|x64
+		{33CF6371-AC7C-4245-AF3A-42C2DA34002D}.Debug|x64.Build.0 = Debug|x64
+		{33CF6371-AC7C-4245-AF3A-42C2DA34002D}.Debug|x86.ActiveCfg = Debug|x86
+		{33CF6371-AC7C-4245-AF3A-42C2DA34002D}.Debug|x86.Build.0 = Debug|x86
+		{33CF6371-AC7C-4245-AF3A-42C2DA34002D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33CF6371-AC7C-4245-AF3A-42C2DA34002D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33CF6371-AC7C-4245-AF3A-42C2DA34002D}.Release|Itanium.ActiveCfg = Release|Itanium
+		{33CF6371-AC7C-4245-AF3A-42C2DA34002D}.Release|Itanium.Build.0 = Release|Itanium
+		{33CF6371-AC7C-4245-AF3A-42C2DA34002D}.Release|x64.ActiveCfg = Release|x64
+		{33CF6371-AC7C-4245-AF3A-42C2DA34002D}.Release|x64.Build.0 = Release|x64
+		{33CF6371-AC7C-4245-AF3A-42C2DA34002D}.Release|x86.ActiveCfg = Release|x86
+		{33CF6371-AC7C-4245-AF3A-42C2DA34002D}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -518,7 +515,6 @@ Global
 		{5997613F-D2A5-4B86-BEE2-C823BC07D5AF} = {372CB0F3-1BA6-4157-8CCB-E10D0912AD02}
 		{42F497A4-0347-491D-8FA8-50E4D8AD19EB} = {372CB0F3-1BA6-4157-8CCB-E10D0912AD02}
 		{71AB07AD-4D94-4693-8560-47862E5B6E61} = {372CB0F3-1BA6-4157-8CCB-E10D0912AD02}
-		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8} = {A5244776-5B87-4499-A1BA-4CC318FDAAE0}
 		{38846B91-92C5-4ED0-A77C-5480FA06EDBE} = {A5244776-5B87-4499-A1BA-4CC318FDAAE0}
 		{F753AF28-A251-4C12-9335-07E8236184F2} = {E858B607-246D-4056-A56E-A27312A4FDEE}
 		{009B84F0-3E1E-4674-9318-7B6BECF748E1} = {352C7D18-D5CA-41EA-815F-65DECA33D17E}

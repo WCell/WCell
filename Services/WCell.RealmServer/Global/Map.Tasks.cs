@@ -1,5 +1,5 @@
-using WCell.Util.Threading;
 using WCell.RealmServer.Entities;
+using WCell.Util.Threading;
 
 namespace WCell.RealmServer.Global
 {

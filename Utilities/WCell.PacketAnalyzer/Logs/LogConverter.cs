@@ -39,6 +39,8 @@ namespace WCell.PacketAnalysis.Logs
 			AvailableParsers[(int)LogParserType.Sniffitzt] = SniffitztLogConverter.Extract;
 		    AvailableParsers[(int)LogParserType.ZorSniffer] = ZorLogConverter.Extract;
 		    AvailableParsers[(int) LogParserType.SomeTextLog] = BioAndAokromesLogConverter.Extract;
+            AvailableParsers[(int)LogParserType.WlpSniffer] = WlpConverter.Extract;
+            AvailableParsers[(int)LogParserType.KSnifferZor] = KSnifferZorLogConverter.Extract;
 		}
 
 		public static LogParser GetParser(LogParserType type)
@@ -62,6 +64,8 @@ namespace WCell.PacketAnalysis.Logs
 		Sniffitzt,
 		ZorSniffer,
         SomeTextLog,
+        WlpSniffer,
+        KSnifferZor,
 		End
 	}
 }

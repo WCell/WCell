@@ -400,7 +400,7 @@ namespace WCell.RealmServer.Entities
         /// The base mana regeneration modifier per level
         /// TODO: Get it from the DBCs (GtOCTRegenMP.dbc?)
         /// </summary>
-        [NotVariable] public static readonly float[] BaseRegen = new float[81]
+        [NotVariable] private static readonly float[] BaseRegen = new float[81]
                                                                      {
                                                                          0f,
                                                                          0.034965f, 0.034191f, 0.033465f, 0.032526f,
@@ -428,7 +428,12 @@ namespace WCell.RealmServer.Entities
                                                                          0.006179f, 0.005869f, 0.005575f,
                                                                      };
 
-        // Table for base dodge values
+		public static float GetBaseRegenForLevel(int level)
+		{
+			return level >= BaseRegen.Length ? BaseRegen[BaseRegen.Length - 1] : BaseRegen[level];
+		}
+
+    	// Table for base dodge values
         public static readonly float[] BaseDodge = new float[12]
                                                        {
                                                            0.0f,        // None

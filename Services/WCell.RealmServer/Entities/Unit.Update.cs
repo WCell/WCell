@@ -19,7 +19,6 @@ using WCell.Constants.Updates;
 using WCell.Core.Network;
 using WCell.RealmServer.UpdateFields;
 using WCell.Util;
-using WCell.Constants.Spells;
 using WCell.Util.Graphics;
 
 namespace WCell.RealmServer.Entities
@@ -42,6 +41,10 @@ namespace WCell.RealmServer.Entities
 			if (chr == m_master)
 			{
 				return UpdateFieldFlags.OwnerOnly | UpdateFieldFlags.Public;
+			}
+			if (IsAlliedWith(chr))
+			{
+				return UpdateFieldFlags.GroupOnly | UpdateFieldFlags.Public;
 			}
 			return UpdateFieldFlags.Public;
 		}
@@ -77,7 +80,7 @@ namespace WCell.RealmServer.Entities
 			#endregion
 
 			#region Spline Info
-            if (MovementFlags.HasFlag(MovementFlags.SplinePath))
+            if (MovementFlags.HasFlag(MovementFlags.SplineEnabled))
 			{
 				// TODO: Write spline flags
 				//var splineFlags = SplineFlags.None;
@@ -157,7 +160,7 @@ namespace WCell.RealmServer.Entities
 				packet.Write(TransportTime);
 				packet.Write(TransportSeat);
 
-                if (moveFlags2.HasFlag(MovementFlags2.MoveFlag2_10_0x400))
+                if (moveFlags2.HasFlag(MovementFlags2.InterpolateMove))
                 {
                     packet.Write(0);
                 }
@@ -169,7 +172,7 @@ namespace WCell.RealmServer.Entities
 				packet.Write(PitchRate);
 			}
 
-            if (moveFlags2.HasFlag(MovementFlags2.InterpolatedTurning))
+            if (moveFlags2.HasFlag(MovementFlags2.InterpolateTurning))
             {
                 packet.Write(0); // air time
                 // constant, but different when jumping in water and on land?                

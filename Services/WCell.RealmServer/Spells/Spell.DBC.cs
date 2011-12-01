@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2010-04-23 15:13:50 +0200 (fr, 23 apr 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 1282 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -312,7 +312,7 @@ namespace WCell.RealmServer.Spells
 
                 effect.SpellId = (SpellId)GetUInt32(rawData, currentIndex++);
 
-                effect.EffectIndex = GetInt32(rawData, currentIndex);
+                effect.EffectIndex = (EffectIndex)GetInt32(rawData, currentIndex);
 
                 SpellEffectsCollection.Add(effect);
 
@@ -390,7 +390,7 @@ namespace WCell.RealmServer.Spells
 
                 id = (int)GetUInt32(rawData, 0);
                 spellCategories.Category = GetUInt32(rawData, 1);
-                spellCategories.DefenseType = (SpellDefenseType)GetUInt32(rawData, 2);
+                spellCategories.DefenseType = (DamageType)GetUInt32(rawData, 2);
                 spellCategories.DispelType = (DispelType)GetUInt32(rawData, 3);
                 spellCategories.Mechanic = (SpellMechanic)GetUInt32(rawData, 4);
                 spellCategories.PreventionType = (SpellPreventionType)GetUInt32(rawData, 5);

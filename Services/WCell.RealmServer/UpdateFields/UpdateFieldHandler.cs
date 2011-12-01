@@ -17,12 +17,12 @@
 using System;
 using WCell.Constants;
 using WCell.Constants.GameObjects;
+using WCell.Constants.NPCs;
+using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Entities;
 using WCell.Util.Variables;
-using WCell.RealmServer.NPCs;
-using WCell.Constants.NPCs;
 
 namespace WCell.RealmServer.UpdateFields
 {
@@ -100,6 +100,20 @@ namespace WCell.RealmServer.UpdateFields
 			DynamicCorpseHandlers[(int)CorpseFields.DYNAMIC_FLAGS] = WriteCorpseDynFlags;
 			DynamicUnitHandlers[(int)UnitFields.NPC_FLAGS] = WriteNPCFlags;
 			DynamicUnitHandlers[(int)UnitFields.DYNAMIC_FLAGS] = WriteUnitDynFlags;
+			DynamicUnitHandlers[(int)UnitFields.AURASTATE] = WriteAuraStateFlags;
+		}
+
+		private static void WriteAuraStateFlags(ObjectBase obj, Character reciever, UpdatePacket packet)
+		{
+			var unit = (Unit)obj;
+			SpellId immolateAura = unit.GetStrongestImmolate();
+			//if there is a immolate aura on this object and the reciver casted it we can send that aurastate to him
+			if (immolateAura != SpellId.None && unit.Auras[immolateAura].SpellCast.CasterChar == reciever)
+			{
+				packet.Write((uint)(unit.AuraState | AuraStateMask.Immolate));
+			}
+			else
+				packet.Write((uint)(unit.AuraState & ~AuraStateMask.Immolate));
 		}
 
 		private static void WriteNPCFlags(ObjectBase obj, Character chr, UpdatePacket packet)

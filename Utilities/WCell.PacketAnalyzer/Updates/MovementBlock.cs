@@ -1,13 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using WCell.Core;
-using WCell.Constants;
 using System.IO;
-using WCell.Util;
-using WCell.Util.Graphics;
+using WCell.Constants;
 using WCell.Constants.Updates;
+using WCell.Core;
+using WCell.Util.Graphics;
 
 namespace WCell.PacketAnalysis.Updates
 {
@@ -147,12 +142,12 @@ namespace WCell.PacketAnalysis.Updates
 				writer.WriteLine(indent + "Speeds: " + Speeds);
 			}
 
-            if (MovementFlags.HasFlag(MovementFlags.SplinePath))
+            if (MovementFlags.HasFlag(MovementFlags.SplineEnabled))
 			{
 				DumpSpline(indent, writer);
 			}
 
-            if (MovementFlags2.HasFlag(MovementFlags2.MoveFlag2_10_0x400))
+            if (MovementFlags2.HasFlag(MovementFlags2.InterpolateMove))
             {
                 writer.WriteLine(indent + "MoveFlag2_10_0x400: " + MoveFlag2_0x400_Unk);
             }
@@ -195,12 +190,12 @@ namespace WCell.PacketAnalysis.Updates
 		{
 			writer.WriteLine(indent + "SplineFlags: " + SplineFlags);
 
-			if (SplineFlags.HasAnyFlag(SplineFlags.XYZ | SplineFlags.Orientation))
+			if (SplineFlags.HasAnyFlag(SplineFlags.FinalFacePoint | SplineFlags.FinalFaceAngle))
 			{
 				writer.WriteLine(indent + "SplinePosition: " + SplinePosition);
 			}
 
-            if (SplineFlags.HasFlag(SplineFlags.GUID))
+            if (SplineFlags.HasFlag(SplineFlags.FinalFaceTarget))
 			{
 				writer.WriteLine(indent + "SplineGuid: " + SplineId);
 			}
@@ -325,7 +320,7 @@ namespace WCell.PacketAnalysis.Updates
 				block.TransportSeatPosition = block.Update.ReadByte();
 
                 // Client checks for 0x400
-                if (block.MovementFlags2.HasFlag(MovementFlags2.MoveFlag2_10_0x400))
+                if (block.MovementFlags2.HasFlag(MovementFlags2.InterpolateMove))
                 {
                     block.MoveFlag2_0x400_Unk = block.Update.ReadUInt();
                 }
@@ -338,7 +333,7 @@ namespace WCell.PacketAnalysis.Updates
 				block.Pitch = block.Update.ReadFloat();
 			}
 
-            if (block.MovementFlags2.HasFlag(MovementFlags2.InterpolatedTurning))
+            if (block.MovementFlags2.HasFlag(MovementFlags2.InterpolateTurning))
             {
                 block.FallTime = block.Update.ReadUInt();
                 // constant, but different when jumping in water and on land?                
@@ -373,19 +368,19 @@ namespace WCell.PacketAnalysis.Updates
 			};
 
 
-            if (block.MovementFlags.HasFlag(MovementFlags.SplinePath))
+            if (block.MovementFlags.HasFlag(MovementFlags.SplineEnabled))
 			{
 				block.SplineFlags = (SplineFlags)block.Update.ReadUInt();
 
-                if (block.SplineFlags.HasFlag(SplineFlags.Orientation))
+                if (block.SplineFlags.HasFlag(SplineFlags.FinalFaceAngle))
 				{
 					block.SplinePosition.W = block.Update.ReadFloat();
 				}
-                else if (block.SplineFlags.HasFlag(SplineFlags.GUID))
+                else if (block.SplineFlags.HasFlag(SplineFlags.FinalFaceTarget))
 				{
 					block.SplineId = block.Update.ReadEntityId();
 				}
-                else if (block.SplineFlags.HasFlag(SplineFlags.XYZ))
+                else if (block.SplineFlags.HasFlag(SplineFlags.FinalFacePoint))
 				{
 					block.SplinePosition = block.Update.ReadVector4NoO();
 				}

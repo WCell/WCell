@@ -1,13 +1,10 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using NLog;
 using WCell.Core.ClientDB;
 using WCell.Constants;
 using WCell.Constants.Factions;
 using WCell.Constants.Items;
 using WCell.RealmServer.Items;
-using NLog;
 
 namespace WCell.RealmServer.RacesClasses
 {

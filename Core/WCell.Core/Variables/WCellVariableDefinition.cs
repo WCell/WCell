@@ -1,7 +1,5 @@
-using System.Xml;
 using NLog;
 using WCell.Util.Variables;
-using WCell.Intercommunication.DataTypes;
 
 namespace WCell.Core.Variables
 {

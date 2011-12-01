@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2008-08-12 23:56:01 +0800 (Tue, 12 Aug 2008) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 590 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -23,20 +23,18 @@ using Cell.Core;
 using WCell.Constants;
 using WCell.Constants.Login;
 using WCell.Core;
-using WCell.RealmServer.Content;
-using WCell.RealmServer.Res;
-using WCell.Util.Graphics;
-using WCell.Util.Threading;
+using WCell.Core.Initialization;
 using WCell.Intercommunication.DataTypes;
 using WCell.RealmServer.Chat;
 using WCell.RealmServer.Global;
+using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Network;
 using WCell.RealmServer.Privileges;
-using WCell.RealmServer.Server;
+using WCell.RealmServer.Res;
 using WCell.Util;
-using WCell.Core.Initialization;
+using WCell.Util.Graphics;
+using WCell.Util.Threading;
 using WCell.Util.Variables;
-using WCell.RealmServer.Handlers;
 
 namespace WCell.RealmServer
 {
@@ -45,9 +43,11 @@ namespace WCell.RealmServer
 	/// connections and verifies authentication with the 
 	/// authentication server 
 	/// </summary>
-	[VariableClassAttribute(true)]
-	public sealed partial class RealmServer : ServerApp<RealmServer>
+	[VariableClass(true)]
+	public sealed class RealmServer : ServerApp<RealmServer>
 	{
+		public event Action<RealmStatus> StatusChanged;
+
 		static DateTime timeStart;
 		private static long timeStartTicks;
 

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using NLog;
-using WCell.Constants;
 using WCell.Constants.Spells;
 using WCell.Core;
 using WCell.RealmServer.Entities;
@@ -22,7 +21,7 @@ namespace WCell.RealmServer.GameObjects.Handlers
 		{
 			var entry = m_go.Entry as GODoorEntry;
 
-			m_go.IsEnabled = !m_go.IsEnabled;
+            m_go.AnimationProgress = m_go.AnimationProgress == 100 ? (byte)0 : (byte)100;
 			return true;
 		}
 	}

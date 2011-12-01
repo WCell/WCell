@@ -3,7 +3,6 @@ using WCell.Constants.GameObjects;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Factions;
 using WCell.RealmServer.Looting;
-using System;
 
 namespace WCell.RealmServer.GameObjects
 {
@@ -39,19 +38,19 @@ namespace WCell.RealmServer.GameObjects
 		/// <returns></returns>
 		public bool CanBeUsedBy(Character chr)
 		{
-			if (chr.GodMode)
-			{
-				return true;
-			}
-
 			// must be enabled
 			if (!chr.CanSee(m_go) || m_go.State == GameObjectState.Disabled)
 			{
 				return false;
 			}
 
+			if (chr.GodMode)
+			{
+				return true;
+			}
+
 			// must have the right Faction (if limited to either side)
-			if (m_go.Faction != Faction.NullFaction && m_go.Faction.Group != chr.Faction.Group)
+			if (m_go.Faction != Faction.NullFaction && m_go.Faction.Group != 0 && m_go.Faction.Group != chr.Faction.Group)
 			{
 				return false;
 			}

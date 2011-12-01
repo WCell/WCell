@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2010-01-27 10:06:23 +0100 (on, 27 jan 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 1227 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -15,18 +15,16 @@
  *************************************************************************/
 
 using System.Collections.Generic;
-using WCell.Util.Collections;
 using WCell.Constants;
 using WCell.Core;
-using WCell.Core.Initialization;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Interaction;
+using WCell.Util.Collections;
 
 namespace WCell.RealmServer.Groups
 {
 	/// <summary>
-	/// TODO: Consider an approach on how to synchronize the Group the best way
 	/// TODO: Group-Tracking (including buffs/debuffs)
 	/// </summary>
 	public sealed class GroupMgr : Manager<GroupMgr>
@@ -39,21 +37,6 @@ namespace WCell.RealmServer.Groups
 		private GroupMgr()
 		{
 			OfflineChars = new SynchronizedDictionary<uint, GroupMember>(100);
-		}
-
-		protected override bool InternalStart()
-		{
-			return true;
-		}
-
-		protected override bool InternalStop()
-		{
-			return true;
-		}
-
-		protected override bool InternalRestart(bool forced)
-		{
-			return true;
 		}
 
 		#region Login/Logout
@@ -167,12 +150,6 @@ namespace WCell.RealmServer.Groups
 			return true;
 		}
 		#endregion
-
-		[Initialization(InitializationPass.Fifth, "Start group manager")]
-		public static bool StartGroupMgr()
-		{
-			return Instance.Start();
-		}
 	}
 
 	public static class GroupUtil

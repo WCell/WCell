@@ -12,9 +12,9 @@ namespace WCell.Addons.Default.Spells.Hunter
 		{
 			// taming has an invalid target
 			SpellHandler.Apply(spell =>
-			{
-				spell.GetEffect(AuraType.PeriodicTriggerSpell).ImplicitTargetA = ImplicitSpellTargetType.SingleEnemy;
-			}, SpellId.ClassSkillTameBeast);
+			    {
+				    spell.GetEffect(AuraType.PeriodicTriggerSpell).ImplicitTargetA = ImplicitSpellTargetType.SingleEnemy;
+			    }, SpellId.ClassSkillTameBeast);
 
 			// Only one Aspect can be active at a time
 			AuraHandler.AddAuraGroup(SpellLineId.HunterAspectOfTheFox,
@@ -36,6 +36,18 @@ namespace WCell.Addons.Default.Spells.Hunter
             //    {
             //        spell.CooldownTime = 12000;
             //    });
+
+            SpellLineId.HunterSerpentSting.Apply(spell =>
+                {
+                    spell.SpellCooldowns = null;
+                });
+
+            //SpellLineId.HunterViperSting.Apply(spell =>
+            //    {
+            //        if(spell.SpellCooldowns != null)
+            //            spell.CooldownTime = 15000;
+            //    });
+
 
 			// Expose Weakness aura applied on the target  - Seems the spell has changed
 			//SpellHandler.Apply(spell => spell.Effects[0].ImplicitTargetA = ImplicitTargetType.SingleEnemy,

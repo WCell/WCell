@@ -7,7 +7,7 @@ using WCell.RealmServer.Instances;
 
 namespace WCell.Addons.Default.Instances
 {
-	public class GruulsLair : DungeonInstance
+	public class GruulsLair : BaseInstance
 	{
 	}
 

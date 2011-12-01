@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2009-09-01 21:50:20 +0800 (Tue, 01 Sep 2009) $
- *   last author	: $LastChangedBy: dominikseifert $
+ 
  *   revision		: $Rev: 1065 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -18,7 +18,6 @@ using System;
 using System.Threading;
 using WCell.AuthServer;
 using WCell.AuthServer.Commands;
-using WCell.Core;
 using WCell.Core.Database;
 
 namespace WCell.AuthServerConsole

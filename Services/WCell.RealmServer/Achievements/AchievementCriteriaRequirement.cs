@@ -5,7 +5,6 @@ using WCell.Constants;
 using WCell.Constants.Achievements;
 using WCell.Constants.Factions;
 using WCell.Constants.Misc;
-using WCell.RealmServer.Achievements;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
@@ -136,6 +135,13 @@ namespace WCell.RealmServer.Achievements
         {
             if (target == null)
                 return false;
+            var charTarget = target as Character;
+            if (charTarget != null)
+            {
+                if (charTarget.Class == ClassId.DeathKnight)
+                    if (Value1 < 55)
+                        return false; // Do not reward achievement for death knights when level < 55
+            }
             return target.Level >= Value1;
         }
     }

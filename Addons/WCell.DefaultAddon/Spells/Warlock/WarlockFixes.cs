@@ -6,7 +6,7 @@ using WCell.RealmServer.Entities;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Spells.Auras.Handlers;
-using WCell.Constants;
+using WCell.RealmServer.Spells.Effects;
 
 namespace WCell.Addons.Default.Spells.Warlock
 {
@@ -58,6 +58,19 @@ namespace WCell.Addons.Default.Spells.Warlock
                 var spellEffect = spell.GetEffect(SpellEffectType.Dummy);
                 spellEffect.SpellEffectHandlerCreator = (cast, effect) => new LifeTapHandler(cast, effect);
             }, SpellLineId.WarlockLifeTap);
+
+			SpellLineId.WarlockImmolate.Apply(spell =>
+			{
+				spell.AddAuraEffect(() => new ApplyImmolateStateHandler(),ImplicitSpellTargetType.SingleEnemy);
+			});
+
+            //SpellLineId.WarlockDestructionConflagrate.Apply(spell =>
+            //{
+            //    var dmgeff = spell.GetEffect(SpellEffectType.SchoolDamage);
+            //    var periodicdmgeff = spell.GetEffect(AuraType.PeriodicDamage);
+            //    dmgeff.SpellEffectHandlerCreator = (cast, effect) => new ConflagrateHandler(cast, effect);
+            //    periodicdmgeff.AuraEffectHandlerCreator = () => new ConflagratePeriodicHandler();
+            //});
         }
 
         public class IncreaseDamageIfAuraPresentHandler : SpellEffectHandler
@@ -135,5 +148,60 @@ namespace WCell.Addons.Default.Spells.Warlock
                 return base.InitializeTarget(target);
             }
         }
-    }
+
+		#region ApplyImmolateStateHandler
+		public class ApplyImmolateStateHandler : DummyHandler
+		{
+			protected override void Apply()
+			{
+				Owner.IncMechanicCount(SpellMechanic.Custom_Immolate, true);
+			}
+			protected override void Remove(bool cancelled)
+			{
+				Owner.DecMechanicCount(SpellMechanic.Custom_Immolate, true);
+			}
+		}
+		#endregion
+
+		#region Conflagrate
+		public class ConflagrateHandler : SchoolDamageEffectHandler
+		{
+			public ConflagrateHandler(SpellCast cast, SpellEffect effect)
+            : base(cast, effect)
+            {
+            }
+
+			protected override void Apply(WorldObject target)
+			{
+				var unit = (Unit)target;
+				if (unit != null)
+				{
+					var aura = unit.Auras[unit.GetStrongestImmolate()];
+					var modbasepoints = aura.Spell.Effects[0].GetModifiedDamage(m_cast.CasterUnit); //basepoints after applying all damage modifiers
+					var totalbasepoints = modbasepoints * aura.MaxTicks;//total damage of immolate aura with all mods
+					m_cast.Spell.Effects[0].BasePoints = 60 * totalbasepoints / 100; //60% of total damage
+				}
+				base.Apply(target);
+			}
+		}
+		public class ConflagratePeriodicHandler : PeriodicDamageHandler
+		{
+			protected override void Apply()
+			{
+				var aura = Owner.Auras[Owner.GetStrongestImmolate()];
+				if (aura != null)
+				{
+					var modbasepoints = aura.Spell.Effects[0].GetModifiedDamage(m_aura.CasterUnit);
+					var totalbasepoints = modbasepoints * aura.MaxTicks;
+					var finalvalue = m_aura.Spell.Effects[2].CalcEffectValue() * totalbasepoints / (100 * m_aura.MaxTicks);//40% of total damage
+					m_aura.Spell.Effects[1].BasePoints = finalvalue;
+					UpdateEffectValue();
+					Owner.Auras.Remove(aura.Id);
+				}
+				base.Apply();
+			}
+		}
+		
+		#endregion
+	}
 }

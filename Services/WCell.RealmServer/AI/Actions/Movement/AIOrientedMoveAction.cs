@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using WCell.RealmServer.Entities;
 using WCell.Util.Graphics;
 
@@ -68,7 +64,7 @@ namespace WCell.RealmServer.AI.Actions.Movement
 			}
 		}
 
-		public override bool IsInRange(Unit target)
+		public override bool IsInRange(WorldObject target)
 		{
 			var angle = m_owner.GetAngleTowards(target);
 			if (angle >= MinAngle && angle <= MaxAngle)

@@ -957,6 +957,14 @@ namespace WCell.Constants.Spells
 		PeriodicLeech = 0x10,
 		PeriodicEnergize = 0x20
 	}
+
+	public enum EffectIndex
+	{
+		Custom = -1,
+		Zero,
+		One,
+		Two,
+	}
 	#endregion
 
 	#region AuraState
@@ -1129,11 +1137,14 @@ namespace WCell.Constants.Spells
 		SpellLogFlag_0x20 = 0x20,
 	}
 
+	/// <summary>
+	/// Displayed above target head when spell fails to hit
+	/// </summary>
 	public enum CastMissReason : byte
 	{
 		None = 0,
 		Miss = 1,
-		Resist = 2,
+		FullResist = 2,
 		Dodge = 3,
 		Parry = 4,
 		Block = 5,
@@ -1174,7 +1185,7 @@ namespace WCell.Constants.Spells
 		Flag_3_0x8 = 0x8,
 	}
 
-	public enum SpellDefenseType
+	public enum DamageType
 	{
 		None = 0,
 		Magic = 1,

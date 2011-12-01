@@ -1,20 +1,19 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using Castle.ActiveRecord;
 using WCell.Constants;
 using WCell.Constants.GameObjects;
-using WCell.Core;
-using WCell.RealmServer.Handlers;
-using WCell.RealmServer.Modifiers;
-using WCell.RealmServer.NPCs.Pets;
-using WCell.RealmServer.NPCs;
-using WCell.RealmServer.Database;
 using WCell.Constants.NPCs;
 using WCell.Constants.Pets;
+using WCell.Core;
+using WCell.RealmServer.AI;
+using WCell.RealmServer.Database;
+using WCell.RealmServer.Handlers;
+using WCell.RealmServer.Modifiers;
+using WCell.RealmServer.NPCs;
+using WCell.RealmServer.NPCs.Pets;
 using WCell.Util.Graphics;
-using Castle.ActiveRecord;
-
 
 namespace WCell.RealmServer.Entities
 {
@@ -181,6 +180,62 @@ namespace WCell.RealmServer.Entities
 			if (m_activePet != null)
 			{
 			}
+		}
+		#endregion
+
+		#region Controlling
+		public void Possess(int duration, Unit target, bool controllable = true, bool sendPetActionsWithSpells = true)
+		{
+			if (target == null)
+				return;
+			if (target is NPC)
+			{
+				
+				Enslave((NPC)target, duration);
+				target.Charmer = this;
+				Charm = target;
+				target.Brain.State = BrainState.Idle;
+
+				if(sendPetActionsWithSpells)
+					PetHandler.SendSpells(this, (NPC)target, PetAction.Stay);
+				else
+					PetHandler.SendVehicleSpells(this, (NPC)target);
+
+				SetMover(target, controllable);
+				target.UnitFlags |= UnitFlags.Possessed;
+				
+			}
+			else if (target is Character)
+			{
+				PetHandler.SendPlayerPossessedPetSpells(this, (Character)target);
+				SetMover(target, controllable);
+			}
+			Observing = target;
+			FarSight = target.EntityId;
+			
+		}
+
+		public void UnPossess(Unit target)
+		{
+			Observing = null;
+			SetMover(this, true);
+			ResetMover();
+			FarSight = EntityId.Zero;
+			PetHandler.SendEmptySpells(this);
+			
+			Charm = null;
+
+			if (target == null)
+				return;
+
+			target.Charmer = null;
+			target.UnitFlags &= ~UnitFlags.Possessed;
+
+			if (!(target is NPC))
+				return;
+
+			target.Brain.EnterDefaultState();
+			((NPC)target).RemainingDecayDelayMillis = 1;
 		}
 		#endregion
 
@@ -516,7 +571,7 @@ namespace WCell.RealmServer.Entities
 		{
 			if (record is SummonedPetRecord)
 			{
-				SummonedPetRecords.Add((SummonedPetRecord) record);
+				SummonedPetRecords.Add((SummonedPetRecord)record);
 			}
 			else if (record is PermanentPetRecord)
 			{
@@ -723,6 +778,37 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
+		public void RemoveSummonedEntourage()
+		{
+			if (Minions != null)
+			{
+				foreach (var minion in Minions.Where(minion => minion != null))
+				{
+					DeleteMinion(minion);
+				}
+			}
+
+			if (Totems != null)
+			{
+				foreach (var totem in Totems.Where(totem => totem != null))
+				{
+					DeleteMinion(totem);
+				}
+			}
+		}
+
+		void DeleteMinion(NPC npc)
+		{
+			if (npc.Summon != EntityId.Zero)
+			{
+				var summon = Map.GetObject(npc.Summon);
+				if (summon != null)
+					summon.Delete();
+				npc.Summon = EntityId.Zero;
+			}
+			npc.Delete();
+		}
+
 		#region GOs
 		public bool OwnsGo(GOEntryId goId)
 		{
@@ -811,5 +897,14 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 		#endregion
+
+		void DetatchFromVechicle()
+		{
+			var seat = VehicleSeat;
+			if (seat != null)
+			{
+				seat.ClearSeat();
+			}
+		}
 	}
 }

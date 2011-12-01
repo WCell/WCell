@@ -1,13 +1,12 @@
 using Castle.ActiveRecord;
-using Cell.Core;
-using WCell.Constants.Spells;
+using NLog;
 using WCell.Core;
 using WCell.Core.Database;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
-using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Spells;
-using NLog;
+using WCell.RealmServer.Spells.Auras;
+using WCell.Util.ObjectPools;
 
 namespace WCell.RealmServer.Database
 {

@@ -208,7 +208,35 @@ namespace WCell.RealmServer.Spells
         public int MaxStackCount;
         public uint ProcChance; //29
         public int ProcCharges; //30
-        public ProcTriggerFlags ProcTriggerFlags;
+        private ProcTriggerFlags _procTriggerFlags;//28
+        
+        /// <summary> 
+        /// Indicates events which cause this spell to trigger its proc effect
+        /// </summary>
+        /// <remarks>
+        /// This spell must be a proc <see cref="IsProc"/>/
+        // </remarks>
+        public ProcTriggerFlags ProcTriggerFlags
+        {
+            get { return _procTriggerFlags; }
+            set
+            {
+                _procTriggerFlags = value;
+        
+                if (_procTriggerFlags.RequireHitFlags() && ProcHitFlags == ProcHitFlags.None)
+                {
+                   // Default proc on hit
+                   ProcHitFlags = ProcHitFlags.Hit;
+                }
+            }
+        }
+        
+        /// <summary>
+        /// Contains information needed for ProcTriggerFlags depending on hit result
+        /// <remarks>
+        /// This spell must be a proc <see cref="IsProc"/>
+        /// </remarks>
+        public ProcHitFlags ProcHitFlags { get; set; }
     }
 
     public sealed class SpellAuraRestrictions
@@ -263,7 +291,7 @@ namespace WCell.RealmServer.Spells
 		/// SpellCategory.dbc
 		/// </summary>
 		public uint Category;
-        public SpellDefenseType DefenseType;
+        public DamageType DefenseType;
         /// <summary>
 		/// SpellDispelType.dbc
 		/// </summary>
@@ -306,6 +334,16 @@ namespace WCell.RealmServer.Spells
         public int CategoryCooldownTime;
         public int CooldownTime;
         public int StartRecoveryTime;
+
+        public static void SetCooldownTime(Spell spell, int coolDownTime)
+        {
+            if (spell.SpellCooldowns != null)
+                spell.SpellCooldowns.CooldownTime = coolDownTime;
+            else
+            {
+                spell.SpellCooldowns = new SpellCooldowns { CooldownTime = coolDownTime };
+            }
+        }
     }
 
     public sealed class SpellEquippedItems

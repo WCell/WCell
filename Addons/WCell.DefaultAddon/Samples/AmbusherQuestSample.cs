@@ -1,19 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using WCell.Constants.Misc;
-using WCell.RealmServer.Quests;
-using WCell.Constants.NPCs;
-using WCell.RealmServer.Entities;
-using WCell.RealmServer.NPCs;
 using WCell.Constants;
 using WCell.Constants.Factions;
+using WCell.Constants.Misc;
+using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
-using WCell.RealmServer.AI.Brains;
 using WCell.Core.Initialization;
-using WCell.RealmServer.Chat;
 using WCell.RealmServer.AI;
+using WCell.RealmServer.Chat;
+using WCell.RealmServer.Entities;
+using WCell.RealmServer.NPCs;
+using WCell.RealmServer.Quests;
 
 namespace WCell.Addons.Default.Samples
 {

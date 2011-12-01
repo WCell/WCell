@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2010-01-28 05:18:24 +0100 (to, 28 jan 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 1229 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,6 @@
  *************************************************************************/
 
 using System;
-using NLog;
 using WCell.Constants.Achievements;
 using WCell.Constants.Skills;
 using WCell.Constants.Updates;
@@ -206,7 +205,7 @@ namespace WCell.RealmServer.Skills
 			if (SkillLine.HasTier(tier))
 			{
 				uint tierLimit = SkillLine.Tiers.GetMaxValue(tier);
-				if (CurrentValue >= tierLimit - 100)
+				if (CurrentValue >= (int)tierLimit - 100)
 				{
 					// cannot be learnt if we have less than max - 100 in that skill
 					return true;

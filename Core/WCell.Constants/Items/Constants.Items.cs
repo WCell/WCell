@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace WCell.Constants.Items
 {
@@ -142,6 +139,7 @@ namespace WCell.Constants.Items
 
 	public enum BuyItemError : byte
 	{
+		Ok = 0xFF,
 		CantFindItem = 0x00,
 		ItemAlreadySold = 0x01,
 		NotEnoughMoney = 0x02,

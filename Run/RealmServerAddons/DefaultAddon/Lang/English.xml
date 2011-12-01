@@ -310,6 +310,11 @@
   <Item Key="NPCTrenton">
     <Value>Tell me more, Trenton</Value>
   </Item>
-    
+  <Item Key="NPCArelas1">
+    <Value>I am ready</Value>
+  </Item>
+  <Item Key="NPCArelas2">
+    <Value>I am ready for the next challenge</Value>
+  </Item>
   </Items>
 </Translation>

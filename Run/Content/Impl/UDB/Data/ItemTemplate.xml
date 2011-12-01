@@ -98,7 +98,7 @@
     <Flat Name="ZoneId" Column="area" />
     <Flat Name="MapId" Column="Map" />
     <Flat Name="BagFamily" Column="BagFamily" />
-    <Flat Name="TotemCategory" Column="ToolCategory" />
+    <Flat Name="ToolCategory" Column="TotemCategory" />
     <NestedArray Name="Sockets">
       <Flat Name="Color" Pattern="socketColor_{#}" Offset="1" />
       <Flat Name="Content" Pattern="SocketContent_{#}" Offset="1" />
@@ -108,14 +108,11 @@
     <Flat Name="RequiredDisenchantingLevel" Column="RequiredDisenchantSkill" />
     <Flat Name="ArmorModifier" Column="ArmorDamageModifier" />
     <Flat Name="Duration" Column="Duration" />
-    <Flat Name="FoodType" Column="FoodType" />
-<!--<Flat Name="RequiredTargetType" Column="type" Table="item_required_target"/>
+	<Flat Name="RequiredTargetType" Column="type" Table="item_required_target"/>
     <Flat Name="RequiredTargetId" Column="targetEntry" Table="item_required_target"/>
     <Flat Name="ItemLimitCategoryId" Column="ItemLimitCategory"/>
     <Flat Name="HolidayId" Column="HolidayId"/>
-    
-    These two don't seem to be in UDB
--->
+	<Flat Name="FoodType" Column="FoodType" />
     
 <!--not in UDB
     in npc_vendor table, don't know how to select that, altough makes more sense in that table
@@ -128,11 +125,8 @@
 
 <!--extra in UDB
     ExtraFlags
-    name
     requiredspell
-    stackable = StackSize
     spellppmRate_{#}
-    LanguageId
     ScriptName
     DisenchantID
     minMoneyLoot

@@ -2,11 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
-using NLog;
+using WCell.Constants;
 using WCell.Constants.Factions;
-using WCell.Constants.Looting;
 using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
+using WCell.Constants.World;
 using WCell.Core;
 using WCell.Core.ClientDB;
 using WCell.Core.Initialization;
@@ -17,19 +17,15 @@ using WCell.RealmServer.Global;
 using WCell.RealmServer.Gossips;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Items;
-using WCell.RealmServer.Looting;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.NPCs.Auctioneer;
 using WCell.RealmServer.NPCs.Spawns;
 using WCell.RealmServer.NPCs.Trainers;
 using WCell.RealmServer.NPCs.Vendors;
-using WCell.RealmServer.Quests;
 using WCell.RealmServer.Spawns;
 using WCell.RealmServer.Spells;
 using WCell.Util;
 using WCell.Util.Variables;
-using WCell.Constants.World;
-using WCell.Constants;
 
 namespace WCell.RealmServer.NPCs
 {
@@ -568,6 +564,12 @@ namespace WCell.RealmServer.NPCs
 
 		private static bool entriesLoaded, spawnsLoaded;
 
+		public static bool Loading
+		{
+			get;
+			private set;
+		}
+
 		public static void LoadNPCDefs(bool force = false)
 		{
 			LoadEntries(force);
@@ -581,73 +583,92 @@ namespace WCell.RealmServer.NPCs
 				return;
 			}
 
-			FactionMgr.Initialize();
+			try
+			{
+				Loading = true;
+				FactionMgr.Initialize();
 
             if (ContentMgr.HasMapper(typeof(NPCBaseStats)))
 		        ContentMgr.Load<NPCBaseStats>(force);
-			ContentMgr.Load<NPCEquipmentEntry>(force);
-			ContentMgr.Load<NPCEntry>(force);
+				ContentMgr.Load<NPCEquipmentEntry>(force);
+				//Dont move this into LoadTrainers, the templates must
+				//be loaded before NPC Entries
+				ContentMgr.Load<TrainerSpellTemplate>(force);
+				ContentMgr.Load<NPCEntry>(force);
 
-			//foreach (var entry in Entries)
-			//{
-			//    if (entry != null && entry.Template == null)
-			//    {
-			//        ContentHandler.OnInvalidData("NPCEntry had no corresponding NPCTemplate: " + entry.NPCId);
-			//    }
-			//}
+				//foreach (var entry in Entries)
+				//{
+				//    if (entry != null && entry.Template == null)
+				//    {
+				//        ContentHandler.OnInvalidData("NPCEntry had no corresponding NPCTemplate: " + entry.NPCId);
+				//    }
+				//}
 
-			LoadTrainers(force);
+				LoadTrainers(force);
 
-			// mount-entries
-			//foreach (var spell in SpellHandler.ById)
-			//{
-			//    if (spell != null && spell.IsMount)
-			//    {
-			//        var id = (MountId)spell.Effects[0].MiscValue;
-			//        if ((int)id >= Entries.Length)
-			//        {
-			//            log.Warn("Invalid Mount Id: " + id);
-			//            spell.Effects[0].EffectType = SpellEffectType.Dummy;		// reach-around fix for the time being
-			//            continue;
-			//        }
-			//        var entry = Entries[(int)id];
-			//        if (entry != null)
-			//        {
-			//            Mounts[id] = entry;
-			//        }
-			//    }
-			//}
+				// mount-entries
+				//foreach (var spell in SpellHandler.ById)
+				//{
+				//    if (spell != null && spell.IsMount)
+				//    {
+				//        var id = (MountId)spell.Effects[0].MiscValue;
+				//        if ((int)id >= Entries.Length)
+				//        {
+				//            log.Warn("Invalid Mount Id: " + id);
+				//            spell.Effects[0].EffectType = SpellEffectType.Dummy;		// reach-around fix for the time being
+				//            continue;
+				//        }
+				//        var entry = Entries[(int)id];
+				//        if (entry != null)
+				//        {
+				//            Mounts[id] = entry;
+				//        }
+				//    }
+				//}
 
-			EntriesLoaded = true;
+				EntriesLoaded = true;
+			}
+			finally
+			{
+				Loading = false;
+			}
 		}
 
 		public static void LoadSpawns(bool force)
 		{
-			OnlyLoadSpawns(force);
-			LoadWaypoints(force);
-			GossipMgr.LoadNPCRelations();
-
-			if (!RealmServer.Instance.IsRunning) return;
-
-			// spawn immediately
-			for (MapId mapId = 0; mapId < MapId.End; mapId++)
+			Loading = true;
+			try
 			{
-				var map = World.GetNonInstancedMap(mapId);
-				if (map != null && map.NPCsSpawned)
+				OnlyLoadSpawns(force);
+				LoadWaypoints(force);
+				GossipMgr.LoadNPCRelations();
+
+				if (!RealmServer.Instance.IsRunning) return;
+
+				// spawn immediately
+				for (MapId mapId = 0; mapId < MapId.End; mapId++)
 				{
-					var pools = GetSpawnPoolTemplatesByMap(mapId);
-					if (pools != null)
+					var map = World.GetNonInstancedMap(mapId);
+					if (map != null && map.NPCsSpawned)
 					{
-						foreach (var pool in pools)
+						var pools = GetSpawnPoolTemplatesByMap(mapId);
+						if (pools != null)
 						{
-							if (pool.AutoSpawns)
+							foreach (var pool in pools)
 							{
-								var p = pool;			// wrap closure
-								map.ExecuteInContext(() => map.AddNPCSpawnPoolNow(p));
+								if (pool.AutoSpawns)
+								{
+									var p = pool; // wrap closure
+									map.ExecuteInContext(() => map.AddNPCSpawnPoolNow(p));
+								}
 							}
 						}
 					}
 				}
+			}
+			finally
+			{
+				Loading = false;
 			}
 		}
 
@@ -699,6 +720,12 @@ namespace WCell.RealmServer.NPCs
 		#endregion
 
 		#region Trainers
+
+		/// <summary>
+		/// Trainer spell entries by trainer spell template id
+		/// </summary>
+		public static Dictionary<uint, List<TrainerSpellEntry>> TrainerSpellTemplates = new Dictionary<uint, List<TrainerSpellEntry>>();
+
 		private static void LoadTrainers(bool force)
 		{
 			ContentMgr.Load<TrainerSpellEntry>(force);

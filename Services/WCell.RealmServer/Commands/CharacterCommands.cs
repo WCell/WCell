@@ -1,7 +1,6 @@
 using WCell.Constants.Updates;
 using WCell.Constants.World;
 using WCell.RealmServer.Entities;
-using WCell.RealmServer.Formulas;
 using WCell.Util.Commands;
 
 namespace WCell.RealmServer.Commands
@@ -44,14 +43,24 @@ namespace WCell.RealmServer.Commands
 		protected override void Initialize()
 		{
 			Init("Level");
-			EnglishParamInfo = "<level>";
-			EnglishDescription = "Sets the target's level.";
+			EnglishParamInfo = "[-o] <level>";
+			EnglishDescription = "Sets the target's level. Using -o Allows overriding the servers configured Max Level";
 		}
 
 		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 		{
+			var mod = trigger.Text.NextModifiers();
 			var unit = trigger.Args.Target;
-			unit.Level = trigger.Text.NextInt(unit.Level);
+			
+            var level = trigger.Text.NextInt(unit.Level);
+
+			if (!mod.Contains("o") && level > unit.MaxLevel)
+			{
+				trigger.Reply("Max Level is {0} use the -o switch if you intended to set above this", unit.MaxLevel);
+				return;
+			}
+			
+			unit.Level = level;
 		}
 
 		public override ObjectTypeCustom TargetTypes

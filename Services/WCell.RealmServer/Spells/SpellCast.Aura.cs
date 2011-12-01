@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using NLog;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
@@ -20,7 +18,7 @@ namespace WCell.RealmServer.Spells
 			var missReason = CastMissReason.None;
 			if (hostile && target.CheckDebuffResist(casterLevel, target.GetLeastResistantSchool(spell)))
 			{
-				missReason = CastMissReason.Resist;
+				missReason = CastMissReason.FullResist;
 			}
 			return missReason;
 		}
@@ -33,9 +31,9 @@ namespace WCell.RealmServer.Spells
 
 			// check stacking
 			SpellEffectHandler lastHandler = null;
-			for (var i = 0; i < m_handlers.Length; i++)
+			for (var i = 0; i < Handlers.Length; i++)
 			{
-				var spellHandler = m_handlers[i];
+				var spellHandler = Handlers[i];
 				if (spellHandler.Effect.IsAuraEffect)
 				{
 					if (lastHandler != null && lastHandler.Effect.SharesTargetsWith(spellHandler.Effect, IsAICast))
@@ -57,9 +55,9 @@ namespace WCell.RealmServer.Spells
 									continue;
 								}
 
-								var id = m_spell.GetAuraUID(CasterReference, target);
+								var id = Spell.GetAuraUID(CasterReference, target);
 								var failReason = SpellFailedReason.Ok;
-								if (((Unit)target).Auras.PrepareStackOrOverride(CasterReference, id, m_spell, ref failReason, this))
+								if (((Unit)target).Auras.PrepareStackOrOverride(CasterReference, id, Spell, ref failReason, this))
 								{
 									m_auraApplicationInfos.Add(new AuraApplicationInfo((Unit)target));
 								}
@@ -78,19 +76,19 @@ namespace WCell.RealmServer.Spells
 			return SpellFailedReason.Ok;
 		}
 
-		void CreateAuras(ref List<CastMiss> missedTargets, ref List<IAura> auras, DynamicObject dynObj)
+		void CreateAuras(ref List<MissedTarget> missedTargets, ref List<IAura> auras, DynamicObject dynObj)
 		{
 			auras = AuraListPool.Obtain();
 
-			var allowDead = m_spell.PersistsThroughDeath;
+			var allowDead = Spell.PersistsThroughDeath;
 
 			// create AreaAura
-			if (m_spell.IsAreaAura)
+			if (Spell.IsAreaAura)
 			{
 				if (dynObj != null || (CasterObject != null && (allowDead || !(CasterObject is Unit) || ((Unit)CasterObject).IsAlive)))
 				{
 					// AreaAura is created at the target location if it is a DynamicObject, else its applied to the caster
-					var aaura = new AreaAura(dynObj ?? CasterObject, m_spell);
+					var aaura = new AreaAura(dynObj ?? CasterObject, Spell);
 					if (dynObj != null)
 					{
 						// also start the area aura
@@ -102,7 +100,7 @@ namespace WCell.RealmServer.Spells
 				{
 					LogManager.GetCurrentClassLogger().Warn(
 						"Tried to cast Spell {0} with invalid dynObj or Caster - dynObj: {1}, CasterObject: {2}, CasterUnit: {3}",
-						m_spell, dynObj, CasterObject, CasterUnit);
+						Spell, dynObj, CasterObject, CasterUnit);
 				}
 			}
 
@@ -110,7 +108,7 @@ namespace WCell.RealmServer.Spells
 			for (var i = m_auraApplicationInfos.Count - 1; i >= 0; i--)
 			{
 				var app = m_auraApplicationInfos[i];
-				if (!m_targets.Contains(app.Target))
+				if (!Targets.Contains(app.Target))
 				{
 					m_auraApplicationInfos.RemoveAt(i);
 				}
@@ -121,9 +119,9 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// create Aura-Handlers
-			for (var i = 0; i < m_handlers.Length; i++)
+			for (var i = 0; i < Handlers.Length; i++)
 			{
-				var spellHandler = m_handlers[i];
+				var spellHandler = Handlers[i];
 				if (spellHandler is ApplyAuraEffectHandler)
 				{
 					((ApplyAuraEffectHandler)spellHandler).AddAuraHandlers(m_auraApplicationInfos);
@@ -152,22 +150,22 @@ namespace WCell.RealmServer.Spells
 
 				// check for immunities and resistances
 				CastMissReason missReason;
-				var hostile = m_spell.IsHarmfulFor(CasterReference, target);
+				var hostile = Spell.IsHarmfulFor(CasterReference, target);
 
-				if (!IsPassive && !m_spell.IsPreventionDebuff &&
-					(missReason = CheckDebuffResist(target, m_spell, CasterReference.Level, hostile)) != CastMissReason.None)
+				if (!IsPassive && !Spell.IsPreventionDebuff &&
+					(missReason = CheckDebuffResist(target, Spell, CasterReference.Level, hostile)) != CastMissReason.None)
 				{
 					// debuff miss
-					missedTargets.Add(new CastMiss(target, missReason));
+					missedTargets.Add(new MissedTarget(target, missReason));
 				}
 				else
 				{
 					// create aura
-					var newAura = target.Auras.CreateAura(CasterReference, m_spell, info.Handlers, TargetItem, !m_spell.IsPreventionDebuff && !hostile);
+					var newAura = target.Auras.CreateAura(CasterReference, Spell, info.Handlers, TargetItem, !Spell.IsPreventionDebuff && !hostile);
 					if (newAura != null)
 					{
 						// check for debuff and if the spell causes no threat we aren't put in combat
-						if (!m_spell.IsPreventionDebuff && !((m_spell.AttributesExC & SpellAttributesExC.NoInitialAggro) != 0) && hostile && target.IsInWorld && target.IsAlive)
+						if (!Spell.IsPreventionDebuff && !((Spell.AttributesExC & SpellAttributesExC.NoInitialAggro) != 0) && hostile && target.IsInWorld && target.IsAlive)
 						{
 							// force combat mode
 							target.IsInCombat = true;

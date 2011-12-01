@@ -1,8 +1,7 @@
-using System.IO;
+using WCell.Core.Addons;
+using WCell.RealmServer.Addons;
 using WCell.RealmServer.Lang;
 using WCell.Util.Commands;
-using WCell.RealmServer.Addons;
-using WCell.Core.Addons;
 
 namespace WCell.RealmServer.Commands
 {
@@ -67,7 +66,7 @@ namespace WCell.RealmServer.Commands
 					var context = RealmAddonMgr.Instance.TryLoadAddon(path);
 					if (context == null)
 					{
-						trigger.Reply("File does not exist: " + path);
+						trigger.Reply("File does not exist or has invalid format: " + path);
 					}
 					else
 					{

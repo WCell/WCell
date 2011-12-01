@@ -3,7 +3,7 @@
  *   file			: LockfreeStack.cs
  *   copyright		: (C) 2004 Julian M Bucknall 
  *   last changed	: $LastChangedDate: 2008-11-25 11:16:45 +0100 (ti, 25 nov 2008) $
- *   last author	: $LastChangedBy: dominikseifert $
+ 
  *   revision		: $Rev: 686 $
  *
  *   Written by/rights held by Julian M Bucknall (boyet.com)
@@ -14,9 +14,6 @@
  *************************************************************************/
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 
 namespace WCell.Util.Collections

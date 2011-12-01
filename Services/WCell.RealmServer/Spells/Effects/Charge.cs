@@ -1,9 +1,8 @@
-using System;
+using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
-using WCell.Constants.NPCs;
 
 namespace WCell.RealmServer.Spells.Effects
 {

@@ -55,21 +55,26 @@ namespace WCell.RealmServer.Handlers
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_ADDON_INFO))
 			{
-				int unk;
-				using (var binReader = new BinaryReader(new MemoryStream(client.Addons)))
+				//Fix for reading past the end of stream
+				//Due to fake clients!
+				if (client.Addons.Length > 0)
 				{
-					ClientAddOn addon;
-					var addonCount = binReader.ReadInt32();
-					for (var i = 0; i < addonCount; i++)
+					int unk;
+					using (var binReader = new BinaryReader(new MemoryStream(client.Addons)))
 					{
-						addon = ReadAddOn(binReader);
-						WriteAddOnInfo(packet, addon);
-					}
+						var addonCount = binReader.ReadInt32();
+						for (var i = 0; i < addonCount; i++)
+						{
+							var addon = ReadAddOn(binReader);
+							WriteAddOnInfo(packet, addon);
+						}
 
-					unk = binReader.ReadInt32();
+						unk = binReader.ReadInt32();
+					}
+					Console.WriteLine("CMSG ADDON Unk: " + unk);
 				}
 
-				Console.WriteLine("CMSG ADDON Unk: " + unk);
+				
 
 				const int count = 0;
 				packet.Write(count);

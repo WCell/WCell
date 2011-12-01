@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace WCell.Constants.GameObjects
+﻿namespace WCell.Constants.GameObjects
 {
 	public static class GOConstantsExtensions
 	{

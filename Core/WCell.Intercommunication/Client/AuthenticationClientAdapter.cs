@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2008-08-17 08:08:03 +0800 (Sun, 17 Aug 2008) $
- *   last author	: $LastChangedBy: dominikseifert $
+ 
  *   revision		: $Rev: 598 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -15,19 +15,14 @@
  *************************************************************************/
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.ServiceModel;
-using System.Diagnostics;
 using System.CodeDom.Compiler;
-using NLog;
+using System.Diagnostics;
+using System.ServiceModel;
+using System.ServiceModel.Channels;
 using WCell.Constants;
 using WCell.Constants.Login;
-using WCell.Intercommunication.DataTypes;
-using System.ServiceModel.Channels;
 using WCell.Constants.Realm;
-using System.Net;
+using WCell.Intercommunication.DataTypes;
 
 namespace WCell.Intercommunication.Client
 {

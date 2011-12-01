@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2009-03-17 22:00:27 +0100 (ti, 17 mar 2009) $
- *   last author	: $LastChangedBy: dominikseifert $
+ 
  *   revision		: $Rev: 813 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -17,12 +17,12 @@
 using System;
 using System.Reflection;
 using NLog;
-using resources = WCell.AuthServer.Res.WCell_AuthServer;
 using WCell.Constants;
 using WCell.Core.Initialization;
 using WCell.Core.Network;
 using WCell.Util;
 using WCell.Util.NLog;
+using resources = WCell.AuthServer.Res.WCell_AuthServer;
 
 namespace WCell.AuthServer.Network
 {

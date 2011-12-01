@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using NLog;
 using WCell.Constants;
@@ -10,20 +9,18 @@ using WCell.Constants.NPCs;
 using WCell.Constants.World;
 using WCell.Core;
 using WCell.Core.Network;
-using WCell.RealmServer.Misc;
-using WCell.RealmServer.Res;
-using WCell.Util.Graphics;
-using WCell.Util.Threading;
-using WCell.RealmServer.Chat;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Items;
+using WCell.RealmServer.Misc;
 using WCell.RealmServer.NPCs;
 using WCell.RealmServer.Network;
 using WCell.RealmServer.RacesClasses;
+using WCell.RealmServer.Res;
 using WCell.Util;
 using WCell.Util.NLog;
+using WCell.Util.Threading;
 
 namespace WCell.RealmServer.Handlers
 {
@@ -1369,7 +1366,7 @@ namespace WCell.RealmServer.Handlers
 			}
 		}
 
-		public static void SendProfiency(IPacketReceiver client, ItemClass itemClass, ItemSubClassMask value)
+		public static void SendProficiency(IPacketReceiver client, ItemClass itemClass, ItemSubClassMask value)
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_SET_PROFICIENCY, 5))
 			{

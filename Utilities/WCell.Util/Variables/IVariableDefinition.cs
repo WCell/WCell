@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Xml.Serialization;
 
 namespace WCell.Util.Variables
@@ -14,6 +11,11 @@ namespace WCell.Util.Variables
 		}
 
 		bool IsReadOnly
+		{
+			get;
+		}
+
+		bool IsFileOnly
 		{
 			get;
 		}
@@ -72,7 +74,7 @@ namespace WCell.Util.Variables
 				throw new Exception("Variable's StringValue was not set - Name: " + Name + "");
 			}
 			object obj = null;
-			if (!Utility.Parse(StringValue, type, ref obj))
+			if (!StringParser.Parse(StringValue, type, ref obj))
 			{
 				throw new Exception(string.Format("Unable to parse Variable Value \"{0}\" as Type \"{1}\"", StringValue, type.Name));
 			}

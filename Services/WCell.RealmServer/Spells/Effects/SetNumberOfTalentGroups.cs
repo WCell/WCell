@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using WCell.RealmServer.Entities;
-using WCell.Util;
 
 namespace WCell.RealmServer.Spells.Effects
 {

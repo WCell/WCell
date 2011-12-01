@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2010-01-14 20:38:52 +0100 (to, 14 jan 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 1195 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -17,19 +17,17 @@
 using System.Linq;
 using WCell.Constants;
 using WCell.Constants.NPCs;
-using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.Constants.World;
-using WCell.RealmServer.AI.Brains;
+using WCell.RealmServer.AI;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Global;
 using WCell.RealmServer.Instances;
 using WCell.RealmServer.NPCs;
 using WCell.RealmServer.NPCs.Spawns;
-using WCell.Util.Commands;
-using WCell.Util;
-using WCell.RealmServer.AI;
 using WCell.RealmServer.NPCs.Vehicles;
-using WCell.RealmServer.Global;
+using WCell.Util;
+using WCell.Util.Commands;
 
 namespace WCell.RealmServer.Commands
 {
@@ -245,7 +243,7 @@ namespace WCell.RealmServer.Commands
 				}
 
 				// create & teleport
-				map.AddNPCSpawnPoolLater(spawnEntry.PoolTemplate);
+				map.AddNPCSpawnPool(spawnEntry.PoolTemplate);
 				if (trigger.Args.Target != null)
 				{
 					trigger.Args.Target.TeleportTo(map, spawnEntry.Position);
@@ -500,6 +498,50 @@ namespace WCell.RealmServer.Commands
 			}
 		}
         #endregion
+
+		#region Selectable
+		public class SelectableNPCCommand : RealmServerCommand
+		{
+			protected override void Initialize()
+			{
+				Init("Selectable", "NPCSel");
+				EnglishDescription = "Makes all NPCs on the current Map selectable";
+			}
+
+			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+			{
+				var rgn = trigger.Args.Character.Map;
+
+				if (rgn == null)
+				{
+					trigger.Reply("Instances are currently not supported.");
+					return;
+				}
+
+
+				// add message to iterate and then reply
+				rgn.ExecuteInContext(() =>
+				{
+					foreach (var obj in rgn)
+					{
+						if (obj is NPC)
+						{
+							((NPC)obj).UnitFlags &= ~UnitFlags.NotSelectable;
+						}
+					}
+				});
+				trigger.Reply("Done.");
+			}
+
+			public override bool RequiresCharacter
+			{
+				get
+				{
+					return true;
+				}
+			}
+		}
+		#endregion
     }
 
 	#region Respawn

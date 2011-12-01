@@ -1,12 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using WCell.Constants.Items;
-using WCell.RealmServer.ArenaTeams;
-using WCell.RealmServer.Handlers;
+using WCell.RealmServer.Battlegrounds.Arenas;
 using WCell.RealmServer.Guilds;
-using WCell.RealmServer.Items;
 
 namespace WCell.RealmServer.NPCs
 {
@@ -26,8 +20,8 @@ namespace WCell.RealmServer.NPCs
 			Index = 1,
 			ItemId = ItemId.ArenaTeamCharter2v2,
 			DisplayId = 16161,
-			Cost = ArenaTeamMgr.ArenaTeamCharter2v2Cost,
-			RequiredSignatures = ArenaTeamMgr.RequiredCharter2v2Signature
+			Cost = ArenaMgr.ArenaTeamCharter2v2Cost,
+			RequiredSignatures = ArenaMgr.RequiredCharter2v2Signature
 		};
 
 		public static PetitionerEntry ArenaPetition3v3Entry = new PetitionerEntry
@@ -35,8 +29,8 @@ namespace WCell.RealmServer.NPCs
 			Index = 2,
 			ItemId = ItemId.ArenaTeamCharter3v3,
 			DisplayId = 16161,
-			Cost = ArenaTeamMgr.ArenaTeamCharter3v3Cost,
-			RequiredSignatures = ArenaTeamMgr.RequiredCharter3v3Signature
+			Cost = ArenaMgr.ArenaTeamCharter3v3Cost,
+			RequiredSignatures = ArenaMgr.RequiredCharter3v3Signature
 		};
 
 		public static PetitionerEntry ArenaPetition5v5Entry = new PetitionerEntry
@@ -44,8 +38,8 @@ namespace WCell.RealmServer.NPCs
 			Index = 3,
 			ItemId = ItemId.ArenaTeamCharter5v5,
 			DisplayId = 16161,
-			Cost = ArenaTeamMgr.ArenaTeamCharter5v5Cost,
-			RequiredSignatures = ArenaTeamMgr.RequiredCharter5v5Signature
+			Cost = ArenaMgr.ArenaTeamCharter5v5Cost,
+			RequiredSignatures = ArenaMgr.RequiredCharter5v5Signature
 		};
 
 		public uint Index;

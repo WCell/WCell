@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2009-03-12 05:32:34 +0800 (Thu, 12 Mar 2009) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 794 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -21,8 +21,6 @@ using WCell.Constants;
 using WCell.Constants.Login;
 using WCell.Core;
 using WCell.Core.Cryptography;
-using WCell.RealmServer.Res;
-using WCell.Util.Threading;
 using WCell.Intercommunication.DataTypes;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
@@ -30,8 +28,9 @@ using WCell.RealmServer.Global;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Network;
 using WCell.RealmServer.Privileges;
-
+using WCell.RealmServer.Res;
 using WCell.Util.NLog;
+using WCell.Util.Threading;
 
 namespace WCell.RealmServer
 {
@@ -299,13 +298,13 @@ namespace WCell.RealmServer
 								{
 									// not staff anymore
 									World.StaffMemberCount--;
-									map.AddPlayerCount(chr);
+									map.IncreasePlayerCount(chr);
 								}
 								else
 								{
 									// new staff
 									World.StaffMemberCount++;
-									map.RemovePlayerCount(chr);
+									map.DecreasePlayerCount(chr);
 								}
 							});
 						}

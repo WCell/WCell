@@ -1,7 +1,8 @@
+using System.Collections.Generic;
+using WCell.Constants.NPCs;
 using WCell.Core.Paths;
 using WCell.RealmServer.Handlers;
 using WCell.Util;
-using WCell.Constants.NPCs;
 using WCell.Util.Graphics;
 
 namespace WCell.RealmServer.Entities
@@ -31,6 +32,8 @@ namespace WCell.RealmServer.Entities
 		/// The target of the current (or last) travel
 		/// </summary>
 		protected Vector3 m_destination;
+
+		protected Path _currentPath;
 
 		/// <summary>
 		/// The movement type (walking, running or flying)
@@ -142,8 +145,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Remaining movement time to current Destination (in millis)
 		/// </summary>
-		/// <returns>projected movement time</returns>
-		public virtual uint RemainingTime
+		public uint RemainingTime
 		{
 			get
 			{
@@ -174,23 +176,19 @@ namespace WCell.RealmServer.Entities
 		#endregion
 
 		#region MoveTo / Update / Stop
-
 		/// <summary>
 		/// Starts the MovementAI
 		/// </summary>
 		/// <returns>Whether already arrived</returns>
-		public bool MoveTo(Vector3 destination)
+		public bool MoveTo(Vector3 destination, bool findPath = true)
 		{
-			// TODO: Figure out when to send a query
-			return MoveTo(destination, false);
-		}
+			if (!m_owner.IsInWorld)
+			{
+				// something's wrong here
+				m_owner.DeleteNow();
+				return false;
+			}
 
-		/// <summary>
-		/// Starts the MovementAI
-		/// </summary>
-		/// <returns>Whether already arrived</returns>
-		public bool MoveTo(Vector3 destination, bool findPath)
-		{
 			m_destination = destination;
 			if (IsAtDestination)
 			{
@@ -199,14 +197,56 @@ namespace WCell.RealmServer.Entities
 
 			if (findPath)
 			{
-				m_currentQuery = new PathQuery(m_owner.Position, ref destination, m_owner.ContextHandler, OnPathQueryReply);
-				m_owner.Map.QueryDirectPath(m_currentQuery);
+				// TODO: Consider flying units & liquid levels
+				var pos = m_owner.Position;
+				pos.Z += 5;
+				m_currentQuery = new PathQuery(pos, ref destination, m_owner.ContextHandler, OnPathQueryReply);
+
+				m_owner.Map.Terrain.FindPath(m_currentQuery);
 			}
 			else if (m_owner.CanMove)
 			{
 				// start moving
 				MoveToDestination();
 			}
+			// cannot move
+			return false;
+		}
+
+		/// <summary>
+		/// Starts the MovementAI
+		/// </summary>
+		/// <returns>Whether already arrived</returns>
+		public bool MoveToPoints(List<Vector3> points)
+		{
+			if (!m_owner.IsInWorld)
+			{
+				// something's wrong here
+				m_owner.DeleteNow();
+				return false;
+			}
+
+			m_destination = points[points.Count - 1];
+			if (IsAtDestination)
+			{
+				return true;
+			}
+
+
+			// TODO: Consider flying units & liquid levels
+			var pos = m_owner.Position;
+			pos.Z += 5;
+			m_currentQuery = new PathQuery(pos, ref m_destination, m_owner.ContextHandler, OnPathQueryReply);
+
+			m_currentQuery.Path.Reset(points.Count);
+			foreach (var point in points)
+			{
+				m_currentQuery.Path.Add(point);
+			}
+			m_currentQuery.Reply();
+
+			//m_owner.Map.Terrain.FindPath(m_currentQuery);
+
 			// cannot move
 			return false;
 		}
@@ -280,11 +320,18 @@ namespace WCell.RealmServer.Entities
 			}
 			m_currentQuery = null;
 
-			// TODO: Support paths
-			MoveToDestination();
+		    FollowPath(query.Path);
 		}
 
-		/// <summary>
+	    public void FollowPath(Path path)
+	    {
+	        _currentPath = path;
+
+	        m_destination = _currentPath.Next();
+	        MoveToDestination();
+	    }
+
+	    /// <summary>
 		/// Updates position of unit
 		/// </summary>
 		/// <returns>true if target point is reached</returns>
@@ -300,8 +347,25 @@ namespace WCell.RealmServer.Entities
 			{
 				// move target directly to the destination
 				m_owner.Map.MoveObject(m_owner, ref m_destination);
-				m_moving = false;
-				return true;
+				if (_currentPath != null)
+				{
+					if (_currentPath.HasNext())
+					{
+						// go to next destination
+						m_destination = _currentPath.Next();
+						MoveToDestination();
+					}
+					else
+					{
+						_currentPath = null;
+					}
+					return false;
+				}
+				else
+				{
+					m_moving = false;
+					return true;
+				}
 			}
 
 			// otherwise we've passed delta part of the path

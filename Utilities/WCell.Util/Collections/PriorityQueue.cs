@@ -16,9 +16,9 @@
 
 using System;
 using System.Collections;
-using System.Security.Permissions;
-using System.Runtime.Serialization;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
+using System.Security.Permissions;
 
 namespace WCell.Util.Collections
 {
@@ -203,7 +203,7 @@ namespace WCell.Util.Collections
 		#endregion
 
 		#region ISerializable implementation
-		[SecurityPermissionAttribute(SecurityAction.Demand, SerializationFormatter = true)]
+		[SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
 		void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			info.AddValue(CAPACITY_NAME, _capacity);

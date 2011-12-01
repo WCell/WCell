@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2010-01-28 13:29:18 +0100 (to, 28 jan 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+ 
  *   revision		: $Rev: 1230 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -16,26 +16,20 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
-using WCell.RealmServer;
+using System.Linq;
+using System.Reflection;
+using WCell.Constants.Skills;
+using WCell.Constants.Spells;
 using WCell.RealmServer.Addons;
+using WCell.RealmServer.Content;
+using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Factions;
 using WCell.RealmServer.Items;
 using WCell.RealmServer.Spells;
-using System.Reflection;
-using WCell.RealmServer.Skills;
-using WCell.Constants.Skills;
-using WCell.Constants.Spells;
-using WCell.Util.Toolshed;
-using WCell.RealmServer.Content;
-using WCell.RealmServer.Database;
-using WCell.Constants.Items;
-using WCell.RealmServer.Spells.Auras;
-using WCell.RealmServer.Talents;
 using WCell.Util;
+using WCell.Util.Toolshed;
 
 namespace WCell.Tools.Domi.Output
 {
@@ -54,7 +48,10 @@ namespace WCell.Tools.Domi.Output
 		public static void Init()
 		{
 			RealmDBMgr.Initialize();
-			RealmAddonMgr.Initialize(RealmServer.RealmServer.InitMgr);
+		    var mgr = RealmServer.RealmServer.InitMgr;
+            RealmAddonMgr.Initialize(mgr);
+            mgr.PerformInitialization();
+			
 			ContentMgr.Initialize();
 
 			SpellHandler.LoadSpells();

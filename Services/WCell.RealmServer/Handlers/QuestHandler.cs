@@ -1,4 +1,4 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: QuestHandler.cs
  *   copyright		: (C) The WCell Team
@@ -70,63 +70,63 @@ namespace WCell.RealmServer.Handlers
 			}
 		}
 
-        /// <summary>
+		/// <summary>
 		/// Handles the quest position of interest query.
 		/// </summary>
 		/// <param name="client">The client.</param>
 		/// <param name="packet">The packet.</param>
 		[ClientPacketHandler(RealmServerOpCode.CMSG_QUEST_POI_QUERY)]
-        public static void HandleQuestPOIQuery(IRealmClient client, RealmPacketIn packet)
-        {
-            uint count = packet.ReadUInt32();
-            var questIds = new List<uint>();
-            for(var i = 0; i < count; i++)
-                questIds.Add(packet.ReadUInt32());
-            SendQuestPOIResponse(client, count, questIds);
-        }
+		public static void HandleQuestPOIQuery(IRealmClient client, RealmPacketIn packet)
+		{
+			uint count = packet.ReadUInt32();
+			var questIds = new List<uint>();
+			for (var i = 0; i < count; i++)
+				questIds.Add(packet.ReadUInt32());
+			SendQuestPOIResponse(client, count, questIds);
+		}
 
-        public static void SendQuestPOIResponse(IRealmClient client, uint count, IEnumerable<uint> questIds)
-        {
-            using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_QUEST_POI_QUERY_RESPONSE))
-            {
-                packet.Write(count);
-                foreach (var questId in questIds)
-                {
-                    List<QuestPOI> poiList;
-                    QuestMgr.POIs.TryGetValue(questId, out poiList);
-                    if (poiList != null)
-                    {
-                        packet.Write(questId);                  // quest ID
-                        packet.Write((uint)poiList.Count);      // POI count
+		public static void SendQuestPOIResponse(IRealmClient client, uint count, IEnumerable<uint> questIds)
+		{
+			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_QUEST_POI_QUERY_RESPONSE))
+			{
+				packet.Write(count);
+				foreach (var questId in questIds)
+				{
+					List<QuestPOI> poiList;
+					QuestMgr.POIs.TryGetValue(questId, out poiList);
+					if (poiList != null)
+					{
+						packet.Write(questId);                  // quest ID
+						packet.Write((uint)poiList.Count);      // POI count
 
-                        foreach (var poi in poiList)
-                        {
-                            packet.Write(poi.PoiId);            // POI index
-                            packet.Write(poi.ObjectiveIndex);   // objective index
-                            packet.Write((uint) poi.MapID);     // mapid
-                            packet.Write((uint) poi.ZoneId);    // world map area id
-                            packet.Write(poi.FloorId);          // floor id
-                            packet.Write(poi.Unk3);             // unknown
-                            packet.Write(poi.Unk4);             // unknown
-                            packet.Write((uint)poi.Points.Count); // POI points count
+						foreach (var poi in poiList)
+						{
+							packet.Write(poi.PoiId);            // POI index
+							packet.Write(poi.ObjectiveIndex);   // objective index
+							packet.Write((uint)poi.MapID);     // mapid
+							packet.Write((uint)poi.ZoneId);    // world map area id
+							packet.Write(poi.FloorId);          // floor id
+							packet.Write(poi.Unk3);             // unknown
+							packet.Write(poi.Unk4);             // unknown
+							packet.Write((uint)poi.Points.Count); // POI points count
 
-                            foreach (var questPOIPoints in poi.Points)
-                            {
-                                packet.Write(questPOIPoints.X); // POI point x
-                                packet.Write(questPOIPoints.Y); // POI point y
-                            }
-                        }
-                    }
-                    else
-                    {
-                        packet.Write(questId); // quest ID
-                        packet.Write(0u); // POI count
-                    }
-                }
+							foreach (var questPOIPoints in poi.Points)
+							{
+								packet.Write(questPOIPoints.X); // POI point x
+								packet.Write(questPOIPoints.Y); // POI point y
+							}
+						}
+					}
+					else
+					{
+						packet.Write(questId); // quest ID
+						packet.Write(0u); // POI count
+					}
+				}
 
-                client.Send(packet);
-            }
-        }
+				client.Send(packet);
+			}
+		}
 
 		/// <summary>
 		/// Handles the quest giver cancel.
@@ -501,8 +501,8 @@ namespace WCell.RealmServer.Handlers
 				{
 					pckt.Write(qt.ObjectOrSpellInteractions[i].RawId);		// Mob or GO entry ID [i]
 					pckt.Write(qt.ObjectOrSpellInteractions[i].Amount);	// amount [i],
-					pckt.Write(0); // interactions item id
-					pckt.Write(0); // interactions item count
+					pckt.Write((uint)qt.CollectableSourceItems[i].ItemId);
+					pckt.Write(qt.CollectableSourceItems[i].Amount);
 				}
 
 				for (i = 0; i < QuestConstants.MaxCollectableItems; i++)
@@ -694,7 +694,7 @@ namespace WCell.RealmServer.Handlers
                 pckt.Write(0u); //unk
 				for (i = 0; i < QuestConstants.MaxReputations; ++i)
 				{
-					pckt.Write((uint) qt.RewardReputations[i].Faction);
+					pckt.Write((uint)qt.RewardReputations[i].Faction);
 				}
 				for (i = 0; i < QuestConstants.MaxReputations; ++i)
 				{
@@ -1153,11 +1153,11 @@ namespace WCell.RealmServer.Handlers
 				if (!chr.QuestLog.HasActiveQuest(questid))
 				{
 					var autoAccept = qt.Flags.HasFlag(QuestFlags.AutoAccept);
-                    SendDetails(qHolder, qt, chr, !autoAccept);
-                    if (autoAccept)
-                    {
-                        chr.QuestLog.TryAddQuest(qt, qHolder);
-                    }
+					SendDetails(qHolder, qt, chr, !autoAccept);
+					if (autoAccept)
+					{
+						chr.QuestLog.TryAddQuest(qt, qHolder);
+					}
 				}
 				else
 				{
@@ -1211,57 +1211,47 @@ namespace WCell.RealmServer.Handlers
 					var group = client.ActiveCharacter.Group;
 					if (group != null)
 					{
-						group.SyncRoot.EnterReadLock();
-						try
+						group.ForeachCharacter(chr =>
 						{
-							foreach (var member in group)
+							if (chr == null) return;
+
+							if (chr.QuestLog.ActiveQuestCount >= QuestLog.MaxQuestCount)
 							{
-								var chr = member.Character;
-
-								if (chr == null) continue;
-
-								if (chr.QuestLog.ActiveQuestCount >= QuestLog.MaxQuestCount)
-								{
-									SendQuestPushResult(chr, QuestPushResponse.QuestlogFull, client.ActiveCharacter);
-									continue;
-								}
-								if (chr.QuestLog.GetActiveQuest(qt.Id) != null)
-								{
-									SendQuestPushResult(chr, QuestPushResponse.AlreadyHave, client.ActiveCharacter);
-									continue;
-								}
-								if (chr.QuestLog.FinishedQuests.Contains(qt.Id) && !qt.Repeatable)
-								{
-									SendQuestPushResult(chr, QuestPushResponse.AlreadyFinished,
-														client.ActiveCharacter);
-									continue;
-								}
-								if ((qt.CheckBasicRequirements(chr) != QuestInvalidReason.Ok) || !chr.IsAlive)
-								{
-									SendQuestPushResult(chr, QuestPushResponse.CannotTake, client.ActiveCharacter);
-									continue;
-								}
-								// not sure about range
-								if (!chr.IsInRadius(client.ActiveCharacter, 30f))
-								{
-									SendQuestPushResult(chr, QuestPushResponse.TooFar, client.ActiveCharacter);
-									continue;
-								}
-								/*
-									if (chr.CanInteractWith(client.ActiveCharacter){
-									// bank, trading, combat, talking to a quest npc allready, accepting a quest from another person sharing a quest
-										QuestMgr.SendQuestPushResult(chr, QuestPushResponse.Busy, client.ActiveCharacter);
-										continue;
-									}
-									*/
-								SendQuestPushResult(chr, QuestPushResponse.Sharing, client.ActiveCharacter);
-								SendDetails(client.ActiveCharacter, qt, chr, true);
+								SendQuestPushResult(chr, QuestPushResponse.QuestlogFull, client.ActiveCharacter);
+								return;
 							}
-						}
-						finally
-						{
-							group.SyncRoot.ExitReadLock();
-						}
+							if (chr.QuestLog.GetActiveQuest(qt.Id) != null)
+							{
+								SendQuestPushResult(chr, QuestPushResponse.AlreadyHave, client.ActiveCharacter);
+								return;
+							}
+							if (chr.QuestLog.FinishedQuests.Contains(qt.Id) && !qt.Repeatable)
+							{
+								SendQuestPushResult(chr, QuestPushResponse.AlreadyFinished,
+													client.ActiveCharacter);
+								return;
+							}
+							if ((qt.CheckBasicRequirements(chr) != QuestInvalidReason.Ok) || !chr.IsAlive)
+							{
+								SendQuestPushResult(chr, QuestPushResponse.CannotTake, client.ActiveCharacter);
+								return;
+							}
+							// not sure about range
+							if (!chr.IsInRadius(client.ActiveCharacter, 30f))
+							{
+								SendQuestPushResult(chr, QuestPushResponse.TooFar, client.ActiveCharacter);
+								return;
+							}
+							/*
+			if (chr.CanInteractWith(client.ActiveCharacter){
+			// bank, trading, combat, talking to a quest npc allready, accepting a quest from another person sharing a quest
+				QuestMgr.SendQuestPushResult(chr, QuestPushResponse.Busy, client.ActiveCharacter);
+				continue;
+			}
+			*/
+							SendQuestPushResult(chr, QuestPushResponse.Sharing, client.ActiveCharacter);
+							SendDetails(client.ActiveCharacter, qt, chr, true);
+						});
 					}
 
 				}

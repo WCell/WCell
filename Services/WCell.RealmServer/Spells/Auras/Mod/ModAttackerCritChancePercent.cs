@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2009-12-23 20:07:17 +0100 (on, 23 dec 2009) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 1151 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -14,15 +14,10 @@
  *
  *************************************************************************/
 
-using WCell.Constants;
-using WCell.RealmServer.Modifiers;
-
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
 	public class ModAttackerCritChancePercentHandler : AuraEffectHandler
 	{
-		float amount;
-
 		protected override void Apply()
 		{
 			Owner.AttackerPhysicalCritChancePercentMod += EffectValue;

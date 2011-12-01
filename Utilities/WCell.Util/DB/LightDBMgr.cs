@@ -4,8 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using WCell.Util.Conversion;
-using WCell.Util.Data;
 using WCell.Util.DB.Xml;
+using WCell.Util.Data;
 
 namespace WCell.Util.DB
 {
@@ -109,7 +109,7 @@ namespace WCell.Util.DB
 			object defaultValue;
 			if (!String.IsNullOrEmpty(fieldDef.DefaultStringValue))
 			{
-				defaultValue = Utility.Parse(fieldDef.DefaultStringValue, member.GetVariableType());
+				defaultValue = StringParser.Parse(fieldDef.DefaultStringValue, member.GetVariableType());
 			}
 			else
 			{

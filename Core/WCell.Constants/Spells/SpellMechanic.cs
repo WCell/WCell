@@ -37,11 +37,12 @@ namespace WCell.Constants.Spells
 		Interrupted = 26,
 		Dazed = 27,
 		Discovery = 28,
-		Invulnerable_2 = 29,
+		Invulnerable2 = 29,
 		Sapped = 30,
 		Enraged = 31,
 		Wounded = 32,
-		End
+		End = 33,
+        Custom_Immolate = 34
 	}
 
 }

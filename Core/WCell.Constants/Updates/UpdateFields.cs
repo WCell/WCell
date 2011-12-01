@@ -1,5 +1,3 @@
-using System;
-
 ///
 /// This file was automatically created, using WCell's CodeFileWriter
 /// Date: 30/04/2011
@@ -1070,7 +1068,7 @@ namespace WCell.Constants.Updates
 				},
 				// UnitFields.AURASTATE
 				new UpdateField {
-					Flags = UpdateFieldFlags.Public,
+					Flags = UpdateFieldFlags.Dynamic,
 					Group = ObjectTypeId.Unit,
 					Name = "AURASTATE",
 					Offset = 79,

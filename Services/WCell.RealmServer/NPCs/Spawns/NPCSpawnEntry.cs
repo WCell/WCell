@@ -1,15 +1,15 @@
 using System;
 using System.Collections.Generic;
-using NLog;
 using WCell.Constants.NPCs;
 using WCell.Constants.World;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Global;
+using WCell.RealmServer.Gossips;
 using WCell.RealmServer.Spawns;
 using WCell.RealmServer.Waypoints;
 using WCell.Util;
 using WCell.Util.Data;
-using WCell.RealmServer.Global;
 using WCell.Util.Graphics;
 
 namespace WCell.RealmServer.NPCs.Spawns
@@ -42,7 +42,10 @@ namespace WCell.RealmServer.NPCs.Spawns
 		}
 
 		#region Spawn data for NPCs
-		public AIMovementType MoveType;
+		//TODO: Rename to something meaningful!
+		public AIMotionGenerationType MoveType;
+
+		public float RespawnRadius;
 
 		public bool IsDead;
 
@@ -164,6 +167,9 @@ namespace WCell.RealmServer.NPCs.Spawns
 
             }
 
+			//if(MoveType == AIMotionGenerationType.RandomMotion)
+				//CreateRandomWaypoints();
+
 			// finished initializing, now call the hooks
 			foreach (var handler in Entry.SpawnTypeHandlers)
 			{
@@ -186,25 +192,18 @@ namespace WCell.RealmServer.NPCs.Spawns
 		}
 		#endregion
 
+		[NotPersistent]
+		public GossipMenu DefaultGossip;
+
 		#region Waypoints
 		[NotPersistent]
 		public readonly LinkedList<WaypointEntry> Waypoints = new LinkedList<WaypointEntry>();
-
-		private bool m_HasDefaultWaypoints;
 
 		/// <summary>
 		/// Whether this SpawnEntry has fixed Waypoints from DB
 		/// </summary>
 		[NotPersistent]
-		public bool HasDefaultWaypoints
-		{
-			get { return m_HasDefaultWaypoints; }
-			set
-			{
-				m_HasDefaultWaypoints = value;
-				Entry.MovesRandomly = false;
-			}
-		}
+		public bool HasDefaultWaypoints { get; set; }
 
 		public void RecreateRandomWaypoints()
 		{
@@ -218,8 +217,9 @@ namespace WCell.RealmServer.NPCs.Spawns
 			if (terrain != null)
 			{
 				var gen = new RandomWaypointGenerator();
-				var wps = gen.GenerateWaypoints(terrain, Position);
+				var wps = gen.GenerateWaypoints(terrain, Position, RespawnRadius);
 				AddWaypoints(wps);
+				Waypoints.Last.Value.WaitTime = (uint)Utility.Random(2000, 7000);
 			}
 		}
 		public int WaypointCount

@@ -11,8 +11,8 @@ using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Handlers;
-using WCell.Util.Variables;
 using WCell.RealmServer.Network;
+using WCell.Util.Variables;
 
 namespace WCell.RealmServer.Mail
 {
@@ -91,8 +91,6 @@ namespace WCell.RealmServer.Mail
 				RealmDBMgr.OnDBError(e);
 				CreateIdGenerators();
 			}
-
-			Instance.InternalStart();
 		}
 
 		private static void CreateIdGenerators()
@@ -111,16 +109,6 @@ namespace WCell.RealmServer.Mail
 
 		protected MailMgr()
 		{
-		}
-
-		protected override bool InternalStart()
-		{
-			return true;
-		}
-
-		protected override bool InternalStop()
-		{
-			return true;
 		}
 		#endregion
 

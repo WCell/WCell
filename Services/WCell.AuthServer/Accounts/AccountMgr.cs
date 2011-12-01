@@ -1,17 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
+using System.Text.RegularExpressions;
 using NHibernate.Criterion;
 using NLog;
 using WCell.AuthServer.Database;
-using resources = WCell.AuthServer.Res.WCell_AuthServer;
 using WCell.Constants;
-using WCell.Core;
 using WCell.Core.Cryptography;
 using WCell.Core.Initialization;
-using WCell.Intercommunication.DataTypes;
+using WCell.Core.Timers;
+using WCell.Util;
 using WCell.Util.NLog;
+using resources = WCell.AuthServer.Res.WCell_AuthServer;
 
 namespace WCell.AuthServer.Accounts
 {
@@ -25,9 +25,10 @@ namespace WCell.AuthServer.Accounts
 	/// Whenever accessing any of the 2 Account collections,
 	/// make sure to also synchronize against the <c>Lock</c>.
 	/// </summary>
-	public class AccountMgr : Manager<AccountMgr>
+	public class AccountMgr
 	{
-		private static Logger log = LogManager.GetCurrentClassLogger();
+		private static readonly Logger log = LogManager.GetCurrentClassLogger();
+		public static AccountMgr Instance = new AccountMgr();
 
 		public static int MinAccountNameLen = 3;
 
@@ -40,11 +41,35 @@ namespace WCell.AuthServer.Accounts
 
 		public static readonly Account[] EmptyAccounts = new Account[0];
 
-		new ReaderWriterLockSlim m_lock;
+		ReaderWriterLockWrapper m_lock;
 		readonly Dictionary<long, Account> m_cachedAccsById;
 		readonly Dictionary<string, Account> m_cachedAccsByName;
 		bool m_IsCached;
 		private DateTime m_lastResyncTime;
+
+		/// <summary>
+		/// Interval in milliseconds between reloading the account cache from the database
+		/// if caching is enabled. Default is 180000ms == 3 minutes.
+		/// </summary>
+		public static int AccountReloadIntervalMs
+		{
+			set
+			{
+				_accountReloadIntervalMs = value;
+
+				if (Instance._accountsReloadTimer == null)
+					return;
+
+				Instance._accountsReloadTimer.IntervalMillis = value;
+				Instance._accountsReloadTimer.Start();
+			}
+			
+			get { return _accountReloadIntervalMs; }
+		}
+
+		private static int _accountReloadIntervalMs = 180000;
+
+		private TimerEntry _accountsReloadTimer;
 
 		protected AccountMgr()
 		{
@@ -90,13 +115,13 @@ namespace WCell.AuthServer.Accounts
 		/// The lock of the Account Manager.
 		/// Make sure to use it when accessing, reading or writing any of the two cached collections.
 		/// </summary>
-		public ReaderWriterLockSlim Lock
-		{
-			get
-			{
-				return m_lock;
-			}
-		}
+		//public ReaderWriterLockWrapper Lock
+		//{
+		//    get
+		//    {
+		//        return m_lock;
+		//    }
+		//}
 
 		/// <summary>
 		/// Whether all Accounts are cached.
@@ -127,11 +152,36 @@ namespace WCell.AuthServer.Accounts
 		}
 		#endregion
 
+		public void ForeachAccount(Action<Account> action)
+		{
+			using (m_lock.EnterReadLock())
+			{
+				foreach (var acc in AccountsById.Values)
+				{
+					action(acc);
+				}
+			}
+		}
+
+		public IEnumerable<Account> GetAccounts(Predicate<Account> predicate)
+		{
+			using (m_lock.EnterReadLock())
+			{
+				foreach (var acc in AccountsById.Values)
+				{
+					if (predicate(acc))
+					{
+						yield return acc;
+					}
+				}
+			}
+		}
+
 		#region Caching/Purging
 		private void Cache()
 		{
 			log.Info(resources.CachingAccounts);
-			m_lock = new ReaderWriterLockSlim();
+			m_lock = new ReaderWriterLockWrapper();
 			m_lastResyncTime = default(DateTime);
 
 			Resync();
@@ -139,15 +189,10 @@ namespace WCell.AuthServer.Accounts
 
 		private void Purge()
 		{
-			m_lock.EnterWriteLock();
-			try
+			using (m_lock.EnterWriteLock())
 			{
 				m_cachedAccsById.Clear();
 				m_cachedAccsByName.Clear();
-			}
-			finally
-			{
-				m_lock.ExitWriteLock();
 			}
 		}
 
@@ -162,14 +207,9 @@ namespace WCell.AuthServer.Accounts
 
 		internal void Remove(Account acc)
 		{
-			m_lock.EnterWriteLock();
-			try
+			using (m_lock.EnterWriteLock())
 			{
 				RemoveUnlocked(acc);
-			}
-			finally
-			{
-				m_lock.ExitWriteLock();
 			}
 		}
 
@@ -184,27 +224,28 @@ namespace WCell.AuthServer.Accounts
 		/// </summary>
 		public void Resync()
 		{
-			m_lock.EnterWriteLock();
-
 			var lastTime = m_lastResyncTime;
 			m_lastResyncTime = DateTime.Now;
 
 			Account[] accounts = null;
 			try
 			{
-				//if (lastTime == default(DateTime))
-				//{
-				//    m_cachedAccsById.Clear();
-				//    m_cachedAccsByName.Clear();
-				//    accounts = Account.FindAll();
-				//}
-				//else
-				//{
-				//    accounts = Account.FindAll(Expression.Ge("LastChanged", lastTime));
-				//}
-				m_cachedAccsById.Clear();
-				m_cachedAccsByName.Clear();
-				accounts = Account.FindAll();
+				using (m_lock.EnterWriteLock())
+				{
+					//if (lastTime == default(DateTime))
+					//{
+					//    m_cachedAccsById.Clear();
+					//    m_cachedAccsByName.Clear();
+					//    accounts = Account.FindAll();
+					//}
+					//else
+					//{
+					//    accounts = Account.FindAll(Expression.Ge("LastChanged", lastTime));
+					//}
+					m_cachedAccsById.Clear();
+					m_cachedAccsByName.Clear();
+					accounts = Account.FindAll();
+				}
 			}
 			catch (Exception e)
 			{
@@ -239,7 +280,6 @@ namespace WCell.AuthServer.Accounts
 						Update(acc);
 					}
 				}
-				m_lock.ExitWriteLock();
 			}
 
 			log.Info(resources.AccountsCached, accounts != null ? accounts.Count() : 0);
@@ -304,18 +344,13 @@ namespace WCell.AuthServer.Accounts
 
 				if (IsCached)
 				{
-					m_lock.EnterWriteLock();
-					try
+					using (m_lock.EnterWriteLock())
 					{
 						Update(usr);
 					}
-					finally
-					{
-						m_lock.ExitWriteLock();
-					}
 				}
 
-				s_log.Info(resources.AccountCreated, username, usr.RoleGroupName);
+				log.Info(resources.AccountCreated, username, usr.RoleGroupName);
 				return usr;
 			}
 			catch (Exception ex)
@@ -353,14 +388,9 @@ namespace WCell.AuthServer.Accounts
 			var serv = Instance;
 			if (serv.IsCached)
 			{
-				serv.m_lock.EnterReadLock();
-				try
+				using (serv.m_lock.EnterReadLock())
 				{
 					return serv.m_cachedAccsByName.ContainsKey(accName);
-				}
-				finally
-				{
-					serv.m_lock.ExitReadLock();
 				}
 			}
 
@@ -383,16 +413,11 @@ namespace WCell.AuthServer.Accounts
 			{
 				if (IsCached)
 				{
-					m_lock.EnterReadLock();
-					try
+					using (m_lock.EnterReadLock())
 					{
 						Account acc;
 						m_cachedAccsByName.TryGetValue(accountName, out acc);
 						return acc;
-					}
-					finally
-					{
-						m_lock.ExitReadLock();
 					}
 				}
 				return Account.FindOne(Restrictions.Eq("Name", accountName));
@@ -405,16 +430,11 @@ namespace WCell.AuthServer.Accounts
 			{
 				if (IsCached)
 				{
-					m_lock.EnterReadLock();
-					try
+					using (m_lock.EnterReadLock())
 					{
 						Account acc;
 						m_cachedAccsById.TryGetValue(id, out acc);
 						return acc;
-					}
-					finally
-					{
-						m_lock.ExitReadLock();
 					}
 
 				}
@@ -433,16 +453,27 @@ namespace WCell.AuthServer.Accounts
 
 		#region Initialize/Start/Stop
 		[Initialization(InitializationPass.Fifth, "Initialize Accounts")]
-		public static void Initialize()
+		public static bool Initialize()
 		{
-			Instance.InternalStart();
+			return Instance.Start();
 		}
 
-		protected override bool InternalStart()
+		protected bool Start()
 		{
 			try
 			{
 				IsCached = AuthServerConfiguration.CacheAccounts;
+
+				//I would have liked this to be a readonly field but it must be
+				//initialised here otherwise in the ctor AccountReloadIntervalMs
+				//wont have been init'd which would mean we cant customise the timer easily
+				_accountsReloadTimer = new TimerEntry(0, AccountReloadIntervalMs, delay =>
+				{
+					if (Instance.IsCached)
+						Instance.Resync();
+				});
+				_accountsReloadTimer.Start();
+				AuthenticationServer.IOQueue.RegisterUpdatable(_accountsReloadTimer);
 
 				if (Count == 0)
 				{
@@ -461,17 +492,19 @@ namespace WCell.AuthServer.Accounts
 			return true;
 		}
 
-		protected override bool InternalStop()
+		protected bool Stop()
 		{
+			_accountsReloadTimer.Stop();
+			AuthenticationServer.IOQueue.UnregisterUpdatable(_accountsReloadTimer);
 			return true;
 		}
 		#endregion
 
 		/// <summary>
-		/// TODO: Improve name-verification
+		/// Validates the name against the stored Regex <see cref="DefaultNameValidationRegex"/>
 		/// </summary>
-		/// <param name="name"></param>
-		/// <returns></returns>
+		/// <param name="name">The name to be validated</param>
+		/// <returns>A Boolean value true is the name is valid; otherwise false</returns>
 		public static bool ValidateNameDefault(ref string name)
 		{
 			// Account-names are always upper case
@@ -479,20 +512,13 @@ namespace WCell.AuthServer.Accounts
 
 			if (name.Length >= MinAccountNameLen && name.Length <= MaxAccountNameLen)
 			{
-				foreach (var c in name)
-				{
-					if (c < '0' || c > 'z')
-					{
-						return false;
-					}
-				}
-				return true;
+				return DefaultNameValidationRegex.IsMatch(name);
 			}
 			return false;
 		}
 
 		public delegate bool NameValidationHandler(ref string name);
-
+		public static readonly Regex DefaultNameValidationRegex = new Regex("^[A-Za-z0-9]+$");
 		public static NameValidationHandler NameValidator = ValidateNameDefault;
 	}
 }

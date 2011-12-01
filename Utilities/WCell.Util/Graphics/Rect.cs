@@ -2,6 +2,10 @@
 
 namespace WCell.Util.Graphics
 {
+    /// <summary>
+    /// Represents a Rectangle in WoW coordinate space
+    /// i.e. X-positive into the screen, Y-Positive to the left
+    /// </summary>
     public struct Rect
     {
         internal float x;
@@ -246,64 +250,63 @@ namespace WCell.Util.Graphics
         {
             get
             {
-                return x;
+                if (IsEmpty)
+                {
+                    return float.NegativeInfinity;
+                }
+                return (y + width);
             }
         }
         public float Top
         {
             get
             {
-                return y;
+                if (IsEmpty)
+                {
+                    return float.NegativeInfinity;
+                }
+                return (x + height);
             }
         }
         public float Right
         {
             get
             {
-                if (IsEmpty)
-                {
-                    return float.NegativeInfinity;
-                }
-                return (x + width);
+                return y;
             }
         }
+
         public float Bottom
         {
-            get
-            {
-                if (IsEmpty)
-                {
-                    return float.NegativeInfinity;
-                }
-                return (y + height);
-            }
+            get { return x; }
         }
+
         public Point TopLeft
         {
             get
             {
-                return new Point(Left, Top);
+                return new Point(Top, Left);
             }
         }
         public Point TopRight
         {
             get
             {
-                return new Point(Right, Top);
+                return new Point(Top, Right);
             }
         }
         public Point BottomLeft
         {
             get
             {
-                return new Point(Left, Bottom);
+                return new Point(Bottom, Left);
             }
         }
         public Point BottomRight
         {
             get
             {
-                return new Point(Right, Bottom);
+                return new Point(Bottom, Right);
             }
         }
         
@@ -336,7 +339,7 @@ namespace WCell.Util.Graphics
                 return false;
             }
             return ((((x <= rect.x) && (y <= rect.y)) &&
-                     ((x + width) >= (rect.x + rect.width))) && ((y + height) >= (rect.y + rect.height)));
+                     ((x + height) >= (rect.x + rect.height))) && ((y + width) >= (rect.y + rect.width)));
         }
 
         public bool IntersectsWith(Rect rect)
@@ -611,7 +614,7 @@ namespace WCell.Util.Graphics
             {
                 float num = Math.Min(Left, rect.Left);
                 float num2 = Math.Min(Top, rect.Top);
-                if ((rect.Width == float.PositiveInfinity) || (Width == float.PositiveInfinity))
+                if (float.IsPositiveInfinity(rect.Width) || float.IsPositiveInfinity(Width))
                 {
                     width = float.PositiveInfinity;
                 }
@@ -620,7 +623,7 @@ namespace WCell.Util.Graphics
                     float num3 = Math.Max(Right, rect.Right);
                     width = Math.Max(num3 - num, 0.0f);
                 }
-                if ((rect.Height == float.PositiveInfinity) || (Height == float.PositiveInfinity))
+                if (float.IsPositiveInfinity(rect.Height) || float.IsPositiveInfinity(Height))
                 {
                     height = float.PositiveInfinity;
                 }
@@ -725,7 +728,7 @@ namespace WCell.Util.Graphics
 
         private bool ContainsInternal(float xPos, float yPos)
         {
-            return ((((xPos >= x) && ((xPos - width) <= x)) && (yPos >= y)) && ((yPos - height) <= y));
+            return ((((xPos >= x) && ((xPos - height) <= x)) && (yPos >= y)) && ((yPos - width) <= y));
         }
 
         static Rect()
@@ -749,4 +752,9 @@ namespace WCell.Util.Graphics
         Left = 0x04,
         Right = 0x08
     }
+
+	public struct RectInt
+	{
+		
+	}
 }

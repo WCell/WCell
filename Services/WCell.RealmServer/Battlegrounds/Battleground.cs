@@ -1,9 +1,7 @@
 using System;
-using NLog;
 using WCell.Constants;
 using WCell.Constants.Spells;
 using WCell.Core.Timers;
-using WCell.RealmServer.Chat;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Handlers;
@@ -50,6 +48,7 @@ namespace WCell.RealmServer.Battlegrounds
 		protected InstanceBattlegroundQueue _instanceQueue;
 		protected GlobalBattlegroundQueue _parentQueue;
 		private Spell _preparationSpell;
+		private Spell _healingReductionSpell;
 		protected TimerEntry _queueTimer;
 		protected TimerEntry _shutdownTimer;
 		protected DateTime _startTime;
@@ -123,13 +122,18 @@ namespace WCell.RealmServer.Battlegrounds
 			protected set
 			{
 				_winner = value;
-				value.ForeachCharacter( chr => chr.Achievements.CheckPossibleAchievementUpdates(Constants.Achievements.AchievementCriteriaType.CompleteBattleground, (uint)MapId ,1));
+				value.ForeachCharacter(chr => chr.Achievements.CheckPossibleAchievementUpdates(Constants.Achievements.AchievementCriteriaType.CompleteBattleground, (uint)MapId, 1));
 			}
 		}
 
 		public virtual SpellId PreparationSpellId
 		{
 			get { return SpellId.Preparation; }
+		}
+
+		public virtual SpellId HealingReductionSpellId
+		{
+			get { return SpellId.BattlegroundDampening; }
 		}
 
 		/// <summary>
@@ -226,20 +230,20 @@ namespace WCell.RealmServer.Battlegrounds
 		}
 
 		/// <summary>
-		/// Whether enqueued Characters are actively being processed
+		/// Whether Characters can still join
 		/// </summary>
 		public virtual bool IsAddingPlayers
 		{
 			get { return IsActive; }
 		}
 
-        /// <summary>
-        /// Whether to start the mode "Call To Arms" and change timers
-        /// </summary>
-        public virtual bool IsHolidayBG
-        {
-            get { return WorldEventMgr.IsHolidayActive(BattlegroundMgr.GetHolidayIdByBGId(Template.Id)); }
-        }
+		/// <summary>
+		/// Whether to start the mode "Call To Arms" and change timers
+		/// </summary>
+		public virtual bool IsHolidayBG
+		{
+			get { return WorldEventMgr.IsHolidayActive(BattlegroundMgr.GetHolidayIdByBGId(Template.Id)); }
+		}
 
 		/// <summary>
 		/// Whether to start the Shutdown timer when <see cref="Map.PlayerCount"/> drops below the minimum
@@ -296,6 +300,8 @@ namespace WCell.RealmServer.Battlegrounds
 		{
 			ExecuteInContext(() =>
 			{
+				if (!IsOpen) return;
+
 				_status = BattlegroundStatus.Preparing;
 
 				if (_preparationSpell != null)
@@ -308,7 +314,7 @@ namespace WCell.RealmServer.Battlegrounds
 
 				CallDelayed(PreparationTimeMillis / 2, OnPrepareHalftime);
 
-				OnPrepare();
+				OnPrepareBegin();
 			});
 		}
 
@@ -536,29 +542,30 @@ namespace WCell.RealmServer.Battlegrounds
 
 		#region Events
 
+		protected virtual void OnPrepareBegin()
+		{
+		}
+
 		protected virtual void OnPrepareHalftime()
 		{
 			CallDelayed(PreparationTimeMillis / 2, StartFight);
 		}
 
-		protected virtual void OnPrepare()
-		{
-		}
-
 		protected virtual void OnStart()
 		{
-            MiscHandler.SendPlaySoundToMap(this, (uint)BattlegroundSounds.BgStart);
+			MiscHandler.SendPlaySoundToMap(this, (uint)BattlegroundSounds.BgStart);
 		}
 
 		protected virtual void OnFinish(bool disposing)
 		{
-            MiscHandler.SendPlaySoundToMap(this, Winner.Side == BattlegroundSide.Horde ? (uint)BattlegroundSounds.HordeWins 
-                                                                                           : (uint)BattlegroundSounds.AllianceWins);
-        }
+			MiscHandler.SendPlaySoundToMap(this,
+				Winner.Side == BattlegroundSide.Horde ? (uint)BattlegroundSounds.HordeWins
+													  : (uint)BattlegroundSounds.AllianceWins);
+		}
 
-        public virtual void OnPlayerClickedOnflag(GameObject go, Character chr)
-        {
-        }
+		public virtual void OnPlayerClickedOnflag(GameObject go, Character chr)
+		{
+		}
 
 		#endregion
 
@@ -571,6 +578,7 @@ namespace WCell.RealmServer.Battlegrounds
 			BattlegroundMgr.Instances.AddInstance(Template.Id, this);
 
 			_preparationSpell = SpellHandler.Get(PreparationSpellId);
+			_healingReductionSpell = SpellHandler.Get(HealingReductionSpellId);
 
 			if (HasQueue)
 			{
@@ -610,7 +618,7 @@ namespace WCell.RealmServer.Battlegrounds
 		/// <summary>
 		/// Override this to give the players mark of honors and whatnot.
 		/// Note: Usually should trigger  a spell on the characters
-		/// e.g. SpellId.CreateWarsongMarkOfHonorWInner
+		/// e.g. SpellId.CreateWarsongMarkOfHonorWinner
 		/// </summary>
 		protected virtual void RewardPlayers()
 		{
@@ -663,6 +671,9 @@ namespace WCell.RealmServer.Battlegrounds
 			// stop cancel timer
 			chr.RemoveUpdateAction(invitation.CancelTimer);
 
+			// Cast the spell "10% Healing Reduction in BG/Arenas"
+			chr.SpellCast.TriggerSelf(_healingReductionSpell);
+
 			// join team
 			JoinTeam(chr, team);
 
@@ -679,7 +690,7 @@ namespace WCell.RealmServer.Battlegrounds
 			team.AddMember(chr);
 
 			if (_status == BattlegroundStatus.None &&
-			   PlayerCount >= (Template.MapTemplate.MaxPlayerCount * StartPlayerPct) / 100)
+			   PlayerCount >= (MaxPlayerCount * StartPlayerPct) / 100)
 			{
 				StartPreparation();
 			}
@@ -691,23 +702,19 @@ namespace WCell.RealmServer.Battlegrounds
 		internal protected virtual bool LogBackIn(Character chr)
 		{
 			var side = chr.Record.BattlegroundTeam;
-			var isStaff = chr.Role.IsStaff;
-			if (side == BattlegroundSide.End ||
-				(!isStaff && GetTeam(side).IsFull))
-			{
-				if (!isStaff)
-				{
-					// may not stay
-					TeleportOutside(chr);
-					return false;
-				}
-			}
-			else
+			var team = GetTeam(side);
+			if (side != BattlegroundSide.End && !team.IsFull)
 			{
 				// make sure, Character will be added back to the Team
-				var queue = InstanceQueue.GetTeamQueue(side);
+				var queue = team.Queue;
 				var index = chr.Battlegrounds.AddRelation(new BattlegroundRelation(queue, chr, false));
-				chr.Battlegrounds.Invitation = new BattlegroundInvitation(GetTeam(side), index);
+				chr.Battlegrounds.Invitation = new BattlegroundInvitation(team, index);
+			}
+			else if (!chr.Role.IsStaff)
+			{
+				// may not stay
+				TeleportOutside(chr);
+				return false;
 			}
 			return true;
 		}
@@ -734,8 +741,10 @@ namespace WCell.RealmServer.Battlegrounds
 				if (IsActive && !chr.Role.IsStaff)
 				{
 					// flag as deserter
-					chr.Auras.CreateSelf(BattlegroundMgr.DeserterSpell, false);
+					chr.Auras.CreateSelf(BattlegroundMgr.DeserterSpell);
 				}
+
+				chr.Auras.Remove(_healingReductionSpell);
 
 				// check if the BG is too empty to continue
 				CheckShutdown();

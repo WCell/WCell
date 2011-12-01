@@ -1,9 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace WCell.Util.Graphics
 {
@@ -36,21 +33,12 @@ namespace WCell.Util.Graphics
 
         public Plane(Vector3 point1, Vector3 point2, Vector3 point3)
         {
-            float num10 = point2.X - point1.X;
-            float num9 = point2.Y - point1.Y;
-            float num8 = point2.Z - point1.Z;
-            float num7 = point3.X - point1.X;
-            float num6 = point3.Y - point1.Y;
-            float num5 = point3.Z - point1.Z;
-            float num4 = (num9 * num5) - (num8 * num6);
-            float num3 = (num8 * num7) - (num10 * num5);
-            float num2 = (num10 * num6) - (num9 * num7);
-            float num11 = ((num4 * num4) + (num3 * num3)) + (num2 * num2);
-            float num = 1f / ((float)Math.Sqrt((double)num11));
-            this.Normal.X = num4 * num;
-            this.Normal.Y = num3 * num;
-            this.Normal.Z = num2 * num;
-            this.D = -(((this.Normal.X * point1.X) + (this.Normal.Y * point1.Y)) + (this.Normal.Z * point1.Z));
+            var oneToTwo = point2 - point1;
+            var oneToThree = point3 - point1;
+        	Normal = Vector3.Cross(oneToTwo, oneToThree);
+        	Normal.Normalize();
+
+            D = -Vector3.Dot(Normal, point1);
         }
 
         public bool Equals(Plane other)

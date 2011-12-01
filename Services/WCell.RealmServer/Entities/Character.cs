@@ -1,10 +1,10 @@
-/*************************************************************************
+ï»¿/*************************************************************************
  *
  *   file		: Character.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
- *   last changed	: $LastChangedDate: 2010-02-20 06:16:32 +0100 (lï¿? 20 feb 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+ *   last changed	: $LastChangedDate: 2010-02-20 06:16:32 +0100 (lï¿½? 20 feb 2010) $
+
  *   revision		: $Rev: 1257 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,6 @@
 
 using System;
 using System.Collections.Generic;
-using NLog;
 using WCell.Constants;
 using WCell.Constants.Achievements;
 using WCell.Constants.Factions;
@@ -25,7 +24,8 @@ using WCell.Constants.Misc;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.Constants.World;
-using WCell.RealmServer.Achievements;
+using WCell.Core.Timers;
+using WCell.RealmServer.Battlegrounds;
 using WCell.RealmServer.Chat;
 using WCell.RealmServer.Commands;
 using WCell.RealmServer.Factions;
@@ -35,7 +35,6 @@ using WCell.RealmServer.Groups;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Help.Tickets;
 using WCell.RealmServer.Instances;
-using WCell.RealmServer.Interaction;
 using WCell.RealmServer.Items;
 using WCell.RealmServer.Lang;
 using WCell.RealmServer.Looting;
@@ -45,16 +44,13 @@ using WCell.RealmServer.NPCs;
 using WCell.RealmServer.NPCs.Pets;
 using WCell.RealmServer.NPCs.Spawns;
 using WCell.RealmServer.Quests;
+using WCell.RealmServer.RacesClasses;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Talents;
 using WCell.RealmServer.Taxi;
 using WCell.Util;
 using WCell.Util.Commands;
-using WCell.RealmServer.Battlegrounds;
 using WCell.Util.Graphics;
-using WCell.RealmServer.Spells.Auras;
-using WCell.Core.Timers;
-using WCell.RealmServer.RacesClasses;
 
 namespace WCell.RealmServer.Entities
 {
@@ -64,7 +60,7 @@ namespace WCell.RealmServer.Entities
 	public partial class Character : Unit, IUser, IContainer, ITicketHandler, IInstanceHolderSet, ICharacterSet
 	{
 		public static new readonly List<Character> EmptyArray = new List<Character>();
-		
+
 		#region Globals
 		/// <summary>
 		/// The delay until a normal player may logout in millis.
@@ -193,19 +189,19 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
-        public bool IsAllowedLowLevelRaid
-        {
-            get { return PlayerFlags.HasFlag(PlayerFlags.AllowLowLevelRaid); }
-            set 
-            { 
-                if (value)
-                {
-                    PlayerFlags |= PlayerFlags.AllowLowLevelRaid;
-                    return;
-                }
-                PlayerFlags &= ~PlayerFlags.AllowLowLevelRaid;
-            }
-        }
+		public bool IsAllowedLowLevelRaid
+		{
+			get { return PlayerFlags.HasFlag(PlayerFlags.AllowLowLevelRaid); }
+			set
+			{
+				if (value)
+				{
+					PlayerFlags |= PlayerFlags.AllowLowLevelRaid;
+					return;
+				}
+				PlayerFlags &= ~PlayerFlags.AllowLowLevelRaid;
+			}
+		}
 		#endregion
 
 		public uint GetInstanceDifficulty(bool isRaid)
@@ -291,8 +287,8 @@ namespace WCell.RealmServer.Entities
 		{
 			m_record.LastDeathTime = DateTime.Now;
 			MarkDead();
-            Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.DeathAtMap, (uint)MapId, 1);
-            Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.DeathInDungeon, (uint)MapId, 1);
+			Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.DeathAtMap, (uint)MapId, 1);
+			Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.DeathInDungeon, (uint)MapId, 1);
 			// start release timer
 			m_corpseReleaseTimer = new TimerEntry(dt => ReleaseCorpse());
 			m_corpseReleaseTimer.Start(Corpse.AutoReleaseDelay, 0);
@@ -414,18 +410,18 @@ namespace WCell.RealmServer.Entities
 
 				if (pvp)
 				{
-                    if (chr.IsInBattleground)
-                    {
-                        // Add BG stats
-                        var attackerStats = chr.Battlegrounds.Stats;
-                        var victimStats = Battlegrounds.Stats;
-                        attackerStats.KillingBlows++;
-                        if (victimStats != null)
-                        {
-                            victimStats.Deaths++;
-                        }
-                    }
-                    Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.KilledByPlayer, (uint)chr.FactionGroup);
+					if (chr.IsInBattleground)
+					{
+						// Add BG stats
+						var attackerStats = chr.Battlegrounds.Stats;
+						var victimStats = Battlegrounds.Stats;
+						attackerStats.KillingBlows++;
+						if (victimStats != null)
+						{
+							victimStats.Deaths++;
+						}
+					}
+					Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.KilledByPlayer, (uint)chr.FactionGroup);
 				}
 			}
 			else
@@ -437,8 +433,8 @@ namespace WCell.RealmServer.Entities
 			{
 				// durability loss
 				m_inventory.ApplyDurabilityLoss(PlayerInventory.DeathDurabilityLossPct);
-                if(action.Attacker != null && action.Attacker is NPC)
-                    Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.KilledByCreature, (uint)((NPC)action.Attacker).Entry.NPCId);
+				if (action.Attacker != null && action.Attacker is NPC)
+					Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.KilledByCreature, (uint)((NPC)action.Attacker).Entry.NPCId);
 			}
 
 			m_Map.MapTemplate.NotifyPlayerDied(action);
@@ -470,15 +466,16 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
-		protected override void OnHeal(Unit healer, SpellEffect effect, int value)
+		protected override void OnHeal(HealAction action)
 		{
-			base.OnHeal(healer, effect, value);
+			base.OnHeal(action);
+			var healer = action.Attacker;
 			if (healer is Character)
 			{
 				var chr = (Character)healer;
 				if (chr.IsInBattleground)
 				{
-					chr.Battlegrounds.Stats.TotalHealing += value;
+					chr.Battlegrounds.Stats.TotalHealing += action.Value;
 				}
 			}
 		}
@@ -1010,35 +1007,54 @@ namespace WCell.RealmServer.Entities
 				return true;
 			}
 
-			var rep = m_reputations[opponent.Faction.ReputationIndex];
-			return rep != null && rep.Standing >= Standing.Friendly;
+			var opFaction = opponent.Faction;
+			var rep = m_reputations[opFaction.ReputationIndex];
+			if (rep != null)
+			{
+				return rep.Standing >= Standing.Friendly;
+			}
+			return m_faction.IsFriendlyTowards(opFaction);
 		}
 
-        public override bool IsNeutralWith(IFactionMember opponent)
-        {
-            if (IsAlliedWith(opponent))
-            {
-                return true;
-            }
+		public override bool IsAtLeastNeutralWith(IFactionMember opponent)
+		{
+			if (IsFriendlyWith(opponent))
+			{
+				return true;
+			}
 
-            var rep = m_reputations[opponent.Faction.ReputationIndex];
-            return rep != null && rep.Standing >= Standing.Neutral;
-        }
+			var opFaction = opponent.Faction;
+			var rep = m_reputations[opFaction.ReputationIndex];
+			if (rep != null)
+			{
+				return rep.Standing >= Standing.Neutral;
+			}
+			return m_faction.Neutrals.Contains(opFaction);
+		}
 
 		public override bool IsHostileWith(IFactionMember opponent)
 		{
-			if (object.ReferenceEquals(opponent, this) || (opponent is Unit && ((Unit)opponent).Master == this))
+			if (ReferenceEquals(opponent, this) || (opponent is Unit && ((Unit)opponent).Master == this))
 			{
 				return false;
 			}
 
 			if (opponent is Character)
 			{
-				var chr = (Character)opponent;
-				return CanPvP(chr);
+				return CanPvP((Character)opponent);
 			}
 
-			return m_reputations.IsHostile(opponent.Faction);
+			var opFaction = opponent.Faction;
+
+			if (opponent is NPC && opFaction.Neutrals.Contains(m_faction))
+			{
+				return ((NPC)opponent).ThreatCollection.HasAggressor(this);
+			}
+
+			if (m_faction.Friends.Contains(opFaction))
+				return false;
+
+			return m_faction.Enemies.Contains(opFaction) && m_reputations.CanAttack(opFaction);
 		}
 
 		public override bool MayAttack(IFactionMember opponent)
@@ -1053,7 +1069,8 @@ namespace WCell.RealmServer.Entities
 				return CanPvP((Character)opponent);
 			}
 
-			return m_reputations.CanAttack(opponent.Faction);
+			var opFaction = opponent.Faction;
+			return m_faction.Enemies.Contains(opFaction) || (!m_faction.Friends.Contains(opFaction) && m_reputations.CanAttack(opFaction));
 		}
 
 		public bool CanPvP(Character chr)
@@ -1066,7 +1083,7 @@ namespace WCell.RealmServer.Entities
 			}
 
 			return
-				(state == PvPState.PVP && chr.Faction.IsAlliance != m_faction.IsAlliance) ||					// default case
+				(state == PvPState.PVP && chr.Faction.IsAlliance != m_faction.IsAlliance) ||					// world pvp
 				(IsInBattleground && chr.IsInBattleground && chr.Battlegrounds.Team != Battlegrounds.Team) ||	// battlegrounds
 				(DuelOpponent == chr && Duel.IsActive);															// duels
 		}
@@ -1645,10 +1662,10 @@ namespace WCell.RealmServer.Entities
 
 		#region PvP Flag
 
-	    /// <summary>
-	    /// Auto removes PvP flag after expiring
-	    /// </summary>
-	    protected TimerEntry PvPEndTime;
+		/// <summary>
+		/// Auto removes PvP flag after expiring
+		/// </summary>
+		protected TimerEntry PvPEndTime;
 
 		public void TogglePvPFlag()
 		{
@@ -1657,12 +1674,12 @@ namespace WCell.RealmServer.Entities
 
 		public void SetPvPFlag(bool state)
 		{
-			
+
 			if (state)
 			{
-                // if the pvp timer is set, override the pvp state to on
-                UpdatePvPState(true, (PvPEndTime != null && PvPEndTime.IsRunning));
-                PlayerFlags |= PlayerFlags.PVP;
+				// if the pvp timer is set, override the pvp state to on
+				UpdatePvPState(true, (PvPEndTime != null && PvPEndTime.IsRunning));
+				PlayerFlags |= PlayerFlags.PVP;
 				return;
 			}
 
@@ -1700,29 +1717,29 @@ namespace WCell.RealmServer.Entities
 
 		private void SetPvPResetTimer(bool overridden = false)
 		{
-            if (PvPEndTime == null)
-                PvPEndTime = new TimerEntry(dt => OnPvPTimerEnded());
-            
-            if (!PvPEndTime.IsRunning || overridden)
-                PvPEndTime.Start(300000);
+			if (PvPEndTime == null)
+				PvPEndTime = new TimerEntry(dt => OnPvPTimerEnded());
 
-            IsPvPTimerActive = true;
+			if (!PvPEndTime.IsRunning || overridden)
+				PvPEndTime.Start(300000);
+
+			IsPvPTimerActive = true;
 		}
 
 		private void ClearPvPResetTimer()
 		{
-            if(PvPEndTime != null)
-                PvPEndTime.Stop();
+			if (PvPEndTime != null)
+				PvPEndTime.Stop();
 
-            IsPvPTimerActive = false;
+			IsPvPTimerActive = false;
 		}
 
-        private void OnPvPTimerEnded()
-        {
-            PlayerFlags &= ~PlayerFlags.PVP;
-            IsPvPTimerActive = false;
-            SetPvPState(false);
-        }
+		private void OnPvPTimerEnded()
+		{
+			PlayerFlags &= ~PlayerFlags.PVP;
+			IsPvPTimerActive = false;
+			SetPvPState(false);
+		}
 
 		private void SetPvPState(bool state)
 		{

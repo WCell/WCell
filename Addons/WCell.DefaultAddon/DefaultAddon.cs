@@ -1,12 +1,10 @@
 using System.Globalization;
-
-using WCell.Core.Addons;
-
-using WCell.RealmServer.Spells;
-using WCell.RealmServer.Entities;
 using WCell.Constants.Spells;
+using WCell.Core.Addons;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Chat;
+using WCell.RealmServer.Entities;
+using WCell.RealmServer.Spells;
 using WCell.Util.Graphics;
 
 namespace WCell.Addons

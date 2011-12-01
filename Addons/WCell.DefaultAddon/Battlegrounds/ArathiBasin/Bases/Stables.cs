@@ -1,8 +1,7 @@
-using WCell.Constants;
+using WCell.Addons.Default.Lang;
 using WCell.Constants.Battlegrounds;
 using WCell.Constants.GameObjects;
 using WCell.Constants.World;
-using WCell.Addons.Default.Lang;
 using WCell.RealmServer.GameObjects;
 
 namespace WCell.Addons.Default.Battlegrounds.ArathiBasin

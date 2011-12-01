@@ -6,7 +6,6 @@ using NLog;
 using WCell.Constants.World;
 using WCell.RealmServer.Entities;
 using WCell.Util.Data;
-using WCell.Util.Graphics;
 
 namespace WCell.RealmServer.Spawns
 {

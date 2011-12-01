@@ -4,7 +4,7 @@
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2008-08-14 03:51:23 +0800 (Thu, 14 Aug 2008) $
- *   last author	: $LastChangedBy: dominikseifert $
+ 
  *   revision		: $Rev: 591 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -17,10 +17,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
+using System.Text;
 using WCell.Constants;
 using WCell.Util;
-using System.Text;
 
 namespace WCell.Core
 {

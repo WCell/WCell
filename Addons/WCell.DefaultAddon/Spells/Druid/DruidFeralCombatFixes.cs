@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Constants.Spells;
@@ -27,7 +24,7 @@ namespace WCell.Addons.Default.Spells.Druid
 				spell.ForeachEffect(effect => effect.Radius = 45);	// fix radius
 
 				// "heal themselves for $s1% of their total health when they critically hit with a melee or ranged attack"
-				spell.SpellAuraOptions.ProcTriggerFlags = ProcTriggerFlags.MeleeCriticalHitOther | ProcTriggerFlags.RangedCriticalHit;
+				spell.SpellAuraOptions.ProcTriggerFlags = ProcTriggerFlags.DoneMeleeSpell | ProcTriggerFlags.DoneMeleeAutoAttack | ProcTriggerFlags.DoneRangedAutoAttack | ProcTriggerFlags.DoneRangedSpell;
 
 				// "The healing effect cannot occur more than once every 6 sec"
 				spell.ProcDelay = 6000;
@@ -201,7 +198,29 @@ namespace WCell.Addons.Default.Spells.Druid
 					spell.AttributesExB = SpellAttributesExB.None;
 				});
 
+            // Druid Faerie Fire / Druid Faerie Fire (Feral)
+            // Should add stealth/invis immunity to the target.
+            SpellHandler.Apply(spell =>
+            {
+                var stealth = spell.AddAuraEffect(AuraType.DispelImmunity, ImplicitSpellTargetType.SingleEnemy);
+                var invis = spell.AddAuraEffect(AuraType.DispelImmunity, ImplicitSpellTargetType.SingleEnemy);
+
+                stealth.MiscValue = (int)DispelType.Stealth;
+                invis.MiscValue = (int)DispelType.Invisibility;
+            }, SpellLineId.DruidFaerieFire, SpellLineId.DruidFaerieFireFeral);
+
 			FixBloodFrenzy();
+
+            // Dash should only be usable while in cat form
+            SpellLineId.DruidDash.Apply(spell =>
+            {
+                if(spell.SpellShapeshift != null)
+                    spell.SpellShapeshift.RequiredShapeshiftMask = ShapeshiftMask.Cat;
+                else
+                {
+                    spell.SpellShapeshift = new SpellShapeshift {RequiredShapeshiftMask = ShapeshiftMask.Cat};
+                }
+            });
 		}
 
 		#region Blood Frenzy

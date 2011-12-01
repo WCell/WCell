@@ -282,12 +282,12 @@
     </Simple>
     <Simple>
       <Name>How Obtained</Name>
-      <Type>Byte</Type>
+      <Type>Int</Type>
       <SegmentType>Items.HowObtained</SegmentType>
     </Simple>
     <Simple>
       <Name>How Received</Name>
-      <Type>Byte</Type>
+      <Type>Int</Type>
       <SegmentType>Items.HowReceived</SegmentType>
     </Simple>
     <Simple>

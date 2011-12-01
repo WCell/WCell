@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 namespace WCell.Constants.Spells
 {
 	public enum SpellEffectType
@@ -44,7 +39,7 @@ namespace WCell.Constants.Spells
 		/// MiscValueB: Index in SummonProperties.dbc
 		/// </summary>
 		Summon = 28,
-		Leap = 29,
+		LeapForward = 29,
 		Energize = 30,
 		WeaponPercentDamage = 31,
 		TriggerMissile = 32,
@@ -179,10 +174,7 @@ namespace WCell.Constants.Spells
 		/// </summary>
 		RedirectThreat = 130,
 		Effect_131 = 131, // 44393, 44393
-		/// <summary>
-		/// Unused
-		/// </summary>
-		Effect_132 = 132, //Play Music
+		PlayMusic = 132,
 		ForgetSpecialization = 133,
 		Effect_134 = 134, // Kill Credit
 		Effect_135 = 135, //Call-summon pet
@@ -196,9 +188,9 @@ namespace WCell.Constants.Spells
 		/// </summary>
 		Effect_138 = 138, //Leap
 		/// <summary>
-		/// Unused
+		/// Used by spells for the ring in IceCrown
 		/// </summary>
-		Unused_Effect_139 = 139, // Clear Quest
+		ClearQuest = 139,
 		/// <summary>
 		/// Weird name, from wowhead
 		/// </summary>
@@ -216,7 +208,7 @@ namespace WCell.Constants.Spells
 		Effect_145 = 145, // Black Hole Effect, Gravity Well Effect
 		ActivateRune = 146, //EmpowerRune
 		QuestFail = 147, // Quest Fail
-		Unused_Effect_148 = 148,
+		Unused_Effect_148 = 148, // Used by only one spell : Orb Of Fire (43509)
 
 		SideLeap = 149, //Sliding, Side leap
 		Unused_Effect_150 = 150,
@@ -229,7 +221,7 @@ namespace WCell.Constants.Spells
 		/// Tame Creature
 		/// </summary>
 		Effect_153 = 153, // Highest as of 2.4.3.8606
-		Unused_154 = 154,
+		TeachFlightPath = 154, // Used only by TeachRiversHeartTaxiPath (64090)
 		/// <summary>
 		/// Allows 2h weapons to be carried in 1h and applied an aura
 		/// </summary>

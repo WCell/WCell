@@ -15,28 +15,20 @@
  *************************************************************************/
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 using NLog;
-using WCell.AuthServer;
-using resources = WCell.AuthServer.Res.WCell_AuthServer;
+using WCell.AuthServer.Accounts;
+using WCell.AuthServer.Commands;
+using WCell.AuthServer.Privileges;
 using WCell.Constants;
 using WCell.Constants.Login;
+using WCell.Constants.Realm;
 using WCell.Core.Cryptography;
 using WCell.Intercommunication;
 using WCell.Intercommunication.DataTypes;
-using NHibernate.Criterion;
-using WCell.AuthServer.Privileges;
-using WCell.AuthServer.Accounts;
-using WCell.Core.Database;
-using Cell.Core;
-using WCell.Constants.Realm;
-using WCell.Util;
-using WCell.AuthServer.Firewall;
-using WCell.AuthServer.Commands;
+using resources = WCell.AuthServer.Res.WCell_AuthServer;
 
 namespace WCell.AuthServer.IPC
 {
@@ -71,22 +63,25 @@ namespace WCell.AuthServer.IPC
             s_authServer = AuthenticationServer.Instance;
 			var channel = OperationContext.Current.Channel;
 
-            channel.Faulted += (sender, args) =>
-            {
-            	var realm = GetRealmByChannel((IContextChannel) sender);
-            	String msg;
-				if (realm != null)
-				{
-					msg = realm.ToString();
-					realm.SetOffline(AuthServerConfiguration.RemoveOfflineRealms);
-				}
-				else
-				{
-					msg = "<Unknown>";
-				}
-				log.Warn(resources.RealmDisconnected, msg);
-            };
+        	channel.Closed += OnDisconnected;
+            channel.Faulted += OnDisconnected;
         }
+
+		private void OnDisconnected(object sender, EventArgs args)
+		{
+			var realm = GetRealmByChannel((IContextChannel) sender);
+			String msg;
+			if (realm != null)
+			{
+				msg = realm.ToString();
+				realm.SetOffline(AuthServerConfiguration.RemoveOfflineRealms);
+			}
+			else
+			{
+				msg = "<Unknown>";
+			}
+			log.Warn(resources.RealmDisconnected, msg);
+		}
 
     	private RealmEntry GetRealmByChannel(IContextChannel chan)
     	{

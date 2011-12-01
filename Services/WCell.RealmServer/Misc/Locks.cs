@@ -6,7 +6,6 @@ using WCell.Constants.GameObjects;
 using WCell.Constants.Items;
 using WCell.Constants.Looting;
 using WCell.Constants.Skills;
-using WCell.Constants.World;
 using WCell.Core;
 using WCell.Core.ClientDB;
 using WCell.Core.Initialization;

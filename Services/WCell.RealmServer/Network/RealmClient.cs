@@ -1,10 +1,10 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: IRealmClient.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2010-01-30 02:51:11 +0100 (lø, 30 jan 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
+
  *   revision		: $Rev: 1233 $
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using Cell.Core;
@@ -28,8 +27,8 @@ using WCell.PacketAnalysis;
 using WCell.RealmServer.Debugging;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Stats;
-using WCell.Util;
 using WCell.Util.NLog;
+using Utility = WCell.Util.Utility;
 
 namespace WCell.RealmServer.Network
 {
@@ -209,7 +208,7 @@ namespace WCell.RealmServer.Network
 					var str = Encoding.UTF8.GetString(bytes);
 					if (str.Equals("GET HT", StringComparison.InvariantCultureIgnoreCase))
 					{
-						log.Warn("HTTP crawler bot connected from {0} and has been disconnected.", this);
+						log.Warn("HTTP crawler bot connected from {0} - requesting: {1}", this, str);
 					}
 					else
 					{
@@ -218,7 +217,7 @@ namespace WCell.RealmServer.Network
 						                       this, opcode, packetLength, BufferSize, i, segment.Number,
 						                       isLargePacket,
 						                       _remainingLength,
-						                       bytes.ToString(" ", b => string.Format("{0:X2}", b)),
+						                       Utility.ToString(bytes, " ", b => string.Format("{0:X2}", b)),
 						                       str);
 					}
 					Disconnect();

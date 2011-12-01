@@ -1,16 +1,13 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using WCell.Constants.Skills;
-using WCell.Constants.Spells;
-using WCell.PacketAnalysis.Logs;
-using WCell.Util;
 using WCell.Constants;
 using WCell.Constants.Factions;
-using WCell.Core;
-using WCell.PacketAnalysis.Updates;
+using WCell.Constants.Skills;
+using WCell.Constants.Spells;
 using WCell.Constants.Updates;
+using WCell.Core;
+using WCell.PacketAnalysis.Logs;
+using WCell.PacketAnalysis.Updates;
+using WCell.Util;
 
 namespace WCell.PacketAnalysis.Samples
 {

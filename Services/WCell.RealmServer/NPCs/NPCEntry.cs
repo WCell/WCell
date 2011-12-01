@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using WCell.Constants;
@@ -5,9 +6,15 @@ using WCell.Constants.Factions;
 using WCell.Constants.Items;
 using WCell.Constants.Looting;
 using WCell.Constants.NPCs;
+using WCell.Constants.Spells;
+using WCell.RealmServer.AI;
+using WCell.RealmServer.AI.Brains;
+using WCell.RealmServer.Battlegrounds;
 using WCell.RealmServer.Content;
+using WCell.RealmServer.Entities;
 using WCell.RealmServer.Factions;
-using WCell.RealmServer.Gossips;
+using WCell.RealmServer.Global;
+using WCell.RealmServer.Items;
 using WCell.RealmServer.Lang;
 using WCell.RealmServer.Looting;
 using WCell.RealmServer.NPCs.Pets;
@@ -15,17 +22,9 @@ using WCell.RealmServer.NPCs.Spawns;
 using WCell.RealmServer.NPCs.Trainers;
 using WCell.RealmServer.NPCs.Vehicles;
 using WCell.RealmServer.NPCs.Vendors;
+using WCell.RealmServer.Spells;
 using WCell.Util;
 using WCell.Util.Data;
-using WCell.RealmServer.Battlegrounds;
-using WCell.RealmServer.Entities;
-using System;
-using WCell.RealmServer.Spells;
-using WCell.Constants.Spells;
-using WCell.RealmServer.AI.Brains;
-using WCell.RealmServer.AI;
-using WCell.RealmServer.Items;
-using WCell.RealmServer.Global;
 using WCell.Util.Graphics;
 using WCell.Util.Variables;
 
@@ -101,6 +100,17 @@ namespace WCell.RealmServer.NPCs
 		/// </summary>
 		public bool IsIdle;
 
+		/// <summary>
+		/// Whether an NPC is a special event trigger like the little
+		/// elementals used to cast spells or trigger concerts
+		/// </summary>
+		[NotPersistent]
+		public bool IsEventTrigger
+		{
+			get;
+			private set;
+		}
+
 		public uint EquipmentId;
 
 		[NotPersistent]
@@ -110,9 +120,13 @@ namespace WCell.RealmServer.NPCs
 
 		public InvisType InvisibilityType;
 
-		public InhabitType InhabitType = InhabitType.Anywhere;
+		public InhabitType InhabitType = InhabitType.Ground;
 
 		public bool Regenerates;
+
+	    public uint TrainerTemplateId;
+
+        public uint VendorTemplateId;
 
 		// addon data
 		public NPCAddonData AddonData
@@ -122,10 +136,16 @@ namespace WCell.RealmServer.NPCs
 		}
 
 		/// <summary>
-		/// Ids of items that this NPC can drop in relation to quests (sent in a packet)
+		/// Ids of creatures which simulate a death when this entry die
+		/// </summary>
+		[Persistent(2)]
+		public uint[] KillCreditIds = new uint[UnitConstants.MaxKillCredits];
+
+		/// <summary>
+		/// Ids of items this NPC drops in relation to quests (sent in a packet)
 		/// </summary>
 		[Persistent(6)]
-		public uint[] QuestItemIds = new uint[6];
+		public uint[] QuestItems = new uint[6];
 
 		[NotPersistent]
 		public bool GeneratesXp;
@@ -262,6 +282,10 @@ namespace WCell.RealmServer.NPCs
 		public int MinMana;
 
 		public int MaxMana;
+
+		public float ModHealth;
+
+		public float ModMana;
 
 		public DamageSchool DamageSchool;
 
@@ -477,7 +501,10 @@ namespace WCell.RealmServer.NPCs
 		#endregion
 
 		#region Movement & Speed
-		public MovementType MovementType;
+		//TODO: Rename to something more meaningful
+		public AIMotionGenerationType MovementType;
+
+		//public MovementType MovementType;
 
 		/// <summary>
 		/// The factor to be applied to the default speed for this kind of NPC
@@ -490,11 +517,7 @@ namespace WCell.RealmServer.NPCs
 
 		public float FlySpeed;
 
-		/// <summary>
-		/// Whether the spawns from this entry should roam on randomly generated WPs
-		/// </summary>
-		[NotPersistent]
-		public bool MovesRandomly = true;
+		public uint MovementId;
 		#endregion
 
 		#region Loot
@@ -523,15 +546,64 @@ namespace WCell.RealmServer.NPCs
 		#endregion
 
 		#region Factions
+		private FactionTemplateId m_HordeFactionId;
+		private FactionTemplateId m_AllianceFactionId;
+
 		/// <summary>
 		/// 
 		/// </summary>
-		public FactionTemplateId HordeFactionId, AllianceFactionId;
+		public FactionTemplateId HordeFactionId
+		{
+			get { return m_HordeFactionId; }
+			set
+			{
+				m_HordeFactionId = value;
+				if (HordeFaction != null)
+				{
+					HordeFaction = FactionMgr.Get(value);
+				}
+			}
+		}
+
+		public FactionTemplateId AllianceFactionId
+		{
+			get { return m_AllianceFactionId; }
+			set
+			{
+				m_AllianceFactionId = value;
+				if (AllianceFaction != null)
+				{
+					AllianceFaction = FactionMgr.Get(value);
+				}
+			}
+		}
 
 		[NotPersistent]
-		public Faction HordeFaction, AllianceFaction;
+		public Faction HordeFaction
+		{
+			get;
+			private set;
+		}
+		
+		[NotPersistent]
+		public Faction AllianceFaction
+		{
+			get;
+			private set;
+		}
 
-		public Faction Faction { get { return HordeFaction; } }
+		public Faction RandomFaction
+		{
+			get
+			{
+				return Utility.HeadsOrTails() ? HordeFaction : AllianceFaction;
+			}
+		}
+
+		public Faction GetFaction(FactionGroup fact)
+		{
+			return fact == FactionGroup.Alliance ? AllianceFaction : HordeFaction;
+		}
 		#endregion
 
 		#region Spells
@@ -794,16 +866,20 @@ namespace WCell.RealmServer.NPCs
 
 			AggroBaseRange = AggroBaseRangeDefault;
 
-			MovesRandomly = NPCFlags == NPCFlags.None;
-
 			NPCId = (NPCId)Id;
 
 			DefaultDecayDelayMillis = _DefaultDecayDelayMillis;
 			Family = NPCMgr.GetFamily(FamilyId);
 
-			if (Type == CreatureType.NotSpecified)
+			if (Type == CreatureType.NotSpecified || VehicleEntry != null)
 			{
 				IsIdle = true;
+			}
+			
+			if (Type == CreatureType.NotSpecified && UnitFlags.HasFlag((UnitFlags.Passive | UnitFlags.NotSelectable)))
+			{
+				IsEventTrigger = true;
+				IsIdle = false;
 			}
 
 			if (Resistances == null)
@@ -812,25 +888,28 @@ namespace WCell.RealmServer.NPCs
 			}
 
 			SetFlagIndices = Utility.GetSetIndices((uint)NPCFlags);
+
+			// set/fix factions
 			HordeFaction = FactionMgr.Get(HordeFactionId);
 			AllianceFaction = FactionMgr.Get(AllianceFactionId);
-
 			if (HordeFaction == null)
 			{
 				HordeFaction = AllianceFaction;
+				HordeFactionId = AllianceFactionId;
 			}
 			else if (AllianceFaction == null)
 			{
 				AllianceFaction = HordeFaction;
+				AllianceFactionId = HordeFactionId;
 			}
-
 			if (AllianceFaction == null)
 			{
 				ContentMgr.OnInvalidDBData("NPCEntry has no valid Faction: " + this);
-				AllianceFaction = NPCMgr.DefaultFaction;
-				HordeFaction = AllianceFaction;
+				HordeFaction = AllianceFaction = NPCMgr.DefaultFaction;
+				HordeFactionId = AllianceFactionId = (FactionTemplateId) HordeFaction.Template.Id;
 			}
 
+			// speeds
 			if (SpeedFactor < 0.01)
 			{
 				SpeedFactor = 1;
@@ -912,6 +991,25 @@ namespace WCell.RealmServer.NPCs
 
             //End SFDB Specific
 
+            if(TrainerTemplateId != 0)
+            {
+                if (!NPCMgr.TrainerSpellTemplates.ContainsKey(TrainerTemplateId))
+                {
+                    ContentMgr.OnInvalidDBData("NPCEntry has invalid TrainerTemplateId: {0} ({1})", this, TrainerTemplateId);
+                }
+                else
+                {
+                    if (TrainerEntry == null)
+                    {
+                        TrainerEntry = new TrainerEntry();
+                    }
+                    foreach (var trainerSpell in NPCMgr.TrainerSpellTemplates[TrainerTemplateId])
+                    {
+                        TrainerEntry.AddSpell(trainerSpell);
+                    }
+                }
+            }
+
 			if (AddonData != null)
 			{
 				AddonData.InitAddonData(this);
@@ -966,24 +1064,38 @@ namespace WCell.RealmServer.NPCs
 			return npc;
 		}
 
-		public NPC SpawnAt(Map map, Vector3 pos)
+		public NPC SpawnAt(Map map, Vector3 pos, bool hugGround = false)
 		{
 			var npc = Create(map.DifficultyIndex);
+			if (hugGround && InhabitType == InhabitType.Ground)
+			{
+				pos.Z = map.Terrain.GetGroundHeightUnderneath(pos);
+			}
 			map.AddObject(npc, pos);
 			return npc;
 		}
 
-		public NPC SpawnAt(IWorldZoneLocation loc)
+		public NPC SpawnAt(IWorldZoneLocation loc, bool hugGround = false)
 		{
 			var npc = Create(loc.Map.DifficultyIndex);
 			npc.Zone = loc.GetZone();
-			loc.Map.AddObject(npc, loc.Position);
+			var pos = loc.Position;
+			if (hugGround && InhabitType == InhabitType.Ground)
+			{
+				pos.Z = loc.Map.Terrain.GetGroundHeightUnderneath(pos);
+			}
+			loc.Map.AddObject(npc, pos);
 			return npc;
 		}
 
-		public NPC SpawnAt(IWorldLocation loc)
+		public NPC SpawnAt(IWorldLocation loc, bool hugGround = false)
 		{
 			var npc = Create(loc.Map.DifficultyIndex);
+			var pos = loc.Position;
+			if (hugGround && InhabitType == InhabitType.Ground)
+			{
+				pos.Z = loc.Map.Terrain.GetGroundHeightUnderneath(pos);
+			}
 			loc.Map.AddObject(npc, loc.Position);
 			npc.Phase = loc.Phase;
 			return npc;
@@ -1184,6 +1296,26 @@ namespace WCell.RealmServer.NPCs
 				}
 				writer.WriteLine("DifficultyOverrides: {0}", parts.ToString("; "));
 			}
+
+			if (KillCreditIds != null && KillCreditIds.Any(id => id != 0))
+			{
+				var parts = new List<string>(2);
+				for (var i = 0u; i < UnitConstants.MaxKillCredits; i++)
+				{
+					var id = KillCreditIds[i];
+					if (id != 0)
+					{
+						var entry = NPCMgr.GetEntry(id);
+						if (entry != null)
+						{
+							parts.Add(id + " (" + (uint)id + ")");
+						}
+					}
+				}
+				writer.WriteLine("KillCredits: {0}", parts.ToString("; "));
+			}
+
+
 			//if (inclFaction)	
 			//{
 			//    writer.WriteLineNotDefault(DefaultFactionId, "Faction: " + DefaultFactionId);
