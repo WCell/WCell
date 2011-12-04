@@ -291,18 +291,26 @@ namespace WCell.RealmServer.Network
 
 		void AddDisconnectWarningToTitle()
 		{
-			m_warnInfo = " - ######### " + RealmLocalizer.Instance.Translate(RealmLangKey.NotConnectedToAuthServer).ToUpper() + " #########";
-			Console.Title += m_warnInfo;
+            if (RealmServer.ConsoleActive)
+            {
+                m_warnInfo = " - ######### " +
+                             RealmLocalizer.Instance.Translate(RealmLangKey.NotConnectedToAuthServer).ToUpper() +
+                             " #########";
+                Console.Title += m_warnInfo;
+            }
 		}
 
 		void RearmDisconnectWarning()
 		{
 			m_warned = false;
-			if (m_warnInfo != null)
-			{
-				Console.Title = Console.Title.Replace(m_warnInfo, "");
-				m_warnInfo = null;	
-			}
+            if (RealmServer.ConsoleActive)
+            {
+                if (m_warnInfo != null)
+                {
+                    Console.Title = Console.Title.Replace(m_warnInfo, "");
+                    m_warnInfo = null;
+                }
+            }
 		}
 	}
 }
