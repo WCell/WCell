@@ -244,6 +244,30 @@ namespace WCell.Core.Network
 			return new string(chrs);
 		}
 
+        public string ReadFourCC()
+        {
+            if (!EnsureData(4))
+            {
+                return "";
+            }
+
+            char[] chrs = ReadChars(4);
+            //if the fourcc is null terminated
+            //then we dont want to move the termination
+            //character!
+            if(chrs[3] == 0)
+            {
+                var temp = chrs[2];
+                chrs[2] = chrs[0];
+                chrs[0] = temp;
+            }
+            else
+            {
+                (chrs).Reverse();
+            }
+            return new string(chrs);
+        }
+
 		/// <summary>
 		/// Reads a <see cref="BigInteger" /> from the current stream. The <see cref="BigInteger" /> is of length bytes.
 		/// </summary>

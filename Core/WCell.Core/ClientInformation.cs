@@ -15,9 +15,11 @@
  *************************************************************************/
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using Cell.Core;
+using NLog;
 using WCell.Constants;
 using WCell.Core.Network;
 
@@ -30,14 +32,17 @@ namespace WCell.Core
 	[Serializable]
 	public class ClientInformation
 	{
-		private OperatingSystem m_operatingSys;
-		private ProcessorArchitecture m_architecture;
-		private ClientLocale m_Locale;
+	    private static readonly Logger Log = LogManager.GetCurrentClassLogger();
+        
+        private ClientType _clientInstallationType;
+		private OperatingSystem _operatingSys;
+		private ProcessorArchitecture _architecture;
+		private ClientLocale _locale;
 
 		public ClientInformation()
 		{
-			m_operatingSys = OperatingSystem.Win;
-			m_architecture = ProcessorArchitecture.x86;
+			_operatingSys = OperatingSystem.Win;
+			_architecture = ProcessorArchitecture.x86;
 			Locale = ClientLocale.English;
 			TimeZone = 0x258;
 			IPAddress = new XmlIPAddress(System.Net.IPAddress.Loopback);
@@ -45,27 +50,71 @@ namespace WCell.Core
 
 		private ClientInformation(PacketIn packet)
 		{
-			packet.SkipBytes(1);	// 0
+            try
+            {
+                ProtocolVersion = packet.ReadByte();
+                var claimedRemainingLength = packet.ReadUInt16();
+                if (packet.RemainingLength != claimedRemainingLength)
+                {
+                    Log.Warn("Client attempting login sent AUTH_LOGON_CHALLENGE remaining length as {0}, however {1} bytes are remaining", claimedRemainingLength, packet.RemainingLength);
+                }
 
-			try
-			{
-				Version = new ClientVersion(packet.ReadBytes(5));
-				Architecture = packet.ReadReversedString();
-				OS = packet.ReadReversedString();
+                var clientInstallationType = packet.ReadFourCC();
+                ClientTypes.Lookup(clientInstallationType, out _clientInstallationType);
 
-				var localeStr = packet.ReadReversedPascalString(4);
-				if (!ClientLocales.Lookup(localeStr, out m_Locale))
-				{
-					m_Locale = WCellConstants.DefaultLocale;
-				}
+                Version = new ClientVersion(packet.ReadBytes(5));
+                Architecture = packet.ReadFourCC().TrimEnd('\0');
+                OS = packet.ReadFourCC().TrimEnd('\0');
 
-				TimeZone = BitConverter.ToUInt32(packet.ReadBytes(4), 0);
-				IPAddress = new XmlIPAddress(packet.ReadBytes(4));
-			}
-			catch
-			{
-			}
+                var localeStr = packet.ReadFourCC();
+                if (!ClientLocales.Lookup(localeStr, out _locale))
+                {
+                    _locale = WCellConstants.DefaultLocale;
+                }
+
+                TimeZone = BitConverter.ToUInt32(packet.ReadBytes(4), 0);
+                IPAddress = new XmlIPAddress(packet.ReadBytes(4));
+
+                Log.Info("ProtocolVersion: {0} ClientType: {1} Version: {2} Architecture: {3} OS: {4} Locale: {5} TimeZone: {6} IP: {7}", ProtocolVersion, ClientInstallationType, Version, Architecture, OS, Locale, TimeZone, IPAddress);
+            }
+            catch
+            {
+            }
 		}
+
+        public enum ClientType : byte
+        {
+            Test = 0,
+            Beta = 1,
+            Normal = 2,
+            Installing = 3,
+            Invalid = 4
+        }
+
+        public static class ClientTypes
+        {
+            public static readonly Dictionary<string, ClientType> TypeMap =
+            new Dictionary<string, ClientType>(StringComparer.InvariantCultureIgnoreCase);
+
+            static ClientTypes()
+            {
+                TypeMap["WoWT"] = ClientType.Test;
+                TypeMap["WoWB"] = ClientType.Beta;
+                TypeMap["WoW\0"] = ClientType.Normal;
+                TypeMap["WoWI"] = ClientType.Installing;
+            }
+
+            public static bool Lookup(string clientInstallationTypeStr, out ClientType clientType)
+            {
+                if (!TypeMap.TryGetValue(clientInstallationTypeStr.Substring(0, 4), out clientType))
+                {
+                    clientType = ClientType.Invalid;
+                    return false;
+                }
+                return true;
+            }
+
+        }
 
 		/// <summary>
 		/// Possible operating systems of the client
@@ -106,17 +155,35 @@ namespace WCell.Core
 			set;
 		}
 
+        /// <summary>
+        /// The game client version of the client.
+        /// </summary>
+        public byte ProtocolVersion
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// The type of client that is attempting to connect.
+        /// </summary>
+        public ClientType ClientInstallationType
+        {
+            get { return _clientInstallationType; }
+            set { _clientInstallationType = value; }
+        }
+
 		/// <summary>
 		/// The operating system of the client.
 		/// </summary>
 		public string OS
 		{
-			get { return Enum.GetName(typeof(OperatingSystem), m_operatingSys); }
+			get { return Enum.GetName(typeof(OperatingSystem), _operatingSys); }
 			set
 			{
 				try
 				{
-					m_operatingSys = (OperatingSystem)Enum.Parse(typeof(OperatingSystem), value);
+					_operatingSys = (OperatingSystem)Enum.Parse(typeof(OperatingSystem), value);
 				}
 				catch (ArgumentException)
 				{
@@ -129,12 +196,12 @@ namespace WCell.Core
 		/// </summary>
 		public string Architecture
 		{
-			get { return Enum.GetName(typeof(ProcessorArchitecture), m_architecture); }
+			get { return Enum.GetName(typeof(ProcessorArchitecture), _architecture); }
 			set
 			{
 				try
 				{
-					m_architecture = (ProcessorArchitecture)Enum.Parse(typeof(ProcessorArchitecture), value);
+					_architecture = (ProcessorArchitecture)Enum.Parse(typeof(ProcessorArchitecture), value);
 				}
 				catch (ArgumentException)
 				{
@@ -147,8 +214,8 @@ namespace WCell.Core
 		/// </summary>
 		public ClientLocale Locale
 		{
-			get { return m_Locale; }
-			set { m_Locale = value; }
+			get { return _locale; }
+			set { _locale = value; }
 		}
 
 		/// <summary>
