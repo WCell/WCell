@@ -187,7 +187,7 @@ namespace WCell.RealmServer
 		}
 
 		/// <summary>
-		/// The host address to listen of for game connections.
+		/// The host address to listen on for game connections.
 		/// </summary>
 		public static string Host = IPAddress.Loopback.ToString();
 
