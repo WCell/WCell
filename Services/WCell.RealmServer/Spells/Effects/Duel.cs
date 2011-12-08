@@ -34,7 +34,7 @@ namespace WCell.RealmServer.Spells.Effects
 
 		public override void Initialize(ref SpellFailedReason failReason)
 		{
-			var rival = m_cast.Selected as Character;
+			var rival = m_cast.SelectedTarget as Character;
 			if (rival != null)
 			{
 				failReason = Duel.CheckRequirements(m_cast.CasterChar, rival);
@@ -51,7 +51,7 @@ namespace WCell.RealmServer.Spells.Effects
 
 		public override void Apply()
 		{
-			Duel.InitializeDuel(m_cast.CasterChar, m_cast.Selected as Character);
+			Duel.InitializeDuel(m_cast.CasterChar, m_cast.SelectedTarget as Character);
 		}
 
 		public override ObjectTypes CasterType

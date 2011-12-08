@@ -263,6 +263,7 @@
     <Compile Include="Spells\Effects\WMOChange.cs" />
     <Compile Include="Spells\Effects\WMODamage.cs" />
     <Compile Include="Spells\Effects\WMORepair.cs" />
+    <Compile Include="Spells\SpellHitChecker.cs" />
     <Compile Include="Spells\Targeting\AISpellTargetCollection.cs" />
     <Compile Include="Battlegrounds\Arenas\ArenaTeam.cs" />
     <Compile Include="Battlegrounds\Arenas\ArenaTeamMember.cs" />

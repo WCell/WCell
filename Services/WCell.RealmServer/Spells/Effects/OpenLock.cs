@@ -46,9 +46,9 @@ namespace WCell.RealmServer.Spells.Effects
 
 		public override void Initialize(ref SpellFailedReason failReason)
 		{
-			if (m_cast.Selected != null)
+			if (m_cast.SelectedTarget != null)
 			{
-				lockable = m_cast.Selected as GameObject;
+				lockable = m_cast.SelectedTarget as GameObject;
 			}
 			else
 			{

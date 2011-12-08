@@ -868,7 +868,7 @@ namespace WCell.RealmServer.Entities
 									if (!IsMoving)
 									{
 										SpellCast.TargetFlags = SpellTargetFlags.Unit;
-										SpellCast.Selected = target;
+										SpellCast.SelectedTarget = target;
 										SpellCast.Start(m_AutorepeatSpell, false);
 										m_lastStrike = now;
 										mainHandDelay += RangedAttackTime;

@@ -15,7 +15,7 @@ namespace WCell.RealmServer.Spells.Effects
 
 		public override void Initialize(ref SpellFailedReason failReason)
 		{
-			if (!m_cast.Selected.IsInFrontOf(m_cast.CasterObject))
+			if (!m_cast.SelectedTarget.IsInFrontOf(m_cast.CasterObject))
 			{
 				failReason = SpellFailedReason.NotInfront;
 			}

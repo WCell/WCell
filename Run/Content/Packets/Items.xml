@@ -64,9 +64,9 @@
           <Type>PackedGuid</Type>
         </Simple>
       </Case>
-      <Case And="Object">
+      <Case And="GameObject">
         <Simple>
-          <Name>Object Guid</Name>
+          <Name>Game Object Guid</Name>
           <Type>PackedGuid</Type>
         </Simple>
       </Case>

@@ -617,7 +617,23 @@ namespace WCell.RealmServer.Entities
 			return m_dmgImmunities != null && m_dmgImmunities[(int)school] > 0;
 		}
 
-
+        public bool IsImmuneToSpell(Spell spell)
+        {
+            if (spell.Mechanic.IsNegative() && spell.IsAffectedByInvulnerability &&
+                (spell.Mechanic == SpellMechanic.Invulnerable_2 || spell.Mechanic == SpellMechanic.Invulnerable) &&
+                (
+                    IsInvulnerable ||
+                    IsImmune(SpellMechanic.Invulnerable_2) ||
+                    IsImmune(SpellMechanic.Invulnerable) ||
+                    IsImmune(spell.Mechanic) ||
+                    IsImmune(spell.DispelType)
+                )
+                )
+            {
+                return true;
+            }
+            return false;
+        }
 
 		/// <summary>
 		/// Adds immunity against given damage-school

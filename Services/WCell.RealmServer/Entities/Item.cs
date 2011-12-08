@@ -964,7 +964,6 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Tries to equip this Item
 		/// </summary>
-		/// <returns></returns>
 		public InventoryError Equip()
 		{
 			return m_owner.Inventory.TryEquip(m_container, Slot);

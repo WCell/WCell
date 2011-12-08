@@ -124,7 +124,7 @@ namespace WCell.RealmServer.Spells
 			}
 			if (obj is GameObject)
 			{
-				return SpellTargetFlags.Object;
+				return SpellTargetFlags.GameObject;
 			}
 			if (obj is Corpse)
 			{
@@ -253,7 +253,7 @@ namespace WCell.RealmServer.Spells
 			if (flags == 0 || flags == SpellTargetFlags.Self)
 			{
 				var spell = cast.Spell;
-				if (cast.Selected is Unit && !spell.IsAreaSpell &&
+				if (cast.SelectedTarget is Unit && !spell.IsAreaSpell &&
 					(spell.Visual != 0 || spell.IsPhysicalAbility))
 				{
 					flags = SpellTargetFlags.Unit;
@@ -263,11 +263,11 @@ namespace WCell.RealmServer.Spells
 			if (flags.HasAnyFlag(
 				SpellTargetFlags.SpellTargetFlag_Dynamic_0x10000 |
 				SpellTargetFlags.Corpse |
-				SpellTargetFlags.Object |
+				SpellTargetFlags.GameObject |
 				SpellTargetFlags.PvPCorpse |
 				SpellTargetFlags.Unit))
 			{
-				if (cast.Selected == null)
+				if (cast.SelectedTarget == null)
 				{
 #if DEBUG
 					log.Warn("{0} casted Spell {1} with TargetFlags {2} but with nothing Selected",
@@ -277,7 +277,7 @@ namespace WCell.RealmServer.Spells
 				}
 				else
 				{
-					cast.Selected.EntityId.WritePacked(packet);
+					cast.SelectedTarget.EntityId.WritePacked(packet);
 				}
 			}
 			// 0x1010
@@ -291,9 +291,9 @@ namespace WCell.RealmServer.Spells
 			// 0x20
 			if (flags.HasAnyFlag(SpellTargetFlags.SourceLocation))
 			{
-				if (cast.Selected != null)
+				if (cast.SelectedTarget != null)
 				{
-					cast.Selected.EntityId.WritePacked(packet);
+					cast.SelectedTarget.EntityId.WritePacked(packet);
 				}
 				else
 				{
@@ -306,9 +306,9 @@ namespace WCell.RealmServer.Spells
 			// 0x40
 			if (flags.HasAnyFlag(SpellTargetFlags.DestinationLocation))
 			{
-				if (cast.Selected != null)
+				if (cast.SelectedTarget != null)
 				{
-					cast.Selected.EntityId.WritePacked(packet);
+					cast.SelectedTarget.EntityId.WritePacked(packet);
 				}
 				else
 				{
