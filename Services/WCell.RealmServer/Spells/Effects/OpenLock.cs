@@ -44,7 +44,7 @@ namespace WCell.RealmServer.Spells.Effects
 		{
 		}
 
-		public override void Initialize(ref SpellFailedReason failReason)
+		public override SpellFailedReason Initialize()
 		{
 			if (m_cast.SelectedTarget != null)
 			{
@@ -57,80 +57,76 @@ namespace WCell.RealmServer.Spells.Effects
 
 			if (lockable == null)
 			{
-				failReason = SpellFailedReason.BadTargets;
+				return SpellFailedReason.BadTargets;
 			}
-			else
+
+			var lck = lockable.Lock;
+			var chr = m_cast.CasterChar;
+
+			if (lck == null)
 			{
-				var lck = lockable.Lock;
-				var chr = m_cast.CasterChar;
+				log.Warn("Using OpenLock on object without Lock: " + lockable);
+				return SpellFailedReason.Error;
+			}
+			if (chr == null)
+			{
+				log.Warn("Using OpenLock without Character: " + chr);
+				return SpellFailedReason.Error;
+			}
 
-				if (lck == null)
+			var failReason = SpellFailedReason.Ok;
+			if (!lck.IsUnlocked)
+			{
+				var type = (LockInteractionType)Effect.MiscValue;
+				if (lck.Keys.Length > 0 && m_cast.CasterItem != null)
 				{
-					log.Warn("Using OpenLock on object without Lock: " + lockable);
-					failReason = SpellFailedReason.Error;
-					return;
-				}
-				if (chr == null)
-				{
-					log.Warn("Using OpenLock without Character: " + chr);
-					failReason = SpellFailedReason.Error;
-					return;
-				}
-
-				if (!lck.IsUnlocked)
-				{
-					var type = (LockInteractionType)Effect.MiscValue;
-					if (lck.Keys.Length > 0 && m_cast.CasterItem != null)
+					if (!lck.Keys.Contains(key => key.KeyId == m_cast.CasterItem.Template.ItemId))
 					{
-						if (!lck.Keys.Contains(key => key.KeyId == m_cast.CasterItem.Template.ItemId))
-						{
-							failReason = SpellFailedReason.ItemNotFound;
-							return;
-						}
+						return SpellFailedReason.ItemNotFound;
 					}
-					else if (!lck.Supports(type))
-					{
-						failReason = SpellFailedReason.BadTargets;
-						return;
-					}
+				}
+				else if (!lck.Supports(type))
+				{
+					return SpellFailedReason.BadTargets;
+				}
 
-					if (type != LockInteractionType.None)
+				if (type != LockInteractionType.None)
+				{
+					foreach (var openingMethod in lck.OpeningMethods)
 					{
-						foreach (var openingMethod in lck.OpeningMethods)
+						if (openingMethod.InteractionType == type)
 						{
-							if (openingMethod.InteractionType == type)
+							if (openingMethod.RequiredSkill != SkillId.None)
 							{
-								if (openingMethod.RequiredSkill != SkillId.None)
+								skill = chr.Skills[openingMethod.RequiredSkill];
+								if (skill == null || skill.ActualValue < openingMethod.RequiredSkillValue)
 								{
-									skill = chr.Skills[openingMethod.RequiredSkill];
-									if (skill == null || skill.ActualValue < openingMethod.RequiredSkillValue)
-									{
-										failReason = SpellFailedReason.MinSkill;
-									}
+									failReason = SpellFailedReason.MinSkill;
 								}
-								method = openingMethod;
-								break;
 							}
-						}
-
-						if (method == null)
-						{
-							// we are using the wrong kind of spell on the target
-							failReason = SpellFailedReason.BadTargets;
+							method = openingMethod;
+							break;
 						}
 					}
-				}
 
-				if (failReason != SpellFailedReason.Ok)
-				{
-					// spell failed
-					if (lockable is GameObject && ((GameObject)lockable).Entry.IsConsumable)
+					if (method == null)
 					{
-						// re-enable GO
-						((GameObject)lockable).State = GameObjectState.Enabled;
+						// we are using the wrong kind of spell on the target
+						failReason = SpellFailedReason.BadTargets;
 					}
 				}
 			}
+
+			if (failReason != SpellFailedReason.Ok)
+			{
+				// spell failed
+				if (lockable is GameObject && ((GameObject)lockable).Entry.IsConsumable)
+				{
+					// re-enable GO
+					((GameObject)lockable).State = GameObjectState.Enabled;
+				}
+			}
+			return failReason;
 		}
 
 		public override void Apply()

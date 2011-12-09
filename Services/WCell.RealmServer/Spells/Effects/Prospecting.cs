@@ -27,16 +27,14 @@ namespace WCell.RealmServer.Spells.Effects
 		{
 		}
 
-		public override void Initialize(ref SpellFailedReason failReason)
+		public override SpellFailedReason Initialize()
 		{
 			if (!m_cast.TargetItem.Template.Flags.HasFlag(ItemFlags.Prospectable))
 			{
-				failReason = SpellFailedReason.CantBeProspected;
+				return SpellFailedReason.CantBeProspected;
 			}
-			else
-			{
-				base.Initialize(ref failReason);
-			}
+
+			return base.Initialize();
 		}
 
 		public override LootEntryType LootEntryType

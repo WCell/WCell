@@ -32,13 +32,14 @@ namespace WCell.RealmServer.Spells.Effects
 		{
 		}
 
-		public override void Initialize(ref SpellFailedReason failReason)
+		public override SpellFailedReason Initialize()
 		{
 			var rival = m_cast.SelectedTarget as Character;
 			if (rival != null)
 			{
-				failReason = Duel.CheckRequirements(m_cast.CasterChar, rival);
+				return Duel.CheckRequirements(m_cast.CasterChar, rival);
 			}
+			return SpellFailedReason.Ok;
 		}
 
 		public override bool HasOwnTargets

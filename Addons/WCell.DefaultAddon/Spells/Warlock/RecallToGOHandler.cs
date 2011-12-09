@@ -14,7 +14,7 @@ namespace WCell.Addons.Default.Spells.Warlock
         {
         }
 
-		public override void Initialize(ref SpellFailedReason failReason)
+		public override SpellFailedReason Initialize()
 		{
 			var goId = (GOEntryId)Effect.MiscValue;
 			var caster = m_cast.CasterUnit as Character;
@@ -23,13 +23,15 @@ namespace WCell.Addons.Default.Spells.Warlock
             	go = caster.GetOwnedGO(goId);
 				if (go == null || !caster.IsInSpellRange(Effect.Spell, go))
 				{
-					failReason = SpellFailedReason.OutOfRange;
+					return SpellFailedReason.OutOfRange;
 				}
             }
 			else
             {
-            	base.Initialize(ref failReason);
+            	return base.Initialize();
             }
+
+			return SpellFailedReason.Ok;
 		}
 
         public override void Apply()

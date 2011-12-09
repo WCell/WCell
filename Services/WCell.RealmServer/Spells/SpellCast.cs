@@ -793,7 +793,7 @@ namespace WCell.RealmServer.Spells
 
 			if (failReason == SpellFailedReason.Ok)
 			{
-				failReason = InitializeSpellHandlers();
+				failReason = PrepareHandlers();
 				if (failReason != SpellFailedReason.Ok)
 				{
 					Cancel(failReason);

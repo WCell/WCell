@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using NLog;
 using WCell.Constants;
 using WCell.Constants.Achievements;
 using WCell.Constants.Misc;
@@ -16,13 +15,26 @@ namespace WCell.RealmServer.Spells
 {
 	public partial class SpellCast
 	{
-		#region InitializeSpellHandlers
-		/// <summary>
-		/// Creates the SpellEffectHandlers and collects all initial targets
-		/// </summary>
-		protected SpellFailedReason InitializeSpellHandlers()
+		#region PrepareHandlers
+		private SpellFailedReason PrepareHandlers()
 		{
 			var failReason = SpellFailedReason.Ok;
+			
+			var handlers = CreateHandlers(ref failReason);
+			if (failReason != SpellFailedReason.Ok)
+				return failReason;
+
+			Handlers = handlers;
+
+			failReason = InitializeHandlers();
+			if (failReason != SpellFailedReason.Ok)
+				return failReason;
+
+			return InitializeHandlersTargets();
+		}
+
+		private SpellEffectHandler[] CreateHandlers(ref SpellFailedReason failReason)
+		{
 			var handlers = new SpellEffectHandler[Spell.EffectHandlerCount];
 			var h = 0;
 			SpellTargetCollection targets = null;
@@ -31,65 +43,12 @@ namespace WCell.RealmServer.Spells
 				CreateHandler(effect, h, handlers, ref targets, ref failReason);
 				if (failReason != SpellFailedReason.Ok)
 				{
-					return failReason;
+					return null;
 				}
 				h++;
 			}
 
-			if (failReason == SpellFailedReason.Ok)
-			{
-				Handlers = handlers;
-
-				// initialize handlers
-				foreach (var handler in Handlers)
-				{
-					handler.Initialize(ref failReason);
-					if (failReason != SpellFailedReason.Ok)
-					{
-						Handlers = null;
-						return failReason;
-					}
-				}
-
-				// initialize targets
-				foreach (var handler in Handlers)
-				{
-					var handlerTargets = handler.m_targets;
-					if (handlerTargets == null || handlerTargets.IsInitialized) continue;
-
-					if (InitialTargets != null)
-					{
-						// initialize forced targets
-						if ((failReason = handlerTargets.AddAll(InitialTargets)) != SpellFailedReason.Ok)
-						{
-							return failReason;
-						}
-					}
-					else
-					{
-						// Initialize standard Targets
-						if ((failReason = handlerTargets.FindAllTargets()) != SpellFailedReason.Ok)
-						{
-							return failReason;
-						}
-					}
-
-					foreach (var target in handlerTargets)
-					{
-						Targets.Add(target);
-					}
-				}
-			}
-			return failReason;
-		}
-
-		SpellTargetCollection CreateSpellTargetCollection()
-		{
-			if (IsAICast)
-			{
-				return AISpellTargetCollection.ObtainAICollection();
-			}
-			return SpellTargetCollection.Obtain();
+			return handlers;
 		}
 
 		private void CreateHandler(SpellEffect effect, int h, SpellEffectHandler[] handlers, ref SpellTargetCollection targets, ref SpellFailedReason failReason)
@@ -142,6 +101,62 @@ namespace WCell.RealmServer.Spells
 			}
 		}
 
+		private SpellFailedReason InitializeHandlers()
+		{
+			foreach (var handler in Handlers)
+			{
+				var failReason = handler.Initialize();
+				
+				if (failReason != SpellFailedReason.Ok)
+				{
+					Handlers = null;
+					return failReason;
+				}
+			}
+
+			return SpellFailedReason.Ok;
+		}
+
+		private SpellFailedReason InitializeHandlersTargets()
+		{
+			foreach (var handler in Handlers.Where(handler => handler.Targets != null && !handler.Targets.IsInitialized))
+			{
+				var failReason = CollectHandlerTargets(handler);
+				if (failReason != SpellFailedReason.Ok)
+					return failReason;
+			}
+
+			return SpellFailedReason.Ok;
+		}
+
+		private SpellFailedReason CollectHandlerTargets(SpellEffectHandler handler)
+		{
+			var failReason = InitialTargets != null ? handler.Targets.AddAll(InitialTargets) : handler.Targets.FindAllTargets();
+
+			if (failReason != SpellFailedReason.Ok)
+				return failReason;
+
+			AddHandlerTargetsToTargets(handler);
+
+			return SpellFailedReason.Ok;
+		}
+
+		private void AddHandlerTargetsToTargets(SpellEffectHandler handler)
+		{
+			foreach (var target in handler.Targets)
+			{
+				Targets.Add(target);
+			}
+		}
+
+		SpellTargetCollection CreateSpellTargetCollection()
+		{
+			if (IsAICast)
+			{
+				return AISpellTargetCollection.ObtainAICollection();
+			}
+			return SpellTargetCollection.Obtain();
+		}
 		#endregion
 
 		#region Perform
@@ -373,8 +388,7 @@ namespace WCell.RealmServer.Spells
 				SpellFailedReason failReason;
 				if (Handlers == null)
 				{
-					// initialze Spell handlers
-					failReason = InitializeSpellHandlers();
+					failReason = PrepareHandlers();
 					if (failReason != SpellFailedReason.Ok)
 					{
 						Cancel(failReason);

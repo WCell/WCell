@@ -11,12 +11,13 @@ namespace WCell.RealmServer.Spells.Effects
 		{
 		}
 
-		public override void Initialize(ref SpellFailedReason failReason)
+		public override SpellFailedReason Initialize()
 		{
 			if (m_cast.TargetItem.Amount < Effect.MinValue)
 			{
-				failReason = SpellFailedReason.NeedMoreItems;
+				return SpellFailedReason.NeedMoreItems;
 			}
+			return SpellFailedReason.Ok;
 		}
 
 		public override void Apply()
