@@ -102,7 +102,10 @@ namespace WCell.RealmServer.Spells
 		/// Initializes this effect and checks whether the effect can be casted *before* Targets have been initialized.
 		/// Use CheckValidTarget to validate Targets.
 		/// </summary>
-		public virtual void Initialize(ref SpellFailedReason failReason) { }
+		public virtual SpellFailedReason Initialize()
+		{
+			return SpellFailedReason.Ok;
+		}
 
 		/// <summary>
 		/// This method is called on every target during CheckApply(). 

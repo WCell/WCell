@@ -9,7 +9,7 @@ namespace WCell.RealmServer.Spells.Effects
 			: base(cast, effect)
 		{
 		}
-		public override void Initialize(ref SpellFailedReason fail)
+		public override SpellFailedReason Initialize()
 		{
 			if (m_cast.GlyphSlot != 0)
 			{
@@ -18,9 +18,11 @@ namespace WCell.RealmServer.Spells.Effects
 				var slot = GlyphInfoHolder.GetGlyphSlotEntryForGlyphSlotId(m_cast.CasterChar.GetGlyphSlot((byte)m_cast.GlyphSlot));
 				if (properties.TypeFlags != slot.TypeFlags)
 				{
-					fail =  SpellFailedReason.InvalidGlyph;
+					return SpellFailedReason.InvalidGlyph;
 				}
 			}
+
+			return SpellFailedReason.Ok;
 		}
 		public override void Apply()
 		{

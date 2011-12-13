@@ -32,33 +32,33 @@ namespace WCell.RealmServer.Spells.Effects
 		{
 		}
 
-		public override void Initialize(ref SpellFailedReason failReason)
+		public override SpellFailedReason Initialize()
 		{
 			if (m_cast.TargetItem == null)
 			{
-				failReason = SpellFailedReason.ItemGone;
-				return;
+				return SpellFailedReason.ItemGone;
 			}
 
-		    if (Effect.Spell.SpellLevels != null)
-		    {
-		        if (m_cast.TargetItem.Template.Level < Effect.Spell.SpellLevels.BaseLevel)
-		        {
-		            failReason = SpellFailedReason.Lowlevel;
-		            return;
-		        }
-		    }
+            if (Effect.Spell.SpellLevels != null)
+            {
+                if (m_cast.TargetItem.Template.Level < Effect.Spell.SpellLevels.BaseLevel)
+                {
+                    return SpellFailedReason.LowCastlevel;
+                }
+            }
 
 		    enchantEntry = EnchantMgr.GetEnchantmentEntry((uint)Effect.MiscValue);
 			if (enchantEntry == null)
 			{
 				log.Error("Spell {0} refers to invalid EnchantmentEntry {1}", Effect.Spell, Effect.MiscValue);
-				failReason = SpellFailedReason.Error;
+				return SpellFailedReason.Error;
 			}
-			else if (!enchantEntry.CheckRequirements(m_cast.CasterUnit))
+			if (!enchantEntry.CheckRequirements(m_cast.CasterUnit))
 			{
-				failReason = SpellFailedReason.MinSkill;
+				return SpellFailedReason.MinSkill;
 			}
+
+			return SpellFailedReason.Ok;
 		}
 
 		public virtual EnchantSlot EnchantSlot

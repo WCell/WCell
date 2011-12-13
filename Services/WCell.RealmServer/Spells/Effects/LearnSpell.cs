@@ -32,7 +32,7 @@ namespace WCell.RealmServer.Spells.Effects
 		{
 		}
 
-		public override void Initialize(ref SpellFailedReason failReason)
+		public override SpellFailedReason Initialize()
 		{
 			if ((toLearn = Effect.TriggerSpell) == null)
 			{
@@ -43,9 +43,10 @@ namespace WCell.RealmServer.Spells.Effects
 				else
 				{
 					log.Warn("Learn-Spell {0} has invalid Spell to be taught: {1}", Effect.Spell, Effect.TriggerSpellId);
-					failReason = SpellFailedReason.Error;
+					return SpellFailedReason.Error;
 				}
 			}
+			return SpellFailedReason.Ok;
 		}
 
 		public override SpellFailedReason InitializeTarget(WorldObject target)

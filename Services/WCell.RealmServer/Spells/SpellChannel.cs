@@ -264,7 +264,7 @@ namespace WCell.RealmServer.Spells
 					Close(false);
 					if (cast.IsCasting)
 					{
-						cast.Cleanup(true);
+						cast.Cleanup();
 					}
 				}
 				//else

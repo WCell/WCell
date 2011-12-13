@@ -41,9 +41,10 @@ namespace WCell.RealmServer.Spells.Effects
 			get { return true; }
 		}
 
-		public override void Initialize(ref SpellFailedReason failReason)
+		public override SpellFailedReason Initialize()
 		{
 			m_auraEffectHandlers = new List<SingleAuraApplicationInfo>(3);
+			return SpellFailedReason.Ok;
 		}
 
 		public override SpellFailedReason InitializeTarget(WorldObject target)

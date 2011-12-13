@@ -28,7 +28,6 @@ namespace WCell.RealmServer.Entities
 
         private static float[] s_barberShopCosts;
         private static float[] s_octManaRegen;
-        private static float[] s_octHealthRegen;
         private static float[] s_octManaRegenPerSpirit;
         private static float[] s_octHealthPerStamina;
 

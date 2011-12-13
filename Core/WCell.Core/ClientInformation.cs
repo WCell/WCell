@@ -170,24 +170,6 @@ namespace WCell.Core
         /// </summary>
         public ClientType ClientInstallationType
         {
-            get { return _mClientInstallationType; }
-            set { _mClientInstallationType = value; }
-        }
-
-        /// <summary>
-        /// The game client version of the client.
-        /// </summary>
-        public byte ProtocolVersion
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// The type of client that is attempting to connect.
-        /// </summary>
-        public ClientType ClientInstallationType
-        {
             get { return _clientInstallationType; }
             set { _clientInstallationType = value; }
         }

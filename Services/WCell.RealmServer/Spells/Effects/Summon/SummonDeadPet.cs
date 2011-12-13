@@ -26,12 +26,13 @@ namespace WCell.RealmServer.Spells.Effects
 		{
 		}
 
-		public override void Initialize(ref SpellFailedReason failReason)
+		public override SpellFailedReason Initialize()
 		{
 			if (m_cast.CasterChar.ActivePet == null)
 			{
-				failReason = SpellFailedReason.NoPet;
+				return SpellFailedReason.NoPet;
 			}
+			return SpellFailedReason.Ok;
 		}
 
 		public override void Apply()

@@ -13,13 +13,14 @@ namespace WCell.RealmServer.Spells.Effects.Custom
 		{
 		}
 
-		public override void Initialize(ref SpellFailedReason failReason)
+		public override SpellFailedReason Initialize()
 		{
 			if (Effect.AffectSpellSet == null)
 			{
-				failReason = SpellFailedReason.Error;
 				LogManager.GetCurrentClassLogger().Warn("Tried to use {0} in Spell \"{1}\" with an empty SpellEffect.AffectSpellSet", GetType(), Effect.Spell);
+				return SpellFailedReason.Error;
 			}
+			return SpellFailedReason.Ok;
 		}
 
 		protected override void Apply(WorldObject target)

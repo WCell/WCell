@@ -23,42 +23,39 @@ namespace WCell.RealmServer.Spells.Effects
 			get { return ObjectTypes.Player; }
 		}
 
-		public override void Initialize(ref SpellFailedReason failReason)
+		public override SpellFailedReason Initialize()
 		{
 			var pet = Cast.CasterChar.ActivePet;
 
 			if (pet == null)
 			{
-				failReason = SpellFailedReason.BadImplicitTargets;
-				return;
+				return SpellFailedReason.BadImplicitTargets;
 			}
 
 			if (Cast.TargetItem == null)
 			{
-				failReason = SpellFailedReason.ItemNotFound;
-				return;
+				return SpellFailedReason.ItemNotFound;
 			}
 
 			var food = Cast.TargetItem.Template;
 
 			if (!pet.CanEat(food.m_PetFood))
 			{
-				failReason = SpellFailedReason.WrongPetFood;
-				return;
+				return SpellFailedReason.WrongPetFood;
 			}
 
 			var diff = pet.Level - food.Level;
 			if (diff > 35)
 			{
-				failReason = SpellFailedReason.FoodLowlevel;
-				return;
+				return SpellFailedReason.FoodLowlevel;
 			}
 
 			if (diff < -15)
 			{
-				failReason = SpellFailedReason.Highlevel;
-				return;
+				return SpellFailedReason.Highlevel;
 			}
+
+			return SpellFailedReason.Ok;
 		}
 
 		public override void Apply()

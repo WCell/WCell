@@ -9,13 +9,14 @@ namespace WCell.RealmServer.Spells.Effects
 		{
 		}
 
-		public override void Initialize(ref SpellFailedReason failReason)
+		public override SpellFailedReason Initialize()
 		{
 			if(Effect.BasePoints < 0)
 			{
 				Effect.BasePoints = 0;
 			}
-			base.Initialize(ref failReason);
+
+			return base.Initialize();
 		}
 
 		public override SpellFailedReason InitializeTarget(WorldObject target)

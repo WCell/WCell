@@ -112,7 +112,7 @@ namespace WCell.RealmServer.Spells.Targeting
 				return;
 
 			var caster = cast.CasterObject as Unit;
-			var selected = cast.Selected;
+			var selected = cast.SelectedTarget;
 			if (selected == null)
 			{
 				if (caster == null)
@@ -301,7 +301,7 @@ namespace WCell.RealmServer.Spells.Targeting
 		/// </summary>
 		public static void AddItemOrObject(this SpellTargetCollection targets, TargetFilter filter, ref SpellFailedReason failReason)
 		{
-			if (targets.Cast.TargetItem == null && !(targets.Cast.Selected is GameObject))
+			if (targets.Cast.TargetItem == null && !(targets.Cast.SelectedTarget is GameObject))
 			{
 				failReason = SpellFailedReason.BadTargets;
 			}
@@ -309,13 +309,13 @@ namespace WCell.RealmServer.Spells.Targeting
 
 		public static void AddObject(this SpellTargetCollection targets, TargetFilter filter, ref SpellFailedReason failReason)
 		{
-			if (!(targets.Cast.Selected is GameObject))
+			if (!(targets.Cast.SelectedTarget is GameObject))
 			{
 				failReason = SpellFailedReason.BadTargets;
 			}
 			else
 			{
-				targets.Add(targets.Cast.Selected);
+				targets.Add(targets.Cast.SelectedTarget);
 			}
 		}
 		#endregion

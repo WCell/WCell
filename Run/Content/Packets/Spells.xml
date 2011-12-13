@@ -32,9 +32,9 @@
           <Type>PackedGuid</Type>
         </Simple>
       </Case>
-      <Case And="Object">
+      <Case And="GameObject">
         <Simple>
-          <Name>Object Guid</Name>
+          <Name>Game Object Guid</Name>
           <Type>PackedGuid</Type>
         </Simple>
       </Case>
@@ -139,9 +139,9 @@
           <Type>PackedGuid</Type>
         </Simple>
       </Case>
-      <Case And="Object">
+      <Case And="GameObject">
         <Simple>
-          <Name>Object Guid</Name>
+          <Name>Game Object Guid</Name>
           <Type>PackedGuid</Type>
         </Simple>
       </Case>
@@ -350,9 +350,9 @@
           <Type>PackedGuid</Type>
         </Simple>
       </Case>
-      <Case And="Object">
+      <Case And="GameObject">
         <Simple>
-          <Name>Object</Name>
+          <Name>Game Object</Name>
           <Type>PackedGuid</Type>
         </Simple>
       </Case>
@@ -581,7 +581,7 @@
       <SegmentType>WCell.Constants.Spells.SpellTargetFlags</SegmentType>
     </Simple>
     <Switch CompareWith="TargetMask">
-      <Case And="Unit | PvPCorpse | Object | Corpse | SpellTargetFlag_Dynamic_0x10000">
+      <Case And="Unit | PvPCorpse | GameObject | Corpse | SpellTargetFlag_Dynamic_0x10000">
         <Simple>
           <Name>TargetGuid</Name>
           <Type>PackedGuid</Type>

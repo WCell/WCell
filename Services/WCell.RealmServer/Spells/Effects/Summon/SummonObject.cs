@@ -35,12 +35,13 @@ namespace WCell.RealmServer.Spells.Effects
 		{
 		}
 
-		public override void Initialize(ref SpellFailedReason failReason)
+		public override SpellFailedReason Initialize()
 		{
 			if (m_targets != null && m_targets.Count > 0)
 			{
 				firstTarget = (Unit)m_targets[0];
 			}
+			return SpellFailedReason.Ok;
 		}
 
 		public override void Apply()

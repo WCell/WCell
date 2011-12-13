@@ -11,12 +11,13 @@ namespace WCell.RealmServer.Spells.Effects
 		{
 		}
 
-		public override void Initialize(ref SpellFailedReason failReason)
+		public override SpellFailedReason Initialize()
 		{
 			if (m_cast.InitialTargets == null || m_cast.InitialTargets.Length == 0 || !(m_cast.InitialTargets[0] is Unit))
 			{
-				failReason = SpellFailedReason.NoValidTargets;
+				return SpellFailedReason.NoValidTargets;
 			}
+			return SpellFailedReason.Ok;
 		}
 
 		public override void Apply()

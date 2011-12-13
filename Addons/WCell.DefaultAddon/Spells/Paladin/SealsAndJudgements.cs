@@ -145,20 +145,20 @@ namespace WCell.Addons.Default.Spells.Paladin
 		{
 		}
 
-		public override void Initialize(ref SpellFailedReason failReason)
+		public override SpellFailedReason Initialize()
 		{
 			var seal = m_cast.CasterUnit.Auras[new AuraIndexId(SealsAndJudgements.SealAuraId, true)];
 			if (seal == null)
 			{
-				failReason = SpellFailedReason.CasterAurastate;
+				return SpellFailedReason.CasterAurastate;
 			}
-			else
+
+			if (!SealsAndJudgements.SealDamageCalculators.TryGetValue(seal.Spell.Line.LineId, out calc))
 			{
-				if (!SealsAndJudgements.SealDamageCalculators.TryGetValue(seal.Spell.Line.LineId, out calc))
-				{
-					LogManager.GetCurrentClassLogger().Warn("Seal {0} has no Damage Calculator.", seal.Spell);
-				}
+				LogManager.GetCurrentClassLogger().Warn("Seal {0} has no Damage Calculator.", seal.Spell);
 			}
+
+			return SpellFailedReason.Ok;
 		}
 
 		protected override void Apply(WorldObject target)

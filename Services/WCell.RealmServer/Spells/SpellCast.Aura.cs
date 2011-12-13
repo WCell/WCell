@@ -18,7 +18,7 @@ namespace WCell.RealmServer.Spells
 			var missReason = CastMissReason.None;
 			if (hostile && target.CheckDebuffResist(casterLevel, target.GetLeastResistantSchool(spell)))
 			{
-				missReason = CastMissReason.FullResist;
+				missReason = CastMissReason.Resist;
 			}
 			return missReason;
 		}

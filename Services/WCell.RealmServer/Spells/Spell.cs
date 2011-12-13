@@ -953,12 +953,13 @@ namespace WCell.RealmServer.Spells
 			return caster.GetPowerCost(school, this, CalcBasePowerCost(caster));
 		}
 
-		public bool ShouldShowToClient()
+		public bool IsVisibleToClient
 		{
-			return IsRangedAbility || Visual != 0 || Visual2 != 0 ||
-				   IsChanneled || CastDelay > 0 || HasCooldown;
-			// || (!IsPassive && IsAura)
-			;
+			get
+			{
+				return IsRangedAbility || Visual != 0 || Visual2 != 0 ||
+					IsChanneled || CastDelay > 0 || HasCooldown;
+			}
 		}
 
 		public void SetDuration(int duration)
@@ -1017,6 +1018,12 @@ namespace WCell.RealmServer.Spells
 		public bool IsAffectedByInvulnerability
 		{
 			get { return !Attributes.HasFlag(SpellAttributes.UnaffectedByInvulnerability); }
+		}
+
+		public bool CanFailDueToImmuneAgainstTarget(Unit spellTarget)
+		{
+			var characterTarget = spellTarget as Character;
+			return IsAffectedByInvulnerability || characterTarget != null && characterTarget.Role.IsStaff;
 		}
 
 		#endregion

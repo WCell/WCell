@@ -28,7 +28,7 @@ namespace WCell.RealmServer.Spells
 
 			// init handlers pre-maturely, to make sure we got any targets
 			// revalidate handlers again, later
-			var err = InitHandlers();
+			var err = PrepareHandlers();
 
 			if (err == SpellFailedReason.Ok && Targets.Count == 0)
 			{
@@ -36,7 +36,7 @@ namespace WCell.RealmServer.Spells
 				err = SpellFailedReason.NoValidTargets;
 			}
 
-			if (Targets != null && Targets.Count == 1)
+			if (Targets.Count == 1)
 			{
 				// look at single target
 				var target = Targets.First() as Unit;
