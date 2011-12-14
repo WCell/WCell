@@ -237,6 +237,8 @@ namespace WCell.RealmServer.Instances
 			{
 				progress = new InstanceProgress(MapId, InstanceId);
 			}
+		    progress.ResetTime = DateTime.Now.AddMilliseconds(m_timeoutTimer.RemainingInitialDelayMillis);
+		    progress.DifficultyIndex = DifficultyIndex;
 			PerformSave();
 			progress.Save();
 		}

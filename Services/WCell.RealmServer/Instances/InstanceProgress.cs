@@ -26,9 +26,10 @@ namespace WCell.RealmServer.Instances
 		{
 			MapId = mapId;
 			InstanceId = instanceId;
+            State = RecordState.New;
 		}
 
-        [PrimaryKey]
+        [PrimaryKey(PrimaryKeyType.Assigned)]
         public long Guid
         {
             get { return Utility.MakeLong((int)MapId, _instanceId); }

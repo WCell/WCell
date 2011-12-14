@@ -26,6 +26,7 @@ namespace WCell.RealmServer.Instances
 			DifficultyIndex = difficultyIndex;
 			InstanceId = id;
 			MapId = mapId;
+		    State = RecordState.New;
 		}
 
 		public uint InstanceId
@@ -34,7 +35,7 @@ namespace WCell.RealmServer.Instances
 			set { _instanceId = (int)value; }
 		}
 
-        [PrimaryKey]
+        [PrimaryKey(PrimaryKeyType.Assigned)]
         public long Guid
         {
             get { return Utility.MakeLong((int) MapId, _instanceId); }
