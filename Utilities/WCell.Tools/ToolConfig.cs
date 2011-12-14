@@ -28,7 +28,18 @@ namespace WCell.Tools
 		public static string RealmServerRoot { get { return ServicesRoot + "WCell.RealmServer/"; } }
 		public static string AuthServerRoot { get { return ServicesRoot + "WCell.AuthServer/"; } }
 		public static string RunDir { get { return WCellRoot + "Run/"; } }
-		public static string ContentDir { get { return RunDir + "Content/"; } }
+        public static string ContentDir
+        { 
+            get 
+            { 
+                return _contentDir;
+            }
+            set
+            {
+                _contentDir = value;
+            }
+        }
+        private static string _contentDir = RunDir + "Content/";
 		public static string MapDir { get { return ContentDir + "Maps/"; } }
 		public static string WMODir { get { return ContentDir + "Maps/"; } }
 		public static string M2Dir { get { return ContentDir + "Maps/"; } }

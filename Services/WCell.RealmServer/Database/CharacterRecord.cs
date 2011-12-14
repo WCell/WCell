@@ -82,7 +82,7 @@ namespace WCell.RealmServer.Database
 			}
 			catch (Exception ex)
 			{
-				s_log.Error("Character creation error (DBS: " + RealmServerConfiguration.DBType + "): ", ex);
+				s_log.Error("Character creation error (DBS: " + RealmServerConfiguration.DatabaseType + "): ", ex);
 				record = null;
 			}
 

@@ -37,7 +37,7 @@ namespace WCell.RealmServer.Achievements
 			}
 			catch (Exception ex)
 			{
-				s_log.ErrorException("AchievementRecord creation error (DBS: " + RealmServerConfiguration.DBType + "): ", ex);
+				s_log.ErrorException("AchievementRecord creation error (DBS: " + RealmServerConfiguration.DatabaseType + "): ", ex);
 				record = null;
 			}
 
