@@ -23,12 +23,12 @@ namespace Cell.Core
 	/// <summary>
 	/// This class manages objects in a pool to maximize memory (de)allocation efficiency.
 	/// </summary>
-	public static class zzObjectPoolMgr
+	public static class ObjectPoolMgr
 	{
 		/// <summary>
 		/// A list of types of objects the pool contains.
 		/// </summary>
-		private static SynchronizedDictionary<long, IObjectPool> m_pools = new SynchronizedDictionary<long, IObjectPool>();
+		private static readonly SynchronizedDictionary<long, IObjectPool> Pools = new SynchronizedDictionary<long, IObjectPool>();
 
 		/// <summary>
 		/// Returns true if the specified type is registered.
@@ -37,7 +37,7 @@ namespace Cell.Core
 		/// <returns>True if the specified type is registered.</returns>
 		public static bool ContainsType<T>()
 		{
-			return m_pools.ContainsKey(GetTypePointer<T>());
+			return Pools.ContainsKey(GetTypePointer<T>());
 		}
 
 		/// <summary>
@@ -47,7 +47,7 @@ namespace Cell.Core
 		/// <returns>True if the specified type is registered.</returns>
 		public static bool ContainsType(Type t)
 		{
-			return m_pools.ContainsKey(t.TypeHandle.Value.ToInt64());
+			return Pools.ContainsKey(t.TypeHandle.Value.ToInt64());
 		}
 
 		/// <summary>
@@ -60,11 +60,11 @@ namespace Cell.Core
 		{
 			long typePointer = GetTypePointer<T>();
 
-			lock (typeof(zzObjectPoolMgr))
+			lock (typeof(ObjectPoolMgr))
 			{
-				if (!m_pools.ContainsKey(typePointer))
+				if (!Pools.ContainsKey(typePointer))
 				{
-					m_pools.Add(typePointer, new ObjectPool<T>(func));
+					Pools.Add(typePointer, new ObjectPool<T>(func));
 
 
 					return true;
@@ -82,9 +82,9 @@ namespace Cell.Core
 		{
 			long typePointer = GetTypePointer<T>();
 
-			if (m_pools.ContainsKey(typePointer))
+			if (Pools.ContainsKey(typePointer))
 			{
-				ObjectPool<T> pool = (ObjectPool<T>)m_pools[typePointer];
+				var pool = (ObjectPool<T>)Pools[typePointer];
 				pool.MinimumSize = minSize;
 			}
 		}
@@ -98,7 +98,7 @@ namespace Cell.Core
 			long typePointer = GetTypePointer<T>();
 
 			IObjectPool pool;
-			if (m_pools.TryGetValue(typePointer, out pool))
+			if (Pools.TryGetValue(typePointer, out pool))
 			{
 				pool.Recycle(obj);
 			}
@@ -113,7 +113,7 @@ namespace Cell.Core
 			long typePointer = GetTypePointer<T>();
 
 			IObjectPool pool;
-			if (m_pools.TryGetValue(typePointer, out pool))
+			if (Pools.TryGetValue(typePointer, out pool))
 			{
 				return ((ObjectPool<T>)pool).Obtain();
 			}
@@ -130,7 +130,7 @@ namespace Cell.Core
 			long typePointer = GetTypePointer<T>();
 
 			IObjectPool pool;
-			if (m_pools.TryGetValue(typePointer, out pool))
+			if (Pools.TryGetValue(typePointer, out pool))
 			{
 				return ((ObjectPool<T>)pool).Info;
 			}

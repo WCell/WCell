@@ -139,8 +139,9 @@
       <DependentUpon>Cell.Core.resx</DependentUpon>
     </Compile>
     <Compile Include="Localization\Resources.cs" />
+    <Compile Include="NativeMethods.cs" />
     <Compile Include="NetworkUtil.cs" />
-    <Compile Include="zzObjectPoolMgr.cs" />
+    <Compile Include="ObjectPoolMgr.cs" />
     <Compile Include="SegmentStream.cs" />
     <Compile Include="ServerBase.cs" />
     <Compile Include="SocketHelpers.cs" />

@@ -10,12 +10,12 @@ namespace Cell.Core
 
         static SocketHelpers()
         {
-            if (!zzObjectPoolMgr.ContainsType<SocketAsyncEventArgs>())
+            if (!ObjectPoolMgr.ContainsType<SocketAsyncEventArgs>())
             {
-                zzObjectPoolMgr.RegisterType<SocketAsyncEventArgs>(CreateSocketArg);
+                ObjectPoolMgr.RegisterType<SocketAsyncEventArgs>(CreateSocketArg);
 
                 // TODO: have the minimum value set in config or find an appropriate minimum.
-                zzObjectPoolMgr.SetMinimumSize<SocketAsyncEventArgs>(100);
+                ObjectPoolMgr.SetMinimumSize<SocketAsyncEventArgs>(100);
             }
         }
 
@@ -39,7 +39,7 @@ namespace Cell.Core
             //Interlocked.Increment(ref s_OutstandingArgs);
             //Interlocked.Increment(ref s_AcquiredArgs);
             //Console.WriteLine("Acquiring SocketAsyncEventArg {0}:{1}", s_OutstandingArgs, s_AcquiredArgs);
-			SocketAsyncEventArgs args = zzObjectPoolMgr.ObtainObject<SocketAsyncEventArgs>();
+			SocketAsyncEventArgs args = ObjectPoolMgr.ObtainObject<SocketAsyncEventArgs>();
 
 			CleanSocketArg(args);
 
@@ -52,7 +52,7 @@ namespace Cell.Core
             //Interlocked.Decrement(ref s_OutstandingArgs);
             //Console.WriteLine("Releasing SocketAsyncEventArg {0}:{1}", s_OutstandingArgs, s_ReleasedArgs);
 
-            zzObjectPoolMgr.ReleaseObject<SocketAsyncEventArgs>(arg);
+            ObjectPoolMgr.ReleaseObject<SocketAsyncEventArgs>(arg);
         }
 
 

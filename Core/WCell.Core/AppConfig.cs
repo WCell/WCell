@@ -19,6 +19,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Configuration;
+using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using NLog;
 using WCell.Core.Localization;
@@ -28,20 +30,26 @@ namespace WCell.Core
 	/// <summary>
 	/// Defines a configuration made up of key/value values
 	/// </summary>
-	public class AppConfig : IEnumerable<string>
+	public sealed class AppConfig : IEnumerable<string>
 	{
-		protected static Logger s_log = LogManager.GetCurrentClassLogger();
+	    private static readonly Logger Log = LogManager.GetCurrentClassLogger();
 		public const string NullString = "None";
 
-		private readonly Configuration m_cfg;
-		/// <summary>
-		/// Whether to save after adding/changing values
-		/// </summary>
-		public bool SaveOnChange;
+		private readonly Configuration _cfg;
 
-		public readonly FileInfo ExecutableFile;
+	    private readonly FileInfo _executableFile;
 
-		/// <summary>
+        public FileInfo ExecutableFile
+	    {
+	        get { return _executableFile; }
+	    }
+
+	    /// <summary>
+	    /// Whether to save after adding/changing values
+	    /// </summary>
+	    public bool SaveOnChange { get; set; }
+
+	    /// <summary>
 		/// Default constructor
 		/// </summary>
 		/// <param name="executablePath">The path of the executable whose App-config to load</param>
@@ -49,20 +57,22 @@ namespace WCell.Core
 		{
 			try
 			{
-				m_cfg = ConfigurationManager.OpenExeConfiguration((ExecutableFile = new FileInfo(executablePath)).FullName);
+				_cfg = ConfigurationManager.OpenExeConfiguration((_executableFile = new FileInfo(executablePath)).FullName);
 			}
 			catch (Exception e)
 			{
-				throw new Exception(string.Format("Cannot load AppConfig for {0}", executablePath), e);
+				throw new Exception(string.Format(CultureInfo.CurrentCulture, "Cannot load AppConfig for {0}", executablePath), e);
 			}
 
 			LoadConfigDefaults();
 		}
 
-		/// <summary>
+	    
+
+	    /// <summary>
 		/// Loads default values in the configuration if they don't already exist
 		/// </summary>
-		protected virtual void LoadConfigDefaults()
+		private void LoadConfigDefaults()
 		{
 		}
 
@@ -87,7 +97,7 @@ namespace WCell.Core
 
 		public bool AddValue(string key, string value)
 		{
-			m_cfg.AppSettings.Settings.Add(key, value);
+			_cfg.AppSettings.Settings.Add(key, value);
 
 			return true;
 		}
@@ -99,11 +109,11 @@ namespace WCell.Core
 				throw new ArgumentNullException("key");
 			}
 
-			string cfgVal = m_cfg.AppSettings.Settings[key].Value;
+			string cfgVal = _cfg.AppSettings.Settings[key].Value;
 
 			if (cfgVal == null)
 			{
-				s_log.Error(string.Format(Resources.KeyNotFound, key));
+				Log.Error(string.Format(CultureInfo.CurrentCulture, WCell_Core.KeyNotFound, key));
 
 				return "";
 			}
@@ -136,10 +146,10 @@ namespace WCell.Core
 
 		public bool SetValue(string key, object value)
 		{
-		    if (m_cfg.AppSettings.Settings[key] != null)
+		    if (_cfg.AppSettings.Settings[key] != null)
 			{
-				m_cfg.AppSettings.Settings.Remove(key);
-				m_cfg.AppSettings.Settings.Add(key, value.ToString());
+				_cfg.AppSettings.Settings.Remove(key);
+				_cfg.AppSettings.Settings.Add(key, value.ToString());
 
 				return true;
 			}
@@ -153,25 +163,25 @@ namespace WCell.Core
 		/// <param name="value">the value</param>
 		public void CreateValue(string key, object value)
 		{
-			KeyValueConfigurationElement cfgVal = m_cfg.AppSettings.Settings[key];
+			KeyValueConfigurationElement cfgVal = _cfg.AppSettings.Settings[key];
 
 			if (cfgVal == null)
 			{
-				m_cfg.AppSettings.Settings.Add(key, value.ToString());
+				_cfg.AppSettings.Settings.Add(key, value.ToString());
 				if (SaveOnChange)
 				{
-					m_cfg.Save(ConfigurationSaveMode.Full);
+					_cfg.Save(ConfigurationSaveMode.Full);
 				}
 			}
 		}
 
 		public void OverrideValue(string key, string value)
 		{
-			KeyValueConfigurationElement cfgVal = m_cfg.AppSettings.Settings[key];
+			KeyValueConfigurationElement cfgVal = _cfg.AppSettings.Settings[key];
 
 			if (cfgVal == null)
 			{
-				m_cfg.AppSettings.Settings.Add(key, value);
+				_cfg.AppSettings.Settings.Add(key, value);
 			}
 			else
 			{
@@ -180,35 +190,34 @@ namespace WCell.Core
 
 			if (SaveOnChange)
 			{
-				m_cfg.Save(ConfigurationSaveMode.Full);
+				_cfg.Save(ConfigurationSaveMode.Full);
 			}
 		}
 
 		public void Save()
 		{
-			m_cfg.Save(ConfigurationSaveMode.Full);
+			_cfg.Save(ConfigurationSaveMode.Full);
 		}
 
 		public string GetFullPath(string file)
 		{
 			if (!Path.IsPathRooted(file))
 			{
-				return Path.Combine(ExecutableFile.Directory.FullName, file);
+			    Debug.Assert(_executableFile.Directory != null, "ExecutableFile.Directory != null");
+			    return Path.Combine(_executableFile.Directory.FullName, file);
 			}
-			return file;
+		    return file;
 		}
 
 		#region IEnumerable members
 
 		IEnumerator<string> IEnumerable<string>.GetEnumerator()
 		{
-			string configLine = "";
-
-			foreach (string cfgEle in m_cfg.AppSettings.Settings.AllKeys)
+		    foreach (string cfgElement in _cfg.AppSettings.Settings.AllKeys)
 			{
-				configLine = cfgEle + ": " + m_cfg.AppSettings.Settings[cfgEle].Value;
+			    string configLine = cfgElement + ": " + _cfg.AppSettings.Settings[cfgElement].Value;
 
-				yield return configLine;
+			    yield return configLine;
 			}
 		}
 
@@ -218,17 +227,16 @@ namespace WCell.Core
 		/// <returns>an IEnumerator object to enumerate through this configuration</returns>
 		public IEnumerator GetEnumerator()
 		{
-			StringCollection strCol = new StringCollection();
-			string configLine = "";
+			var strCol = new StringCollection();
 
-			foreach (string cfgEle in m_cfg.AppSettings.Settings.AllKeys)
+            foreach (string cfgElement in _cfg.AppSettings.Settings.AllKeys)
 			{
-				configLine = cfgEle + ": " + m_cfg.AppSettings.Settings[cfgEle].Value;
+			    string configLine = cfgElement + ": " + _cfg.AppSettings.Settings[cfgElement].Value;
 
-				strCol.Add(configLine);
+			    strCol.Add(configLine);
 			}
 
-			return (IEnumerator)strCol.GetEnumerator();
+		    return (IEnumerator)strCol.GetEnumerator();
 		}
 
 		#endregion
