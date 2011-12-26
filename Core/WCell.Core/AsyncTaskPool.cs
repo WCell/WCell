@@ -14,10 +14,10 @@ namespace WCell.Core
 	/// </summary>
 	public class AsyncTaskPool
 	{
-		protected readonly Logger s_log = LogManager.GetCurrentClassLogger();
-		protected LockfreeQueue<IMessage> m_taskQueue;
-		protected Stopwatch m_taskTimer;
-		protected long m_updateFrequency;
+		protected static readonly Logger Log = LogManager.GetCurrentClassLogger();
+		protected LockfreeQueue<IMessage> TaskQueue;
+		protected Stopwatch TaskTimer;
+		protected long UpdateFrequency;
 
 		/// <summary>
 		/// Creates a new task pool with an update frequency of 100ms
@@ -33,11 +33,11 @@ namespace WCell.Core
 		/// <param name="updateFrequency">the update frequency of the task pool</param>
 		public AsyncTaskPool(long updateFrequency)
 		{
-			m_taskQueue = new LockfreeQueue<IMessage>();
-			m_taskTimer = Stopwatch.StartNew();
-			m_updateFrequency = updateFrequency;
+			TaskQueue = new LockfreeQueue<IMessage>();
+			TaskTimer = Stopwatch.StartNew();
+			UpdateFrequency = updateFrequency;
 
-		    Task.Factory.StartNewDelayed((int)m_updateFrequency, TaskUpdateCallback, this);
+		    Task.Factory.StartNewDelayed((int)UpdateFrequency, TaskUpdateCallback, this);
 		}
 
 		/// <summary>
@@ -49,7 +49,7 @@ namespace WCell.Core
 			if (task == null)
 				throw new ArgumentNullException("task", "task cannot be null");
 
-			m_taskQueue.Enqueue(task);
+			TaskQueue.Enqueue(task);
 		}
 
 		static readonly object obj = "";
@@ -69,7 +69,7 @@ namespace WCell.Core
 
 			lock (obj)
 			{
-				m_taskQueue.Enqueue(msg);
+				TaskQueue.Enqueue(msg);
 				Monitor.Wait(obj);
 			}
 		}
@@ -79,21 +79,21 @@ namespace WCell.Core
 			if (frequency < 0)
 				throw new ArgumentException("frequency cannot be less than 0", "frequency");
 
-			m_updateFrequency = frequency;
+			UpdateFrequency = frequency;
 		}
 
 		protected void TaskUpdateCallback(object state)
 		{
 			// get the time at the start of our task processing
-			long timerStart = m_taskTimer.ElapsedMilliseconds;
+			long timerStart = TaskTimer.ElapsedMilliseconds;
 
 			ProcessTasks(timerStart);
 
 			// get the end time
-			long timerStop = m_taskTimer.ElapsedMilliseconds;
+			long timerStop = TaskTimer.ElapsedMilliseconds;
 
-			bool updateLagged = timerStop - timerStart > m_updateFrequency;
-			long callbackTimeout = updateLagged ? 0 : ((timerStart + m_updateFrequency) - timerStop);
+			bool updateLagged = timerStop - timerStart > UpdateFrequency;
+			long callbackTimeout = updateLagged ? 0 : ((timerStart + UpdateFrequency) - timerStop);
 
 			// re-register the update to be called
 		    Task.Factory.StartNewDelayed((int)callbackTimeout, TaskUpdateCallback, this);
@@ -104,7 +104,7 @@ namespace WCell.Core
 			IMessage msg;
 
 			// fire ze tasks
-			while (m_taskQueue.TryDequeue(out msg))
+			while (TaskQueue.TryDequeue(out msg))
 			{
 				msg.Execute();
 			}

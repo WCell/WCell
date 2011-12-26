@@ -382,7 +382,7 @@ namespace WCell.AuthServer
 				}
 				catch (AddressAlreadyInUseException)
 				{
-					s_log.Fatal(resources.AuthServiceAlreadyListening);
+					Log.Fatal(resources.AuthServiceAlreadyListening);
 					Stop();
 				}
 			}
@@ -457,9 +457,9 @@ namespace WCell.AuthServer
 				AuthServerConfiguration.Instance.Save(true, true);
 			}
 
-			s_log.Info("Initiating Shutdown...");
+			Log.Info("Initiating Shutdown...");
 			IPCServiceHost.StopService();
-			s_log.Info("Shutting down...");
+			Log.Info("Shutting down...");
 		}
 
 		public override string ToString()

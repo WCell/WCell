@@ -188,6 +188,7 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="Addons\WCellAddonAttribute.cs" />
+    <Compile Include="ClientInformationUtil.cs" />
     <Compile Include="CommandUtil.cs" />
     <Compile Include="Cryptography\ARC4.cs" />
     <Compile Include="Addons\WCellAddonBase.cs" />

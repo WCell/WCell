@@ -1,11 +1,8 @@
 /*************************************************************************
  *
- *   file		: SystemInformation.cs
+ *   file		: ClientInformation.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
- *   last changed	: $LastChangedDate: 2008-07-27 16:18:17 +0800 (Sun, 27 Jul 2008) $
- 
- *   revision		: $Rev: 582 $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -21,7 +18,9 @@ using System.Runtime.Serialization.Formatters.Binary;
 using Cell.Core;
 using NLog;
 using WCell.Constants;
+using WCell.Core.Localization;
 using WCell.Core.Network;
+using OperatingSystem = WCell.Constants.OperatingSystem;
 
 namespace WCell.Core
 {
@@ -56,97 +55,30 @@ namespace WCell.Core
                 var claimedRemainingLength = packet.ReadUInt16();
                 if (packet.RemainingLength != claimedRemainingLength)
                 {
-                    Log.Warn("Client attempting login sent AUTH_LOGON_CHALLENGE remaining length as {0}, however {1} bytes are remaining", claimedRemainingLength, packet.RemainingLength);
+                    Log.Warn(WCell_Core.Auth_Logon_with_invalid_length, claimedRemainingLength, packet.RemainingLength);
                 }
 
                 var clientInstallationType = packet.ReadFourCC();
-                ClientTypes.Lookup(clientInstallationType, out _clientInstallationType);
+                _clientInstallationType = ClientTypeUtility.Lookup(clientInstallationType);
 
                 Version = new ClientVersion(packet.ReadBytes(5));
                 Architecture = packet.ReadFourCC().TrimEnd('\0');
                 OS = packet.ReadFourCC().TrimEnd('\0');
 
-                var localeStr = packet.ReadFourCC();
-                if (!ClientLocales.Lookup(localeStr, out _locale))
-                {
-                    _locale = WCellConstants.DefaultLocale;
-                }
+                var locale = packet.ReadFourCC();
+                _locale = ClientLocaleUtility.Lookup(locale);
 
                 TimeZone = BitConverter.ToUInt32(packet.ReadBytes(4), 0);
                 IPAddress = new XmlIPAddress(packet.ReadBytes(4));
 
-                Log.Info("ProtocolVersion: {0} ClientType: {1} Version: {2} Architecture: {3} OS: {4} Locale: {5} TimeZone: {6} IP: {7}", ProtocolVersion, ClientInstallationType, Version, Architecture, OS, Locale, TimeZone, IPAddress);
+                Log.Info(WCell_Core.ClientInformationFourCCs, ProtocolVersion, ClientInstallationType, Version, Architecture, OS, Locale, TimeZone, IPAddress);
             }
             catch
             {
             }
 		}
 
-        public enum ClientType : byte
-        {
-            Test = 0,
-            Beta = 1,
-            Normal = 2,
-            Installing = 3,
-            Invalid = 4
-        }
-
-        public static class ClientTypes
-        {
-            public static readonly Dictionary<string, ClientType> TypeMap =
-            new Dictionary<string, ClientType>(StringComparer.InvariantCultureIgnoreCase);
-
-            static ClientTypes()
-            {
-                TypeMap["WoWT"] = ClientType.Test;
-                TypeMap["WoWB"] = ClientType.Beta;
-                TypeMap["WoW\0"] = ClientType.Normal;
-                TypeMap["WoWI"] = ClientType.Installing;
-            }
-
-            public static bool Lookup(string clientInstallationTypeStr, out ClientType clientType)
-            {
-                if (!TypeMap.TryGetValue(clientInstallationTypeStr.Substring(0, 4), out clientType))
-                {
-                    clientType = ClientType.Invalid;
-                    return false;
-                }
-                return true;
-            }
-
-        }
-
-		/// <summary>
-		/// Possible operating systems of the client
-		/// </summary>
-		public enum OperatingSystem
-		{
-			/// <summary>
-			/// Mac OSX
-			/// </summary>
-			OSX,
-			/// <summary>
-			/// Any supported version of Windows
-			/// </summary>
-			Win
-		}
-
-		/// <summary>
-		/// Possible CPU architectures of the client
-		/// </summary>
-		public enum ProcessorArchitecture
-		{
-			/// <summary>
-			/// x86 architecture (AMD, Intel, Via)
-			/// </summary>
-			x86,
-			/// <summary>
-			/// PowerPC architecture (all pre-2006Q1 Apple computers)
-			/// </summary>
-			PPC
-		}
-
-		/// <summary>
+	    /// <summary>
 		/// The game client version of the client.
 		/// </summary>
 		public ClientVersion Version
@@ -255,12 +187,15 @@ namespace WCell.Core
 		/// <returns>the binary representation of the <see cref="ClientInformation" /> object</returns>
 		public static byte[] Serialize(ClientInformation clientInfo)
 		{
-			MemoryStream memStream = new MemoryStream();
-			BinaryFormatter bFormatter = new BinaryFormatter();
+		    byte[] memStreamArray;
+            using (var memStream = new MemoryStream())
+            {
+                var bFormatter = new BinaryFormatter();
 
-			bFormatter.Serialize(memStream, clientInfo);
-
-			return memStream.ToArray();
+                bFormatter.Serialize(memStream, clientInfo);
+                memStreamArray = memStream.ToArray();
+            }
+		    return memStreamArray;
 		}
 
 		/// <summary>
@@ -270,12 +205,15 @@ namespace WCell.Core
 		/// <returns>a <see cref="ClientInformation" /> object</returns>
 		public static ClientInformation Deserialize(byte[] rawInfoData)
 		{
-			MemoryStream memStream = new MemoryStream(rawInfoData);
-			BinaryFormatter bFormatter = new BinaryFormatter();
+		    ClientInformation sInfo;
+            using (var memStream = new MemoryStream(rawInfoData))
+            {
+                var bFormatter = new BinaryFormatter();
 
-			ClientInformation sInfo = (ClientInformation)bFormatter.Deserialize(memStream);
+                sInfo = (ClientInformation) bFormatter.Deserialize(memStream);
+            }
 
-			return sInfo;
+		    return sInfo;
 		}
 	}
 }

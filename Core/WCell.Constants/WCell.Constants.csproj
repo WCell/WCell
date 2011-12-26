@@ -150,6 +150,7 @@
     <Compile Include="Achievements\ProgressType.cs" />
     <Compile Include="AreaTriggerId.cs" />
     <Compile Include="ArenaTeams.cs" />
+    <Compile Include="Auth.cs" />
     <Compile Include="Battlegrounds.cs" />
     <Compile Include="Battlegrounds\ArathiBasin.cs" />
     <Compile Include="Battlegrounds\WarsongGulch.cs" />

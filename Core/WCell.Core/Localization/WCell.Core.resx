@@ -237,4 +237,10 @@
   <data name="InitFailed" xml:space="preserve">
     <value>Failed to fully process all required initialization steps!</value>
   </data>
+  <data name="ClientInformationFourCCs">
+    <value xml:space="preserve">ProtocolVersion: {0} ClientType: {1} Version: {2} Architecture: {3} OS: {4} Locale: {5} TimeZone: {6} IP: {7}</value>
+  </data>
+  <data name="Auth Logon with invalid length">
+    <value xml:space="preserve">Client attempting login sent AUTH_LOGON_CHALLENGE remaining length as {0}, however {1} bytes are remaining</value>
+  </data>
 </root>

@@ -72,11 +72,11 @@ namespace WCell.Core
 	    /// <summary>
 		/// Loads default values in the configuration if they don't already exist
 		/// </summary>
-		private void LoadConfigDefaults()
+		private static void LoadConfigDefaults()
 		{
 		}
 
-		private int GetNoneNesting(string val)
+		private static int GetNoneNesting(string val)
 		{
 			int num1 = 0;
 			int num2 = val.Length;

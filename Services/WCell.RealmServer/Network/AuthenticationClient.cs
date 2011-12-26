@@ -291,7 +291,7 @@ namespace WCell.RealmServer.Network
 
 		void AddDisconnectWarningToTitle()
 		{
-            if (RealmServer.ConsoleActive)
+            if (RealmServer.Instance.ConsoleActive)
             {
                 m_warnInfo = " - ######### " +
                              RealmLocalizer.Instance.Translate(RealmLangKey.NotConnectedToAuthServer).ToUpper() +
@@ -303,7 +303,7 @@ namespace WCell.RealmServer.Network
 		void RearmDisconnectWarning()
 		{
 			m_warned = false;
-            if (RealmServer.ConsoleActive)
+            if (RealmServer.Instance.ConsoleActive)
             {
                 if (m_warnInfo != null)
                 {
