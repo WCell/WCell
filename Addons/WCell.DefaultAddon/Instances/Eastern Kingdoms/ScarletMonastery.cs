@@ -1,3 +1,4 @@
+using System;
 using WCell.Constants;
 using WCell.Constants.GameObjects;
 using WCell.Constants.Misc;
@@ -42,6 +43,7 @@ namespace WCell.Addons.Default.Instances
         private static NPCEntry whitemaneEntry;
 
         public GameObject cathedralDoor;
+        public bool mograineIsDead = false;
 
         #region NPCs Initialization
         [Initialization]
@@ -180,7 +182,6 @@ namespace WCell.Addons.Default.Instances
         [DependentInitialization(typeof(GOMgr))]
         public static void InitGOs()
         {
-
             var cathedralDoorEntry = GOMgr.GetEntry(GOEntryId.HighInquisitorsDoor);
 
             if (cathedralDoorEntry != null)
@@ -204,7 +205,7 @@ namespace WCell.Addons.Default.Instances
     #region Interrogator Vishas
     public class InterrogatorVishasAttackAction : AIAttackAction
     {
-        private int _phase = 1;
+        private int phase = 1;
 
         public InterrogatorVishasAttackAction(NPC InterrogatorVishas)
             : base(InterrogatorVishas)
@@ -214,18 +215,18 @@ namespace WCell.Addons.Default.Instances
         public override void Update()
         {
             int hpPct = m_owner.HealthPct;
-            if (hpPct <= 75 && _phase == 1)
+            if (hpPct <= 75 && phase == 1)
             {
                 m_owner.Yell("Naughty secrets!");
                 m_owner.PlaySound(5849);
-                _phase = 2;
+                phase = 2;
                 return;
             }
-            else if (hpPct <= 25 && _phase == 2)
+            else if (hpPct <= 25 && phase == 2)
             {
                 m_owner.Yell("I'll rip the secrets from your flesh!");
                 m_owner.PlaySound(5850);
-                _phase = 3;
+                phase = 3;
                 return;
             }
             base.Update();
@@ -257,7 +258,7 @@ namespace WCell.Addons.Default.Instances
 	#region Bloodmage Thalnos
     public class BloodmageThalnosAttackAction : AIAttackAction
     {
-        private int _phase = 1;
+        private int phase = 1;
 
         public BloodmageThalnosAttackAction(NPC BloodmageThalnos)
             : base(BloodmageThalnos)
@@ -267,11 +268,11 @@ namespace WCell.Addons.Default.Instances
         public override void Update()
         {
             int hpPct = m_owner.HealthPct;
-            if (hpPct <= 50 && _phase == 1)
+            if (hpPct <= 50 && phase == 1)
             {
                 m_owner.Yell("No rest, for the angry dead.");
                 m_owner.PlaySound(5846);
-                _phase = 2;
+                phase = 2;
                 return;
             }
             base.Update();
@@ -339,7 +340,7 @@ namespace WCell.Addons.Default.Instances
     {
         private static Spell arcanistdoanProtection;
         private static Spell arcanistdoanAoE;
-        private int _phase = 1;
+        private int phase = 1;
 
         [Initialization(InitializationPass.Second)]
         public static void InitArcanistDoan()
@@ -355,13 +356,13 @@ namespace WCell.Addons.Default.Instances
 
         public override void Update()
         {
-            if (m_owner.HealthPct <= 50 && _phase == 1)
+            if (m_owner.HealthPct <= 50 && phase == 1)
             {
                 m_owner.Auras.CreateSelf(arcanistdoanProtection);		// apply Arcane Bubble after 50% to self
                 m_owner.Yell("Burn in righteous fire!");
                 m_owner.PlaySound(5843);
                 m_owner.SpellCast.Start(SpellHandler.Get(SpellId.Detonation_2));		// aoe spell finds targets automatically
-                _phase = 2;
+                phase = 2;
                 return;
             }
             base.Update();
@@ -389,13 +390,19 @@ namespace WCell.Addons.Default.Instances
     #region Herod
     public class HerodAttackAction : AIAttackAction
     {
+        private const int Interval = 1;
+        
         private static Spell herodFrenzy;
-        private int _phase = 1;
+        private static Spell herodWhirlWind;
+
+        private int phase = 1;
+        private DateTime timeSinceLastInterval;
 
         [Initialization(InitializationPass.Second)]
         public static void InitHerod()
         {
             herodFrenzy = SpellHandler.Get(SpellId.Frenzy_2);
+            herodWhirlWind = SpellHandler.Get(SpellId.WhirlwindRank1);
         }
 
         public HerodAttackAction(NPC Herod)
@@ -403,14 +410,23 @@ namespace WCell.Addons.Default.Instances
         {
         }
 
+        public override void Start()
+        {
+            timeSinceLastInterval = DateTime.Now;
+            base.Start();
+        }
+
         public override void Update()
         {
-            if (m_owner.HealthPct <= 50 && _phase == 1)
+            DateTime timeNow = DateTime.Now;
+            TimeSpan timeBetween = timeNow - timeSinceLastInterval;
+
+            if (m_owner.HealthPct <= 50 && phase == 1)
             {
                 m_owner.Auras.CreateSelf(herodFrenzy);		// apply Frenzy after 50% to self
                 m_owner.Yell("Light, give me strength!");
                 m_owner.PlaySound(5833);
-                _phase = 2;
+                phase = 2;
                 return;
             }
             base.Update();
@@ -457,7 +473,7 @@ namespace WCell.Addons.Default.Instances
     public class HighInquisitorFairbanksAttackAction : AIAttackAction
     {
         private static Spell fairbanksHeal;
-        private int _phase = 1;
+        private int phase = 1;
 
         [Initialization(InitializationPass.Second)]
         public static void InitHerod()
@@ -472,10 +488,10 @@ namespace WCell.Addons.Default.Instances
 
         public override void Update()
         {
-            if (m_owner.HealthPct <= 25 && _phase == 1)
+            if (m_owner.HealthPct <= 25 && phase == 1)
             {
                 m_owner.Auras.CreateSelf(fairbanksHeal);		// heals him self when below 25% once
-                _phase = 2;
+                phase = 2;
                 return;
             }
             base.Update();
@@ -545,6 +561,7 @@ namespace WCell.Addons.Default.Instances
                     m_Door.State = GameObjectState.Disabled;
                 }
             }
+            instance.mograineIsDead = true;
             base.OnDeath();
         }
     }
@@ -552,11 +569,17 @@ namespace WCell.Addons.Default.Instances
     #region High Inquisitor Whitemane
     public class HighInquisitorWhitemaneAttackAction : AIAttackAction
     {
-        private int _phase = 0;
+        private static Vector3 AltarLocation = new Vector3(1163.113370f, 1398.856812f, 32.527786f);
+        private NPCEntry mograine = NPCMgr.GetEntry(NPCId.ScarletCommanderMograine);
+        private int phase = 1;
+
+        private static Spell whitemaneMassSleep;
+
 
         [Initialization(InitializationPass.Second)]
         public static void InitHighInquisitorWhitemane()
         {
+            whitemaneMassSleep = SpellHandler.Get(SpellId.DeepSleep);
         }
 
         public HighInquisitorWhitemaneAttackAction(NPC HighInquisitorWhitemane)
@@ -566,13 +589,24 @@ namespace WCell.Addons.Default.Instances
 
         public override void Update()
         {
+            var instance = m_owner.Map as ScarletMonastery;
             // Suppose to start up the Whitemane Boss encounter after you have slain Mograine.
-            if ()
+            if (instance != null)
             {
-                m_owner.Yell("Mograine has fallen? You shall pay for this treachery!");
-                m_owner.PlaySound(5838);
-                _phase = 2;
-                return;
+                if (instance.mograineIsDead == true)
+                {
+                    m_owner.MoveToThenIdle(ref AltarLocation);
+                    m_owner.Yell("Mograine has fallen? You shall pay for this treachery!");
+                    m_owner.PlaySound(5838);
+                    phase = 2;
+                    instance.mograineIsDead = false;
+                    return;
+                }
+                else if (phase == 2)
+                {
+                    Character chr = m_owner.GetNearbyRandomHostileCharacter();
+                    m_owner.SpellCast.Start(whitemaneMassSleep, false, chr);
+                }
             }
             base.Update();
         }
