@@ -570,7 +570,6 @@ namespace WCell.Addons.Default.Instances
     public class HighInquisitorWhitemaneAttackAction : AIAttackAction
     {
         private static Vector3 AltarLocation = new Vector3(1163.113370f, 1398.856812f, 32.527786f);
-        private NPCEntry mograine = NPCMgr.GetEntry(NPCId.ScarletCommanderMograine);
         private int phase = 1;
 
         private static Spell whitemaneMassSleep;
