@@ -20,8 +20,9 @@ using WCell.Util.Graphics;
 /// Date: 6/11/2009
 ///
 /* TODO: 
-		*Finish upp Mograine and Whitemane encounter
-		*Add Headless Horseman for Hallow's End Event */
+		*Finish up Mograine and Whitemane encounter
+		*Add Headless Horseman for Hallow's End Event 
+		*Finish up Herod encounter*/
 
 namespace WCell.Addons.Default.Instances
 {
