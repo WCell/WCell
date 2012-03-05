@@ -120,6 +120,32 @@
 
 		NPCArelas1,
 		NPCArelas2,
+		
+		#region Scarlet Monastery
+        VishasAggro,
+        VishasSlay,
+        VishasHealth01,		
+		VishasHealth02,
+		ThalnosAggro,
+        ThalnosSlay,
+        ThalnosHealth01,
+		
+		LokseyAggro,
+        DoanAggro,
+        DoanSpecialAE,
+		
+		HerodAggro,
+        HerodSlay,
+        HerodWhirlwind,		
+		HerodEnrage,
+		
+		MograineAggro,
+        MograineSlay,
+        MograineAtRest,
+		WhitemaneSpawn,
+        WhitemaneSlay,
+        WhitemaneRes,
+        #endregion
 		End
 	}
 }
