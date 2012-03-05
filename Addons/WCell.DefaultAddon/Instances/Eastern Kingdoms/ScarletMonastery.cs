@@ -21,11 +21,7 @@ using WCell.Util.Graphics;
 ///
 /* TODO: 
 		*Finish upp Mograine and Whitemane encounter
-		*Add Headless Horseman for Hallow's End Event
-		*Add Whirlwind spell for Herod with time interval
-	BUGS:
-		*The NPCs still cast their "speciaL" spells even if 
-		the shouldn't. Core bug? */
+		*Add Headless Horseman for Hallow's End Event */
 
 namespace WCell.Addons.Default.Instances
 {
@@ -43,7 +39,6 @@ namespace WCell.Addons.Default.Instances
         private static NPCEntry whitemaneEntry;
 
         public GameObject cathedralDoor;
-        public bool mograineIsDead = false;
 
         #region NPCs Initialization
         [Initialization]
@@ -120,7 +115,6 @@ namespace WCell.Addons.Default.Instances
             // Herod
             herodEntry = NPCMgr.GetEntry(NPCId.Herod);
 			herodEntry.AddSpell(SpellId.Cleave_2);
-			herodEntry.AddSpell(SpellId.WhirlwindRank1);
             herodEntry.BrainCreator = herod => new HerodBrain(herod);
             herodEntry.Activated += herod =>
             {
@@ -128,7 +122,6 @@ namespace WCell.Addons.Default.Instances
             };
 			
 			SpellHandler.Apply(spell => { spell.CooldownTime = 12000; }, SpellId.Cleave_2);
-			SpellHandler.Apply(spell => { spell.CooldownTime = 60000; }, SpellId.WhirlwindRank1);
 
             // Cathedral
             // High Inquisitor Fairbanks
@@ -159,6 +152,7 @@ namespace WCell.Addons.Default.Instances
 
             SpellHandler.Apply(spell => { spell.CooldownTime = 10000; }, SpellId.CrusaderStrike_2);
             SpellHandler.Apply(spell => { spell.CooldownTime = 60000; }, SpellId.ClassSkillHammerOfJusticeRank3);
+
 
             // Arcanist Doan
 			whitemaneEntry = NPCMgr.GetEntry(NPCId.HighInquisitorWhitemane);
@@ -215,18 +209,19 @@ namespace WCell.Addons.Default.Instances
         public override void Update()
         {
             int hpPct = m_owner.HealthPct;
-            if (hpPct <= 75 && phase == 1)
-            {
-                m_owner.Yell("Naughty secrets!");
-                m_owner.PlaySound(5849);
-                phase = 2;
-                return;
-            }
-            else if (hpPct <= 25 && phase == 2)
+            
+            if (hpPct <= 25 && phase == 2)
             {
                 m_owner.Yell("I'll rip the secrets from your flesh!");
                 m_owner.PlaySound(5850);
                 phase = 3;
+                return;
+            }
+            else if (hpPct <= 75 && phase == 1)
+            {
+                m_owner.Yell("Naughty secrets!");
+                m_owner.PlaySound(5849);
+                phase = 2;
                 return;
             }
             base.Update();
@@ -361,7 +356,7 @@ namespace WCell.Addons.Default.Instances
                 m_owner.Auras.CreateSelf(arcanistdoanProtection);		// apply Arcane Bubble after 50% to self
                 m_owner.Yell("Burn in righteous fire!");
                 m_owner.PlaySound(5843);
-                m_owner.SpellCast.Start(SpellHandler.Get(SpellId.Detonation_2));		// aoe spell finds targets automatically
+                m_owner.SpellCast.Start(arcanistdoanAoE);		// aoe spell finds targets automatically
                 phase = 2;
                 return;
             }
@@ -389,14 +384,15 @@ namespace WCell.Addons.Default.Instances
     #region Armory
     #region Herod
     public class HerodAttackAction : AIAttackAction
-    {
-        private const int Interval = 1;
-        
+    {   
         private static Spell herodFrenzy;
         private static Spell herodWhirlWind;
 
-        private int phase = 1;
+        private const int Interval = 1;
         private DateTime timeSinceLastInterval;
+        private int herodWhirlWindTick;
+
+        private int phase = 1;
 
         [Initialization(InitializationPass.Second)]
         public static void InitHerod()
@@ -412,16 +408,27 @@ namespace WCell.Addons.Default.Instances
 
         public override void Start()
         {
+            herodWhirlWindTick = 0;
             timeSinceLastInterval = DateTime.Now;
             base.Start();
         }
 
         public override void Update()
         {
-            DateTime timeNow = DateTime.Now;
-            TimeSpan timeBetween = timeNow - timeSinceLastInterval;
+            var timeNow = DateTime.Now;
+            var timeBetween = timeNow - timeSinceLastInterval;
 
-            if (m_owner.HealthPct <= 50 && phase == 1)
+            if (timeBetween.TotalSeconds >= Interval)
+            {
+                timeSinceLastInterval = timeNow;
+                if (CheckSpellCast())
+                {
+                    // idle a little after casting a spell
+                    m_owner.Idle(1000);
+                    return;
+                }
+            }
+            else if (m_owner.HealthPct <= 50 && phase == 1)
             {
                 m_owner.Auras.CreateSelf(herodFrenzy);		// apply Frenzy after 50% to self
                 m_owner.Yell("Light, give me strength!");
@@ -430,6 +437,25 @@ namespace WCell.Addons.Default.Instances
                 return;
             }
             base.Update();
+        }
+
+        private bool CheckSpellCast()
+        {
+            herodWhirlWindTick++;
+
+            if (herodWhirlWindTick >= 50)
+            {
+                var chr = m_owner.GetNearbyRandomHostileCharacter();
+                if (chr != null)
+                {
+                    herodWhirlWindTick = 0;
+                    m_owner.Yell("Blades of Light!");
+                    m_owner.PlaySound(5832);
+                    m_owner.SpellCast.Start(herodWhirlWind, false, chr);
+                }
+                return true;
+            }
+            return false;
         }
     }
 
@@ -546,6 +572,7 @@ namespace WCell.Addons.Default.Instances
 		{
             m_owner.Yell("At your side, milady.");
             m_owner.PlaySound(5837);
+            OnEnterCombat();
         }		
 
         public override void OnDeath()
@@ -561,24 +588,26 @@ namespace WCell.Addons.Default.Instances
                     m_Door.State = GameObjectState.Disabled;
                 }
             }
-            instance.mograineIsDead = true;
             base.OnDeath();
         }
     }
     #endregion
+
     #region High Inquisitor Whitemane
     public class HighInquisitorWhitemaneAttackAction : AIAttackAction
     {
         private static Vector3 AltarLocation = new Vector3(1163.113370f, 1398.856812f, 32.527786f);
-        private int phase = 1;
 
         private static Spell whitemaneMassSleep;
+        private static Spell whitemaneResurrection;
 
+        private int phase = 1;
 
         [Initialization(InitializationPass.Second)]
         public static void InitHighInquisitorWhitemane()
         {
             whitemaneMassSleep = SpellHandler.Get(SpellId.DeepSleep);
+            whitemaneResurrection = SpellHandler.Get(SpellId.ScarletResurrection);
         }
 
         public HighInquisitorWhitemaneAttackAction(NPC HighInquisitorWhitemane)
@@ -588,24 +617,24 @@ namespace WCell.Addons.Default.Instances
 
         public override void Update()
         {
-            var instance = m_owner.Map as ScarletMonastery;
-            // Suppose to start up the Whitemane Boss encounter after you have slain Mograine.
-            if (instance != null)
+            int hpPct = m_owner.HealthPct;
+            
+            if (hpPct <= 50 && phase == 2)
             {
-                if (instance.mograineIsDead == true)
-                {
-                    m_owner.MoveToThenIdle(ref AltarLocation);
-                    m_owner.Yell("Mograine has fallen? You shall pay for this treachery!");
-                    m_owner.PlaySound(5838);
-                    phase = 2;
-                    instance.mograineIsDead = false;
-                    return;
-                }
-                else if (phase == 2)
-                {
-                    Character chr = m_owner.GetNearbyRandomHostileCharacter();
-                    m_owner.SpellCast.Start(whitemaneMassSleep, false, chr);
-                }
+                m_owner.SpellCast.Start(whitemaneMassSleep);
+                m_owner.Yell("Arise, my champion!");
+                m_owner.PlaySound(5840);
+                m_owner.SpellCast.Start(whitemaneResurrection, false, m_owner.GetNearbyNPC(NPCId.ScarletCommanderMograine));
+                phase = 3;
+                return;
+            }
+            else if (phase == 1)
+            {
+                m_owner.Yell("Mograine has fallen? You shall pay for this treachery!");
+                m_owner.PlaySound(5838);
+                m_owner.MoveToThenEnter(ref AltarLocation, RealmServer.AI.BrainState.Combat);
+                phase = 2;
+                return;
             }
             base.Update();
         }
@@ -621,7 +650,7 @@ namespace WCell.Addons.Default.Instances
         {
             base.OnEnterCombat();
         }
-    }
+    }   
     #endregion
     #endregion
 }
