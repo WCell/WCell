@@ -1,4 +1,5 @@
 using System;
+using WCell.Addons.Default.Lang;
 using WCell.Constants;
 using WCell.Constants.GameObjects;
 using WCell.Constants.Misc;
@@ -20,9 +21,8 @@ using WCell.Util.Graphics;
 /// Date: 6/11/2009
 ///
 /* TODO: 
-		*Finish up Mograine and Whitemane encounter
-		*Add Headless Horseman for Hallow's End Event 
-		*Finish up Herod encounter*/
+		*Finish upp Mograine and Whitemane encounter
+		*Add Headless Horseman for Hallow's End Event */
 
 namespace WCell.Addons.Default.Instances
 {
@@ -213,14 +213,14 @@ namespace WCell.Addons.Default.Instances
             
             if (hpPct <= 25 && phase == 2)
             {
-                m_owner.Yell("I'll rip the secrets from your flesh!");
+                m_owner.Yell(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.VishasHealth02));
                 m_owner.PlaySound(5850);
                 phase = 3;
                 return;
             }
             else if (hpPct <= 75 && phase == 1)
             {
-                m_owner.Yell("Naughty secrets!");
+                m_owner.Yell(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.VishasHealth01));
                 m_owner.PlaySound(5849);
                 phase = 2;
                 return;
@@ -237,14 +237,14 @@ namespace WCell.Addons.Default.Instances
 
         public override void OnEnterCombat()
         {
-            m_owner.Yell("Tell me... tell me everything!");
+            m_owner.Yell(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.VishasAggro));
             m_owner.PlaySound(5847);
             base.OnEnterCombat();
         }
 
         public override void OnKilled(Unit killerUnit, Unit victimUnit)
         {
-            m_owner.Yell("Purged by pain!");
+            m_owner.Yell(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.VishasSlay));
             m_owner.PlaySound(5848);
             base.OnKilled(killerUnit, victimUnit);
         }
@@ -266,7 +266,7 @@ namespace WCell.Addons.Default.Instances
             int hpPct = m_owner.HealthPct;
             if (hpPct <= 50 && phase == 1)
             {
-                m_owner.Yell("No rest, for the angry dead.");
+                m_owner.Yell(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.ThalnosHealth01));
                 m_owner.PlaySound(5846);
                 phase = 2;
                 return;
@@ -283,14 +283,14 @@ namespace WCell.Addons.Default.Instances
 
         public override void OnEnterCombat()
         {
-            m_owner.Yell("We hunger for vengeance.");
+            m_owner.Yell(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.ThalnosAggro));
             m_owner.PlaySound(5844);
             base.OnEnterCombat();
         }
 
         public override void OnKilled(Unit killerUnit, Unit victimUnit)
         {
-            m_owner.Yell("More... More souls.");
+            m_owner.Yell(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.ThalnosSlay));
             m_owner.PlaySound(5845);
             base.OnKilled(killerUnit, victimUnit);
         }
@@ -324,7 +324,7 @@ namespace WCell.Addons.Default.Instances
 		
 		public override void OnEnterCombat()
 		{
-			m_owner.Yell("Release the hounds!");
+			m_owner.Yell(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.LokseyAggro));
             m_owner.PlaySound(5841);
 			base.OnEnterCombat();
 		}
@@ -355,7 +355,7 @@ namespace WCell.Addons.Default.Instances
             if (m_owner.HealthPct <= 50 && phase == 1)
             {
                 m_owner.Auras.CreateSelf(arcanistdoanProtection);		// apply Arcane Bubble after 50% to self
-                m_owner.Yell("Burn in righteous fire!");
+                m_owner.Yell(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.DoanSpecialAE));
                 m_owner.PlaySound(5843);
                 m_owner.SpellCast.Start(arcanistdoanAoE);		// aoe spell finds targets automatically
                 phase = 2;
@@ -374,7 +374,7 @@ namespace WCell.Addons.Default.Instances
 
         public override void OnEnterCombat()
         {
-            m_owner.Yell("You will not defile these mysteries!");
+            m_owner.Yell(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.DoanAggro));
             m_owner.PlaySound(5842);
             base.OnEnterCombat(); 
         }
@@ -432,7 +432,7 @@ namespace WCell.Addons.Default.Instances
             else if (m_owner.HealthPct <= 50 && phase == 1)
             {
                 m_owner.Auras.CreateSelf(herodFrenzy);		// apply Frenzy after 50% to self
-                m_owner.Yell("Light, give me strength!");
+                m_owner.Yell(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.HerodEnrage));
                 m_owner.PlaySound(5833);
                 phase = 2;
                 return;
@@ -450,7 +450,7 @@ namespace WCell.Addons.Default.Instances
                 if (chr != null)
                 {
                     herodWhirlWindTick = 0;
-                    m_owner.Yell("Blades of Light!");
+                    m_owner.Yell(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.HerodWhirlwind));
                     m_owner.PlaySound(5832);
                     m_owner.SpellCast.Start(herodWhirlWind, false, chr);
                 }
@@ -469,7 +469,7 @@ namespace WCell.Addons.Default.Instances
 
         public override void OnEnterCombat()
         {
-            m_owner.Yell("Ah I've been waiting for a real challenge.");
+            m_owner.Yell(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.HerodAggro));
             m_owner.PlaySound(5830);
             m_owner.SpellCast.Start(SpellHandler.Get(SpellId.RushingChargeRank1_2));
             base.OnEnterCombat();
@@ -477,7 +477,7 @@ namespace WCell.Addons.Default.Instances
 
         public override void OnKilled(Unit killerUnit, Unit victimUnit)
         {
-            m_owner.Yell("Ha, is that all?");
+            m_owner.Yell(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.HerodSlay));
             m_owner.PlaySound(5831);
             base.OnKilled(killerUnit, victimUnit);
         }
@@ -486,8 +486,6 @@ namespace WCell.Addons.Default.Instances
 		{
             if (action.Spell == SpellHandler.Get(SpellId.WhirlwindRank1))
 			{
-                m_owner.Yell("Blades of Light!");
-                m_owner.PlaySound(5832);
 				base.OnDamageDealt(action);
 			}
 		}
@@ -557,22 +555,23 @@ namespace WCell.Addons.Default.Instances
 
         public override void OnEnterCombat()
         {
-            m_owner.Yell("Infidels. They must be purified!");
+            m_owner.Yell(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.MograineAggro));
             m_owner.PlaySound(5835);
             base.OnEnterCombat();
         }
 
         public override void OnKilled(Unit killerUnit, Unit victimUnit)
         {
-            m_owner.Yell("Unworthy.");
+            m_owner.Yell(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.MograineSlay));
             m_owner.PlaySound(5836);
             base.OnKilled(killerUnit, victimUnit);
         }
 
         public override void OnActivate()
 		{
-            m_owner.Yell("At your side, milady.");
+            m_owner.Yell(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.MograineAtRest));
             m_owner.PlaySound(5837);
+            OnEnterCombat();
         }		
 
         public override void OnDeath()
@@ -622,7 +621,7 @@ namespace WCell.Addons.Default.Instances
             if (hpPct <= 50 && phase == 2)
             {
                 m_owner.SpellCast.Start(whitemaneMassSleep);
-                m_owner.Yell("Arise, my champion!");
+                m_owner.Yell(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.WhitemaneRes));
                 m_owner.PlaySound(5840);
                 m_owner.SpellCast.Start(whitemaneResurrection, false, m_owner.GetNearbyNPC(NPCId.ScarletCommanderMograine));
                 phase = 3;
@@ -630,7 +629,7 @@ namespace WCell.Addons.Default.Instances
             }
             else if (phase == 1)
             {
-                m_owner.Yell("Mograine has fallen? You shall pay for this treachery!");
+                m_owner.Yell(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.WhitemaneSpawn));
                 m_owner.PlaySound(5838);
                 m_owner.MoveToThenEnter(ref AltarLocation, RealmServer.AI.BrainState.Combat);
                 phase = 2;
@@ -649,6 +648,13 @@ namespace WCell.Addons.Default.Instances
         public override void OnEnterCombat()
         {
             base.OnEnterCombat();
+        }
+		
+		public override void OnKilled(Unit killerUnit, Unit victimUnit)
+        {
+            m_owner.Yell(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.WhitemaneSlay));
+            m_owner.PlaySound(5839);
+            base.OnKilled(killerUnit, victimUnit);
         }
     }   
     #endregion
