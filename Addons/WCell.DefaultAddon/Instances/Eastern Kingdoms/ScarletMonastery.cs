@@ -573,7 +573,6 @@ namespace WCell.Addons.Default.Instances
 		{
             m_owner.Yell("At your side, milady.");
             m_owner.PlaySound(5837);
-            OnEnterCombat();
         }		
 
         public override void OnDeath()
