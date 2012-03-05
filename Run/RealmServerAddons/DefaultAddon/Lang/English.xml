@@ -93,6 +93,68 @@
 	  <Value>The {0} flag was returned to its base by {1}!</Value>
 	</Item>
 	
+		<!-- Scarlet Monastery -->
+	<Item Key="VishasAggro">
+	  <Value>Tell me... tell me everything!</Value>
+	</Item>
+	<Item Key="VishasSlay">
+	  <Value>Purged by pain!</Value>
+	</Item>
+	<Item Key="VishasHealth01">
+	  <Value>Naughty secrets!</Value>
+	</Item>
+	<Item Key="VishasHealth02">
+	  <Value>I'll rip the secrets from your flesh!</Value>
+	</Item>
+	<Item Key="ThalnosAggro">
+	  <Value>We hunger for vengeance.</Value>
+	</Item>
+	<Item Key="ThalnosSlay">
+	  <Value>More... More souls.</Value>
+	</Item>
+	<Item Key="ThalnosHealth01">
+	  <Value>No rest, for the angry dead.</Value>
+	</Item>
+	<Item Key="LokseyAggro">
+	  <Value>Release the hounds!</Value>
+	</Item>
+	<Item Key="DoanAggro">
+	  <Value>You will not defile these mysteries!</Value>
+	</Item>
+	<Item Key="DoanSpecialAE">
+	  <Value>Burn in righteous fire!</Value>
+	</Item>
+	<Item Key="HerodAggro">
+	  <Value>Ah, I've been waiting for a real challenge.</Value>
+	</Item>
+	<Item Key="HerodSlay">
+	  <Value>Ha, is that all?</Value>
+	</Item>
+	<Item Key="HerodWhirlwind">
+	  <Value>Blades of Light!</Value>
+	</Item>
+	<Item Key="HerodEnrage">
+	  <Value>Light, give me strength!</Value>
+	</Item>
+	<Item Key="MograineAggro">
+	  <Value>Infidels. They must be purified!</Value>
+	</Item>
+	<Item Key="MograineSlay">
+	  <Value>Unworthy.</Value>
+	</Item>
+	<Item Key="MograineAtRest">
+	  <Value>At your side, milady.</Value>
+	</Item>
+	<Item Key="WhitemaneSpawn">
+	  <Value>Mograine has fallen? You shall pay for this treachery!</Value>
+	</Item>
+	<Item Key="WhitemaneSlay">
+	  <Value>The light has spoken!</Value>
+	</Item>
+	<Item Key="WhitemaneRes">
+	  <Value>Arise, my champion!</Value>
+	</Item>
+	
 	<!-- Guard Gossip -->
 	<Item Key="GuardBank">
       <Value>The Bank</Value>
