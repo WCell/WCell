@@ -5,79 +5,91 @@ using WCell.Core.DBC;
 
 namespace WCell.RealmServer.Items
 {
-	public class ItemExtendedCostEntry
-	{
-	    public uint Id;
-		public uint HonorCost;
-		public uint ArenaPointCost;
+    public class ItemExtendedCostEntry
+    {
+        public uint Id;
+        public uint HonorCost;
+        public uint ArenaPointCost;
         public List<RequiredItem> RequiredItems = new List<RequiredItem>(5);
-	    public ItemId ReqItem1
-	    {
-	        get { return RequiredItems[0].Id; }
-	    }
-	    public ItemId ReqItem2
-	    {
-	        get { return RequiredItems[1].Id; }
-	    }
+
+        public ItemId ReqItem1
+        {
+            get { return RequiredItems[0].Id; }
+        }
+
+        public ItemId ReqItem2
+        {
+            get { return RequiredItems[1].Id; }
+        }
+
         public ItemId ReqItem3
         {
-	        get { return RequiredItems[2].Id; }
-	    }
+            get { return RequiredItems[2].Id; }
+        }
+
         public ItemId ReqItem4
         {
-	        get { return RequiredItems[3].Id; }
-	    }
+            get { return RequiredItems[3].Id; }
+        }
+
         public ItemId ReqItem5
         {
-	        get { return RequiredItems[4].Id; }
-	    }
-	    public int ReqItemAmt1
-	    {
-	        get { return RequiredItems[0].Cost; }
-	    }
-	    public int ReqItemAmt2
-	    {
-	        get { return RequiredItems[1].Cost; }
-	    }
-	    public int ReqItemAmt3
-	    {
-	        get { return RequiredItems[2].Cost; }
-	    }
-	    public int ReqItemAmt4
-	    {
-	        get { return RequiredItems[3].Cost; }
-	    }
-	    public int ReqItemAmt5
-	    {
-	        get { return RequiredItems[4].Cost; }
-	    }
-	    public uint ReqArenaRating;
+            get { return RequiredItems[4].Id; }
+        }
+
+        public int ReqItemAmt1
+        {
+            get { return RequiredItems[0].Cost; }
+        }
+
+        public int ReqItemAmt2
+        {
+            get { return RequiredItems[1].Cost; }
+        }
+
+        public int ReqItemAmt3
+        {
+            get { return RequiredItems[2].Cost; }
+        }
+
+        public int ReqItemAmt4
+        {
+            get { return RequiredItems[3].Cost; }
+        }
+
+        public int ReqItemAmt5
+        {
+            get { return RequiredItems[4].Cost; }
+        }
+
+        public uint ReqArenaRating;
 
         public uint Unk_322;
 
-        public static ItemExtendedCostEntry NullEntry = new ItemExtendedCostEntry() {
-	        Id = 0,
-	        HonorCost = 0,
-	        ArenaPointCost = 0,
-	        RequiredItems = new List<RequiredItem>(5) {
+        public static ItemExtendedCostEntry NullEntry = new ItemExtendedCostEntry()
+        {
+            Id = 0,
+            HonorCost = 0,
+            ArenaPointCost = 0,
+            RequiredItems = new List<RequiredItem>(5) {
                 new RequiredItem() {Id = ItemId.None, Cost = 0},
                 new RequiredItem() {Id = ItemId.None, Cost = 0},
                 new RequiredItem() {Id = ItemId.None, Cost = 0},
                 new RequiredItem() {Id = ItemId.None, Cost = 0},
                 new RequiredItem() {Id = ItemId.None, Cost = 0}
             },
-	        ReqArenaRating = 0
-	    };
+            ReqArenaRating = 0
+        };
 
         public struct RequiredItem
         {
             public ItemId Id;
             public int Cost;
 
-        	public ItemTemplate Template
-        	{
-        		get { return ItemMgr.GetTemplate(Id); }
-        	}
+            public ItemTemplate Template
+            {
+                get { return ItemMgr.GetTemplate(Id); }
+            }
         }
     }
 
@@ -113,7 +125,8 @@ namespace WCell.RealmServer.Items
                 new ItemExtendedCostEntry.RequiredItem() {Id = reqItem5, Cost = reqItemAmt5}
             };
 
-            var entry = new ItemExtendedCostEntry() {
+            var entry = new ItemExtendedCostEntry()
+            {
                 Id = (uint)id,
                 HonorCost = honorCost,
                 ArenaPointCost = arenaPointCost,
@@ -125,5 +138,5 @@ namespace WCell.RealmServer.Items
         }
     }
 
-    #endregion
+    #endregion ItemExtendedCostEntry.dbc
 }

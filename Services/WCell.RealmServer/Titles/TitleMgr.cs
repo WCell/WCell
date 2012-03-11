@@ -26,7 +26,7 @@ namespace WCell.RealmServer.Titles
         {
             foreach (var characterTitleEntry in CharacterTitleEntries.Values)
             {
-                if(characterTitleEntry.BitIndex == titleBitId)
+                if (characterTitleEntry.BitIndex == titleBitId)
                     return characterTitleEntry;
             }
 

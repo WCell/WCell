@@ -2,10 +2,10 @@
 
 namespace WCell.RealmServer.Items
 {
-	public interface IItemEquipmentEventHandler
-	{
-		void OnEquip(Item item);
+    public interface IItemEquipmentEventHandler
+    {
+        void OnEquip(Item item);
 
-		void OnBeforeUnEquip(Item item);
-	}
+        void OnBeforeUnEquip(Item item);
+    }
 }

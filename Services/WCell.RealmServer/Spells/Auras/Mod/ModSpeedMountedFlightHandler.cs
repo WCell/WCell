@@ -21,6 +21,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
     public class ModSpeedMountedFlightHandler : AuraEffectHandler
     {
         private float val;
+
         protected override void Apply()
         {
             m_aura.Auras.Owner.FlightSpeedFactor += (val = EffectValue / 100f);
@@ -30,6 +31,5 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
         {
             m_aura.Auras.Owner.FlightSpeedFactor -= val;
         }
-
     }
 };

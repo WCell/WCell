@@ -18,24 +18,24 @@ using WCell.Constants;
 
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
-	public class ModResistanceHandler : AuraEffectHandler
-	{
-		protected override void Apply()
-		{
-			for (var i = 0; i < m_spellEffect.MiscBitSet.Length; i++)
-			{
-				var flag = m_spellEffect.MiscBitSet[i];
-				m_aura.Auras.Owner.AddResistanceBuff((DamageSchool) flag, EffectValue);
-			}
-		}
+    public class ModResistanceHandler : AuraEffectHandler
+    {
+        protected override void Apply()
+        {
+            for (var i = 0; i < m_spellEffect.MiscBitSet.Length; i++)
+            {
+                var flag = m_spellEffect.MiscBitSet[i];
+                m_aura.Auras.Owner.AddResistanceBuff((DamageSchool)flag, EffectValue);
+            }
+        }
 
-		protected override void Remove(bool cancelled)
-		{
-			for (var i = 0; i < m_spellEffect.MiscBitSet.Length; i++)
-			{
-				var flag = m_spellEffect.MiscBitSet[i];
-				m_aura.Auras.Owner.RemoveResistanceBuff((DamageSchool) flag, EffectValue);
-			}
-		}
-	}
+        protected override void Remove(bool cancelled)
+        {
+            for (var i = 0; i < m_spellEffect.MiscBitSet.Length; i++)
+            {
+                var flag = m_spellEffect.MiscBitSet[i];
+                m_aura.Auras.Owner.RemoveResistanceBuff((DamageSchool)flag, EffectValue);
+            }
+        }
+    }
 };

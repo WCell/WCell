@@ -3,12 +3,12 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Global
 {
-	public interface IWorldSpace
-	{
-		IWorldSpace ParentSpace { get; }
+    public interface IWorldSpace
+    {
+        IWorldSpace ParentSpace { get; }
 
-		WorldStateCollection WorldStates { get; }
+        WorldStateCollection WorldStates { get; }
 
-		void CallOnAllCharacters(Action<Character> action);
-	}
+        void CallOnAllCharacters(Action<Character> action);
+    }
 }

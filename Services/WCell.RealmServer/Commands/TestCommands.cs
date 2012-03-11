@@ -5,60 +5,64 @@ using WCell.Util.Commands;
 
 namespace WCell.RealmServer.Commands
 {
-	#region CastFail
-	public class ShowCastFailCommand : RealmServerCommand
-	{
-		protected ShowCastFailCommand() {}
+    #region CastFail
 
-		protected override void Initialize()
-		{
-			base.Init("ShowCastFail");
-			EnglishParamInfo = "<spell> <reason>";
-			EnglishDescription = "Sends a spell failed packet";
+    public class ShowCastFailCommand : RealmServerCommand
+    {
+        protected ShowCastFailCommand() { }
 
-			// doesn't do anything
-			Enabled = false;
-		}
+        protected override void Initialize()
+        {
+            base.Init("ShowCastFail");
+            EnglishParamInfo = "<spell> <reason>";
+            EnglishDescription = "Sends a spell failed packet";
 
-		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
-		{
-			var spell = trigger.Text.NextEnum(SpellId.None);
-			var reason = trigger.Text.NextEnum(SpellFailedReason.Interrupted);
-			//SpellHandler.SendCastFailed(trigger.Args.Target, trigger.Args.Character.Client, spell, reason);
-			trigger.Reply("Done.");
-		}
-	}
-	#endregion
+            // doesn't do anything
+            Enabled = false;
+        }
 
-	#region BankSlotResult
-	public class ShowBankSlotResultCommand : RealmServerCommand
-	{
-		protected ShowBankSlotResultCommand() {}
+        public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+        {
+            var spell = trigger.Text.NextEnum(SpellId.None);
+            var reason = trigger.Text.NextEnum(SpellFailedReason.Interrupted);
+            //SpellHandler.SendCastFailed(trigger.Args.Target, trigger.Args.Character.Client, spell, reason);
+            trigger.Reply("Done.");
+        }
+    }
 
-		protected override void Initialize()
-		{
-			base.Init("ShowBankSlotResult");
-			EnglishParamInfo = "<value>";
-			EnglishDescription = "Sends the BankSlotResult packet";
+    #endregion CastFail
 
-			// we don't really need this
-			Enabled = false;
-		}
+    #region BankSlotResult
 
-		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
-		{
-			var value = trigger.Text.NextEnum(BuyBankBagResponse.Ok);
-			NPCHandler.SendBankSlotResult(trigger.Args.Character, value);
-			trigger.Reply("Done.");
-		}
+    public class ShowBankSlotResultCommand : RealmServerCommand
+    {
+        protected ShowBankSlotResultCommand() { }
 
-		public override bool RequiresCharacter
-		{
-			get
-			{
-				return true;
-			}
-		}
-	}
-	#endregion
+        protected override void Initialize()
+        {
+            base.Init("ShowBankSlotResult");
+            EnglishParamInfo = "<value>";
+            EnglishDescription = "Sends the BankSlotResult packet";
+
+            // we don't really need this
+            Enabled = false;
+        }
+
+        public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+        {
+            var value = trigger.Text.NextEnum(BuyBankBagResponse.Ok);
+            NPCHandler.SendBankSlotResult(trigger.Args.Character, value);
+            trigger.Reply("Done.");
+        }
+
+        public override bool RequiresCharacter
+        {
+            get
+            {
+                return true;
+            }
+        }
+    }
+
+    #endregion BankSlotResult
 }

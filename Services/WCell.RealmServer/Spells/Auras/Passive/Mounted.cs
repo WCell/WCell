@@ -19,41 +19,41 @@ using WCell.RealmServer.NPCs;
 
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
-	/// <summary>
-	/// Applies a mount-aura
-	/// </summary>
-	public class MountedHandler : AuraEffectHandler
-	{
-		private static Logger log = LogManager.GetCurrentClassLogger();
+    /// <summary>
+    /// Applies a mount-aura
+    /// </summary>
+    public class MountedHandler : AuraEffectHandler
+    {
+        private static Logger log = LogManager.GetCurrentClassLogger();
 
-		protected override void Apply()
-		{
-			var creatureId = (uint)SpellEffect.MiscValue;
-			var entry = NPCMgr.GetEntry(creatureId);
-			if (entry != null && entry.DisplayIds.Length > 0)
-			{
-				var displayId = entry.DisplayIds[0];
+        protected override void Apply()
+        {
+            var creatureId = (uint)SpellEffect.MiscValue;
+            var entry = NPCMgr.GetEntry(creatureId);
+            if (entry != null && entry.DisplayIds.Length > 0)
+            {
+                var displayId = entry.DisplayIds[0];
 
-				m_aura.Auras.Owner.Mount(displayId);
+                m_aura.Auras.Owner.Mount(displayId);
 
-				m_aura.Auras.MountAura = m_aura;
+                m_aura.Auras.MountAura = m_aura;
 
-				// some flying mounts dont have a flying effect, so we need to apply it here:
-				if (m_aura.Spell.IsFlyingMount && !m_aura.Spell.HasFlyEffect)
-				{
-					m_aura.Auras.Owner.Flying++;
-				}
-			}
-		}
+                // some flying mounts dont have a flying effect, so we need to apply it here:
+                if (m_aura.Spell.IsFlyingMount && !m_aura.Spell.HasFlyEffect)
+                {
+                    m_aura.Auras.Owner.Flying++;
+                }
+            }
+        }
 
-		protected override void Remove(bool cancelled)
-		{
-			// some flying mounts dont have a flying effect, so we need to remove it here:
-			if (m_aura.Spell.IsFlyingMount && !m_aura.Spell.HasFlyEffect)
-			{
-				m_aura.Auras.Owner.Flying--;
-			}
-			m_aura.Auras.Owner.DoDismount();
-		}
-	}
+        protected override void Remove(bool cancelled)
+        {
+            // some flying mounts dont have a flying effect, so we need to remove it here:
+            if (m_aura.Spell.IsFlyingMount && !m_aura.Spell.HasFlyEffect)
+            {
+                m_aura.Auras.Owner.Flying--;
+            }
+            m_aura.Auras.Owner.DoDismount();
+        }
+    }
 };

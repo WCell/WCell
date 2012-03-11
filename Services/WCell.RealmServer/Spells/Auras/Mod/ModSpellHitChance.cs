@@ -18,41 +18,41 @@ using WCell.Constants;
 
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
-	/// <summary>
-	/// Mods Spell crit chance in %
-	/// </summary>
-	public class ModSpellHitChanceHandler : AuraEffectHandler
-	{
-		protected override void Apply()
-		{
-			var owner = Owner;
-			if (m_spellEffect.MiscValue == 0)
-			{
-				for (var s = DamageSchool.Physical; s < DamageSchool.Count; s++)
-				{
-					owner.ModSpellHitChance(s, EffectValue);
-				}
-			}
-			else
-			{
-				owner.ModSpellHitChance(m_spellEffect.MiscBitSet, EffectValue);
-			}
-		}
+    /// <summary>
+    /// Mods Spell crit chance in %
+    /// </summary>
+    public class ModSpellHitChanceHandler : AuraEffectHandler
+    {
+        protected override void Apply()
+        {
+            var owner = Owner;
+            if (m_spellEffect.MiscValue == 0)
+            {
+                for (var s = DamageSchool.Physical; s < DamageSchool.Count; s++)
+                {
+                    owner.ModSpellHitChance(s, EffectValue);
+                }
+            }
+            else
+            {
+                owner.ModSpellHitChance(m_spellEffect.MiscBitSet, EffectValue);
+            }
+        }
 
-		protected override void Remove(bool cancelled)
-		{
-			var owner = Owner;
-			if (m_spellEffect.MiscValue == 0)
-			{
-				for (var s = DamageSchool.Physical; s < DamageSchool.Count; s++)
-				{
-					owner.ModSpellHitChance(s, -EffectValue);
-				}
-			}
-			else
-			{
-				owner.ModSpellHitChance(m_spellEffect.MiscBitSet, -EffectValue);
-			}
-		}
-	}
+        protected override void Remove(bool cancelled)
+        {
+            var owner = Owner;
+            if (m_spellEffect.MiscValue == 0)
+            {
+                for (var s = DamageSchool.Physical; s < DamageSchool.Count; s++)
+                {
+                    owner.ModSpellHitChance(s, -EffectValue);
+                }
+            }
+            else
+            {
+                owner.ModSpellHitChance(m_spellEffect.MiscBitSet, -EffectValue);
+            }
+        }
+    }
 };

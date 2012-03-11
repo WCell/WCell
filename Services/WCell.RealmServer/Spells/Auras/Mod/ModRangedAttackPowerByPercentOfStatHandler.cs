@@ -19,24 +19,24 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
-	public class ModRangedAttackPowerByPercentOfStatHandler : AuraEffectHandler
-	{
-		protected override void Apply()
-		{
-			var chr = Owner as Character;
-			if (chr != null)
-			{
-				chr.ModRangedAPModByStat((StatType)m_spellEffect.MiscValue, EffectValue);
-			}
-		}
+    public class ModRangedAttackPowerByPercentOfStatHandler : AuraEffectHandler
+    {
+        protected override void Apply()
+        {
+            var chr = Owner as Character;
+            if (chr != null)
+            {
+                chr.ModRangedAPModByStat((StatType)m_spellEffect.MiscValue, EffectValue);
+            }
+        }
 
-		protected override void Remove(bool cancelled)
-		{
-			var chr = Owner as Character;
-			if (chr != null)
-			{
-				chr.ModRangedAPModByStat((StatType)m_spellEffect.MiscValue, -EffectValue);
-			}
-		}
-	}
+        protected override void Remove(bool cancelled)
+        {
+            var chr = Owner as Character;
+            if (chr != null)
+            {
+                chr.ModRangedAPModByStat((StatType)m_spellEffect.MiscValue, -EffectValue);
+            }
+        }
+    }
 };

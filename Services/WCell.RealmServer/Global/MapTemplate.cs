@@ -17,352 +17,359 @@ namespace WCell.RealmServer.Global
     {
         public uint Id;
         public MapId MapId;
-		public uint Index;
-		/// <summary>
-		/// You must have level...
-		/// You must have Key of...
-		/// Heroid Difficulty requires completion of...
-		/// You must complete the quest...
-		/// </summary>
+        public uint Index;
+        /// <summary>
+        /// You must have level...
+        /// You must have Key of...
+        /// Heroid Difficulty requires completion of...
+        /// You must complete the quest...
+        /// </summary>
         public string RequirementString;
-		/// <summary>
-		/// Automatic reset-time in seconds.
-		/// 0 for non-raid Dungeons
-		/// </summary>
+        /// <summary>
+        /// Automatic reset-time in seconds.
+        /// 0 for non-raid Dungeons
+        /// </summary>
         public int ResetTime;
-		/// <summary>
-		/// Might be 0 (have to use MapInfo.MaxPlayerCount)
-		/// </summary>
-    	public int MaxPlayerCount;
+        /// <summary>
+        /// Might be 0 (have to use MapInfo.MaxPlayerCount)
+        /// </summary>
+        public int MaxPlayerCount;
     }
 
-	/// <summary>
-	/// The template of a Map
-	/// </summary>
-	[DataHolder]
-	public partial class MapTemplate : IDataHolder, IComparable
-	{
-		public MapId Id;
-		public string Name;
-		public bool HasTwoSides;
-		public uint LoadScreen;
-		public MapId ParentMapId;
-		public MapType Type;
-		public int MinLevel;
-		public int MaxLevel;
+    /// <summary>
+    /// The template of a Map
+    /// </summary>
+    [DataHolder]
+    public partial class MapTemplate : IDataHolder, IComparable
+    {
+        public MapId Id;
+        public string Name;
+        public bool HasTwoSides;
+        public uint LoadScreen;
+        public MapId ParentMapId;
+        public MapType Type;
+        public int MinLevel;
+        public int MaxLevel;
 
         /// <summary>
         /// Maximum amount of players allowed in the map.
         /// See Difficulties for more information.
         /// </summary>
         [NotPersistent]
-		public int MaxPlayerCount;
-		public Vector3 RepopPosition;
-		public MapId RepopMapId;
-		public uint AreaTableId;
-		public string HordeText;
-		public string AllianceText;
-		public int HeroicLevelDiff;
-		public uint RequiredQuestId;
-		public uint RequiredItemId;
-		public ClientId RequiredClientId;
-		public int DefaultResetTime;
+        public int MaxPlayerCount;
+        public Vector3 RepopPosition;
+        public MapId RepopMapId;
+        public uint AreaTableId;
+        public string HordeText;
+        public string AllianceText;
+        public int HeroicLevelDiff;
+        public uint RequiredQuestId;
+        public uint RequiredItemId;
+        public ClientId RequiredClientId;
+        public int DefaultResetTime;
 
-		/// <summary>
-		/// The default BattlegroundTemplate, associated with this MapTemplate
-		/// </summary>
-		public BattlegroundTemplate BattlegroundTemplate
-		{
-			get;
-			internal set;
-		}
+        /// <summary>
+        /// The default BattlegroundTemplate, associated with this MapTemplate
+        /// </summary>
+        public BattlegroundTemplate BattlegroundTemplate
+        {
+            get;
+            internal set;
+        }
 
-		/// <summary>
-		/// The default InstanceTemplate, associated with this MapInfo
-		/// </summary>
-		[NotPersistent]
-		public InstanceTemplate InstanceTemplate;
+        /// <summary>
+        /// The default InstanceTemplate, associated with this MapInfo
+        /// </summary>
+        [NotPersistent]
+        public InstanceTemplate InstanceTemplate;
 
-		/// <summary>
-		/// The BoundingBox around the entire Map
-		/// </summary>
-		[NotPersistent]
-		public BoundingBox Bounds;
+        /// <summary>
+        /// The BoundingBox around the entire Map
+        /// </summary>
+        [NotPersistent]
+        public BoundingBox Bounds;
 
-		[NotPersistent]
-		public MapDifficultyEntry[] Difficulties;
+        [NotPersistent]
+        public MapDifficultyEntry[] Difficulties;
 
-		public MapDifficultyEntry GetDifficulty(uint index)
-		{
-			var diff = Difficulties.Get(index);
-			if (diff == null)
-			{
-				return Difficulties[0];
-			}
-			return diff;
-		}
+        public MapDifficultyEntry GetDifficulty(uint index)
+        {
+            var diff = Difficulties.Get(index);
+            if (diff == null)
+            {
+                return Difficulties[0];
+            }
+            return diff;
+        }
 
-		public uint GetId()
-		{
-			return (uint)Id;
-		}
+        public uint GetId()
+        {
+            return (uint)Id;
+        }
 
-		public bool IsRaid
-		{
-			get { return Type == MapType.Raid; }
-		}
+        public bool IsRaid
+        {
+            get { return Type == MapType.Raid; }
+        }
 
-		/// <summary>
-		/// All zone ids within the Map
-		/// </summary>
-		public bool IsInstance
-		{
-			get { return Type == MapType.Dungeon || Type == MapType.Raid; }
-		}
+        /// <summary>
+        /// All zone ids within the Map
+        /// </summary>
+        public bool IsInstance
+        {
+            get { return Type == MapType.Dungeon || Type == MapType.Raid; }
+        }
 
-		/// <summary>
-		/// Battleground or Arena
-		/// </summary>
-		public bool IsBattleground
-		{
-			get
-			{
-				//return Type == MapType.Battleground || Type == MapType.Arena;
-				return BattlegroundTemplate != null;
-			}
-		}
+        /// <summary>
+        /// Battleground or Arena
+        /// </summary>
+        public bool IsBattleground
+        {
+            get
+            {
+                //return Type == MapType.Battleground || Type == MapType.Arena;
+                return BattlegroundTemplate != null;
+            }
+        }
 
-		public Map RepopMap
-		{
-			get
-			{
-				if (RepopMapId != MapId.End)
-				{
-					return World.GetNonInstancedMap(RepopMapId);
-				}
-				return null;
-			}
-		}
+        public Map RepopMap
+        {
+            get
+            {
+                if (RepopMapId != MapId.End)
+                {
+                    return World.GetNonInstancedMap(RepopMapId);
+                }
+                return null;
+            }
+        }
 
-		[NotPersistent]
-		public Vector3[] EntrancePositions = new Vector3[0];
+        [NotPersistent]
+        public Vector3[] EntrancePositions = new Vector3[0];
 
-		[NotPersistent]
-		/// <summary>
-		/// 
-		/// </summary>
-		public Vector3 FirstEntrance
-		{
-			get { return EntrancePositions.Length > 0 ? EntrancePositions[0] : Vector3.Right; }
-		}
+        [NotPersistent]
+        /// <summary>
+        ///
+        /// </summary>
+        public Vector3 FirstEntrance
+        {
+            get { return EntrancePositions.Length > 0 ? EntrancePositions[0] : Vector3.Right; }
+        }
 
-		#region Ids
-		IdQueue Ids;
+        #region Ids
 
-		public uint NextId()
-		{
-			if (Ids == null)
-			{
-				Ids = new IdQueue();
-			}
-			return Ids.NextId();
-		}
+        IdQueue Ids;
 
-		public void RecycleId(uint id)
-		{
-			Ids.RecycleId(id);
-		}
-		#endregion
+        public uint NextId()
+        {
+            if (Ids == null)
+            {
+                Ids = new IdQueue();
+            }
+            return Ids.NextId();
+        }
 
-		#region Zones
-		[NotPersistent]
-		/// <summary>
-		/// All the ZoneInfos within this map.
-		/// </summary>
-		public readonly IList<ZoneTemplate> ZoneInfos = new List<ZoneTemplate>();
+        public void RecycleId(uint id)
+        {
+            Ids.RecycleId(id);
+        }
 
-		[NotPersistent]
-		public ZoneTileSet ZoneTileSet;
+        #endregion Ids
 
-		public ZoneTemplate GetZoneInfo(float x, float y)
-		{
-			if (ZoneTileSet != null)
-			{
-				var zoneId = ZoneTileSet.GetZoneId(x, y);
-				return World.GetZoneInfo(zoneId);
-			}
-			return null;
-		}
-		#endregion
+        #region Zones
 
-		/// <summary>
-		/// Does all the default checks
-		/// </summary>
-		/// <param name="chr"></param>
-		/// <returns></returns>
-		public bool MayEnter(Character chr)
-		{
-			if (Type == MapType.Normal)
-			{
-				return true;
-			}
+        [NotPersistent]
+        /// <summary>
+        /// All the ZoneInfos within this map.
+        /// </summary>
+        public readonly IList<ZoneTemplate> ZoneInfos = new List<ZoneTemplate>();
 
-			return
-				(RequiredQuestId == 0 || chr.QuestLog.FinishedQuests.Contains(RequiredQuestId)) &&
-				RequiredClientId <= chr.Account.ClientId;
-			//&& (RequiredItemId == 0 || chr.Inventory.Contains(RequiredItemId)) &&
-			//chr.Inventory.ContainsAll(RequiredKeys);
-		}
+        [NotPersistent]
+        public ZoneTileSet ZoneTileSet;
 
-		public void FinalizeDataHolder()
-		{
-			//if (NormalResetDelay > 0 && HeroicResetDelay == 0)
-			//{
-			//    HeroicResetDelay = NormalResetDelay;
-			//}
+        public ZoneTemplate GetZoneInfo(float x, float y)
+        {
+            if (ZoneTileSet != null)
+            {
+                var zoneId = ZoneTileSet.GetZoneId(x, y);
+                return World.GetZoneInfo(zoneId);
+            }
+            return null;
+        }
 
-			if (RepopPosition == default(Vector3))
-			{
-				RepopMapId = MapId.End;
-			}
+        #endregion Zones
 
-			if (IsInstance)
-			{
-				InstanceTemplate = new InstanceTemplate(this);
-				InstanceMgr.InstanceInfos.Add(this);
-			}
+        /// <summary>
+        /// Does all the default checks
+        /// </summary>
+        /// <param name="chr"></param>
+        /// <returns></returns>
+        public bool MayEnter(Character chr)
+        {
+            if (Type == MapType.Normal)
+            {
+                return true;
+            }
 
-			//ArrayUtil.Set(ref World.s_mapInfos, (uint)Id, this);
-		}
+            return
+                (RequiredQuestId == 0 || chr.QuestLog.FinishedQuests.Contains(RequiredQuestId)) &&
+                RequiredClientId <= chr.Account.ClientId;
+            //&& (RequiredItemId == 0 || chr.Inventory.Contains(RequiredItemId)) &&
+            //chr.Inventory.ContainsAll(RequiredKeys);
+        }
 
-		#region Events
+        public void FinalizeDataHolder()
+        {
+            //if (NormalResetDelay > 0 && HeroicResetDelay == 0)
+            //{
+            //    HeroicResetDelay = NormalResetDelay;
+            //}
 
-		internal void NotifyCreated(Map map)
-		{
-			var evt = Created;
-			if (evt != null)
-			{
-				evt(map);
-			}
-		}
+            if (RepopPosition == default(Vector3))
+            {
+                RepopMapId = MapId.End;
+            }
 
-		public void NotifyStarted(Map map)
-		{
-			var evt = Started;
-			if (evt != null)
-			{
-				evt(map);
-			}
-		}
+            if (IsInstance)
+            {
+                InstanceTemplate = new InstanceTemplate(this);
+                InstanceMgr.InstanceInfos.Add(this);
+            }
 
-		public bool NotifySpawning(Map map)
-		{
-			var evt = Spawning;
-			if (evt != null)
-			{
-				return evt(map);
-			}
-			return true;
-		}
+            //ArrayUtil.Set(ref World.s_mapInfos, (uint)Id, this);
+        }
 
-		public void NotifySpawned(Map map)
-		{
-			var evt = Spawned;
-			if (evt != null)
-			{
-				evt(map);
-			}
-		}
+        #region Events
 
-		public bool NotifyStopping(Map map)
-		{
-			var evt = Stopping;
-			if (evt != null)
-			{
-				return evt(map);
-			}
-			return true;
-		}
+        internal void NotifyCreated(Map map)
+        {
+            var evt = Created;
+            if (evt != null)
+            {
+                evt(map);
+            }
+        }
 
-		public void NotifyStopped(Map map)
-		{
-			var evt = Started;
-			if (evt != null)
-			{
-				evt(map);
-			}
-		}
+        public void NotifyStarted(Map map)
+        {
+            var evt = Started;
+            if (evt != null)
+            {
+                evt(map);
+            }
+        }
 
-		public void NotifyPlayerEntered(Map map, Character chr)
-		{
-			var evt = PlayerEntered;
-			if (evt != null)
-			{
-				evt(map, chr);
-			}
-		}
+        public bool NotifySpawning(Map map)
+        {
+            var evt = Spawning;
+            if (evt != null)
+            {
+                return evt(map);
+            }
+            return true;
+        }
 
-		public void NotifyPlayerLeft(Map map, Character chr)
-		{
-			var evt = PlayerLeft;
-			if (evt != null)
-			{
-				evt(map, chr);
-			}
-		}
+        public void NotifySpawned(Map map)
+        {
+            var evt = Spawned;
+            if (evt != null)
+            {
+                evt(map);
+            }
+        }
 
-		public bool NotifyPlayerBeforeDeath(Character chr)
-		{
-			var evt = PlayerBeforeDeath;
-			if (evt != null)
-			{
-				return evt(chr);
-			}
-			return true;
-		}
+        public bool NotifyStopping(Map map)
+        {
+            var evt = Stopping;
+            if (evt != null)
+            {
+                return evt(map);
+            }
+            return true;
+        }
 
-		public void NotifyPlayerDied(IDamageAction action)
-		{
-			var evt = PlayerDied;
-			if (evt != null)
-			{
-				evt(action);
-			}
-			action.Victim.Map.OnPlayerDeath(action);
-		}
+        public void NotifyStopped(Map map)
+        {
+            var evt = Started;
+            if (evt != null)
+            {
+                evt(map);
+            }
+        }
 
-		public void NotifyPlayerResurrected(Character chr)
-		{
-			var evt = PlayerResurrected;
-			if (evt != null)
-			{
-				evt(chr);
-			}
-		}
-		#endregion
+        public void NotifyPlayerEntered(Map map, Character chr)
+        {
+            var evt = PlayerEntered;
+            if (evt != null)
+            {
+                evt(map, chr);
+            }
+        }
 
-		#region Misc
-		//public static IEnumerable<MapInfo> GetAllDataHolders()
-		//{
-		//    return World.MapInfos;
-		//}
+        public void NotifyPlayerLeft(Map map, Character chr)
+        {
+            var evt = PlayerLeft;
+            if (evt != null)
+            {
+                evt(map, chr);
+            }
+        }
 
-		public int CompareTo(object obj)
-		{
-			var info = obj as MapTemplate;
-			if (info != null)
-			{
-				return Id.CompareTo(info.Id);
-			}
-			return -1;
-		}
+        public bool NotifyPlayerBeforeDeath(Character chr)
+        {
+            var evt = PlayerBeforeDeath;
+            if (evt != null)
+            {
+                return evt(chr);
+            }
+            return true;
+        }
 
-		public override string ToString()
-		{
-			return Type + " " + Name + " (" + Id + " #" + (uint)Id + ")";
-		}
-		#endregion
-	}
+        public void NotifyPlayerDied(IDamageAction action)
+        {
+            var evt = PlayerDied;
+            if (evt != null)
+            {
+                evt(action);
+            }
+            action.Victim.Map.OnPlayerDeath(action);
+        }
+
+        public void NotifyPlayerResurrected(Character chr)
+        {
+            var evt = PlayerResurrected;
+            if (evt != null)
+            {
+                evt(chr);
+            }
+        }
+
+        #endregion Events
+
+        #region Misc
+
+        //public static IEnumerable<MapInfo> GetAllDataHolders()
+        //{
+        //    return World.MapInfos;
+        //}
+
+        public int CompareTo(object obj)
+        {
+            var info = obj as MapTemplate;
+            if (info != null)
+            {
+                return Id.CompareTo(info.Id);
+            }
+            return -1;
+        }
+
+        public override string ToString()
+        {
+            return Type + " " + Name + " (" + Id + " #" + (uint)Id + ")";
+        }
+
+        #endregion Misc
+    }
 }
 
 //using System;
@@ -468,7 +475,6 @@ namespace WCell.RealmServer.Global
 //        {
 //            get { return HeroicResetTimer > 0; }
 //        }
-
 
 //        /// <summary>
 //        /// The description of the heroic mode for this map.

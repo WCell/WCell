@@ -25,95 +25,95 @@ using WCell.RealmServer.Network;
 
 namespace WCell.RealmServer.UpdateFields
 {
-	/// <summary>
-	/// TODO: Create fully customizable UpdatePacket class
-	/// </summary>
-	public class UpdatePacket : RealmPacketOut
-	{
-		private static readonly Logger log = LogManager.GetCurrentClassLogger();
+    /// <summary>
+    /// TODO: Create fully customizable UpdatePacket class
+    /// </summary>
+    public class UpdatePacket : RealmPacketOut
+    {
+        private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-		public const int DefaultCapacity = 1024;
-		//public static int MaxCapacity = 10000;
+        public const int DefaultCapacity = 1024;
+        //public static int MaxCapacity = 10000;
 
-		public UpdatePacket()
-			//: this(BufferManager.Small.CheckOut())
-			: base(RealmServerOpCode.SMSG_UPDATE_OBJECT)
-		{
-			Position = FullUpdatePacketHeaderSize;
-		}
+        public UpdatePacket()
+            //: this(BufferManager.Small.CheckOut())
+            : base(RealmServerOpCode.SMSG_UPDATE_OBJECT)
+        {
+            Position = FullUpdatePacketHeaderSize;
+        }
 
-		public UpdatePacket(int maxContentLength)
-			//: this(BufferManager.Small.CheckOut())
-			: base(RealmServerOpCode.SMSG_UPDATE_OBJECT, maxContentLength + FullUpdatePacketHeaderSize)
-		{
-			Position = FullUpdatePacketHeaderSize;
-		}
+        public UpdatePacket(int maxContentLength)
+            //: this(BufferManager.Small.CheckOut())
+            : base(RealmServerOpCode.SMSG_UPDATE_OBJECT, maxContentLength + FullUpdatePacketHeaderSize)
+        {
+            Position = FullUpdatePacketHeaderSize;
+        }
 
-		/// <summary>
-		/// Sends packet (might be compressed)
-		/// </summary>
-		/// <returns></returns>
-		public void SendTo(IRealmClient client)
-		{
-			if (TotalLength <= WCellConstants.MAX_UNCOMPRESSED_UPDATE_PACKET)
-			{
-				client.Send(GetFinalizedPacket());
-			}
-			else
-			{
-				var segment = ((SegmentStream)BaseStream).Segment;
-				//var input = ((MemoryStream)BaseStream).ToArray();
-				var inputOffset = HeaderSize;
-				//Compression.CompressZLib(packetBuffer, outputBuffer, RealmServer.Instance.Configuration.CompressionLevel, out deflatedLength);
+        /// <summary>
+        /// Sends packet (might be compressed)
+        /// </summary>
+        /// <returns></returns>
+        public void SendTo(IRealmClient client)
+        {
+            if (TotalLength <= WCellConstants.MAX_UNCOMPRESSED_UPDATE_PACKET)
+            {
+                client.Send(GetFinalizedPacket());
+            }
+            else
+            {
+                var segment = ((SegmentStream)BaseStream).Segment;
+                //var input = ((MemoryStream)BaseStream).ToArray();
+                var inputOffset = HeaderSize;
+                //Compression.CompressZLib(packetBuffer, outputBuffer, RealmServer.Instance.Configuration.CompressionLevel, out deflatedLength);
 
-				var length = ContentLength;
-				if (length > 0x7FFF)
-				{
-					log.Warn("Sent UpdatePacket with Length {0} to {1} in {2}", length, client,
-						client.ActiveCharacter.Zone as IWorldSpace ?? client.ActiveCharacter.Map);
-				}
+                var length = ContentLength;
+                if (length > 0x7FFF)
+                {
+                    log.Warn("Sent UpdatePacket with Length {0} to {1} in {2}", length, client,
+                        client.ActiveCharacter.Zone as IWorldSpace ?? client.ActiveCharacter.Map);
+                }
 
-				var maxOutputLength = length + FullUpdatePacketHeaderSize;
+                var maxOutputLength = length + FullUpdatePacketHeaderSize;
 
-				var outSegment = BufferManager.GetSegment(maxOutputLength);
+                var outSegment = BufferManager.GetSegment(maxOutputLength);
 
-				var deflater = new Deflater(RealmServerConfiguration.CompressionLevel);
-				deflater.SetInput(segment.Buffer.Array, segment.Offset + inputOffset, length);
-				//deflater.SetInput(input, 0 + inputOffset, length);
-				deflater.Finish();
-				int deflatedLength = deflater.Deflate(outSegment.Buffer.Array,
-					outSegment.Offset + FullUpdatePacketHeaderSize, length);
+                var deflater = new Deflater(RealmServerConfiguration.CompressionLevel);
+                deflater.SetInput(segment.Buffer.Array, segment.Offset + inputOffset, length);
+                //deflater.SetInput(input, 0 + inputOffset, length);
+                deflater.Finish();
+                int deflatedLength = deflater.Deflate(outSegment.Buffer.Array,
+                    outSegment.Offset + FullUpdatePacketHeaderSize, length);
 
-				var totalLength = deflatedLength + FullUpdatePacketHeaderSize;
+                var totalLength = deflatedLength + FullUpdatePacketHeaderSize;
 
-				if (totalLength > MaxPacketSize)
-				{
-					throw new Exception("Compressed Update packet exceeded max length: " + totalLength);
-				}
-				SendPacket(client, outSegment, totalLength, length);
+                if (totalLength > MaxPacketSize)
+                {
+                    throw new Exception("Compressed Update packet exceeded max length: " + totalLength);
+                }
+                SendPacket(client, outSegment, totalLength, length);
 
-				outSegment.DecrementUsage();
-			}
-		}
+                outSegment.DecrementUsage();
+            }
+        }
 
-		public void Reset()
-		{
-			Position = 2;
-			Write((ushort)m_id.RawId);
-			Zero(5);
-		}
+        public void Reset()
+        {
+            Position = 2;
+            Write((ushort)m_id.RawId);
+            Zero(5);
+        }
 
-		static void SendPacket(IRealmClient client, BufferSegment outputBuffer, int totalLength, int actualLength)
-		{
-			var offset = (uint)outputBuffer.Offset;
-			outputBuffer.Buffer.Array.SetUShortBE(offset, (ushort)(totalLength - 2));
-			outputBuffer.Buffer.Array.SetBytes(offset + 2,
-				BitConverter.GetBytes((ushort)RealmServerOpCode.SMSG_COMPRESSED_UPDATE_OBJECT));
+        private static void SendPacket(IRealmClient client, BufferSegment outputBuffer, int totalLength, int actualLength)
+        {
+            var offset = (uint)outputBuffer.Offset;
+            outputBuffer.Buffer.Array.SetUShortBE(offset, (ushort)(totalLength - 2));
+            outputBuffer.Buffer.Array.SetBytes(offset + 2,
+                BitConverter.GetBytes((ushort)RealmServerOpCode.SMSG_COMPRESSED_UPDATE_OBJECT));
 
-			// original length
-			outputBuffer.Buffer.Array.SetBytes(offset + HEADER_SIZE, BitConverter.GetBytes((uint)actualLength));
+            // original length
+            outputBuffer.Buffer.Array.SetBytes(offset + HEADER_SIZE, BitConverter.GetBytes((uint)actualLength));
 
-			client.Send(outputBuffer, totalLength);
-		}
-	}
+            client.Send(outputBuffer, totalLength);
+        }
+    }
 }

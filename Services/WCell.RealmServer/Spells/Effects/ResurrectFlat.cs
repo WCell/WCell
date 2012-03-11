@@ -19,41 +19,41 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Effects
 {
-	/// <summary>
-	/// TODO: Target gets a res query
-	/// </summary>
-	public class ResurrectFlatEffectHandler : SpellEffectHandler
-	{
-		public ResurrectFlatEffectHandler(SpellCast cast, SpellEffect effect)
-			: base(cast, effect)
-		{
-		}
+    /// <summary>
+    /// TODO: Target gets a res query
+    /// </summary>
+    public class ResurrectFlatEffectHandler : SpellEffectHandler
+    {
+        public ResurrectFlatEffectHandler(SpellCast cast, SpellEffect effect)
+            : base(cast, effect)
+        {
+        }
 
-		protected override void Apply(WorldObject target)
-		{
-			Unit unit;
-			if (target is Unit)
-			{
-				unit = (Unit) target;
-			}
-			else if (target is Corpse)
-			{
-				unit = ((Corpse)target).Owner;
-				if (unit == null  || unit.IsAlive)
-				{
-					return;
-				}
-			}
-			else
-			{
-				return;
-			}
+        protected override void Apply(WorldObject target)
+        {
+            Unit unit;
+            if (target is Unit)
+            {
+                unit = (Unit)target;
+            }
+            else if (target is Corpse)
+            {
+                unit = ((Corpse)target).Owner;
+                if (unit == null || unit.IsAlive)
+                {
+                    return;
+                }
+            }
+            else
+            {
+                return;
+            }
 
-			unit.Health = CalcEffectValue();
-			if (((Unit)target).PowerType == PowerType.Mana)
-			{
-				((Unit)target).Energize(Effect.MiscValue, m_cast.CasterUnit, Effect);
-			}
-		}
-	}
+            unit.Health = CalcEffectValue();
+            if (((Unit)target).PowerType == PowerType.Mana)
+            {
+                ((Unit)target).Energize(Effect.MiscValue, m_cast.CasterUnit, Effect);
+            }
+        }
+    }
 }

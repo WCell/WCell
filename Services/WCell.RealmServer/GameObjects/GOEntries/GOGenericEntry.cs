@@ -4,8 +4,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 {
     public class GOGenericEntry : GOEntry
     {
-		private static readonly Logger sLog = LogManager.GetCurrentClassLogger();
-
+        private static readonly Logger sLog = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// Show the floating tooltip for this object (?)
@@ -47,13 +46,12 @@ namespace WCell.RealmServer.GameObjects.GOEntries
             get { return Fields[4]; }
         }
 
-
-		/// <summary>
-		/// The Id of the quest required to be active
-		/// </summary>
-		public override uint QuestId
-		{
-			get { return (uint)Fields[5]; }
-		}
-	}
+        /// <summary>
+        /// The Id of the quest required to be active
+        /// </summary>
+        public override uint QuestId
+        {
+            get { return (uint)Fields[5]; }
+        }
+    }
 }

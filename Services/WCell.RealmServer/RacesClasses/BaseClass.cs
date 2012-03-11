@@ -54,12 +54,12 @@ namespace WCell.RealmServer.RacesClasses
 
         //internal Archetype Archetype;
 
-        #endregion
+        #endregion Fields
 
-    	public int ActualStartLevel
-    	{
-    		get { return Math.Max(StartLevel, DefaultStartLevel); }
-    	}
+        public int ActualStartLevel
+        {
+            get { return Math.Max(StartLevel, DefaultStartLevel); }
+        }
 
         public virtual int StartLevel
         {
@@ -105,7 +105,7 @@ namespace WCell.RealmServer.RacesClasses
         //    else
         //        totalbonus = bonus * (float)Math.Pow(1.1, level);
 
-        //    return totalbonus;    
+        //    return totalbonus;
         //}
 
         /// <summary>
@@ -127,8 +127,8 @@ namespace WCell.RealmServer.RacesClasses
         /// <returns>the total dodge amount</returns>
         public virtual float CalculateDodge(int level, int agility, int baseAgility, int defenseSkill, int dodgeRating, int defenseRating)
         {
-            var dodge = GameTables.BaseDodge[(int)Id] + agility * GameTables.BaseMeleeCritChance[(int)Id-1];
-            dodge += GameTables.GetUnModifiedClassMeleeCritChanceValue(level, Id)/GameTables.CritAgiMod[(int) Id];
+            var dodge = GameTables.BaseDodge[(int)Id] + agility * GameTables.BaseMeleeCritChance[(int)Id - 1];
+            dodge += GameTables.GetUnModifiedClassMeleeCritChanceValue(level, Id) / GameTables.CritAgiMod[(int)Id];
             return dodge;
 
             // Diminished dodge (by level) prototype
@@ -159,7 +159,7 @@ namespace WCell.RealmServer.RacesClasses
         /// <returns></returns>
         public virtual float CalculateParry(int level, int parryRating, int str)
         {
-            return parryRating / GameTables.GetCRTable(CombatRating.Parry)[level-1];
+            return parryRating / GameTables.GetCRTable(CombatRating.Parry)[level - 1];
         }
 
         /// <summary>
@@ -170,9 +170,9 @@ namespace WCell.RealmServer.RacesClasses
         /// <returns>the total health regeneration amount</returns>
         public int CalculateHealthRegen(Unit unit)
         {
-			// 0.75% of max health since cataclysm
-			// see http://www.wowpedia.org/Health_regeneration
-			return (unit.MaxHealth * 75 + 5000) / 10000;
+            // 0.75% of max health since cataclysm
+            // see http://www.wowpedia.org/Health_regeneration
+            return (unit.MaxHealth * 75 + 5000) / 10000;
         }
 
         /// <summary>
@@ -182,16 +182,15 @@ namespace WCell.RealmServer.RacesClasses
         /// <returns>the total magic critical chance</returns>
         public virtual float CalculateMagicCritChance(int level, int intellect)
         {
-
             //if(level == 80)
             //{
             //    return (float) (((intellect / 166.6667) + classConstant) + (critRating/45.91));
             //}
             //return (intellect/80f);
-            var critBase = GameTables.BaseSpellCritChance[(int)Id-1]*100;
+            var critBase = GameTables.BaseSpellCritChance[(int)Id - 1] * 100;
             var critMod = GameTables.GetClassSpellCritChanceValue(level, Id);
 
-        	return critBase + intellect/critMod;
+            return critBase + intellect / critMod;
         }
 
         /// <summary>
@@ -203,10 +202,10 @@ namespace WCell.RealmServer.RacesClasses
         /// <returns>the total melee critical chance</returns>
         public float CalculateMeleeCritChance(int level, int agility)
         {
-			var baseCrit = GameTables.BaseMeleeCritChance[((int)Id) - 1] * 100;
-			var critFromAgi = agility / (GameTables.GetClassMeleeCritChanceValue(level, Id));
-			var crit = baseCrit + critFromAgi;
-			return crit > 5 ? crit : 5; // Naked crit is always at least 5%
+            var baseCrit = GameTables.BaseMeleeCritChance[((int)Id) - 1] * 100;
+            var critFromAgi = agility / (GameTables.GetClassMeleeCritChanceValue(level, Id));
+            var crit = baseCrit + critFromAgi;
+            return crit > 5 ? crit : 5; // Naked crit is always at least 5%
         }
 
         /// <summary>
@@ -216,10 +215,10 @@ namespace WCell.RealmServer.RacesClasses
         /// </summary>
         public float CalculateRangedCritChance(int level, int agility)
         {
-        	var baseCrit = GameTables.BaseMeleeCritChance[((int) Id) - 1]* 100;
-        	var critFromAgi = agility/(GameTables.GetClassMeleeCritChanceValue(level, Id));
-        	var crit = baseCrit + critFromAgi;
-        	return crit > 5 ? crit : 5; // Naked crit is always at least 5%
+            var baseCrit = GameTables.BaseMeleeCritChance[((int)Id) - 1] * 100;
+            var critFromAgi = agility / (GameTables.GetClassMeleeCritChanceValue(level, Id));
+            var crit = baseCrit + critFromAgi;
+            return crit > 5 ? crit : 5; // Naked crit is always at least 5%
         }
 
         /// <summary>
@@ -228,14 +227,14 @@ namespace WCell.RealmServer.RacesClasses
         /// <param name="level">the player's level</param>
         /// <param name="strength">the player's Strength</param>
         /// <param name="agility">the player's Agility</param>
-		/// <returns>the total ranged attack power</returns>
-		public virtual int CalculateRangedAP(int level, int strength, int agility)
-		{
-			return agility - 10;
-		}
+        /// <returns>the total ranged attack power</returns>
+        public virtual int CalculateRangedAP(int level, int strength, int agility)
+        {
+            return agility - 10;
+        }
 
         /// <summary>
-        /// Gets the total health gained for the class at a specific level. 
+        /// Gets the total health gained for the class at a specific level.
         /// </summary>
         /// <param name="level">the player's level</param>
         /// <returns>the total health gained up until the given level</returns>
@@ -252,7 +251,7 @@ namespace WCell.RealmServer.RacesClasses
         {
         }
 
-        #endregion
+        #endregion Methods
 
         public override string ToString()
         {

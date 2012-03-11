@@ -6,7 +6,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 {
     public class GOSpellCasterEntry : GOEntry
     {
-		private static readonly Logger sLog = LogManager.GetCurrentClassLogger();
+        private static readonly Logger sLog = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// The SpellId
@@ -16,7 +16,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
             get { return (SpellId)Fields[0]; }
         }
 
-		public Spell Spell;
+        public Spell Spell;
 
         /// <summary>
         /// The number of times this can cast the Spell
@@ -32,24 +32,24 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         /// <summary>
         /// Whether you must be in the same group as the caster to recieve the Spell effect.
         /// </summary>
-		public override bool IsPartyOnly
-		{
-			get
-			{
+        public override bool IsPartyOnly
+        {
+            get
+            {
                 return Fields[2] > 0;
-			}
-		}
+            }
+        }
 
         public bool Large
         {
             get { return Fields[4] != 0; }
         }
 
-		protected internal override void InitEntry()
-		{
-			Spell = SpellHandler.Get(SpellId);
+        protected internal override void InitEntry()
+        {
+            Spell = SpellHandler.Get(SpellId);
 
-		    AllowMounted = Fields[3] != 0;
-		}
-	}
+            AllowMounted = Fields[3] != 0;
+        }
+    }
 }

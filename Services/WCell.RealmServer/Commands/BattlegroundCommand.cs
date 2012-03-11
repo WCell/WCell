@@ -9,449 +9,465 @@ using WCell.Util.Commands;
 
 namespace WCell.RealmServer.Commands
 {
-	public class BattlegroundCommand : RealmServerCommand
-	{
-		protected BattlegroundCommand() { }
+    public class BattlegroundCommand : RealmServerCommand
+    {
+        protected BattlegroundCommand() { }
 
-		protected override void Initialize()
-		{
-			Init("Battleground", "BG");
-		}
+        protected override void Initialize()
+        {
+            Init("Battleground", "BG");
+        }
 
-		#region Cfg
-		public class BattlegroundCfgCommand : BGSubCommand
-		{
-			protected override void Initialize()
-			{
-				Init("Config", "Cfg");
-			}
+        #region Cfg
 
-			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
-			{
-				TriggerSubCommand(trigger);
-			}
+        public class BattlegroundCfgCommand : BGSubCommand
+        {
+            protected override void Initialize()
+            {
+                Init("Config", "Cfg");
+            }
 
-			public class BattlegroundCfgLoadCommand : SubCommand
-			{
-				protected override void Initialize()
-				{
-					Init("Reload", "L");
-					EnglishDescription = "Reloads the Battleground config.";
-				}
+            public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+            {
+                TriggerSubCommand(trigger);
+            }
 
-				public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
-				{
-					BattlegroundConfig.LoadSettings();
-				}
-			}
-		}
-		#endregion
+            public class BattlegroundCfgLoadCommand : SubCommand
+            {
+                protected override void Initialize()
+                {
+                    Init("Reload", "L");
+                    EnglishDescription = "Reloads the Battleground config.";
+                }
 
-		#region List
-		public class BattlegroundListCommand : BGSubCommand
-		{
-			protected BattlegroundListCommand() { }
+                public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+                {
+                    BattlegroundConfig.LoadSettings();
+                }
+            }
+        }
 
-			protected override void Initialize()
-			{
-				Init("List", "L");
-				EnglishParamInfo = "[<bgid>]";
-				EnglishDescription = "Shows an overview over all existing BGs. " +
-					"Optionally, you can choose to only show BGs of a given type.";
-			}
+        #endregion Cfg
 
-			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
-			{
-				IEnumerable<Battleground> instances;
-				if (trigger.Text.HasNext)
-				{
-					var bgId = trigger.Text.NextEnum(BattlegroundId.End);
-					if (bgId == BattlegroundId.End)
-					{
-						trigger.Reply("Invalid BattlegroundId.");
-						return;
-					}
-					instances = BattlegroundMgr.Instances.GetInstances(bgId);
-				}
-				else
-				{
-					instances = BattlegroundMgr.Instances.GetAllInstances();
-				}
+        #region List
 
-				List(trigger, instances);
-			}
+        public class BattlegroundListCommand : BGSubCommand
+        {
+            protected BattlegroundListCommand() { }
 
-			/// <summary>
-			/// Shaky method - BG can be disposed at any point during the iteration
-			/// </summary>
-			public static int List(CmdTrigger<RealmServerCmdArgs> trigger, IEnumerable<Battleground> bgs)
-			{
-				var count = bgs.Count();
-				if (count > 0)
-				{
-					trigger.Reply("Found {0} Battlegrounds:", count);
+            protected override void Initialize()
+            {
+                Init("List", "L");
+                EnglishParamInfo = "[<bgid>]";
+                EnglishDescription = "Shows an overview over all existing BGs. " +
+                    "Optionally, you can choose to only show BGs of a given type.";
+            }
 
-					foreach (var bg in bgs)
-					{
-						BattlegroundInfoCommand.DisplayInfo(trigger, bg);
-					}
-				}
-				else
-				{
-					trigger.Reply("Found no (matching) Battlegrounds.");
-				}
+            public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+            {
+                IEnumerable<Battleground> instances;
+                if (trigger.Text.HasNext)
+                {
+                    var bgId = trigger.Text.NextEnum(BattlegroundId.End);
+                    if (bgId == BattlegroundId.End)
+                    {
+                        trigger.Reply("Invalid BattlegroundId.");
+                        return;
+                    }
+                    instances = BattlegroundMgr.Instances.GetInstances(bgId);
+                }
+                else
+                {
+                    instances = BattlegroundMgr.Instances.GetAllInstances();
+                }
 
-				return count;
-			}
-		}
-		#endregion
+                List(trigger, instances);
+            }
 
-		#region Info
-		public class BattlegroundInfoCommand : BGSubCommand
-		{
-			protected override void Initialize()
-			{
-				Init("Info", "I");
-				EnglishParamInfo = "[-i <BGId> <InstanceId>]";
-				EnglishDescription = "Shows some information about the current or (if -s switch is used) given Battleground.";
-			}
+            /// <summary>
+            /// Shaky method - BG can be disposed at any point during the iteration
+            /// </summary>
+            public static int List(CmdTrigger<RealmServerCmdArgs> trigger, IEnumerable<Battleground> bgs)
+            {
+                var count = bgs.Count();
+                if (count > 0)
+                {
+                    trigger.Reply("Found {0} Battlegrounds:", count);
 
-			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
-			{
-				var bg = GetBG(trigger);
+                    foreach (var bg in bgs)
+                    {
+                        BattlegroundInfoCommand.DisplayInfo(trigger, bg);
+                    }
+                }
+                else
+                {
+                    trigger.Reply("Found no (matching) Battlegrounds.");
+                }
 
-				if (bg != null)
-				{
-					DisplayInfo(trigger, bg);
-				}
-			}
+                return count;
+            }
+        }
 
-			public static void DisplayInfo(CmdTrigger<RealmServerCmdArgs> trigger, Battleground bg)
-			{
-				trigger.Reply(bg.ToString());
-				trigger.Reply(" " + bg.GetTeam(BattlegroundSide.Alliance));
-				trigger.Reply(" " + bg.GetTeam(BattlegroundSide.Horde));
-			}
-		}
-		#endregion
+        #endregion List
 
-		#region Prepare
-		public class BattlegroundPrepareCommand : BGSubCommand
-		{
-			protected BattlegroundPrepareCommand() { }
+        #region Info
 
-			protected override void Initialize()
-			{
-				Init("Prepare");
-				EnglishParamInfo = "[-i <BGId> <InstanceId>]";
-				EnglishDescription = "Starts preparation time.";
-			}
+        public class BattlegroundInfoCommand : BGSubCommand
+        {
+            protected override void Initialize()
+            {
+                Init("Info", "I");
+                EnglishParamInfo = "[-i <BGId> <InstanceId>]";
+                EnglishDescription = "Shows some information about the current or (if -s switch is used) given Battleground.";
+            }
 
-			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
-			{
-				var bg = GetBG(trigger);
+            public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+            {
+                var bg = GetBG(trigger);
 
-				if (bg != null)
-				{
+                if (bg != null)
+                {
+                    DisplayInfo(trigger, bg);
+                }
+            }
+
+            public static void DisplayInfo(CmdTrigger<RealmServerCmdArgs> trigger, Battleground bg)
+            {
+                trigger.Reply(bg.ToString());
+                trigger.Reply(" " + bg.GetTeam(BattlegroundSide.Alliance));
+                trigger.Reply(" " + bg.GetTeam(BattlegroundSide.Horde));
+            }
+        }
+
+        #endregion Info
+
+        #region Prepare
+
+        public class BattlegroundPrepareCommand : BGSubCommand
+        {
+            protected BattlegroundPrepareCommand() { }
+
+            protected override void Initialize()
+            {
+                Init("Prepare");
+                EnglishParamInfo = "[-i <BGId> <InstanceId>]";
+                EnglishDescription = "Starts preparation time.";
+            }
+
+            public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+            {
+                var bg = GetBG(trigger);
+
+                if (bg != null)
+                {
                     if (bg.Status < BattlegroundStatus.Preparing)
                         bg.StartPreparation();
                     else
                         trigger.Reply("The battleground is already in progress !");
-				}
-			}
-		}
-		#endregion
+                }
+            }
+        }
 
-		#region Create
-		public class BattlegroundCreateCommand : SubCommand
-		{
-			protected BattlegroundCreateCommand() { }
+        #endregion Prepare
 
-			protected override void Initialize()
-			{
-				Init("Create", "C");
-				EnglishParamInfo = "[-[i]|[e][l <level>]] <BGId>";
-				EnglishDescription = "Creates a new Instance of the given BG type. " +
-					"-e enters it right away. " +
-					"-i invites the target to the target's Faction's Team. " +
-					"-l determines the level range of the newly created instance.";
-			}
+        #region Create
 
-			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
-			{
-				var mod = trigger.Text.NextModifiers();
-				var target = trigger.Args.Target;
+        public class BattlegroundCreateCommand : SubCommand
+        {
+            protected BattlegroundCreateCommand() { }
 
-				int level;
-				if (mod.Contains("l"))
-				{
-					level = trigger.Text.NextInt();
-					if (level < 1)
-					{
-						trigger.Reply("Invalid level.");
-						return;
-					}
-				}
-				else
-				{
-					if (target == null)
-					{
-						trigger.Reply("You need to specify a level with the -l switch.");
-						return;
-					}
-					level = target.Level;
-				}
+            protected override void Initialize()
+            {
+                Init("Create", "C");
+                EnglishParamInfo = "[-[i]|[e][l <level>]] <BGId>";
+                EnglishDescription = "Creates a new Instance of the given BG type. " +
+                    "-e enters it right away. " +
+                    "-i invites the target to the target's Faction's Team. " +
+                    "-l determines the level range of the newly created instance.";
+            }
 
-				var bgid = trigger.Text.NextEnum(BattlegroundId.End);
-				var templ = BattlegroundMgr.GetTemplate(bgid);
+            public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+            {
+                var mod = trigger.Text.NextModifiers();
+                var target = trigger.Args.Target;
 
-				if (templ == null)
-				{
-					trigger.Reply("Invalid BGId: {0}", bgid);
-					return;
-				}
-				if (level < templ.MinLevel || level > templ.MaxLevel)
-				{
-					trigger.Reply("Invalid level: Must be between {0} and {1}", templ.MinLevel, templ.MaxLevel);
-					return;
-				}
+                int level;
+                if (mod.Contains("l"))
+                {
+                    level = trigger.Text.NextInt();
+                    if (level < 1)
+                    {
+                        trigger.Reply("Invalid level.");
+                        return;
+                    }
+                }
+                else
+                {
+                    if (target == null)
+                    {
+                        trigger.Reply("You need to specify a level with the -l switch.");
+                        return;
+                    }
+                    level = target.Level;
+                }
 
-				var queue = templ.GetQueue(level);
-				var instance = queue.CreateBattleground();
+                var bgid = trigger.Text.NextEnum(BattlegroundId.End);
+                var templ = BattlegroundMgr.GetTemplate(bgid);
 
-				if (instance != null)
-				{
-					trigger.Reply("Battleground created: " + instance);
-					if (mod.Length == 0) return;
+                if (templ == null)
+                {
+                    trigger.Reply("Invalid BGId: {0}", bgid);
+                    return;
+                }
+                if (level < templ.MinLevel || level > templ.MaxLevel)
+                {
+                    trigger.Reply("Invalid level: Must be between {0} and {1}", templ.MinLevel, templ.MaxLevel);
+                    return;
+                }
 
-					// process modifiers
-					var chr = target as Character;
+                var queue = templ.GetQueue(level);
+                var instance = queue.CreateBattleground();
 
-					if (mod.Contains("i"))
-					{
-						// invite
-						if (chr == null)
-						{
-							// requires Character
-							trigger.Reply("-i modifier requires a Character target: " + mod);
-							return;
-						}
-						var team = instance.GetTeam(chr.FactionGroup.GetBattlegroundSide());
-						team.Invite(chr);
-					}
-					
-					if (mod.Contains("e"))
-					{
-						// enter
-						if (chr == null)
-						{
-							// requires Character
-							trigger.Reply("-e modifier requires a Character target: " + mod);
-							return;
-						}
-						instance.TeleportInside(chr);
-					}
-				}
-				else
-				{
-					trigger.Reply("Unable to create Battleground: " + bgid);
-				}
-			}
-		}
-		#endregion
+                if (instance != null)
+                {
+                    trigger.Reply("Battleground created: " + instance);
+                    if (mod.Length == 0) return;
 
-		#region Enter
-		public class BattlegroundEnterCommand : BGSubCommand
-		{
-			protected BattlegroundEnterCommand() { }
+                    // process modifiers
+                    var chr = target as Character;
 
-			protected override void Initialize()
-			{
-				Init("Enter", "E");
-				EnglishParamInfo = "[-i <BGId> <InstanceId>] [g]";
-				EnglishDescription = "Teleports the Character target into the given instance. " +
-					"g teleports the entire group.";
-			}
+                    if (mod.Contains("i"))
+                    {
+                        // invite
+                        if (chr == null)
+                        {
+                            // requires Character
+                            trigger.Reply("-i modifier requires a Character target: " + mod);
+                            return;
+                        }
+                        var team = instance.GetTeam(chr.FactionGroup.GetBattlegroundSide());
+                        team.Invite(chr);
+                    }
 
-			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
-			{
-				var chr = trigger.Args.Target as Character;
-				if (chr == null)
-				{
-					trigger.Reply("No Character given.");
-					return;
-				}
+                    if (mod.Contains("e"))
+                    {
+                        // enter
+                        if (chr == null)
+                        {
+                            // requires Character
+                            trigger.Reply("-e modifier requires a Character target: " + mod);
+                            return;
+                        }
+                        instance.TeleportInside(chr);
+                    }
+                }
+                else
+                {
+                    trigger.Reply("Unable to create Battleground: " + bgid);
+                }
+            }
+        }
 
-				var mod = trigger.Text.NextWord();
-				var instance = GetBG(trigger);
+        #endregion Create
 
-				ICharacterSet chrs;
-				if (mod.Contains("g"))
-				{
-					chrs = chr.Group;
-					if (chrs == null)
-					{
-						trigger.Reply(chr + " is not in Group.");
-						return;
-					}
-				}
-				else
-				{
-					chrs = chr;
-				}
+        #region Enter
 
-				if (instance == null)
-				{
-					return;
-				}
+        public class BattlegroundEnterCommand : BGSubCommand
+        {
+            protected BattlegroundEnterCommand() { }
 
-				chrs.ForeachCharacter(instance.TeleportInside);
-			}
-		}
-		#endregion
+            protected override void Initialize()
+            {
+                Init("Enter", "E");
+                EnglishParamInfo = "[-i <BGId> <InstanceId>] [g]";
+                EnglishDescription = "Teleports the Character target into the given instance. " +
+                    "g teleports the entire group.";
+            }
 
-		#region Join
-		public class BattlegroundJoinCommand : BGSubCommand
-		{
-			protected BattlegroundJoinCommand() { }
+            public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+            {
+                var chr = trigger.Args.Target as Character;
+                if (chr == null)
+                {
+                    trigger.Reply("No Character given.");
+                    return;
+                }
 
-			protected override void Initialize()
-			{
-				Init("Invite", "Inv", "Join");
-				EnglishParamInfo = "[-i <BGId> <InstanceId>] [[g][s <side>]]";
-				EnglishDescription = "Invites oneself or the target to an existing Battleground. " +
-					"Use s to select a side. " +
-					"Use g to select the entire Group of the Character.";
-			}
+                var mod = trigger.Text.NextWord();
+                var instance = GetBG(trigger);
 
-			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
-			{
-				var chr = trigger.Args.Target as Character;
-				if (chr == null)
-				{
-					trigger.Reply("No Character given.");
-					return;
-				}
+                ICharacterSet chrs;
+                if (mod.Contains("g"))
+                {
+                    chrs = chr.Group;
+                    if (chrs == null)
+                    {
+                        trigger.Reply(chr + " is not in Group.");
+                        return;
+                    }
+                }
+                else
+                {
+                    chrs = chr;
+                }
 
-				var instance = GetBG(trigger);
-				var mod = trigger.Text.NextWord();
+                if (instance == null)
+                {
+                    return;
+                }
 
-				if (instance == null)
-				{
-					return;
-				}
+                chrs.ForeachCharacter(instance.TeleportInside);
+            }
+        }
 
-				BattlegroundSide side;
-				if (mod.Contains("s"))
-				{
-					side = trigger.Text.NextEnum(BattlegroundSide.End);
-					if (side == BattlegroundSide.End)
-					{
-						trigger.Reply("Invalid side (Horde or Alliance)");
-						return;
-					}
-				}
-				else
-				{
-					side = chr.FactionGroup.GetBattlegroundSide();
-				}
+        #endregion Enter
 
-				ICharacterSet chrs;
-				if (mod.Contains("g"))
-				{
-					chrs = chr.Group;
-					if (chrs == null)
-					{
-						trigger.Reply(chr + " is not in Group.");
-						return;
-					}
-				}
-				else
-				{
-					chrs = chr;
-				}
+        #region Join
 
-				var team = instance.GetTeam(side);
-				team.Invite(chrs);
-			}
-		}
-		#endregion
+        public class BattlegroundJoinCommand : BGSubCommand
+        {
+            protected BattlegroundJoinCommand() { }
 
-		#region Delete
-		public class BattlegroundDeleteCommand : BGSubCommand
-		{
-			protected BattlegroundDeleteCommand() { }
+            protected override void Initialize()
+            {
+                Init("Invite", "Inv", "Join");
+                EnglishParamInfo = "[-i <BGId> <InstanceId>] [[g][s <side>]]";
+                EnglishDescription = "Invites oneself or the target to an existing Battleground. " +
+                    "Use s to select a side. " +
+                    "Use g to select the entire Group of the Character.";
+            }
 
-			protected override void Initialize()
-			{
-				Init("Delete", "Del");
-				EnglishParamInfo = "[-i <BGId> <InstanceId>]";
-				EnglishDescription = "Deletes the Battleground of the given Map with the given Id, or the current one if no arguments are supplied.";
-			}
+            public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+            {
+                var chr = trigger.Args.Target as Character;
+                if (chr == null)
+                {
+                    trigger.Reply("No Character given.");
+                    return;
+                }
 
-			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
-			{
-				var bg = GetBG(trigger);
+                var instance = GetBG(trigger);
+                var mod = trigger.Text.NextWord();
 
-				if (bg != null)
-				{
-					bg.Delete();
-					trigger.Reply("Battleground Deleted");
-				}
-			}
-		}
-		#endregion
+                if (instance == null)
+                {
+                    return;
+                }
 
-		public abstract class BGSubCommand : SubCommand
-		{
-			public Battleground GetBG(CmdTrigger<RealmServerCmdArgs> trigger)
-			{
-				var chr = trigger.Args.Target as Character;
-				Battleground bg;
-				if (trigger.Text.NextModifiers() == "i" ||
-					chr == null ||
-					(bg = chr.Map as Battleground) == null)
-				{
-					var bgId = trigger.Text.NextEnum(BattlegroundId.End);
-					if (bgId == BattlegroundId.End)
-					{
-						trigger.Reply("Invalid BattlegroundId.");
-						bg = null;
-					}
-					else
-					{
-						var id = trigger.Text.NextUInt();
-						bg = BattlegroundMgr.Instances.GetInstance(bgId, id);
-						if (bg == null)
-						{
-							trigger.Reply("Invalid id (" + id + ") for " + bgId);
-						}
-					}
-				}
-				return bg;
-			}
-		}
-	}
+                BattlegroundSide side;
+                if (mod.Contains("s"))
+                {
+                    side = trigger.Text.NextEnum(BattlegroundSide.End);
+                    if (side == BattlegroundSide.End)
+                    {
+                        trigger.Reply("Invalid side (Horde or Alliance)");
+                        return;
+                    }
+                }
+                else
+                {
+                    side = chr.FactionGroup.GetBattlegroundSide();
+                }
 
-	public class DeserterCommand : RealmServerCommand
-	{
-		protected override void Initialize()
-		{
-			Init("FlagDeserter", "Deserter");
-			EnglishDescription = "Flags the target as Deserter who is then " +
-				"kicked out of the Battleground (if he/she is in any) and " +
-				"is rendered unable to join any Battleground for a limited amount of time.";
-		}
+                ICharacterSet chrs;
+                if (mod.Contains("g"))
+                {
+                    chrs = chr.Group;
+                    if (chrs == null)
+                    {
+                        trigger.Reply(chr + " is not in Group.");
+                        return;
+                    }
+                }
+                else
+                {
+                    chrs = chr;
+                }
 
-		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
-		{
-			trigger.Args.Target.SpellCast.TriggerSelf(SpellId.Deserter);
-			trigger.Reply("Done.");
-		}
+                var team = instance.GetTeam(side);
+                team.Invite(chrs);
+            }
+        }
 
-		public override ObjectTypeCustom TargetTypes
-		{
-			get { return ObjectTypeCustom.Unit; }
-		}
-	}
+        #endregion Join
+
+        #region Delete
+
+        public class BattlegroundDeleteCommand : BGSubCommand
+        {
+            protected BattlegroundDeleteCommand() { }
+
+            protected override void Initialize()
+            {
+                Init("Delete", "Del");
+                EnglishParamInfo = "[-i <BGId> <InstanceId>]";
+                EnglishDescription = "Deletes the Battleground of the given Map with the given Id, or the current one if no arguments are supplied.";
+            }
+
+            public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+            {
+                var bg = GetBG(trigger);
+
+                if (bg != null)
+                {
+                    bg.Delete();
+                    trigger.Reply("Battleground Deleted");
+                }
+            }
+        }
+
+        #endregion Delete
+
+        public abstract class BGSubCommand : SubCommand
+        {
+            public Battleground GetBG(CmdTrigger<RealmServerCmdArgs> trigger)
+            {
+                var chr = trigger.Args.Target as Character;
+                Battleground bg;
+                if (trigger.Text.NextModifiers() == "i" ||
+                    chr == null ||
+                    (bg = chr.Map as Battleground) == null)
+                {
+                    var bgId = trigger.Text.NextEnum(BattlegroundId.End);
+                    if (bgId == BattlegroundId.End)
+                    {
+                        trigger.Reply("Invalid BattlegroundId.");
+                        bg = null;
+                    }
+                    else
+                    {
+                        var id = trigger.Text.NextUInt();
+                        bg = BattlegroundMgr.Instances.GetInstance(bgId, id);
+                        if (bg == null)
+                        {
+                            trigger.Reply("Invalid id (" + id + ") for " + bgId);
+                        }
+                    }
+                }
+                return bg;
+            }
+        }
+    }
+
+    public class DeserterCommand : RealmServerCommand
+    {
+        protected override void Initialize()
+        {
+            Init("FlagDeserter", "Deserter");
+            EnglishDescription = "Flags the target as Deserter who is then " +
+                "kicked out of the Battleground (if he/she is in any) and " +
+                "is rendered unable to join any Battleground for a limited amount of time.";
+        }
+
+        public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+        {
+            trigger.Args.Target.SpellCast.TriggerSelf(SpellId.Deserter);
+            trigger.Reply("Done.");
+        }
+
+        public override ObjectTypeCustom TargetTypes
+        {
+            get { return ObjectTypeCustom.Unit; }
+        }
+    }
 }

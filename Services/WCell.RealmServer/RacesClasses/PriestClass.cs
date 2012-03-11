@@ -22,11 +22,11 @@ namespace WCell.RealmServer.RacesClasses
     /// Defines the basics of the Priest class.
     /// </summary>
     public class PriestClass : BaseClass
-	{
-		public override ClassId Id
-		{
-			get { return ClassId.Priest; }
-		}
+    {
+        public override ClassId Id
+        {
+            get { return ClassId.Priest; }
+        }
 
         /// <summary>
         /// Calculates attack power for the class at a specific level, Strength and Agility.

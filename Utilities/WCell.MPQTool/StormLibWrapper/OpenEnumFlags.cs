@@ -3,25 +3,25 @@ namespace WCell.MPQTool.StormLibWrapper
     public enum OpenArchiveFlags : uint
     {
         /// <summary>
-        /// Always creates new MPQ. 
+        /// Always creates new MPQ.
         /// Fails if the file exists or not an MPQ.
         /// </summary>
         CreateNew = 0x0001,
         /// <summary>
-        /// Always creates new MPQ. 
+        /// Always creates new MPQ.
         /// If the file exists, it will be overwriten
         /// </summary>
         ForceCreate = 0x0002,
         /// <summary>
-        /// Opens an existing MPQ. 
+        /// Opens an existing MPQ.
         /// If the file doesn't exist, the function fails.
         /// </summary>
         OpenExisting = 0x0003,
         /// <summary>
-        /// Opens an existing MPQ. 
+        /// Opens an existing MPQ.
         /// If the file doesn't exist or it's not an MPQ, the function creates new MPQ.
         /// </summary>
-        OpenOrCreate  = 0x0004, 
+        OpenOrCreate = 0x0004,
         /// <summary>
         /// Don't load the internal listfile
         /// </summary>

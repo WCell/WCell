@@ -52,31 +52,31 @@ namespace WCell.RealmServer
             return baseType.IsAssignableFrom(targetType);
         }
 
+        #region ItemDamage
 
+        public static float TotalMin(this DamageInfo[] damages)
+        {
+            return damages.Sum(dmg => dmg.Minimum);
+        }
 
-		#region ItemDamage
-		public static float TotalMin(this DamageInfo[] damages)
-		{
-		    return damages.Sum(dmg => dmg.Minimum);
-		}
+        public static float TotalMax(this DamageInfo[] damages)
+        {
+            return damages.Sum(dmg => dmg.Maximum);
+        }
 
-		public static float TotalMax(this DamageInfo[] damages)
-		{
-		    return damages.Sum(dmg => dmg.Maximum);
-		}
+        public static DamageSchoolMask AllSchools(this DamageInfo[] damages)
+        {
+            return damages.Aggregate(DamageSchoolMask.None, (current, dmg) => current | dmg.School);
+        }
 
-		public static DamageSchoolMask AllSchools(this DamageInfo[] damages)
-		{
-		    return damages.Aggregate(DamageSchoolMask.None, (current, dmg) => current | dmg.School);
-		}
-		#endregion
+        #endregion ItemDamage
 
-		public static bool IsValid(this IWorldLocation location)
-		{
-			return location.Position.X != 0 && location.Map != null && location.Phase != 0;
-		}
+        public static bool IsValid(this IWorldLocation location)
+        {
+            return location.Position.X != 0 && location.Map != null && location.Phase != 0;
+        }
 
-		public static void AddChecked(this XElement element, string name, int value)
+        public static void AddChecked(this XElement element, string name, int value)
         {
             if (value != 0)
             {
@@ -90,33 +90,33 @@ namespace WCell.RealmServer
             {
                 element.Add(new XElement(name, value));
             }
-		}
+        }
 
-		public static int ReadInt32(this XElement element, string name)
-		{
-			XElement ele = element.Element(name);
-			if (ele != null)
-			{
-				return int.Parse(ele.Value);
-			}
-			return 0;
-		}
+        public static int ReadInt32(this XElement element, string name)
+        {
+            XElement ele = element.Element(name);
+            if (ele != null)
+            {
+                return int.Parse(ele.Value);
+            }
+            return 0;
+        }
 
-		public static uint ReadUInt32(this XElement element, string name)
-		{
-			XElement ele = element.Element(name);
-			if (ele != null)
-			{
-				var strVal = ele.Value;
-				uint result;
-				if (!uint.TryParse(strVal, out result))
-				{
-					result = (uint)int.Parse(ele.Value);
-				}
-				return result;
-			}
-			return 0;
-		}
+        public static uint ReadUInt32(this XElement element, string name)
+        {
+            XElement ele = element.Element(name);
+            if (ele != null)
+            {
+                var strVal = ele.Value;
+                uint result;
+                if (!uint.TryParse(strVal, out result))
+                {
+                    result = (uint)int.Parse(ele.Value);
+                }
+                return result;
+            }
+            return 0;
+        }
 
         public static uint ReadUInt32(this XElement element)
         {
@@ -131,16 +131,16 @@ namespace WCell.RealmServer
             return (T)Enum.Parse(typeof(T), str);
         }
 
-		public static bool ReadBoolean(this XElement element, string name)
-		{
-			XElement ele = element.Element(name);
-			if (ele != null)
-			{
-				var strVal = ele.Value;
+        public static bool ReadBoolean(this XElement element, string name)
+        {
+            XElement ele = element.Element(name);
+            if (ele != null)
+            {
+                var strVal = ele.Value;
                 return strVal == "1" || strVal.Equals("true", StringComparison.InvariantCultureIgnoreCase);
-			}
-			return false;
-		}
+            }
+            return false;
+        }
 
         public static string ReadString(this XElement element, string name)
         {
@@ -160,7 +160,7 @@ namespace WCell.RealmServer
                 return float.Parse(ele.Value);
             }
             return 0f;
-		}
+        }
 
         public static float ReadFloat(this XElement element, string name, float defaultValue)
         {
@@ -176,83 +176,81 @@ namespace WCell.RealmServer
         {
             var x = ReadFloat(node, xyzPrefix + (upperCase ? "X" : "x"));
             var y = ReadFloat(node, xyzPrefix + (upperCase ? "Y" : "y"));
-			var z = ReadFloat(node, xyzPrefix + (upperCase ? "Z" : "z"));
-			//return new Vector3(x, z, y);
-			return new Vector3(x, y, z);
+            var z = ReadFloat(node, xyzPrefix + (upperCase ? "Z" : "z"));
+            //return new Vector3(x, z, y);
+            return new Vector3(x, y, z);
         }
-    
 
+        public static XmlNode Add(this XmlNode el, string name, Vector3 pos)
+        {
+            var str = pos.X + "," + pos.Y + "," + pos.Z;
+            return Add(el, name, str);
+        }
 
+        public static XmlNode Add(this XmlNode el, string name, Vector4 pos)
+        {
+            var str = pos.X + "," + pos.Y + "," + pos.Z + "," + pos.W;
+            return Add(el, name, str);
+        }
 
-		public static XmlNode Add(this XmlNode el, string name, Vector3 pos)
-		{
-			var str = pos.X + "," + pos.Y + "," + pos.Z;
-			return Add(el, name, str);
-		}
+        public static XmlNode Add(this XmlNode el, string name, object value, params object[] args)
+        {
+            var doc = el.OwnerDocument ?? el as XmlDocument;
 
-		public static XmlNode Add(this XmlNode el, string name, Vector4 pos)
-		{
-			var str = pos.X + "," + pos.Y + "," + pos.Z + "," + pos.W;
-			return Add(el, name, str);
-		}
+            var node = el.AppendChild(doc.CreateElement(name));
+            node.AppendChild(doc.CreateTextNode(string.Format(value.ToString(), args)));
+            return node;
+        }
 
-		public static XmlNode Add(this XmlNode el, string name, object value, params object[] args)
-		{
-			var doc = el.OwnerDocument ?? el as XmlDocument;
+        public static XmlNode AddAttr(this XmlNode el, string name, object value, params object[] args)
+        {
+            var doc = el.OwnerDocument ?? el as XmlDocument;
 
-		    var node = el.AppendChild(doc.CreateElement(name));
-			node.AppendChild(doc.CreateTextNode(string.Format(value.ToString(), args)));
-			return node;
-		}
+            var attr = el.Attributes.Append(doc.CreateAttribute(name));
+            attr.AppendChild(doc.CreateTextNode(string.Format(value.ToString(), args)));
+            return attr;
+        }
 
-		public static XmlNode AddAttr(this XmlNode el, string name, object value, params object[] args)
-		{
-			var doc = el.OwnerDocument ?? el as XmlDocument;
+        public static XmlElement Add(this XmlNode el, string name)
+        {
+            var doc = el.OwnerDocument ?? el as XmlDocument;
 
-		    var attr = el.Attributes.Append(doc.CreateAttribute(name));
-			attr.AppendChild(doc.CreateTextNode(string.Format(value.ToString(), args)));
-			return attr;
-		}
+            return el.AppendChild(doc.CreateElement(name)) as XmlElement;
+        }
 
-		public static XmlElement Add(this XmlNode el, string name)
-		{
-			var doc = el.OwnerDocument ?? el as XmlDocument;
+        public static int GetAttrInt32(this XElement element, string name)
+        {
+            return int.Parse(element.Attribute(name).Value);
+        }
 
-		    return el.AppendChild(doc.CreateElement(name)) as XmlElement;
-		}
+        public static uint GetAttrUInt32(this XElement element, string name)
+        {
+            uint result;
+            if (!uint.TryParse(element.Attribute(name).Value, out result))
+            {
+                result = (uint)int.Parse(element.Attribute(name).Value);
+            }
+            return result;
+        }
 
-		public static int GetAttrInt32(this XElement element, string name)
-		{
-			return int.Parse(element.Attribute(name).Value);
-		}
+        public static Vector3 GetLocation(this byte[] bytes, uint index)
+        {
+            return new Vector3(bytes.GetFloat(index), bytes.GetFloat(index + 1), bytes.GetFloat(index + 2));
+        }
 
-		public static uint GetAttrUInt32(this XElement element, string name)
-		{
-			uint result;
-			if (!uint.TryParse(element.Attribute(name).Value, out result)) {
-				result = (uint)int.Parse(element.Attribute(name).Value);
-			}
-			return result;
-		}
+        public static float GetDist(this IHasPosition pos, IHasPosition pos2)
+        {
+            return pos.Position.GetDistance(pos2.Position);
+        }
 
-		public static Vector3 GetLocation(this byte[] bytes, uint index)
-		{
-			return new Vector3(bytes.GetFloat(index), bytes.GetFloat(index + 1), bytes.GetFloat(index + 2));
-		}
+        public static float GetDistSq(this IHasPosition pos, IHasPosition pos2)
+        {
+            return pos.Position.DistanceSquared(pos2.Position);
+        }
 
-		public static float GetDist(this IHasPosition pos, IHasPosition pos2)
-		{
-			return pos.Position.GetDistance(pos2.Position);
-		}
-
-		public static float GetDistSq(this IHasPosition pos, IHasPosition pos2)
-		{
-			return pos.Position.DistanceSquared(pos2.Position);
-		}
-
-		public static float GetDistSq(this IHasPosition pos, Vector3 pos2)
-		{
-			return pos.Position.DistanceSquared(pos2);
-		}
+        public static float GetDistSq(this IHasPosition pos, Vector3 pos2)
+        {
+            return pos.Position.DistanceSquared(pos2);
+        }
     }
 }

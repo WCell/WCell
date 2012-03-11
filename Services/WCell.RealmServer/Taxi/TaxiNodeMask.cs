@@ -5,67 +5,66 @@ using WCell.RealmServer.Global;
 
 namespace WCell.RealmServer.Taxi
 {
-	public class TaxiNodeMask
-	{
-		private static Logger sLog = LogManager.GetCurrentClassLogger();
+    public class TaxiNodeMask
+    {
+        private static Logger sLog = LogManager.GetCurrentClassLogger();
 
-		#region Fields
+        #region Fields
 
-		private uint[] fields;
+        private uint[] fields;
 
-		#endregion
+        #endregion Fields
 
-		#region Properties
+        #region Properties
 
-		public uint[] Mask
-		{
-			get { return fields; }
-			internal set { fields = value; }
-		}
+        public uint[] Mask
+        {
+            get { return fields; }
+            internal set { fields = value; }
+        }
 
-		#endregion
+        #endregion Properties
 
-		#region Constructors
+        #region Constructors
 
-		public TaxiNodeMask()
-		{
-			fields = new uint[TaxiConstants.TaxiMaskSize];
-		}
+        public TaxiNodeMask()
+        {
+            fields = new uint[TaxiConstants.TaxiMaskSize];
+        }
 
-		public TaxiNodeMask(uint[] mask)
-		{
-			if (mask.Length < TaxiConstants.TaxiMaskSize)
-			{
-				Array.Resize(ref mask, TaxiConstants.TaxiMaskSize);
-			}
-			fields = mask;
-		}
+        public TaxiNodeMask(uint[] mask)
+        {
+            if (mask.Length < TaxiConstants.TaxiMaskSize)
+            {
+                Array.Resize(ref mask, TaxiConstants.TaxiMaskSize);
+            }
+            fields = mask;
+        }
 
-		#endregion
+        #endregion Constructors
 
-		public void Activate(PathNode node)
-		{
-			Activate(node.Id);
-		}
+        public void Activate(PathNode node)
+        {
+            Activate(node.Id);
+        }
 
-		public void Activate(uint nodeId)
-		{
-			var field = fields[(nodeId / 32)];
-			field |= (uint)(1 << ((int)(nodeId % 32)));
-			fields[(nodeId / 32)] = field;
+        public void Activate(uint nodeId)
+        {
+            var field = fields[(nodeId / 32)];
+            field |= (uint)(1 << ((int)(nodeId % 32)));
+            fields[(nodeId / 32)] = field;
+        }
 
-		}
+        public bool IsActive(PathNode node)
+        {
+            return node != null && IsActive(node.Id);
+        }
 
-		public bool IsActive(PathNode node)
-		{
-		    return node != null && IsActive(node.Id);
-		}
-
-	    public bool IsActive(uint nodeId)
-		{
-			uint field = Mask[(nodeId / 32)];
-			uint mask = (uint)(1 << ((int)(nodeId % 32)));
-			return ((mask & field) == mask);
-		}
-	}
+        public bool IsActive(uint nodeId)
+        {
+            uint field = Mask[(nodeId / 32)];
+            uint mask = (uint)(1 << ((int)(nodeId % 32)));
+            return ((mask & field) == mask);
+        }
+    }
 }

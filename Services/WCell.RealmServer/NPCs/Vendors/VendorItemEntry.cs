@@ -8,113 +8,113 @@ using WCell.Util.Data;
 
 namespace WCell.RealmServer.NPCs.Vendors
 {
-	[DataHolder]
-	public class VendorItemEntry : IDataHolder
-	{
+    [DataHolder]
+    public class VendorItemEntry : IDataHolder
+    {
         [NotPersistent]
-		public static readonly List<VendorItemEntry> EmptyList = new List<VendorItemEntry>(1);
+        public static readonly List<VendorItemEntry> EmptyList = new List<VendorItemEntry>(1);
 
-		private int remainingStackAmount;
+        private int remainingStackAmount;
 
-		public NPCId VendorId;
-		public ItemId ItemId;
+        public NPCId VendorId;
+        public ItemId ItemId;
 
-		/// <summary>
-		/// The amount of available stacks
-		/// </summary>
-		public int StockAmount;
+        /// <summary>
+        /// The amount of available stacks
+        /// </summary>
+        public int StockAmount;
 
-		/// <summary>
-		/// The size of one stack
-		/// </summary>
-		public int BuyStackSize;
+        /// <summary>
+        /// The size of one stack
+        /// </summary>
+        public int BuyStackSize;
 
-		/// <summary>
-		/// The time until the vendor restocks, after he/she ran out of this Item
-		/// </summary>
-		public uint StockRefillDelay;
+        /// <summary>
+        /// The time until the vendor restocks, after he/she ran out of this Item
+        /// </summary>
+        public uint StockRefillDelay;
 
-		public uint ExtendedCostId;
+        public uint ExtendedCostId;
 
-		[NotPersistent]
-		public ItemExtendedCostEntry ExtendedCostEntry;
+        [NotPersistent]
+        public ItemExtendedCostEntry ExtendedCostEntry;
 
-		[NotPersistent]
-		private DateTime lastUpdate;
+        [NotPersistent]
+        private DateTime lastUpdate;
 
-		[NotPersistent]
-		public ItemTemplate Template;
+        [NotPersistent]
+        public ItemTemplate Template;
 
-		/// <summary>
-		/// If this item has a limited supply available, this returns a number smaller than uint.MaxValue
-		/// </summary>
-		[NotPersistent]
-		public int RemainingStockAmount
-		{
-			get
-			{
-				if (StockAmount > 0 && StockRefillDelay > 0)
-				{
-					var numRegenedStacks = (int)((DateTime.Now - lastUpdate).Milliseconds / StockRefillDelay);
-					if ((remainingStackAmount + numRegenedStacks) > StockAmount)
-						remainingStackAmount = StockAmount;
-					else
-						remainingStackAmount += numRegenedStacks;
+        /// <summary>
+        /// If this item has a limited supply available, this returns a number smaller than uint.MaxValue
+        /// </summary>
+        [NotPersistent]
+        public int RemainingStockAmount
+        {
+            get
+            {
+                if (StockAmount > 0 && StockRefillDelay > 0)
+                {
+                    var numRegenedStacks = (int)((DateTime.Now - lastUpdate).Milliseconds / StockRefillDelay);
+                    if ((remainingStackAmount + numRegenedStacks) > StockAmount)
+                        remainingStackAmount = StockAmount;
+                    else
+                        remainingStackAmount += numRegenedStacks;
 
-					lastUpdate = DateTime.Now;
-					return remainingStackAmount;
-				}
-				return -1;
-			}
-			set
-			{
-				remainingStackAmount = value;
-			}
-		}
+                    lastUpdate = DateTime.Now;
+                    return remainingStackAmount;
+                }
+                return -1;
+            }
+            set
+            {
+                remainingStackAmount = value;
+            }
+        }
 
-		public void FinalizeDataHolder()
-		{
-			Template = ItemMgr.GetTemplate(ItemId);
-			if (Template == null)
-			{
-				ContentMgr.OnInvalidDBData("{0} has invalid ItemId: {1} ({2})", this, ItemId, (int)ItemId);
-			}
-			else
-			{
-				var list = NPCMgr.GetOrCreateVendorList(VendorId);
+        public void FinalizeDataHolder()
+        {
+            Template = ItemMgr.GetTemplate(ItemId);
+            if (Template == null)
+            {
+                ContentMgr.OnInvalidDBData("{0} has invalid ItemId: {1} ({2})", this, ItemId, (int)ItemId);
+            }
+            else
+            {
+                var list = NPCMgr.GetOrCreateVendorList(VendorId);
 
-				// set defaults
-				if (StockAmount < 0)
-				{
-					StockAmount = Template.StockAmount;
-				}
-				if (StockRefillDelay < 0)
-				{
-					StockRefillDelay = Template.StockRefillDelay;
-				}
+                // set defaults
+                if (StockAmount < 0)
+                {
+                    StockAmount = Template.StockAmount;
+                }
+                if (StockRefillDelay < 0)
+                {
+                    StockRefillDelay = Template.StockRefillDelay;
+                }
 
-				remainingStackAmount = StockAmount;
-				list.Add(this);
-			}
-		}
+                remainingStackAmount = StockAmount;
+                list.Add(this);
+            }
+        }
 
-		public override string ToString()
-		{
-			return GetType().Name + " " + VendorId + " (" + (int)VendorId + ")";
-		}
+        public override string ToString()
+        {
+            return GetType().Name + " " + VendorId + " (" + (int)VendorId + ")";
+        }
 
-		public static IEnumerable<VendorItemEntry> GetAllDataHolders()
-		{
-			var list = new List<VendorItemEntry>(20000);
-			foreach (var vendor in NPCMgr.GetAllEntries())
-			{
-				if (vendor == null || vendor.VendorItems == null)
-				{
-					continue;
-				}
-				list.AddRange(vendor.VendorItems);
-			}
-			return list;
-		}
-	}
+        public static IEnumerable<VendorItemEntry> GetAllDataHolders()
+        {
+            var list = new List<VendorItemEntry>(20000);
+            foreach (var vendor in NPCMgr.GetAllEntries())
+            {
+                if (vendor == null || vendor.VendorItems == null)
+                {
+                    continue;
+                }
+                list.AddRange(vendor.VendorItems);
+            }
+            return list;
+        }
+    }
 }

@@ -1,6 +1,6 @@
 namespace WCell.RealmServer.Calendars
 {
-    class Calendar
+    internal class Calendar
     {
         //public HashSet<CalendarEventInvite> m_eventInvites;
         //public HashSet<CalendarEvent> m_events;

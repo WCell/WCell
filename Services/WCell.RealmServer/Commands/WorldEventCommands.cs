@@ -15,6 +15,7 @@ namespace WCell.RealmServer.Commands
         }
 
         #region Start/Stop
+
         public class StartEventCommand : SubCommand
         {
             protected override void Initialize()
@@ -29,7 +30,7 @@ namespace WCell.RealmServer.Commands
             {
                 var mod = trigger.Text.NextModifiers();
                 TimeSpan? duration = null;
-                if(mod == "t")
+                if (mod == "t")
                 {
                     duration = trigger.Text.NextTimeSpan();
                     if (duration == null)
@@ -39,13 +40,12 @@ namespace WCell.RealmServer.Commands
                     }
                 }
                 var id = trigger.Text.NextUInt();
-                
 
                 var worldEvent = WorldEventMgr.GetEvent(id);
                 if (worldEvent == null)
                 {
                     trigger.Reply("Invalid World Event {0} specified", id);
-                    if(id == 0)
+                    if (id == 0)
                     {
                         trigger.Reply("Usage:" + EnglishParamInfo);
                     }
@@ -53,7 +53,6 @@ namespace WCell.RealmServer.Commands
                 }
                 worldEvent.TimeUntilNextStart = TimeSpan.Zero;
                 worldEvent.TimeUntilEnd = duration ?? worldEvent.Duration;
-
             }
         }
 
@@ -79,13 +78,15 @@ namespace WCell.RealmServer.Commands
                     }
                     return;
                 }
-                
+
                 WorldEvent.CalculateEventDelays(worldEvent);
             }
         }
-        #endregion
+
+        #endregion Start/Stop
 
         #region Find/List
+
         public class ListEventsCommand : SubCommand
         {
             protected override void Initialize()
@@ -137,9 +138,11 @@ namespace WCell.RealmServer.Commands
                 }
             }
         }
-        #endregion
+
+        #endregion Find/List
 
         #region Disable
+
         public class DisableEventCommand : SubCommand
         {
             protected override void Initialize()
@@ -168,9 +171,11 @@ namespace WCell.RealmServer.Commands
                 WorldEventMgr.StopEvent(worldEvent);
             }
         }
-        #endregion
+
+        #endregion Disable
 
         #region Edit
+
         public class EditDurationEventCommand : SubCommand
         {
             protected override void Initialize()
@@ -184,7 +189,6 @@ namespace WCell.RealmServer.Commands
             {
                 var duration = trigger.Text.NextTimeSpan();
                 var id = trigger.Text.NextUInt();
-
 
                 var worldEvent = WorldEventMgr.GetEvent(id);
                 if (worldEvent == null)
@@ -223,7 +227,6 @@ namespace WCell.RealmServer.Commands
                 var occurence = trigger.Text.NextTimeSpan();
                 var id = trigger.Text.NextUInt();
 
-
                 var worldEvent = WorldEventMgr.GetEvent(id);
                 if (worldEvent == null)
                 {
@@ -246,9 +249,11 @@ namespace WCell.RealmServer.Commands
                 WorldEvent.CalculateEventDelays(worldEvent);
             }
         }
-        #endregion
+
+        #endregion Edit
 
         #region Info
+
         public class EventInfoCommand : SubCommand
         {
             protected override void Initialize()
@@ -287,7 +292,8 @@ namespace WCell.RealmServer.Commands
                 trigger.Reply("Quest count:         {0}", worldEvent.QuestIds.Count);
             }
         }
-        #endregion
+
+        #endregion Info
 
         public override bool RequiresCharacter
         {

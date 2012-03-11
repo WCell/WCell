@@ -10,7 +10,7 @@ namespace WCell.RealmServer.Commands
         protected override void Initialize()
         {
             Init("Addon");
-			EnglishDescription = "Provides commands for managing Addons";
+            EnglishDescription = "Provides commands for managing Addons";
         }
 
         public class ListAddonsCommand : SubCommand
@@ -21,6 +21,7 @@ namespace WCell.RealmServer.Commands
                 EnglishParamInfo = "[-l]";
                 EnglishDescription = "Lists all active Addons. -l to also list libraries.";
             }
+
             public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
             {
                 var i = 0;
@@ -31,18 +32,19 @@ namespace WCell.RealmServer.Commands
                     ++i;
                     if (context.Addon != null)
                     {
-						trigger.Reply(i + ". " + trigger.Translate(RealmLangKey.Addon) + " " + context.Addon);
+                        trigger.Reply(i + ". " + trigger.Translate(RealmLangKey.Addon) + " " + context.Addon);
                     }
                     else if (lib)
                     {
-						trigger.Reply(i + ". " + trigger.Translate(RealmLangKey.Library) + " " + context.Assembly);
+                        trigger.Reply(i + ". " + trigger.Translate(RealmLangKey.Library) + " " + context.Assembly);
                     }
                 }
             }
-		}
+        }
 
-		#region Load
-		public class LoadAddonCommand : SubCommand
+        #region Load
+
+        public class LoadAddonCommand : SubCommand
         {
             protected override void Initialize()
             {
@@ -51,7 +53,7 @@ namespace WCell.RealmServer.Commands
                 EnglishDescription = "Loads a new Addon from the given file.";
             }
 
-			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+            public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
             {
                 //var mod = trigger.Text.NextModifiers();
 
@@ -62,19 +64,20 @@ namespace WCell.RealmServer.Commands
                 }
                 else
                 {
-					trigger.Reply("Loading addon from " + path + "...");
-					var context = RealmAddonMgr.Instance.TryLoadAddon(path);
-					if (context == null)
-					{
-						trigger.Reply("File does not exist or has invalid format: " + path);
-					}
-					else
-					{
-						trigger.Reply("Done: " + context);
-					}
+                    trigger.Reply("Loading addon from " + path + "...");
+                    var context = RealmAddonMgr.Instance.TryLoadAddon(path);
+                    if (context == null)
+                    {
+                        trigger.Reply("File does not exist or has invalid format: " + path);
+                    }
+                    else
+                    {
+                        trigger.Reply("Done: " + context);
+                    }
                 }
             }
-		}
-		#endregion
-	}
+        }
+
+        #endregion Load
+    }
 }

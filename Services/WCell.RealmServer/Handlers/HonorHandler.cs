@@ -27,7 +27,6 @@ namespace WCell.RealmServer.Handlers
         {
         }*/
 
-
         public static void SendPVPCredit(IPacketReceiver receiver, uint points, Character victim)
         {
             using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PVP_CREDIT))

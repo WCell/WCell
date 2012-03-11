@@ -21,130 +21,131 @@ using WCell.RealmServer.UpdateFields;
 
 namespace WCell.RealmServer.Entities
 {
-	/// <summary>
-	/// The base class for all in-game Objects
-	/// </summary>
-	public abstract partial class ObjectBase : IDisposable, ILootable, IEntity
-	{
-		protected readonly CompoundType[] m_updateValues;
+    /// <summary>
+    /// The base class for all in-game Objects
+    /// </summary>
+    public abstract partial class ObjectBase : IDisposable, ILootable, IEntity
+    {
+        protected readonly CompoundType[] m_updateValues;
 
-		protected ObjectBase()
-		{
-			int updateFieldInfoLen = _UpdateFieldInfos.Fields.Length;
+        protected ObjectBase()
+        {
+            int updateFieldInfoLen = _UpdateFieldInfos.Fields.Length;
 
-			m_privateUpdateMask = new UpdateMask(updateFieldInfoLen);
+            m_privateUpdateMask = new UpdateMask(updateFieldInfoLen);
 
-			// we only need a distinction between private and public if we have any non-public update fields
-			if (HasPrivateUpdateFields)
-			{
-				m_publicUpdateMask = new UpdateMask(updateFieldInfoLen);
-			}
-			else
-			{
-				m_publicUpdateMask = m_privateUpdateMask;
-			}
+            // we only need a distinction between private and public if we have any non-public update fields
+            if (HasPrivateUpdateFields)
+            {
+                m_publicUpdateMask = new UpdateMask(updateFieldInfoLen);
+            }
+            else
+            {
+                m_publicUpdateMask = m_privateUpdateMask;
+            }
 
-			m_updateValues = new CompoundType[updateFieldInfoLen];
+            m_updateValues = new CompoundType[updateFieldInfoLen];
 
-			Type = ObjectTypes.Object;
-			SetFloat(ObjectFields.SCALE_X, 1.0f);
-		}
+            Type = ObjectTypes.Object;
+            SetFloat(ObjectFields.SCALE_X, 1.0f);
+        }
 
-		protected abstract UpdateFieldCollection _UpdateFieldInfos
-		{
-			get;
-		}
+        protected abstract UpdateFieldCollection _UpdateFieldInfos
+        {
+            get;
+        }
 
-		#region Properties
+        #region Properties
 
-		public abstract UpdateFlags UpdateFlags
-		{
-			get;
-		}
+        public abstract UpdateFlags UpdateFlags
+        {
+            get;
+        }
 
-		/// <summary>
-		/// The type of this object (player, corpse, item, etc)
-		/// </summary>
-		public abstract ObjectTypeId ObjectTypeId
-		{
-			get;
-		}
+        /// <summary>
+        /// The type of this object (player, corpse, item, etc)
+        /// </summary>
+        public abstract ObjectTypeId ObjectTypeId
+        {
+            get;
+        }
 
-		public CompoundType[] UpdateValues
-		{
-			get { return m_updateValues; }
-		}
+        public CompoundType[] UpdateValues
+        {
+            get { return m_updateValues; }
+        }
 
-		public UpdateMask UpdateMask
-		{
-			get { return m_privateUpdateMask; }
-		}
-		#endregion
+        public UpdateMask UpdateMask
+        {
+            get { return m_privateUpdateMask; }
+        }
 
-		public abstract bool IsInWorld
-		{
-			get;
-		}
+        #endregion Properties
 
-		public abstract void Dispose(bool disposing);
+        public abstract bool IsInWorld
+        {
+            get;
+        }
 
-		public void Dispose()
-		{
-			GC.SuppressFinalize(this);
-			Dispose(true);
-		}
+        public abstract void Dispose(bool disposing);
 
-		public bool CheckObjType(ObjectTypes type)
-		{
-			return type == ObjectTypes.None || Type.HasAnyFlag(type);
-		}
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+            Dispose(true);
+        }
 
-		public virtual bool UseGroupLoot
-		{
-			get { return false; }
-		}
+        public bool CheckObjType(ObjectTypes type)
+        {
+            return type == ObjectTypes.None || Type.HasAnyFlag(type);
+        }
 
-		/// <summary>
-		/// Called whenever everything has been looted off this object.
-		/// </summary>
-		public virtual void OnFinishedLooting()
-		{
-		}
+        public virtual bool UseGroupLoot
+        {
+            get { return false; }
+        }
 
-		public virtual UpdatePriority UpdatePriority
-		{
-			get { return UpdatePriority.LowPriority; }
-		}
+        /// <summary>
+        /// Called whenever everything has been looted off this object.
+        /// </summary>
+        public virtual void OnFinishedLooting()
+        {
+        }
 
-		public static bool operator ==(ObjectBase o1, ObjectBase o2)
-		{
-			return (o1 as Object == null) != (o2 as Object == null) ? false : 
-				(o1 as Object == o2 as Object ? true : (o2.EntityId == o1.EntityId));
-		}
+        public virtual UpdatePriority UpdatePriority
+        {
+            get { return UpdatePriority.LowPriority; }
+        }
 
-		public static bool operator !=(ObjectBase o1, ObjectBase o2)
-		{
-			return !(o1 == o2);
-		}
+        public static bool operator ==(ObjectBase o1, ObjectBase o2)
+        {
+            return (o1 as Object == null) != (o2 as Object == null) ? false :
+                (o1 as Object == o2 as Object ? true : (o2.EntityId == o1.EntityId));
+        }
 
-		public bool Equals(ObjectBase obj)
-		{
-			return obj.EntityId == EntityId;
-		}
+        public static bool operator !=(ObjectBase o1, ObjectBase o2)
+        {
+            return !(o1 == o2);
+        }
 
-		public override bool Equals(object obj)
-		{
-			return obj is ObjectBase && ((ObjectBase)obj).EntityId == EntityId;
-		}
+        public bool Equals(ObjectBase obj)
+        {
+            return obj.EntityId == EntityId;
+        }
 
-		public override int GetHashCode()
-		{
-			return EntityId.GetHashCode();
-		}
+        public override bool Equals(object obj)
+        {
+            return obj is ObjectBase && ((ObjectBase)obj).EntityId == EntityId;
+        }
 
-		public override string ToString()
-		{
-			return GetType().Name + " (ID: " + EntityId + ")";
-		}
-	}
+        public override int GetHashCode()
+        {
+            return EntityId.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return GetType().Name + " (ID: " + EntityId + ")";
+        }
+    }
 }

@@ -45,10 +45,9 @@ namespace WCell.MPQTool.StormLibWrapper
             if (filePath == null)
                 throw new ArgumentNullException("filePath");
 
-
             var retVal = NativeMethods.HasFile(handle, filePath);
 
-            return (((long) retVal & 0xFF) > 0x00);
+            return (((long)retVal & 0xFF) > 0x00);
             //// Try to open the file
             //if (fileHandle == IntPtr.Zero)
             //    return false;
@@ -72,7 +71,7 @@ namespace WCell.MPQTool.StormLibWrapper
 
             IntPtr fileHandle;
             var retVal = NativeMethods.OpenFileEx(handle, filePath, OpenFileFlags.FromMPQ, out fileHandle);
-            var success = (((long) retVal & 0xFF) > 0x00);
+            var success = (((long)retVal & 0xFF) > 0x00);
 
             ErrorHandler.ThrowOnFailure((!success || (fileHandle != IntPtr.Zero)), "Could not open MPQ file.");
 
@@ -168,7 +167,7 @@ namespace WCell.MPQTool.StormLibWrapper
             if (!success) return false;
 
             if (data.FilePath == "") return false;
-            
+
             filePath = data.FilePath;
             return true;
         }

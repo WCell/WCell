@@ -20,62 +20,62 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
-	/// <summary>
-	/// Dead players wear this
-	/// </summary>
-	public class GhostHandler : AuraEffectHandler
-	{
-		protected override void Apply()
-		{
-			var owner = m_aura.Auras.Owner;
-			if (owner is Character)
-			{
-				((Character)owner).PlayerFlags |= PlayerFlags.Ghost;
-			}
-			if (owner.Race == RaceId.NightElf)
-			{
-				// Whisp
-				owner.SpellCast.TriggerSelf(SpellId.Ghost_3);
-			}
+    /// <summary>
+    /// Dead players wear this
+    /// </summary>
+    public class GhostHandler : AuraEffectHandler
+    {
+        protected override void Apply()
+        {
+            var owner = m_aura.Auras.Owner;
+            if (owner is Character)
+            {
+                ((Character)owner).PlayerFlags |= PlayerFlags.Ghost;
+            }
+            if (owner.Race == RaceId.NightElf)
+            {
+                // Whisp
+                owner.SpellCast.TriggerSelf(SpellId.Ghost_3);
+            }
 
-			// run faster
-			owner.SpeedFactor += Character.DeathSpeedFactorIncrease;
+            // run faster
+            owner.SpeedFactor += Character.DeathSpeedFactorIncrease;
 
-			// walk on water
-			owner.WaterWalk++;
-			m_aura.Auras.GhostAura = m_aura;
-		}
+            // walk on water
+            owner.WaterWalk++;
+            m_aura.Auras.GhostAura = m_aura;
+        }
 
-		protected override void Remove(bool cancelled)
-		{
-			var owner = m_aura.Auras.Owner;
-			if (owner is Character)
-			{
-				((Character)owner).PlayerFlags &= ~PlayerFlags.Ghost;
-			}
-			if (owner.Race == RaceId.NightElf)
-			{
-				// Whisp
-				m_aura.Auras.Remove(SpellId.Ghost_3);
-			}
+        protected override void Remove(bool cancelled)
+        {
+            var owner = m_aura.Auras.Owner;
+            if (owner is Character)
+            {
+                ((Character)owner).PlayerFlags &= ~PlayerFlags.Ghost;
+            }
+            if (owner.Race == RaceId.NightElf)
+            {
+                // Whisp
+                m_aura.Auras.Remove(SpellId.Ghost_3);
+            }
 
-			if (m_aura.Auras.GhostAura == m_aura)
-				m_aura.Auras.GhostAura = null;
+            if (m_aura.Auras.GhostAura == m_aura)
+                m_aura.Auras.GhostAura = null;
 
-			owner.SpeedFactor -= Character.DeathSpeedFactorIncrease;
-			owner.WaterWalk--;
-			m_aura.Auras.Owner.OnResurrect();
-		}
+            owner.SpeedFactor -= Character.DeathSpeedFactorIncrease;
+            owner.WaterWalk--;
+            m_aura.Auras.Owner.OnResurrect();
+        }
 
-		/// <summary>
-		/// Not positive also means that its not removable
-		/// </summary>
-		public override bool IsPositive
-		{
-			get
-			{
-				return false;
-			}
-		}
-	}
+        /// <summary>
+        /// Not positive also means that its not removable
+        /// </summary>
+        public override bool IsPositive
+        {
+            get
+            {
+                return false;
+            }
+        }
+    }
 };

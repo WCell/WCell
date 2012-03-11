@@ -20,58 +20,57 @@ using WCell.Constants.Talents;
 
 namespace WCell.RealmServer.Talents
 {
-	public class TalentTree
-	{
-		public TalentTreeId Id;
-		public string Name;
+    public class TalentTree
+    {
+        public TalentTreeId Id;
+        public string Name;
 
-		// unnecessary
-		//public uint Icon;						// 18
+        // unnecessary
+        //public uint Icon;						// 18
 
-		public ClassId Class;					// 20
+        public ClassId Class;					// 20
 
-		public uint TabIndex;					// 22
+        public uint TabIndex;					// 22
 
-		/// <summary>
-		/// For Pet Talents
-		/// </summary>
-		public uint PetTabIndex;					// 21
+        /// <summary>
+        /// For Pet Talents
+        /// </summary>
+        public uint PetTabIndex;					// 21
 
-		// unnecessary
-		//public uint Icon2;					// 22
+        // unnecessary
+        //public uint Icon2;					// 22
 
-		/// <summary>
-		/// All talents of this tree
-		/// </summary>
-		public readonly List<TalentEntry> Talents = new List<TalentEntry>(30);
+        /// <summary>
+        /// All talents of this tree
+        /// </summary>
+        public readonly List<TalentEntry> Talents = new List<TalentEntry>(30);
 
-		public TalentEntry[][] TalentTable = new TalentEntry[TalentMgr.MaxTalentRowCount][];
+        public TalentEntry[][] TalentTable = new TalentEntry[TalentMgr.MaxTalentRowCount][];
 
-		/// <summary>
-		/// Total amount of Talent ranks in this Tree
-		/// </summary>
-		public int TotalRankCount;
+        /// <summary>
+        /// Total amount of Talent ranks in this Tree
+        /// </summary>
+        public int TotalRankCount;
 
-		/// <summary>
-		/// Full name of this tree (includes the name of the Class this Tree belongs to)
-		/// </summary>
-		public string FullName
-		{
-			get
-			{
-				return Class + " " + Name;
-			}
-		}
+        /// <summary>
+        /// Full name of this tree (includes the name of the Class this Tree belongs to)
+        /// </summary>
+        public string FullName
+        {
+            get
+            {
+                return Class + " " + Name;
+            }
+        }
 
-		public IEnumerator<TalentEntry> GetEnumerator()
-		{
-			return Talents.GetEnumerator();
-		}
+        public IEnumerator<TalentEntry> GetEnumerator()
+        {
+            return Talents.GetEnumerator();
+        }
 
-		public override string ToString()
-		{
-			return FullName + " (Id: " + (int)Id + ")";
-		}
-	}
+        public override string ToString()
+        {
+            return FullName + " (Id: " + (int)Id + ")";
+        }
+    }
 }
- 

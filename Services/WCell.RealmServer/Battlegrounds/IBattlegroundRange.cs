@@ -1,11 +1,11 @@
 namespace WCell.RealmServer.Battlegrounds
 {
-	public interface IBattlegroundRange
-	{
-		int MinLevel { get; }
+    public interface IBattlegroundRange
+    {
+        int MinLevel { get; }
 
-		int MaxLevel { get; }
+        int MaxLevel { get; }
 
-		BattlegroundTemplate Template { get; }
-	}
+        BattlegroundTemplate Template { get; }
+    }
 }

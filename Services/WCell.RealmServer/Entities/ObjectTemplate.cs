@@ -5,47 +5,47 @@ using WCell.Util.Data;
 
 namespace WCell.RealmServer.Entities
 {
-	public abstract class ObjectTemplate : IQuestHolderEntry
-	{
-		/// <summary>
-		/// Entry Id
-		/// </summary>
-		public uint Id
-		{
-			get;
-			set;
-		}
+    public abstract class ObjectTemplate : IQuestHolderEntry
+    {
+        /// <summary>
+        /// Entry Id
+        /// </summary>
+        public uint Id
+        {
+            get;
+            set;
+        }
 
-		public float Scale
-		{
-			get;
-			set;
-		}
+        public float Scale
+        {
+            get;
+            set;
+        }
 
-		public abstract ResolvedLootItemList GetLootEntries();
+        public abstract ResolvedLootItemList GetLootEntries();
 
-		#region Implementation of IQuestHolderEntry
+        #region Implementation of IQuestHolderEntry
 
-		private QuestHolderInfo m_QuestHolderInfo;
+        private QuestHolderInfo m_QuestHolderInfo;
 
-		/// <summary>
-		/// The QuestHolderEntry of this template, if this is a QuestGiver
-		/// </summary>
-		[NotPersistent]
-		public QuestHolderInfo QuestHolderInfo
-		{
-			get { return m_QuestHolderInfo; }
-			set
-			{
-				m_QuestHolderInfo = value;
-			}
-		}
+        /// <summary>
+        /// The QuestHolderEntry of this template, if this is a QuestGiver
+        /// </summary>
+        [NotPersistent]
+        public QuestHolderInfo QuestHolderInfo
+        {
+            get { return m_QuestHolderInfo; }
+            set
+            {
+                m_QuestHolderInfo = value;
+            }
+        }
 
-		[NotPersistent]
-		public GossipMenu DefaultGossip { get; set; }
+        [NotPersistent]
+        public GossipMenu DefaultGossip { get; set; }
 
-		public abstract IWorldLocation[] GetInWorldTemplates();
+        public abstract IWorldLocation[] GetInWorldTemplates();
 
-		#endregion
-	}
+        #endregion
+    }
 }

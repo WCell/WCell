@@ -18,51 +18,53 @@ using WCell.Constants.Spells;
 
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
-	/// <summary>
-	/// Periodically damages the holder
-	/// </summary>
-	public class PeriodicDamageHandler : AuraEffectHandler
-	{
-		protected override void Apply()
-		{
-			var holder = Owner;
-			if (holder.IsAlive)
-			{
-				var value = EffectValue;
-				if (m_aura.Spell.Mechanic == SpellMechanic.Bleeding)
-				{
-					var bonus = m_aura.Auras.GetBleedBonusPercent();
-					value += ((value * bonus) + 50) / 100;
-					m_aura.Owner.IncMechanicCount(SpellMechanic.Bleeding);
-				}
+    /// <summary>
+    /// Periodically damages the holder
+    /// </summary>
+    public class PeriodicDamageHandler : AuraEffectHandler
+    {
+        protected override void Apply()
+        {
+            var holder = Owner;
+            if (holder.IsAlive)
+            {
+                var value = EffectValue;
+                if (m_aura.Spell.Mechanic == SpellMechanic.Bleeding)
+                {
+                    var bonus = m_aura.Auras.GetBleedBonusPercent();
+                    value += ((value * bonus) + 50) / 100;
+                    m_aura.Owner.IncMechanicCount(SpellMechanic.Bleeding);
+                }
 
-				holder.DealSpellDamage(m_aura.CasterUnit, m_spellEffect, value);
-			}
-		}
-		protected override void Remove(bool cancelled)
-		{
-			if (m_aura.Spell.Mechanic == SpellMechanic.Bleeding)
-				m_aura.Owner.DecMechanicCount(SpellMechanic.Bleeding);
-		}
-	}
+                holder.DealSpellDamage(m_aura.CasterUnit, m_spellEffect, value);
+            }
+        }
 
-	public class ParameterizedPeriodicDamageHandler : PeriodicDamageHandler
-	{
-		public int TotalDamage { get; set; }
+        protected override void Remove(bool cancelled)
+        {
+            if (m_aura.Spell.Mechanic == SpellMechanic.Bleeding)
+                m_aura.Owner.DecMechanicCount(SpellMechanic.Bleeding);
+        }
+    }
 
-		public ParameterizedPeriodicDamageHandler() : this(0)
-		{
-		}
+    public class ParameterizedPeriodicDamageHandler : PeriodicDamageHandler
+    {
+        public int TotalDamage { get; set; }
 
-		public ParameterizedPeriodicDamageHandler(int totalDmg)
-		{
-			TotalDamage = totalDmg;
-		}
+        public ParameterizedPeriodicDamageHandler()
+            : this(0)
+        {
+        }
 
-		protected override void Apply()
-		{
-			BaseEffectValue = TotalDamage / (m_aura.TicksLeft + 1);
-			TotalDamage -= BaseEffectValue;
-		}
-	}
+        public ParameterizedPeriodicDamageHandler(int totalDmg)
+        {
+            TotalDamage = totalDmg;
+        }
+
+        protected override void Apply()
+        {
+            BaseEffectValue = TotalDamage / (m_aura.TicksLeft + 1);
+            TotalDamage -= BaseEffectValue;
+        }
+    }
 }

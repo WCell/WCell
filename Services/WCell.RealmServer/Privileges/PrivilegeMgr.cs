@@ -22,122 +22,124 @@ using WCell.Intercommunication.DataTypes;
 
 namespace WCell.RealmServer.Privileges
 {
-	/// <summary>
-	/// Handles the management of role groups, and their permissions.
-	/// </summary>
-	public class PrivilegeMgr : Manager<PrivilegeMgr>
-	{
-		#region Fields
-		private Dictionary<string, RoleGroup> m_roleGroups;
-		#endregion
+    /// <summary>
+    /// Handles the management of role groups, and their permissions.
+    /// </summary>
+    public class PrivilegeMgr : Manager<PrivilegeMgr>
+    {
+        #region Fields
 
-		/// <summary>
-		/// Default constructor.
-		/// </summary>
-		private PrivilegeMgr()
-		{
-		}
+        private Dictionary<string, RoleGroup> m_roleGroups;
 
-		public void SetGroupInfo(RoleGroupInfo[] infos)
-		{
-			var groups = new Dictionary<string, RoleGroup>(StringComparer.InvariantCultureIgnoreCase);
-			foreach (var info in infos)
-			{
-				groups.Add(info.Name, new RoleGroup(info));
-			}
-			m_roleGroups = groups;
-		}
+        #endregion Fields
 
-		/// <summary>
-		/// Returns the RoleGroup with the highest Rank.
-		/// </summary>
-		public RoleGroup HighestRole
-		{
-			get
-			{
-				if (m_roleGroups == null)
-				{
-					SetGroupInfo(RoleGroupInfo.CreateDefaultGroups().ToArray());
-				}
-				return m_roleGroups[RoleGroupInfo.HighestRole.Name];
-			}
-		}
+        /// <summary>
+        /// Default constructor.
+        /// </summary>
+        private PrivilegeMgr()
+        {
+        }
 
-		/// <summary>
-		/// Returns the RoleGroup with the highest Rank.
-		/// </summary>
-		public RoleGroup LowestRole
-		{
-			get
-			{
-				return m_roleGroups[RoleGroupInfo.LowestRole.Name];
-			}
-		}
+        public void SetGroupInfo(RoleGroupInfo[] infos)
+        {
+            var groups = new Dictionary<string, RoleGroup>(StringComparer.InvariantCultureIgnoreCase);
+            foreach (var info in infos)
+            {
+                groups.Add(info.Name, new RoleGroup(info));
+            }
+            m_roleGroups = groups;
+        }
 
-		/// <summary>
-		/// All existing RoleGroups
-		/// </summary>
-		public Dictionary<string, RoleGroup> RoleGroups
-		{
-			get
-			{
-				return m_roleGroups;
-			}
-		}
+        /// <summary>
+        /// Returns the RoleGroup with the highest Rank.
+        /// </summary>
+        public RoleGroup HighestRole
+        {
+            get
+            {
+                if (m_roleGroups == null)
+                {
+                    SetGroupInfo(RoleGroupInfo.CreateDefaultGroups().ToArray());
+                }
+                return m_roleGroups[RoleGroupInfo.HighestRole.Name];
+            }
+        }
 
-		public bool IsInitialized
-		{
-			get;
-			internal set;
-		}
+        /// <summary>
+        /// Returns the RoleGroup with the highest Rank.
+        /// </summary>
+        public RoleGroup LowestRole
+        {
+            get
+            {
+                return m_roleGroups[RoleGroupInfo.LowestRole.Name];
+            }
+        }
 
-		#region Methods
+        /// <summary>
+        /// All existing RoleGroups
+        /// </summary>
+        public Dictionary<string, RoleGroup> RoleGroups
+        {
+            get
+            {
+                return m_roleGroups;
+            }
+        }
 
-		/// <summary>
-		/// Gets a role group by name.
-		/// </summary>
-		/// <returns>the RoleGroup if it exists; null otherwise</returns>
-		public RoleGroup GetRoleOrDefault(string roleGroupName)
-		{
-			RoleGroup retGrp;
+        public bool IsInitialized
+        {
+            get;
+            internal set;
+        }
 
-			if (m_roleGroups.TryGetValue(roleGroupName, out retGrp))
-			{
-				return retGrp;
-			}
+        #region Methods
 
-			return m_roleGroups.Values.First();
-		}
+        /// <summary>
+        /// Gets a role group by name.
+        /// </summary>
+        /// <returns>the RoleGroup if it exists; null otherwise</returns>
+        public RoleGroup GetRoleOrDefault(string roleGroupName)
+        {
+            RoleGroup retGrp;
 
-		public RoleGroup GetRole(string roleGroupName)
-		{
-			RoleGroup retGrp;
+            if (m_roleGroups.TryGetValue(roleGroupName, out retGrp))
+            {
+                return retGrp;
+            }
 
-			if (m_roleGroups.TryGetValue(roleGroupName, out retGrp))
-			{
-				return retGrp;
-			}
+            return m_roleGroups.Values.First();
+        }
 
-			return null;
-		}
+        public RoleGroup GetRole(string roleGroupName)
+        {
+            RoleGroup retGrp;
 
-		#endregion
+            if (m_roleGroups.TryGetValue(roleGroupName, out retGrp))
+            {
+                return retGrp;
+            }
 
-		#region Initialization/teardown
+            return null;
+        }
 
-		public void Setup()
-		{
-			var client = RealmServer.Instance.AuthClient;
-			if (client.IsConnected)
-			{
-				var groups = client.Channel.RetrieveRoleGroups();
-				if (groups != null)
-				{
-					SetGroupInfo(groups);
-				}
-			}
-		}
+        #endregion Methods
 
-		#endregion
-	}
+        #region Initialization/teardown
+
+        public void Setup()
+        {
+            var client = RealmServer.Instance.AuthClient;
+            if (client.IsConnected)
+            {
+                var groups = client.Channel.RetrieveRoleGroups();
+                if (groups != null)
+                {
+                    SetGroupInfo(groups);
+                }
+            }
+        }
+
+        #endregion Initialization/teardown
+    }
 }

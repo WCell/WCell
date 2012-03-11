@@ -1,7 +1,7 @@
 /*
  * Written by Mokrago from the WCell team.
  * Please see the wiki article on my findings and more documentation.
- * 
+ *
  */
 
 using System.Collections.Generic;
@@ -18,8 +18,6 @@ namespace WCell.RealmServer.Entities
 {
     public class GameTables
     {
-        
-
         private static float[] s_baseMeleeCritChance;
         private static float[] s_baseSpellCritChance;
 
@@ -155,7 +153,7 @@ namespace WCell.RealmServer.Entities
         {
             var value = GetValuePerRating(ClassMeleeCritChance, level, id);
             return ModifyValue(value);
-			//return value;
+            //return value;
         }
 
         public static float GetUnmodifiedClassSpellCritChanceValue(int level, ClassId id)
@@ -178,7 +176,7 @@ namespace WCell.RealmServer.Entities
         /// <returns></returns>
         public static float ModifyValue(float value)
         {
-            return 1f/(value*100);
+            return 1f / (value * 100);
         }
 
         /// <summary>
@@ -200,9 +198,9 @@ namespace WCell.RealmServer.Entities
             {
                 level = 1;
             }
-            return table[100*(int) classId + level - 101];
+            return table[100 * (int)classId + level - 101];
         }
-        
+
         #region DBCs loading
 
         private static bool LoadRatingChanceDBC(string file, out float[] vals)
@@ -298,13 +296,13 @@ namespace WCell.RealmServer.Entities
             }
             var dbcRdr = new ListDBCReader<float, GameTableConverter>(gtDbcPath);
 
-            for (int rating = (int) CombatRating.WeaponSkill; rating < ((int) CombatRating.Expertise + 1); rating++)
+            for (int rating = (int)CombatRating.WeaponSkill; rating < ((int)CombatRating.Expertise + 1); rating++)
             {
-                combatRatings[(CombatRating) rating] = new float[100];
+                combatRatings[(CombatRating)rating] = new float[100];
 
-                for (int i = (rating - 1)*100; i < rating*100; i++)
+                for (int i = (rating - 1) * 100; i < rating * 100; i++)
                 {
-                    combatRatings[(CombatRating) rating][i - (rating - 1)*100] = dbcRdr.EntryList[i];
+                    combatRatings[(CombatRating)rating][i - (rating - 1) * 100] = dbcRdr.EntryList[i];
                 }
             }
 
@@ -359,7 +357,7 @@ namespace WCell.RealmServer.Entities
                 return false;
             }
 
-            if(!LoadGtClassHealthRegenPerSpiritDBC())
+            if (!LoadGtClassHealthRegenPerSpiritDBC())
             {
                 s_log.Info(string.Format(Resources.DBCLoadFailed, WCellConstants.DBC_REGENHPPERSPIRIT));
 
@@ -373,7 +371,7 @@ namespace WCell.RealmServer.Entities
                 return false;
             }
 
-            if(!LoadGtClassOCTHealthRegenDBC())
+            if (!LoadGtClassOCTHealthRegenDBC())
             {
                 s_log.Info(string.Format(Resources.DBCLoadFailed, WCellConstants.DBC_OCTREGENHP));
 
@@ -391,7 +389,7 @@ namespace WCell.RealmServer.Entities
             return true;
         }
 
-        #endregion
+        #endregion DBCs loading
 
         #region Hardcoded values
 
@@ -400,7 +398,8 @@ namespace WCell.RealmServer.Entities
         /// The base mana regeneration modifier per level
         /// TODO: Get it from the DBCs (GtOCTRegenMP.dbc?)
         /// </summary>
-        [NotVariable] private static readonly float[] BaseRegen = new float[81]
+        [NotVariable]
+        private static readonly float[] BaseRegen = new float[81]
                                                                      {
                                                                          0f,
                                                                          0.034965f, 0.034191f, 0.033465f, 0.032526f,
@@ -428,12 +427,12 @@ namespace WCell.RealmServer.Entities
                                                                          0.006179f, 0.005869f, 0.005575f,
                                                                      };
 
-		public static float GetBaseRegenForLevel(int level)
-		{
-			return level >= BaseRegen.Length ? BaseRegen[BaseRegen.Length - 1] : BaseRegen[level];
-		}
+        public static float GetBaseRegenForLevel(int level)
+        {
+            return level >= BaseRegen.Length ? BaseRegen[BaseRegen.Length - 1] : BaseRegen[level];
+        }
 
-    	// Table for base dodge values
+        // Table for base dodge values
         public static readonly float[] BaseDodge = new float[12]
                                                        {
                                                            0.0f,        // None
@@ -509,6 +508,6 @@ namespace WCell.RealmServer.Entities
                                                                     116.890707f // Druid
                                                                 };
 
-        #endregion
+        #endregion Hardcoded values
     }
 }

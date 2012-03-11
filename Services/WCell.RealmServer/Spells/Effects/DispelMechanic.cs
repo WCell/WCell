@@ -21,30 +21,30 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Effects
 {
-	public class DispelMechanicEffectHandler : SpellEffectHandler
-	{
-		public DispelMechanicEffectHandler(SpellCast cast, SpellEffect effect)
-			: base(cast, effect)
-		{
-		}
+    public class DispelMechanicEffectHandler : SpellEffectHandler
+    {
+        public DispelMechanicEffectHandler(SpellCast cast, SpellEffect effect)
+            : base(cast, effect)
+        {
+        }
 
-		protected override void Apply(WorldObject target)
-		{
-			var mechanic = (SpellMechanic)Effect.MiscValue;
-			if (mechanic == SpellMechanic.None)
-			{
-				throw new Exception("Invalid Mechanic \"None\" in Spell: " + Effect.Spell);
-			}
+        protected override void Apply(WorldObject target)
+        {
+            var mechanic = (SpellMechanic)Effect.MiscValue;
+            if (mechanic == SpellMechanic.None)
+            {
+                throw new Exception("Invalid Mechanic \"None\" in Spell: " + Effect.Spell);
+            }
 
-			((Unit)target).Auras.RemoveWhere(aura => aura.Spell.Mechanic == mechanic);
-		}
+            ((Unit)target).Auras.RemoveWhere(aura => aura.Spell.Mechanic == mechanic);
+        }
 
-		public override ObjectTypes TargetType
-		{
-			get
-			{
-				return ObjectTypes.Unit;
-			}
-		}
-	}
+        public override ObjectTypes TargetType
+        {
+            get
+            {
+                return ObjectTypes.Unit;
+            }
+        }
+    }
 }

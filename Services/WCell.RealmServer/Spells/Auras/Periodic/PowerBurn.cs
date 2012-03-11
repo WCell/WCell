@@ -18,21 +18,19 @@ using WCell.Constants;
 
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
-	/// <summary>
-	/// Drains Mana and applies damage
-	/// </summary>
-	public class PowerBurnHandler : AuraEffectHandler
-	{
-
-		protected override void Apply()
-		{
-			var holder = Owner;
-			if (holder.PowerType == (PowerType)m_spellEffect.MiscValue &&
-				m_aura.CasterUnit != null)
-			{
-				holder.BurnPower(EffectValue, m_spellEffect.ProcValue, m_aura.CasterUnit, m_spellEffect);
-			}
-		}
-
-	}
+    /// <summary>
+    /// Drains Mana and applies damage
+    /// </summary>
+    public class PowerBurnHandler : AuraEffectHandler
+    {
+        protected override void Apply()
+        {
+            var holder = Owner;
+            if (holder.PowerType == (PowerType)m_spellEffect.MiscValue &&
+                m_aura.CasterUnit != null)
+            {
+                holder.BurnPower(EffectValue, m_spellEffect.ProcValue, m_aura.CasterUnit, m_spellEffect);
+            }
+        }
+    }
 };

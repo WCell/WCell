@@ -16,15 +16,15 @@ namespace WCell.RealmServer.NPCs.Trainers
         #region IDataHolder Members
 
         public new void FinalizeDataHolder()
-		{
-			if ((Spell = SpellHandler.Get(SpellId)) == null)
-			{
-				ContentMgr.OnInvalidDBData("SpellId is invalid in " + this);
-			}
-			else if (RequiredSpellId != SpellId.None && SpellHandler.Get(RequiredSpellId) == null)
-			{
-				ContentMgr.OnInvalidDBData("RequiredSpellId is invalid in " + this);
-			}
+        {
+            if ((Spell = SpellHandler.Get(SpellId)) == null)
+            {
+                ContentMgr.OnInvalidDBData("SpellId is invalid in " + this);
+            }
+            else if (RequiredSpellId != SpellId.None && SpellHandler.Get(RequiredSpellId) == null)
+            {
+                ContentMgr.OnInvalidDBData("RequiredSpellId is invalid in " + this);
+            }
             else if (RequiredSkillId != SkillId.None && SkillHandler.Get(RequiredSkillId) == null)
             {
                 ContentMgr.OnInvalidDBData("RequiredSkillId is invalid in " + this);
@@ -40,10 +40,9 @@ namespace WCell.RealmServer.NPCs.Trainers
                     NPCMgr.TrainerSpellTemplates.Add(TrainerTemplateId, new List<TrainerSpellEntry>());
 
                 NPCMgr.TrainerSpellTemplates[TrainerTemplateId].Add(this);
-
             }
-		}
+        }
 
-		#endregion
+        #endregion IDataHolder Members
     }
 }

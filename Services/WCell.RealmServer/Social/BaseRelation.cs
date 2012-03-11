@@ -25,24 +25,25 @@ namespace WCell.RealmServer.Interaction
     /// Represents a relationship between two <see cref="Character"/> entities.
     /// </summary>
     public abstract class BaseRelation : IBaseRelation
-	{
-		public static readonly IBaseRelation[] EmptyRelations = new IBaseRelation[0];
-		public static readonly HashSet<IBaseRelation> EmptyRelationSet = new HashSet<IBaseRelation>();
+    {
+        public static readonly IBaseRelation[] EmptyRelations = new IBaseRelation[0];
+        public static readonly HashSet<IBaseRelation> EmptyRelationSet = new HashSet<IBaseRelation>();
 
-		#region Properties
-		/// <summary>
-		/// The Character who created this Relation
-		/// </summary>
+        #region Properties
+
+        /// <summary>
+        /// The Character who created this Relation
+        /// </summary>
         public virtual uint CharacterId
         {
             get;
             set;
-		}
+        }
 
-		/// <summary>
-		/// The related Character with who this Relation is with
-		/// </summary>
-		public virtual uint RelatedCharacterId
+        /// <summary>
+        /// The related Character with who this Relation is with
+        /// </summary>
+        public virtual uint RelatedCharacterId
         {
             get;
             set;
@@ -56,26 +57,28 @@ namespace WCell.RealmServer.Interaction
             get;
         }
 
-		/// <summary>
-		/// A note describing the relation
-		/// </summary>
-		public virtual string Note
-		{
-			get;
-			set;
-		}
+        /// <summary>
+        /// A note describing the relation
+        /// </summary>
+        public virtual string Note
+        {
+            get;
+            set;
+        }
 
         /// <summary>
-        /// Indicates if the relation requires sending a notification when a player change 
+        /// Indicates if the relation requires sending a notification when a player change
         /// its online status
         /// </summary>
         public virtual bool RequiresOnlineNotification
         {
             get { return false; }
         }
-        #endregion
+
+        #endregion Properties
 
         #region Constructors
+
         /// <summary>
         /// Default constructor
         /// </summary>
@@ -91,26 +94,27 @@ namespace WCell.RealmServer.Interaction
             CharacterId = charId;
             RelatedCharacterId = relatedCharId;
         }
-        #endregion
 
-		public override bool Equals(object otherRelation)
+        #endregion Constructors
+
+        public override bool Equals(object otherRelation)
         {
             if (!(otherRelation is BaseRelation))
                 return false;
 
-			var other = otherRelation as BaseRelation;
-            return CharacterId == other.CharacterId && 
-                RelatedCharacterId == other.RelatedCharacterId && 
+            var other = otherRelation as BaseRelation;
+            return CharacterId == other.CharacterId &&
+                RelatedCharacterId == other.RelatedCharacterId &&
                 Type == other.Type;
         }
 
-		public override int GetHashCode()
-		{
-			// persistant and unique if only used within the context of one Character
-			return (int)RelatedCharacterId;
-		}
+        public override int GetHashCode()
+        {
+            // persistant and unique if only used within the context of one Character
+            return (int)RelatedCharacterId;
+        }
 
-        public virtual bool Validate(CharacterRecord charInfo, CharacterRecord relatedCharInfo, 
+        public virtual bool Validate(CharacterRecord charInfo, CharacterRecord relatedCharInfo,
             out RelationResult relResult)
         {
             relResult = RelationResult.FRIEND_DB_ERROR;

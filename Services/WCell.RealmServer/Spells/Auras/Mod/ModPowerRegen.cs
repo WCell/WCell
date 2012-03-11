@@ -21,25 +21,25 @@ using WCell.RealmServer.Modifiers;
 
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
-	public class ModPowerRegenHandler : AuraEffectHandler
-	{
-		protected internal override void CheckInitialize(SpellCast creatingCast, ObjectReference casterReference, Unit target, ref SpellFailedReason failReason)
-		{
-			var type = (PowerType)m_spellEffect.MiscValue;
-			if (target.PowerType != type)
-			{
-				failReason = SpellFailedReason.BadTargets;
-			}
-		}
+    public class ModPowerRegenHandler : AuraEffectHandler
+    {
+        protected internal override void CheckInitialize(SpellCast creatingCast, ObjectReference casterReference, Unit target, ref SpellFailedReason failReason)
+        {
+            var type = (PowerType)m_spellEffect.MiscValue;
+            if (target.PowerType != type)
+            {
+                failReason = SpellFailedReason.BadTargets;
+            }
+        }
 
-		protected override void Apply()
-		{
-			m_aura.Auras.Owner.ChangeModifier(StatModifierInt.PowerRegen, EffectValue);
-		}
+        protected override void Apply()
+        {
+            m_aura.Auras.Owner.ChangeModifier(StatModifierInt.PowerRegen, EffectValue);
+        }
 
-		protected override void Remove(bool cancelled)
-		{
-			m_aura.Auras.Owner.ChangeModifier(StatModifierInt.PowerRegen, -EffectValue);
-		}
-	}
+        protected override void Remove(bool cancelled)
+        {
+            m_aura.Auras.Owner.ChangeModifier(StatModifierInt.PowerRegen, -EffectValue);
+        }
+    }
 };

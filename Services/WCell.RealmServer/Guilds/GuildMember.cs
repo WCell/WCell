@@ -28,17 +28,18 @@ namespace WCell.RealmServer.Guilds
     /// </summary>
     public partial class GuildMember : INamed
     {
-		private Character m_chr;
-		private Guild m_Guild;
+        private Character m_chr;
+        private Guild m_Guild;
 
         #region Properties
+
         /// <summary>
         /// The low part of the Character's EntityId. Use EntityId.GetPlayerId(Id) to get a full EntityId
         /// </summary>
-		public uint Id
-		{
-			get { return (uint) CharacterLowId; }
-		}
+        public uint Id
+        {
+            get { return (uint)CharacterLowId; }
+        }
 
         /// <summary>
         /// The name of this GuildMember's character
@@ -48,52 +49,52 @@ namespace WCell.RealmServer.Guilds
             get { return _name; }
         }
 
-    	public Guild Guild
-    	{
-    		get { return m_Guild; }
-    		private set
-    		{
-    			m_Guild = value;
-    			GuildId = value.Id;
-    		}
-    	}
-
-    	public string PublicNote
+        public Guild Guild
         {
-			get { return _publicNote; }
-        	set
-			{
-				_publicNote = value;
-
-				SaveLater();
-			}
+            get { return m_Guild; }
+            private set
+            {
+                m_Guild = value;
+                GuildId = value.Id;
+            }
         }
 
-		public string OfficerNote
-		{
-			get { return _officerNote; }
-			set
-			{
-				_officerNote = value;
+        public string PublicNote
+        {
+            get { return _publicNote; }
+            set
+            {
+                _publicNote = value;
 
-				SaveLater();
-			}
-		}
+                SaveLater();
+            }
+        }
+
+        public string OfficerNote
+        {
+            get { return _officerNote; }
+            set
+            {
+                _officerNote = value;
+
+                SaveLater();
+            }
+        }
 
         /// <summary>
         /// Current level of this GuildMember or his saved level if member already logged out
         /// </summary>
         public int Level
         {
-			get
-			{
-				if (m_chr != null)
-				{
-					return m_chr.Level;
-				}
-				return _lastLevel;
-			}
-        	internal set { _lastLevel = value; }
+            get
+            {
+                if (m_chr != null)
+                {
+                    return m_chr.Level;
+                }
+                return _lastLevel;
+            }
+            internal set { _lastLevel = value; }
         }
 
         /// <summary>
@@ -103,13 +104,13 @@ namespace WCell.RealmServer.Guilds
         {
             get
             {
-					if (m_chr != null)
-					{
-						return DateTime.Now;
-					}
-					return _lastLogin;
+                if (m_chr != null)
+                {
+                    return DateTime.Now;
+                }
+                return _lastLogin;
             }
-			internal set { _lastLogin = value; }
+            internal set { _lastLogin = value; }
         }
 
         /// <summary>
@@ -117,15 +118,15 @@ namespace WCell.RealmServer.Guilds
         /// </summary>
         public int ZoneId
         {
-			get
-			{
-				if (m_chr != null)
-				{
-					return m_chr.Zone != null ? (int)m_chr.Zone.Id : 0;
-				}
-				return _lastZoneId;
-			}
-        	internal set { _lastZoneId = value; }
+            get
+            {
+                if (m_chr != null)
+                {
+                    return m_chr.Zone != null ? (int)m_chr.Zone.Id : 0;
+                }
+                return _lastZoneId;
+            }
+            internal set { _lastZoneId = value; }
         }
 
         /// <summary>
@@ -133,40 +134,40 @@ namespace WCell.RealmServer.Guilds
         /// </summary>
         public ClassId Class
         {
-			get
-			{
-				if (m_chr != null)
-				{
-					return m_chr.Class;
-				}
-				return (ClassId) _class;
-			}
-        	internal set { _class = (int) value; }
+            get
+            {
+                if (m_chr != null)
+                {
+                    return m_chr.Class;
+                }
+                return (ClassId)_class;
+            }
+            internal set { _class = (int)value; }
         }
 
-		public GuildRank Rank
-		{
-			get { return Guild.Ranks[RankId]; }
-		}
+        public GuildRank Rank
+        {
+            get { return Guild.Ranks[RankId]; }
+        }
 
         public int RankId
         {
-			get { return _rankId; }
-			set
-			{
-				_rankId = value;
+            get { return _rankId; }
+            set
+            {
+                _rankId = value;
 
-				if (m_chr != null)
-				{
-				    m_chr.GuildRank = (uint) value;
-				    foreach (var right in m_chr.GuildMember.Rank.BankTabRights.Where(right => right != null))
-				    {
-				        right.GuildRankId = (uint) value;
-				    }
-				}
+                if (m_chr != null)
+                {
+                    m_chr.GuildRank = (uint)value;
+                    foreach (var right in m_chr.GuildMember.Rank.BankTabRights.Where(right => right != null))
+                    {
+                        right.GuildRankId = (uint)value;
+                    }
+                }
 
-			    SaveLater();
-			}
+                SaveLater();
+            }
         }
 
         /// <summary>
@@ -174,19 +175,19 @@ namespace WCell.RealmServer.Guilds
         /// </summary>
         public Character Character
         {
-			get { return m_chr; }
-			internal set
-			{
-				m_chr = value;
+            get { return m_chr; }
+            internal set
+            {
+                m_chr = value;
 
-				if (m_chr != null)
-				{
-					_name = m_chr.Name;
-					m_chr.GuildMember = this;
-				}
-			}
+                if (m_chr != null)
+                {
+                    _name = m_chr.Name;
+                    m_chr.GuildMember = this;
+                }
+            }
         }
-        
+
         public uint BankMoneyWithdrawlAllowance
         {
             get
@@ -214,28 +215,32 @@ namespace WCell.RealmServer.Guilds
             get { return _moneyAllowanceResetTime; }
             set { _moneyAllowanceResetTime = value; }
         }
-        
+
         public bool IsLeader
         {
             get
-			{
-				return Guild.Leader == this;
-			}
+            {
+                return Guild.Leader == this;
+            }
         }
-        #endregion
 
-    	#region Constructors
-		internal GuildMember()
-		{
-		}
-        #endregion
+        #endregion Properties
+
+        #region Constructors
+
+        internal GuildMember()
+        {
+        }
+
+        #endregion Constructors
 
         #region Methods
-		internal void Init(Guild guild, Character chr)
-		{
-			Guild = guild;
-			Character = chr;
-		}
+
+        internal void Init(Guild guild, Character chr)
+        {
+            Guild = guild;
+            Character = chr;
+        }
 
         /// <summary>
         /// Removes this member from its Guild
@@ -253,7 +258,6 @@ namespace WCell.RealmServer.Guilds
             return Rank.BankTabRights[tabId].Privileges.HasAnyFlag(privilege);
         }
 
-
         public override string ToString()
         {
             return "GuildMember: " + Name;
@@ -261,13 +265,14 @@ namespace WCell.RealmServer.Guilds
 
         public bool HasRight(GuildPrivileges privilege)
         {
-			return IsLeader || Rank.Privileges.HasAnyFlag(privilege);
+            return IsLeader || Rank.Privileges.HasAnyFlag(privilege);
         }
 
         public void SaveLater()
-		{
-			RealmServer.IOQueue.AddMessage(SaveAndFlush);
-		}
-        #endregion
+        {
+            RealmServer.IOQueue.AddMessage(SaveAndFlush);
+        }
+
+        #endregion Methods
     }
 }

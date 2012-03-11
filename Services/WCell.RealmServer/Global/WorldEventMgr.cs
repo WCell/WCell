@@ -12,40 +12,45 @@ using WCell.Util;
 using WCell.Util.Variables;
 
 namespace WCell.RealmServer.Global
-{	
-	/// <summary>
-	/// Manages world events
-	/// </summary>
-	public static class WorldEventMgr
-	{
+{
+    /// <summary>
+    /// Manages world events
+    /// </summary>
+    public static class WorldEventMgr
+    {
         private static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
-		internal static WorldEvent[] AllEvents = new WorldEvent[100];
-		internal static WorldEvent[] ActiveEvents = new WorldEvent[100];
+        internal static WorldEvent[] AllEvents = new WorldEvent[100];
+        internal static WorldEvent[] ActiveEvents = new WorldEvent[100];
 
         #region Fields
+
         internal static uint _eventCount;
 
-	    private static DateTime LastUpdateTime;
+        private static DateTime LastUpdateTime;
 
-		[NotVariable]
+        [NotVariable]
         public static List<WorldEventQuest> WorldEventQuests = new List<WorldEventQuest>();
-        #endregion
+
+        #endregion Fields
 
         #region Properties
+
         public static uint EventCount
         {
             get { return _eventCount; }
         }
 
-	    public static bool Loaded
-        { 
+        public static bool Loaded
+        {
             get;
             private set;
         }
-        #endregion
+
+        #endregion Properties
 
         #region Initialization and Loading
+
         [Initialization(InitializationPass.Fifth, "Initialize World Events")]
         public static void Initialize()
         {
@@ -67,7 +72,7 @@ namespace WCell.RealmServer.Global
                 LastUpdateTime = DateTime.Now;
 
                 Log.Debug("{0} World Events loaded.", _eventCount);
-                
+
                 // Add the Update method to the world task queue
                 World.TaskQueue.CallPeriodically(10000, Update);
             }
@@ -80,7 +85,7 @@ namespace WCell.RealmServer.Global
             {
                 Loaded = false;
                 AllEvents = new WorldEvent[100];
-		        ActiveEvents = new WorldEvent[100];
+                ActiveEvents = new WorldEvent[100];
                 return true;
             }
             return false;
@@ -90,7 +95,8 @@ namespace WCell.RealmServer.Global
         {
             return UnloadAll() && LoadAll();
         }
-        #endregion
+
+        #endregion Initialization and Loading
 
         #region Timers
 
@@ -116,13 +122,14 @@ namespace WCell.RealmServer.Global
             }
         }
 
-	    #endregion
+        #endregion Timers
 
         #region Manage Events
+
         public static WorldEvent GetEvent(uint id)
-		{
-			return AllEvents.Get(id);
-		}
+        {
+            return AllEvents.Get(id);
+        }
 
         public static void AddEvent(WorldEvent worldEvent)
         {
@@ -176,31 +183,31 @@ namespace WCell.RealmServer.Global
             Log.Info("Stopping event {0}: {1}", worldEvent.Id, worldEvent.Description);
             ActiveEvents[worldEvent.Id] = null;
 
-            if(worldEvent.QuestIds.Count != 0)
+            if (worldEvent.QuestIds.Count != 0)
                 ClearActiveQuests(worldEvent.QuestIds);
 
             DeSpawnEvent(worldEvent);
             ResetEventNPCData(worldEvent);
         }
-		#endregion
+
+        #endregion Manage Events
 
         #region Event Actions
 
         private static void ClearActiveQuests(IEnumerable<uint> questIds)
         {
-           
-                World.CallOnAllChars(chr =>
+            World.CallOnAllChars(chr =>
+                                     {
+                                         foreach (var questId in questIds)
                                          {
-                                             foreach (var questId in questIds)
+                                             var quest = chr.QuestLog.GetQuestById(questId);
+                                             if (quest != null)
                                              {
-                                                 var quest = chr.QuestLog.GetQuestById(questId);
-                                                 if (quest != null)
-                                                 {
-                                                     quest.Cancel(false);
-                                                 }
+                                                 quest.Cancel(false);
                                              }
                                          }
-                    );
+                                     }
+                );
         }
 
         public static void SpawnEvent(uint eventId)
@@ -217,7 +224,6 @@ namespace WCell.RealmServer.Global
 
         private static void SpawnEvent(WorldEvent worldEvent)
         {
-
             foreach (var worldEventNPC in worldEvent.NPCSpawns)
             {
                 var spawnEntry = NPCMgr.GetSpawnEntry(worldEventNPC.Guid);
@@ -235,14 +241,11 @@ namespace WCell.RealmServer.Global
                 }
                 else
                 {
-
                     foreach (var point in spawnEntry.SpawnPoints.ToArray())
                     {
                         point.Disable();
                     }
                 }
-
-
             }
 
             foreach (var worldEventGO in worldEvent.GOSpawns)
@@ -262,7 +265,6 @@ namespace WCell.RealmServer.Global
                 }
                 else
                 {
-
                     foreach (var point in spawnEntry.SpawnPoints.ToArray())
                     {
                         point.Disable();
@@ -290,7 +292,6 @@ namespace WCell.RealmServer.Global
                 }
                 else
                 {
-
                     foreach (var point in spawnEntry.SpawnPoints.ToArray())
                     {
                         point.Respawn();
@@ -315,7 +316,6 @@ namespace WCell.RealmServer.Global
                 }
                 else
                 {
-
                     foreach (var point in spawnEntry.SpawnPoints.ToArray())
                     {
                         point.Respawn();
@@ -326,17 +326,16 @@ namespace WCell.RealmServer.Global
 
         private static void ApplyEventNPCData(WorldEvent worldEvent)
         {
-
             foreach (var eventNpcData in worldEvent.ModelEquips)
             {
                 var spawnEntry = NPCMgr.GetSpawnEntry(eventNpcData.Guid);
-                if(spawnEntry == null)
+                if (spawnEntry == null)
                 {
                     Log.Warn("Invalid Spawn Entry in World Event NPC Data, Entry: {0}", eventNpcData.Guid);
                     continue;
                 }
 
-                if(eventNpcData.EntryId != 0)
+                if (eventNpcData.EntryId != 0)
                 {
                     eventNpcData.OriginalEntryId = spawnEntry.EntryId;
                     spawnEntry.EntryId = eventNpcData.EntryId;
@@ -355,20 +354,20 @@ namespace WCell.RealmServer.Global
                     spawnEntry.DisplayIdOverride = eventNpcData.ModelId;
                 }
 
-                if(eventNpcData.EquipmentId != 0)
+                if (eventNpcData.EquipmentId != 0)
                 {
                     eventNpcData.OriginalEquipmentId = spawnEntry.EquipmentId;
                     spawnEntry.EquipmentId = eventNpcData.EquipmentId;
 
                     spawnEntry.Equipment = NPCMgr.GetEquipment(spawnEntry.EquipmentId);
                 }
-                
+
                 foreach (var point in spawnEntry.SpawnPoints.ToArray().Where(point => point.IsActive))
                 {
                     point.Respawn();
                     if (eventNpcData.SpellIdToCastAtStart == 0)
                         continue;
-                    
+
                     Spell spell = SpellHandler.Get(eventNpcData.SpellIdToCastAtStart);
                     if (spell == null)
                         continue;
@@ -381,7 +380,6 @@ namespace WCell.RealmServer.Global
 
         private static void ResetEventNPCData(WorldEvent worldEvent)
         {
-
             foreach (var eventNpcData in worldEvent.ModelEquips)
             {
                 var spawnEntry = NPCMgr.GetSpawnEntry(eventNpcData.Guid);
@@ -408,7 +406,7 @@ namespace WCell.RealmServer.Global
 
                     spawnEntry.Equipment = NPCMgr.GetEquipment(spawnEntry.EquipmentId);
                 }
-                
+
                 foreach (var point in spawnEntry.SpawnPoints.ToArray().Where(point => point.IsActive))
                 {
                     point.Respawn();
@@ -425,7 +423,8 @@ namespace WCell.RealmServer.Global
                 }
             }
         }
-        #endregion
+
+        #endregion Event Actions
 
         #region Active Events
 
@@ -434,15 +433,16 @@ namespace WCell.RealmServer.Global
             return id != 0 && ActiveEvents.Any(evnt => evnt != null && evnt.HolidayId == id);
         }
 
-	    public static bool IsEventActive(uint id)
-		{
+        public static bool IsEventActive(uint id)
+        {
             return id == 0 || ActiveEvents.Get(id) != null;
-		}
+        }
 
-		public static IEnumerable<WorldEvent> GetActiveEvents()
-		{
-			return ActiveEvents.Where(evt => evt != null);
-		}
-		#endregion
-	}
+        public static IEnumerable<WorldEvent> GetActiveEvents()
+        {
+            return ActiveEvents.Where(evt => evt != null);
+        }
+
+        #endregion Active Events
+    }
 }

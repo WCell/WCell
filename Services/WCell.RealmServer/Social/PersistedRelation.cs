@@ -28,6 +28,7 @@ namespace WCell.RealmServer.Interaction
         private readonly CharacterRelationRecord m_charRelationRecord;
 
         #region Properties
+
         public override uint CharacterId
         {
             get
@@ -40,7 +41,7 @@ namespace WCell.RealmServer.Interaction
             }
         }
 
-		public override uint RelatedCharacterId
+        public override uint RelatedCharacterId
         {
             get
             {
@@ -52,18 +53,19 @@ namespace WCell.RealmServer.Interaction
             }
         }
 
-		public override string Note
-		{
-			get
-			{
-				return m_charRelationRecord.Note;
-			}
-			set
-			{
-				m_charRelationRecord.Note = value;
-			}
-		}
-        #endregion
+        public override string Note
+        {
+            get
+            {
+                return m_charRelationRecord.Note;
+            }
+            set
+            {
+                m_charRelationRecord.Note = value;
+            }
+        }
+
+        #endregion Properties
 
         /// <summary>
         /// Default constructor
@@ -76,7 +78,7 @@ namespace WCell.RealmServer.Interaction
         /// <summary>
         /// Creates a new character relation based on the chars EntityId
         /// </summary>
-		public PersistedRelation(uint charId, uint relatedCharId)
+        public PersistedRelation(uint charId, uint relatedCharId)
         {
             m_charRelationRecord = new CharacterRelationRecord(charId, relatedCharId, this.Type);
         }
@@ -106,6 +108,7 @@ namespace WCell.RealmServer.Interaction
         }
 
         #region Static Methods
+
         /// <summary>
         /// Retrieves the list of character relations
         /// </summary>
@@ -125,10 +128,11 @@ namespace WCell.RealmServer.Interaction
         public static BaseRelation[] GetByCharacterId(uint charLowId)
         {
             CharacterRelationRecord[] relations =
-				CharacterRelationRecord.FindAllByProperty("_characterId", (long)charLowId);
+                CharacterRelationRecord.FindAllByProperty("_characterId", (long)charLowId);
 
             return relations.Select(crr => RelationMgr.CreateRelation(crr)).ToArray();
         }
-        #endregion
+
+        #endregion Static Methods
     }
 }

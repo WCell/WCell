@@ -7,162 +7,162 @@ using WCell.RealmServer.Gossips;
 
 namespace WCell.RealmServer.Editor
 {
-	/// <summary>
-	/// Every map can have one MapEditor.
-	/// It contains all the information related to editing that map (mostly spawn editing).
-	/// </summary>
-	public class MapEditor
-	{
-		public const int CharacterUpdateDelayMillis = 1000;
+    /// <summary>
+    /// Every map can have one MapEditor.
+    /// It contains all the information related to editing that map (mostly spawn editing).
+    /// </summary>
+    public class MapEditor
+    {
+        public const int CharacterUpdateDelayMillis = 1000;
 
-		/// <summary>
-		/// Set of Characters who are currently working with this editor.
-		/// Only use in the Map's context.
-		/// </summary>
-		public readonly Dictionary<uint, EditorArchitectInfo> Team = new Dictionary<uint, EditorArchitectInfo>();
-		private readonly List<EditorFigurine> Figurines = new List<EditorFigurine>(100);
+        /// <summary>
+        /// Set of Characters who are currently working with this editor.
+        /// Only use in the Map's context.
+        /// </summary>
+        public readonly Dictionary<uint, EditorArchitectInfo> Team = new Dictionary<uint, EditorArchitectInfo>();
+        private readonly List<EditorFigurine> Figurines = new List<EditorFigurine>(100);
 
-		private bool m_IsVisible;
+        private bool m_IsVisible;
 
-		public MapEditor(Map map)
-		{
-			Map = map;
-			Menu = new MapEditorMenu(this);
-			m_IsVisible = false;
-		}
+        public MapEditor(Map map)
+        {
+            Map = map;
+            Menu = new MapEditorMenu(this);
+            m_IsVisible = false;
+        }
 
-		public GossipMenu Menu
-		{
-			get;
-			private set;
-		}
+        public GossipMenu Menu
+        {
+            get;
+            private set;
+        }
 
-		public Map Map
-		{
-			get;
-			private set;
-		}
+        public Map Map
+        {
+            get;
+            private set;
+        }
 
-		public bool IsVisible
-		{
-			get { return m_IsVisible; }
-			set
-			{
-				if (m_IsVisible == value) return;
+        public bool IsVisible
+        {
+            get { return m_IsVisible; }
+            set
+            {
+                if (m_IsVisible == value) return;
 
-				Map.EnsureContext();
-				m_IsVisible = value;
-				if (value)
-				{
-					PlaceFigurines();
-				}
-				else
-				{
-					RemoveFigurines();
-				}
-			}
-		}
+                Map.EnsureContext();
+                m_IsVisible = value;
+                if (value)
+                {
+                    PlaceFigurines();
+                }
+                else
+                {
+                    RemoveFigurines();
+                }
+            }
+        }
 
-		private void PlaceFigurines()
-		{
-			Map.ForeachSpawnPool(pool =>
-			{
-				foreach (var point in pool.SpawnPoints)
-				{
-					var figurine = new SpawnPointFigurine(this, point);
-					
-					Figurines.Add(figurine);
-					figurine.TeleportTo(point);
-				}
-			});
-		}
+        private void PlaceFigurines()
+        {
+            Map.ForeachSpawnPool(pool =>
+            {
+                foreach (var point in pool.SpawnPoints)
+                {
+                    var figurine = new SpawnPointFigurine(this, point);
 
-		private void RemoveFigurines()
-		{
-			//InvalidateVisibilityForTeamMembers();
-			foreach (var fig in Figurines)
-			{
-				fig.Delete();
-			}
-			Figurines.Clear();
-		}
+                    Figurines.Add(figurine);
+                    figurine.TeleportTo(point);
+                }
+            });
+        }
 
-		void InvalidateVisibilityForTeamMembers()
-		{
-			foreach (var info in Team.Values)
-			{
-				if (info.Character.IsInContext)
-				{
-					info.Character.ResetOwnWorld();
-				}
-			}
-		}
+        private void RemoveFigurines()
+        {
+            //InvalidateVisibilityForTeamMembers();
+            foreach (var fig in Figurines)
+            {
+                fig.Delete();
+            }
+            Figurines.Clear();
+        }
 
-		/// <summary>
-		/// Adds the given Character to the team of this editor (if not already part of the team)
-		/// </summary>
-		public void Join(Character chr)
-		{
-			Map.AddMessage(() =>
-			{
-				if (chr.Map != Map) return;
-				OnJoin(chr);
-			});
-		}
+        private void InvalidateVisibilityForTeamMembers()
+        {
+            foreach (var info in Team.Values)
+            {
+                if (info.Character.IsInContext)
+                {
+                    info.Character.ResetOwnWorld();
+                }
+            }
+        }
 
-		public void Leave(Character chr)
-		{
-			Map.AddMessage(() =>
-			{
-				OnLeave(chr);
-			});
-		}
+        /// <summary>
+        /// Adds the given Character to the team of this editor (if not already part of the team)
+        /// </summary>
+        public void Join(Character chr)
+        {
+            Map.AddMessage(() =>
+            {
+                if (chr.Map != Map) return;
+                OnJoin(chr);
+            });
+        }
 
-		private void OnJoin(Character chr)
-		{
-			if (Team.ContainsKey(chr.EntityId.Low)) return;
+        public void Leave(Character chr)
+        {
+            Map.AddMessage(() =>
+            {
+                OnLeave(chr);
+            });
+        }
 
-			var architect = MapEditorMgr.GetOrCreateArchitectInfo(chr);
-			Team.Add(chr.EntityId.Low, architect);
-			architect.Editor = this;
-			chr.CallPeriodically(CharacterUpdateDelayMillis, UpdateCallback);
-		}
+        private void OnJoin(Character chr)
+        {
+            if (Team.ContainsKey(chr.EntityId.Low)) return;
 
-		void OnLeave(Character chr)
-		{
-			Team.Remove(chr.EntityId.Low);
-			chr.RemoveUpdateAction(UpdateCallback);
+            var architect = MapEditorMgr.GetOrCreateArchitectInfo(chr);
+            Team.Add(chr.EntityId.Low, architect);
+            architect.Editor = this;
+            chr.CallPeriodically(CharacterUpdateDelayMillis, UpdateCallback);
+        }
 
-			// hide all figurines
-			chr.ResetOwnWorld();
-		}
+        private void OnLeave(Character chr)
+        {
+            Team.Remove(chr.EntityId.Low);
+            chr.RemoveUpdateAction(UpdateCallback);
 
-		/// <summary>
-		/// Called periodically on editing Characters
-		/// </summary>
-		void UpdateCallback(WorldObject obj)
-		{
-			// make sure, Character is still in place
-			var chr = (Character)obj;
-			if (obj.Map != Map || !obj.IsInWorld)
-			{
-				Leave(chr);
-				return;
-			}
+            // hide all figurines
+            chr.ResetOwnWorld();
+        }
 
-			// update target
-			var info = MapEditorMgr.GetOrCreateArchitectInfo(chr);
-			var chrTarget = chr.Target as EditorFigurine;
-			var target = info.CurrentTarget;
-			if (target != chrTarget)
-			{
-				target = chrTarget;
-				info.CurrentTarget = target;
-				if (target != null)
-				{
-					// selected new target
-				}
-			}
-		}
-	}
+        /// <summary>
+        /// Called periodically on editing Characters
+        /// </summary>
+        private void UpdateCallback(WorldObject obj)
+        {
+            // make sure, Character is still in place
+            var chr = (Character)obj;
+            if (obj.Map != Map || !obj.IsInWorld)
+            {
+                Leave(chr);
+                return;
+            }
+
+            // update target
+            var info = MapEditorMgr.GetOrCreateArchitectInfo(chr);
+            var chrTarget = chr.Target as EditorFigurine;
+            var target = info.CurrentTarget;
+            if (target != chrTarget)
+            {
+                target = chrTarget;
+                info.CurrentTarget = target;
+                if (target != null)
+                {
+                    // selected new target
+                }
+            }
+        }
+    }
 }

@@ -27,470 +27,485 @@ using WCell.RealmServer.Handlers;
 
 namespace WCell.RealmServer.Talents
 {
-	/// <summary>
-	/// Represents all Talents of a Character or Pet
-	/// </summary>
-	public abstract class TalentCollection : IEnumerable<Talent>
-	{
-		internal Dictionary<TalentId, Talent> ById = new Dictionary<TalentId, Talent>();
+    /// <summary>
+    /// Represents all Talents of a Character or Pet
+    /// </summary>
+    public abstract class TalentCollection : IEnumerable<Talent>
+    {
+        internal Dictionary<TalentId, Talent> ById = new Dictionary<TalentId, Talent>();
 
-		internal readonly int[] m_treePoints;
+        internal readonly int[] m_treePoints;
 
-		internal TalentCollection(Unit unit)
-		{
-			Owner = unit;
+        internal TalentCollection(Unit unit)
+        {
+            Owner = unit;
 
-			m_treePoints = new int[Trees.Length];
-		}
+            m_treePoints = new int[Trees.Length];
+        }
 
-		internal void CalcSpentTalentPoints()
-		{
+        internal void CalcSpentTalentPoints()
+        {
             for (var i = 0; i < Trees.Length; i++)
             {
                 m_treePoints[i] = 0;
             }
 
-			foreach (var talent in this)
-			{
+            foreach (var talent in this)
+            {
                 UpdateTreePoint(talent.Entry.Tree.TabIndex, talent.ActualRank);
-			}
-		}
+            }
+        }
 
         internal void UpdateTreePoint(uint tabIndex, int diff)
         {
             m_treePoints[tabIndex] += diff;
         }
 
-		#region Default Properties
-		public TalentTree[] Trees
-		{
-			get { return TalentMgr.GetTrees(Owner.Class); }
-		}
+        #region Default Properties
 
-		public int TotalPointsSpent
-		{
-			get { return m_treePoints.Sum(); }
-		}
+        public TalentTree[] Trees
+        {
+            get { return TalentMgr.GetTrees(Owner.Class); }
+        }
 
-		public int Count
-		{
-			get { return ById.Count; }
-		}
+        public int TotalPointsSpent
+        {
+            get { return m_treePoints.Sum(); }
+        }
 
-		public Unit Owner
-		{
-			get;
-			internal set;
-		}
-		#endregion
+        public int Count
+        {
+            get { return ById.Count; }
+        }
 
-		#region CanLearn
-		/// <summary>
-		/// Whether the given talent can be learned by this Character
-		/// </summary>
-		public bool CanLearn(TalentId id, int rank)
-		{
-			var talent = TalentMgr.GetEntry(id);
+        public Unit Owner
+        {
+            get;
+            internal set;
+        }
 
-			return talent != null && CanLearn(talent, rank);
-		}
+        #endregion Default Properties
 
-		/// <summary>
-		/// Whether the given talent can be learned by an average player.
-		/// Does not check for available Talent points, since that is checked when the Rank is changed.
-		/// </summary>
-		public virtual bool CanLearn(TalentEntry entry, int rank)
-		{
-			var tree = entry.Tree;
-			var diff = rank - GetRank(entry.Id);
+        #region CanLearn
 
-			if (tree.Class != Owner.Class || m_treePoints[tree.TabIndex] < entry.RequiredTreePoints ||
-				rank > entry.Spells.Length || diff < 1)
-			{
-				return false;
-			}
+        /// <summary>
+        /// Whether the given talent can be learned by this Character
+        /// </summary>
+        public bool CanLearn(TalentId id, int rank)
+        {
+            var talent = TalentMgr.GetEntry(id);
 
-			// requires another talent?
-			Talent reqTalent;
+            return talent != null && CanLearn(talent, rank);
+        }
 
-			return
-				FreeTalentPoints >= diff &&
-				(entry.RequiredId == TalentId.None || (ById.TryGetValue(entry.RequiredId, out reqTalent) &&
-				(entry.RequiredRank == 0 || reqTalent.Rank >= entry.RequiredRank)));
-		}
-		#endregion
+        /// <summary>
+        /// Whether the given talent can be learned by an average player.
+        /// Does not check for available Talent points, since that is checked when the Rank is changed.
+        /// </summary>
+        public virtual bool CanLearn(TalentEntry entry, int rank)
+        {
+            var tree = entry.Tree;
+            var diff = rank - GetRank(entry.Id);
 
-		#region Learn
-		public Talent Learn(TalentId id, int rank)
-		{
-			var entry = TalentMgr.GetEntry(id);
-			if (entry != null)
-			{
-				return Learn(entry, rank);
-			}
-			return null;
-		}
+            if (tree.Class != Owner.Class || m_treePoints[tree.TabIndex] < entry.RequiredTreePoints ||
+                rank > entry.Spells.Length || diff < 1)
+            {
+                return false;
+            }
 
-		/// <summary>
-		/// Tries to learn the given talent on the given rank
-		/// </summary>
-		/// <returns>Whether it was learnt</returns>
-		public Talent Learn(TalentEntry entry, int rank)
-		{
-			if (!CanLearn(entry, rank))
-			{
-				return null;
-			}
+            // requires another talent?
+            Talent reqTalent;
 
-			return Set(entry, rank);
-		}
+            return
+                FreeTalentPoints >= diff &&
+                (entry.RequiredId == TalentId.None || (ById.TryGetValue(entry.RequiredId, out reqTalent) &&
+                (entry.RequiredRank == 0 || reqTalent.Rank >= entry.RequiredRank)));
+        }
 
-		/// <summary>
-		/// Learn all talents of your own class
-		/// </summary>
-		public void LearnAll()
-		{
-			LearnAll(Owner.Class);
-		}
+        #endregion CanLearn
 
-		/// <summary>
-		/// Learns all talents of the given class
-		/// </summary>
-		public void LearnAll(ClassId clss)
-		{
-			var points = FreeTalentPoints;
-			FreeTalentPoints = 300;			// need extra Talent points to avoid internal checks to fail
+        #region Learn
 
-			foreach (var talentTree in TalentMgr.TreesByClass[(int)clss])
-			{
-				if (talentTree == null) continue;
-				foreach (var entry in talentTree)
-				{
-					if (entry == null) continue;
-					Learn(entry, entry.MaxRank);
-				}
-			}
+        public Talent Learn(TalentId id, int rank)
+        {
+            var entry = TalentMgr.GetEntry(id);
+            if (entry != null)
+            {
+                return Learn(entry, rank);
+            }
+            return null;
+        }
 
-			FreeTalentPoints = points;
-		}
-		#endregion
+        /// <summary>
+        /// Tries to learn the given talent on the given rank
+        /// </summary>
+        /// <returns>Whether it was learnt</returns>
+        public Talent Learn(TalentEntry entry, int rank)
+        {
+            if (!CanLearn(entry, rank))
+            {
+                return null;
+            }
 
-		#region Set & Add
-		/// <summary>
-		/// Sets the given talent to the given rank without any checks.
-		/// Make sure that the given TalentId is valid for this Character's class.
-		/// </summary>
-		public Talent Set(TalentId id, int rank)
-		{
-			var entry = TalentMgr.GetEntry(id);
-			return Set(entry, rank);
-		}
+            return Set(entry, rank);
+        }
 
-		/// <summary>
-		/// Sets the given talent to the given rank without any checks
-		/// </summary>
-		public Talent Set(TalentEntry entry, int rank)
-		{
-			Talent talent;
-			if (!ById.TryGetValue(entry.Id, out talent))
-			{
-				ById.Add(entry.Id, talent = new Talent(this, entry, rank));
-			}
-			else
-			{
-				talent.Rank = rank;
-			}
-			return talent;
-		}
+        /// <summary>
+        /// Learn all talents of your own class
+        /// </summary>
+        public void LearnAll()
+        {
+            LearnAll(Owner.Class);
+        }
 
-		internal void AddExisting(TalentEntry entry, int rank)
-		{
-			var talent = new Talent(this, entry);
-			rank = Math.Max(0, rank - 1);
-			talent.SetRankSilently(rank);
+        /// <summary>
+        /// Learns all talents of the given class
+        /// </summary>
+        public void LearnAll(ClassId clss)
+        {
+            var points = FreeTalentPoints;
+            FreeTalentPoints = 300;			// need extra Talent points to avoid internal checks to fail
 
-			ById[entry.Id] = talent;
-		}
-		#endregion
+            foreach (var talentTree in TalentMgr.TreesByClass[(int)clss])
+            {
+                if (talentTree == null) continue;
+                foreach (var entry in talentTree)
+                {
+                    if (entry == null) continue;
+                    Learn(entry, entry.MaxRank);
+                }
+            }
 
+            FreeTalentPoints = points;
+        }
 
-		#region Getters
-		/// <summary>
-		/// Returns the current rank that this player has of this talent
-		/// </summary>
-		public Talent GetTalent(TalentId id)
-		{
-			Talent talent;
-			ById.TryGetValue(id, out talent);
-			return talent;
-		}
+        #endregion Learn
 
-		/// <summary>
-		/// Returns the current rank that this player has of this talent
-		/// </summary>
-		public int GetRank(TalentId id)
-		{
-			Talent talent;
-			if (ById.TryGetValue(id, out talent))
-			{
-				return talent.Rank;
-			}
+        #region Set & Add
 
-			return -1;
-		}
+        /// <summary>
+        /// Sets the given talent to the given rank without any checks.
+        /// Make sure that the given TalentId is valid for this Character's class.
+        /// </summary>
+        public Talent Set(TalentId id, int rank)
+        {
+            var entry = TalentMgr.GetEntry(id);
+            return Set(entry, rank);
+        }
 
-		/// <summary>
-		/// Whether this Owner has a certain Talent.
-		/// </summary>
-		/// <param name="id">The TalentId of the Talent</param>
-		/// <returns>True if the Owner has the specified Talent</returns>
-		public bool HasTalent(TalentId id)
-		{
-			return ById.ContainsKey(id);
-		}
+        /// <summary>
+        /// Sets the given talent to the given rank without any checks
+        /// </summary>
+        public Talent Set(TalentEntry entry, int rank)
+        {
+            Talent talent;
+            if (!ById.TryGetValue(entry.Id, out talent))
+            {
+                ById.Add(entry.Id, talent = new Talent(this, entry, rank));
+            }
+            else
+            {
+                talent.Rank = rank;
+            }
+            return talent;
+        }
 
-		/// <summary>
-		/// Whether this Owner has a certain Talent.
-		/// </summary>
-		/// <param name="talent">The Talent in question.</param>
-		/// <returns>True if the Owner has the specified Talent</returns>
-		public bool HasTalent(Talent talent)
-		{
-			return ById.ContainsKey(talent.Entry.Id);
-		}
-		#endregion
+        internal void AddExisting(TalentEntry entry, int rank)
+        {
+            var talent = new Talent(this, entry);
+            rank = Math.Max(0, rank - 1);
+            talent.SetRankSilently(rank);
 
-		#region Remove & Reset
-		public bool Remove(TalentId id)
-		{
-			var talent = GetTalent(id);
-			if (talent != null)
-			{
-				talent.Remove();
-				return true;
-			}
-			return false;
-		}
+            ById[entry.Id] = talent;
+        }
 
-		/// <summary>
-		/// Removes the given amount of arbitrarily selected talents (always removes higher level talents first)
-		/// </summary>
-		public void RemoveTalents(int count)
-		{
-			var trees = Trees;
+        #endregion Set & Add
 
-			// TODO: Remove depth-first, instead of breadth-first
-			for (var i = 0; i < trees.Length; i++)
-			{
-				var tree = trees[i];
-				while (m_treePoints[i] > 0 && count > 0)
-				{
-					for (var r = tree.TalentTable.Length - 1; r >= 0; r--)
-					{
-						var row = tree.TalentTable[r];
-						foreach (var entry in row)
-						{
-							if (entry != null)
-							{
-								var talent = GetTalent(entry.Id);
-								if (talent != null)
-								{
-									if (count >= talent.ActualRank)
-									{
-										count -= talent.ActualRank;
-										talent.Remove();
-									}
-									else
-									{
-										talent.ActualRank -= count;
-										count = 0;
-										TalentHandler.SendTalentGroupList(this);
-										return;
-									}
-								}
-							}
-						}
-					}
-				}
-			}
+        #region Getters
 
-			TalentHandler.SendTalentGroupList(this);
-		}
+        /// <summary>
+        /// Returns the current rank that this player has of this talent
+        /// </summary>
+        public Talent GetTalent(TalentId id)
+        {
+            Talent talent;
+            ById.TryGetValue(id, out talent);
+            return talent;
+        }
 
-		/// <summary>
-		/// Resets all talents for free
-		/// </summary>
-		public void ResetAllForFree()
-		{
-			foreach (var talent in ById.Values.ToArray())
-			{
-				talent.Remove();
-			}
-			ById.Clear();
-			FreeTalentPoints = GetFreeTalentPointsForLevel(Owner.Level);
-			LastResetTime = DateTime.Now;
-		}
+        /// <summary>
+        /// Returns the current rank that this player has of this talent
+        /// </summary>
+        public int GetRank(TalentId id)
+        {
+            Talent talent;
+            if (ById.TryGetValue(id, out talent))
+            {
+                return talent.Rank;
+            }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public int CalculateCurrentResetTier()
-		{
-			if (OwnerCharacter.GodMode)
-			{
-				return 0;
-			}
+            return -1;
+        }
 
-			var tier = CurrentResetTier;
-			var lastResetTime = LastResetTime;
+        /// <summary>
+        /// Whether this Owner has a certain Talent.
+        /// </summary>
+        /// <param name="id">The TalentId of the Talent</param>
+        /// <returns>True if the Owner has the specified Talent</returns>
+        public bool HasTalent(TalentId id)
+        {
+            return ById.ContainsKey(id);
+        }
 
-			if (lastResetTime == null)
-			{
-				return 0;
-			}
+        /// <summary>
+        /// Whether this Owner has a certain Talent.
+        /// </summary>
+        /// <param name="talent">The Talent in question.</param>
+        /// <returns>True if the Owner has the specified Talent</returns>
+        public bool HasTalent(Talent talent)
+        {
+            return ById.ContainsKey(talent.Entry.Id);
+        }
 
-			// count down the tier
-			var timeLapse = DateTime.Now - lastResetTime.Value;
-			var numDiscounts = (int)timeLapse.TotalHours / ResetTierDecayHours;
-			var newPriceTier = tier - numDiscounts;
-			if (newPriceTier < 0)
-			{
-				return 0;
-			}
+        #endregion Getters
 
-			return newPriceTier;
-		}
+        #region Remove & Reset
 
-		/// <summary>
-		/// The amount of copper that it costs to reset all talents.
-		/// Updates the current tier, according to the amount of time passed.
-		/// </summary>
-		public uint GetResetPrice()
-		{
-			var tier = CalculateCurrentResetTier();
-			var tiers = ResetPricesPerTier;
-			if (tier >= tiers.Length)
-			{
-				tier = tiers.Length - 1;
-			}
-			return tiers[tier];
-		}
+        public bool Remove(TalentId id)
+        {
+            var talent = GetTalent(id);
+            if (talent != null)
+            {
+                talent.Remove();
+                return true;
+            }
+            return false;
+        }
 
-		/// <summary>
-		/// Returns whether reseting succeeded or if it failed (due to not having enough gold)
-		/// </summary>
-		public bool ResetTalents()
-		{
-			var tier = CalculateCurrentResetTier();
-			var tiers = ResetPricesPerTier;
-			if (tier >= tiers.Length)
-			{
-				tier = tiers.Length - 1;
-			}
+        /// <summary>
+        /// Removes the given amount of arbitrarily selected talents (always removes higher level talents first)
+        /// </summary>
+        public void RemoveTalents(int count)
+        {
+            var trees = Trees;
 
-			var price = tiers[tier];
-			var chr = OwnerCharacter;
-			if (price > chr.Money || chr.GodMode)
-			{
-				ResetAllForFree();
+            // TODO: Remove depth-first, instead of breadth-first
+            for (var i = 0; i < trees.Length; i++)
+            {
+                var tree = trees[i];
+                while (m_treePoints[i] > 0 && count > 0)
+                {
+                    for (var r = tree.TalentTable.Length - 1; r >= 0; r--)
+                    {
+                        var row = tree.TalentTable[r];
+                        foreach (var entry in row)
+                        {
+                            if (entry != null)
+                            {
+                                var talent = GetTalent(entry.Id);
+                                if (talent != null)
+                                {
+                                    if (count >= talent.ActualRank)
+                                    {
+                                        count -= talent.ActualRank;
+                                        talent.Remove();
+                                    }
+                                    else
+                                    {
+                                        talent.ActualRank -= count;
+                                        count = 0;
+                                        TalentHandler.SendTalentGroupList(this);
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
-				chr.Money -= price;
-				CurrentResetTier = tier + 1;
+            TalentHandler.SendTalentGroupList(this);
+        }
+
+        /// <summary>
+        /// Resets all talents for free
+        /// </summary>
+        public void ResetAllForFree()
+        {
+            foreach (var talent in ById.Values.ToArray())
+            {
+                talent.Remove();
+            }
+            ById.Clear();
+            FreeTalentPoints = GetFreeTalentPointsForLevel(Owner.Level);
+            LastResetTime = DateTime.Now;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        public int CalculateCurrentResetTier()
+        {
+            if (OwnerCharacter.GodMode)
+            {
+                return 0;
+            }
+
+            var tier = CurrentResetTier;
+            var lastResetTime = LastResetTime;
+
+            if (lastResetTime == null)
+            {
+                return 0;
+            }
+
+            // count down the tier
+            var timeLapse = DateTime.Now - lastResetTime.Value;
+            var numDiscounts = (int)timeLapse.TotalHours / ResetTierDecayHours;
+            var newPriceTier = tier - numDiscounts;
+            if (newPriceTier < 0)
+            {
+                return 0;
+            }
+
+            return newPriceTier;
+        }
+
+        /// <summary>
+        /// The amount of copper that it costs to reset all talents.
+        /// Updates the current tier, according to the amount of time passed.
+        /// </summary>
+        public uint GetResetPrice()
+        {
+            var tier = CalculateCurrentResetTier();
+            var tiers = ResetPricesPerTier;
+            if (tier >= tiers.Length)
+            {
+                tier = tiers.Length - 1;
+            }
+            return tiers[tier];
+        }
+
+        /// <summary>
+        /// Returns whether reseting succeeded or if it failed (due to not having enough gold)
+        /// </summary>
+        public bool ResetTalents()
+        {
+            var tier = CalculateCurrentResetTier();
+            var tiers = ResetPricesPerTier;
+            if (tier >= tiers.Length)
+            {
+                tier = tiers.Length - 1;
+            }
+
+            var price = tiers[tier];
+            var chr = OwnerCharacter;
+            if (price > chr.Money || chr.GodMode)
+            {
+                ResetAllForFree();
+
+                chr.Money -= price;
+                CurrentResetTier = tier + 1;
                 chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.GoldSpentForTalents, price);
-				return true;
-			}
-			return false;
-		}
-		#endregion
+                return true;
+            }
+            return false;
+        }
 
-		#region Abstract & Virtual
-		/// <summary>
-		/// The Owner of this TalentCollection or the owning pet's Master
-		/// </summary>
-		public abstract Character OwnerCharacter
-		{
-			get;
-		}
+        #endregion Remove & Reset
 
-		public abstract int FreeTalentPoints
-		{
-			get;
-			set;
-		}
+        #region Abstract & Virtual
 
-		public virtual int SpecProfileCount
-		{
-			get { return 1; }
-			internal set
-			{
-				/* don't do nothing */
-				LogManager.GetCurrentClassLogger().Warn("Tried to set Talents.TalentGroupCount for: {0}", Owner);
-			}
-		}
+        /// <summary>
+        /// The Owner of this TalentCollection or the owning pet's Master
+        /// </summary>
+        public abstract Character OwnerCharacter
+        {
+            get;
+        }
 
-		/// <summary>
-		/// The index of the currently used group of talents (one can have multiple groups due to multi spec)
-		/// </summary>
-		public abstract int CurrentSpecIndex
-		{
-			get;
-		}
+        public abstract int FreeTalentPoints
+        {
+            get;
+            set;
+        }
 
-		public abstract uint[] ResetPricesPerTier
-		{
-			get;
-		}
+        public virtual int SpecProfileCount
+        {
+            get { return 1; }
+            internal set
+            {
+                /* don't do nothing */
+                LogManager.GetCurrentClassLogger().Warn("Tried to set Talents.TalentGroupCount for: {0}", Owner);
+            }
+        }
 
-		protected abstract int CurrentResetTier
-		{
-			get;
-			set;
-		}
+        /// <summary>
+        /// The index of the currently used group of talents (one can have multiple groups due to multi spec)
+        /// </summary>
+        public abstract int CurrentSpecIndex
+        {
+            get;
+        }
 
-		public abstract DateTime? LastResetTime
-		{
-			get;
-			set;
-		}
+        public abstract uint[] ResetPricesPerTier
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Amount of hours that it takes the reset price tier to go down by one
-		/// </summary>
-		public abstract int ResetTierDecayHours
-		{
-			get;
-		}
+        protected abstract int CurrentResetTier
+        {
+            get;
+            set;
+        }
 
-		public abstract int GetFreeTalentPointsForLevel(int level);
+        public abstract DateTime? LastResetTime
+        {
+            get;
+            set;
+        }
 
-		//TODO
-		public abstract void UpdateFreeTalentPointsSilently(int delta);
-		#endregion
+        /// <summary>
+        /// Amount of hours that it takes the reset price tier to go down by one
+        /// </summary>
+        public abstract int ResetTierDecayHours
+        {
+            get;
+        }
 
-		#region Enumerator
-		/// <summary>
-		/// Returns an enumerator that iterates through the collection.
-		/// </summary>
-		/// <returns>
-		/// A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.
-		/// </returns>
-		/// <filterpriority>1</filterpriority>
-		public IEnumerator<Talent> GetEnumerator()
-		{
-			return ById.Values.GetEnumerator();
-		}
+        public abstract int GetFreeTalentPointsForLevel(int level);
 
-		/// <summary>
-		/// Returns an enumerator that iterates through a collection.
-		/// </summary>
-		/// <returns>
-		/// An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.
-		/// </returns>
-		/// <filterpriority>2</filterpriority>
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return GetEnumerator();
-		}
-		#endregion
-	}
+        //TODO
+        public abstract void UpdateFreeTalentPointsSilently(int delta);
+
+        #endregion Abstract & Virtual
+
+        #region Enumerator
+
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.
+        /// </returns>
+        /// <filterpriority>1</filterpriority>
+        public IEnumerator<Talent> GetEnumerator()
+        {
+            return ById.Values.GetEnumerator();
+        }
+
+        /// <summary>
+        /// Returns an enumerator that iterates through a collection.
+        /// </summary>
+        /// <returns>
+        /// An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.
+        /// </returns>
+        /// <filterpriority>2</filterpriority>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        #endregion Enumerator
+    }
 }

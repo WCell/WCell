@@ -4,15 +4,15 @@ using WCell.RealmServer.Database;
 
 namespace WCell.RealmServer.Battlegrounds.Arenas
 {
-	[ActiveRecord("ArenaTeamMember", Access = PropertyAccess.Property)]
-	public partial class ArenaTeamMember : WCellRecord<ArenaTeamMember>
-	{
-		[PrimaryKey(PrimaryKeyType.Assigned)]
-		public int CharacterLowId
-		{
-			get;
-			private set;
-		}
+    [ActiveRecord("ArenaTeamMember", Access = PropertyAccess.Property)]
+    public partial class ArenaTeamMember : WCellRecord<ArenaTeamMember>
+    {
+        [PrimaryKey(PrimaryKeyType.Assigned)]
+        public int CharacterLowId
+        {
+            get;
+            private set;
+        }
 
         [Field("ArenaTeamId", NotNull = true)]
         private int _arenaTeamId;
@@ -24,10 +24,10 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
         }
 
         [Field("Name", NotNull = true)]
-		private string _name;
+        private string _name;
 
-		[Field("Class", NotNull = true)]
-		private int _class;
+        [Field("Class", NotNull = true)]
+        private int _class;
 
         [Field("GamesWeek", NotNull = true)]
         private int _gamesWeek;
@@ -49,22 +49,22 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
             return FindAllByProperty("_arenaTeamId", (int)team.Id);
         }
 
-        public ArenaTeamMember() {}
+        public ArenaTeamMember() { }
 
-		public ArenaTeamMember(CharacterRecord chr, ArenaTeam team, bool isLeader)
-			: this()
-		{
-			ArenaTeam = team;
-     
-			CharacterLowId = (int)chr.EntityLowId;
+        public ArenaTeamMember(CharacterRecord chr, ArenaTeam team, bool isLeader)
+            : this()
+        {
+            ArenaTeam = team;
+
+            CharacterLowId = (int)chr.EntityLowId;
             ArenaTeamId = team.Id;
-			_name = chr.Name;
-			_class = (int)chr.Class;
+            _name = chr.Name;
+            _class = (int)chr.Class;
             _gamesWeek = 0;
             _winsWeek = 0;
             _gamesSeason = 0;
             _winsSeason = 0;
             _personalRating = 1500;
-		}
-   }
+        }
+    }
 }

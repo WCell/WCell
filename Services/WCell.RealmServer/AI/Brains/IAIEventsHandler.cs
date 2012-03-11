@@ -4,26 +4,26 @@ using WCell.RealmServer.Spells.Auras;
 
 namespace WCell.RealmServer.AI.Brains
 {
-	public interface IAIEventsHandler
-	{
-		void OnEnterCombat();
+    public interface IAIEventsHandler
+    {
+        void OnEnterCombat();
 
-		void OnDamageTaken(Misc.IDamageAction action);
+        void OnDamageTaken(Misc.IDamageAction action);
 
-		void OnDebuff(Unit attackingUnit, SpellCast cast, Aura debuff);
+        void OnDebuff(Unit attackingUnit, SpellCast cast, Aura debuff);
 
-		void OnDamageDealt(Misc.IDamageAction action);
+        void OnDamageDealt(Misc.IDamageAction action);
 
-		void OnLeaveCombat();
+        void OnLeaveCombat();
 
-		void OnKilled(Unit killerUnit, Unit victimUnit);
+        void OnKilled(Unit killerUnit, Unit victimUnit);
 
-		void OnDeath();
+        void OnDeath();
 
-		void OnSpawn();
+        void OnSpawn();
 
-		void OnCombatTargetOutOfRange();
+        void OnCombatTargetOutOfRange();
 
-		void OnHeal(Unit healer, Unit healed, int amtHealed);
-	}
+        void OnHeal(Unit healer, Unit healed, int amtHealed);
+    }
 }

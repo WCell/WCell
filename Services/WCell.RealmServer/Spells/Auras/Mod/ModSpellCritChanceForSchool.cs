@@ -18,24 +18,24 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
-	public class ModSpellCritChanceForSchoolHandler : AuraEffectHandler
-	{
-		protected override void Apply()
-		{
-			var owner = Owner as Character;
-			if (owner != null)
-			{
-				owner.ModCritMod(m_spellEffect.MiscBitSet, EffectValue);
-			}
-		}
+    public class ModSpellCritChanceForSchoolHandler : AuraEffectHandler
+    {
+        protected override void Apply()
+        {
+            var owner = Owner as Character;
+            if (owner != null)
+            {
+                owner.ModCritMod(m_spellEffect.MiscBitSet, EffectValue);
+            }
+        }
 
-		protected override void Remove(bool cancelled)
-		{
-			var owner = Owner as Character;
-			if (owner != null)
-			{
-				owner.ModCritMod(m_spellEffect.MiscBitSet, -EffectValue);
-			}
-		}
-	}
+        protected override void Remove(bool cancelled)
+        {
+            var owner = Owner as Character;
+            if (owner != null)
+            {
+                owner.ModCritMod(m_spellEffect.MiscBitSet, -EffectValue);
+            }
+        }
+    }
 };

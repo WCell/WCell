@@ -19,73 +19,75 @@ using System.IO;
 
 namespace MpqReader
 {
-	// A node which is both hierachcical (parent/child) and doubly linked (next/prev)
-	class LinkedNode
-	{
-		public int DecompressedValue;
-		public int Weight;
-		public LinkedNode Parent;
-		public LinkedNode Child0;
+    // A node which is both hierachcical (parent/child) and doubly linked (next/prev)
+    internal class LinkedNode
+    {
+        public int DecompressedValue;
+        public int Weight;
+        public LinkedNode Parent;
+        public LinkedNode Child0;
 
-		public LinkedNode Child1
-		{ get { return Child0.Prev; } }
+        public LinkedNode Child1
+        { get { return Child0.Prev; } }
 
-		public LinkedNode Next;
-		public LinkedNode Prev;
-		
-		public LinkedNode(int DecompVal, int Weight)
-		{
-			DecompressedValue = DecompVal;
-			this.Weight = Weight;
-		}
+        public LinkedNode Next;
+        public LinkedNode Prev;
 
-		// TODO: This would be more efficient as a member of the other class
-		// ie avoid the recursion
-		public LinkedNode Insert(LinkedNode Other)
-		{
-			// 'Next' should have a lower weight
-			// we should return the lower weight
-			if (Other.Weight <= Weight)
-			{
-				// insert before
-				if (Next != null)
-				{
-					Next.Prev = Other;
-					Other.Next = Next;
-				}
-				Next = Other;
-				Other.Prev = this;
-				return Other;
-			} else
-			{
-				if (Prev == null)
-				{
-					// Insert after
-					Other.Prev = null;
-					Prev = Other;
-					Other.Next = this;
-				} else
-				{
-					Prev.Insert(Other);
-				}
-			}
-			return this;
-		}
-	}
+        public LinkedNode(int DecompVal, int Weight)
+        {
+            DecompressedValue = DecompVal;
+            this.Weight = Weight;
+        }
 
-	/// <summary>
-	/// A decompressor for MPQ's huffman compression
-	/// </summary>
-	public class MpqHuffman
-	{
-		private MpqHuffman()
-		{
-		}
-		
-		private static readonly byte[][] sPrime =
+        // TODO: This would be more efficient as a member of the other class
+        // ie avoid the recursion
+        public LinkedNode Insert(LinkedNode Other)
+        {
+            // 'Next' should have a lower weight
+            // we should return the lower weight
+            if (Other.Weight <= Weight)
+            {
+                // insert before
+                if (Next != null)
+                {
+                    Next.Prev = Other;
+                    Other.Next = Next;
+                }
+                Next = Other;
+                Other.Prev = this;
+                return Other;
+            }
+            else
+            {
+                if (Prev == null)
+                {
+                    // Insert after
+                    Other.Prev = null;
+                    Prev = Other;
+                    Other.Next = this;
+                }
+                else
+                {
+                    Prev.Insert(Other);
+                }
+            }
+            return this;
+        }
+    }
+
+    /// <summary>
+    /// A decompressor for MPQ's huffman compression
+    /// </summary>
+    public class MpqHuffman
+    {
+        private MpqHuffman()
+        {
+        }
+
+        private static readonly byte[][] sPrime =
 		{
 			// Compression type 0
-			new byte[] 
+			new byte[]
 			{
 				0x0A, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 				0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -105,7 +107,7 @@ namespace MpqReader
 				0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02,
 			},
 			// Compression type 1
-			new byte[] 
+			new byte[]
 			{
 				0x54, 0x16, 0x16, 0x0D, 0x0C, 0x08, 0x06, 0x05, 0x06, 0x05, 0x06, 0x03, 0x04, 0x04, 0x03, 0x05,
 				0x0E, 0x0B, 0x14, 0x13, 0x13, 0x09, 0x0B, 0x06, 0x05, 0x04, 0x03, 0x02, 0x03, 0x02, 0x02, 0x02,
@@ -125,7 +127,7 @@ namespace MpqReader
 				0x02, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x02, 0x02, 0x01, 0x01, 0x02, 0x02, 0x02, 0x06, 0x4B,
 			},
 			// Compression type 2
-			new byte[] 
+			new byte[]
 			{
 				0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x27, 0x00, 0x00, 0x23, 0x00, 0x00,
 				0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -137,7 +139,7 @@ namespace MpqReader
 				0x10, 0x01, 0x23, 0x23, 0x2F, 0x10, 0x06, 0x07, 0x02, 0x09, 0x01, 0x01, 0x01, 0x01, 0x01
 			},
 			// Compression type 3
-			new byte[] 
+			new byte[]
 			{
 				0xFF, 0x0B, 0x07, 0x05, 0x0B, 0x02, 0x02, 0x02, 0x06, 0x02, 0x02, 0x01, 0x04, 0x02, 0x01, 0x03,
 				0x09, 0x01, 0x01, 0x01, 0x03, 0x04, 0x01, 0x01, 0x02, 0x01, 0x01, 0x01, 0x02, 0x01, 0x01, 0x01,
@@ -157,12 +159,12 @@ namespace MpqReader
 				0x02, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x02, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x11,
 			},
 			// Compression type 4
-			new byte[] 
+			new byte[]
 			{
 				0xFF, 0xFB, 0x98, 0x9A, 0x84, 0x85, 0x63, 0x64, 0x3E, 0x3E, 0x22, 0x22, 0x13, 0x13, 0x18, 0x17,
 			},
 			// Compression type 5
-			new byte[] 
+			new byte[]
 			{
 				0xFF, 0xF1, 0x9D, 0x9E, 0x9A, 0x9B, 0x9A, 0x97, 0x93, 0x93, 0x8C, 0x8E, 0x86, 0x88, 0x80, 0x82,
 				0x7C, 0x7C, 0x72, 0x73, 0x69, 0x6B, 0x5F, 0x60, 0x55, 0x56, 0x4A, 0x4B, 0x40, 0x41, 0x37, 0x37,
@@ -170,7 +172,7 @@ namespace MpqReader
 				0x0B, 0x0B, 0x09, 0x09, 0x08, 0x08, 0x07, 0x07, 0x06, 0x05, 0x05, 0x04, 0x04, 0x04, 0x19, 0x18
 			},
 			// Compression type 6
-			new byte[] 
+			new byte[]
 			{
 				0xC3, 0xCB, 0xF5, 0x41, 0xFF, 0x7B, 0xF7, 0x21, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 				0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -183,7 +185,7 @@ namespace MpqReader
 				0x7A, 0x46
 			},
 			// Compression type 7
-			new byte[] 
+			new byte[]
 			{
 				0xC3, 0xD9, 0xEF, 0x3D, 0xF9, 0x7C, 0xE9, 0x1E, 0xFD, 0xAB, 0xF1, 0x2C, 0xFC, 0x5B, 0xFE, 0x17,
 				0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -196,7 +198,7 @@ namespace MpqReader
 				0x70, 0x6C
 			},
 			// Compression type 8
-			new byte[] 
+			new byte[]
 			{
 				0xBA, 0xC5, 0xDA, 0x33, 0xE3, 0x6D, 0xD8, 0x18, 0xE5, 0x94, 0xDA, 0x23, 0xDF, 0x4A, 0xD1, 0x10,
 				0xEE, 0xAF, 0xE4, 0x2C, 0xEA, 0x5A, 0xDE, 0x15, 0xF4, 0x87, 0xE9, 0x21, 0xF6, 0x43, 0xFC, 0x12,
@@ -210,180 +212,180 @@ namespace MpqReader
 			}
 		};
 
-		public static byte[] Decompress(Stream Data)
-		{
-			int comptype = Data.ReadByte();
+        public static byte[] Decompress(Stream Data)
+        {
+            int comptype = Data.ReadByte();
 
-			if (comptype == 0)
-				throw new NotImplementedException("Compression type 0 is not currently supported");
+            if (comptype == 0)
+                throw new NotImplementedException("Compression type 0 is not currently supported");
 
-			LinkedNode tail = BuildList(sPrime[comptype]);
-			LinkedNode head = BuildTree(tail);
+            LinkedNode tail = BuildList(sPrime[comptype]);
+            LinkedNode head = BuildTree(tail);
 
-			MemoryStream outputstream = new MemoryStream();
-			BitStream bitstream = new BitStream(Data);
-			int decoded;
-			do
-			{
-				LinkedNode node = Decode(bitstream, head);
-				decoded = node.DecompressedValue;
-				switch(decoded)
-				{
-					case 256:
-						break;
-					case 257:
-						int newvalue = bitstream.ReadBits(8);
-						outputstream.WriteByte((byte)newvalue);
-						tail = InsertNode(tail, newvalue);
-						break;
-					default:
-						outputstream.WriteByte((byte)decoded);
-						break;
-				}
-			} while (decoded != 256);
-			
-			return outputstream.ToArray();
-		}
+            MemoryStream outputstream = new MemoryStream();
+            BitStream bitstream = new BitStream(Data);
+            int decoded;
+            do
+            {
+                LinkedNode node = Decode(bitstream, head);
+                decoded = node.DecompressedValue;
+                switch (decoded)
+                {
+                    case 256:
+                        break;
+                    case 257:
+                        int newvalue = bitstream.ReadBits(8);
+                        outputstream.WriteByte((byte)newvalue);
+                        tail = InsertNode(tail, newvalue);
+                        break;
+                    default:
+                        outputstream.WriteByte((byte)decoded);
+                        break;
+                }
+            } while (decoded != 256);
 
-		private static LinkedNode Decode(BitStream Input, LinkedNode Head)
-		{
-			LinkedNode node = Head;
+            return outputstream.ToArray();
+        }
 
-			while(node.Child0 != null)
-			{
-				int bit = Input.ReadBits(1);
-				if (bit == -1)
+        private static LinkedNode Decode(BitStream Input, LinkedNode Head)
+        {
+            LinkedNode node = Head;
+
+            while (node.Child0 != null)
+            {
+                int bit = Input.ReadBits(1);
+                if (bit == -1)
                     throw new MpqParserException("Unexpected end of file");
 
-				node = bit == 0 ? node.Child0 : node.Child1;
-			}
-			return node;
-		}
+                node = bit == 0 ? node.Child0 : node.Child1;
+            }
+            return node;
+        }
 
-		private static LinkedNode BuildList(byte[] PrimeData)
-		{
-		    var root = new LinkedNode(256, 1);
-			root = root.Insert(new LinkedNode(257, 1));
+        private static LinkedNode BuildList(byte[] PrimeData)
+        {
+            var root = new LinkedNode(256, 1);
+            root = root.Insert(new LinkedNode(257, 1));
 
-			for(int i = 0; i < PrimeData.Length; i++)
-			{
-				if (PrimeData[i] != 0) 
-					root = root.Insert(new LinkedNode(i, PrimeData[i]));
-			}
-			return root;
-		}
+            for (int i = 0; i < PrimeData.Length; i++)
+            {
+                if (PrimeData[i] != 0)
+                    root = root.Insert(new LinkedNode(i, PrimeData[i]));
+            }
+            return root;
+        }
 
-		private static LinkedNode BuildTree(LinkedNode Tail)
-		{
-			LinkedNode current = Tail;
+        private static LinkedNode BuildTree(LinkedNode Tail)
+        {
+            LinkedNode current = Tail;
 
-			while(current != null)
-			{
-				LinkedNode child0 = current;
-				LinkedNode child1 = current.Prev;
-				if (child1 == null) break;
+            while (current != null)
+            {
+                LinkedNode child0 = current;
+                LinkedNode child1 = current.Prev;
+                if (child1 == null) break;
 
-				var parent = new LinkedNode(0, child0.Weight + child1.Weight);
-				parent.Child0 = child0;
-				child0.Parent = parent;
-				child1.Parent = parent;
+                var parent = new LinkedNode(0, child0.Weight + child1.Weight);
+                parent.Child0 = child0;
+                child0.Parent = parent;
+                child1.Parent = parent;
 
-				current.Insert(parent);
-				current = current.Prev.Prev;
-			}
-			return current;
-		}
+                current.Insert(parent);
+                current = current.Prev.Prev;
+            }
+            return current;
+        }
 
-		private static LinkedNode InsertNode(LinkedNode Tail, int Decomp)
-		{
-			LinkedNode parent = Tail;
-			LinkedNode result = Tail.Prev; // This will be the new tail after the tree is updated
+        private static LinkedNode InsertNode(LinkedNode Tail, int Decomp)
+        {
+            LinkedNode parent = Tail;
+            LinkedNode result = Tail.Prev; // This will be the new tail after the tree is updated
 
-			LinkedNode temp = new LinkedNode(parent.DecompressedValue, parent.Weight);
-			temp.Parent = parent;
+            LinkedNode temp = new LinkedNode(parent.DecompressedValue, parent.Weight);
+            temp.Parent = parent;
 
-			LinkedNode newnode = new LinkedNode(Decomp, 0);
-			newnode.Parent = parent;
+            LinkedNode newnode = new LinkedNode(Decomp, 0);
+            newnode.Parent = parent;
 
-			parent.Child0 = newnode;
+            parent.Child0 = newnode;
 
-			Tail.Next = temp;
-			temp.Prev = Tail;
-			newnode.Prev = temp;
-			temp.Next = newnode;
+            Tail.Next = temp;
+            temp.Prev = Tail;
+            newnode.Prev = temp;
+            temp.Next = newnode;
 
-			AdjustTree(newnode);
-			// TODO: For compression type 0, AdjustTree should be called 
-			// once for every value written and only once here
-			AdjustTree(newnode);
-			return result;
-		}
+            AdjustTree(newnode);
+            // TODO: For compression type 0, AdjustTree should be called
+            // once for every value written and only once here
+            AdjustTree(newnode);
+            return result;
+        }
 
-		// This increases the weight of the new node and its antecendants
-		// and adjusts the tree if needed
-		private static void AdjustTree(LinkedNode NewNode)
-		{
-			LinkedNode current = NewNode;
+        // This increases the weight of the new node and its antecendants
+        // and adjusts the tree if needed
+        private static void AdjustTree(LinkedNode NewNode)
+        {
+            LinkedNode current = NewNode;
 
-			while (current != null)
-			{
-				current.Weight++;
-			    LinkedNode prev;
-				// Go backwards thru the list looking for the insertion point
-				LinkedNode insertpoint = current;
-				while(true)
-				{
-					prev = insertpoint.Prev;
-					if (prev == null) break;
-					if(prev.Weight >= current.Weight) break;
-					insertpoint = prev;
-				}
-				
-				// No insertion point found
-				if (insertpoint == current) 
-				{
-					current = current.Parent;
-					continue;
-				}
-				
-				// The following code basicly swaps insertpoint with current
-			
-				// remove insert point
-				if (insertpoint.Prev != null) insertpoint.Prev.Next = insertpoint.Next;
-				insertpoint.Next.Prev = insertpoint.Prev;
-				
-				// Insert insertpoint after current
-				insertpoint.Next = current.Next;
-				insertpoint.Prev = current;
-				if (current.Next != null) current.Next.Prev = insertpoint;
-				current.Next = insertpoint;
+            while (current != null)
+            {
+                current.Weight++;
+                LinkedNode prev;
+                // Go backwards thru the list looking for the insertion point
+                LinkedNode insertpoint = current;
+                while (true)
+                {
+                    prev = insertpoint.Prev;
+                    if (prev == null) break;
+                    if (prev.Weight >= current.Weight) break;
+                    insertpoint = prev;
+                }
 
-				// remove current
-				current.Prev.Next = current.Next;
-				current.Next.Prev = current.Prev;
-				
-				// insert current after prev
-				LinkedNode temp = prev.Next;
-				current.Next = temp;
-				current.Prev = prev;
-				temp.Prev = current;
-				prev.Next = current;
-				
-				// Set up parent/child links
-				LinkedNode currentparent = current.Parent;
-				LinkedNode insertparent = insertpoint.Parent;
-				
-				if (currentparent.Child0 == current) 
-					currentparent.Child0 = insertpoint;
+                // No insertion point found
+                if (insertpoint == current)
+                {
+                    current = current.Parent;
+                    continue;
+                }
 
-				if (currentparent != insertparent && insertparent.Child0 == insertpoint) 
-					insertparent.Child0 = current;
+                // The following code basicly swaps insertpoint with current
 
-				current.Parent = insertparent;
-				insertpoint.Parent = currentparent;
+                // remove insert point
+                if (insertpoint.Prev != null) insertpoint.Prev.Next = insertpoint.Next;
+                insertpoint.Next.Prev = insertpoint.Prev;
 
-				current = current.Parent;
-			}
-		}
-	}
+                // Insert insertpoint after current
+                insertpoint.Next = current.Next;
+                insertpoint.Prev = current;
+                if (current.Next != null) current.Next.Prev = insertpoint;
+                current.Next = insertpoint;
+
+                // remove current
+                current.Prev.Next = current.Next;
+                current.Next.Prev = current.Prev;
+
+                // insert current after prev
+                LinkedNode temp = prev.Next;
+                current.Next = temp;
+                current.Prev = prev;
+                temp.Prev = current;
+                prev.Next = current;
+
+                // Set up parent/child links
+                LinkedNode currentparent = current.Parent;
+                LinkedNode insertparent = insertpoint.Parent;
+
+                if (currentparent.Child0 == current)
+                    currentparent.Child0 = insertpoint;
+
+                if (currentparent != insertparent && insertparent.Child0 == insertpoint)
+                    insertparent.Child0 = current;
+
+                current.Parent = insertparent;
+                insertpoint.Parent = currentparent;
+
+                current = current.Parent;
+            }
+        }
+    }
 }

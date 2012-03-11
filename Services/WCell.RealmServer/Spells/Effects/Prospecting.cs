@@ -20,26 +20,26 @@ using WCell.Constants.Spells;
 
 namespace WCell.RealmServer.Spells.Effects
 {
-	public class ProspectingEffectHandler : ItemConvertEffectHandler
-	{
-		public ProspectingEffectHandler(SpellCast cast, SpellEffect effect)
-			: base(cast, effect)
-		{
-		}
+    public class ProspectingEffectHandler : ItemConvertEffectHandler
+    {
+        public ProspectingEffectHandler(SpellCast cast, SpellEffect effect)
+            : base(cast, effect)
+        {
+        }
 
-		public override SpellFailedReason Initialize()
-		{
-			if (!m_cast.TargetItem.Template.Flags.HasFlag(ItemFlags.Prospectable))
-			{
-				return SpellFailedReason.CantBeProspected;
-			}
+        public override SpellFailedReason Initialize()
+        {
+            if (!m_cast.TargetItem.Template.Flags.HasFlag(ItemFlags.Prospectable))
+            {
+                return SpellFailedReason.CantBeProspected;
+            }
 
-			return base.Initialize();
-		}
+            return base.Initialize();
+        }
 
-		public override LootEntryType LootEntryType
-		{
-			get { return LootEntryType.Prospecting; }
-		}
-	}
+        public override LootEntryType LootEntryType
+        {
+            get { return LootEntryType.Prospecting; }
+        }
+    }
 }

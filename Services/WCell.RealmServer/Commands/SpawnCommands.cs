@@ -1,6 +1,6 @@
 namespace WCell.RealmServer.Commands
 {
-	class SpawnCommands
-	{
-	}
+    internal class SpawnCommands
+    {
+    }
 }

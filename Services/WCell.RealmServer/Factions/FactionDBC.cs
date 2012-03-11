@@ -20,21 +20,22 @@ using WCell.Core.DBC;
 
 namespace WCell.RealmServer.Factions
 {
-	#region Faction.dbc
-	public struct FactionEntry
-	{
-		public FactionId Id;
+    #region Faction.dbc
+
+    public struct FactionEntry
+    {
+        public FactionId Id;
         /// <summary>
         /// m_reputationIndex
         /// </summary>
-		public FactionReputationIndex FactionIndex;
-		public RaceMask[] RaceMask;
-	    public ClassMask[] ClassMask;
-		public int[] BaseRepValue;
+        public FactionReputationIndex FactionIndex;
+        public RaceMask[] RaceMask;
+        public ClassMask[] ClassMask;
+        public int[] BaseRepValue;
         public FactionFlags[] BaseFlags;
-		public FactionId ParentId;
-		public string Name;
-	}
+        public FactionId ParentId;
+        public string Name;
+    }
 
     public class FactionConverter : AdvancedDBCRecordConverter<FactionEntry>
     {
@@ -74,57 +75,60 @@ namespace WCell.RealmServer.Factions
             return entry;
         }
     }
-	#endregion
 
-	#region FactionTemplate.dbc
-	public struct FactionTemplateEntry
-	{
-		public uint Id;
-		public FactionId FactionId;
-		public FactionTemplateFlags Flags;
+    #endregion Faction.dbc
+
+    #region FactionTemplate.dbc
+
+    public struct FactionTemplateEntry
+    {
+        public uint Id;
+        public FactionId FactionId;
+        public FactionTemplateFlags Flags;
         /// <summary>
         /// The Faction-Group mask of this faction.
         /// </summary>
-		public FactionGroupMask FactionGroup;
+        public FactionGroupMask FactionGroup;
         /// <summary>
         /// Mask of Faction-Groups this faction is friendly towards
         /// </summary>
-		public FactionGroupMask FriendGroup;
+        public FactionGroupMask FriendGroup;
         /// <summary>
         /// Mask of Faction-Groups this faction is hostile towards
         /// </summary>
-		public FactionGroupMask EnemyGroup;
-		public FactionId[] EnemyFactions;
-		public FactionId[] FriendlyFactions;
-	}
+        public FactionGroupMask EnemyGroup;
+        public FactionId[] EnemyFactions;
+        public FactionId[] FriendlyFactions;
+    }
 
-	public class FactionTemplateConverter : AdvancedDBCRecordConverter<FactionTemplateEntry>
-	{
-		public override FactionTemplateEntry ConvertTo(byte[] rawData, ref int id)
-		{
-			var entry = new FactionTemplateEntry();
-			var x = 0;
-			id = (int)(entry.Id = GetUInt32(rawData, x++));
-			entry.FactionId = (FactionId)GetUInt32(rawData, x++);
-			entry.Flags = (FactionTemplateFlags)GetUInt32(rawData, x++);
+    public class FactionTemplateConverter : AdvancedDBCRecordConverter<FactionTemplateEntry>
+    {
+        public override FactionTemplateEntry ConvertTo(byte[] rawData, ref int id)
+        {
+            var entry = new FactionTemplateEntry();
+            var x = 0;
+            id = (int)(entry.Id = GetUInt32(rawData, x++));
+            entry.FactionId = (FactionId)GetUInt32(rawData, x++);
+            entry.Flags = (FactionTemplateFlags)GetUInt32(rawData, x++);
             entry.FactionGroup = (FactionGroupMask)GetUInt32(rawData, x++);
-			entry.FriendGroup = (FactionGroupMask)GetUInt32(rawData, x++);
-			entry.EnemyGroup = (FactionGroupMask)GetUInt32(rawData, x++);
+            entry.FriendGroup = (FactionGroupMask)GetUInt32(rawData, x++);
+            entry.EnemyGroup = (FactionGroupMask)GetUInt32(rawData, x++);
 
-			entry.EnemyFactions = new FactionId[4];
-			for (uint i = 0; i < entry.EnemyFactions.Length; i++)
-			{
-				entry.EnemyFactions[i] = (FactionId)GetUInt32(rawData, x++);
-			}
+            entry.EnemyFactions = new FactionId[4];
+            for (uint i = 0; i < entry.EnemyFactions.Length; i++)
+            {
+                entry.EnemyFactions[i] = (FactionId)GetUInt32(rawData, x++);
+            }
 
-			entry.FriendlyFactions = new FactionId[4];
-			for (uint i = 0; i < entry.FriendlyFactions.Length; i++)
-			{
-				entry.FriendlyFactions[i] = (FactionId)GetUInt32(rawData, x++);
-			}
+            entry.FriendlyFactions = new FactionId[4];
+            for (uint i = 0; i < entry.FriendlyFactions.Length; i++)
+            {
+                entry.FriendlyFactions[i] = (FactionId)GetUInt32(rawData, x++);
+            }
 
-			return entry;
-		}
-	}
-	#endregion
+            return entry;
+        }
+    }
+
+    #endregion FactionTemplate.dbc
 }

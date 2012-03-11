@@ -23,75 +23,77 @@ using WCell.RealmServer.Entities;
 namespace WCell.RealmServer.Interaction
 {
     /// <summary>
-    /// <see cref="CharacterSearch"/> derived class customized to perform the Who List search 
+    /// <see cref="CharacterSearch"/> derived class customized to perform the Who List search
     /// </summary>
     public sealed class WhoSearch : CharacterSearch
     {
         #region Public Properties
-		/// <summary>
-		/// Guild name search filter. If not set this filter is ignored when performing the search.
-		/// </summary>
-		public string GuildName
-		{
-			get;
-			set;
-		}
 
-		/// <summary>
-		/// Zones search filter. If not set this filter is ignored when performing the search.
-		/// </summary>
-		public List<ZoneId> Zones
-		{
-			get;
-			set;
-		}
+        /// <summary>
+        /// Guild name search filter. If not set this filter is ignored when performing the search.
+        /// </summary>
+        public string GuildName
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Zones search filter. If not set this filter is ignored when performing the search.
+        /// </summary>
+        public List<ZoneId> Zones
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// Names search filter. If not set this filter is ignored when performing the search.
         /// </summary>
-		public List<string> Names
-		{
-			get;
-			set;
-		}
+        public List<string> Names
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// Faction search filter. If not set this filter is ignored when performing the search.
         /// </summary>
-		public FactionGroup Faction
-		{
-			get;
-			set;
-		}
+        public FactionGroup Faction
+        {
+            get;
+            set;
+        }
 
-		/// <summary>
-		/// Race search filter. If not set this filter is ignored when performing the search.
-		/// </summary>
-		public RaceMask2 RaceMask
-		{
-			get;
-			set;
-		}
+        /// <summary>
+        /// Race search filter. If not set this filter is ignored when performing the search.
+        /// </summary>
+        public RaceMask2 RaceMask
+        {
+            get;
+            set;
+        }
 
-		/// <summary>
-		/// Class search filter. If not set this filter is ignored when performing the search.
-		/// </summary>
-		public ClassMask2 ClassMask
-		{
-			get;
-			set;
-		}
-        #endregion
+        /// <summary>
+        /// Class search filter. If not set this filter is ignored when performing the search.
+        /// </summary>
+        public ClassMask2 ClassMask
+        {
+            get;
+            set;
+        }
 
-		public WhoSearch()
-		{
-			GuildName = string.Empty;
-			Zones = new List<ZoneId>();
-			Names = new List<string>();
-			Faction = FactionGroup.Invalid;
-			RaceMask = RaceMask2.All;
-			ClassMask = ClassMask2.All;
-		}
+        #endregion Public Properties
+
+        public WhoSearch()
+        {
+            GuildName = string.Empty;
+            Zones = new List<ZoneId>();
+            Names = new List<string>();
+            Faction = FactionGroup.Invalid;
+            RaceMask = RaceMask2.All;
+            ClassMask = ClassMask2.All;
+        }
 
         /// <summary>
         /// Method used to add custom search criterias. Added Who List custom search criterias to the default ones.
@@ -103,19 +105,19 @@ namespace WCell.RealmServer.Interaction
             if (!base.IncludeCharacter(character))
                 return false;
 
-			if (Faction != FactionGroup.Invalid && character.Faction.Group != Faction)
-				return false;
+            if (Faction != FactionGroup.Invalid && character.Faction.Group != Faction)
+                return false;
 
-			if (!string.IsNullOrEmpty(GuildName) /*&& character.Guild.Name != GuildName */)
-				return false;
+            if (!string.IsNullOrEmpty(GuildName) /*&& character.Guild.Name != GuildName */)
+                return false;
 
-			if (!RaceMask.HasAnyFlag(character.RaceMask2))
-				return false;
+            if (!RaceMask.HasAnyFlag(character.RaceMask2))
+                return false;
 
-			if (!ClassMask.HasAnyFlag(character.ClassMask2))
-				return false;
+            if (!ClassMask.HasAnyFlag(character.ClassMask2))
+                return false;
 
-			if (Zones.Count > 0 && !Zones.Contains(character.Zone.Id))
+            if (Zones.Count > 0 && !Zones.Contains(character.Zone.Id))
                 return false;
 
             if (Names.Count > 0 && !Names.Contains(character.Name.ToLower()))

@@ -7,266 +7,273 @@ using WCell.Util.ObjectPools;
 
 namespace WCell.RealmServer.Spells
 {
-	/// <summary>
-	/// NPC spell collection
-	/// </summary>
-	public class NPCSpellCollection : SpellCollection
-	{
-		/// <summary>
-		/// Cooldown of NPC spells, if they don't have one
-		/// </summary>
-		public static int DefaultNPCSpellCooldownMillis = 1500;
+    /// <summary>
+    /// NPC spell collection
+    /// </summary>
+    public class NPCSpellCollection : SpellCollection
+    {
+        /// <summary>
+        /// Cooldown of NPC spells, if they don't have one
+        /// </summary>
+        public static int DefaultNPCSpellCooldownMillis = 1500;
 
-		static readonly ObjectPool<NPCSpellCollection> NPCSpellCollectionPool =
-			new ObjectPool<NPCSpellCollection>(() => new NPCSpellCollection());
+        static readonly ObjectPool<NPCSpellCollection> NPCSpellCollectionPool =
+            new ObjectPool<NPCSpellCollection>(() => new NPCSpellCollection());
 
-		public static NPCSpellCollection Obtain(NPC npc)
-		{
-			var spells = NPCSpellCollectionPool.Obtain();
-			spells.Initialize(npc);
-			return spells;
-		}
+        public static NPCSpellCollection Obtain(NPC npc)
+        {
+            var spells = NPCSpellCollectionPool.Obtain();
+            spells.Initialize(npc);
+            return spells;
+        }
 
-		protected HashSet<Spell> m_readySpells;
-		protected List<CooldownRemoveTimer> m_cooldowns;
+        protected HashSet<Spell> m_readySpells;
+        protected List<CooldownRemoveTimer> m_cooldowns;
 
-		#region Init & Cleanup
-		private NPCSpellCollection()
-		{
-			m_readySpells = new HashSet<Spell>();
-		}
+        #region Init & Cleanup
 
-		protected internal override void Recycle()
-		{
-			base.Recycle();
+        private NPCSpellCollection()
+        {
+            m_readySpells = new HashSet<Spell>();
+        }
 
-			m_readySpells.Clear();
-			if (m_cooldowns != null)
-			{
-				m_cooldowns.Clear();
-			}
+        protected internal override void Recycle()
+        {
+            base.Recycle();
 
-			NPCSpellCollectionPool.Recycle(this);
-		}
-		#endregion
+            m_readySpells.Clear();
+            if (m_cooldowns != null)
+            {
+                m_cooldowns.Clear();
+            }
 
-		public NPC OwnerNPC
-		{
-			get { return Owner as NPC; }
-		}
+            NPCSpellCollectionPool.Recycle(this);
+        }
 
-		public IEnumerable<Spell> ReadySpells
-		{
-			get { return m_readySpells; }
-		}
+        #endregion Init & Cleanup
 
-		public int ReadyCount
-		{
-			get { return m_readySpells.Count; }
-		}
+        public NPC OwnerNPC
+        {
+            get { return Owner as NPC; }
+        }
 
-		/// <summary>
-		/// The max combat of any 1vs1 combat spell
-		/// </summary>
-		public float MaxCombatSpellRange
-		{
-			get;
-			private set;
-		}
+        public IEnumerable<Spell> ReadySpells
+        {
+            get { return m_readySpells; }
+        }
 
-		/// <summary>
-		/// Shuffles all currently ready Spells
-		/// </summary>
-		public void ShuffleReadySpells()
-		{
-			Utility.Shuffle(m_readySpells);
-		}
+        public int ReadyCount
+        {
+            get { return m_readySpells.Count; }
+        }
 
-		public Spell GetReadySpell(SpellId spellId)
-		{
-			foreach (var spell in m_readySpells)
-			{
-				if (spell.SpellId == spellId)
-				{
-					return spell;
-				}
-			}
-			return null;
-		}
+        /// <summary>
+        /// The max combat of any 1vs1 combat spell
+        /// </summary>
+        public float MaxCombatSpellRange
+        {
+            get;
+            private set;
+        }
 
-		#region Add / Remove
-		public override void AddSpell(Spell spell)
-		{
-		    if (m_byId.ContainsKey(spell.SpellId)) return;
-		    //NPCOwner.Brain.ActionCollection.AddFactory
-		    base.AddSpell(spell);
+        /// <summary>
+        /// Shuffles all currently ready Spells
+        /// </summary>
+        public void ShuffleReadySpells()
+        {
+            Utility.Shuffle(m_readySpells);
+        }
 
-		    OnNewSpell(spell);
-		}
+        public Spell GetReadySpell(SpellId spellId)
+        {
+            foreach (var spell in m_readySpells)
+            {
+                if (spell.SpellId == spellId)
+                {
+                    return spell;
+                }
+            }
+            return null;
+        }
 
-		void OnNewSpell(Spell spell)
-		{
-			if (!spell.IsAreaSpell && !spell.IsAura && spell.HasHarmfulEffects)
-			{
-				MaxCombatSpellRange = Math.Max(MaxCombatSpellRange, Owner.GetSpellMaxRange(spell, null));
-			}
-			AddReadySpell(spell);
-		}
+        #region Add / Remove
 
-		/// <summary>
-		/// Adds the given spell as ready. Once casted, the spell will be removed.
-		/// This can be used to signal a one-time cast of a spell whose priority is to be
-		/// compared to the other spells.
-		/// </summary>
-		public void AddReadySpell(Spell spell)
-		{
-			if (!spell.IsPassive)
-			{
-				m_readySpells.Add(spell);
-			}
-		}
+        public override void AddSpell(Spell spell)
+        {
+            if (m_byId.ContainsKey(spell.SpellId)) return;
+            //NPCOwner.Brain.ActionCollection.AddFactory
+            base.AddSpell(spell);
 
-		public override void Clear()
-		{
-			base.Clear();
-			m_readySpells.Clear();
-		}
+            OnNewSpell(spell);
+        }
 
-		public override bool Remove(Spell spell)
-		{
-			if (base.Remove(spell))
-			{
-				m_readySpells.Remove(spell);
+        private void OnNewSpell(Spell spell)
+        {
+            if (!spell.IsAreaSpell && !spell.IsAura && spell.HasHarmfulEffects)
+            {
+                MaxCombatSpellRange = Math.Max(MaxCombatSpellRange, Owner.GetSpellMaxRange(spell, null));
+            }
+            AddReadySpell(spell);
+        }
 
-				if (Owner.GetSpellMaxRange(spell, null) >= MaxCombatSpellRange)
-				{
-					// find new max combat spell range
-					MaxCombatSpellRange = 0f;
-					foreach (var sp in m_byId.Values)
-					{
-						if (sp.Range.MaxDist > MaxCombatSpellRange)
-						{
-							MaxCombatSpellRange = Owner.GetSpellMaxRange(sp, null);
-						}
-					}
-				}
-				return true;
-			}
-			return false;
-		}
-		#endregion
+        /// <summary>
+        /// Adds the given spell as ready. Once casted, the spell will be removed.
+        /// This can be used to signal a one-time cast of a spell whose priority is to be
+        /// compared to the other spells.
+        /// </summary>
+        public void AddReadySpell(Spell spell)
+        {
+            if (!spell.IsPassive)
+            {
+                m_readySpells.Add(spell);
+            }
+        }
 
-		#region Cooldowns
-		/// <summary>
-		/// When NPC Spells cooldown, they get removed from the list of
-		/// ready Spells.
-		/// </summary>
-		public override void AddCooldown(Spell spell, Item item)
-		{
-			var millis = Math.Max(spell.GetCooldown(Owner), spell.CategoryCooldownTime);
-			if (millis <= 0)
-			{
-				if (spell.CastDelay == 0 && spell.Durations.Max == 0)
-				{
-					// no cooldown, no cast delay, no duration: Add default cooldown
-					millis = Owner.Auras.GetModifiedInt(SpellModifierType.CooldownTime, spell, DefaultNPCSpellCooldownMillis);
-					AddCooldown(spell, millis);
-				}
-			}
-			else
-			{
-				// add existing cooldown
-				millis = Owner.Auras.GetModifiedInt(SpellModifierType.CooldownTime, spell, millis);
-				AddCooldown(spell, millis);
-			}
-		}
+        public override void Clear()
+        {
+            base.Clear();
+            m_readySpells.Clear();
+        }
 
-		public void AddCooldown(Spell spell, DateTime cdTime)
-		{
-			var millis = (cdTime - DateTime.Now).ToMilliSecondsInt();
-			AddCooldown(spell, millis);
-		}
+        public override bool Remove(Spell spell)
+        {
+            if (base.Remove(spell))
+            {
+                m_readySpells.Remove(spell);
 
-		private void AddCooldown(Spell spell, int millis)
-		{
-			if (millis <= 0) return;
-			m_readySpells.Remove(spell);
+                if (Owner.GetSpellMaxRange(spell, null) >= MaxCombatSpellRange)
+                {
+                    // find new max combat spell range
+                    MaxCombatSpellRange = 0f;
+                    foreach (var sp in m_byId.Values)
+                    {
+                        if (sp.Range.MaxDist > MaxCombatSpellRange)
+                        {
+                            MaxCombatSpellRange = Owner.GetSpellMaxRange(sp, null);
+                        }
+                    }
+                }
+                return true;
+            }
+            return false;
+        }
 
-			var action = new CooldownRemoveTimer(millis, spell);
-			Owner.AddUpdateAction(action);
-			if (m_cooldowns == null)
-			{
-				m_cooldowns = new List<CooldownRemoveTimer>();
-			}
-			m_cooldowns.Add(action);
-		}
+        #endregion Add / Remove
 
-		public override void ClearCooldowns()
-		{
-			var context = Owner.ContextHandler;
-			if (context != null)
-			{
-				context.AddMessage(() =>
-				{
-					if (m_cooldowns == null) return;
-					foreach (var cd in m_cooldowns)
-					{
-						Owner.RemoveUpdateAction(cd);
-						AddReadySpell(cd.Spell);
-					}
-				});
-			}
-		}
+        #region Cooldowns
 
-		public override bool IsReady(Spell spell)
-		{
-			return m_readySpells.Contains(spell);
-		}
+        /// <summary>
+        /// When NPC Spells cooldown, they get removed from the list of
+        /// ready Spells.
+        /// </summary>
+        public override void AddCooldown(Spell spell, Item item)
+        {
+            var millis = Math.Max(spell.GetCooldown(Owner), spell.CategoryCooldownTime);
+            if (millis <= 0)
+            {
+                if (spell.CastDelay == 0 && spell.Durations.Max == 0)
+                {
+                    // no cooldown, no cast delay, no duration: Add default cooldown
+                    millis = Owner.Auras.GetModifiedInt(SpellModifierType.CooldownTime, spell, DefaultNPCSpellCooldownMillis);
+                    AddCooldown(spell, millis);
+                }
+            }
+            else
+            {
+                // add existing cooldown
+                millis = Owner.Auras.GetModifiedInt(SpellModifierType.CooldownTime, spell, millis);
+                AddCooldown(spell, millis);
+            }
+        }
 
-		public override void ClearCooldown(Spell spell, bool alsoCategory = true)
-		{
-		    if (m_cooldowns == null) return;
-		    for (var i = 0; i < m_cooldowns.Count; i++)
-		    {
-		        var cd = m_cooldowns[i];
-		        if (cd.Spell.Id != spell.Id) continue;
+        public void AddCooldown(Spell spell, DateTime cdTime)
+        {
+            var millis = (cdTime - DateTime.Now).ToMilliSecondsInt();
+            AddCooldown(spell, millis);
+        }
 
-		        m_cooldowns.Remove(cd);
-		        AddReadySpell(cd.Spell);
-		        break;
-		    }
-		}
+        private void AddCooldown(Spell spell, int millis)
+        {
+            if (millis <= 0) return;
+            m_readySpells.Remove(spell);
 
-	    /// <summary>
-		/// Returns the delay until the given spell has cooled down in milliseconds
-		/// </summary>
-		public int GetRemainingCooldownMillis(Spell spell)
-		{
-			if (m_cooldowns == null) return 0;
+            var action = new CooldownRemoveTimer(millis, spell);
+            Owner.AddUpdateAction(action);
+            if (m_cooldowns == null)
+            {
+                m_cooldowns = new List<CooldownRemoveTimer>();
+            }
+            m_cooldowns.Add(action);
+        }
 
-		    var cooldown = m_cooldowns.Find(cd => cd.Spell.Id == spell.Id);
+        public override void ClearCooldowns()
+        {
+            var context = Owner.ContextHandler;
+            if (context != null)
+            {
+                context.AddMessage(() =>
+                {
+                    if (m_cooldowns == null) return;
+                    foreach (var cd in m_cooldowns)
+                    {
+                        Owner.RemoveUpdateAction(cd);
+                        AddReadySpell(cd.Spell);
+                    }
+                });
+            }
+        }
+
+        public override bool IsReady(Spell spell)
+        {
+            return m_readySpells.Contains(spell);
+        }
+
+        public override void ClearCooldown(Spell spell, bool alsoCategory = true)
+        {
+            if (m_cooldowns == null) return;
+            for (var i = 0; i < m_cooldowns.Count; i++)
+            {
+                var cd = m_cooldowns[i];
+                if (cd.Spell.Id != spell.Id) continue;
+
+                m_cooldowns.Remove(cd);
+                AddReadySpell(cd.Spell);
+                break;
+            }
+        }
+
+        /// <summary>
+        /// Returns the delay until the given spell has cooled down in milliseconds
+        /// </summary>
+        public int GetRemainingCooldownMillis(Spell spell)
+        {
+            if (m_cooldowns == null) return 0;
+
+            var cooldown = m_cooldowns.Find(cd => cd.Spell.Id == spell.Id);
             return cooldown == null ? 0 : cooldown.GetDelayUntilNextExecution(Owner);
-		}
+        }
 
-		protected class CooldownRemoveTimer : OneShotObjectUpdateTimer
-		{
-			public CooldownRemoveTimer(int millis, Spell spell) : base(millis, null)
-			{
-				Spell = spell;
-				Callback = DoRemoveCooldown;
-			}
+        protected class CooldownRemoveTimer : OneShotObjectUpdateTimer
+        {
+            public CooldownRemoveTimer(int millis, Spell spell)
+                : base(millis, null)
+            {
+                Spell = spell;
+                Callback = DoRemoveCooldown;
+            }
 
-			public Spell Spell
-			{
-				get;
-				set;
-			}
+            public Spell Spell
+            {
+                get;
+                set;
+            }
 
-			void DoRemoveCooldown(WorldObject owner)
-			{
-				((NPCSpellCollection)((NPC)owner).Spells).AddReadySpell(Spell);
-			}
-		}
-		#endregion
-	}
+            private void DoRemoveCooldown(WorldObject owner)
+            {
+                ((NPCSpellCollection)((NPC)owner).Spells).AddReadySpell(Spell);
+            }
+        }
+
+        #endregion Cooldowns
+    }
 }

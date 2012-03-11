@@ -7,174 +7,176 @@ using WCell.RealmServer.Network;
 
 namespace WCell.RealmServer.Handlers
 {
-	public static class GossipHandler
-	{
-		/// <summary>
-		/// Handles gossip hello packet (client requests Gossip Menu)
-		/// </summary>
-		/// <param name="client">realm client</param>
-		/// <param name="packet">packet incoming</param>
-		[ClientPacketHandler(RealmServerOpCode.CMSG_GOSSIP_HELLO)]
-		public static void HandleGossipHello(IRealmClient client, RealmPacketIn packet)
-		{
-			var targetEntityId = packet.ReadEntityId();
+    public static class GossipHandler
+    {
+        /// <summary>
+        /// Handles gossip hello packet (client requests Gossip Menu)
+        /// </summary>
+        /// <param name="client">realm client</param>
+        /// <param name="packet">packet incoming</param>
+        [ClientPacketHandler(RealmServerOpCode.CMSG_GOSSIP_HELLO)]
+        public static void HandleGossipHello(IRealmClient client, RealmPacketIn packet)
+        {
+            var targetEntityId = packet.ReadEntityId();
 
-			var chr = client.ActiveCharacter;
-			var target = chr.Map.GetObject(targetEntityId) as Unit;
+            var chr = client.ActiveCharacter;
+            var target = chr.Map.GetObject(targetEntityId) as Unit;
 
-			if (target == null)
-				return;
-			
-			chr.GossipConversation = null;
+            if (target == null)
+                return;
 
-			var menu = target.GossipMenu;
-			if (menu == null)
-				return;
+            chr.GossipConversation = null;
 
-			if (target is NPC && !((NPC) target).CheckVendorInteraction(chr) && !chr.Role.IsStaff)
-			{
-				return;
-			}
+            var menu = target.GossipMenu;
+            if (menu == null)
+                return;
 
-			chr.OnInteract(target);
-			chr.StartGossip(menu, target);
-		}
+            if (target is NPC && !((NPC)target).CheckVendorInteraction(chr) && !chr.Role.IsStaff)
+            {
+                return;
+            }
 
-		/// <summary>
-		/// Handles option selecting in gossip menu
-		/// </summary>
-		/// <param name="client">realm client</param>
-		/// <param name="packet">packet incoming</param>
-		[ClientPacketHandler(RealmServerOpCode.CMSG_GOSSIP_SELECT_OPTION)]
-		public static void HandleGossipSelectOption(IRealmClient client, RealmPacketIn packet)
-		{
-			var targetEntityId = packet.ReadEntityId();
-			var unknown = packet.ReadUInt32();				// usually Zero, sometimes in the thousands for quest givers, Same as the first int sent in SMSG_GOSSIP_MESSAGE
-			var selectedOption = packet.ReadUInt32();
+            chr.OnInteract(target);
+            chr.StartGossip(menu, target);
+        }
 
-		    string extra = string.Empty;
-			if (packet.Position < packet.Length)
-			{
-				extra = packet.ReadCString();
-			}
+        /// <summary>
+        /// Handles option selecting in gossip menu
+        /// </summary>
+        /// <param name="client">realm client</param>
+        /// <param name="packet">packet incoming</param>
+        [ClientPacketHandler(RealmServerOpCode.CMSG_GOSSIP_SELECT_OPTION)]
+        public static void HandleGossipSelectOption(IRealmClient client, RealmPacketIn packet)
+        {
+            var targetEntityId = packet.ReadEntityId();
+            var unknown = packet.ReadUInt32();				// usually Zero, sometimes in the thousands for quest givers, Same as the first int sent in SMSG_GOSSIP_MESSAGE
+            var selectedOption = packet.ReadUInt32();
 
-			var chr = client.ActiveCharacter;
-			var worldObject = chr.Map.GetObject(targetEntityId);
+            string extra = string.Empty;
+            if (packet.Position < packet.Length)
+            {
+                extra = packet.ReadCString();
+            }
 
-			if (worldObject == null)
-				return;
+            var chr = client.ActiveCharacter;
+            var worldObject = chr.Map.GetObject(targetEntityId);
 
-			var conversation = chr.GossipConversation;
+            if (worldObject == null)
+                return;
 
-			if (conversation == null || conversation.Speaker != worldObject)
-				return;
+            var conversation = chr.GossipConversation;
 
-			conversation.HandleSelectedItem(selectedOption, extra);
-		}
+            if (conversation == null || conversation.Speaker != worldObject)
+                return;
 
-		#region Out
-		/// <summary>
-		/// Sends a page to the character
-		/// </summary>
-		/// <param name="chr">recieving character</param>
-		/// <param name="owner">EntityID of sender</param>
-		public static void SendPageToCharacter(GossipConversation convo,
-											   IList<QuestMenuItem> questItems)
-		{
-			var speaker = convo.Speaker;
-			var chr = convo.Character;
+            conversation.HandleSelectedItem(selectedOption, extra);
+        }
 
-			var menu = convo.CurrentMenu;
-			var gossipItems = menu.GossipItems;
-			var gossipEntry = menu.GossipEntry;
+        #region Out
 
-			if (gossipEntry.IsDynamic)
-			{
-				// not cached
-				QueryHandler.SendNPCTextUpdate(chr, gossipEntry);
-			}
+        /// <summary>
+        /// Sends a page to the character
+        /// </summary>
+        /// <param name="chr">recieving character</param>
+        /// <param name="owner">EntityID of sender</param>
+        public static void SendPageToCharacter(GossipConversation convo,
+                                               IList<QuestMenuItem> questItems)
+        {
+            var speaker = convo.Speaker;
+            var chr = convo.Character;
 
-			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_GOSSIP_MESSAGE))
-			{
-				packet.Write(speaker.EntityId);
-				packet.Write(0);				// new Flag field since 2.4.0 - menu id
-				packet.Write(gossipEntry.GossipId);
+            var menu = convo.CurrentMenu;
+            var gossipItems = menu.GossipItems;
+            var gossipEntry = menu.GossipEntry;
 
-				var countPos = packet.Position;
-				packet.Position += 4;
-				var count = 0;
-				if (gossipItems != null)
-				{
-					for (var i = 0; i < gossipItems.Count; i++)
-					{
-						var item = gossipItems[i];
-						if (item.Action != null && !item.Action.CanUse(convo))
-						{
-							continue;
-						}
+            if (gossipEntry.IsDynamic)
+            {
+                // not cached
+                QueryHandler.SendNPCTextUpdate(chr, gossipEntry);
+            }
 
-						packet.Write(i);
-						packet.Write((byte)item.Icon);
-						packet.Write(item.Input);
-						packet.Write((uint)item.RequiredMoney);
-						packet.WriteCString(item.GetText(convo));
-						packet.WriteCString(item.GetConfirmText(convo));
-						count++;
-					}
-				}
+            using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_GOSSIP_MESSAGE))
+            {
+                packet.Write(speaker.EntityId);
+                packet.Write(0);				// new Flag field since 2.4.0 - menu id
+                packet.Write(gossipEntry.GossipId);
 
-				if (questItems != null)
-				{
-					packet.WriteUInt(questItems.Count);
-					for (int i = 0; i < questItems.Count; i++)
-					{
-						var item = questItems[i];
-						packet.Write(item.ID);
-						packet.Write(item.Status);
-						packet.Write(item.Level);
-					    packet.Write(0); // quest flags
-					    packet.Write((byte)0); // 3.3.3 flag (blue question or yelloe exclamation mark)
-						packet.WriteCString(item.Text);
-					}
-				}
-				else
-					packet.Write(0);
+                var countPos = packet.Position;
+                packet.Position += 4;
+                var count = 0;
+                if (gossipItems != null)
+                {
+                    for (var i = 0; i < gossipItems.Count; i++)
+                    {
+                        var item = gossipItems[i];
+                        if (item.Action != null && !item.Action.CanUse(convo))
+                        {
+                            continue;
+                        }
 
-				packet.Position = countPos;
-				packet.Write(count);
+                        packet.Write(i);
+                        packet.Write((byte)item.Icon);
+                        packet.Write(item.Input);
+                        packet.Write((uint)item.RequiredMoney);
+                        packet.WriteCString(item.GetText(convo));
+                        packet.WriteCString(item.GetConfirmText(convo));
+                        count++;
+                    }
+                }
 
-				chr.Client.Send(packet);
-			}
-		}
+                if (questItems != null)
+                {
+                    packet.WriteUInt(questItems.Count);
+                    for (int i = 0; i < questItems.Count; i++)
+                    {
+                        var item = questItems[i];
+                        packet.Write(item.ID);
+                        packet.Write(item.Status);
+                        packet.Write(item.Level);
+                        packet.Write(0); // quest flags
+                        packet.Write((byte)0); // 3.3.3 flag (blue question or yelloe exclamation mark)
+                        packet.WriteCString(item.Text);
+                    }
+                }
+                else
+                    packet.Write(0);
 
-		/// <summary>
-		/// Sends a page to the character
-		/// </summary>
-		/// <param name="rcv">recieving character</param>
-		public static void SendConversationComplete(IPacketReceiver rcv)
-		{
-			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_GOSSIP_COMPLETE))
-			{
-				rcv.Send(packet);
-			}
-		}
+                packet.Position = countPos;
+                packet.Write(count);
 
-		/// <summary>
-		/// Send Point of interest which will then appear on the minimap
-		/// </summary>
+                chr.Client.Send(packet);
+            }
+        }
+
+        /// <summary>
+        /// Sends a page to the character
+        /// </summary>
+        /// <param name="rcv">recieving character</param>
+        public static void SendConversationComplete(IPacketReceiver rcv)
+        {
+            using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_GOSSIP_COMPLETE))
+            {
+                rcv.Send(packet);
+            }
+        }
+
+        /// <summary>
+        /// Send Point of interest which will then appear on the minimap
+        /// </summary>
         public static void SendGossipPOI(IPacketReceiver rcv, GossipPOIFlags Flags, float X, float Y, int Data, int Icon, string Name)
-		{
-			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_GOSSIP_POI))
-			{
-				packet.Write((uint)Flags);
-				packet.Write(X);
-				packet.Write(Y);
-				packet.Write(Data);
-				packet.Write(Icon);
-				packet.WriteCString(Name);
-				rcv.Send(packet);
-			}
-		}
-		#endregion
-	}
+        {
+            using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_GOSSIP_POI))
+            {
+                packet.Write((uint)Flags);
+                packet.Write(X);
+                packet.Write(Y);
+                packet.Write(Data);
+                packet.Write(Icon);
+                packet.WriteCString(Name);
+                rcv.Send(packet);
+            }
+        }
+
+        #endregion Out
+    }
 }

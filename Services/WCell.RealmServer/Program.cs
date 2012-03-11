@@ -23,14 +23,14 @@ namespace WCell.RealmServer
     /// </summary>
     public class Program
     {
-		private static readonly Logger s_log = LogManager.GetCurrentClassLogger();
+        private static readonly Logger s_log = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// Starts up the realm server.
         /// </summary>
         public static void Start()
-		{
-			RealmServer.Instance.Start();
+        {
+            RealmServer.Instance.Start();
         }
     }
 }

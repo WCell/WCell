@@ -19,32 +19,32 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Effects
 {
-	/// <summary>
-	/// Should be a passive spell
-	/// Adds the DualWeild skill
-	/// </summary>
-	public class DualWeildEffectHandler : SpellEffectHandler
-	{
-		public DualWeildEffectHandler(SpellCast cast, SpellEffect effect)
-			: base(cast, effect)
-		{
-		}
+    /// <summary>
+    /// Should be a passive spell
+    /// Adds the DualWeild skill
+    /// </summary>
+    public class DualWeildEffectHandler : SpellEffectHandler
+    {
+        public DualWeildEffectHandler(SpellCast cast, SpellEffect effect)
+            : base(cast, effect)
+        {
+        }
 
-		protected override void Apply(WorldObject target)
-		{
-			if (target is Character)
-			{
-				var skills = ((Character) target).Skills;
-				if (skills != null)
-				{
-					skills.TryLearn(SkillId.DualWield);
-				}
-				// TODO: What if it cannot be learnt?
-			}
-			else
-			{
-				// TODO: Do NPCs need this skill for anything really?
-			}
-		}
-	}
+        protected override void Apply(WorldObject target)
+        {
+            if (target is Character)
+            {
+                var skills = ((Character)target).Skills;
+                if (skills != null)
+                {
+                    skills.TryLearn(SkillId.DualWield);
+                }
+                // TODO: What if it cannot be learnt?
+            }
+            else
+            {
+                // TODO: Do NPCs need this skill for anything really?
+            }
+        }
+    }
 }

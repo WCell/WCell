@@ -19,97 +19,98 @@ using WCell.RealmServer.Global;
 
 namespace WCell.RealmServer.Entities
 {
-	/// <summary>
-	/// Wraps a WorldObject.
-	/// This is primarily used for Auras and other things that are allowed to persist after
-	/// a Character or object might be gone, but still require basic information about the original
-	/// object.
-	/// </summary>
-	public class ObjectReference : IEntity
-	{
-		public static ObjectReference GetOrCreate(Map rgn, EntityId id)
-		{
-			var caster = rgn.GetObject(id);
-			if (caster != null)
-			{
-				return caster.SharedReference;
-			}
-			return new ObjectReference(id, 1);
-		}
+    /// <summary>
+    /// Wraps a WorldObject.
+    /// This is primarily used for Auras and other things that are allowed to persist after
+    /// a Character or object might be gone, but still require basic information about the original
+    /// object.
+    /// </summary>
+    public class ObjectReference : IEntity
+    {
+        public static ObjectReference GetOrCreate(Map rgn, EntityId id)
+        {
+            var caster = rgn.GetObject(id);
+            if (caster != null)
+            {
+                return caster.SharedReference;
+            }
+            return new ObjectReference(id, 1);
+        }
 
-		public EntityId EntityId
-		{
-			get;
-			private set;
-		}
-		//public readonly ObjectTypes ObjectType;
-		//public readonly Faction Faction;
+        public EntityId EntityId
+        {
+            get;
+            private set;
+        }
 
-		WorldObject m_Object;
+        //public readonly ObjectTypes ObjectType;
+        //public readonly Faction Faction;
 
-		public ObjectReference(WorldObject obj)
-		{
-			EntityId = obj.EntityId;
-			Level = obj.CasterLevel;
-			m_Object = obj;
-			//Faction = caster.Faction;
-			//ObjectType = caster.Type;
-		}
+        WorldObject m_Object;
 
-		public ObjectReference(EntityId entityId, int level)
-		{
-			EntityId = entityId;
-			Level = level;
-		}
+        public ObjectReference(WorldObject obj)
+        {
+            EntityId = obj.EntityId;
+            Level = obj.CasterLevel;
+            m_Object = obj;
+            //Faction = caster.Faction;
+            //ObjectType = caster.Type;
+        }
 
-		public ObjectReference(int level)
-		{
-			Level = level;
-		}
+        public ObjectReference(EntityId entityId, int level)
+        {
+            EntityId = entityId;
+            Level = level;
+        }
 
-		public ObjectReference()
-		{
-		}
+        public ObjectReference(int level)
+        {
+            Level = level;
+        }
 
-		public int Level
-		{
-			get;
-			internal set;
-		}
+        public ObjectReference()
+        {
+        }
 
-		public WorldObject Object
-		{
-			get { return (m_Object != null && m_Object.IsInWorld) ? m_Object : null; }
-			internal set { m_Object = value; }
-		}
+        public int Level
+        {
+            get;
+            internal set;
+        }
 
-		/// <summary>
-		/// Returns the Unit behind this object (if exists)
-		/// </summary>
-		public Unit UnitMaster
-		{
-			get { return m_Object != null ? m_Object.UnitMaster : null; }
-		}
+        public WorldObject Object
+        {
+            get { return (m_Object != null && m_Object.IsInWorld) ? m_Object : null; }
+            internal set { m_Object = value; }
+        }
 
-		//public DynamicObject CasterObject
-		//{
-		//    get
-		//    {
-		//        return WorldMgr.GetObject(Id) as DynamicObject;
-		//    }
-		//}
+        /// <summary>
+        /// Returns the Unit behind this object (if exists)
+        /// </summary>
+        public Unit UnitMaster
+        {
+            get { return m_Object != null ? m_Object.UnitMaster : null; }
+        }
 
-		public override string ToString()
-		{
-			var obj = Object;
-			if (obj != null)
-			{
-				return obj.ToString();
-			}
-			else
-			{
-				return string.Format("Object with Id: {0}", EntityId);
-			}
-		}
-	}
+        //public DynamicObject CasterObject
+        //{
+        //    get
+        //    {
+        //        return WorldMgr.GetObject(Id) as DynamicObject;
+        //    }
+        //}
+
+        public override string ToString()
+        {
+            var obj = Object;
+            if (obj != null)
+            {
+                return obj.ToString();
+            }
+            else
+            {
+                return string.Format("Object with Id: {0}", EntityId);
+            }
+        }
+    }
 }

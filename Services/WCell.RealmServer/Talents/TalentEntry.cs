@@ -19,62 +19,62 @@ using WCell.RealmServer.Spells;
 
 namespace WCell.RealmServer.Talents
 {
-	public class TalentEntry
-	{
-		public TalentId Id;
-		public TalentTree Tree;			// 1
-		public uint Row;				// 2
-		public uint Col;				// 3
+    public class TalentEntry
+    {
+        public TalentId Id;
+        public TalentTree Tree;			// 1
+        public uint Row;				// 2
+        public uint Col;				// 3
 
-		/// <summary>
-		/// Spells indexed by Talent-Rank
-		/// </summary>
-		public Spell[] Spells;	// 4-12  (9)
+        /// <summary>
+        /// Spells indexed by Talent-Rank
+        /// </summary>
+        public Spell[] Spells;	// 4-12  (9)
 
-		/// <summary>
-		/// The id of the talent that must be learnt before this one can be learnt
-		/// </summary>
-		public TalentId RequiredId;		// 13[-15 (3)]
+        /// <summary>
+        /// The id of the talent that must be learnt before this one can be learnt
+        /// </summary>
+        public TalentId RequiredId;		// 13[-15 (3)]
 
-		/// <summary>
-		/// The required rank of the required talent
-		/// </summary>
-		public uint RequiredRank;			// 16
+        /// <summary>
+        /// The required rank of the required talent
+        /// </summary>
+        public uint RequiredRank;			// 16
 
-		public uint Index;
+        public uint Index;
 
-		/// <summary>
-		/// Required amount of points spent within the same TalentTree to activate this talent
-		/// </summary>
-		public uint RequiredTreePoints
-		{
-			get { return Row * 5; }
-		}
+        /// <summary>
+        /// Required amount of points spent within the same TalentTree to activate this talent
+        /// </summary>
+        public uint RequiredTreePoints
+        {
+            get { return Row * 5; }
+        }
 
-		/// <summary>
-		/// The highest rank that this talent has
-		/// </summary>
-		public int MaxRank
-		{
-			get { return Spells.Length; }
-		}
+        /// <summary>
+        /// The highest rank that this talent has
+        /// </summary>
+        public int MaxRank
+        {
+            get { return Spells.Length; }
+        }
 
-		public string Name
-		{
-			get { return Spells[0].Name; }
-		}
+        public string Name
+        {
+            get { return Spells[0].Name; }
+        }
 
-		/// <summary>
-		/// Complete name of this talent (includes the FullName of the tree)
-		/// </summary>
-		public string FullName
-		{
-			get { return Tree.FullName + " " + Name; }
-		}
+        /// <summary>
+        /// Complete name of this talent (includes the FullName of the tree)
+        /// </summary>
+        public string FullName
+        {
+            get { return Tree.FullName + " " + Name; }
+        }
 
-		public override string ToString()
-		{
-			return FullName + " (Id: " + (int)Id + ", Ranks: " + Spells.Length + ", Required: " + RequiredId + ")";
-		}
-	}
+        public override string ToString()
+        {
+            return FullName + " (Id: " + (int)Id + ", Ranks: " + Spells.Length + ", Required: " + RequiredId + ")";
+        }
+    }
 }

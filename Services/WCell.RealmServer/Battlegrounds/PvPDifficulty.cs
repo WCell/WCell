@@ -17,7 +17,7 @@ namespace WCell.RealmServer.Battlegrounds
     {
         public override PvPDifficultyEntry ConvertTo(byte[] rawData, ref int id)
         {
- 	        var entry = new PvPDifficultyEntry
+            var entry = new PvPDifficultyEntry
                             {
                                 Id = (id = GetInt32(rawData, 0)),
                                 mapId = (MapId)GetInt32(rawData, 1),
@@ -27,6 +27,5 @@ namespace WCell.RealmServer.Battlegrounds
                             };
             return entry;
         }
-
     }
 }

@@ -19,25 +19,24 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Effects
 {
+    /// <summary>
+    /// Either just heals or trades one Rejuvenation or Regrowth for a lot of healing
+    /// </summary>
+    public class HealEffectHandler : SpellEffectHandler
+    {
+        public HealEffectHandler(SpellCast cast, SpellEffect effect)
+            : base(cast, effect)
+        {
+        }
 
-	/// <summary>
-	/// Either just heals or trades one Rejuvenation or Regrowth for a lot of healing
-	/// </summary>
-	public class HealEffectHandler : SpellEffectHandler
-	{
-		public HealEffectHandler(SpellCast cast, SpellEffect effect)
-			: base(cast, effect)
-		{
-		}
+        protected override void Apply(WorldObject target)
+        {
+            ((Unit)target).Heal(CalcDamageValue(), m_cast.CasterUnit, Effect);
+        }
 
-		protected override void Apply(WorldObject target)
-		{
-			((Unit)target).Heal(CalcDamageValue(), m_cast.CasterUnit, Effect);
-		}
-
-		public override ObjectTypes TargetType
-		{
-			get { return ObjectTypes.Unit; }
-		}
-	}
+        public override ObjectTypes TargetType
+        {
+            get { return ObjectTypes.Unit; }
+        }
+    }
 }

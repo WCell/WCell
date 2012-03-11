@@ -68,9 +68,9 @@ namespace WCell.RealmServer.Spells
             //set;
         }
 
-		/// <summary>
-		/// Called when the given Aura is removed from the given owner
-		/// </summary>
+        /// <summary>
+        /// Called when the given Aura is removed from the given owner
+        /// </summary>
         void OnRemove(Unit owner, Aura aura);
 
         void Cancel();

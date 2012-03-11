@@ -35,6 +35,5 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
             if (chr != null)
                 chr.ReputationGainModifierPercent -= EffectValue;
         }
-
     }
 };

@@ -39,7 +39,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 
         protected internal override void InitEntry()
         {
-			Lock = LockEntry.Entries.Get((uint)LockId);
+            Lock = LockEntry.Entries.Get((uint)LockId);
         }
     }
 }

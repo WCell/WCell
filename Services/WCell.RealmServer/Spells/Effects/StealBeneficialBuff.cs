@@ -21,69 +21,69 @@ using WCell.RealmServer.Spells.Auras;
 
 namespace WCell.RealmServer.Spells.Effects
 {
-	/// <summary>
-	/// Steals a positive Aura -which has a timeout and is not channeled- off the target and applies it on oneself
-	/// </summary>
-	public class StealBeneficialBuffEffectHandler : SpellEffectHandler
-	{
-		Aura toSteal;
+    /// <summary>
+    /// Steals a positive Aura -which has a timeout and is not channeled- off the target and applies it on oneself
+    /// </summary>
+    public class StealBeneficialBuffEffectHandler : SpellEffectHandler
+    {
+        Aura toSteal;
 
-		public StealBeneficialBuffEffectHandler(SpellCast cast, SpellEffect effect)
-			: base(cast, effect)
-		{
-		}
+        public StealBeneficialBuffEffectHandler(SpellCast cast, SpellEffect effect)
+            : base(cast, effect)
+        {
+        }
 
-		public override SpellFailedReason InitializeTarget(WorldObject target)
-		{
-			var caster = m_cast.CasterObject.SharedReference;
-			var auras = m_cast.CasterUnit.Auras;
-			foreach (var aura in ((Unit)target).Auras)
-			{
-				// find a stealable positive auras
-				if (aura.IsBeneficial && 
-					aura.CanBeStolen && 
-					aura.TimeLeft > 100 &&
-					auras.GetAura(caster, aura.Id, aura.Spell) == null)
-				{
-					toSteal = aura;
-					return SpellFailedReason.Ok;
-				}
-			}
+        public override SpellFailedReason InitializeTarget(WorldObject target)
+        {
+            var caster = m_cast.CasterObject.SharedReference;
+            var auras = m_cast.CasterUnit.Auras;
+            foreach (var aura in ((Unit)target).Auras)
+            {
+                // find a stealable positive auras
+                if (aura.IsBeneficial &&
+                    aura.CanBeStolen &&
+                    aura.TimeLeft > 100 &&
+                    auras.GetAura(caster, aura.Id, aura.Spell) == null)
+                {
+                    toSteal = aura;
+                    return SpellFailedReason.Ok;
+                }
+            }
 
-			return SpellFailedReason.NothingToSteal;
-		}
+            return SpellFailedReason.NothingToSteal;
+        }
 
-		// TODO: Make sure that if multiple casters steal from the same target at the same time,
-		// that they don't just move around one buff between each other?
-		protected override void Apply(WorldObject target)
-		{
-			var cast = m_cast;
-			if (toSteal.IsAdded)
-			{
-				// remove from owner
-				toSteal.Remove(true);
+        // TODO: Make sure that if multiple casters steal from the same target at the same time,
+        // that they don't just move around one buff between each other?
+        protected override void Apply(WorldObject target)
+        {
+            var cast = m_cast;
+            if (toSteal.IsAdded)
+            {
+                // remove from owner
+                toSteal.Remove(true);
 
-				// apply to caster
+                // apply to caster
 
-				// maximum 2 minutes or the spell's duration
-				const int maxTime = 120000;
-				if (toSteal.TimeLeft > maxTime)
-				{
-					toSteal.TimeLeft = maxTime;
-				}
+                // maximum 2 minutes or the spell's duration
+                const int maxTime = 120000;
+                if (toSteal.TimeLeft > maxTime)
+                {
+                    toSteal.TimeLeft = maxTime;
+                }
 
-				cast.CasterUnit.Auras.AddAura(toSteal);
-			}
-		}
+                cast.CasterUnit.Auras.AddAura(toSteal);
+            }
+        }
 
-		public override ObjectTypes TargetType
-		{
-			get { return ObjectTypes.Unit; }
-		}
+        public override ObjectTypes TargetType
+        {
+            get { return ObjectTypes.Unit; }
+        }
 
-		public override ObjectTypes CasterType
-		{
-			get { return ObjectTypes.Unit; }
-		}
-	}
+        public override ObjectTypes CasterType
+        {
+            get { return ObjectTypes.Unit; }
+        }
+    }
 }

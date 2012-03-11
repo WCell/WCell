@@ -18,25 +18,25 @@ using WCell.Constants.Updates;
 
 namespace WCell.RealmServer.Spells.Effects
 {
-	/// <summary>
-	/// Represents a mobile Aura-Effect that is applied to everyone in the area.
-	/// The SpellCast-object creates AreaAuras explicitely.
-	/// </summary>
-	public class ApplyAreaAuraEffectHandler : ApplyAuraEffectHandler
-	{
-		public ApplyAreaAuraEffectHandler(SpellCast cast, SpellEffect effect)
-			: base(cast, effect)
-		{
-		}
+    /// <summary>
+    /// Represents a mobile Aura-Effect that is applied to everyone in the area.
+    /// The SpellCast-object creates AreaAuras explicitely.
+    /// </summary>
+    public class ApplyAreaAuraEffectHandler : ApplyAuraEffectHandler
+    {
+        public ApplyAreaAuraEffectHandler(SpellCast cast, SpellEffect effect)
+            : base(cast, effect)
+        {
+        }
 
-		public override void Apply()
-		{
-			// do nothing (AreaAuras will be created upon SpellCast)
-		}
+        public override void Apply()
+        {
+            // do nothing (AreaAuras will be created upon SpellCast)
+        }
 
-		public override ObjectTypes CasterType
-		{
-			get { return ObjectTypes.Unit; }
-		}
-	}
+        public override ObjectTypes CasterType
+        {
+            get { return ObjectTypes.Unit; }
+        }
+    }
 }

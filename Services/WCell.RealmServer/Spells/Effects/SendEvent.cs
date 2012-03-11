@@ -18,19 +18,19 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Effects
 {
-	/// <summary>
-	/// Quest related
-	/// </summary>
-	public class SendEventEffectHandler : SpellEffectHandler
-	{
-		public SendEventEffectHandler(SpellCast cast, SpellEffect effect)
-			: base(cast, effect)
-		{
-			uint questId = (uint)effect.MiscValue;
-		}
+    /// <summary>
+    /// Quest related
+    /// </summary>
+    public class SendEventEffectHandler : SpellEffectHandler
+    {
+        public SendEventEffectHandler(SpellCast cast, SpellEffect effect)
+            : base(cast, effect)
+        {
+            uint questId = (uint)effect.MiscValue;
+        }
 
-		protected override void Apply(WorldObject target)
-		{
-		}
-	}
+        protected override void Apply(WorldObject target)
+        {
+        }
+    }
 }

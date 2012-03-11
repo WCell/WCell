@@ -5,7 +5,6 @@ namespace WCell.RealmServer.Guilds
 {
     public partial class GuildBankTab
     {
-
         public ItemRecord this[int slot]
         {
             get
@@ -19,7 +18,7 @@ namespace WCell.RealmServer.Guilds
                 if (slot > GuildMgr.MAX_BANK_TAB_SLOTS)
                     return;
 
-                if(value == null)
+                if (value == null)
                 {
                     Items[slot] = null;
                     ItemRecords[slot] = null;
@@ -28,7 +27,8 @@ namespace WCell.RealmServer.Guilds
 
                 value.Slot = slot;
 
-                Items[slot] = new GuildBankTabItemMapping {
+                Items[slot] = new GuildBankTabItemMapping
+                {
                     Guid = value.Guid,
                     TabSlot = (byte)slot
                 };
@@ -69,13 +69,13 @@ namespace WCell.RealmServer.Guilds
         /// </summary>
         /// <param name="item">The item to store.</param>
         /// <param name="slot">The slot to store it in.</param>
-        /// <returns>The <see cref="ItemRecord" /> that was in the slot (or the original <see cref="ItemRecord" /> minus the items that were merged) 
+        /// <returns>The <see cref="ItemRecord" /> that was in the slot (or the original <see cref="ItemRecord" /> minus the items that were merged)
         /// or null if the store/merge was successful.</returns>
         public ItemRecord StoreItemInSlot(ItemRecord item, int slot)
         {
             return StoreItemInSlot(item, slot, false);
         }
-        
+
         /// <summary>
         /// Places the given item in the given slot (or tries mergeing at slot> if indicated).
         /// Make sure that the depositer has deposit rights to this BankTab!
@@ -83,7 +83,7 @@ namespace WCell.RealmServer.Guilds
         /// <param name="item">The <see cref="ItemRecord" /> to store.</param>
         /// <param name="slot">The slotId where you want to store.</param>
         /// <param name="allowMerge">Whether or not to try and merge the stacks.</param>
-        /// <returns>The <see cref="ItemRecord" /> that was in the slot (or the original <see cref="ItemRecord" /> minus the items that were merged) 
+        /// <returns>The <see cref="ItemRecord" /> that was in the slot (or the original <see cref="ItemRecord" /> minus the items that were merged)
         /// or null if the store/merge was successful.</returns>
         public ItemRecord StoreItemInSlot(ItemRecord item, int slot, bool allowMerge)
         {
@@ -98,7 +98,7 @@ namespace WCell.RealmServer.Guilds
         /// <param name="amount">The amount of items from the stack to store.</param>
         /// <param name="slot">The slotId where you want to store.</param>
         /// <param name="allowMerge">Whether or not to try and merge the stacks.</param>
-        /// <returns>The <see cref="ItemRecord" /> that was in the slot (or the original <see cref="ItemRecord" /> minus the items that were merged) 
+        /// <returns>The <see cref="ItemRecord" /> that was in the slot (or the original <see cref="ItemRecord" /> minus the items that were merged)
         /// or null if the store/merge was successful.</returns>
         public ItemRecord StoreItemInSlot(ItemRecord item, int amount, int slot, bool allowMerge)
         {
@@ -108,7 +108,7 @@ namespace WCell.RealmServer.Guilds
             var curItem = this[slot];
             if (curItem == null)
             {
-                // the slot is empty, rock on 
+                // the slot is empty, rock on
                 this[slot] = item;
                 return null;
             }
@@ -146,7 +146,7 @@ namespace WCell.RealmServer.Guilds
 
             var curItem = this[slot];
             if (curItem == null) return true;
-            
+
             if (allowMerge && this[slot].EntryId == item.EntryId)
             {
                 // try to merge the stacks.

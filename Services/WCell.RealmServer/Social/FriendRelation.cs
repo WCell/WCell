@@ -27,9 +27,9 @@ namespace WCell.RealmServer.Interaction
     /// </summary>
     public sealed class FriendRelation : PersistedRelation
     {
-		public FriendRelation(uint charId, uint relatedCharId)
+        public FriendRelation(uint charId, uint relatedCharId)
             : base(charId, relatedCharId)
-        { 
+        {
         }
 
         public override bool RequiresOnlineNotification
@@ -51,7 +51,7 @@ namespace WCell.RealmServer.Interaction
                 return false;
             }
 
-            //Checks if the relation target char exist 
+            //Checks if the relation target char exist
             if (relatedCharInfo == null)
             {
                 relResult = RelationResult.FRIEND_NOT_FOUND;
@@ -66,7 +66,7 @@ namespace WCell.RealmServer.Interaction
             }
 
             //Checks if both chars are in the same faction
-			if (FactionMgr.GetFactionGroup(charInfo.Race) != FactionMgr.GetFactionGroup(relatedCharInfo.Race))
+            if (FactionMgr.GetFactionGroup(charInfo.Race) != FactionMgr.GetFactionGroup(relatedCharInfo.Race))
             {
                 relResult = RelationResult.FRIEND_ENEMY;
                 return false;

@@ -19,22 +19,21 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
-	/// <summary>
-	/// Regenerates a percentage of your total Mana every tick
-	/// </summary>
-	public class RegenPercentOfTotalManaHandler : AuraEffectHandler
-	{
-		protected internal override void CheckInitialize(SpellCast creatingCast, ObjectReference casterReference, Unit target, ref SpellFailedReason failReason)
-		{
-			//if (target.PowerType != WCell.Core.PowerType.Mana) {
-			//    failReason = SpellFailedReason.AlreadyAtFullPower;
-			//}
-		}
+    /// <summary>
+    /// Regenerates a percentage of your total Mana every tick
+    /// </summary>
+    public class RegenPercentOfTotalManaHandler : AuraEffectHandler
+    {
+        protected internal override void CheckInitialize(SpellCast creatingCast, ObjectReference casterReference, Unit target, ref SpellFailedReason failReason)
+        {
+            //if (target.PowerType != WCell.Core.PowerType.Mana) {
+            //    failReason = SpellFailedReason.AlreadyAtFullPower;
+            //}
+        }
 
-		protected override void Apply()
-		{
-			Owner.Energize((EffectValue * Owner.MaxPower + 50) / 100, m_aura.CasterUnit, m_spellEffect);
-		}
-
-	}
+        protected override void Apply()
+        {
+            Owner.Energize((EffectValue * Owner.MaxPower + 50) / 100, m_aura.CasterUnit, m_spellEffect);
+        }
+    }
 };

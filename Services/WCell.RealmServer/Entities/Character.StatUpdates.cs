@@ -4,103 +4,105 @@ using WCell.RealmServer.Modifiers;
 
 namespace WCell.RealmServer.Entities
 {
-	/// <summary>
-	/// TODO: Move everything Character-related from UnitUpdates in here
-	/// </summary>
-	public partial class Character
-	{
-		protected internal override void UpdateStamina()
-		{
-			base.UpdateStamina();
-			
-			if (m_MeleeAPModByStat != null)
-			{
-				this.UpdateAllAttackPower();
-			}
+    /// <summary>
+    /// TODO: Move everything Character-related from UnitUpdates in here
+    /// </summary>
+    public partial class Character
+    {
+        protected internal override void UpdateStamina()
+        {
+            base.UpdateStamina();
 
-			// update pet
-			if (m_activePet != null && m_activePet.IsHunterPet)
-			{
-				m_activePet.UpdateStamina();
-			}
-		}
+            if (m_MeleeAPModByStat != null)
+            {
+                this.UpdateAllAttackPower();
+            }
 
-		protected internal override void UpdateIntellect()
-		{
-			base.UpdateIntellect();
+            // update pet
+            if (m_activePet != null && m_activePet.IsHunterPet)
+            {
+                m_activePet.UpdateStamina();
+            }
+        }
 
-			if (PowerType == PowerType.Mana)
-			{
-				// spell caster crit chance depends on intellect
-				this.UpdateSpellCritChance();
-			}
+        protected internal override void UpdateIntellect()
+        {
+            base.UpdateIntellect();
 
-			// TODO Update spell power: AddDamageMod & HealingDoneMod
+            if (PowerType == PowerType.Mana)
+            {
+                // spell caster crit chance depends on intellect
+                this.UpdateSpellCritChance();
+            }
 
-			this.UpdatePowerRegen();
-			if (m_MeleeAPModByStat != null)
-			{
-				this.UpdateAllAttackPower();
-			}
-		}
+            // TODO Update spell power: AddDamageMod & HealingDoneMod
 
-		protected internal override void UpdateSpirit()
-		{
-			base.UpdateSpirit();
+            this.UpdatePowerRegen();
+            if (m_MeleeAPModByStat != null)
+            {
+                this.UpdateAllAttackPower();
+            }
+        }
 
-			if (m_MeleeAPModByStat != null)
-			{
-				this.UpdateAllAttackPower();
-			}
-		}
+        protected internal override void UpdateSpirit()
+        {
+            base.UpdateSpirit();
 
-		protected internal override int IntellectManaBonus
-		{
-			get
-			{
-				var intelBase = Archetype.FirstLevelStats.Intellect;
-				return intelBase + (Intellect - intelBase) * ManaPerIntelligence;
-			}
-		}
+            if (m_MeleeAPModByStat != null)
+            {
+                this.UpdateAllAttackPower();
+            }
+        }
 
-		#region CombatRatings
-		private void UpdateChancesByCombatRating(CombatRating rating)
-		{
-			// TODO: Update influence
-			switch (rating)
-			{
-				case CombatRating.Dodge:
-					UnitUpdates.UpdateDodgeChance(this);
-					break;
-				case CombatRating.Parry:
-					UnitUpdates.UpdateParryChance(this);
-					break;
-				case CombatRating.Block:
-					UnitUpdates.UpdateBlockChance(this);
-					break;
-				case CombatRating.MeleeCritChance:
-					UnitUpdates.UpdateCritChance(this);
-					break;
-				case CombatRating.RangedCritChance:
-					UnitUpdates.UpdateCritChance(this);
-					break;
-				case CombatRating.SpellCritChance:
-					UnitUpdates.UpdateSpellCritChance(this);
-					break;
-				case CombatRating.DefenseSkill:
-					UnitUpdates.UpdateDefense(this);
-					break;
-				case CombatRating.MeleeHitChance:
-					UnitUpdates.UpdateMeleeHitChance(this);
-					break;
-				case CombatRating.RangedHitChance:
-					UnitUpdates.UpdateRangedHitChance(this);
-					break;
-				case CombatRating.Expertise:
-					UnitUpdates.UpdateExpertise(this);
-					break;
-			}
-		}
-		#endregion
-	}
+        protected internal override int IntellectManaBonus
+        {
+            get
+            {
+                var intelBase = Archetype.FirstLevelStats.Intellect;
+                return intelBase + (Intellect - intelBase) * ManaPerIntelligence;
+            }
+        }
+
+        #region CombatRatings
+
+        private void UpdateChancesByCombatRating(CombatRating rating)
+        {
+            // TODO: Update influence
+            switch (rating)
+            {
+                case CombatRating.Dodge:
+                    UnitUpdates.UpdateDodgeChance(this);
+                    break;
+                case CombatRating.Parry:
+                    UnitUpdates.UpdateParryChance(this);
+                    break;
+                case CombatRating.Block:
+                    UnitUpdates.UpdateBlockChance(this);
+                    break;
+                case CombatRating.MeleeCritChance:
+                    UnitUpdates.UpdateCritChance(this);
+                    break;
+                case CombatRating.RangedCritChance:
+                    UnitUpdates.UpdateCritChance(this);
+                    break;
+                case CombatRating.SpellCritChance:
+                    UnitUpdates.UpdateSpellCritChance(this);
+                    break;
+                case CombatRating.DefenseSkill:
+                    UnitUpdates.UpdateDefense(this);
+                    break;
+                case CombatRating.MeleeHitChance:
+                    UnitUpdates.UpdateMeleeHitChance(this);
+                    break;
+                case CombatRating.RangedHitChance:
+                    UnitUpdates.UpdateRangedHitChance(this);
+                    break;
+                case CombatRating.Expertise:
+                    UnitUpdates.UpdateExpertise(this);
+                    break;
+            }
+        }
+
+        #endregion CombatRatings
+    }
 }

@@ -23,53 +23,53 @@ using WCell.RealmServer.Looting;
 
 namespace WCell.RealmServer.Spells.Effects
 {
-	/// <summary>
-	/// Disenchant Visual (Id: 61335)
-	/// </summary>
-	public class DisenchantEffectHandler : SpellEffectHandler
-	{
-		public DisenchantEffectHandler(SpellCast cast, SpellEffect effect)
-			: base(cast, effect)
-		{
-		}
+    /// <summary>
+    /// Disenchant Visual (Id: 61335)
+    /// </summary>
+    public class DisenchantEffectHandler : SpellEffectHandler
+    {
+        public DisenchantEffectHandler(SpellCast cast, SpellEffect effect)
+            : base(cast, effect)
+        {
+        }
 
-		public override SpellFailedReason Initialize()
-		{
-			if (m_cast.TargetItem == null)
-			{
-				return SpellFailedReason.ItemNotReady;
-			}
+        public override SpellFailedReason Initialize()
+        {
+            if (m_cast.TargetItem == null)
+            {
+                return SpellFailedReason.ItemNotReady;
+            }
 
-			var templ = m_cast.TargetItem.Template;
-			if (templ.RequiredDisenchantingLevel == -1)
-			{
-				return SpellFailedReason.CantBeDisenchanted;
-			}
+            var templ = m_cast.TargetItem.Template;
+            if (templ.RequiredDisenchantingLevel == -1)
+            {
+                return SpellFailedReason.CantBeDisenchanted;
+            }
 
-			if (templ.RequiredDisenchantingLevel > m_cast.CasterChar.Skills.GetValue(SkillId.Enchanting))
-			{
-				return SpellFailedReason.CantBeDisenchantedSkill;
-			}
+            if (templ.RequiredDisenchantingLevel > m_cast.CasterChar.Skills.GetValue(SkillId.Enchanting))
+            {
+                return SpellFailedReason.CantBeDisenchantedSkill;
+            }
 
-			return SpellFailedReason.Ok;
-		}
+            return SpellFailedReason.Ok;
+        }
 
-		public override void Apply()
-		{
-			var caster = m_cast.CasterChar;
-			caster.Emote(EmoteType.SimpleTalk);
-			LootMgr.CreateAndSendObjectLoot(m_cast.TargetItem, caster, LootEntryType.Disenchanting, false);
-			//m_cast.CasterChar.Inventory.AddAllUnchecked(loot, slots);
-		}
+        public override void Apply()
+        {
+            var caster = m_cast.CasterChar;
+            caster.Emote(EmoteType.SimpleTalk);
+            LootMgr.CreateAndSendObjectLoot(m_cast.TargetItem, caster, LootEntryType.Disenchanting, false);
+            //m_cast.CasterChar.Inventory.AddAllUnchecked(loot, slots);
+        }
 
-		public override bool HasOwnTargets
-		{
-			get { return false; }
-		}
+        public override bool HasOwnTargets
+        {
+            get { return false; }
+        }
 
-		public override ObjectTypes CasterType
-		{
-			get { return ObjectTypes.Player; }
-		}
-	}
+        public override ObjectTypes CasterType
+        {
+            get { return ObjectTypes.Player; }
+        }
+    }
 }

@@ -10,56 +10,55 @@ using WCell.Util.Commands;
 
 namespace WCell.RealmServer.Misc
 {
-	public interface IHasRole
-	{
-		/// <summary>
-		/// The RoleGroup of this entity
-		/// </summary>
-		RoleGroup Role { get; }
-	}
+    public interface IHasRole
+    {
+        /// <summary>
+        /// The RoleGroup of this entity
+        /// </summary>
+        RoleGroup Role { get; }
+    }
 
-	public interface IUser : IChatter, IHasRole
-	{
-		/// <summary>
-		/// Whether this User ignores the given User
-		/// </summary>
-		/// <param name="user"></param>
-		/// <returns></returns>
-		bool IsIgnoring(IUser user);
+    public interface IUser : IChatter, IHasRole
+    {
+        /// <summary>
+        /// Whether this User ignores the given User
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        bool IsIgnoring(IUser user);
 
-		/// <summary>
-		/// The targeted Unit of this User (or null)
-		/// </summary>
-		Unit Target { get; }
+        /// <summary>
+        /// The targeted Unit of this User (or null)
+        /// </summary>
+        Unit Target { get; }
 
-		/// <summary>
-		/// The command that has been selected by this User
-		/// </summary>
-		BaseCommand<RealmServerCmdArgs> SelectedCommand
-		{
-			get; 
-			set;
-		}
+        /// <summary>
+        /// The command that has been selected by this User
+        /// </summary>
+        BaseCommand<RealmServerCmdArgs> SelectedCommand
+        {
+            get;
+            set;
+        }
 
-		List<ChatChannel> ChatChannels
-		{
-			get;
-		}
+        List<ChatChannel> ChatChannels
+        {
+            get;
+        }
 
-		FactionGroup FactionGroup
-		{
-			get;
-		}
+        FactionGroup FactionGroup
+        {
+            get;
+        }
 
-		ClientLocale Locale
-		{ 
-			get;
-			set;
-		}
-	}
+        ClientLocale Locale
+        {
+            get;
+            set;
+        }
+    }
 
-	public interface IStaffUser : IUser, ITicketHandler
-	{
-		
-	}
+    public interface IStaffUser : IUser, ITicketHandler
+    {
+    }
 }
