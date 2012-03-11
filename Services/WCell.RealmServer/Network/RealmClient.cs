@@ -23,6 +23,8 @@ using NLog;
 using WCell.Constants;
 using WCell.Core;
 using WCell.Core.Cryptography;
+using WCell.PacketAnalysis;
+using WCell.RealmServer.Debugging;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Stats;
 using WCell.Util.NLog;

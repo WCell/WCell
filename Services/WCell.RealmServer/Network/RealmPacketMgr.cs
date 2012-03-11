@@ -20,6 +20,8 @@ using NLog;
 using WCell.Constants;
 using WCell.Core.Initialization;
 using WCell.Core.Network;
+using WCell.PacketAnalysis;
+using WCell.RealmServer.Debugging;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Res;
 using WCell.Util;

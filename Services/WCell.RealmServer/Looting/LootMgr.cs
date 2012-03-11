@@ -8,6 +8,7 @@ using WCell.Core.Initialization;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
+using WCell.RealmServer.Items;
 using WCell.RealmServer.Misc;
 using WCell.Util;
 
