@@ -2,8 +2,8 @@ using WCell.Util;
 
 namespace WCell.PacketAnalysis
 {
-	public interface IParsedPacket
-	{
-		void Dump(IndentTextWriter writer);
-	}
+    public interface IParsedPacket
+    {
+        void Dump(IndentTextWriter writer);
+    }
 }

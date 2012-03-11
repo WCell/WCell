@@ -7,221 +7,221 @@ using WCell.Util;
 
 namespace WCell.RealmServer.Guilds
 {
-	public class GuildBankLog
-	{
-		public const int MAX_ENTRIES = 24;
+    public class GuildBankLog
+    {
+        public const int MAX_ENTRIES = 24;
 
-		private readonly StaticCircularList<GuildBankLogEntry> itemLogEntries;
-		private readonly StaticCircularList<GuildBankLogEntry> moneyLogEntries;
+        private readonly StaticCircularList<GuildBankLogEntry> itemLogEntries;
+        private readonly StaticCircularList<GuildBankLogEntry> moneyLogEntries;
 
-		public GuildBankLog(GuildBank bank)
-		{
-			Bank = bank;
-			itemLogEntries = new StaticCircularList<GuildBankLogEntry>(MAX_ENTRIES, OnEntryDeleted);
-			moneyLogEntries = new StaticCircularList<GuildBankLogEntry>(MAX_ENTRIES, OnEntryDeleted);
-		}
+        public GuildBankLog(GuildBank bank)
+        {
+            Bank = bank;
+            itemLogEntries = new StaticCircularList<GuildBankLogEntry>(MAX_ENTRIES, OnEntryDeleted);
+            moneyLogEntries = new StaticCircularList<GuildBankLogEntry>(MAX_ENTRIES, OnEntryDeleted);
+        }
 
-		private static void OnEntryDeleted(GuildBankLogEntry obj)
-		{
-			obj.DeleteLater();
-		}
+        private static void OnEntryDeleted(GuildBankLogEntry obj)
+        {
+            obj.DeleteLater();
+        }
 
-		public GuildBank Bank
-		{
-			get;
-			internal set;
-		}
+        public GuildBank Bank
+        {
+            get;
+            internal set;
+        }
 
-		internal void LoadLogs()
-		{
-			var logEntries = GuildBankLogEntry.LoadAll(Bank.Guild.Id);
-			foreach (var entry in logEntries)
-			{
-				switch (entry.Type)
-				{
-					case GuildBankLogEntryType.None:
-						{
-							break;
-						}
-					case GuildBankLogEntryType.DepositItem:
-						{
-							itemLogEntries.Insert(entry);
-							break;
-						}
-					case GuildBankLogEntryType.WithdrawItem:
-						{
-							itemLogEntries.Insert(entry);
-							break;
-						}
-					case GuildBankLogEntryType.MoveItem:
-						{
-							itemLogEntries.Insert(entry);
-							break;
-						}
-					case GuildBankLogEntryType.DepositMoney:
-						{
-							moneyLogEntries.Insert(entry);
-							break;
-						}
-					case GuildBankLogEntryType.WithdrawMoney:
-						{
-							moneyLogEntries.Insert(entry);
-							break;
-						}
-					case GuildBankLogEntryType.MoneyUsedForRepairs:
-						{
-							moneyLogEntries.Insert(entry);
-							break;
-						}
-					case GuildBankLogEntryType.MoveItem_2:
-						{
-							itemLogEntries.Insert(entry);
-							break;
-						}
-					case GuildBankLogEntryType.Unknown1:
-						{
-							break;
-						}
-					case GuildBankLogEntryType.Unknown2:
-						{
-							break;
-						}
-					default:
-						{
-							break;
-						}
-				} // end switch
-			} // end foreach
-		}
+        internal void LoadLogs()
+        {
+            var logEntries = GuildBankLogEntry.LoadAll(Bank.Guild.Id);
+            foreach (var entry in logEntries)
+            {
+                switch (entry.Type)
+                {
+                    case GuildBankLogEntryType.None:
+                        {
+                            break;
+                        }
+                    case GuildBankLogEntryType.DepositItem:
+                        {
+                            itemLogEntries.Insert(entry);
+                            break;
+                        }
+                    case GuildBankLogEntryType.WithdrawItem:
+                        {
+                            itemLogEntries.Insert(entry);
+                            break;
+                        }
+                    case GuildBankLogEntryType.MoveItem:
+                        {
+                            itemLogEntries.Insert(entry);
+                            break;
+                        }
+                    case GuildBankLogEntryType.DepositMoney:
+                        {
+                            moneyLogEntries.Insert(entry);
+                            break;
+                        }
+                    case GuildBankLogEntryType.WithdrawMoney:
+                        {
+                            moneyLogEntries.Insert(entry);
+                            break;
+                        }
+                    case GuildBankLogEntryType.MoneyUsedForRepairs:
+                        {
+                            moneyLogEntries.Insert(entry);
+                            break;
+                        }
+                    case GuildBankLogEntryType.MoveItem_2:
+                        {
+                            itemLogEntries.Insert(entry);
+                            break;
+                        }
+                    case GuildBankLogEntryType.Unknown1:
+                        {
+                            break;
+                        }
+                    case GuildBankLogEntryType.Unknown2:
+                        {
+                            break;
+                        }
+                    default:
+                        {
+                            break;
+                        }
+                } // end switch
+            } // end foreach
+        }
 
-		public void LogEvent(GuildBankLogEntryType type, Character chr, ItemRecord item, GuildBankTab intoTab)
-		{
-			LogEvent(type, chr, item, item.Amount, intoTab);
-		}
+        public void LogEvent(GuildBankLogEntryType type, Character chr, ItemRecord item, GuildBankTab intoTab)
+        {
+            LogEvent(type, chr, item, item.Amount, intoTab);
+        }
 
-		public void LogEvent(GuildBankLogEntryType type, Character chr, ItemRecord item, int amount, GuildBankTab intoTab)
-		{
-			LogEvent(type, chr, 0, item, amount, intoTab);
-		}
+        public void LogEvent(GuildBankLogEntryType type, Character chr, ItemRecord item, int amount, GuildBankTab intoTab)
+        {
+            LogEvent(type, chr, 0, item, amount, intoTab);
+        }
 
-		public void LogEvent(GuildBankLogEntryType type, Character member, uint money, ItemRecord item, int amount, GuildBankTab intoTab)
-		{
-			switch (type)
-			{
-				case GuildBankLogEntryType.None:
-					{
-						break;
-					}
-				case GuildBankLogEntryType.DepositItem:
-					{
-						LogItemEvent(type, member, item, amount, intoTab);
-						break;
-					}
-				case GuildBankLogEntryType.WithdrawItem:
-					{
-						LogItemEvent(type, member, item, amount, intoTab);
-						break;
-					}
-				case GuildBankLogEntryType.MoveItem:
-					{
-						LogItemEvent(type, member, item, amount, intoTab);
-						break;
-					}
-				case GuildBankLogEntryType.DepositMoney:
-					{
-						LogMoneyEvent(type, member, money);
-						break;
-					}
-				case GuildBankLogEntryType.WithdrawMoney:
-					{
-						LogMoneyEvent(type, member, money);
-						break;
-					}
-				case GuildBankLogEntryType.MoneyUsedForRepairs:
-					{
-						LogMoneyEvent(type, member, money);
-						break;
-					}
-				case GuildBankLogEntryType.MoveItem_2:
-					{
-						LogItemEvent(type, member, item, amount, intoTab);
-						break;
-					}
-				case GuildBankLogEntryType.Unknown1:
-					{
-						break;
-					}
-				case GuildBankLogEntryType.Unknown2:
-					{
-						break;
-					}
-				default:
-					{
-						break;
-					}
-			} // end switch
-		} // end method
+        public void LogEvent(GuildBankLogEntryType type, Character member, uint money, ItemRecord item, int amount, GuildBankTab intoTab)
+        {
+            switch (type)
+            {
+                case GuildBankLogEntryType.None:
+                    {
+                        break;
+                    }
+                case GuildBankLogEntryType.DepositItem:
+                    {
+                        LogItemEvent(type, member, item, amount, intoTab);
+                        break;
+                    }
+                case GuildBankLogEntryType.WithdrawItem:
+                    {
+                        LogItemEvent(type, member, item, amount, intoTab);
+                        break;
+                    }
+                case GuildBankLogEntryType.MoveItem:
+                    {
+                        LogItemEvent(type, member, item, amount, intoTab);
+                        break;
+                    }
+                case GuildBankLogEntryType.DepositMoney:
+                    {
+                        LogMoneyEvent(type, member, money);
+                        break;
+                    }
+                case GuildBankLogEntryType.WithdrawMoney:
+                    {
+                        LogMoneyEvent(type, member, money);
+                        break;
+                    }
+                case GuildBankLogEntryType.MoneyUsedForRepairs:
+                    {
+                        LogMoneyEvent(type, member, money);
+                        break;
+                    }
+                case GuildBankLogEntryType.MoveItem_2:
+                    {
+                        LogItemEvent(type, member, item, amount, intoTab);
+                        break;
+                    }
+                case GuildBankLogEntryType.Unknown1:
+                    {
+                        break;
+                    }
+                case GuildBankLogEntryType.Unknown2:
+                    {
+                        break;
+                    }
+                default:
+                    {
+                        break;
+                    }
+            } // end switch
+        } // end method
 
-		private void LogMoneyEvent(GuildBankLogEntryType type, Character actor, uint money)
-		{
-			var entry = new GuildBankLogEntry(Bank.Guild.Id)
-			{
-				Type = type,
-				Actor = actor,
-				BankLog = this,
-				Money = (int)money,
-				Created = DateTime.Now
-			};
+        private void LogMoneyEvent(GuildBankLogEntryType type, Character actor, uint money)
+        {
+            var entry = new GuildBankLogEntry(Bank.Guild.Id)
+            {
+                Type = type,
+                Actor = actor,
+                BankLog = this,
+                Money = (int)money,
+                Created = DateTime.Now
+            };
 
-			entry.CreateLater();
+            entry.CreateLater();
 
-			lock (itemLogEntries)
-			{
-				itemLogEntries.Insert(entry);
-			}
-		}
+            lock (itemLogEntries)
+            {
+                itemLogEntries.Insert(entry);
+            }
+        }
 
-		private void LogItemEvent(GuildBankLogEntryType type, Character actor, ItemRecord record, int amount, GuildBankTab intoTab)
-		{
-			var entry = new GuildBankLogEntry(Bank.Guild.Id)
-			{
-				Type = type,
-				Actor = actor,
-				BankLog = this,
-				DestinationTab = intoTab,
-				ItemEntryId = (int)record.EntryId,
-				ItemStackCount = (int)amount,
-				Created = DateTime.Now
-			};
+        private void LogItemEvent(GuildBankLogEntryType type, Character actor, ItemRecord record, int amount, GuildBankTab intoTab)
+        {
+            var entry = new GuildBankLogEntry(Bank.Guild.Id)
+            {
+                Type = type,
+                Actor = actor,
+                BankLog = this,
+                DestinationTab = intoTab,
+                ItemEntryId = (int)record.EntryId,
+                ItemStackCount = (int)amount,
+                Created = DateTime.Now
+            };
 
-			lock (moneyLogEntries)
-			{
-				moneyLogEntries.Insert(entry);
-			}
-		}
+            lock (moneyLogEntries)
+            {
+                moneyLogEntries.Insert(entry);
+            }
+        }
 
-		public IEnumerable<GuildBankLogEntry> GetBankLogEntries(byte tabId)
-		{
-			if (tabId == GuildMgr.MAX_BANK_TABS)
-			{
-				lock (moneyLogEntries)
-				{
-					foreach (var entry in moneyLogEntries)
-					{
-						if (entry.DestinationTabId != tabId) continue;
-						yield return entry;
-					}
-				}
-			}
+        public IEnumerable<GuildBankLogEntry> GetBankLogEntries(byte tabId)
+        {
+            if (tabId == GuildMgr.MAX_BANK_TABS)
+            {
+                lock (moneyLogEntries)
+                {
+                    foreach (var entry in moneyLogEntries)
+                    {
+                        if (entry.DestinationTabId != tabId) continue;
+                        yield return entry;
+                    }
+                }
+            }
 
-			lock (itemLogEntries)
-			{
-				foreach (var entry in itemLogEntries)
-				{
-					if (entry.DestinationTabId != tabId) continue;
-					yield return entry;
-				}
-			}
-		}
-	}
+            lock (itemLogEntries)
+            {
+                foreach (var entry in itemLogEntries)
+                {
+                    if (entry.DestinationTabId != tabId) continue;
+                    yield return entry;
+                }
+            }
+        }
+    }
 }

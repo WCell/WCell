@@ -21,42 +21,42 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Effects
 {
-	public class PowerDrainEffectHandler : SpellEffectHandler
-	{
-		public PowerDrainEffectHandler(SpellCast cast, SpellEffect effect)
-			: base(cast, effect)
-		{
-		}
+    public class PowerDrainEffectHandler : SpellEffectHandler
+    {
+        public PowerDrainEffectHandler(SpellCast cast, SpellEffect effect)
+            : base(cast, effect)
+        {
+        }
 
-		public override SpellFailedReason InitializeTarget(WorldObject target)
-		{
-			if (((Unit)target).MaxPower == 0 || ((Unit)target).PowerType != (PowerType)Effect.MiscValue)
-			{
-				return SpellFailedReason.BadTargets;
-			}
-			return SpellFailedReason.Ok;
-		}
+        public override SpellFailedReason InitializeTarget(WorldObject target)
+        {
+            if (((Unit)target).MaxPower == 0 || ((Unit)target).PowerType != (PowerType)Effect.MiscValue)
+            {
+                return SpellFailedReason.BadTargets;
+            }
+            return SpellFailedReason.Ok;
+        }
 
-		protected override void Apply(WorldObject target)
-		{
-			var type = (PowerType)Effect.MiscValue;
+        protected override void Apply(WorldObject target)
+        {
+            var type = (PowerType)Effect.MiscValue;
 
-			var value = CalcEffectValue();
-			if (type == PowerType.Happiness)
-			{
-				// for some reason, in case of Happiness, we divide by 1000 apparently
-				value /= 1000;
-			}
+            var value = CalcEffectValue();
+            if (type == PowerType.Happiness)
+            {
+                // for some reason, in case of Happiness, we divide by 1000 apparently
+                value /= 1000;
+            }
 
-			((Unit)target).LeechPower(value, Effect.RealPointsPerLevel, m_cast.CasterUnit, Effect);
-		}
+            ((Unit)target).LeechPower(value, Effect.RealPointsPerLevel, m_cast.CasterUnit, Effect);
+        }
 
-		public override ObjectTypes TargetType
-		{
-			get
-			{
-				return ObjectTypes.Unit;
-			}
-		}
-	}
+        public override ObjectTypes TargetType
+        {
+            get
+            {
+                return ObjectTypes.Unit;
+            }
+        }
+    }
 }

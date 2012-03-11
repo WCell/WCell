@@ -16,16 +16,13 @@
 
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
-	/// <summary>
-	/// Gives a chance of $s1% of all melee and ranged attacks to land on the Caster instead of the Aura-owner
-	/// </summary>
-	public class AddCasterHitTriggerHandler : AuraEffectHandler
-	{
-
-		protected override void Apply()
-		{
-
-		}
-
-	}
+    /// <summary>
+    /// Gives a chance of $s1% of all melee and ranged attacks to land on the Caster instead of the Aura-owner
+    /// </summary>
+    public class AddCasterHitTriggerHandler : AuraEffectHandler
+    {
+        protected override void Apply()
+        {
+        }
+    }
 };

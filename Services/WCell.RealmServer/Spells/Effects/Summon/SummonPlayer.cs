@@ -20,47 +20,47 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Effects
 {
-	public class SummonPlayerEffectHandler : SummonEffectHandler
-	{
-		public SummonPlayerEffectHandler(SpellCast cast, SpellEffect effect)
-			: base(cast, effect)
-		{
-		}
+    public class SummonPlayerEffectHandler : SummonEffectHandler
+    {
+        public SummonPlayerEffectHandler(SpellCast cast, SpellEffect effect)
+            : base(cast, effect)
+        {
+        }
 
-		public override SpellFailedReason InitializeTarget(WorldObject target)
-		{
-			var chr = (Character) target;
-			if (chr.SummonRequest != null)
-			{
-				return SpellFailedReason.AlreadyHaveSummon;
-			}
+        public override SpellFailedReason InitializeTarget(WorldObject target)
+        {
+            var chr = (Character)target;
+            if (chr.SummonRequest != null)
+            {
+                return SpellFailedReason.AlreadyHaveSummon;
+            }
 
-			if (!chr.MayTeleport)
-			{
-				return SpellFailedReason.BadTargets;
-			}
-			return SpellFailedReason.Ok;
-		}
+            if (!chr.MayTeleport)
+            {
+                return SpellFailedReason.BadTargets;
+            }
+            return SpellFailedReason.Ok;
+        }
 
-		protected override void Apply(WorldObject target)
-		{
-			((Character) target).StartSummon(m_cast.CasterUnit);
-		}
+        protected override void Apply(WorldObject target)
+        {
+            ((Character)target).StartSummon(m_cast.CasterUnit);
+        }
 
-		public override ObjectTypes CasterType
-		{
-			get
-			{
-				return ObjectTypes.Unit;
-			}
-		}
+        public override ObjectTypes CasterType
+        {
+            get
+            {
+                return ObjectTypes.Unit;
+            }
+        }
 
-		public override ObjectTypes TargetType
-		{
-			get
-			{
-				return ObjectTypes.Player;
-			}
-		}
-	}
+        public override ObjectTypes TargetType
+        {
+            get
+            {
+                return ObjectTypes.Player;
+            }
+        }
+    }
 }

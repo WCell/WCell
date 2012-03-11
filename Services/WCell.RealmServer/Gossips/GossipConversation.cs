@@ -5,184 +5,190 @@ using WCell.RealmServer.Quests;
 
 namespace WCell.RealmServer.Gossips
 {
-	/// <summary>
-	/// Represents specific gossip conversation between character and an object
-	/// </summary>
-	public class GossipConversation
-	{
-		#region Constructors
+    /// <summary>
+    /// Represents specific gossip conversation between character and an object
+    /// </summary>
+    public class GossipConversation
+    {
+        #region Constructors
 
-		/// <summary>
-		/// Creates gossip conversation by its fields
-		/// </summary>
-		/// <param name="menu">starting menu</param>
-		/// <param name="chr">character which started the conversation</param>
-		/// <param name="speaker">respondent</param>
-		public GossipConversation(GossipMenu menu, Character chr, WorldObject speaker) : this(menu, chr, speaker, menu.KeepOpen)
-		{
-		}
+        /// <summary>
+        /// Creates gossip conversation by its fields
+        /// </summary>
+        /// <param name="menu">starting menu</param>
+        /// <param name="chr">character which started the conversation</param>
+        /// <param name="speaker">respondent</param>
+        public GossipConversation(GossipMenu menu, Character chr, WorldObject speaker)
+            : this(menu, chr, speaker, menu.KeepOpen)
+        {
+        }
 
-		/// <summary>
-		/// Creates gossip conversation by its fields
-		/// </summary>
-		/// <param name="menu">starting menu</param>
-		/// <param name="chr">character which started the conversation</param>
-		/// <param name="speaker">respondent</param>
-		public GossipConversation(GossipMenu menu, Character chr, WorldObject speaker, bool keepOpen)
-		{
-			CurrentMenu = menu;
-			Character = chr;
-			Speaker = speaker;
-			StayOpen = keepOpen;
-		}
-		#endregion
+        /// <summary>
+        /// Creates gossip conversation by its fields
+        /// </summary>
+        /// <param name="menu">starting menu</param>
+        /// <param name="chr">character which started the conversation</param>
+        /// <param name="speaker">respondent</param>
+        public GossipConversation(GossipMenu menu, Character chr, WorldObject speaker, bool keepOpen)
+        {
+            CurrentMenu = menu;
+            Character = chr;
+            Speaker = speaker;
+            StayOpen = keepOpen;
+        }
 
-		#region Properties
-		/// <summary>
-		/// Current menu
-		/// </summary>
-		public GossipMenu CurrentMenu { get; protected internal set; }
+        #endregion Constructors
 
-		public IUser User { get { return Character; } }
+        #region Properties
 
-		/// <summary>
-		/// Character who initiated the conversation
-		/// </summary>
-		public Character Character { get; protected set; }
+        /// <summary>
+        /// Current menu
+        /// </summary>
+        public GossipMenu CurrentMenu { get; protected internal set; }
 
-		/// <summary>
-		/// The speaker that the Character is talking to (usually an NPC)
-		/// </summary>
-		public WorldObject Speaker { get; protected set; }
+        public IUser User { get { return Character; } }
 
-		/// <summary>
-		/// If set to true, will always keep the menu open until
-		/// (preferrable some Option) set this to false or the client cancelled it.
-		/// </summary>
-		public bool StayOpen
-		{
-			get;
-			set;
-		}
-		#endregion
+        /// <summary>
+        /// Character who initiated the conversation
+        /// </summary>
+        public Character Character { get; protected set; }
 
-		#region Methods
-		/// <summary>
-		/// Shows current menu
-		/// </summary>
-		public void DisplayCurrentMenu()
-		{
-			DisplayMenu(CurrentMenu);
-		}
+        /// <summary>
+        /// The speaker that the Character is talking to (usually an NPC)
+        /// </summary>
+        public WorldObject Speaker { get; protected set; }
 
-		/// <summary>
-		/// Handles selection of item in menu by player
-		/// </summary>
-		/// <param name="itemID">ID of selected item</param>
-		/// <param name="extra">additional parameter supplied by user</param>
-		public void HandleSelectedItem(uint itemID, string extra)
-		{
-			var gossipItems = CurrentMenu.GossipItems;
+        /// <summary>
+        /// If set to true, will always keep the menu open until
+        /// (preferrable some Option) set this to false or the client cancelled it.
+        /// </summary>
+        public bool StayOpen
+        {
+            get;
+            set;
+        }
 
-			if (itemID >= gossipItems.Count)
-				return;
+        #endregion Properties
 
-			var item = gossipItems[(int)itemID];
+        #region Methods
 
-			if (item == null)
-				return;
+        /// <summary>
+        /// Shows current menu
+        /// </summary>
+        public void DisplayCurrentMenu()
+        {
+            DisplayMenu(CurrentMenu);
+        }
 
-			if (item.Action != null && item.Action.CanUse(this))
-			{
-				var menu = CurrentMenu;
-				item.Action.OnSelect(this);
-				if (menu != CurrentMenu || item.Action.Navigates)
-				{
-					return;
-				}
-			}
+        /// <summary>
+        /// Handles selection of item in menu by player
+        /// </summary>
+        /// <param name="itemID">ID of selected item</param>
+        /// <param name="extra">additional parameter supplied by user</param>
+        public void HandleSelectedItem(uint itemID, string extra)
+        {
+            var gossipItems = CurrentMenu.GossipItems;
 
-			if (item.SubMenu != null)
-			{
-				DisplayMenu(item.SubMenu);
-			}
-			else if (StayOpen)
-			{
-				DisplayCurrentMenu();
-			}
-			else
-			{
-				CurrentMenu.NotifyClose(this);
-				Dispose();
-			}
-		}
+            if (itemID >= gossipItems.Count)
+                return;
 
-		/// <summary>
-		/// Shows menu to player
-		/// </summary>
-		/// <param name="menu">menu to show</param>
-		public void DisplayMenu(GossipMenu menu)
-		{
-			CurrentMenu = menu;
-			menu.OnDisplay(this);
+            var item = gossipItems[(int)itemID];
 
-			if (Speaker is IQuestHolder && ((IQuestHolder)Speaker).QuestHolderInfo != null)
-			{
-				var questMenuItems = ((IQuestHolder)Speaker).QuestHolderInfo.GetQuestMenuItems(Character);
+            if (item == null)
+                return;
 
-				GossipHandler.SendPageToCharacter(this, questMenuItems);
-			}
-			else
-			{
-				GossipHandler.SendPageToCharacter(this, null);
-			}
-		}
+            if (item.Action != null && item.Action.CanUse(this))
+            {
+                var menu = CurrentMenu;
+                item.Action.OnSelect(this);
+                if (menu != CurrentMenu || item.Action.Navigates)
+                {
+                    return;
+                }
+            }
 
-		public void Dispose()
-		{
-			GossipHandler.SendConversationComplete(Character);
+            if (item.SubMenu != null)
+            {
+                DisplayMenu(item.SubMenu);
+            }
+            else if (StayOpen)
+            {
+                DisplayCurrentMenu();
+            }
+            else
+            {
+                CurrentMenu.NotifyClose(this);
+                Dispose();
+            }
+        }
 
-			var conversation = Character.GossipConversation;
+        /// <summary>
+        /// Shows menu to player
+        /// </summary>
+        /// <param name="menu">menu to show</param>
+        public void DisplayMenu(GossipMenu menu)
+        {
+            CurrentMenu = menu;
+            menu.OnDisplay(this);
 
-			if (conversation != this)
-			{
-				return;
-			}
+            if (Speaker is IQuestHolder && ((IQuestHolder)Speaker).QuestHolderInfo != null)
+            {
+                var questMenuItems = ((IQuestHolder)Speaker).QuestHolderInfo.GetQuestMenuItems(Character);
 
-			Character.GossipConversation = null;
-			CurrentMenu = null;
-			Speaker = null;
-		}
+                GossipHandler.SendPageToCharacter(this, questMenuItems);
+            }
+            else
+            {
+                GossipHandler.SendPageToCharacter(this, null);
+            }
+        }
 
-		/// <summary>
-		/// Cancels the current conversation
-		/// </summary>
-		public void Cancel()
-		{
-			GossipHandler.SendConversationComplete(Character);
-			Dispose();
-		}
+        public void Dispose()
+        {
+            GossipHandler.SendConversationComplete(Character);
 
-		/// <summary>
-		/// Closes any open Client menu and sends the CurrentMenu
-		/// </summary>
-		public void Invalidate()
-		{
-			GossipHandler.SendConversationComplete(Character);
-			DisplayCurrentMenu();
-		}
-		#endregion
+            var conversation = Character.GossipConversation;
 
-		public void GoBack()
-		{
-			if (CurrentMenu.ParentMenu != null)
-			{
-				DisplayMenu(CurrentMenu.ParentMenu);
-			}
-			else
-			{
-				DisplayCurrentMenu();
-			}
-		}
-	}
+            if (conversation != this)
+            {
+                return;
+            }
+
+            Character.GossipConversation = null;
+            CurrentMenu = null;
+            Speaker = null;
+        }
+
+        /// <summary>
+        /// Cancels the current conversation
+        /// </summary>
+        public void Cancel()
+        {
+            GossipHandler.SendConversationComplete(Character);
+            Dispose();
+        }
+
+        /// <summary>
+        /// Closes any open Client menu and sends the CurrentMenu
+        /// </summary>
+        public void Invalidate()
+        {
+            GossipHandler.SendConversationComplete(Character);
+            DisplayCurrentMenu();
+        }
+
+        #endregion Methods
+
+        public void GoBack()
+        {
+            if (CurrentMenu.ParentMenu != null)
+            {
+                DisplayMenu(CurrentMenu.ParentMenu);
+            }
+            else
+            {
+                DisplayCurrentMenu();
+            }
+        }
+    }
 }

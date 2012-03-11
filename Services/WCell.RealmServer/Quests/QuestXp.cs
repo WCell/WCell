@@ -2,20 +2,20 @@ using WCell.Core.DBC;
 
 namespace WCell.RealmServer.Quests
 {
-	public class QuestXPInfo
-	{
-		public int Level;
-		public int[] RewXP;
-	}
+    public class QuestXPInfo
+    {
+        public int Level;
+        public int[] RewXP;
+    }
 
-	public class QuestXpConverter : DBCRecordConverter
-	{
-		public override void Convert(byte[] rawData)
-		{
-			var xpInfo = new QuestXPInfo
-			{
-				Level = GetInt32(rawData, 0),
-				RewXP = new[]
+    public class QuestXpConverter : DBCRecordConverter
+    {
+        public override void Convert(byte[] rawData)
+        {
+            var xpInfo = new QuestXPInfo
+            {
+                Level = GetInt32(rawData, 0),
+                RewXP = new[]
 				{
 					GetInt32(rawData, 2),
 					GetInt32(rawData, 3),
@@ -26,8 +26,8 @@ namespace WCell.RealmServer.Quests
 					GetInt32(rawData, 8),
 					GetInt32(rawData, 9)
 				}
-			};
-			QuestMgr.QuestXpInfos[(uint)xpInfo.Level] = xpInfo;
-		}
-	}
+            };
+            QuestMgr.QuestXpInfos[(uint)xpInfo.Level] = xpInfo;
+        }
+    }
 }

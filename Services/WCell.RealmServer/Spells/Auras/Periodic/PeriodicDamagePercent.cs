@@ -18,25 +18,24 @@ using WCell.Constants.Spells;
 
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
-	/// <summary>
-	/// Periodically damages the holder in %
-	/// </summary>
-	public class PeriodicDamagePercentHandler : AuraEffectHandler
-	{
-		protected override void Apply()
-		{
-			var holder = Owner;
-			if (holder.IsAlive)
-			{
-				var value = (Owner.MaxHealth * EffectValue + 50) / 100;
-				if (m_aura.Spell.Mechanic == SpellMechanic.Bleeding)
-				{
-					var bonus = m_aura.Auras.GetBleedBonusPercent();
-					value += ((value * bonus) + 50) / 100;
-				}
-				holder.DealSpellDamage(m_aura.CasterUnit, m_spellEffect, value, false);
-			}
-		}
-
-	}
+    /// <summary>
+    /// Periodically damages the holder in %
+    /// </summary>
+    public class PeriodicDamagePercentHandler : AuraEffectHandler
+    {
+        protected override void Apply()
+        {
+            var holder = Owner;
+            if (holder.IsAlive)
+            {
+                var value = (Owner.MaxHealth * EffectValue + 50) / 100;
+                if (m_aura.Spell.Mechanic == SpellMechanic.Bleeding)
+                {
+                    var bonus = m_aura.Auras.GetBleedBonusPercent();
+                    value += ((value * bonus) + 50) / 100;
+                }
+                holder.DealSpellDamage(m_aura.CasterUnit, m_spellEffect, value, false);
+            }
+        }
+    }
 };

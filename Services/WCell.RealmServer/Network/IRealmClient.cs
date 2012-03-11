@@ -5,14 +5,14 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Network
 {
-	public interface IPacketReceiver
-	{
-		/// <summary>
-		/// Sends a packet to the target.
-		/// </summary>
-		/// <param name="packet">the packet to send</param>
-		void Send(RealmPacketOut packet);
-	}
+    public interface IPacketReceiver
+    {
+        /// <summary>
+        /// Sends a packet to the target.
+        /// </summary>
+        /// <param name="packet">the packet to send</param>
+        void Send(RealmPacketOut packet);
+    }
 
     /// <summary>
     /// The interface for any kind of IRealmClient (can be used to create fake-IRealmClients)
@@ -53,7 +53,7 @@ namespace WCell.RealmServer.Network
         /// Whether or not communication with this client is encrypted.
         /// </summary>
         bool IsEncrypted
-        { 
+        {
             get;
         }
 
@@ -65,18 +65,18 @@ namespace WCell.RealmServer.Network
         /// <summary>
         /// Connection latency between client and server.
         /// </summary>
-		int Latency { get; set; }
+        int Latency { get; set; }
 
-		/// <summary>
-		/// The amount of time skipped by the client.
-		/// </summary>
-		/// <remarks>Deals with the the way we calculate movement delay.</remarks>
-		uint OutOfSyncDelay { get; set; }
+        /// <summary>
+        /// The amount of time skipped by the client.
+        /// </summary>
+        /// <remarks>Deals with the the way we calculate movement delay.</remarks>
+        uint OutOfSyncDelay { get; set; }
 
-		/// <summary>
-		/// The time that was sent by the Client in the last movement-packet
-		/// </summary>
-		uint LastClientMoveTime { get; set; }
+        /// <summary>
+        /// The time that was sent by the Client in the last movement-packet
+        /// </summary>
+        uint LastClientMoveTime { get; set; }
 
         /// <summary>
         /// The client tick count.
@@ -94,7 +94,7 @@ namespace WCell.RealmServer.Network
         /// The authentication message digest received from the client during re-authentication.
         /// </summary>
         BigInteger ClientDigest { get; set; }
-	
+
         /// <summary>
         /// The current session key
         /// </summary>

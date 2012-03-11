@@ -1,59 +1,59 @@
 namespace WCell.RealmServer.Lang
 {
-	/// <summary>
-	/// Keys for localizable strings
-	/// </summary>
-	public enum RealmLangKey
-	{
-		// ########################################################################
-		// Misc
-		None = 0,
-		Done,
-		PleaseWait,
-		GoBack,
-		Custom,
-		AreYouSure,
+    /// <summary>
+    /// Keys for localizable strings
+    /// </summary>
+    public enum RealmLangKey
+    {
+        // ########################################################################
+        // Misc
+        None = 0,
+        Done,
+        PleaseWait,
+        GoBack,
+        Custom,
+        AreYouSure,
 
-		Addon,
-		Library,
-		NotConnectedToAuthServer,
-		PlayerNotOnline,
-		NoValidTarget,
-		InvalidSelection,
+        Addon,
+        Library,
+        NotConnectedToAuthServer,
+        PlayerNotOnline,
+        NoValidTarget,
+        InvalidSelection,
 
-		// ########################################################################
-		// Server
-		Initializing,
+        // ########################################################################
+        // Server
+        Initializing,
 
-		// ########################################################################
-		// Time
-		Second,
-		Seconds,
-		Minute,
-		Minutes,
-		Hour,
-		Hours,
+        // ########################################################################
+        // Time
+        Second,
+        Seconds,
+        Minute,
+        Minutes,
+        Hour,
+        Hours,
 
-		// ########################################################################
-		// Ingame messages
-		LogCombatExp,
-		LogCombatExpRested,
+        // ########################################################################
+        // Ingame messages
+        LogCombatExp,
+        LogCombatExpRested,
 
-		// #######################################################################
-		// Commands
-		SubCommandNotFound,
-		MustNotUseCommand,
+        // #######################################################################
+        // Commands
+        SubCommandNotFound,
+        MustNotUseCommand,
 
-		CmdSummonPlayerNotOnline,
+        CmdSummonPlayerNotOnline,
 
-		CmdKickMustProvideName,
+        CmdKickMustProvideName,
 
-		CmdLocalizerDescription,
-		CmdLocalizerReloadDescription,
-		CmdLocalizerSetLocaleDescription,
-		CmdLocalizerSetLocaleParamInfo,
-		LocaleSet,
-		UnableToSetUserLocale,
+        CmdLocalizerDescription,
+        CmdLocalizerReloadDescription,
+        CmdLocalizerSetLocaleDescription,
+        CmdLocalizerSetLocaleParamInfo,
+        LocaleSet,
+        UnableToSetUserLocale,
 
         // #######################################################################
         // Spell Commands
@@ -74,8 +74,8 @@ namespace WCell.RealmServer.Lang
         CmdSpellTriggerParamInfo,
         CmdSpellTriggerResponse,
         CmdSpellTriggerError,
-		CmdSpellGetDescription,
-		CmdSpellGetParamInfo,
+        CmdSpellGetDescription,
+        CmdSpellGetParamInfo,
         CmdSpellClearDescription,
         CmdSpellClearResponse,
         CmdSpellClearError,
@@ -84,8 +84,8 @@ namespace WCell.RealmServer.Lang
         CmdSpellVisualError,
         CmdSpellNotExists,
 
-		CmdPushbackParams,
-		CmdPushbackDescription,
+        CmdPushbackParams,
+        CmdPushbackDescription,
 
         // ########################################################################
         // Skill Commands
@@ -127,45 +127,45 @@ namespace WCell.RealmServer.Lang
         CmdMapListDescription,
         CmdMapListResponse,
 
-		// ########################################################################
-		// Gossips
-		GossipOptionBanker,
-		GossipOptionFlightMaster,
-		GossipOptionTrainer,
-		GossipOptionVendor,
+        // ########################################################################
+        // Gossips
+        GossipOptionBanker,
+        GossipOptionFlightMaster,
+        GossipOptionTrainer,
+        GossipOptionVendor,
         GossipOptionInnKeeper,
         GossipOptionSpiritHealer,
         GossipOptionTabardDesigner,
         GossipOptionStableMaster,
 
-		// ########################################################################
-		// Ingame notifications
-		GodModeIsActivated,
+        // ########################################################################
+        // Ingame notifications
+        GodModeIsActivated,
 
         // ########################################################################
         // Error notifications
         FeatureNotYetImplemented,
         InvalidClass,
 
-		// Other
-		Goodbye,
+        // Other
+        Goodbye,
 
-		// ########################################################################
-		// Editor
-		EditorMapMenuText,
-		EditorMapMenuStatusNoData,
-		EditorMapMenuStatusDataLoading,
-		EditorMapMenuStatusNotSpawned,
-		EditorMapMenuStatusSpawning,
+        // ########################################################################
+        // Editor
+        EditorMapMenuText,
+        EditorMapMenuStatusNoData,
+        EditorMapMenuStatusDataLoading,
+        EditorMapMenuStatusNotSpawned,
+        EditorMapMenuStatusSpawning,
 
-		EditorMapMenuLoadData,
-		EditorMapMenuSpawnMap,
-		EditorMapMenuClearMap,
-		EditorMapMenuShow,
-		EditorMapMenuHide,
-		EditorMapMenuEnableAllSpawnPoints,
-		EditorMapMenuDisableAllSpawnPoints,
+        EditorMapMenuLoadData,
+        EditorMapMenuSpawnMap,
+        EditorMapMenuClearMap,
+        EditorMapMenuShow,
+        EditorMapMenuHide,
+        EditorMapMenuEnableAllSpawnPoints,
+        EditorMapMenuDisableAllSpawnPoints,
 
-		EditorSpawnPointMenuMoveOverHere
-	}
+        EditorSpawnPointMenuMoveOverHere
+    }
 }

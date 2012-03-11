@@ -6,23 +6,23 @@ using WCell.RealmServer.Spawns;
 
 namespace WCell.RealmServer.NPCs.Spawns
 {
-	public class NPCSpawnPool : SpawnPool<NPCSpawnPoolTemplate, NPCSpawnEntry, NPC, NPCSpawnPoint, NPCSpawnPool>
-	{
-		public NPCSpawnPool(Map map, NPCSpawnPoolTemplate templ)
-			: base(map, templ)
-		{
-			AIGroup = new AIGroup();
-		}
+    public class NPCSpawnPool : SpawnPool<NPCSpawnPoolTemplate, NPCSpawnEntry, NPC, NPCSpawnPoint, NPCSpawnPool>
+    {
+        public NPCSpawnPool(Map map, NPCSpawnPoolTemplate templ)
+            : base(map, templ)
+        {
+            AIGroup = new AIGroup();
+        }
 
-		public AIGroup AIGroup
-		{
-			get;
-			private set;
-		}
+        public AIGroup AIGroup
+        {
+            get;
+            private set;
+        }
 
-		public override IList<NPC> SpawnedObjects
-		{
-			get { return AIGroup; }
-		}
-	}
+        public override IList<NPC> SpawnedObjects
+        {
+            get { return AIGroup; }
+        }
+    }
 }

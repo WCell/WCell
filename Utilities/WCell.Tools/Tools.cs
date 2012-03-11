@@ -39,7 +39,6 @@ using WCell.Util.Strings;
 using WCell.Util.Toolshed;
 using RealmServ = WCell.RealmServer.RealmServer;
 
-
 namespace WCell.Tools
 {
 #if TESTS
@@ -47,181 +46,181 @@ namespace WCell.Tools
 	using WCell.RealmServer.Tests.Misc;
 #endif
 
-	// TODO: Merge all Enum-writers together and write them directly to a centralized place, 
-	//			have all constants together in the new WCell.Constants project (merge SpellIds project)
+    // TODO: Merge all Enum-writers together and write them directly to a centralized place,
+    //			have all constants together in the new WCell.Constants project (merge SpellIds project)
 
-	// TODO: Re-Export Enums
-	// TODO: Merge the UpdateField - writers together
+    // TODO: Re-Export Enums
+    // TODO: Merge the UpdateField - writers together
 
-	public class Tools
-	{
-		public static readonly ToolMgr Mgr = new ToolMgr();
+    public class Tools
+    {
+        public static readonly ToolMgr Mgr = new ToolMgr();
 
-		private static readonly Logger Log = LogManager.GetCurrentClassLogger();
-		public static ToolConfig Config;
+        private static readonly Logger Log = LogManager.GetCurrentClassLogger();
+        public static ToolConfig Config;
 
-		/// <summary>
-		/// Little trick to get Constants initialized right away
-		/// </summary>
+        /// <summary>
+        /// Little trick to get Constants initialized right away
+        /// </summary>
         public static PATool PATool
-		{
-			get { return ToolConfig.Instance.PATool; }
-		}
+        {
+            get { return ToolConfig.Instance.PATool; }
+        }
 
-		internal static bool Init(params Assembly[] assemblies)
-		{
-			return Init(ToolConfig.ToolsRoot, assemblies);
-		}
+        internal static bool Init(params Assembly[] assemblies)
+        {
+            return Init(ToolConfig.ToolsRoot, assemblies);
+        }
 
-		public static bool Init(string toolsRoot, params Assembly[] assemblies)
-		{
-			ToolConfig.ToolsRoot = toolsRoot;
-			RealmServ.EntryLocation = Path.GetFullPath(ToolConfig.WCellRealmServerConsoleExe);
-			var realmServ = RealmServ.Instance; // make sure to create the RealmServ instance first
+        public static bool Init(string toolsRoot, params Assembly[] assemblies)
+        {
+            ToolConfig.ToolsRoot = toolsRoot;
+            RealmServ.EntryLocation = Path.GetFullPath(ToolConfig.WCellRealmServerConsoleExe);
+            var realmServ = RealmServ.Instance; // make sure to create the RealmServ instance first
 
-			ToolConfig.InitCfg();
+            ToolConfig.InitCfg();
 
-			LogUtil.SetupConsoleLogging();
+            LogUtil.SetupConsoleLogging();
 
-			Log.Info("Output Directory: {0}", new DirectoryInfo(ToolConfig.OutputDir).FullName);
-			if (!Directory.Exists(ToolConfig.OutputDir))
-			{
-				Directory.CreateDirectory(ToolConfig.OutputDir);
-			}
+            Log.Info("Output Directory: {0}", new DirectoryInfo(ToolConfig.OutputDir).FullName);
+            if (!Directory.Exists(ToolConfig.OutputDir))
+            {
+                Directory.CreateDirectory(ToolConfig.OutputDir);
+            }
 
-			RealmServerConfiguration.Instance.AutoSave = false;
-			RealmServerConfiguration.ContentDirName = Path.GetFullPath(ToolConfig.ContentDir);
-			RealmServerConfiguration.Initialize();
-			RealmAddonMgr.AddonDir = ToolConfig.AddonDir;
+            RealmServerConfiguration.Instance.AutoSave = false;
+            RealmServerConfiguration.ContentDirName = Path.GetFullPath(ToolConfig.ContentDir);
+            RealmServerConfiguration.Initialize();
+            RealmAddonMgr.AddonDir = ToolConfig.AddonDir;
 
             Log.Info("Content Directory: " + new DirectoryInfo(RealmServerConfiguration.ContentDir).FullName);
 
-			if (!InitMgr.Initialize(typeof(Tools).Assembly) ||
-				!InitMgr.Initialize(typeof(PacketAnalyzer).Assembly))
-			{
-				Log.Error("Cancelled - Press any key to exit...");
-				Console.ReadKey();
-				return false;
-			}
+            if (!InitMgr.Initialize(typeof(Tools).Assembly) ||
+                !InitMgr.Initialize(typeof(PacketAnalyzer).Assembly))
+            {
+                Log.Error("Cancelled - Press any key to exit...");
+                Console.ReadKey();
+                return false;
+            }
 
-			foreach (var asm in assemblies)
-			{
-				if (!InitMgr.Initialize(asm))
-				{
-					Log.Error("Unable to initialize Assembly: \"{0}\" - Press any key to exit...", asm);
-					return false;
-				}
-				ToolCommandHandler.Instance.AddCmdsOfAsm(asm);
-				Mgr.AddStaticMethodsOfAsm(asm);
-			}
+            foreach (var asm in assemblies)
+            {
+                if (!InitMgr.Initialize(asm))
+                {
+                    Log.Error("Unable to initialize Assembly: \"{0}\" - Press any key to exit...", asm);
+                    return false;
+                }
+                ToolCommandHandler.Instance.AddCmdsOfAsm(asm);
+                Mgr.AddStaticMethodsOfAsm(asm);
+            }
 
-			Mgr.AddStaticMethodsOfAsm(typeof(Tools).Assembly);
-			return true;
-		}
+            Mgr.AddStaticMethodsOfAsm(typeof(Tools).Assembly);
+            return true;
+        }
 
-		/// <summary>
-		/// You can pass args to this Program, where every line represents one command to be executed.
-		/// </summary>
-		public static void Main(string[] args)
-		{
-			if (!Init())
-			{
-				return;
-			}
+        /// <summary>
+        /// You can pass args to this Program, where every line represents one command to be executed.
+        /// </summary>
+        public static void Main(string[] args)
+        {
+            if (!Init())
+            {
+                return;
+            }
 
-			//RealmDBUtil.Initialize();
+            //RealmDBUtil.Initialize();
 
-			//LogConverter.DefaultValidator = (opCode) => opCode.ToString().Contains("UPDATE");
-			//ConvertKSnifferLogSingleLine(@"3.0.2/dump-108-9-18-20-12-4.txt");
-			//WCellEnumWriter.WriteItemId();
+            //LogConverter.DefaultValidator = (opCode) => opCode.ToString().Contains("UPDATE");
+            //ConvertKSnifferLogSingleLine(@"3.0.2/dump-108-9-18-20-12-4.txt");
+            //WCellEnumWriter.WriteItemId();
 
-			//var x = WCellVariables.Load(Path.Combine(WCellRoot, "test.xml"));
+            //var x = WCellVariables.Load(Path.Combine(WCellRoot, "test.xml"));
 
-			ToolCommandHandler.Instance.AddDefaultCallCommand(Mgr);
-			if (args.Length == 0)
-			{
-				StartCommandLine();
+            ToolCommandHandler.Instance.AddDefaultCallCommand(Mgr);
+            if (args.Length == 0)
+            {
+                StartCommandLine();
 
-				Console.WriteLine("Press ANY key to exit...");
-				Console.ReadKey();
-			}
-			else
-			{
-				var argStr = args.ToString(" ");		// merge string again and take apart by different seperator
-				args = argStr.Split(new [] {'\n', '|'}, StringSplitOptions.RemoveEmptyEntries);
+                Console.WriteLine("Press ANY key to exit...");
+                Console.ReadKey();
+            }
+            else
+            {
+                var argStr = args.ToString(" ");		// merge string again and take apart by different seperator
+                args = argStr.Split(new[] { '\n', '|' }, StringSplitOptions.RemoveEmptyEntries);
 
-				Console.WriteLine("Found {0} commands - Processing...", args.Length);
-				var trigger = new ToolCommandHandler.ConsoleCmdTrigger(new ToolCmdArgs());
-				foreach (var arg in args)
-				{
-					ExecuteCommandLine(trigger, arg.Trim());
-				}
-			}
-		}
+                Console.WriteLine("Found {0} commands - Processing...", args.Length);
+                var trigger = new ToolCommandHandler.ConsoleCmdTrigger(new ToolCmdArgs());
+                foreach (var arg in args)
+                {
+                    ExecuteCommandLine(trigger, arg.Trim());
+                }
+            }
+        }
 
-		public static void StartCommandLine()
-		{
-			Console.WriteLine("Tools started:");
-			Console.Write(" Enter ");
-			Console.ForegroundColor = ConsoleColor.Green;
-			Console.Write("?");
-			Console.ResetColor();
-			Console.WriteLine(" for help");
+        public static void StartCommandLine()
+        {
+            Console.WriteLine("Tools started:");
+            Console.Write(" Enter ");
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write("?");
+            Console.ResetColor();
+            Console.WriteLine(" for help");
 
-			Console.Write(" Enter ");
-			Console.ForegroundColor = ConsoleColor.Green;
-			Console.Write("q");
-			Console.ResetColor();
-			Console.WriteLine(" to quit");
+            Console.Write(" Enter ");
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write("q");
+            Console.ResetColor();
+            Console.WriteLine(" to quit");
 
-			var defaultTrigger = new ToolCommandHandler.ConsoleCmdTrigger(new ToolCmdArgs());
-		    do
-			{
-			    string line;
-			    try
-				{
-					line = Console.ReadLine();
-				}
-				catch
-				{
-					// console shutdown
-					break;
-				}
-				if (line != null && line != "q" && line != "quit")
-				{
-					ExecuteCommandLine(defaultTrigger, line);
-				}
-				else
-				{
-					break;
-				}
-			} while (true);
-		}
+            var defaultTrigger = new ToolCommandHandler.ConsoleCmdTrigger(new ToolCmdArgs());
+            do
+            {
+                string line;
+                try
+                {
+                    line = Console.ReadLine();
+                }
+                catch
+                {
+                    // console shutdown
+                    break;
+                }
+                if (line != null && line != "q" && line != "quit")
+                {
+                    ExecuteCommandLine(defaultTrigger, line);
+                }
+                else
+                {
+                    break;
+                }
+            } while (true);
+        }
 
-		public static void ExecuteCommandLine(ToolCommandHandler.ConsoleCmdTrigger trigger, string line)
-		{
-			var text = new StringStream(line);
-			trigger.Text = text;
+        public static void ExecuteCommandLine(ToolCommandHandler.ConsoleCmdTrigger trigger, string line)
+        {
+            var text = new StringStream(line);
+            trigger.Text = text;
 
-			var isSelect = text.ConsumeNext(RealmCommandHandler.SelectCommandPrefix);
-			if (isSelect)
-			{
-				var cmd = ToolCommandHandler.Instance.SelectCommand(text);
-				if (cmd != null)
-				{
-					Console.WriteLine("Selected: " + cmd);
-					trigger.SelectedCommand = cmd;
-					return;
-				}
-				else if (trigger.SelectedCommand != null)
-				{
-					Console.WriteLine("Cleared Command selection.");
-					trigger.SelectedCommand = null;
-					return;
-				}
-			}
-			ToolCommandHandler.Instance.Execute(trigger);
-		}
+            var isSelect = text.ConsumeNext(RealmCommandHandler.SelectCommandPrefix);
+            if (isSelect)
+            {
+                var cmd = ToolCommandHandler.Instance.SelectCommand(text);
+                if (cmd != null)
+                {
+                    Console.WriteLine("Selected: " + cmd);
+                    trigger.SelectedCommand = cmd;
+                    return;
+                }
+                else if (trigger.SelectedCommand != null)
+                {
+                    Console.WriteLine("Cleared Command selection.");
+                    trigger.SelectedCommand = null;
+                    return;
+                }
+            }
+            ToolCommandHandler.Instance.Execute(trigger);
+        }
 
 #if TESTS
 		static void DebugLoginLogoutTest()
@@ -242,8 +241,9 @@ namespace WCell.Tools
 		}
 #endif
 
-		#region Helper methods
-		/*
+        #region Helper methods
+
+        /*
 		/// <summary>
 		/// Converts the log-file in the given file (within the <c>LogFolder</c>)
 		/// to a human-readable file within the <c>LogOutputFolder</c>.
@@ -290,70 +290,68 @@ namespace WCell.Tools
 			//Console.WriteLine();
 		}*/
 
-		public static void Startup()
-		{
-			Utility.Measure("Load all", 1, () =>
-			{
-				ItemMgr.LoadAll();
-				NPCMgr.LoadNPCDefs();
-				GOMgr.LoadAll();
-				QuestMgr.LoadAll();
-			});
+        public static void Startup()
+        {
+            Utility.Measure("Load all", 1, () =>
+            {
+                ItemMgr.LoadAll();
+                NPCMgr.LoadNPCDefs();
+                GOMgr.LoadAll();
+                QuestMgr.LoadAll();
+            });
 
+            Utility.Measure("Basic startup sequence", 1, () =>
+            {
+                RealmServ.Instance.Start();
 
-			Utility.Measure("Basic startup sequence", 1, () =>
-			{
-				RealmServ.Instance.Start();
+                Utility.Measure("Load all", 1, () =>
+                {
+                    ItemMgr.LoadAll();
+                    NPCMgr.LoadNPCDefs();
+                    GOMgr.LoadAll();
+                    QuestMgr.LoadAll();
+                });
 
-				Utility.Measure("Load all", 1, () =>
-				{
-					ItemMgr.LoadAll();
-					NPCMgr.LoadNPCDefs();
-					GOMgr.LoadAll();
-					QuestMgr.LoadAll();
-				});
+                Map.AutoSpawnMaps = true;
+                var easternKD = World.GetNonInstancedMap(MapId.EasternKingdoms);
+                var kalimdor = World.GetNonInstancedMap(MapId.Kalimdor);
+                var outlands = World.GetNonInstancedMap(MapId.Outland);
+                Utility.Measure("Spawning Main Maps", 1, () =>
+                {
+                    //easternKD.Start();
+                    //kalimdor.Start();
+                });
 
-				Map.AutoSpawnMaps = true;
-				var easternKD = World.GetNonInstancedMap(MapId.EasternKingdoms);
-				var kalimdor = World.GetNonInstancedMap(MapId.Kalimdor);
-				var outlands = World.GetNonInstancedMap(MapId.Outland);
-				Utility.Measure("Spawning Main Maps", 1, () =>
-				{
-					//easternKD.Start();
-					//kalimdor.Start();
-				});
+                GC.Collect();
+                Console.WriteLine("Total memory usage with fully spawned world: {0}", GC.GetTotalMemory(true));
+            });
+        }
 
+        [Tool]
+        public static void StartRealm()
+        {
+            if (!RealmServ.Instance.IsRunning)
+            {
+                Utility.Measure("Full startup sequence", 1, RealmServ.Instance.Start);
+            }
+        }
 
-				GC.Collect();
-				Console.WriteLine("Total memory usage with fully spawned world: {0}", GC.GetTotalMemory(true));
-			});
-		}
+        public static void FetchAll()
+        {
+            StartRealm();
 
-		[Tool]
-		public static void StartRealm()
-		{
-			if (!RealmServ.Instance.IsRunning)
-			{
-				Utility.Measure("Full startup sequence", 1, RealmServ.Instance.Start);
-			}
-		}
+            Utility.Measure("Loading of Items and NPCs", 1, ContentMgr.FetchAll);
+        }
 
-		public static void FetchAll()
-		{
-			StartRealm();
+        [Tool]
+        public static void WriteContentStubs()
+        {
+            Utility.Measure("DBSetup.Initialize()", 1, () => RealmDBMgr.Initialize());
+            Utility.Measure("ContentHandler.SaveDefaultStubs()", 1, ContentMgr.SaveDefaultStubs);
 
-			Utility.Measure("Loading of Items and NPCs", 1, ContentMgr.FetchAll);
-		}
+            ContentMgr.SaveDefaultStubs();
+        }
 
-		[Tool]
-		public static void WriteContentStubs()
-		{
-			Utility.Measure("DBSetup.Initialize()", 1, () => RealmDBMgr.Initialize());
-			Utility.Measure("ContentHandler.SaveDefaultStubs()", 1, ContentMgr.SaveDefaultStubs);
-
-			ContentMgr.SaveDefaultStubs();
-		}
-
-		#endregion
-	}
+        #endregion Helper methods
+    }
 }

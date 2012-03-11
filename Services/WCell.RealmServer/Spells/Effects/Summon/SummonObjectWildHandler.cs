@@ -5,9 +5,9 @@ using WCell.RealmServer.Spells;
 
 namespace WCell.RealmServer.Handlers
 {
-	/// <summary>
-	/// Summons an object without owner
-	/// </summary>
+    /// <summary>
+    /// Summons an object without owner
+    /// </summary>
     public class SummonObjectWildEffectHandler : SpellEffectHandler
     {
         private GameObject go;
@@ -27,7 +27,7 @@ namespace WCell.RealmServer.Handlers
                 if (Cast.TargetLoc.X != 0)
                 {
                     var worldLocation = new WorldLocation(caster.Map, Cast.TargetLoc);
-					go = goEntry.Spawn(worldLocation);
+                    go = goEntry.Spawn(worldLocation);
                 }
                 else
                 {

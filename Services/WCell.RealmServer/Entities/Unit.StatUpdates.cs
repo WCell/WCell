@@ -5,147 +5,151 @@ using WCell.RealmServer.Modifiers;
 
 namespace WCell.RealmServer.Entities
 {
-	/// <summary>
-	/// TODO: Move everything Unit-related from UnitUpdates in here
-	/// </summary>
-	public partial class Unit
-	{
-		/// <summary>
-		/// Amount of mana to be added per point of Intelligence
-		/// </summary>
-		public static int ManaPerIntelligence = 15;
+    /// <summary>
+    /// TODO: Move everything Unit-related from UnitUpdates in here
+    /// </summary>
+    public partial class Unit
+    {
+        /// <summary>
+        /// Amount of mana to be added per point of Intelligence
+        /// </summary>
+        public static int ManaPerIntelligence = 15;
 
-		/// <summary>
-		/// Amount of heatlh to be added per point of Stamina
-		/// </summary>
-		public static int HealthPerStamina = 10;
+        /// <summary>
+        /// Amount of heatlh to be added per point of Stamina
+        /// </summary>
+        public static int HealthPerStamina = 10;
 
-		/// <summary>
-		/// Amount of armor to be added per point of Agility
-		/// </summary>
-		public static int ArmorPerAgility = 2;
+        /// <summary>
+        /// Amount of armor to be added per point of Agility
+        /// </summary>
+        public static int ArmorPerAgility = 2;
 
-		#region Str, Sta, Agi, Int, Spi
-		protected internal virtual void UpdateStrength()
-		{
-			var str = GetBaseStatValue(StatType.Strength) + StrengthBuffPositive + StrengthBuffNegative;
-			//str = GetMultiMod(unit.MultiplierMods[(int)StatModifierFloat.Strength], str);
-			SetInt32(UnitFields.STAT0, str);
+        #region Str, Sta, Agi, Int, Spi
 
-			this.UpdateBlockChance();
-			this.UpdateAllAttackPower();
-		}
+        protected internal virtual void UpdateStrength()
+        {
+            var str = GetBaseStatValue(StatType.Strength) + StrengthBuffPositive + StrengthBuffNegative;
+            //str = GetMultiMod(unit.MultiplierMods[(int)StatModifierFloat.Strength], str);
+            SetInt32(UnitFields.STAT0, str);
 
-		protected internal virtual void UpdateStamina()
-		{
-			var stam = GetBaseStatValue(StatType.Stamina) + StaminaBuffPositive + StaminaBuffNegative;
+            this.UpdateBlockChance();
+            this.UpdateAllAttackPower();
+        }
 
-			SetInt32(UnitFields.STAT2, stam);
+        protected internal virtual void UpdateStamina()
+        {
+            var stam = GetBaseStatValue(StatType.Stamina) + StaminaBuffPositive + StaminaBuffNegative;
 
-			UpdateMaxHealth();
-		}
+            SetInt32(UnitFields.STAT2, stam);
 
-		internal void UpdateAgility()
-		{
-			var oldAgil = Agility;
-			var agil = GetBaseStatValue(StatType.Agility) + AgilityBuffPositive + AgilityBuffNegative;
-			//agil = GetMultiMod(unit.MultiplierMods[(int)StatModifierFloat.Agility], agil);
-			SetInt32(UnitFields.STAT1, agil);
+            UpdateMaxHealth();
+        }
 
-			ModBaseResistance(DamageSchool.Physical, (agil - oldAgil) * ArmorPerAgility);	// armor
+        internal void UpdateAgility()
+        {
+            var oldAgil = Agility;
+            var agil = GetBaseStatValue(StatType.Agility) + AgilityBuffPositive + AgilityBuffNegative;
+            //agil = GetMultiMod(unit.MultiplierMods[(int)StatModifierFloat.Agility], agil);
+            SetInt32(UnitFields.STAT1, agil);
 
-			this.UpdateDodgeChance();
-			this.UpdateCritChance();
-			this.UpdateAllAttackPower();
-		}
+            ModBaseResistance(DamageSchool.Physical, (agil - oldAgil) * ArmorPerAgility);	// armor
 
-		protected internal virtual void UpdateIntellect()
-		{
-			var intel = GetBaseStatValue(StatType.Intellect) + IntellectBuffPositive + IntellectBuffNegative;
-			//intel = intel < 0 ? 0 : GetMultiMod(unit.MultiplierMods[(int)StatModifierFloat.Intellect], intel);
-			SetInt32(UnitFields.STAT3, intel);
+            this.UpdateDodgeChance();
+            this.UpdateCritChance();
+            this.UpdateAllAttackPower();
+        }
 
-			UpdateMaxPower();
-		}
+        protected internal virtual void UpdateIntellect()
+        {
+            var intel = GetBaseStatValue(StatType.Intellect) + IntellectBuffPositive + IntellectBuffNegative;
+            //intel = intel < 0 ? 0 : GetMultiMod(unit.MultiplierMods[(int)StatModifierFloat.Intellect], intel);
+            SetInt32(UnitFields.STAT3, intel);
 
-		protected internal virtual void UpdateSpirit()
-		{
-			var spirit = GetBaseStatValue(StatType.Spirit) + SpiritBuffPositive + SpiritBuffNegative;
+            UpdateMaxPower();
+        }
 
-			SetInt32(UnitFields.STAT4, spirit);
+        protected internal virtual void UpdateSpirit()
+        {
+            var spirit = GetBaseStatValue(StatType.Spirit) + SpiritBuffPositive + SpiritBuffNegative;
 
-			this.UpdateNormalHealthRegen();
+            SetInt32(UnitFields.STAT4, spirit);
 
-			// We don't need to call when we are still in the process of loading
-			if (Intellect != 0)
-			{
-				this.UpdatePowerRegen();
-			}
-		}
+            this.UpdateNormalHealthRegen();
 
-		protected internal virtual void UpdateStat(StatType stat)
-		{
-			switch (stat)
-			{
-				case StatType.Strength:
-					UpdateStrength();
-					break;
-				case StatType.Agility:
-					UpdateAgility();
-					break;
-				case StatType.Stamina:
-					UpdateStamina();
-					break;
-				case StatType.Intellect:
-					UpdateIntellect();
-					break;
-				case StatType.Spirit:
-					UpdateSpirit();
-					break;
-			}
-		}
-		#endregion
+            // We don't need to call when we are still in the process of loading
+            if (Intellect != 0)
+            {
+                this.UpdatePowerRegen();
+            }
+        }
 
-		#region Health & Power
-		protected internal virtual void UpdateMaxHealth()
-		{
-			var stamina = Stamina;
-			var uncontributed = StaminaWithoutHealthContribution;
-			var stamBonus = Math.Max(stamina, uncontributed) + (Math.Max(0, stamina - uncontributed) * HealthPerStamina);
+        protected internal virtual void UpdateStat(StatType stat)
+        {
+            switch (stat)
+            {
+                case StatType.Strength:
+                    UpdateStrength();
+                    break;
+                case StatType.Agility:
+                    UpdateAgility();
+                    break;
+                case StatType.Stamina:
+                    UpdateStamina();
+                    break;
+                case StatType.Intellect:
+                    UpdateIntellect();
+                    break;
+                case StatType.Spirit:
+                    UpdateSpirit();
+                    break;
+            }
+        }
 
-			var value = BaseHealth + stamBonus + MaxHealthModFlat;
-			value += (int)(value * MaxHealthModScalar + 0.5f);
+        #endregion Str, Sta, Agi, Int, Spi
 
-		    MaxHealth = value;
+        #region Health & Power
 
-			this.UpdateHealthRegen();
-		}
+        protected internal virtual void UpdateMaxHealth()
+        {
+            var stamina = Stamina;
+            var uncontributed = StaminaWithoutHealthContribution;
+            var stamBonus = Math.Max(stamina, uncontributed) + (Math.Max(0, stamina - uncontributed) * HealthPerStamina);
 
-		/// <summary>
-		/// Amount of mana, contributed by intellect
-		/// </summary>
-		protected internal virtual int IntellectManaBonus
-		{
-			get { return Intellect; }
-		}
+            var value = BaseHealth + stamBonus + MaxHealthModFlat;
+            value += (int)(value * MaxHealthModScalar + 0.5f);
 
-		protected internal void UpdateMaxPower()
-		{
-			var value = BasePower + IntMods[(int)StatModifierInt.Power];
-			if (PowerType == PowerType.Mana)
-			{
-				value += IntellectManaBonus;
-			}
-			value += (value * IntMods[(int)StatModifierInt.PowerPct] + 50) / 100;
-			if (value < 0)
-			{
-				value = 0;
-			}
+            MaxHealth = value;
 
-			MaxPower = value;
+            this.UpdateHealthRegen();
+        }
 
-			this.UpdatePowerRegen();
-		}
-		#endregion
-	}
+        /// <summary>
+        /// Amount of mana, contributed by intellect
+        /// </summary>
+        protected internal virtual int IntellectManaBonus
+        {
+            get { return Intellect; }
+        }
+
+        protected internal void UpdateMaxPower()
+        {
+            var value = BasePower + IntMods[(int)StatModifierInt.Power];
+            if (PowerType == PowerType.Mana)
+            {
+                value += IntellectManaBonus;
+            }
+            value += (value * IntMods[(int)StatModifierInt.PowerPct] + 50) / 100;
+            if (value < 0)
+            {
+                value = 0;
+            }
+
+            MaxPower = value;
+
+            this.UpdatePowerRegen();
+        }
+
+        #endregion Health & Power
+    }
 }

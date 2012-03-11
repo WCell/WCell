@@ -25,88 +25,90 @@ using WCell.Util;
 
 namespace WCell.RealmServer.Talents
 {
-	public static partial class TalentMgr
-	{
-		private static readonly Logger log = LogManager.GetCurrentClassLogger();
+    public static partial class TalentMgr
+    {
+        private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-		#region TalentTab.dbc
-		public class TalentTreeConverter : AdvancedDBCRecordConverter<TalentTree>
-		{
-			public override TalentTree ConvertTo(byte[] rawData, ref int id)
-			{
-				var tree = new TalentTree();
+        #region TalentTab.dbc
 
-				id = (int)(tree.Id = (TalentTreeId)GetUInt32(rawData, 0));
-				tree.Name = GetString(rawData, 1);
+        public class TalentTreeConverter : AdvancedDBCRecordConverter<TalentTree>
+        {
+            public override TalentTree ConvertTo(byte[] rawData, ref int id)
+            {
+                var tree = new TalentTree();
 
-				var classMask = (ClassMask)GetUInt32(rawData, 20);
-				tree.Class = WCellConstants.ClassTypesByMask[classMask];
+                id = (int)(tree.Id = (TalentTreeId)GetUInt32(rawData, 0));
+                tree.Name = GetString(rawData, 1);
 
-				tree.PetTabIndex = GetUInt32(rawData, 21);
-				tree.TabIndex = GetUInt32(rawData, 22);
+                var classMask = (ClassMask)GetUInt32(rawData, 20);
+                tree.Class = WCellConstants.ClassTypesByMask[classMask];
 
+                tree.PetTabIndex = GetUInt32(rawData, 21);
+                tree.TabIndex = GetUInt32(rawData, 22);
 
-				return tree;
-			}
-		}
-		#endregion
+                return tree;
+            }
+        }
 
+        #endregion TalentTab.dbc
 
-		#region Talent.dbc
-		public class TalentConverter : AdvancedDBCRecordConverter<TalentEntry>
-		{
-			public override TalentEntry ConvertTo(byte[] rawData, ref int id)
-			{
-				var talent = new TalentEntry();
+        #region Talent.dbc
 
-				id = (int)(talent.Id = (TalentId)GetUInt32(rawData, 0));
+        public class TalentConverter : AdvancedDBCRecordConverter<TalentEntry>
+        {
+            public override TalentEntry ConvertTo(byte[] rawData, ref int id)
+            {
+                var talent = new TalentEntry();
 
-				var treeId = (TalentTreeId)GetUInt32(rawData, 1);
-				talent.Tree = TalentTrees.Get((uint)treeId);
+                id = (int)(talent.Id = (TalentId)GetUInt32(rawData, 0));
 
-				if (talent.Tree == null)
-				{
-					return null;
-				}
+                var treeId = (TalentTreeId)GetUInt32(rawData, 1);
+                talent.Tree = TalentTrees.Get((uint)treeId);
 
-				talent.Row = GetUInt32(rawData, 2);
-				talent.Col = GetUInt32(rawData, 3);
+                if (talent.Tree == null)
+                {
+                    return null;
+                }
 
-				var abilities = new List<Spell>(5);
-				uint spellId;
+                talent.Row = GetUInt32(rawData, 2);
+                talent.Col = GetUInt32(rawData, 3);
 
-				for (int i = 0; i < 9; i++)
-				{
-					spellId = GetUInt32(rawData, i + 4);
+                var abilities = new List<Spell>(5);
+                uint spellId;
 
-					// There are talents linking to invalid spells, eg Dirty Tricks, Rank 3
-					Spell spell;
-					if (spellId == 0 || (spell = SpellHandler.Get(spellId)) == null)
-					{
-						break;
-					}
-					if (spell.IsTeachSpell)
-					{
-						spell = spell.GetEffectsWhere(effect => effect.TriggerSpell != null)[0].TriggerSpell;
-					}
+                for (int i = 0; i < 9; i++)
+                {
+                    spellId = GetUInt32(rawData, i + 4);
 
-					if (spell != null)
-					{
-						abilities.Add(spell);
-					}
-					else
-					{
-						log.Warn("Talent has invalid Spell: {0} ({1})", talent.Id, spellId);
-					}
-				}
-				talent.Spells = abilities.ToArray();
+                    // There are talents linking to invalid spells, eg Dirty Tricks, Rank 3
+                    Spell spell;
+                    if (spellId == 0 || (spell = SpellHandler.Get(spellId)) == null)
+                    {
+                        break;
+                    }
+                    if (spell.IsTeachSpell)
+                    {
+                        spell = spell.GetEffectsWhere(effect => effect.TriggerSpell != null)[0].TriggerSpell;
+                    }
 
-				talent.RequiredId = (TalentId)GetUInt32(rawData, 13);
-				talent.RequiredRank = GetUInt32(rawData, 16);
+                    if (spell != null)
+                    {
+                        abilities.Add(spell);
+                    }
+                    else
+                    {
+                        log.Warn("Talent has invalid Spell: {0} ({1})", talent.Id, spellId);
+                    }
+                }
+                talent.Spells = abilities.ToArray();
 
-				return talent;
-			}
-		}
-		#endregion
-	}
+                talent.RequiredId = (TalentId)GetUInt32(rawData, 13);
+                talent.RequiredRank = GetUInt32(rawData, 16);
+
+                return talent;
+            }
+        }
+
+        #endregion Talent.dbc
+    }
 }

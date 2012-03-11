@@ -118,7 +118,7 @@ namespace WCell.RealmServer.UpdateFields
 
         public override bool Equals(object obj)
         {
-            return obj != null && obj is CompoundType && Equals((CompoundType) obj);
+            return obj != null && obj is CompoundType && Equals((CompoundType)obj);
         }
 
         private bool Equals(CompoundType obj)

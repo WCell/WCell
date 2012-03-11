@@ -11,12 +11,12 @@ namespace WCell.MPQTool.StormLibWrapper
     {
         public const int MAX_PATH = 260;
         public const string StormLibDllName = "StormLib.dll";
-		public static string StormLibFolder = "../../Libraries/Binaries/Release/Stormlib/";
-		
-		static NativeMethods()
-		{
-			//InitAPI();
-		}
+        public static string StormLibFolder = "../../Libraries/Binaries/Release/Stormlib/";
+
+        static NativeMethods()
+        {
+            //InitAPI();
+        }
 
         public static string StormLib64
         {
@@ -37,10 +37,10 @@ namespace WCell.MPQTool.StormLibWrapper
         public static void InitAPI()
         {
             if (Environment.Is64BitProcess)
-			{
-				File.Copy(Path.GetFullPath(StormLib64), StormLibDllName, true);
-			    return;
-			}
+            {
+                File.Copy(Path.GetFullPath(StormLib64), StormLibDllName, true);
+                return;
+            }
 
             File.Copy(Path.GetFullPath(StormLib32), StormLibDllName, true);
         }
@@ -54,13 +54,11 @@ namespace WCell.MPQTool.StormLibWrapper
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool OpenArchive([In] [MarshalAs(UnmanagedType.LPStr)] string fileName, uint priority, OpenArchiveFlags flags, out IntPtr archiveHandle);
 
-
         /// Return Type: BOOL->int
         ///hMPQ: HANDLE->void*
         [DllImport(StormLibDllName, EntryPoint = "SFileCloseArchive")]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool CloseArchive(IntPtr archiveHandle);
-
 
         /// Return Type: BOOL->int
         ///hMPQ: HANDLE->void*
@@ -79,7 +77,6 @@ namespace WCell.MPQTool.StormLibWrapper
         //[return: MarshalAs(UnmanagedType.Bool)]
         public static extern IntPtr OpenFileEx(IntPtr archiveHandle, [In] [MarshalAs(UnmanagedType.LPStr)] string fileName, OpenFileFlags searchScope, out IntPtr fileHandle);
 
-
         [DllImport(StormLibDllName, EntryPoint = "SFileHasFile")]
         //[return: MarshalAs(UnmanagedType.Bool)]
         public static extern IntPtr HasFile(IntPtr archiveHandle, [In] [MarshalAs(UnmanagedType.LPStr)] string fileName);
@@ -88,7 +85,7 @@ namespace WCell.MPQTool.StormLibWrapper
         /// Returns data about the first file in the ListFile that matches the given search mask
         /// </summary>
         /// <param name="archiveHandle">Handle of the open archive.</param>
-        /// <param name="fileName">Name of the listfile that will be used for searching. 
+        /// <param name="fileName">Name of the listfile that will be used for searching.
         /// If this parameter is NULL, the function searches the MPQ internal listfile (if any).</param>
         /// <param name="searchMask">Name of the search mask. "*" will return all files.</param>
         /// <param name="fileData">A FileFindData structure with the search result.</param>
@@ -105,7 +102,6 @@ namespace WCell.MPQTool.StormLibWrapper
         [DllImport(StormLibDllName, EntryPoint = "SListFileFindNextFile")]
         public static extern IntPtr ListFileFindNext(IntPtr searchHandle, out FileFindData fileData);
 
-
         [DllImport(StormLibDllName, EntryPoint = "SListFileFindClose")]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool CloseSearch(IntPtr searchHandle);
@@ -116,19 +112,16 @@ namespace WCell.MPQTool.StormLibWrapper
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool CloseFile(IntPtr fileHandle);
 
-
         /// Return Type: DWORD->unsigned int
         ///hFile: HANDLE->void*
         ///lpFileSizeHigh: LPDWORD->DWORD*
         [DllImport(StormLibDllName, EntryPoint = "SFileGetFileSize")]
         public static extern uint GetFileSize(IntPtr fileHandle, out uint fileSize);
 
-
         [DllImport(StormLibDllName, EntryPoint = "SFileGetFileArchive")]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GetFileArchive(IntPtr fileHandle, out IntPtr archiveHandle);
 
-        
         /// Return Type: BOOL->int
         ///hFile: HANDLE->void*
         ///lpBuffer: LPCSTR->CHAR*
@@ -137,7 +130,6 @@ namespace WCell.MPQTool.StormLibWrapper
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GetFileName(IntPtr fileHandle, [In] [MarshalAs(UnmanagedType.LPStr)] string buffer, uint bufferLength);
 
-
         /// Return Type: DWORD->unsigned int
         ///hFile: HANDLE->void*
         ///lDistanceToMove: int
@@ -145,7 +137,6 @@ namespace WCell.MPQTool.StormLibWrapper
         ///dwMoveMethod: DWORD->unsigned int
         [DllImport(StormLibDllName, EntryPoint = "SFileSetFilePointer")]
         public static extern uint SetFilePointer(IntPtr fileHandle, int distanceToMove, ref int distanceToMoveHigh, uint moveMethod);
-
 
         /// Return Type: BOOL->int
         ///hFile: HANDLE->void*
@@ -157,12 +148,10 @@ namespace WCell.MPQTool.StormLibWrapper
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool ReadFile(IntPtr fileHandle, IntPtr buffer, uint numberOfBytes, out uint numberOfBytesRead, IntPtr overlapped);
 
-
         /// Return Type: LCID->DWORD->unsigned int
         ///nNewLocale: LCID->DWORD->unsigned int
         [DllImport(StormLibDllName, EntryPoint = "SFileSetLocale")]
         public static extern uint SetLocale(uint newLocale);
-
 
         /// Return Type: BOOL->int
         ///lpBuffer: LPCSTR->CHAR*
@@ -171,13 +160,11 @@ namespace WCell.MPQTool.StormLibWrapper
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GetBasePath([In] [MarshalAs(UnmanagedType.LPStr)] string buffer, uint bufferLength);
 
-
         /// Return Type: BOOL->int
         ///lpNewBasePath: LPCSTR->CHAR*
         [DllImport(StormLibDllName, EntryPoint = "SFileSetBasePath")]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool SetBasePath([In] [MarshalAs(UnmanagedType.LPStr)] string newBasePath);
-
 
         /// Return Type: BOOL->int
         ///pbOutBuffer: char*
@@ -190,7 +177,6 @@ namespace WCell.MPQTool.StormLibWrapper
         [DllImport(StormLibDllName, EntryPoint = "SCompCompress")]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool Compress(IntPtr outBuffer, ref int outLength, IntPtr inBuffer, int inLength, int cmp, int cmpType, int cmpLevel);
-
 
         /// Return Type: BOOL->int
         ///pbOutBuffer: char*

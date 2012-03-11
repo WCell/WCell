@@ -5,8 +5,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 {
     public class GOSummoningRitualEntry : GOEntry
     {
-		private static readonly Logger sLog = LogManager.GetCurrentClassLogger();
-
+        private static readonly Logger sLog = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// Amount of casters?
@@ -48,24 +47,24 @@ namespace WCell.RealmServer.GameObjects.GOEntries
             get { return (SpellId)Fields[4]; }
         }
 
-		/// <summary>
-		/// ??? Not sure if this is actually a bool
-		/// </summary>
-    	public bool CasterTargetSpellTargets
-    	{
-			get
-			{
-				if( Fields[ 5 ] < 2 )
-					return ( Fields[ 5 ] == 1 );
-				else
-				{
-					sLog.Error( "GOSummoningRitualEntry: Invalid value found for CasterTargetSpellTargets: {0}, defaulting to false.",
-						Fields[ 5 ] );
-					return false;
-				}
-			}
-			set { Fields[ 5 ] = ( value ? 1 : 0 ); }
-    	}
+        /// <summary>
+        /// ??? Not sure if this is actually a bool
+        /// </summary>
+        public bool CasterTargetSpellTargets
+        {
+            get
+            {
+                if (Fields[5] < 2)
+                    return (Fields[5] == 1);
+                else
+                {
+                    sLog.Error("GOSummoningRitualEntry: Invalid value found for CasterTargetSpellTargets: {0}, defaulting to false.",
+                        Fields[5]);
+                    return false;
+                }
+            }
+            set { Fields[5] = (value ? 1 : 0); }
+        }
 
         /// <summary>
         /// Whether or not the Casters of this SummoningRitual are in the same Group
@@ -79,5 +78,5 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         {
             get { return Fields[7] != 0; }
         }
-	}
+    }
 }

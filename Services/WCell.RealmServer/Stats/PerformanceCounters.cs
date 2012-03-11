@@ -42,7 +42,7 @@ namespace WCell.RealmServer.Stats
         public static PerformanceCounter PacketsReceivedPerSecond
         {
             get;
-			internal set;
+            internal set;
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace WCell.RealmServer.Stats
         public static PerformanceCounter TotalBytesSent
         {
             get;
-			internal set;
+            internal set;
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace WCell.RealmServer.Stats
         public static PerformanceCounter TotalBytesReceived
         {
             get;
-			internal set;
+            internal set;
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace WCell.RealmServer.Stats
         public static PerformanceCounter NumbersOfClientsInAuthQueue
         {
             get;
-			internal set;
+            internal set;
         }
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace WCell.RealmServer.Stats
                 var p = Process.Start(startInfo);
                 //Wait for the process to end.
                 p.WaitForExit();
-                if(p.ExitCode == 0)
+                if (p.ExitCode == 0)
                     Console.WriteLine("Done...");
                 else
                 {

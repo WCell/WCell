@@ -23,64 +23,64 @@ using WCell.Util;
 
 namespace WCell.RealmServer.Chat
 {
-	public static partial class ChatMgr
-	{
-		/// <summary>
-		/// Handles an incoming chat message.
-		/// </summary>
-		/// <param name="client">the client that sent to us</param>
-		/// <param name="packet">the full packet</param>
-		[ClientPacketHandler(RealmServerOpCode.CMSG_MESSAGECHAT, RequiresLogin = false)]	// one can also chat while logging out
-		public static void HandleChatMessage(IRealmClient client, RealmPacketIn packet)
-		{
-			var chr = client.ActiveCharacter;
+    public static partial class ChatMgr
+    {
+        /// <summary>
+        /// Handles an incoming chat message.
+        /// </summary>
+        /// <param name="client">the client that sent to us</param>
+        /// <param name="packet">the full packet</param>
+        [ClientPacketHandler(RealmServerOpCode.CMSG_MESSAGECHAT, RequiresLogin = false)]	// one can also chat while logging out
+        public static void HandleChatMessage(IRealmClient client, RealmPacketIn packet)
+        {
+            var chr = client.ActiveCharacter;
 
-			if (chr.IsLoggingOut && !chr.IsPlayerLogout)
-			{
-				// forced logout -> can't talk
-				ItemHandler.SendCantDoRightNow(client);
-			}
-			else
-			{
-				var type = (ChatMsgType) packet.ReadUInt32();
+            if (chr.IsLoggingOut && !chr.IsPlayerLogout)
+            {
+                // forced logout -> can't talk
+                ItemHandler.SendCantDoRightNow(client);
+            }
+            else
+            {
+                var type = (ChatMsgType)packet.ReadUInt32();
 
-				var parseHandler = ChatParsers.Get((uint) type);
-				if (parseHandler == null)
-					return;
+                var parseHandler = ChatParsers.Get((uint)type);
+                if (parseHandler == null)
+                    return;
 
-				var language = chr.SpokenLanguage;
-				if (language == ChatLanguage.Universal)
-				{
-					// language is not forced
-					language = (ChatLanguage) packet.ReadUInt32();
-					if (!chr.GodMode && (!chr.CanSpeak(language)))
-					{
-						// TODO: Cheater
-						return;
-					}
-				}
-				else
-				{
-					// spoken language is forced
-					packet.ReadUInt32();
-				}
+                var language = chr.SpokenLanguage;
+                if (language == ChatLanguage.Universal)
+                {
+                    // language is not forced
+                    language = (ChatLanguage)packet.ReadUInt32();
+                    if (!chr.GodMode && (!chr.CanSpeak(language)))
+                    {
+                        // TODO: Cheater
+                        return;
+                    }
+                }
+                else
+                {
+                    // spoken language is forced
+                    packet.ReadUInt32();
+                }
 
-				parseHandler(chr, type, language, packet);
-			}
-		}
+                parseHandler(chr, type, language, packet);
+            }
+        }
 
-		/// <summary>
-		/// Creates a packet
-		/// </summary>
-		public static RealmPacketOut CreateChatPacket(ChatMsgType type, ChatLanguage language, string msg, ChatTag tag)
-		{
-			var packet = new RealmPacketOut(RealmServerOpCode.SMSG_MESSAGECHAT, 23 + msg.Length);
-			packet.WriteByte((byte)type);			// 1
-			packet.WriteUInt((uint)language);		// 5
-			packet.WriteUIntPascalString(msg);			// 22 + msg.Length
-			packet.WriteByte((byte)tag);			// 23 + msg.Length
+        /// <summary>
+        /// Creates a packet
+        /// </summary>
+        public static RealmPacketOut CreateChatPacket(ChatMsgType type, ChatLanguage language, string msg, ChatTag tag)
+        {
+            var packet = new RealmPacketOut(RealmServerOpCode.SMSG_MESSAGECHAT, 23 + msg.Length);
+            packet.WriteByte((byte)type);			// 1
+            packet.WriteUInt((uint)language);		// 5
+            packet.WriteUIntPascalString(msg);			// 22 + msg.Length
+            packet.WriteByte((byte)tag);			// 23 + msg.Length
 
-			return packet;
-		}
-	}
+            return packet;
+        }
+    }
 }

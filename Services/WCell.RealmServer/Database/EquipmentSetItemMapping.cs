@@ -13,10 +13,10 @@ namespace WCell.RealmServer.Database
             set;
         }
 
-		/// <summary>
-		/// Cannot be named "Set" because
-		/// NHibernate doesn't quote table names right now.
-		/// </summary>
+        /// <summary>
+        /// Cannot be named "Set" because
+        /// NHibernate doesn't quote table names right now.
+        /// </summary>
         [BelongsTo]
         public EquipmentSet ParentSet
         {

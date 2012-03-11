@@ -1,6 +1,6 @@
 namespace WCell.RealmServer.Waypoints
 {
-	public class WaypointGenerator
-	{
-	}
+    public class WaypointGenerator
+    {
+    }
 }

@@ -1,6 +1,6 @@
 ﻿namespace WCell.RealmServer.Spells
 {
-	public static class SpellExtensions
-	{
-	}
+    public static class SpellExtensions
+    {
+    }
 }

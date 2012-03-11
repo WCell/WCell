@@ -7,146 +7,156 @@ using WCell.Util.Strings;
 
 namespace WCell.RealmServer.Commands
 {
+    #region Ingame
 
-	#region Ingame
-	/// <summary>
-	/// Represents a trigger for commands through ingame chat
-	/// </summary>
-	public class IngameCmdTrigger : RealmServerCmdTrigger
-	{
-		public IngameCmdTrigger(StringStream text, IUser user, IGenericChatTarget target, bool dbl)
-			: base(text, new RealmServerCmdArgs(user, dbl, target))
-		{
-		}
+    /// <summary>
+    /// Represents a trigger for commands through ingame chat
+    /// </summary>
+    public class IngameCmdTrigger : RealmServerCmdTrigger
+    {
+        public IngameCmdTrigger(StringStream text, IUser user, IGenericChatTarget target, bool dbl)
+            : base(text, new RealmServerCmdArgs(user, dbl, target))
+        {
+        }
 
-		public IngameCmdTrigger(RealmServerCmdArgs args)
-			: base(args)
-		{
-		}
+        public IngameCmdTrigger(RealmServerCmdArgs args)
+            : base(args)
+        {
+        }
 
-		public override void Reply(string txt)
-		{
-			Args.Character.SendSystemMessage(txt);
-		}
+        public override void Reply(string txt)
+        {
+            Args.Character.SendSystemMessage(txt);
+        }
 
-		public override void ReplyFormat(string txt)
-		{
-			Args.Character.SendSystemMessage(txt);
-		}
-	}
-	#endregion
+        public override void ReplyFormat(string txt)
+        {
+            Args.Character.SendSystemMessage(txt);
+        }
+    }
 
-	#region Console
-	/// <summary>
-	/// Default trigger for console
-	/// </summary>
-	public class DefaultCmdTrigger : RealmServerCmdTrigger
-	{
-		public DefaultCmdTrigger()
-		{
-		}
+    #endregion Ingame
 
-		public DefaultCmdTrigger(string text,BaseCommand<RealmServerCmdArgs> selectedCommand, RealmServerCmdArgs args)
-			: base(new StringStream(text), selectedCommand, args)
-		{
-		}
+    #region Console
 
-		public DefaultCmdTrigger(string text)
-			: base(new StringStream(text), null, new RealmServerCmdArgs(null, false, null))
-		{
-		}
+    /// <summary>
+    /// Default trigger for console
+    /// </summary>
+    public class DefaultCmdTrigger : RealmServerCmdTrigger
+    {
+        public DefaultCmdTrigger()
+        {
+        }
 
-		public DefaultCmdTrigger(string text, BaseCommand<RealmServerCmdArgs> selectedCommand)
-			: base(new StringStream(text), selectedCommand, new RealmServerCmdArgs(null, false, null))
-		{
-		}
+        public DefaultCmdTrigger(string text, BaseCommand<RealmServerCmdArgs> selectedCommand, RealmServerCmdArgs args)
+            : base(new StringStream(text), selectedCommand, args)
+        {
+        }
 
-		public DefaultCmdTrigger(StringStream args)
-			: base(args, null, new RealmServerCmdArgs(null, false, null))
-		{
-		}
+        public DefaultCmdTrigger(string text)
+            : base(new StringStream(text), null, new RealmServerCmdArgs(null, false, null))
+        {
+        }
 
-		public DefaultCmdTrigger(StringStream args, BaseCommand<RealmServerCmdArgs> selectedCommand)
-			: base(args, selectedCommand, new RealmServerCmdArgs(null, false, null))
-		{
-		}
+        public DefaultCmdTrigger(string text, BaseCommand<RealmServerCmdArgs> selectedCommand)
+            : base(new StringStream(text), selectedCommand, new RealmServerCmdArgs(null, false, null))
+        {
+        }
 
-		public override void Reply(string txt)
-		{
-			Console.ForegroundColor = ConsoleColor.White;
-			Console.WriteLine(txt);
-			Console.ResetColor();
-		}
+        public DefaultCmdTrigger(StringStream args)
+            : base(args, null, new RealmServerCmdArgs(null, false, null))
+        {
+        }
 
-		public override void ReplyFormat(string txt)
-		{
-			Console.ForegroundColor = ConsoleColor.White;
-			Console.WriteLine(ChatUtility.Strip(txt));
-			Console.ResetColor();
-		}
-	}
-	#endregion
+        public DefaultCmdTrigger(StringStream args, BaseCommand<RealmServerCmdArgs> selectedCommand)
+            : base(args, selectedCommand, new RealmServerCmdArgs(null, false, null))
+        {
+        }
 
-	#region Buffered
-	public class BufferedCommandTrigger : DefaultCmdTrigger
-	{
-		public readonly BufferedCommandResponse Response = new BufferedCommandResponse();
+        public override void Reply(string txt)
+        {
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine(txt);
+            Console.ResetColor();
+        }
 
-		public BufferedCommandTrigger()
-		{
-		}
+        public override void ReplyFormat(string txt)
+        {
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine(ChatUtility.Strip(txt));
+            Console.ResetColor();
+        }
+    }
 
-		public BufferedCommandTrigger(string text) : base(text)
-		{
-		}
+    #endregion Console
 
-		public BufferedCommandTrigger(string text, BaseCommand<RealmServerCmdArgs> selectedCommand, RealmServerCmdArgs args) : base(text, selectedCommand, args)
-		{
-		}
+    #region Buffered
 
-		public BufferedCommandTrigger(StringStream args, BaseCommand<RealmServerCmdArgs> selectedCommand) : base(args, selectedCommand)
-		{
-		}
+    public class BufferedCommandTrigger : DefaultCmdTrigger
+    {
+        public readonly BufferedCommandResponse Response = new BufferedCommandResponse();
 
-		public BufferedCommandTrigger(StringStream args) : base(args)
-		{
-		}
+        public BufferedCommandTrigger()
+        {
+        }
 
-		public BufferedCommandTrigger(string text, BaseCommand<RealmServerCmdArgs> selectedCommand) : base(text, selectedCommand)
-		{
-		}
+        public BufferedCommandTrigger(string text)
+            : base(text)
+        {
+        }
 
-		public override void Reply(string text)
-		{
-			Response.Replies.Add(text);
-		}
+        public BufferedCommandTrigger(string text, BaseCommand<RealmServerCmdArgs> selectedCommand, RealmServerCmdArgs args)
+            : base(text, selectedCommand, args)
+        {
+        }
 
-		public override void ReplyFormat(string text)
-		{
-			Response.Replies.Add(text);
-		}
-	}
-	#endregion
+        public BufferedCommandTrigger(StringStream args, BaseCommand<RealmServerCmdArgs> selectedCommand)
+            : base(args, selectedCommand)
+        {
+        }
 
-	public abstract class RealmServerCmdTrigger : CmdTrigger<RealmServerCmdArgs>
-	{
-		protected RealmServerCmdTrigger()
-		{
-		}
+        public BufferedCommandTrigger(StringStream args)
+            : base(args)
+        {
+        }
 
-		protected RealmServerCmdTrigger(StringStream text, RealmServerCmdArgs args) :
-			base(text, args)
-		{
-		}
+        public BufferedCommandTrigger(string text, BaseCommand<RealmServerCmdArgs> selectedCommand)
+            : base(text, selectedCommand)
+        {
+        }
 
-		protected RealmServerCmdTrigger(StringStream text, BaseCommand<RealmServerCmdArgs> selectedCmd, RealmServerCmdArgs args) :
-			base(text, selectedCmd, args)
-		{
-		}
+        public override void Reply(string text)
+        {
+            Response.Replies.Add(text);
+        }
 
-		protected RealmServerCmdTrigger(RealmServerCmdArgs args) :
-			base(args)
-		{
-		}
-	}
+        public override void ReplyFormat(string text)
+        {
+            Response.Replies.Add(text);
+        }
+    }
+
+    #endregion Buffered
+
+    public abstract class RealmServerCmdTrigger : CmdTrigger<RealmServerCmdArgs>
+    {
+        protected RealmServerCmdTrigger()
+        {
+        }
+
+        protected RealmServerCmdTrigger(StringStream text, RealmServerCmdArgs args) :
+            base(text, args)
+        {
+        }
+
+        protected RealmServerCmdTrigger(StringStream text, BaseCommand<RealmServerCmdArgs> selectedCmd, RealmServerCmdArgs args) :
+            base(text, selectedCmd, args)
+        {
+        }
+
+        protected RealmServerCmdTrigger(RealmServerCmdArgs args) :
+            base(args)
+        {
+        }
+    }
 }

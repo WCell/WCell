@@ -1,14 +1,14 @@
 namespace WCell.RealmServer.Items
 {
-	public struct ItemStack
-	{
-		public ItemTemplate Template;
+    public struct ItemStack
+    {
+        public ItemTemplate Template;
 
-		public int Amount;
+        public int Amount;
 
-		public override string ToString()
-		{
-			return Amount + "x " + Template;
-		}
-	}
+        public override string ToString()
+        {
+            return Amount + "x " + Template;
+        }
+    }
 }

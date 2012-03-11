@@ -18,11 +18,11 @@ using WCell.Constants.Spells;
 
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
-	public class ModInvisibilityHandler : AuraEffectHandler
-	{
-		protected override void Apply()
-		{
-			InvisType type = (InvisType)m_spellEffect.MiscValue;
-		}
-	}
+    public class ModInvisibilityHandler : AuraEffectHandler
+    {
+        protected override void Apply()
+        {
+            InvisType type = (InvisType)m_spellEffect.MiscValue;
+        }
+    }
 };

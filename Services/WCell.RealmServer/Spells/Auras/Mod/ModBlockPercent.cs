@@ -19,11 +19,11 @@ using WCell.RealmServer.Modifiers;
 
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
-	/// <summary>
-	/// Increases Chance to block
-	/// </summary>
-	public class ModBlockPercentHandler : AuraEffectHandler
-	{
+    /// <summary>
+    /// Increases Chance to block
+    /// </summary>
+    public class ModBlockPercentHandler : AuraEffectHandler
+    {
         protected override void Apply()
         {
             m_aura.Auras.Owner.ChangeModifier(StatModifierInt.BlockChance, EffectValue);
@@ -33,5 +33,5 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
         {
             m_aura.Auras.Owner.ChangeModifier(StatModifierInt.BlockChance, -EffectValue);
         }
-	}
+    }
 };

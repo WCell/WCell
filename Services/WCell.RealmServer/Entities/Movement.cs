@@ -7,374 +7,374 @@ using WCell.Util.Graphics;
 
 namespace WCell.RealmServer.Entities
 {
-	public class Movement
-	{
-		private const float SPEED_FACTOR = 0.001f;
+    public class Movement
+    {
+        private const float SPEED_FACTOR = 0.001f;
 
-		//public static int MoveUpdateDelay = ;
+        //public static int MoveUpdateDelay = ;
 
-		/// <summary>
-		/// Starting time of movement
-		/// </summary>
-		protected uint m_lastMoveTime;
+        /// <summary>
+        /// Starting time of movement
+        /// </summary>
+        protected uint m_lastMoveTime;
 
-		/// <summary>
-		/// Total time of movement
-		/// </summary>
-		protected uint m_totalMovingTime;
+        /// <summary>
+        /// Total time of movement
+        /// </summary>
+        protected uint m_totalMovingTime;
 
-		/// <summary>
-		/// Time at which movement should end
-		/// </summary>
-		protected uint m_desiredEndMovingTime;
+        /// <summary>
+        /// Time at which movement should end
+        /// </summary>
+        protected uint m_desiredEndMovingTime;
 
-		/// <summary>
-		/// The target of the current (or last) travel
-		/// </summary>
-		protected Vector3 m_destination;
+        /// <summary>
+        /// The target of the current (or last) travel
+        /// </summary>
+        protected Vector3 m_destination;
 
-		protected Path _currentPath;
+        protected Path _currentPath;
 
-		/// <summary>
-		/// The movement type (walking, running or flying)
-		/// </summary>
-		protected AIMoveType m_moveType;
+        /// <summary>
+        /// The movement type (walking, running or flying)
+        /// </summary>
+        protected AIMoveType m_moveType;
 
-		protected internal Unit m_owner;
+        protected internal Unit m_owner;
 
-		protected bool m_moving, m_MayMove;
+        protected bool m_moving, m_MayMove;
 
-		protected PathQuery m_currentQuery;
+        protected PathQuery m_currentQuery;
 
-		#region Constructors
+        #region Constructors
 
-		public Movement(Unit owner)
-			: this(owner, AIMoveType.Run)
-		{
-		}
+        public Movement(Unit owner)
+            : this(owner, AIMoveType.Run)
+        {
+        }
 
-		public Movement(Unit owner, AIMoveType moveType)
-		{
-			m_owner = owner;
-			m_moveType = moveType;
-			m_MayMove = true;
-		}
+        public Movement(Unit owner, AIMoveType moveType)
+        {
+            m_owner = owner;
+            m_moveType = moveType;
+            m_MayMove = true;
+        }
 
-		#endregion
+        #endregion Constructors
 
-		#region Properties
+        #region Properties
 
-		public Vector3 Destination
-		{
-			get { return m_destination; }
-		}
+        public Vector3 Destination
+        {
+            get { return m_destination; }
+        }
 
-		/// <summary>
-		/// AI-controlled Movement setting
-		/// </summary>
-		public bool MayMove
-		{
-			get { return m_MayMove; }
-			set { m_MayMove = value; }
-		}
+        /// <summary>
+        /// AI-controlled Movement setting
+        /// </summary>
+        public bool MayMove
+        {
+            get { return m_MayMove; }
+            set { m_MayMove = value; }
+        }
 
-		public bool IsMoving
-		{
-			get { return m_moving; }
-		}
+        public bool IsMoving
+        {
+            get { return m_moving; }
+        }
 
-		/// <summary>
-		/// Whether the owner is within 1 yard of the Destination
-		/// </summary>
-		public bool IsAtDestination
-		{
-			get
-			{
-				return m_owner.Position.DistanceSquared(ref m_destination) < 1f;
-			}
-		}
+        /// <summary>
+        /// Whether the owner is within 1 yard of the Destination
+        /// </summary>
+        public bool IsAtDestination
+        {
+            get
+            {
+                return m_owner.Position.DistanceSquared(ref m_destination) < 1f;
+            }
+        }
 
-		/// <summary>
-		/// Get movement flags for the packet
-		/// </summary>
-		/// <returns></returns>
-		public virtual MonsterMoveFlags MovementFlags
-		{
-			get
-			{
-				MonsterMoveFlags moveFlags;
+        /// <summary>
+        /// Get movement flags for the packet
+        /// </summary>
+        /// <returns></returns>
+        public virtual MonsterMoveFlags MovementFlags
+        {
+            get
+            {
+                MonsterMoveFlags moveFlags;
 
-				switch (m_moveType)
-				{
-					case AIMoveType.Fly:
-						moveFlags = MonsterMoveFlags.Fly;
-						break;
-					case AIMoveType.Run:
-					case AIMoveType.Walk:
-						moveFlags = MonsterMoveFlags.Walk;
-						break;
-					case AIMoveType.Sprint:
-						moveFlags = MonsterMoveFlags.DefaultMask;
-						break;
-					default:
-						moveFlags = MonsterMoveFlags.DefaultMask;
-						break;
-				}
+                switch (m_moveType)
+                {
+                    case AIMoveType.Fly:
+                        moveFlags = MonsterMoveFlags.Fly;
+                        break;
+                    case AIMoveType.Run:
+                    case AIMoveType.Walk:
+                        moveFlags = MonsterMoveFlags.Walk;
+                        break;
+                    case AIMoveType.Sprint:
+                        moveFlags = MonsterMoveFlags.DefaultMask;
+                        break;
+                    default:
+                        moveFlags = MonsterMoveFlags.DefaultMask;
+                        break;
+                }
 
-				return moveFlags;
-			}
-		}
+                return moveFlags;
+            }
+        }
 
-		public AIMoveType MoveType
-		{
-			get
-			{
-				return m_moveType;
-			}
-			set
-			{
-				m_moveType = value;
-				//if (!IsAtDestination)
-				//{
-				//    // re-compute route
-				//    MoveToDestination();
-				//}
-			}
-		}
+        public AIMoveType MoveType
+        {
+            get
+            {
+                return m_moveType;
+            }
+            set
+            {
+                m_moveType = value;
+                //if (!IsAtDestination)
+                //{
+                //    // re-compute route
+                //    MoveToDestination();
+                //}
+            }
+        }
 
-		/// <summary>
-		/// Remaining movement time to current Destination (in millis)
-		/// </summary>
-		public uint RemainingTime
-		{
-			get
-			{
-				float speed, distanceToTarget;
+        /// <summary>
+        /// Remaining movement time to current Destination (in millis)
+        /// </summary>
+        public uint RemainingTime
+        {
+            get
+            {
+                float speed, distanceToTarget;
 
-				if (m_owner.IsFlying)
-				{
-					speed = m_owner.FlightSpeed;
-					distanceToTarget = m_owner.GetDistance(ref m_destination);
-				}
-				else if (m_moveType == AIMoveType.Run)
-				{
-					speed = m_owner.RunSpeed;
-					distanceToTarget = m_owner.GetDistanceXY(ref m_destination);
-				}
-				else // walk
-				{
-					speed = m_owner.WalkSpeed;
-					distanceToTarget = m_owner.GetDistanceXY(ref m_destination);
-				}
+                if (m_owner.IsFlying)
+                {
+                    speed = m_owner.FlightSpeed;
+                    distanceToTarget = m_owner.GetDistance(ref m_destination);
+                }
+                else if (m_moveType == AIMoveType.Run)
+                {
+                    speed = m_owner.RunSpeed;
+                    distanceToTarget = m_owner.GetDistanceXY(ref m_destination);
+                }
+                else // walk
+                {
+                    speed = m_owner.WalkSpeed;
+                    distanceToTarget = m_owner.GetDistanceXY(ref m_destination);
+                }
 
-				speed *= SPEED_FACTOR;
+                speed *= SPEED_FACTOR;
 
-				return (uint)(distanceToTarget / speed);
-			}
-		}
+                return (uint)(distanceToTarget / speed);
+            }
+        }
 
-		#endregion
+        #endregion Properties
 
-		#region MoveTo / Update / Stop
-		/// <summary>
-		/// Starts the MovementAI
-		/// </summary>
-		/// <returns>Whether already arrived</returns>
-		public bool MoveTo(Vector3 destination, bool findPath = true)
-		{
-			if (!m_owner.IsInWorld)
-			{
-				// something's wrong here
-				m_owner.DeleteNow();
-				return false;
-			}
+        #region MoveTo / Update / Stop
 
-			m_destination = destination;
-			if (IsAtDestination)
-			{
-				return true;
-			}
+        /// <summary>
+        /// Starts the MovementAI
+        /// </summary>
+        /// <returns>Whether already arrived</returns>
+        public bool MoveTo(Vector3 destination, bool findPath = true)
+        {
+            if (!m_owner.IsInWorld)
+            {
+                // something's wrong here
+                m_owner.DeleteNow();
+                return false;
+            }
 
-			if (findPath)
-			{
-				// TODO: Consider flying units & liquid levels
-				var pos = m_owner.Position;
-				pos.Z += 5;
-				m_currentQuery = new PathQuery(pos, ref destination, m_owner.ContextHandler, OnPathQueryReply);
+            m_destination = destination;
+            if (IsAtDestination)
+            {
+                return true;
+            }
 
-				m_owner.Map.Terrain.FindPath(m_currentQuery);
-			}
-			else if (m_owner.CanMove)
-			{
-				// start moving
-				MoveToDestination();
-			}
-			// cannot move
-			return false;
-		}
+            if (findPath)
+            {
+                // TODO: Consider flying units & liquid levels
+                var pos = m_owner.Position;
+                pos.Z += 5;
+                m_currentQuery = new PathQuery(pos, ref destination, m_owner.ContextHandler, OnPathQueryReply);
 
-		/// <summary>
-		/// Starts the MovementAI
-		/// </summary>
-		/// <returns>Whether already arrived</returns>
-		public bool MoveToPoints(List<Vector3> points)
-		{
-			if (!m_owner.IsInWorld)
-			{
-				// something's wrong here
-				m_owner.DeleteNow();
-				return false;
-			}
+                m_owner.Map.Terrain.FindPath(m_currentQuery);
+            }
+            else if (m_owner.CanMove)
+            {
+                // start moving
+                MoveToDestination();
+            }
+            // cannot move
+            return false;
+        }
 
-			m_destination = points[points.Count - 1];
-			if (IsAtDestination)
-			{
-				return true;
-			}
+        /// <summary>
+        /// Starts the MovementAI
+        /// </summary>
+        /// <returns>Whether already arrived</returns>
+        public bool MoveToPoints(List<Vector3> points)
+        {
+            if (!m_owner.IsInWorld)
+            {
+                // something's wrong here
+                m_owner.DeleteNow();
+                return false;
+            }
 
+            m_destination = points[points.Count - 1];
+            if (IsAtDestination)
+            {
+                return true;
+            }
 
-			// TODO: Consider flying units & liquid levels
-			var pos = m_owner.Position;
-			pos.Z += 5;
-			m_currentQuery = new PathQuery(pos, ref m_destination, m_owner.ContextHandler, OnPathQueryReply);
+            // TODO: Consider flying units & liquid levels
+            var pos = m_owner.Position;
+            pos.Z += 5;
+            m_currentQuery = new PathQuery(pos, ref m_destination, m_owner.ContextHandler, OnPathQueryReply);
 
-			m_currentQuery.Path.Reset(points.Count);
-			foreach (var point in points)
-			{
-				m_currentQuery.Path.Add(point);
-			}
-			m_currentQuery.Reply();
+            m_currentQuery.Path.Reset(points.Count);
+            foreach (var point in points)
+            {
+                m_currentQuery.Path.Add(point);
+            }
+            m_currentQuery.Reply();
 
-			//m_owner.Map.Terrain.FindPath(m_currentQuery);
+            //m_owner.Map.Terrain.FindPath(m_currentQuery);
 
-			// cannot move
-			return false;
-		}
+            // cannot move
+            return false;
+        }
 
-		/// <summary>
-		/// Interpolates the current Position
-		/// </summary>
-		/// <returns>Whether we arrived</returns>
-		public bool Update()
-		{
-			if (!m_moving)
-			{
-				// is not moving
-				return false;
-			}
+        /// <summary>
+        /// Interpolates the current Position
+        /// </summary>
+        /// <returns>Whether we arrived</returns>
+        public bool Update()
+        {
+            if (!m_moving)
+            {
+                // is not moving
+                return false;
+            }
 
-			if (!MayMove)
-			{
-				// cannot continue moving
-				Stop();
-				return false;
-			}
+            if (!MayMove)
+            {
+                // cannot continue moving
+                Stop();
+                return false;
+            }
 
-			if (UpdatePosition())
-			{
-				// arrived
-				return true;
-			}
+            if (UpdatePosition())
+            {
+                // arrived
+                return true;
+            }
 
-			// still going
-			return false;
-		}
+            // still going
+            return false;
+        }
 
-		/// <summary>
-		/// Stops at the current position
-		/// </summary>
-		public void Stop()
-		{
-			if (m_moving)
-			{
-				UpdatePosition();
-				MovementHandler.SendStopMovementPacket(m_owner);
-				m_moving = false;
-			}
-		}
+        /// <summary>
+        /// Stops at the current position
+        /// </summary>
+        public void Stop()
+        {
+            if (m_moving)
+            {
+                UpdatePosition();
+                MovementHandler.SendStopMovementPacket(m_owner);
+                m_moving = false;
+            }
+        }
 
-		#endregion
+        #endregion MoveTo / Update / Stop
 
-		/// <summary>
-		/// Starts moving to current Destination
-		/// </summary>
-		/// <remarks>Sends movement packet to client</remarks>
-		protected void MoveToDestination()
-		{
-			m_moving = true;
+        /// <summary>
+        /// Starts moving to current Destination
+        /// </summary>
+        /// <remarks>Sends movement packet to client</remarks>
+        protected void MoveToDestination()
+        {
+            m_moving = true;
 
-			m_totalMovingTime = RemainingTime;
-			m_owner.SetOrientationTowards(ref m_destination);
-			MovementHandler.SendMoveToPacket(m_owner, ref m_destination, 0f, m_totalMovingTime, MovementFlags);
+            m_totalMovingTime = RemainingTime;
+            m_owner.SetOrientationTowards(ref m_destination);
+            MovementHandler.SendMoveToPacket(m_owner, ref m_destination, 0f, m_totalMovingTime, MovementFlags);
 
-			m_lastMoveTime = Utility.GetSystemTime();
-			m_desiredEndMovingTime = m_lastMoveTime + m_totalMovingTime;
-		}
+            m_lastMoveTime = Utility.GetSystemTime();
+            m_desiredEndMovingTime = m_lastMoveTime + m_totalMovingTime;
+        }
 
-		protected void OnPathQueryReply(PathQuery query)
-		{
-			if (query != m_currentQuery)
-			{
-				// deprecated query
-				return;
-			}
-			m_currentQuery = null;
+        protected void OnPathQueryReply(PathQuery query)
+        {
+            if (query != m_currentQuery)
+            {
+                // deprecated query
+                return;
+            }
+            m_currentQuery = null;
 
-		    FollowPath(query.Path);
-		}
+            FollowPath(query.Path);
+        }
 
-	    public void FollowPath(Path path)
-	    {
-	        _currentPath = path;
+        public void FollowPath(Path path)
+        {
+            _currentPath = path;
 
-	        m_destination = _currentPath.Next();
-	        MoveToDestination();
-	    }
+            m_destination = _currentPath.Next();
+            MoveToDestination();
+        }
 
-	    /// <summary>
-		/// Updates position of unit
-		/// </summary>
-		/// <returns>true if target point is reached</returns>
-		protected bool UpdatePosition()
-		{
-			var currentTime = Utility.GetSystemTime();
+        /// <summary>
+        /// Updates position of unit
+        /// </summary>
+        /// <returns>true if target point is reached</returns>
+        protected bool UpdatePosition()
+        {
+            var currentTime = Utility.GetSystemTime();
 
-			// ratio between time passed since last update and total movement time
-			var delta = (currentTime - m_lastMoveTime)/(float) m_totalMovingTime;
+            // ratio between time passed since last update and total movement time
+            var delta = (currentTime - m_lastMoveTime) / (float)m_totalMovingTime;
 
-			// if the ratio is more than 1, then we have reached the target
-			if (currentTime >= m_desiredEndMovingTime || delta >= 1f)
-			{
-				// move target directly to the destination
-				m_owner.Map.MoveObject(m_owner, ref m_destination);
-				if (_currentPath != null)
-				{
-					if (_currentPath.HasNext())
-					{
-						// go to next destination
-						m_destination = _currentPath.Next();
-						MoveToDestination();
-					}
-					else
-					{
-						_currentPath = null;
-					}
-					return false;
-				}
-				else
-				{
-					m_moving = false;
-					return true;
-				}
-			}
+            // if the ratio is more than 1, then we have reached the target
+            if (currentTime >= m_desiredEndMovingTime || delta >= 1f)
+            {
+                // move target directly to the destination
+                m_owner.Map.MoveObject(m_owner, ref m_destination);
+                if (_currentPath != null)
+                {
+                    if (_currentPath.HasNext())
+                    {
+                        // go to next destination
+                        m_destination = _currentPath.Next();
+                        MoveToDestination();
+                    }
+                    else
+                    {
+                        _currentPath = null;
+                    }
+                    return false;
+                }
+                else
+                {
+                    m_moving = false;
+                    return true;
+                }
+            }
 
-			// otherwise we've passed delta part of the path
-			var currentPos = m_owner.Position;
-			var newPosition = currentPos + (m_destination - currentPos)*delta;
+            // otherwise we've passed delta part of the path
+            var currentPos = m_owner.Position;
+            var newPosition = currentPos + (m_destination - currentPos) * delta;
 
-			m_lastMoveTime = currentTime;
-			m_owner.Map.MoveObject(m_owner, ref newPosition);
-			return false;
-		}
-	}
+            m_lastMoveTime = currentTime;
+            m_owner.Map.MoveObject(m_owner, ref newPosition);
+            return false;
+        }
+    }
 }

@@ -20,24 +20,24 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Effects
 {
-	/// <summary>
-	/// Adds a language
-	/// </summary>
-	public class LanguageEffectHandler : SpellEffectHandler
-	{
-		public LanguageEffectHandler(SpellCast cast, SpellEffect effect)
-			: base(cast, effect)
-		{
-		}
+    /// <summary>
+    /// Adds a language
+    /// </summary>
+    public class LanguageEffectHandler : SpellEffectHandler
+    {
+        public LanguageEffectHandler(SpellCast cast, SpellEffect effect)
+            : base(cast, effect)
+        {
+        }
 
-		protected override void Apply(WorldObject target)
-		{
-			((Character)target).AddLanguage((ChatLanguage)Effect.MiscValue);
-		}
+        protected override void Apply(WorldObject target)
+        {
+            ((Character)target).AddLanguage((ChatLanguage)Effect.MiscValue);
+        }
 
-		public override ObjectTypes TargetType
-		{
-			get { return ObjectTypes.Player; }
-		}
-	}
+        public override ObjectTypes TargetType
+        {
+            get { return ObjectTypes.Player; }
+        }
+    }
 }

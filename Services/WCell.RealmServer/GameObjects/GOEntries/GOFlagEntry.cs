@@ -24,17 +24,17 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         }
 
         public abstract bool NoDamageImmune
-        { 
+        {
             get;
         }
 
         public abstract int OpenTextId
-        { 
+        {
             get;
         }
 
         public abstract SpellId PickupSpellId
-        { 
+        {
             get;
         }
     }

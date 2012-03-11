@@ -6,472 +6,471 @@ using WCell.Util;
 
 namespace WCell.PacketAnalysis
 {
-	public enum ComparisonType
-	{
-		Equal = 0,
-		NotEqual,
-		GreaterThan,
-		LessThan,
-		GreaterOrEqual,
-		LessOrEqual,
-		And,
-		AndExclusive,
-		AndNot,
-		Either,
-		Neither,
-		Count
-	}
+    public enum ComparisonType
+    {
+        Equal = 0,
+        NotEqual,
+        GreaterThan,
+        LessThan,
+        GreaterOrEqual,
+        LessOrEqual,
+        And,
+        AndExclusive,
+        AndNot,
+        Either,
+        Neither,
+        Count
+    }
 
-	/// <summary>
-	/// Represents a condition to be matched for determinig a <c>SwitchPacketSegmentStructure</c>
-	/// </summary>
-	public class SwitchCase
-	{
-		public delegate bool SwitchComparer(SwitchCase switchCase, object val);
+    /// <summary>
+    /// Represents a condition to be matched for determinig a <c>SwitchPacketSegmentStructure</c>
+    /// </summary>
+    public class SwitchCase
+    {
+        public delegate bool SwitchComparer(SwitchCase switchCase, object val);
 
-		protected static SwitchComparer[] Matchers = new SwitchComparer[(int)ComparisonType.Count];
+        protected static SwitchComparer[] Matchers = new SwitchComparer[(int)ComparisonType.Count];
 
-		static SwitchCase()
-		{
-			Matchers[(int)ComparisonType.Equal] = (condition, value) =>
-			{
-				return condition.m_value.Equals(value);
-			};
-			Matchers[(int)ComparisonType.NotEqual] = (condition, value) =>
-			{
-				return !condition.m_value.Equals(value);
-			};
-			Matchers[(int)ComparisonType.GreaterThan] = (condition, value) =>
-			{
-				return condition.ToComparable(condition.m_value).CompareTo(condition.ToComparable(value)) < 0;
-			};
-			Matchers[(int)ComparisonType.LessThan] = (condition, value) =>
-			{
-				return condition.ToComparable(condition.m_value).CompareTo(condition.ToComparable(value)) > 0;
-			};
-			Matchers[(int)ComparisonType.GreaterOrEqual] = (condition, value) =>
-			{
-				return condition.ToComparable(condition.m_value).CompareTo(condition.ToComparable(value)) <= 0;
-			};
-			Matchers[(int)ComparisonType.LessOrEqual] = (condition, value) =>
-			{
-				return condition.ToComparable(condition.m_value).CompareTo(condition.ToComparable(value)) >= 0;
-			};
-			Matchers[(int)ComparisonType.And] = (condition, value) =>
-			{
-				var cmpFlags = (long)Convert.ChangeType(condition.m_value, typeof(long));
-				var flags = (long)Convert.ChangeType(value, typeof(long));
-				return (cmpFlags & flags) != 0;
-			};
-			Matchers[(int)ComparisonType.AndExclusive] = (condition, value) =>
-			{
-				var cmpFlags = (long)Convert.ChangeType(condition.m_value, typeof(long));
-				var flags = (long)Convert.ChangeType(value, typeof(long));
-				return (cmpFlags & flags) == cmpFlags;
-			};
-			Matchers[(int)ComparisonType.AndNot] = (condition, value) =>
-			{
-				var originalFlags = (long)Convert.ChangeType(condition.m_value, typeof(long));
-				var flags = (long)Convert.ChangeType(value, typeof(long));
-				return (originalFlags & flags) == 0;
-			};
-			Matchers[(int)ComparisonType.Either] = (condition, value) =>
-			{
-				return condition.m_valueList.Contains(value);
-			};
-			Matchers[(int)ComparisonType.Neither] = (condition, value) =>
-			{
-				return !condition.m_valueList.Contains(value);
-			};
-		}
+        static SwitchCase()
+        {
+            Matchers[(int)ComparisonType.Equal] = (condition, value) =>
+            {
+                return condition.m_value.Equals(value);
+            };
+            Matchers[(int)ComparisonType.NotEqual] = (condition, value) =>
+            {
+                return !condition.m_value.Equals(value);
+            };
+            Matchers[(int)ComparisonType.GreaterThan] = (condition, value) =>
+            {
+                return condition.ToComparable(condition.m_value).CompareTo(condition.ToComparable(value)) < 0;
+            };
+            Matchers[(int)ComparisonType.LessThan] = (condition, value) =>
+            {
+                return condition.ToComparable(condition.m_value).CompareTo(condition.ToComparable(value)) > 0;
+            };
+            Matchers[(int)ComparisonType.GreaterOrEqual] = (condition, value) =>
+            {
+                return condition.ToComparable(condition.m_value).CompareTo(condition.ToComparable(value)) <= 0;
+            };
+            Matchers[(int)ComparisonType.LessOrEqual] = (condition, value) =>
+            {
+                return condition.ToComparable(condition.m_value).CompareTo(condition.ToComparable(value)) >= 0;
+            };
+            Matchers[(int)ComparisonType.And] = (condition, value) =>
+            {
+                var cmpFlags = (long)Convert.ChangeType(condition.m_value, typeof(long));
+                var flags = (long)Convert.ChangeType(value, typeof(long));
+                return (cmpFlags & flags) != 0;
+            };
+            Matchers[(int)ComparisonType.AndExclusive] = (condition, value) =>
+            {
+                var cmpFlags = (long)Convert.ChangeType(condition.m_value, typeof(long));
+                var flags = (long)Convert.ChangeType(value, typeof(long));
+                return (cmpFlags & flags) == cmpFlags;
+            };
+            Matchers[(int)ComparisonType.AndNot] = (condition, value) =>
+            {
+                var originalFlags = (long)Convert.ChangeType(condition.m_value, typeof(long));
+                var flags = (long)Convert.ChangeType(value, typeof(long));
+                return (originalFlags & flags) == 0;
+            };
+            Matchers[(int)ComparisonType.Either] = (condition, value) =>
+            {
+                return condition.m_valueList.Contains(value);
+            };
+            Matchers[(int)ComparisonType.Neither] = (condition, value) =>
+            {
+                return !condition.m_valueList.Contains(value);
+            };
+        }
 
-		protected IComparable ToComparable(object value)
-		{
-			value = m_switch.ConvertToUnderlyingType(value);
-			if (!(value is IComparable))
-			{
-				throw new Exception(
-					string.Format("Could not parse given value '{0}' in Switch '{1}' since its Type '{2}' is not implementing IComparable",
-					value, m_switch, value.GetType()));
-			}
-			return (IComparable)value;
-		}
+        protected IComparable ToComparable(object value)
+        {
+            value = m_switch.ConvertToUnderlyingType(value);
+            if (!(value is IComparable))
+            {
+                throw new Exception(
+                    string.Format("Could not parse given value '{0}' in Switch '{1}' since its Type '{2}' is not implementing IComparable",
+                    value, m_switch, value.GetType()));
+            }
+            return (IComparable)value;
+        }
 
-		protected object m_value;
+        protected object m_value;
 
-		/// <summary>
-		/// Might be relevant for some switch-cases
-		/// </summary>
-		protected List<object> m_valueList;
+        /// <summary>
+        /// Might be relevant for some switch-cases
+        /// </summary>
+        protected List<object> m_valueList;
 
-		/// <summary>
-		/// This is mutual referencing (since Switches also hold a reference to Condition objects).
-		/// If you often create/destroy Conditions on a running system, add a cleanup method to unset this variable.
-		/// </summary>
-		protected SwitchPacketSegmentStructure m_switch;
+        /// <summary>
+        /// This is mutual referencing (since Switches also hold a reference to Condition objects).
+        /// If you often create/destroy Conditions on a running system, add a cleanup method to unset this variable.
+        /// </summary>
+        protected SwitchPacketSegmentStructure m_switch;
 
-		public SwitchCase() { }
+        public SwitchCase() { }
 
-		public SwitchCase(ComparisonType type, object value, params PacketSegmentStructure[] segments) :
-			this(value, segments)
-		{
-			m_comparer = Matchers[(int)type];
-		}
+        public SwitchCase(ComparisonType type, object value, params PacketSegmentStructure[] segments) :
+            this(value, segments)
+        {
+            m_comparer = Matchers[(int)type];
+        }
 
-		public SwitchCase(ComparisonType type, object value, List<PacketSegmentStructure> segments) :
-			this(value, segments)
-		{
-			m_comparer = Matchers[(int)type];
-		}
+        public SwitchCase(ComparisonType type, object value, List<PacketSegmentStructure> segments) :
+            this(value, segments)
+        {
+            m_comparer = Matchers[(int)type];
+        }
 
-		public SwitchCase(ComparisonType type, string strValue, params PacketSegmentStructure[] segments) :
-			this(strValue, segments)
-		{
-			m_comparer = Matchers[(int)type];
-		}
+        public SwitchCase(ComparisonType type, string strValue, params PacketSegmentStructure[] segments) :
+            this(strValue, segments)
+        {
+            m_comparer = Matchers[(int)type];
+        }
 
+        public SwitchCase(SwitchComparer comparer, object value, params PacketSegmentStructure[] segments) :
+            this(value, segments)
+        {
+            m_comparer = comparer;
+        }
 
-		public SwitchCase(SwitchComparer comparer, object value, params PacketSegmentStructure[] segments) :
-			this(value, segments)
-		{
-			m_comparer = comparer;
-		}
+        public SwitchCase(SwitchComparer comparer, object value, List<PacketSegmentStructure> segments) :
+            this(value, segments)
+        {
+            m_comparer = comparer;
+        }
 
-		public SwitchCase(SwitchComparer comparer, object value, List<PacketSegmentStructure> segments) :
-			this(value, segments)
-		{
-			m_comparer = comparer;
-		}
+        public SwitchCase(SwitchComparer comparer, string strValue, params PacketSegmentStructure[] segments) :
+            this(strValue, segments)
+        {
+            m_comparer = comparer;
+        }
 
-		public SwitchCase(SwitchComparer comparer, string strValue, params PacketSegmentStructure[] segments) :
-			this(strValue, segments)
-		{
-			m_comparer = comparer;
-		}
+        public SwitchCase(object value, params PacketSegmentStructure[] segments)
+        {
+            m_value = value;
+            SegmentList = segments.ToList();
+        }
 
+        public SwitchCase(object value, List<PacketSegmentStructure> segments)
+        {
+            m_value = value;
+            SegmentList = segments;
+        }
 
-		public SwitchCase(object value, params PacketSegmentStructure[] segments)
-		{
-			m_value = value;
-			SegmentList = segments.ToList();
-		}
+        public SwitchCase(string strValue, params PacketSegmentStructure[] segments)
+        {
+            StringValue = strValue;
+            SegmentList = segments.ToList();
+        }
 
-		public SwitchCase(object value, List<PacketSegmentStructure> segments)
-		{
-			m_value = value;
-			SegmentList = segments;
-		}
+        SwitchComparer m_comparer;
 
-		public SwitchCase(string strValue, params PacketSegmentStructure[] segments)
-		{
-			StringValue = strValue;
-			SegmentList = segments.ToList();
-		}
+        [XmlAttribute("Equals")]
+        public string EqualValue
+        {
+            get { return StringValue; }
+            set
+            {
+                m_comparer = Matchers[(int)ComparisonType.Equal];
+                StringValue = value;
+            }
+        }
 
-		SwitchComparer m_comparer;
+        [XmlAttribute("NotEqual")]
+        public string NotEqualValue
+        {
+            get { return StringValue; }
+            set
+            {
+                m_comparer = Matchers[(int)ComparisonType.NotEqual];
+                StringValue = value;
+            }
+        }
 
-		[XmlAttribute("Equals")]
-		public string EqualValue
-		{
-			get { return StringValue; }
-			set
-			{
-				m_comparer = Matchers[(int)ComparisonType.Equal];
-				StringValue = value;
-			}
-		}
+        [XmlAttribute("GreaterThan")]
+        public string GreaterThanValue
+        {
+            get { return StringValue; }
+            set
+            {
+                m_comparer = Matchers[(int)ComparisonType.GreaterThan];
+                StringValue = value;
+            }
+        }
 
-		[XmlAttribute("NotEqual")]
-		public string NotEqualValue
-		{
-			get { return StringValue; }
-			set
-			{
-				m_comparer = Matchers[(int)ComparisonType.NotEqual];
-				StringValue = value;
-			}
-		}
+        [XmlAttribute("GreaterOrEqual")]
+        public string GreaterOrEqualValue
+        {
+            get { return StringValue; }
+            set
+            {
+                m_comparer = Matchers[(int)ComparisonType.GreaterOrEqual];
+                StringValue = value;
+            }
+        }
 
-		[XmlAttribute("GreaterThan")]
-		public string GreaterThanValue
-		{
-			get { return StringValue; }
-			set
-			{
-				m_comparer = Matchers[(int)ComparisonType.GreaterThan];
-				StringValue = value;
-			}
-		}
+        [XmlAttribute("LessThan")]
+        public string LessThanValue
+        {
+            get { return StringValue; }
+            set
+            {
+                m_comparer = Matchers[(int)ComparisonType.LessThan];
+                StringValue = value;
+            }
+        }
 
-		[XmlAttribute("GreaterOrEqual")]
-		public string GreaterOrEqualValue
-		{
-			get { return StringValue; }
-			set
-			{
-				m_comparer = Matchers[(int)ComparisonType.GreaterOrEqual];
-				StringValue = value;
-			}
-		}
+        [XmlAttribute("LessOrEqual")]
+        public string LessOrEqualValue
+        {
+            get { return StringValue; }
+            set
+            {
+                m_comparer = Matchers[(int)ComparisonType.LessOrEqual];
+                StringValue = value;
+            }
+        }
 
-		[XmlAttribute("LessThan")]
-		public string LessThanValue
-		{
-			get { return StringValue; }
-			set
-			{
-				m_comparer = Matchers[(int)ComparisonType.LessThan];
-				StringValue = value;
-			}
-		}
+        [XmlAttribute("And")]
+        public string AndValue
+        {
+            get { return StringValue; }
+            set
+            {
+                m_comparer = Matchers[(int)ComparisonType.And];
+                StringValue = value;
+            }
+        }
 
-		[XmlAttribute("LessOrEqual")]
-		public string LessOrEqualValue
-		{
-			get { return StringValue; }
-			set
-			{
-				m_comparer = Matchers[(int)ComparisonType.LessOrEqual];
-				StringValue = value;
-			}
-		}
+        [XmlAttribute("AndExclusive")]
+        public string AndExclusiveValue
+        {
+            get { return StringValue; }
+            set
+            {
+                m_comparer = Matchers[(int)ComparisonType.AndExclusive];
+                StringValue = value;
+            }
+        }
 
-		[XmlAttribute("And")]
-		public string AndValue
-		{
-			get { return StringValue; }
-			set
-			{
-				m_comparer = Matchers[(int)ComparisonType.And];
-				StringValue = value;
-			}
-		}
+        [XmlAttribute("AndNot")]
+        public string AndNotValue
+        {
+            get { return StringValue; }
+            set
+            {
+                m_comparer = Matchers[(int)ComparisonType.AndNot];
+                StringValue = value;
+            }
+        }
 
-		[XmlAttribute("AndExclusive")]
-		public string AndExclusiveValue
-		{
-			get { return StringValue; }
-			set
-			{
-				m_comparer = Matchers[(int)ComparisonType.AndExclusive];
-				StringValue = value;
-			}
-		}
+        [XmlAttribute("Either")]
+        public string EitherValue
+        {
+            get { return StringValue; }
+            set
+            {
+                m_comparer = Matchers[(int)ComparisonType.Either];
+                StringValue = value;
+            }
+        }
 
-		[XmlAttribute("AndNot")]
-		public string AndNotValue
-		{
-			get { return StringValue; }
-			set
-			{
-				m_comparer = Matchers[(int)ComparisonType.AndNot];
-				StringValue = value;
-			}
-		}
+        [XmlAttribute("Neither")]
+        public string NeitherValue
+        {
+            get { return StringValue; }
+            set
+            {
+                m_comparer = Matchers[(int)ComparisonType.Neither];
+                StringValue = value;
+            }
+        }
 
-		[XmlAttribute("Either")]
-		public string EitherValue
-		{
-			get { return StringValue; }
-			set
-			{
-				m_comparer = Matchers[(int)ComparisonType.Either];
-				StringValue = value;
-			}
-		}
+        [XmlIgnore]
+        public virtual string StringValue
+        {
+            get;
+            set;
+        }
 
-		[XmlAttribute("Neither")]
-		public string NeitherValue
-		{
-			get { return StringValue; }
-			set
-			{
-				m_comparer = Matchers[(int)ComparisonType.Neither];
-				StringValue = value;
-			}
-		}
+        /// <summary>
+        /// The first (and maybe only) supplied value
+        /// </summary>
+        [XmlIgnore]
+        public object Value
+        {
+            get
+            {
+                return m_value;
+            }
+        }
 
-		[XmlIgnore]
-		public virtual string StringValue
-		{
-			get;
-			set;
-		}
+        /// <summary>
+        /// All values as a list
+        /// </summary>
+        [XmlIgnore]
+        public List<object> ValueList
+        {
+            get { return m_valueList; }
+        }
 
-		/// <summary>
-		/// The first (and maybe only) supplied value
-		/// </summary>
-		[XmlIgnore]
-		public object Value
-		{
-			get
-			{
-				return m_value;
-			}
-		}
+        [XmlIgnore]
+        public PacketSegmentStructure Structure
+        {
+            get;
+            set;
+        }
 
-		/// <summary>
-		/// All values as a list
-		/// </summary>
-		[XmlIgnore]
-		public List<object> ValueList
-		{
-			get { return m_valueList; }
-		}
+        [XmlElement("StaticList", typeof(StaticListPacketSegmentStructure))]
+        [XmlElement("List", typeof(ListPacketSegmentStructure))]
+        [XmlElement("FinalList", typeof(FinalListPacketSegmentStructure))]
+        [XmlElement("Complex", typeof(ComplexPacketSegmentStructure))]
+        [XmlElement("Switch", typeof(SwitchPacketSegmentStructure))]
+        [XmlElement("Simple", typeof(PacketSegmentStructure))]
+        public List<PacketSegmentStructure> SegmentList
+        {
+            get;
+            set;
+        }
 
-		[XmlIgnore]
-		public PacketSegmentStructure Structure
-		{
-			get;
-			set;
-		}
+        public virtual void Init(SwitchPacketSegmentStructure swtch, PacketDefinition def)
+        {
+            m_switch = swtch;
 
-		[XmlElement("StaticList", typeof(StaticListPacketSegmentStructure))]
-		[XmlElement("List", typeof(ListPacketSegmentStructure))]
-		[XmlElement("FinalList", typeof(FinalListPacketSegmentStructure))]
-		[XmlElement("Complex", typeof(ComplexPacketSegmentStructure))]
-		[XmlElement("Switch", typeof(SwitchPacketSegmentStructure))]
-		[XmlElement("Simple", typeof(PacketSegmentStructure))]
-		public List<PacketSegmentStructure> SegmentList
-		{
-			get;
-			set;
-		}
+            if (StringValue != null)
+            {
+                var values = StringValue.Split(',');
+                if (values.Length > 0)
+                {
+                    m_value = ParseValue(values[0]);
+                    m_valueList = new List<object>();
+                    foreach (var val in values)
+                    {
+                        m_valueList.Add(ParseValue(val));
+                    }
+                }
+            }
 
-		public virtual void Init(SwitchPacketSegmentStructure swtch, PacketDefinition def)
-		{
-			m_switch = swtch;
+            if (m_value == null)
+            {
+                throw new Exception("No value given in Switch " + m_switch + " Case for " + def + "");
+            }
 
-			if (StringValue != null)
-			{
-				var values = StringValue.Split(',');
-				if (values.Length > 0)
-				{
-					m_value = ParseValue(values[0]);
-					m_valueList = new List<object>();
-					foreach (var val in values)
-					{
-						m_valueList.Add(ParseValue(val));
-					}
-				}
-			}
+            if (SegmentList.Count > 1 || SegmentList.Count == 0)
+            {
+                Structure = new ComplexPacketSegmentStructure(SegmentList);
+            }
+            else
+            {
+                Structure = SegmentList[0];
+            }
 
-			if (m_value == null)
-			{
-				throw new Exception("No value given in Switch " + m_switch + " Case for " + def + "");
-			}
+            foreach (var segment in SegmentList)
+            {
+                segment.Init(def);
+            }
+        }
 
-			if (SegmentList.Count > 1 || SegmentList.Count == 0)
-			{
-				Structure = new ComplexPacketSegmentStructure(SegmentList);
-			}
-			else
-			{
-				Structure = SegmentList[0];
-			}
+        private object ParseValue(string input)
+        {
+            input = input.Trim();
+            var refSegment = m_switch.ReferenceSegment;
+            object value;
+            if (refSegment.SegmentType != null)
+            {
+                value = ConvertType(refSegment.Type.GetActualType(), refSegment.SegmentType, input);
+            }
+            else
+            {
+                value = SimpleTypes.ReadString(refSegment.Type, input);
+            }
+            return value;
+        }
 
-			foreach (var segment in SegmentList)
-			{
-				segment.Init(def);
-			}
-		}
+        private object ConvertType(Type origType, Type segmentType, string input)
+        {
+            long val = 0;
+            object error = null;
+            if (!StringParser.Eval(segmentType, ref val, input, ref error, false))
+            {
+                throw new Exception(string.Format("Could not parse conditional Value {0}: {1}",
+                    input, error));
+            }
 
-		object ParseValue(string input)
-		{
-			input = input.Trim();
-			var refSegment = m_switch.ReferenceSegment;
-			object value;
-			if (refSegment.SegmentType != null)
-			{
-				value = ConvertType(refSegment.Type.GetActualType(), refSegment.SegmentType, input);
-			}
-			else
-			{
-				value = SimpleTypes.ReadString(refSegment.Type, input);
-			}
-			return value;
-		}
+            // now this looks like ridiculous type conversion, but i couldn't seem to find any other way:
+            try
+            {
+                var value = Convert.ChangeType(val, origType);
+                Type type;
+                if (segmentType.IsEnum)
+                {
+                    type = Enum.GetUnderlyingType(segmentType);
+                }
+                else
+                {
+                    type = segmentType;
+                }
+                value = Utility.ChangeType(value, type, true);
+                return value;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(string.Format("Could not parse conditional Value {0}: {1}",
+                    input, e.Message), e);
+            }
+        }
 
-		private object ConvertType(Type origType, Type segmentType, string input)
-		{
-			long val = 0;
-			object error = null;
-			if (!StringParser.Eval(segmentType, ref val, input, ref error, false))
-			{
-				throw new Exception(string.Format("Could not parse conditional Value {0}: {1}",
-					input, error));
-			}
+        public bool Matches(object value)
+        {
+            if (value == null)
+            {
+                throw new Exception("Unexpected value: null");
+            }
 
-			// now this looks like ridiculous type conversion, but i couldn't seem to find any other way:
-			try
-			{
-				var value = Convert.ChangeType(val, origType);
-				Type type;
-				if (segmentType.IsEnum)
-				{
-					type = Enum.GetUnderlyingType(segmentType);
-				}
-				else
-				{
-					type = segmentType;
-				}
-				value = Utility.ChangeType(value, type, true);
-				return value;
-			}
-			catch (Exception e)
-			{
-				throw new Exception(string.Format("Could not parse conditional Value {0}: {1}",
-					input, e.Message), e);
-			}
-		}
+            //var matcher = Matchers[(int)Comparison];
+            //if (matcher == null)
+            //{
+            //    throw new Exception("Invalid Comparison Type \"" + Comparison + "\" in Switch: " + m_switch.Name);
+            //}
 
-		public bool Matches(object value)
-		{
-			if (value == null)
-			{
-				throw new Exception("Unexpected value: null");
-			}
+            try
+            {
+                if (m_value.GetType() != value.GetType())
+                {
+                    var type = m_value.GetType();
+                    if (type.IsEnum)
+                    {
+                        type = Enum.GetUnderlyingType(type);
+                    }
+                    value = Convert.ChangeType(value, type);
+                }
+                return DoMatch(value);
+                //return matcher(this, value);
+            }
+            catch (Exception e)
+            {
+                throw new Exception(string.Format("Switch {0} could not match its value '{1}' against parsed value: {2}", m_switch, m_value, value), e);
+            }
+        }
 
-			//var matcher = Matchers[(int)Comparison];
-			//if (matcher == null)
-			//{
-			//    throw new Exception("Invalid Comparison Type \"" + Comparison + "\" in Switch: " + m_switch.Name);
-			//}
+        protected bool DoMatch(object value)
+        {
+            return m_comparer(this, value);
+        }
 
-			try
-			{
-				if (m_value.GetType() != value.GetType())
-				{
-					var type = m_value.GetType();
-					if (type.IsEnum)
-					{
-						type = Enum.GetUnderlyingType(type);
-					}
-					value = Convert.ChangeType(value, type);
-				}
-				return DoMatch(value);
-				//return matcher(this, value);
-			}
-			catch (Exception e)
-			{
-				throw new Exception(string.Format("Switch {0} could not match its value '{1}' against parsed value: {2}", m_switch, m_value, value), e);
-			}
-		}
+        public override string ToString()
+        {
+            return string.Format("{0}", StringValue);
+        }
+    }
 
-		protected bool DoMatch(object value)
-		{
-			return m_comparer(this, value);
-		}
+    #region Deprecated
 
-		public override string ToString()
-		{
-			return string.Format("{0}", StringValue);
-		}
-	}
-
-	#region Deprecated
-	/*
-	 * 
+    /*
+	 *
 
 	public class EqualCase : SwitchCase
 	{
@@ -785,5 +784,6 @@ namespace WCell.PacketAnalysis
 		}
 	}
 	 * */
-	#endregion
+
+    #endregion Deprecated
 }

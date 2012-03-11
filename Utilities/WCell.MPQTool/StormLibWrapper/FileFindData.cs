@@ -8,12 +8,14 @@ namespace WCell.MPQTool.StormLibWrapper
         /// <summary>
         /// Name of the found file
         /// </summary>
-        [MarshalAsAttribute(UnmanagedType.ByValTStr, SizeConst = NativeMethods.MAX_PATH)] public string FilePath;
+        [MarshalAsAttribute(UnmanagedType.ByValTStr, SizeConst = NativeMethods.MAX_PATH)]
+        public string FilePath;
 
         /// <summary>
         /// Plain name of the found file
         /// </summary>
-        [MarshalAs(UnmanagedType.LPStr)] public string PlainName;
+        [MarshalAs(UnmanagedType.LPStr)]
+        public string PlainName;
 
         /// <summary>
         /// Hash table index for the file

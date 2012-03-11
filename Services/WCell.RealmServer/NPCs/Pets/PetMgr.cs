@@ -16,409 +16,416 @@ using WCell.Util.Variables;
 
 namespace WCell.RealmServer.NPCs.Pets
 {
-	public static class PetMgr
-	{
-		private static readonly Logger log = LogManager.GetCurrentClassLogger();
+    public static class PetMgr
+    {
+        private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-		public const int MaxTotemSlots = 4;
+        public const int MaxTotemSlots = 4;
 
-		#region Variables & Settings & Global fields
+        #region Variables & Settings & Global fields
 
-		/// <summary>
-		/// Whether players are allowed to rename pets infinitely many times
-		/// </summary>
-		public static bool InfinitePetRenames = false;
-		public static int MinPetNameLength = 3;
-		public static int MaxPetNameLength = 12;
-		public static int MaxFeedPetHappinessGain = 33000;
+        /// <summary>
+        /// Whether players are allowed to rename pets infinitely many times
+        /// </summary>
+        public static bool InfinitePetRenames = false;
+        public static int MinPetNameLength = 3;
+        public static int MaxPetNameLength = 12;
+        public static int MaxFeedPetHappinessGain = 33000;
 
-		/// <summary>
-		/// Need at least level 20 for a pet to have talents
-		/// </summary>
-		public static int MinPetTalentLevel = 20;
+        /// <summary>
+        /// Need at least level 20 for a pet to have talents
+        /// </summary>
+        public static int MinPetTalentLevel = 20;
 
-		/// <summary>
-		/// Hunter pets must not have less than ownerlevel - MaxMinionLevelDifference.
-		/// They gain levels if they have less.
-		/// </summary>
-		public static readonly int MaxHunterPetLevelDifference = 5;
+        /// <summary>
+        /// Hunter pets must not have less than ownerlevel - MaxMinionLevelDifference.
+        /// They gain levels if they have less.
+        /// </summary>
+        public static readonly int MaxHunterPetLevelDifference = 5;
 
-		/// <summary>
-		/// Percentage of character exp that pets need to level.
-		/// </summary>
-		public static readonly int PetExperienceOfOwnerPercent = 5;
+        /// <summary>
+        /// Percentage of character exp that pets need to level.
+        /// </summary>
+        public static readonly int PetExperienceOfOwnerPercent = 5;
 
-		/// <summary>
-		/// Percentage of character Stamina that gets added to the Pet's Stamina.
-		/// </summary>
-		public static readonly int PetStaminaOfOwnerPercent = 45;
+        /// <summary>
+        /// Percentage of character Stamina that gets added to the Pet's Stamina.
+        /// </summary>
+        public static readonly int PetStaminaOfOwnerPercent = 45;
 
-		/// <summary>
-		/// Percentage of character Armor that gets added to the Pet's Armor.
-		/// </summary>
-		public static readonly int PetArmorOfOwnerPercent = 35;
+        /// <summary>
+        /// Percentage of character Armor that gets added to the Pet's Armor.
+        /// </summary>
+        public static readonly int PetArmorOfOwnerPercent = 35;
 
-		/// <summary>
-		/// Percentage of character RangedAttackPower that gets added to the Pet's MeleeAttackPower.
-		/// </summary>
-		public static readonly int PetAPOfOwnerPercent = 22;
+        /// <summary>
+        /// Percentage of character RangedAttackPower that gets added to the Pet's MeleeAttackPower.
+        /// </summary>
+        public static readonly int PetAPOfOwnerPercent = 22;
 
-		/// <summary>
-		/// Percentage of character Resistances that get added to the Pet's Resistances.
-		/// </summary>
-		public static readonly int PetResistanceOfOwnerPercent = 40;
+        /// <summary>
+        /// Percentage of character Resistances that get added to the Pet's Resistances.
+        /// </summary>
+        public static readonly int PetResistanceOfOwnerPercent = 40;
 
-		/// <summary>
-		/// Percentage of character Spell Damage that gets added to the Pet's Resistances.
-		/// </summary>
-		public static readonly int PetSpellDamageOfOwnerPercent = 13;
+        /// <summary>
+        /// Percentage of character Spell Damage that gets added to the Pet's Resistances.
+        /// </summary>
+        public static readonly int PetSpellDamageOfOwnerPercent = 13;
 
-		internal static readonly NHIdGenerator PetNumberGenerator = new NHIdGenerator(typeof(PermanentPetRecord), "m_PetNumber");
+        internal static readonly NHIdGenerator PetNumberGenerator = new NHIdGenerator(typeof(PermanentPetRecord), "m_PetNumber");
 
+        [NotVariable]
+        public static int MaxStableSlots;
 
-		[NotVariable]
-		public static int MaxStableSlots;
+        [NotVariable]
+        public static uint[] StableSlotPrices;
 
-		[NotVariable]
-		public static uint[] StableSlotPrices;
-		#endregion
+        #endregion Variables & Settings & Global fields
 
-		#region Init
-		[Initialization(InitializationPass.Sixth)]
-		public static void Init()
-		{
-			InitMisc();
-		}
+        #region Init
 
-		[Initialization]
-		[DependentInitialization(typeof(NPCMgr))]
-		public static void InitEntries()
-		{
-			ContentMgr.Load<PetLevelStatInfo>();
-		}
+        [Initialization(InitializationPass.Sixth)]
+        public static void Init()
+        {
+            InitMisc();
+        }
 
-		private static void InitMisc()
-		{
-			// Read in the prices for Stable Slots from the dbc
-			var stableSlotPriceReader =
-				new ListDBCReader<uint, DBCStableSlotPriceConverter>(
-					RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_STABLESLOTPRICES));
-			StableSlotPrices = stableSlotPriceReader.EntryList.ToArray();
-			MaxStableSlots = StableSlotPrices.Length;
-		}
+        [Initialization]
+        [DependentInitialization(typeof(NPCMgr))]
+        public static void InitEntries()
+        {
+            ContentMgr.Load<PetLevelStatInfo>();
+        }
 
-		#endregion
+        private static void InitMisc()
+        {
+            // Read in the prices for Stable Slots from the dbc
+            var stableSlotPriceReader =
+                new ListDBCReader<uint, DBCStableSlotPriceConverter>(
+                    RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_STABLESLOTPRICES));
+            StableSlotPrices = stableSlotPriceReader.EntryList.ToArray();
+            MaxStableSlots = StableSlotPrices.Length;
+        }
 
-		#region Naming
-		public static PetNameInvalidReason ValidatePetName(ref string petName)
-		{
-			if (petName.Length == 0)
-			{
-				return PetNameInvalidReason.NoName;
-			}
+        #endregion Init
 
-			if (petName.Length < MinPetNameLength)
-			{
-				return PetNameInvalidReason.TooShort;
-			}
+        #region Naming
 
-			if (petName.Length > MaxPetNameLength)
-			{
-				return PetNameInvalidReason.TooLong;
-			}
+        public static PetNameInvalidReason ValidatePetName(ref string petName)
+        {
+            if (petName.Length == 0)
+            {
+                return PetNameInvalidReason.NoName;
+            }
 
-			if (DoesNameViolate(petName))
-			{
-				return PetNameInvalidReason.Profane;
-			}
+            if (petName.Length < MinPetNameLength)
+            {
+                return PetNameInvalidReason.TooShort;
+            }
 
-			var spacesCount = 0;
-			var apostrophesCount = 0;
-			var capitalsCount = 0;
-			var digitsCount = 0;
-			var invalidcharsCount = 0;
-			var consecutiveCharsCount = 0;
-			var lastLetter = '1';
-			var letterBeforeLast = '0';
+            if (petName.Length > MaxPetNameLength)
+            {
+                return PetNameInvalidReason.TooLong;
+            }
 
-			// go through character name and check for chars
-			for (var i = 0; i < petName.Length; i++)
-			{
-				var currentChar = petName[i];
-				if (!Char.IsLetter(currentChar))
-				{
-					switch (currentChar)
-					{
-						case '\'':
-							apostrophesCount++;
-							break;
-						case ' ':
-							spacesCount++;
-							break;
-						default:
-							if (Char.IsDigit(currentChar))
-							{
-								digitsCount++;
-							}
-							else
-							{
-								invalidcharsCount++;
-							}
-							break;
-					}
-				}
-				else
-				{
-					if (currentChar == lastLetter && currentChar == letterBeforeLast)
-					{
-						consecutiveCharsCount++;
-					}
-					letterBeforeLast = lastLetter;
-					lastLetter = currentChar;
-				}
+            if (DoesNameViolate(petName))
+            {
+                return PetNameInvalidReason.Profane;
+            }
 
-				if (Char.IsUpper(currentChar))
-				{
-					capitalsCount++;
-				}
-			}
+            var spacesCount = 0;
+            var apostrophesCount = 0;
+            var capitalsCount = 0;
+            var digitsCount = 0;
+            var invalidcharsCount = 0;
+            var consecutiveCharsCount = 0;
+            var lastLetter = '1';
+            var letterBeforeLast = '0';
 
-			if (consecutiveCharsCount > 0)
-			{
-				return PetNameInvalidReason.ThreeConsecutive;
-			}
+            // go through character name and check for chars
+            for (var i = 0; i < petName.Length; i++)
+            {
+                var currentChar = petName[i];
+                if (!Char.IsLetter(currentChar))
+                {
+                    switch (currentChar)
+                    {
+                        case '\'':
+                            apostrophesCount++;
+                            break;
+                        case ' ':
+                            spacesCount++;
+                            break;
+                        default:
+                            if (Char.IsDigit(currentChar))
+                            {
+                                digitsCount++;
+                            }
+                            else
+                            {
+                                invalidcharsCount++;
+                            }
+                            break;
+                    }
+                }
+                else
+                {
+                    if (currentChar == lastLetter && currentChar == letterBeforeLast)
+                    {
+                        consecutiveCharsCount++;
+                    }
+                    letterBeforeLast = lastLetter;
+                    lastLetter = currentChar;
+                }
 
-			if (spacesCount > 0)
-			{
-				return PetNameInvalidReason.ConsecutiveSpaces;
-			}
+                if (Char.IsUpper(currentChar))
+                {
+                    capitalsCount++;
+                }
+            }
 
-			if (digitsCount > 0 || invalidcharsCount > 0)
-			{
-				return PetNameInvalidReason.Invalid;
-			}
+            if (consecutiveCharsCount > 0)
+            {
+                return PetNameInvalidReason.ThreeConsecutive;
+            }
 
-			if (apostrophesCount > 1)
-			{
-				return PetNameInvalidReason.Invalid;
-			}
+            if (spacesCount > 0)
+            {
+                return PetNameInvalidReason.ConsecutiveSpaces;
+            }
 
-			// there is exactly one apostrophe
-			if (apostrophesCount == 1)
-			{
-				var index = petName.IndexOf("'");
-				if (index == 0 || index == petName.Length - 1)
-				{
-					// you cannot use an apostrophe as the first or last char of your name
-					return PetNameInvalidReason.Invalid;
-				}
-			}
-			// check for blizz like names flag
-			if (RealmServerConfiguration.CapitalizeCharacterNames)
-			{
-				// do not check anything, just modify the name
-				petName = petName.ToCapitalizedString();
-			}
+            if (digitsCount > 0 || invalidcharsCount > 0)
+            {
+                return PetNameInvalidReason.Invalid;
+            }
 
-			return PetNameInvalidReason.Ok;
-		}
+            if (apostrophesCount > 1)
+            {
+                return PetNameInvalidReason.Invalid;
+            }
 
-		private static bool DoesNameViolate(string petName)
-		{
-			petName = petName.ToLower();
+            // there is exactly one apostrophe
+            if (apostrophesCount == 1)
+            {
+                var index = petName.IndexOf("'");
+                if (index == 0 || index == petName.Length - 1)
+                {
+                    // you cannot use an apostrophe as the first or last char of your name
+                    return PetNameInvalidReason.Invalid;
+                }
+            }
+            // check for blizz like names flag
+            if (RealmServerConfiguration.CapitalizeCharacterNames)
+            {
+                // do not check anything, just modify the name
+                petName = petName.ToCapitalizedString();
+            }
 
-			return RealmServerConfiguration.BadWords.Where(word => petName.Contains(word)).Any();
-		}
-		#endregion
+            return PetNameInvalidReason.Ok;
+        }
 
-		#region Stables
-		public static uint GetStableSlotPrice(int slot)
-		{
-			if (slot > StableSlotPrices.Length)
-			{
-				return StableSlotPrices[StableSlotPrices.Length - 1];
-			}
-			return StableSlotPrices[slot];
-		}
+        private static bool DoesNameViolate(string petName)
+        {
+            petName = petName.ToLower();
 
-		public static void DeStablePet(Character chr, NPC stableMaster, uint petNumber)
-		{
-			if (!CheckForStableMasterCheats(chr, stableMaster))
-			{
-				return;
-			}
+            return RealmServerConfiguration.BadWords.Where(word => petName.Contains(word)).Any();
+        }
 
-			var pet = chr.GetStabledPet(petNumber);
-			chr.DeStablePet(pet);
-			PetHandler.SendStableResult(chr, StableResult.DeStableSuccess);
-		}
+        #endregion Naming
 
-		public static void StablePet(Character chr, NPC stableMaster)
-		{
-			if (!CheckForStableMasterCheats(chr, stableMaster))
-			{
-				return;
-			}
+        #region Stables
 
-			var pet = chr.ActivePet;
-			if (!chr.GodMode && pet.Health == 0)
-			{
-				PetHandler.SendStableResult(chr, StableResult.Fail);
-			}
+        public static uint GetStableSlotPrice(int slot)
+        {
+            if (slot > StableSlotPrices.Length)
+            {
+                return StableSlotPrices[StableSlotPrices.Length - 1];
+            }
+            return StableSlotPrices[slot];
+        }
 
-			if (chr.StabledPetRecords.Count < chr.StableSlotCount)
-			{
-				chr.StablePet();
-				PetHandler.SendStableResult(chr, StableResult.StableSuccess);
-			}
-			else
-			{
-				PetHandler.SendStableResult(chr, StableResult.Fail);
-			}
-		}
+        public static void DeStablePet(Character chr, NPC stableMaster, uint petNumber)
+        {
+            if (!CheckForStableMasterCheats(chr, stableMaster))
+            {
+                return;
+            }
 
-		public static void SwapStabledPet(Character chr, NPC stableMaster, uint petNumber)
-		{
-			if (!CheckForStableMasterCheats(chr, stableMaster))
-			{
-				return;
-			}
+            var pet = chr.GetStabledPet(petNumber);
+            chr.DeStablePet(pet);
+            PetHandler.SendStableResult(chr, StableResult.DeStableSuccess);
+        }
 
-			var activePet = chr.ActivePet;
-			var stabledPet = chr.GetStabledPet(petNumber);
-			if (activePet.Health == 0)
-			{
-				PetHandler.SendStableResult(chr, StableResult.Fail);
-				return;
-			}
+        public static void StablePet(Character chr, NPC stableMaster)
+        {
+            if (!CheckForStableMasterCheats(chr, stableMaster))
+            {
+                return;
+            }
 
-			if (!chr.TrySwapStabledPet(stabledPet))
-			{
-				PetHandler.SendStableResult(chr, StableResult.Fail);
-			}
-			else
-			{
-				PetHandler.SendStableResult(chr, StableResult.DeStableSuccess);
-			}
-		}
+            var pet = chr.ActivePet;
+            if (!chr.GodMode && pet.Health == 0)
+            {
+                PetHandler.SendStableResult(chr, StableResult.Fail);
+            }
 
-		public static void BuyStableSlot(Character chr, NPC stableMaster)
-		{
-			if (!CheckForStableMasterCheats(chr, stableMaster))
-			{
-				return;
-			}
+            if (chr.StabledPetRecords.Count < chr.StableSlotCount)
+            {
+                chr.StablePet();
+                PetHandler.SendStableResult(chr, StableResult.StableSuccess);
+            }
+            else
+            {
+                PetHandler.SendStableResult(chr, StableResult.Fail);
+            }
+        }
 
-			if (!chr.TryBuyStableSlot())
-			{
-				PetHandler.SendStableResult(chr.Client, StableResult.NotEnoughMoney);
-			}
-			else
-			{
-				PetHandler.SendStableResult(chr.Client, StableResult.BuySlotSuccess);
-			}
-		}
+        public static void SwapStabledPet(Character chr, NPC stableMaster, uint petNumber)
+        {
+            if (!CheckForStableMasterCheats(chr, stableMaster))
+            {
+                return;
+            }
 
-		public static void ListStabledPets(Character chr, NPC stableMaster)
-		{
-			if (!CheckForStableMasterCheats(chr, stableMaster))
-			{
-				return;
-			}
+            var activePet = chr.ActivePet;
+            var stabledPet = chr.GetStabledPet(petNumber);
+            if (activePet.Health == 0)
+            {
+                PetHandler.SendStableResult(chr, StableResult.Fail);
+                return;
+            }
 
-			PetHandler.SendStabledPetsList(chr, stableMaster, (byte)chr.StableSlotCount, chr.StabledPetRecords);
-		}
+            if (!chr.TrySwapStabledPet(stabledPet))
+            {
+                PetHandler.SendStableResult(chr, StableResult.Fail);
+            }
+            else
+            {
+                PetHandler.SendStableResult(chr, StableResult.DeStableSuccess);
+            }
+        }
 
-		/// <summary>
-		/// Checks StableMaster interactions for cheating.
-		/// </summary>
-		/// <param name="chr">The character doing the interacting.</param>
-		/// <param name="stableMaster">The StableMaster the character is interacting with.</param>
-		/// <returns>True if the interaction checks out.</returns>
-		private static bool CheckForStableMasterCheats(Character chr, NPC stableMaster)
-		{
-			if (chr == null)
-			{
-				return false;
-			}
+        public static void BuyStableSlot(Character chr, NPC stableMaster)
+        {
+            if (!CheckForStableMasterCheats(chr, stableMaster))
+            {
+                return;
+            }
 
-			if (chr.GodMode)
-			{
-				return true;
-			}
+            if (!chr.TryBuyStableSlot())
+            {
+                PetHandler.SendStableResult(chr.Client, StableResult.NotEnoughMoney);
+            }
+            else
+            {
+                PetHandler.SendStableResult(chr.Client, StableResult.BuySlotSuccess);
+            }
+        }
 
-			if (!chr.IsAlive)
-			{
-				return false;
-			}
+        public static void ListStabledPets(Character chr, NPC stableMaster)
+        {
+            if (!CheckForStableMasterCheats(chr, stableMaster))
+            {
+                return;
+            }
 
-			if (stableMaster == null || !stableMaster.IsStableMaster)
-			{
-				log.Warn("Character \"{0}\" requested retreival of stabled pet from invalid NPC: {1}", chr, stableMaster);
-				return false;
-			}
+            PetHandler.SendStabledPetsList(chr, stableMaster, (byte)chr.StableSlotCount, chr.StabledPetRecords);
+        }
 
-			if (!stableMaster.CheckVendorInteraction(chr))
-			{
-				return false;
-			}
+        /// <summary>
+        /// Checks StableMaster interactions for cheating.
+        /// </summary>
+        /// <param name="chr">The character doing the interacting.</param>
+        /// <param name="stableMaster">The StableMaster the character is interacting with.</param>
+        /// <returns>True if the interaction checks out.</returns>
+        private static bool CheckForStableMasterCheats(Character chr, NPC stableMaster)
+        {
+            if (chr == null)
+            {
+                return false;
+            }
 
-			chr.Auras.RemoveByFlag(AuraInterruptFlags.OnStartAttack);
+            if (chr.GodMode)
+            {
+                return true;
+            }
 
-			return true;
-		}
-		#endregion
+            if (!chr.IsAlive)
+            {
+                return false;
+            }
 
-		#region Talents
-		/// <summary>
-		/// Calculates the number of base Talent points a pet should have
-		///   based on its level.
-		/// </summary>
-		/// <param name="level">The pet's level.</param>
-		/// <returns>The number of pet talent points.</returns>
-		public static int GetPetTalentPointsByLevel(int level)
-		{
-			if (level > 19)
-			{
-				return (((level - 20) / 4) + 1);
-			}
-			return 0;
-		}
+            if (stableMaster == null || !stableMaster.IsStableMaster)
+            {
+                log.Warn("Character \"{0}\" requested retreival of stabled pet from invalid NPC: {1}", chr, stableMaster);
+                return false;
+            }
 
-		#endregion
+            if (!stableMaster.CheckVendorInteraction(chr))
+            {
+                return false;
+            }
 
-		#region Records
-		internal static PermanentPetRecord CreatePermanentPetRecord(NPCEntry entry, uint ownerId)
-		{
-			var record = CreateDefaultPetRecord<PermanentPetRecord>(entry, ownerId);
-			record.PetNumber = (uint)PetNumberGenerator.Next();
-			record.IsDirty = true;
-			return record;
-		}
+            chr.Auras.RemoveByFlag(AuraInterruptFlags.OnStartAttack);
 
-		internal static T CreateDefaultPetRecord<T>(NPCEntry entry, uint ownerId)
-			where T : IPetRecord, new()
-		{
-			var record = new T();
-			var mode = entry.Type == CreatureType.NonCombatPet ? PetAttackMode.Passive : PetAttackMode.Defensive;
+            return true;
+        }
 
-			record.OwnerId = ownerId;
-			record.AttackMode = mode;
-			record.Flags = PetFlags.None;
-			record.EntryId = entry.NPCId;
-			return record;
-		}
-		#endregion
-	} // end class
+        #endregion Stables
 
+        #region Talents
 
-	public class DBCStableSlotPriceConverter : AdvancedDBCRecordConverter<uint>
-	{
-		public override uint ConvertTo(byte[] rawData, ref int id)
-		{
-			uint currentIndex = 0;
-			id = rawData.GetInt32(currentIndex++); // col 0 - "Id"
-			return rawData.GetUInt32(currentIndex); // col 1 - "Cost in Copper"
-		}
-	} // end class
+        /// <summary>
+        /// Calculates the number of base Talent points a pet should have
+        ///   based on its level.
+        /// </summary>
+        /// <param name="level">The pet's level.</param>
+        /// <returns>The number of pet talent points.</returns>
+        public static int GetPetTalentPointsByLevel(int level)
+        {
+            if (level > 19)
+            {
+                return (((level - 20) / 4) + 1);
+            }
+            return 0;
+        }
+
+        #endregion Talents
+
+        #region Records
+
+        internal static PermanentPetRecord CreatePermanentPetRecord(NPCEntry entry, uint ownerId)
+        {
+            var record = CreateDefaultPetRecord<PermanentPetRecord>(entry, ownerId);
+            record.PetNumber = (uint)PetNumberGenerator.Next();
+            record.IsDirty = true;
+            return record;
+        }
+
+        internal static T CreateDefaultPetRecord<T>(NPCEntry entry, uint ownerId)
+            where T : IPetRecord, new()
+        {
+            var record = new T();
+            var mode = entry.Type == CreatureType.NonCombatPet ? PetAttackMode.Passive : PetAttackMode.Defensive;
+
+            record.OwnerId = ownerId;
+            record.AttackMode = mode;
+            record.Flags = PetFlags.None;
+            record.EntryId = entry.NPCId;
+            return record;
+        }
+
+        #endregion Records
+    } // end class
+
+    public class DBCStableSlotPriceConverter : AdvancedDBCRecordConverter<uint>
+    {
+        public override uint ConvertTo(byte[] rawData, ref int id)
+        {
+            uint currentIndex = 0;
+            id = rawData.GetInt32(currentIndex++); // col 0 - "Id"
+            return rawData.GetUInt32(currentIndex); // col 1 - "Cost in Copper"
+        }
+    } // end class
 } // end namespace 

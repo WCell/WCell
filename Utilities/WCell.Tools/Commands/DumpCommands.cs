@@ -98,53 +98,53 @@ namespace WCell.Tools.Commands
                 ItemOutput.WriteAllItemInfo();
                 trigger.Reply("Dumped Items to: " + ItemOutput.DefaultDumpFile);
             }
-		}
+        }
 
-		public class DumpQuestsCommand : SubCommand
-		{
-			protected override void Initialize()
-			{
-				Init("Quests");
-				EnglishDescription = "Dumps all Quests";
-			}
+        public class DumpQuestsCommand : SubCommand
+        {
+            protected override void Initialize()
+            {
+                Init("Quests");
+                EnglishDescription = "Dumps all Quests";
+            }
 
-			public override void Process(CmdTrigger<ToolCmdArgs> trigger)
-			{
-				Dump(trigger);
-			}
+            public override void Process(CmdTrigger<ToolCmdArgs> trigger)
+            {
+                Dump(trigger);
+            }
 
-			public static void Dump(CmdTrigger<ToolCmdArgs> trigger)
-			{
-				trigger.Reply("Dumping Quests...");
-				QuestOutput.WriteAllQuests();
-				trigger.Reply("Dumped Quests to: " + QuestOutput.DumpFile);
-			}
-		}
+            public static void Dump(CmdTrigger<ToolCmdArgs> trigger)
+            {
+                trigger.Reply("Dumping Quests...");
+                QuestOutput.WriteAllQuests();
+                trigger.Reply("Dumped Quests to: " + QuestOutput.DumpFile);
+            }
+        }
 
-		public class DumpATsCommand : SubCommand
-		{
-			protected override void Initialize()
-			{
-				Init("ATs");
-				EnglishDescription = "Dumps all AreaTriggers";
-			}
+        public class DumpATsCommand : SubCommand
+        {
+            protected override void Initialize()
+            {
+                Init("ATs");
+                EnglishDescription = "Dumps all AreaTriggers";
+            }
 
-			public override void Process(CmdTrigger<ToolCmdArgs> trigger)
-			{
-				Dump(trigger);
-			}
+            public override void Process(CmdTrigger<ToolCmdArgs> trigger)
+            {
+                Dump(trigger);
+            }
 
-			public static void Dump(CmdTrigger<ToolCmdArgs> trigger)
-			{
-				trigger.Reply("Dumping AreaTriggers...");
-				ATOutput.DumpToFile();
-				trigger.Reply("Dumped AreaTriggers to: " + ATOutput.DumpFile);
-			}
-		}
+            public static void Dump(CmdTrigger<ToolCmdArgs> trigger)
+            {
+                trigger.Reply("Dumping AreaTriggers...");
+                ATOutput.DumpToFile();
+                trigger.Reply("Dumped AreaTriggers to: " + ATOutput.DumpFile);
+            }
+        }
 
         public static void EnsureTypesMapped()
         {
-            if(!TypesMapped)
+            if (!TypesMapped)
             {
                 Utility.AddTypesToTypeMap(typeof(WCellInfo).Assembly);
                 TypesMapped = true;
@@ -169,9 +169,9 @@ namespace WCell.Tools.Commands
                 DumpSpellsCommand.Dump(trigger);
                 DumpNPCsCommand.Dump(trigger);
                 DumpGOsCommand.Dump(trigger);
-				DumpItemsCommand.Dump(trigger);
-				DumpQuestsCommand.Dump(trigger);
-				DumpATsCommand.Dump(trigger);
+                DumpItemsCommand.Dump(trigger);
+                DumpQuestsCommand.Dump(trigger);
+                DumpATsCommand.Dump(trigger);
             }
         }
     }

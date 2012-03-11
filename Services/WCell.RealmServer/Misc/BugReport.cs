@@ -26,8 +26,9 @@ namespace WCell.RealmServer.Misc
 
             return report;
         }
-        #endregion
-        
+
+        #endregion Static Members
+
         [PrimaryKey(PrimaryKeyType.Assigned, "Id")]
         private int _id
         {

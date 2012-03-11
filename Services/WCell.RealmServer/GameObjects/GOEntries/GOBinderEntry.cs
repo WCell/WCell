@@ -2,6 +2,6 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 {
     public class GOBinderEntry : GOEntry
     {
-		// This GOType is apparently unused.
+        // This GOType is apparently unused.
     }
 }

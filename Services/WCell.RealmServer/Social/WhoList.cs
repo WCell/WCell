@@ -20,7 +20,7 @@ namespace WCell.RealmServer.Interaction
 {
     public static class WhoList
     {
-		[Variable("MaxWhoListResultCount")]
+        [Variable("MaxWhoListResultCount")]
         /// <summary>
         /// Max ammount of character matches returned when searching in the who list.
         /// </summary>

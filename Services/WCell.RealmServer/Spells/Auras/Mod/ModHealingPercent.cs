@@ -9,20 +9,20 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
     {
         protected override void Apply()
         {
-        	var owner = Owner as Character;
-			if (owner != null)
-			{
-				owner.HealingTakenModPct += EffectValue;
-			}
+            var owner = Owner as Character;
+            if (owner != null)
+            {
+                owner.HealingTakenModPct += EffectValue;
+            }
         }
 
         protected override void Remove(bool cancelled)
-		{
-			var owner = Owner as Character;
-			if (owner != null)
-			{
-				owner.HealingTakenModPct -= EffectValue;
-			}
+        {
+            var owner = Owner as Character;
+            if (owner != null)
+            {
+                owner.HealingTakenModPct -= EffectValue;
+            }
         }
     }
 };

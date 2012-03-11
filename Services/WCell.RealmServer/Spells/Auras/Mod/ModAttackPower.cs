@@ -16,87 +16,91 @@
 
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
-	#region Melee
-	public class ModMeleeAttackPowerHandler : AuraEffectHandler
-	{
-		protected override void Apply()
-		{
-			if (EffectValue > 0)
-			{
-				m_aura.Auras.Owner.MeleeAttackPowerModsPos += EffectValue;
-			}
-			else
-			{
-				m_aura.Auras.Owner.MeleeAttackPowerModsNeg += EffectValue;
-			}
-		}
+    #region Melee
 
-		protected override void Remove(bool cancelled)
-		{
-			if (EffectValue > 0)
-			{
-				m_aura.Auras.Owner.MeleeAttackPowerModsPos -= EffectValue;
-			}
-			else
-			{
-				m_aura.Auras.Owner.MeleeAttackPowerModsNeg -= EffectValue;
-			}
-		}
-	}
+    public class ModMeleeAttackPowerHandler : AuraEffectHandler
+    {
+        protected override void Apply()
+        {
+            if (EffectValue > 0)
+            {
+                m_aura.Auras.Owner.MeleeAttackPowerModsPos += EffectValue;
+            }
+            else
+            {
+                m_aura.Auras.Owner.MeleeAttackPowerModsNeg += EffectValue;
+            }
+        }
 
-	public class ModMeleeAttackPowerPercentHandler : AuraEffectHandler
-	{
-		protected override void Apply()
-		{
-			m_aura.Auras.Owner.MeleeAttackPowerMultiplier += EffectValue / 100f;
-		}
+        protected override void Remove(bool cancelled)
+        {
+            if (EffectValue > 0)
+            {
+                m_aura.Auras.Owner.MeleeAttackPowerModsPos -= EffectValue;
+            }
+            else
+            {
+                m_aura.Auras.Owner.MeleeAttackPowerModsNeg -= EffectValue;
+            }
+        }
+    }
 
-		protected override void Remove(bool cancelled)
-		{
-			m_aura.Auras.Owner.MeleeAttackPowerMultiplier -= EffectValue / 100f;
-		}
-	}
-	#endregion
+    public class ModMeleeAttackPowerPercentHandler : AuraEffectHandler
+    {
+        protected override void Apply()
+        {
+            m_aura.Auras.Owner.MeleeAttackPowerMultiplier += EffectValue / 100f;
+        }
 
-	#region Ranged
-	public class ModRangedAttackPowerHandler : AuraEffectHandler
-	{
-		protected override void Apply()
-		{
-			if (EffectValue > 0)
-			{
-				m_aura.Auras.Owner.RangedAttackPowerModsPos += EffectValue;
-			}
-			else
-			{
-				m_aura.Auras.Owner.RangedAttackPowerModsNeg += EffectValue;
-			}
-		}
+        protected override void Remove(bool cancelled)
+        {
+            m_aura.Auras.Owner.MeleeAttackPowerMultiplier -= EffectValue / 100f;
+        }
+    }
 
-		protected override void Remove(bool cancelled)
-		{
-			if (EffectValue > 0)
-			{
-				m_aura.Auras.Owner.RangedAttackPowerModsPos -= EffectValue;
-			}
-			else
-			{
-				m_aura.Auras.Owner.RangedAttackPowerModsNeg -= EffectValue;
-			}
-		}
-	}
+    #endregion Melee
 
-	public class ModRangedAttackPowerPercentHandler : AuraEffectHandler
-	{
-		protected override void Apply()
-		{
-			m_aura.Auras.Owner.RangedAttackPowerMultiplier += EffectValue / 100f;
-		}
+    #region Ranged
 
-		protected override void Remove(bool cancelled)
-		{
-			m_aura.Auras.Owner.RangedAttackPowerMultiplier -= EffectValue / 100f;
-		}
-	}
-	#endregion
+    public class ModRangedAttackPowerHandler : AuraEffectHandler
+    {
+        protected override void Apply()
+        {
+            if (EffectValue > 0)
+            {
+                m_aura.Auras.Owner.RangedAttackPowerModsPos += EffectValue;
+            }
+            else
+            {
+                m_aura.Auras.Owner.RangedAttackPowerModsNeg += EffectValue;
+            }
+        }
+
+        protected override void Remove(bool cancelled)
+        {
+            if (EffectValue > 0)
+            {
+                m_aura.Auras.Owner.RangedAttackPowerModsPos -= EffectValue;
+            }
+            else
+            {
+                m_aura.Auras.Owner.RangedAttackPowerModsNeg -= EffectValue;
+            }
+        }
+    }
+
+    public class ModRangedAttackPowerPercentHandler : AuraEffectHandler
+    {
+        protected override void Apply()
+        {
+            m_aura.Auras.Owner.RangedAttackPowerMultiplier += EffectValue / 100f;
+        }
+
+        protected override void Remove(bool cancelled)
+        {
+            m_aura.Auras.Owner.RangedAttackPowerMultiplier -= EffectValue / 100f;
+        }
+    }
+
+    #endregion Ranged
 };

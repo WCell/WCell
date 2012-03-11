@@ -18,15 +18,15 @@ using System.IO;
 
 namespace MpqReader
 {
-	/// <summary>
-	/// An IMA ADPCM decompress for Mpq files
-	/// </summary>
-	public class MpqWavCompression
-	{
-		private MpqWavCompression()
-		{}
+    /// <summary>
+    /// An IMA ADPCM decompress for Mpq files
+    /// </summary>
+    public class MpqWavCompression
+    {
+        private MpqWavCompression()
+        { }
 
-		private static readonly int[] sLookup =
+        private static readonly int[] sLookup =
 		{
 			0x0007, 0x0008, 0x0009, 0x000A, 0x000B, 0x000C, 0x000D, 0x000E,
 			0x0010, 0x0011, 0x0013, 0x0015, 0x0017, 0x0019, 0x001C, 0x001F,
@@ -41,8 +41,8 @@ namespace MpqReader
 			0x3BB9, 0x41B2, 0x4844, 0x4F7E, 0x5771, 0x602F, 0x69CE, 0x7462,
 			0x7FFF
 		};
-		
-		private static readonly int[] sLookup2 =
+
+        private static readonly int[] sLookup2 =
 		{
 		    -1, 0, -1, 4, -1, 2, -1, 6,
 		    -1, 1, -1, 5, -1, 3, -1, 7,
@@ -50,93 +50,95 @@ namespace MpqReader
 		    -1, 2, -1, 4, -1, 6, -1, 8
 		};
 
-		public static byte[] Decompress(Stream Data, int ChannelCount)
-		{
-			int[] Array1 = new int[] {0x2c, 0x2c};
-			int[] Array2 = new int[ChannelCount];
+        public static byte[] Decompress(Stream Data, int ChannelCount)
+        {
+            int[] Array1 = new int[] { 0x2c, 0x2c };
+            int[] Array2 = new int[ChannelCount];
 
-			BinaryReader input = new BinaryReader(Data);
-			MemoryStream outputstream = new MemoryStream();
-			BinaryWriter output = new BinaryWriter(outputstream);
-			
-			input.ReadByte();
-			byte shift = input.ReadByte();
-			
-			for (int i = 0; i < ChannelCount; i++)
-			{
-				short temp = input.ReadInt16();
-				Array2[i] = temp;
-				output.Write(temp);
-			}
+            BinaryReader input = new BinaryReader(Data);
+            MemoryStream outputstream = new MemoryStream();
+            BinaryWriter output = new BinaryWriter(outputstream);
 
-			int channel = ChannelCount - 1;
-			while(Data.Position < Data.Length)
-			{
-				byte value = input.ReadByte();
+            input.ReadByte();
+            byte shift = input.ReadByte();
 
-				if (ChannelCount == 2) channel = 1 - channel;
-				
-				if ((value & 0x80) != 0)
-				{
-					switch (value & 0x7f)
-					{
-						case 0:
-							if(Array1[channel] != 0) Array1[channel]--;
-							output.Write((short)Array2[channel]);
-							break;
-						case 1:
-							Array1[channel] += 8;
-							if(Array1[channel] > 0x58) Array1[channel] = 0x58;
-							if (ChannelCount == 2) channel = 1 - channel;
-							break;
-						case 2:
-							break;
-						default:
-							Array1[channel] -= 8;
-							if(Array1[channel] < 0) Array1[channel] = 0;
-							if (ChannelCount == 2) channel = 1 - channel;
-							break;
-					}
-				} else
-				{
-					int temp1 = sLookup[Array1[channel]];
-					int temp2 = temp1 >> shift;
+            for (int i = 0; i < ChannelCount; i++)
+            {
+                short temp = input.ReadInt16();
+                Array2[i] = temp;
+                output.Write(temp);
+            }
 
-					if ((value & 1) != 0)
-						temp2 += (temp1 >> 0);
-					if ((value & 2) != 0)
-						temp2 += (temp1 >> 1);
-					if ((value & 4) != 0)
-						temp2 += (temp1 >> 2);
-					if ((value & 8) != 0)
-						temp2 += (temp1 >> 3);
-					if ((value & 0x10) != 0)
-						temp2 += (temp1 >> 4);
-					if ((value & 0x20) != 0)
-						temp2 += (temp1 >> 5);
+            int channel = ChannelCount - 1;
+            while (Data.Position < Data.Length)
+            {
+                byte value = input.ReadByte();
 
-					int temp3 = Array2[channel];
-					if ((value & 0x40) != 0)
-					{
-						temp3 -= temp2;
-						if(temp3 <= short.MinValue) temp3 = short.MinValue;
-					} else
-					{
-						temp3 += temp2;
-						if(temp3 >= short.MaxValue) temp3 = short.MaxValue;
-					}
-					Array2[channel] = temp3;
-					output.Write((short)temp3);
-					
-					Array1[channel] += sLookup2[value & 0x1f];
+                if (ChannelCount == 2) channel = 1 - channel;
 
-					if(Array1[channel] < 0) 
-						Array1[channel] = 0;
-					else 
-						if(Array1[channel] > 0x58) Array1[channel] = 0x58;
-				}
-			}
-			return outputstream.ToArray();
-		}
-	}
+                if ((value & 0x80) != 0)
+                {
+                    switch (value & 0x7f)
+                    {
+                        case 0:
+                            if (Array1[channel] != 0) Array1[channel]--;
+                            output.Write((short)Array2[channel]);
+                            break;
+                        case 1:
+                            Array1[channel] += 8;
+                            if (Array1[channel] > 0x58) Array1[channel] = 0x58;
+                            if (ChannelCount == 2) channel = 1 - channel;
+                            break;
+                        case 2:
+                            break;
+                        default:
+                            Array1[channel] -= 8;
+                            if (Array1[channel] < 0) Array1[channel] = 0;
+                            if (ChannelCount == 2) channel = 1 - channel;
+                            break;
+                    }
+                }
+                else
+                {
+                    int temp1 = sLookup[Array1[channel]];
+                    int temp2 = temp1 >> shift;
+
+                    if ((value & 1) != 0)
+                        temp2 += (temp1 >> 0);
+                    if ((value & 2) != 0)
+                        temp2 += (temp1 >> 1);
+                    if ((value & 4) != 0)
+                        temp2 += (temp1 >> 2);
+                    if ((value & 8) != 0)
+                        temp2 += (temp1 >> 3);
+                    if ((value & 0x10) != 0)
+                        temp2 += (temp1 >> 4);
+                    if ((value & 0x20) != 0)
+                        temp2 += (temp1 >> 5);
+
+                    int temp3 = Array2[channel];
+                    if ((value & 0x40) != 0)
+                    {
+                        temp3 -= temp2;
+                        if (temp3 <= short.MinValue) temp3 = short.MinValue;
+                    }
+                    else
+                    {
+                        temp3 += temp2;
+                        if (temp3 >= short.MaxValue) temp3 = short.MaxValue;
+                    }
+                    Array2[channel] = temp3;
+                    output.Write((short)temp3);
+
+                    Array1[channel] += sLookup2[value & 0x1f];
+
+                    if (Array1[channel] < 0)
+                        Array1[channel] = 0;
+                    else
+                        if (Array1[channel] > 0x58) Array1[channel] = 0x58;
+                }
+            }
+            return outputstream.ToArray();
+        }
+    }
 }

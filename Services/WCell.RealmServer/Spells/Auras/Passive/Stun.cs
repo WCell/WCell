@@ -18,31 +18,30 @@ using WCell.Constants.Spells;
 
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
-	public class StunHandler : AuraEffectHandler
-	{
+    public class StunHandler : AuraEffectHandler
+    {
+        protected override void Apply()
+        {
+            if (m_aura.Spell.SchoolMask == Constants.DamageSchoolMask.Frost)
+                m_aura.Auras.Owner.IncMechanicCount(SpellMechanic.Frozen);
 
-		protected override void Apply()
-		{
-			if (m_aura.Spell.SchoolMask == Constants.DamageSchoolMask.Frost)
-				m_aura.Auras.Owner.IncMechanicCount(SpellMechanic.Frozen);
+            m_aura.Auras.Owner.IncMechanicCount(SpellMechanic.Stunned);
+        }
 
-			m_aura.Auras.Owner.IncMechanicCount(SpellMechanic.Stunned);
-		}
+        protected override void Remove(bool cancelled)
+        {
+            if (m_aura.Spell.SchoolMask == Constants.DamageSchoolMask.Frost)
+                m_aura.Auras.Owner.DecMechanicCount(SpellMechanic.Frozen);
 
-		protected override void Remove(bool cancelled)
-		{
-			if (m_aura.Spell.SchoolMask == Constants.DamageSchoolMask.Frost)
-				m_aura.Auras.Owner.DecMechanicCount(SpellMechanic.Frozen);
+            m_aura.Auras.Owner.DecMechanicCount(SpellMechanic.Stunned);
+        }
 
-			m_aura.Auras.Owner.DecMechanicCount(SpellMechanic.Stunned);
-		}
-
-		public override bool IsPositive
-		{
-			get
-			{
-				return false;
-			}
-		}
-	}
+        public override bool IsPositive
+        {
+            get
+            {
+                return false;
+            }
+        }
+    }
 };

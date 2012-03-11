@@ -28,203 +28,202 @@ using WCell.Util;
 
 namespace WCell.RealmServer.Spells.Effects
 {
-	/// <summary>
-	/// Tries to open a GameObject or Item or disarm a trap
-	/// </summary>
-	public class OpenLockEffectHandler : SpellEffectHandler
-	{
-		private static readonly Logger log = LogManager.GetCurrentClassLogger();
+    /// <summary>
+    /// Tries to open a GameObject or Item or disarm a trap
+    /// </summary>
+    public class OpenLockEffectHandler : SpellEffectHandler
+    {
+        private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-		ILockable lockable;
-		LockOpeningMethod method;
-		Skill skill;
+        ILockable lockable;
+        LockOpeningMethod method;
+        Skill skill;
 
-		public OpenLockEffectHandler(SpellCast cast, SpellEffect effect)
-			: base(cast, effect)
-		{
-		}
+        public OpenLockEffectHandler(SpellCast cast, SpellEffect effect)
+            : base(cast, effect)
+        {
+        }
 
-		public override SpellFailedReason Initialize()
-		{
-			if (m_cast.SelectedTarget != null)
-			{
-				lockable = m_cast.SelectedTarget as GameObject;
-			}
-			else
-			{
-				lockable = m_cast.TargetItem;
-			}
+        public override SpellFailedReason Initialize()
+        {
+            if (m_cast.SelectedTarget != null)
+            {
+                lockable = m_cast.SelectedTarget as GameObject;
+            }
+            else
+            {
+                lockable = m_cast.TargetItem;
+            }
 
-			if (lockable == null)
-			{
-				return SpellFailedReason.BadTargets;
-			}
+            if (lockable == null)
+            {
+                return SpellFailedReason.BadTargets;
+            }
 
-			var lck = lockable.Lock;
-			var chr = m_cast.CasterChar;
+            var lck = lockable.Lock;
+            var chr = m_cast.CasterChar;
 
-			if (lck == null)
-			{
-				log.Warn("Using OpenLock on object without Lock: " + lockable);
-				return SpellFailedReason.Error;
-			}
-			if (chr == null)
-			{
-				log.Warn("Using OpenLock without Character: " + chr);
-				return SpellFailedReason.Error;
-			}
+            if (lck == null)
+            {
+                log.Warn("Using OpenLock on object without Lock: " + lockable);
+                return SpellFailedReason.Error;
+            }
+            if (chr == null)
+            {
+                log.Warn("Using OpenLock without Character: " + chr);
+                return SpellFailedReason.Error;
+            }
 
-			var failReason = SpellFailedReason.Ok;
-			if (!lck.IsUnlocked)
-			{
-				var type = (LockInteractionType)Effect.MiscValue;
-				if (lck.Keys.Length > 0 && m_cast.CasterItem != null)
-				{
-					if (!lck.Keys.Contains(key => key.KeyId == m_cast.CasterItem.Template.ItemId))
-					{
-						return SpellFailedReason.ItemNotFound;
-					}
-				}
-				else if (!lck.Supports(type))
-				{
-					return SpellFailedReason.BadTargets;
-				}
+            var failReason = SpellFailedReason.Ok;
+            if (!lck.IsUnlocked)
+            {
+                var type = (LockInteractionType)Effect.MiscValue;
+                if (lck.Keys.Length > 0 && m_cast.CasterItem != null)
+                {
+                    if (!lck.Keys.Contains(key => key.KeyId == m_cast.CasterItem.Template.ItemId))
+                    {
+                        return SpellFailedReason.ItemNotFound;
+                    }
+                }
+                else if (!lck.Supports(type))
+                {
+                    return SpellFailedReason.BadTargets;
+                }
 
-				if (type != LockInteractionType.None)
-				{
-					foreach (var openingMethod in lck.OpeningMethods)
-					{
-						if (openingMethod.InteractionType == type)
-						{
-							if (openingMethod.RequiredSkill != SkillId.None)
-							{
-								skill = chr.Skills[openingMethod.RequiredSkill];
-								if (skill == null || skill.ActualValue < openingMethod.RequiredSkillValue)
-								{
-									failReason = SpellFailedReason.MinSkill;
-								}
-							}
-							method = openingMethod;
-							break;
-						}
-					}
+                if (type != LockInteractionType.None)
+                {
+                    foreach (var openingMethod in lck.OpeningMethods)
+                    {
+                        if (openingMethod.InteractionType == type)
+                        {
+                            if (openingMethod.RequiredSkill != SkillId.None)
+                            {
+                                skill = chr.Skills[openingMethod.RequiredSkill];
+                                if (skill == null || skill.ActualValue < openingMethod.RequiredSkillValue)
+                                {
+                                    failReason = SpellFailedReason.MinSkill;
+                                }
+                            }
+                            method = openingMethod;
+                            break;
+                        }
+                    }
 
-					if (method == null)
-					{
-						// we are using the wrong kind of spell on the target
-						failReason = SpellFailedReason.BadTargets;
-					}
-				}
-			}
+                    if (method == null)
+                    {
+                        // we are using the wrong kind of spell on the target
+                        failReason = SpellFailedReason.BadTargets;
+                    }
+                }
+            }
 
-			if (failReason != SpellFailedReason.Ok)
-			{
-				// spell failed
-				if (lockable is GameObject && ((GameObject)lockable).Entry.IsConsumable)
-				{
-					// re-enable GO
-					((GameObject)lockable).State = GameObjectState.Enabled;
-				}
-			}
-			return failReason;
-		}
+            if (failReason != SpellFailedReason.Ok)
+            {
+                // spell failed
+                if (lockable is GameObject && ((GameObject)lockable).Entry.IsConsumable)
+                {
+                    // re-enable GO
+                    ((GameObject)lockable).State = GameObjectState.Enabled;
+                }
+            }
+            return failReason;
+        }
 
-		public override void Apply()
-		{
-			if (skill != null)
-			{
-				// check if the skill works
-				var reqSkill = method.RequiredSkillValue;
-				var diff = skill.ActualValue - (reqSkill == 1 ? 0 : reqSkill);
+        public override void Apply()
+        {
+            if (skill != null)
+            {
+                // check if the skill works
+                var reqSkill = method.RequiredSkillValue;
+                var diff = skill.ActualValue - (reqSkill == 1 ? 0 : reqSkill);
 
-				if (!CheckSuccess(diff))
-				{
-					// failed
-					m_cast.Cancel(SpellFailedReason.TryAgain);
-					return;
-				}
+                if (!CheckSuccess(diff))
+                {
+                    // failed
+                    m_cast.Cancel(SpellFailedReason.TryAgain);
+                    return;
+                }
 
-				// skill gain
-				var skillVal = skill.ActualValue;
-				skillVal += (ushort)Gain(diff);
-				skillVal = Math.Min(skillVal, skill.MaxValue);
-				skill.CurrentValue = (ushort)skillVal;
-			}
+                // skill gain
+                var skillVal = skill.ActualValue;
+                skillVal += (ushort)Gain(diff);
+                skillVal = Math.Min(skillVal, skill.MaxValue);
+                skill.CurrentValue = (ushort)skillVal;
+            }
 
-			// open lock
-			var chr = m_cast.CasterChar;
-			chr.AddMessage(() =>
-			{
-				if (lockable is ObjectBase && !((ObjectBase)lockable).IsInWorld) return;
+            // open lock
+            var chr = m_cast.CasterChar;
+            chr.AddMessage(() =>
+            {
+                if (lockable is ObjectBase && !((ObjectBase)lockable).IsInWorld) return;
 
-				LockEntry.Handle(chr, lockable, method != null ? method.InteractionType : LockInteractionType.None);
-			});
-		}
+                LockEntry.Handle(chr, lockable, method != null ? method.InteractionType : LockInteractionType.None);
+            });
+        }
 
-		protected override void Apply(WorldObject target)
-		{
-			// this is not a multiple target effect
-		}
+        protected override void Apply(WorldObject target)
+        {
+            // this is not a multiple target effect
+        }
 
-		public override ObjectTypes CasterType
-		{
-			get { return ObjectTypes.Player; }
-		}
+        public override ObjectTypes CasterType
+        {
+            get { return ObjectTypes.Player; }
+        }
 
-		public override bool HasOwnTargets
-		{
-			get { return false; }
-		}
+        public override bool HasOwnTargets
+        {
+            get { return false; }
+        }
 
+        public int Gain(uint diff)
+        {
+            int chance;
+            if (diff >= SkillAbility.GreyDiff)
+            {
+                return 0;
+            }
+            else if (diff >= SkillAbility.GreenDiff)
+            {
+                chance = SkillAbility.GainChanceGreen;
+            }
+            else if (diff >= SkillAbility.YellowDiff)
+            {
+                chance = SkillAbility.GainChanceYellow;
+            }
+            else
+            {
+                chance = SkillAbility.GainChanceOrange;
+            }
 
-		public int Gain(uint diff)
-		{
-			int chance;
-			if (diff >= SkillAbility.GreyDiff)
-			{
-				return 0;
-			}
-			else if (diff >= SkillAbility.GreenDiff)
-			{
-				chance = SkillAbility.GainChanceGreen;
-			}
-			else if (diff >= SkillAbility.YellowDiff)
-			{
-				chance = SkillAbility.GainChanceYellow;
-			}
-			else
-			{
-				chance = SkillAbility.GainChanceOrange;
-			}
+            return (Utility.Random() % 1000) < chance ? SkillAbility.GainAmount : 0;
+        }
 
-			return (Utility.Random() % 1000) < chance ? SkillAbility.GainAmount : 0;
-		}
+        public bool CheckSuccess(uint diff)
+        {
+            int chance;
+            if (diff >= SkillAbility.GreyDiff)
+            {
+                chance = SkillAbility.SuccessChanceGrey;
+            }
+            else if (diff >= SkillAbility.GreenDiff)
+            {
+                chance = SkillAbility.SuccessChanceGreen;
+            }
+            else if (diff >= SkillAbility.YellowDiff)
+            {
+                chance = SkillAbility.SuccessChanceYellow;
+            }
+            else if (diff >= 0)
+            {
+                chance = SkillAbility.SuccessChanceOrange;
+            }
+            else
+            {
+                return false;
+            }
 
-		public bool CheckSuccess(uint diff)
-		{
-			int chance;
-			if (diff >= SkillAbility.GreyDiff)
-			{
-				chance = SkillAbility.SuccessChanceGrey;
-			}
-			else if (diff >= SkillAbility.GreenDiff)
-			{
-				chance = SkillAbility.SuccessChanceGreen;
-			}
-			else if (diff >= SkillAbility.YellowDiff)
-			{
-				chance = SkillAbility.SuccessChanceYellow;
-			}
-			else if (diff >= 0)
-			{
-				chance = SkillAbility.SuccessChanceOrange;
-			}
-			else
-			{
-				return false;
-			}
-
-			return (Utility.Random() % 1000) < chance;
-		}
-	}
+            return (Utility.Random() % 1000) < chance;
+        }
+    }
 }

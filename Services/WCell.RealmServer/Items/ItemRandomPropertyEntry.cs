@@ -7,69 +7,69 @@ using WCell.Util.Data;
 
 namespace WCell.RealmServer.Items
 {
-	public class ItemRandomPropertyEntry
-	{
-		public uint Id;
-		public ItemEnchantmentEntry[] Enchants = new ItemEnchantmentEntry[ItemConstants.MaxEnchantsPerEntry];
-	}
+    public class ItemRandomPropertyEntry
+    {
+        public uint Id;
+        public ItemEnchantmentEntry[] Enchants = new ItemEnchantmentEntry[ItemConstants.MaxEnchantsPerEntry];
+    }
 
-	public class ItemRandomSuffixEntry
-	{
-		public int Id;// 0
+    public class ItemRandomSuffixEntry
+    {
+        public int Id;// 0
 
-		public ItemEnchantmentEntry[] Enchants; // 19, 20, 21
-		public int[] Values; // 22, 23, 24
-	}
+        public ItemEnchantmentEntry[] Enchants; // 19, 20, 21
+        public int[] Values; // 22, 23, 24
+    }
 
-	public abstract class BaseItemRandomPropertyInfo : IDataHolder
-	{
-		public uint EnchantId;
-		public uint PropertiesId;
-		/// <summary>
-		/// 
-		/// </summary>
-		public float ChancePercent;
+    public abstract class BaseItemRandomPropertyInfo : IDataHolder
+    {
+        public uint EnchantId;
+        public uint PropertiesId;
+        /// <summary>
+        ///
+        /// </summary>
+        public float ChancePercent;
 
-		public abstract void FinalizeDataHolder();
-	}
+        public abstract void FinalizeDataHolder();
+    }
 
-	[DataHolder]
-	public class ItemRandomEnchantEntry : BaseItemRandomPropertyInfo
-	{
-		//[NotPersistent]
-		//public ItemRandomPropertyEntry RandomPropEntry;
+    [DataHolder]
+    public class ItemRandomEnchantEntry : BaseItemRandomPropertyInfo
+    {
+        //[NotPersistent]
+        //public ItemRandomPropertyEntry RandomPropEntry;
 
-		public override void FinalizeDataHolder()
-		{
-			//RandomPropEntry = ItemMgr.GetRandomPropertyEntry(EntryId);
-			if (PropertiesId > 30000)
-			{
-				ContentMgr.OnInvalidDBData("RandomEnchantEntry has invalid PropertiesId: {0} (Enchant: {2})", PropertiesId, EnchantId);
-			}
-			else
-			{
-				var list = EnchantMgr.RandomEnchantEntries.Get(PropertiesId);
-				if (list == null)
-				{
-					ArrayUtil.Set(ref EnchantMgr.RandomEnchantEntries, PropertiesId, list = new List<ItemRandomEnchantEntry>());
-				}
-				list.Add(this);
-			}
-		}
-	}
+        public override void FinalizeDataHolder()
+        {
+            //RandomPropEntry = ItemMgr.GetRandomPropertyEntry(EntryId);
+            if (PropertiesId > 30000)
+            {
+                ContentMgr.OnInvalidDBData("RandomEnchantEntry has invalid PropertiesId: {0} (Enchant: {2})", PropertiesId, EnchantId);
+            }
+            else
+            {
+                var list = EnchantMgr.RandomEnchantEntries.Get(PropertiesId);
+                if (list == null)
+                {
+                    ArrayUtil.Set(ref EnchantMgr.RandomEnchantEntries, PropertiesId, list = new List<ItemRandomEnchantEntry>());
+                }
+                list.Add(this);
+            }
+        }
+    }
 
-	//[DataHolder]
-	//public class ItemRandomSuffixInfo : BaseItemRandomPropertyInfo
-	//{
-	//    [NotPersistent]
-	//    public ItemRandomSuffixEntry Entry;
+    //[DataHolder]
+    //public class ItemRandomSuffixInfo : BaseItemRandomPropertyInfo
+    //{
+    //    [NotPersistent]
+    //    public ItemRandomSuffixEntry Entry;
 
-	//    public override void FinalizeAfterLoad()
-	//    {
-	//        Entry = ItemMgr.GetRandomSuffixEntry(EntryId);
+    //    public override void FinalizeAfterLoad()
+    //    {
+    //        Entry = ItemMgr.GetRandomSuffixEntry(EntryId);
 
-	//        var list = ArrayUtil.GetOrCreate(ref ItemMgr.RandomSuffixes, Id);
-	//        list.Add(this);
-	//    }
-	//}
+    //        var list = ArrayUtil.GetOrCreate(ref ItemMgr.RandomSuffixes, Id);
+    //        list.Add(this);
+    //    }
+    //}
 }

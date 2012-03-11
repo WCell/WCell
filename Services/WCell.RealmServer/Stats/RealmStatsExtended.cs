@@ -22,90 +22,90 @@ using WCell.Core.Network;
 
 namespace WCell.RealmServer.Stats
 {
-	/// <summary>
-	/// Handles network statistics and trend tracking.
-	/// </summary>
-	public class RealmStatsExtended : NetworkStatistics
-	{
-		private int m_consumeIntervalMillis = 300000; // 5 minutes
+    /// <summary>
+    /// Handles network statistics and trend tracking.
+    /// </summary>
+    public class RealmStatsExtended : NetworkStatistics
+    {
+        private int m_consumeIntervalMillis = 300000; // 5 minutes
 
-		public static RealmStatsExtended Instance
-		{
-			get { return StatisticsSingleton.Instance; }
-		}
+        public static RealmStatsExtended Instance
+        {
+            get { return StatisticsSingleton.Instance; }
+        }
 
-		protected override void ConsumeStatistics()
-		{
-			var packetCounts = new Dictionary<uint, List<int>>();
+        protected override void ConsumeStatistics()
+        {
+            var packetCounts = new Dictionary<uint, List<int>>();
 
-			// every 5 minutes we update packet count/total size and flush to the DB
-			foreach (PacketInfo pktInfo in m_queuedStats)
-			{
-				if (!packetCounts.ContainsKey(pktInfo.PacketID.RawId))
-				{
-					packetCounts.Add(pktInfo.PacketID.RawId, new List<int>());
-				}
+            // every 5 minutes we update packet count/total size and flush to the DB
+            foreach (PacketInfo pktInfo in m_queuedStats)
+            {
+                if (!packetCounts.ContainsKey(pktInfo.PacketID.RawId))
+                {
+                    packetCounts.Add(pktInfo.PacketID.RawId, new List<int>());
+                }
 
-				packetCounts[pktInfo.PacketID.RawId].Add(pktInfo.PacketSize);
-			}
+                packetCounts[pktInfo.PacketID.RawId].Add(pktInfo.PacketSize);
+            }
 
-			var extInfoList = new List<ExtendedPacketInfo>();
+            var extInfoList = new List<ExtendedPacketInfo>();
 
-			// calculate extended pkt info
-			foreach (var packetCount in packetCounts)
-			{
-				var pktInfo = new ExtendedPacketInfo
-				              	{
-					OpCode = (RealmServerOpCode)packetCount.Key,
-					PacketCount = packetCount.Value.Count,
-					TotalPacketSize = packetCount.Value.Sum(),
-					AveragePacketSize = (int)packetCount.Value.Average(),
-					StartTime = DateTime.Now.Subtract(TimeSpan.FromMinutes(5)),
-					EndTime = DateTime.Now
-				};
+            // calculate extended pkt info
+            foreach (var packetCount in packetCounts)
+            {
+                var pktInfo = new ExtendedPacketInfo
+                                {
+                                    OpCode = (RealmServerOpCode)packetCount.Key,
+                                    PacketCount = packetCount.Value.Count,
+                                    TotalPacketSize = packetCount.Value.Sum(),
+                                    AveragePacketSize = (int)packetCount.Value.Average(),
+                                    StartTime = DateTime.Now.Subtract(TimeSpan.FromMinutes(5)),
+                                    EndTime = DateTime.Now
+                                };
 
-				List<int> packetSizes = packetCount.Value;
+                List<int> packetSizes = packetCount.Value;
 
-				int stdDev = GetStandardDeviation(packetSizes);
-				pktInfo.StandardDeviation = stdDev;
+                int stdDev = GetStandardDeviation(packetSizes);
+                pktInfo.StandardDeviation = stdDev;
 
-				// push to le db.
-			}
-		}
+                // push to le db.
+            }
+        }
 
-		private int GetStandardDeviation(IEnumerable<int> values)
-		{
-			var setAverage = values.Average();
-			var diffSqTotal = values.Sum((val) => (val - setAverage) * (val - setAverage));
-			var diffSqAvg = (diffSqTotal / (values.Count() - 1));
+        private int GetStandardDeviation(IEnumerable<int> values)
+        {
+            var setAverage = values.Average();
+            var diffSqTotal = values.Sum((val) => (val - setAverage) * (val - setAverage));
+            var diffSqAvg = (diffSqTotal / (values.Count() - 1));
 
-			return (int)Math.Sqrt(diffSqAvg);
-		}
+            return (int)Math.Sqrt(diffSqAvg);
+        }
 
-		public void Start()
-		{
-			m_consumerTimer.Start(m_consumeIntervalMillis, m_consumeIntervalMillis);
-		}
+        public void Start()
+        {
+            m_consumerTimer.Start(m_consumeIntervalMillis, m_consumeIntervalMillis);
+        }
 
-		public void Start(int interval)
-		{
-			m_consumeIntervalMillis = interval;
+        public void Start(int interval)
+        {
+            m_consumeIntervalMillis = interval;
 
-			m_consumerTimer.Start(m_consumeIntervalMillis, m_consumeIntervalMillis);
-		}
+            m_consumerTimer.Start(m_consumeIntervalMillis, m_consumeIntervalMillis);
+        }
 
-		public void Stop()
-		{
-			m_consumerTimer.Stop();
-		}
+        public void Stop()
+        {
+            m_consumerTimer.Stop();
+        }
 
-		#region Singleton
+        #region Singleton
 
-		class StatisticsSingleton
-		{
-			internal static readonly RealmStatsExtended Instance = new RealmStatsExtended();
-		}
+        private class StatisticsSingleton
+        {
+            internal static readonly RealmStatsExtended Instance = new RealmStatsExtended();
+        }
 
-		#endregion
-	}
+        #endregion Singleton
+    }
 }

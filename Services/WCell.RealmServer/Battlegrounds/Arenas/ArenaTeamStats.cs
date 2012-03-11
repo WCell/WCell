@@ -6,13 +6,13 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
     {
         public ArenaTeam team
         {
-            set 
-                { 
-                    team = value;
-                    _teamId = (int)value.Id; 
-                }
+            set
+            {
+                team = value;
+                _teamId = (int)value.Id;
+            }
         }
-                    
+
         public uint rating
         {
             get { return (uint)_rating; }
@@ -42,6 +42,7 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
             get { return (uint)_winsSeason; }
             set { _winsSeason = (int)value; }
         }
+
         public uint rank
         {
             get { return (uint)_rank; }
@@ -50,7 +51,6 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
 
         public ArenaTeamStats()
         {
-            
         }
 
         public ArenaTeamStats(ArenaTeam arenaTeam)
@@ -67,29 +67,29 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
 
         public void SetStats(ArenaTeamStatsTypes stats, uint value)
         {
-            switch(stats)
+            switch (stats)
             {
                 case ArenaTeamStatsTypes.STAT_TYPE_RATING:
                     rating = value;
-                break;
+                    break;
 
                 case ArenaTeamStatsTypes.STAT_TYPE_GAMES_WEEK:
                     gamesWeek = value;
-                break;
+                    break;
 
                 case ArenaTeamStatsTypes.STAT_TYPE_WINS_WEEK:
                     winsWeek = value;
-                break;
+                    break;
 
                 case ArenaTeamStatsTypes.STAT_TYPE_GAMES_SEASON:
                     gamesSeason = value;
-                break;
+                    break;
 
                 case ArenaTeamStatsTypes.STAT_TYPE_WINS_SEASON:
                     winsSeason = value;
-                break;
+                    break;
             }
-            UpdateAndFlush();          
+            UpdateAndFlush();
         }
     }
 }

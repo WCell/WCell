@@ -2,12 +2,12 @@
 
 namespace WCell.PerformanceCounterInstaller
 {
-    class Program
+    internal class Program
     {
         private const string CategoryName = "WCell";
         private const string CategoryHelp = "Performance counters for the WCell server platform.";
 
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             SetupCounters();
         }

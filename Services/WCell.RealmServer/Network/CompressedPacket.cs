@@ -12,7 +12,6 @@ namespace WCell.RealmServer.Network
         public CompressedPacket()
             : base(RealmServerOpCode.SMSG_COMPRESSED_MOVES)
         {
-
         }
 
         public void AddPacket(RealmPacketOut packet)

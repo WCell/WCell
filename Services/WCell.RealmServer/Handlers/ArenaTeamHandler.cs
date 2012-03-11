@@ -12,7 +12,6 @@ namespace WCell.RealmServer.Handlers
     {
         private static readonly Logger s_log = LogManager.GetCurrentClassLogger();
 
-
         [ClientPacketHandler(RealmServerOpCode.CMSG_ARENA_TEAM_QUERY)]
         public static void HandleArenaTeamQuery(IRealmClient client, RealmPacketIn packet)
         {
@@ -59,9 +58,10 @@ namespace WCell.RealmServer.Handlers
                 client.Send(packet);
             }
         }
+
         private static RealmPacketOut CreateArenaTeamQueryResponsePacket(ArenaTeam team)
-		{
-			var packet = new RealmPacketOut(RealmServerOpCode.SMSG_ARENA_TEAM_QUERY_RESPONSE, 4*7+team.Name.Length+1);
+        {
+            var packet = new RealmPacketOut(RealmServerOpCode.SMSG_ARENA_TEAM_QUERY_RESPONSE, 4 * 7 + team.Name.Length + 1);
 
             packet.WriteUInt((byte)team.Id);
             packet.WriteCString(team.Name);
@@ -80,7 +80,7 @@ namespace WCell.RealmServer.Handlers
 
         private static RealmPacketOut CreateArenaTeamStatsResponsePacket(ArenaTeam team)
         {
-            var packet = new RealmPacketOut(RealmServerOpCode.SMSG_ARENA_TEAM_STATS, 4*7);
+            var packet = new RealmPacketOut(RealmServerOpCode.SMSG_ARENA_TEAM_STATS, 4 * 7);
 
             packet.WriteUInt((byte)team.Id);
             packet.WriteUInt(team.Stats.rating);
@@ -121,6 +121,7 @@ namespace WCell.RealmServer.Handlers
             }
             return packet;
         }
+
         /// <summary>
         /// Sends result of actions connected with arenas
         /// </summary>

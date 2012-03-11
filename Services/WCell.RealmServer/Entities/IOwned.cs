@@ -16,16 +16,16 @@
 
 namespace WCell.RealmServer.Entities
 {
-	/// <summary>
-	/// Anything that is usable: Items and GameObjects so far
-	/// </summary>
-	public interface IOwned
-	{
-		// TODO: Add general methods for usability?
-		
-		Unit Owner
-		{
-			get;
-		}
-	}
+    /// <summary>
+    /// Anything that is usable: Items and GameObjects so far
+    /// </summary>
+    public interface IOwned
+    {
+        // TODO: Add general methods for usability?
+
+        Unit Owner
+        {
+            get;
+        }
+    }
 }

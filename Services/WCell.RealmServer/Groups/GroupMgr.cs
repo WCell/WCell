@@ -24,143 +24,149 @@ using WCell.Util.Collections;
 
 namespace WCell.RealmServer.Groups
 {
-	/// <summary>
-	/// TODO: Group-Tracking (including buffs/debuffs)
-	/// </summary>
-	public sealed class GroupMgr : Manager<GroupMgr>
-	{
-		/// <summary>
-		/// Maps char-id to the corresponding GroupMember object so it can be looked up when char reconnects
-		/// </summary>
-		internal readonly IDictionary<uint, GroupMember> OfflineChars;
+    /// <summary>
+    /// TODO: Group-Tracking (including buffs/debuffs)
+    /// </summary>
+    public sealed class GroupMgr : Manager<GroupMgr>
+    {
+        /// <summary>
+        /// Maps char-id to the corresponding GroupMember object so it can be looked up when char reconnects
+        /// </summary>
+        internal readonly IDictionary<uint, GroupMember> OfflineChars;
 
-		private GroupMgr()
-		{
-			OfflineChars = new SynchronizedDictionary<uint, GroupMember>(100);
-		}
+        private GroupMgr()
+        {
+            OfflineChars = new SynchronizedDictionary<uint, GroupMember>(100);
+        }
 
-		#region Login/Logout
-		/// <summary>
-		/// Removes an offline Character with the given Id
-		/// from his/her Group
-		/// </summary>
-		/// <param name="id"></param>
-		public bool RemoveOfflineCharacter(uint id)
-		{
-			GroupMember member;
-			if (OfflineChars.TryGetValue(id, out member))
-			{
-				member.LeaveGroup();
-				return true;
-			}
-			return false;
-		}
+        #region Login/Logout
 
-		internal void OnCharacterLogin(Character chr)
-		{
-			GroupMember member;
-			if (OfflineChars.TryGetValue(chr.EntityId.Low, out member))
-			{
-				OfflineChars.Remove(chr.EntityId.Low);
-				member.Character = chr;
-				var group = member.Group;
-				if (group.Leader == null)
-				{
-					// complete Group was offline, make a new Leader
-					group.Leader = member;
-				}
-				else
-				{
-					group.SendUpdate();
-				}
-				chr.GroupUpdateFlags |= GroupUpdateFlags.Status;
-			}
-		}
+        /// <summary>
+        /// Removes an offline Character with the given Id
+        /// from his/her Group
+        /// </summary>
+        /// <param name="id"></param>
+        public bool RemoveOfflineCharacter(uint id)
+        {
+            GroupMember member;
+            if (OfflineChars.TryGetValue(id, out member))
+            {
+                member.LeaveGroup();
+                return true;
+            }
+            return false;
+        }
 
-		/// <summary>
-		/// Cleanup character invitations and group leader, looter change on character logout/disconnect
-		/// </summary>
-		/// <param name="member">The GroupMember logging out / disconnecting (or null if the corresponding Character is not in a Group)</param>
-		internal void OnCharacterLogout(GroupMember member)
-		{
-			if (member == null)
-			{
-				// null check is only required because we stated in the documentation of this method that memeber is allowed to be null
-				return;
-			}
+        internal void OnCharacterLogin(Character chr)
+        {
+            GroupMember member;
+            if (OfflineChars.TryGetValue(chr.EntityId.Low, out member))
+            {
+                OfflineChars.Remove(chr.EntityId.Low);
+                member.Character = chr;
+                var group = member.Group;
+                if (group.Leader == null)
+                {
+                    // complete Group was offline, make a new Leader
+                    group.Leader = member;
+                }
+                else
+                {
+                    group.SendUpdate();
+                }
+                chr.GroupUpdateFlags |= GroupUpdateFlags.Status;
+            }
+        }
 
-			var chr = member.Character;
-			var listInviters = RelationMgr.Instance.GetRelations(chr.EntityId.Low,
-				CharacterRelationType.GroupInvite);
+        /// <summary>
+        /// Cleanup character invitations and group leader, looter change on character logout/disconnect
+        /// </summary>
+        /// <param name="member">The GroupMember logging out / disconnecting (or null if the corresponding Character is not in a Group)</param>
+        internal void OnCharacterLogout(GroupMember member)
+        {
+            if (member == null)
+            {
+                // null check is only required because we stated in the documentation of this method that memeber is allowed to be null
+                return;
+            }
 
-			foreach (GroupInviteRelation inviteRelation in listInviters)
-			{
-				RelationMgr.Instance.RemoveRelation(inviteRelation);
-			}
+            var chr = member.Character;
+            var listInviters = RelationMgr.Instance.GetRelations(chr.EntityId.Low,
+                CharacterRelationType.GroupInvite);
 
-			var group = member.Group;
+            foreach (GroupInviteRelation inviteRelation in listInviters)
+            {
+                RelationMgr.Instance.RemoveRelation(inviteRelation);
+            }
 
-			member.Position = member.Character.Position;
-			member.Map = member.Character.Map;
-			member.Character.GroupUpdateFlags |= GroupUpdateFlags.Status;
-			member.Character = null;
+            var group = member.Group;
 
-			OfflineChars.Add(chr.EntityId.Low, member);
+            member.Position = member.Character.Position;
+            member.Map = member.Character.Map;
+            member.Character.GroupUpdateFlags |= GroupUpdateFlags.Status;
+            member.Character = null;
 
-			group.SendUpdate();
-		}
-		#endregion
+            OfflineChars.Add(chr.EntityId.Low, member);
 
-		#region Checks
-		private static bool CheckIsLeader(GroupMember member)
-		{
-			if (!member.IsLeader)
-			{
-				// you dont have permission
-				var chr = member.Character;
-				if (chr != null)
-				{
-					GroupHandler.SendResult(chr.Client, GroupResult.DontHavePermission);
-				}
-				return false;
-			}
-			return true;
-		}
+            group.SendUpdate();
+        }
 
-		private static bool CheckMemberInGroup(Character requester, Group group, uint memberLowId)
-		{
-			GroupMember member = group[memberLowId];
+        #endregion Login/Logout
 
-			if (member == null)
-			{
-				// you can't uninvite people not from your group
-				GroupHandler.SendResult(requester.Client, GroupResult.NotInYourParty);
-				return false;
-			}
-			return true;
-		}
+        #region Checks
 
-		private static bool CheckSameGroup(Character requester, Character character)
-		{
-			if (requester.Group != character.Group)
-			{
-				Group.SendResult(requester.Client, GroupResult.NotInYourParty, character.Name);
-				return false;
-			}
-			return true;
-		}
-		#endregion
-	}
+        private static bool CheckIsLeader(GroupMember member)
+        {
+            if (!member.IsLeader)
+            {
+                // you dont have permission
+                var chr = member.Character;
+                if (chr != null)
+                {
+                    GroupHandler.SendResult(chr.Client, GroupResult.DontHavePermission);
+                }
+                return false;
+            }
+            return true;
+        }
 
-	public static class GroupUtil
-	{
-		#region Staff Management
-		public static void EnsurePureStaffGroup(this Character chr)
-		{
-			var group = chr.Group;
-			if (group == null) return;
-			group.EnsurePureStaffGroup();
-		}
-		#endregion
-	}
+        private static bool CheckMemberInGroup(Character requester, Group group, uint memberLowId)
+        {
+            GroupMember member = group[memberLowId];
+
+            if (member == null)
+            {
+                // you can't uninvite people not from your group
+                GroupHandler.SendResult(requester.Client, GroupResult.NotInYourParty);
+                return false;
+            }
+            return true;
+        }
+
+        private static bool CheckSameGroup(Character requester, Character character)
+        {
+            if (requester.Group != character.Group)
+            {
+                Group.SendResult(requester.Client, GroupResult.NotInYourParty, character.Name);
+                return false;
+            }
+            return true;
+        }
+
+        #endregion Checks
+    }
+
+    public static class GroupUtil
+    {
+        #region Staff Management
+
+        public static void EnsurePureStaffGroup(this Character chr)
+        {
+            var group = chr.Group;
+            if (group == null) return;
+            group.EnsurePureStaffGroup();
+        }
+
+        #endregion Staff Management
+    }
 }

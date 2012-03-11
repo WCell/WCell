@@ -34,197 +34,201 @@ using WCell.Util.Threading;
 
 namespace WCell.RealmServer
 {
-	/// <summary>
-	/// Represents the Account that a client used to login with on RealmServer side.
-	/// </summary>
-	public partial class RealmAccount : IAccount
-	{
-		protected static Logger log = LogManager.GetCurrentClassLogger();
+    /// <summary>
+    /// Represents the Account that a client used to login with on RealmServer side.
+    /// </summary>
+    public partial class RealmAccount : IAccount
+    {
+        protected static Logger log = LogManager.GetCurrentClassLogger();
 
-		#region Fields
-		protected long m_accountId;
-		protected string m_email;
-		protected int m_HighestCharLevel;
-		#endregion
+        #region Fields
 
-		/// <summary>
-		/// Default constructor.
-		/// </summary>
-		/// <param name="accountName">the name of the account</param>
-		public RealmAccount(string accountName, IAccountInfo info)
-		{
-			Name = accountName;
+        protected long m_accountId;
+        protected string m_email;
+        protected int m_HighestCharLevel;
 
-			Characters = new List<CharacterRecord>();
+        #endregion Fields
 
-			m_accountId = info.AccountId;
-			ClientId = info.ClientId;
-			IsActive = true;
-			Role = PrivilegeMgr.Instance.GetRoleOrDefault(info.RoleGroupName);
-			m_email = info.EmailAddress;
-			LastIP = info.LastIP;
-			LastLogin = info.LastLogin;
-			Locale = info.Locale;
-		}
+        /// <summary>
+        /// Default constructor.
+        /// </summary>
+        /// <param name="accountName">the name of the account</param>
+        public RealmAccount(string accountName, IAccountInfo info)
+        {
+            Name = accountName;
 
-		#region Properties
-		/// <summary>
-		/// Still in Auth-Queue and waiting for a free slot
-		/// </summary>
-		public bool IsEnqueued
-		{
-			get;
-			internal set;
-		}
+            Characters = new List<CharacterRecord>();
 
-		/// <summary>
-		/// The username of this account.
-		/// </summary>
-		public string Name
-		{
-			get;
-			protected set;
-		}
+            m_accountId = info.AccountId;
+            ClientId = info.ClientId;
+            IsActive = true;
+            Role = PrivilegeMgr.Instance.GetRoleOrDefault(info.RoleGroupName);
+            m_email = info.EmailAddress;
+            LastIP = info.LastIP;
+            LastLogin = info.LastLogin;
+            Locale = info.Locale;
+        }
 
-		public bool IsActive
-		{
-			get;
-			protected set;
-		}
+        #region Properties
 
-		public DateTime? StatusUntil
-		{
-			get;
-			protected set;
-		}
+        /// <summary>
+        /// Still in Auth-Queue and waiting for a free slot
+        /// </summary>
+        public bool IsEnqueued
+        {
+            get;
+            internal set;
+        }
 
-		/// <summary>
-		/// The database row ID for this account.
-		/// Don't change it.
-		/// </summary>
-		public long AccountId
-		{
-			get
-			{
-				return m_accountId;
-			}
-		}
+        /// <summary>
+        /// The username of this account.
+        /// </summary>
+        public string Name
+        {
+            get;
+            protected set;
+        }
 
-		/// <summary>
-		/// The e-mail address of this account.
-		/// </summary>
-		/// <remarks>Use <c>SetEmail</c> instead to change the EmailAddress.</remarks>
-		public string EmailAddress
-		{
-			get
-			{
-				return m_email;
-			}
-		}
+        public bool IsActive
+        {
+            get;
+            protected set;
+        }
 
-		/// <summary>
-		/// Setting this would not be saved to DB.
-		/// </summary>
-		public ClientId ClientId
-		{
-			get;
-			protected set;
-		}
+        public DateTime? StatusUntil
+        {
+            get;
+            protected set;
+        }
 
-		/// <summary>
-		/// The last IP-Address that this Account connected with
-		/// </summary>
-		public byte[] LastIP
-		{
-			get;
-			protected set;
-		}
+        /// <summary>
+        /// The database row ID for this account.
+        /// Don't change it.
+        /// </summary>
+        public long AccountId
+        {
+            get
+            {
+                return m_accountId;
+            }
+        }
 
-		/// <summary>
-		/// The time of when this Account last logged in.
-		/// Might be null.
-		/// </summary>
-		public DateTime? LastLogin
-		{
-			get;
-			protected set;
-		}
+        /// <summary>
+        /// The e-mail address of this account.
+        /// </summary>
+        /// <remarks>Use <c>SetEmail</c> instead to change the EmailAddress.</remarks>
+        public string EmailAddress
+        {
+            get
+            {
+                return m_email;
+            }
+        }
 
-		public int HighestCharLevel
-		{
-			get { return m_HighestCharLevel; }
-			set
-			{
-				m_HighestCharLevel = value;
-				RealmServer.IOQueue.AddMessage(new Message(() => {
-					if (RealmServer.Instance.AuthClient.IsRunning)
-					{
-						RealmServer.Instance.AuthClient.Channel.SetHighestLevel(AccountId,
-																				m_HighestCharLevel);
-					}
-				}));
-			}
-		}
+        /// <summary>
+        /// Setting this would not be saved to DB.
+        /// </summary>
+        public ClientId ClientId
+        {
+            get;
+            protected set;
+        }
 
-		public ClientLocale Locale
-		{
-			get;
-			private set;
-		}
+        /// <summary>
+        /// The last IP-Address that this Account connected with
+        /// </summary>
+        public byte[] LastIP
+        {
+            get;
+            protected set;
+        }
 
-		/// <summary>
-		/// The name of the RoleGroup.
-		/// </summary>
-		/// <remarks>
-		/// Implements <see cref="IAccountInfo.RoleGroupName"/>.
-		/// Use <c>SetRole</c> to change the Role.
-		/// </remarks>
-		public string RoleGroupName
-		{
-			get
-			{
-				return Role.Name;
-			}
-		}
+        /// <summary>
+        /// The time of when this Account last logged in.
+        /// Might be null.
+        /// </summary>
+        public DateTime? LastLogin
+        {
+            get;
+            protected set;
+        }
 
-		/// <summary>
-		/// The RoleGroup of this Account.
-		/// </summary>
-		/// <remarks>Use <c>SetRole</c> to change the Role.</remarks>
-		public RoleGroup Role
-		{
-			get;
-			protected set;
-		}
+        public int HighestCharLevel
+        {
+            get { return m_HighestCharLevel; }
+            set
+            {
+                m_HighestCharLevel = value;
+                RealmServer.IOQueue.AddMessage(new Message(() =>
+                {
+                    if (RealmServer.Instance.AuthClient.IsRunning)
+                    {
+                        RealmServer.Instance.AuthClient.Channel.SetHighestLevel(AccountId,
+                                                                                m_HighestCharLevel);
+                    }
+                }));
+            }
+        }
 
-		/// <summary>
-		/// All the character associated with this account.
-		/// </summary>
-		public List<CharacterRecord> Characters
-		{
-			get;
-			protected set;
-		}
+        public ClientLocale Locale
+        {
+            get;
+            private set;
+        }
 
-		/// <summary>
-		/// The Character that is currently being used by this Account (or null)
-		/// </summary>
-		public Character ActiveCharacter
-		{
-			get;
-			internal set;
-		}
+        /// <summary>
+        /// The name of the RoleGroup.
+        /// </summary>
+        /// <remarks>
+        /// Implements <see cref="IAccountInfo.RoleGroupName"/>.
+        /// Use <c>SetRole</c> to change the Role.
+        /// </remarks>
+        public string RoleGroupName
+        {
+            get
+            {
+                return Role.Name;
+            }
+        }
 
-		/// <summary>
-		/// The client that is connected to this Account.
-		/// If connected, the client is either still selecting a Character,
-		/// seeing the Login-screen or already ingame (in which case ActiveCharacter is also set).
-		/// </summary>
-		public IRealmClient Client
-		{
-			get;
-			internal set;
-		}
+        /// <summary>
+        /// The RoleGroup of this Account.
+        /// </summary>
+        /// <remarks>Use <c>SetRole</c> to change the Role.</remarks>
+        public RoleGroup Role
+        {
+            get;
+            protected set;
+        }
+
+        /// <summary>
+        /// All the character associated with this account.
+        /// </summary>
+        public List<CharacterRecord> Characters
+        {
+            get;
+            protected set;
+        }
+
+        /// <summary>
+        /// The Character that is currently being used by this Account (or null)
+        /// </summary>
+        public Character ActiveCharacter
+        {
+            get;
+            internal set;
+        }
+
+        /// <summary>
+        /// The client that is connected to this Account.
+        /// If connected, the client is either still selecting a Character,
+        /// seeing the Login-screen or already ingame (in which case ActiveCharacter is also set).
+        /// </summary>
+        public IRealmClient Client
+        {
+            get;
+            internal set;
+        }
 
         /// <summary>
         /// The account data cache, related to this account.
@@ -234,311 +238,315 @@ namespace WCell.RealmServer
             get;
             internal set;
         }
-		#endregion
 
-		#region Methods
-		public CharacterRecord GetCharacterRecord(uint id)
-		{
-			foreach (var chr in Characters)
-			{
-				if (chr.EntityLowId == id)
-				{
-					return chr;
-				}
-			}
-			return null;
-		}
+        #endregion Properties
 
-		public void RemoveCharacterRecord(uint id)
-		{
-			for (var i = 0; i < Characters.Count; i++)
-			{
-				var chr = Characters[i];
-				if (chr.EntityLowId == id)
-				{
-					Characters.RemoveAt(i);
-					break;
-				}
-			}
-		}
+        #region Methods
 
-		/// <summary>
-		/// Tells the AuthServer to change the role for this Account.
-		/// </summary>
-		/// <param name="role">the new role for this account</param>
-		/// <returns>true if the role was set; false otherwise</returns>
-		/// <remarks>Requires IO-Context</remarks>
-		public bool SetRole(RoleGroup role)
-		{
-			var wasStaff = Role.IsStaff;
-			if (!Role.Equals(role))
-			{
-				if (!RealmServer.Instance.AuthClient.Channel.SetAccountRole(AccountId, role.Name))
-				{
-					return false;
-				}
+        public CharacterRecord GetCharacterRecord(uint id)
+        {
+            foreach (var chr in Characters)
+            {
+                if (chr.EntityLowId == id)
+                {
+                    return chr;
+                }
+            }
+            return null;
+        }
 
-				Role = role;
-				if (wasStaff != role.IsStaff)
-				{
-					var chr = ActiveCharacter;
-					if (chr != null)
-					{
-						var map = chr.Map;
-						var context = chr.ContextHandler;
-						if (context != null)
-						{
-							context.AddMessage(() => {
-								if (!chr.IsInWorld || chr.Map != context)
-								{
-									return;
-								}
+        public void RemoveCharacterRecord(uint id)
+        {
+            for (var i = 0; i < Characters.Count; i++)
+            {
+                var chr = Characters[i];
+                if (chr.EntityLowId == id)
+                {
+                    Characters.RemoveAt(i);
+                    break;
+                }
+            }
+        }
 
-								if (wasStaff)
-								{
-									// not staff anymore
-									World.StaffMemberCount--;
-									map.IncreasePlayerCount(chr);
-								}
-								else
-								{
-									// new staff
-									World.StaffMemberCount++;
-									map.DecreasePlayerCount(chr);
-								}
-							});
-						}
-					}
-				}
-			}
+        /// <summary>
+        /// Tells the AuthServer to change the role for this Account.
+        /// </summary>
+        /// <param name="role">the new role for this account</param>
+        /// <returns>true if the role was set; false otherwise</returns>
+        /// <remarks>Requires IO-Context</remarks>
+        public bool SetRole(RoleGroup role)
+        {
+            var wasStaff = Role.IsStaff;
+            if (!Role.Equals(role))
+            {
+                if (!RealmServer.Instance.AuthClient.Channel.SetAccountRole(AccountId, role.Name))
+                {
+                    return false;
+                }
 
-			return true;
-		}
+                Role = role;
+                if (wasStaff != role.IsStaff)
+                {
+                    var chr = ActiveCharacter;
+                    if (chr != null)
+                    {
+                        var map = chr.Map;
+                        var context = chr.ContextHandler;
+                        if (context != null)
+                        {
+                            context.AddMessage(() =>
+                            {
+                                if (!chr.IsInWorld || chr.Map != context)
+                                {
+                                    return;
+                                }
 
-		public bool SetAccountActive(bool active, DateTime? statusUntil)
-		{
-			if (!RealmServer.Instance.AuthClient.Channel.SetAccountActive(AccountId, active, statusUntil))
-			{
-				return false;
-			}
+                                if (wasStaff)
+                                {
+                                    // not staff anymore
+                                    World.StaffMemberCount--;
+                                    map.IncreasePlayerCount(chr);
+                                }
+                                else
+                                {
+                                    // new staff
+                                    World.StaffMemberCount++;
+                                    map.DecreasePlayerCount(chr);
+                                }
+                            });
+                        }
+                    }
+                }
+            }
 
-			IsActive = active;
-			StatusUntil = statusUntil;
-			return true;
-		}
+            return true;
+        }
 
-		/// <summary>
-		/// Sets the e-mail address for this account and persists it to the DB.
-		/// Blocking call. Make sure to call this from outside the Map-Thread.
-		/// </summary>
-		/// <param name="email">the new e-mail address for this account</param>
-		/// <returns>true if the e-mail address was set; false otherwise</returns>
-		/// <remarks>Requires IO-Context</remarks>
-		public bool SetEmail(string email)
-		{
-			if (EmailAddress != email)
-			{
-				if (!RealmServer.Instance.AuthClient.Channel.SetAccountEmail(AccountId, email))
-				{
-					return false;
-				}
+        public bool SetAccountActive(bool active, DateTime? statusUntil)
+        {
+            if (!RealmServer.Instance.AuthClient.Channel.SetAccountActive(AccountId, active, statusUntil))
+            {
+                return false;
+            }
 
-				m_email = email;
-			}
+            IsActive = active;
+            StatusUntil = statusUntil;
+            return true;
+        }
 
-			return true;
-		}
+        /// <summary>
+        /// Sets the e-mail address for this account and persists it to the DB.
+        /// Blocking call. Make sure to call this from outside the Map-Thread.
+        /// </summary>
+        /// <param name="email">the new e-mail address for this account</param>
+        /// <returns>true if the e-mail address was set; false otherwise</returns>
+        /// <remarks>Requires IO-Context</remarks>
+        public bool SetEmail(string email)
+        {
+            if (EmailAddress != email)
+            {
+                if (!RealmServer.Instance.AuthClient.Channel.SetAccountEmail(AccountId, email))
+                {
+                    return false;
+                }
 
-		/// <summary>
-		/// Sets the password for this account and sends it to the Authserver to be saved.
-		/// Blocking call. Make sure to call this from outside the Map-Thread.
-		/// </summary>
-		/// <returns>true if the e-mail address was set; false otherwise</returns>
-		public bool SetPass(string oldPassStr, string passStr)
-		{
-			byte[] pass;
-			if (oldPassStr != null)
-			{
-				pass = SecureRemotePassword.GenerateCredentialsHash(Name, passStr);
-			}
-			else
-			{
-				pass = null;
-			}
-			return RealmServer.Instance.AuthClient.Channel.SetAccountPass(AccountId, oldPassStr, pass);
-		}
+                m_email = email;
+            }
 
-		/// <summary>
-		/// Reloads all characters belonging to this account from the database.
-		/// Blocking call. Make sure to call this from outside the Map-Thread.
-		/// </summary>
-		void LoadCharacters()
-		{
-			var chrs = CharacterRecord.FindAllOfAccount(this);
-			for (var i = 0; i < chrs.Length; i++)
-			{
-				var chr = chrs[i];
-				Characters.Add(chr);
-			}
-		}
+            return true;
+        }
 
-		/// <summary>
+        /// <summary>
+        /// Sets the password for this account and sends it to the Authserver to be saved.
+        /// Blocking call. Make sure to call this from outside the Map-Thread.
+        /// </summary>
+        /// <returns>true if the e-mail address was set; false otherwise</returns>
+        public bool SetPass(string oldPassStr, string passStr)
+        {
+            byte[] pass;
+            if (oldPassStr != null)
+            {
+                pass = SecureRemotePassword.GenerateCredentialsHash(Name, passStr);
+            }
+            else
+            {
+                pass = null;
+            }
+            return RealmServer.Instance.AuthClient.Channel.SetAccountPass(AccountId, oldPassStr, pass);
+        }
+
+        /// <summary>
+        /// Reloads all characters belonging to this account from the database.
+        /// Blocking call. Make sure to call this from outside the Map-Thread.
+        /// </summary>
+        private void LoadCharacters()
+        {
+            var chrs = CharacterRecord.FindAllOfAccount(this);
+            for (var i = 0; i < chrs.Length; i++)
+            {
+                var chr = chrs[i];
+                Characters.Add(chr);
+            }
+        }
+
+        /// <summary>
         /// Loads account based data, creates base data if no data is found.
         /// </summary>
-        void LoadAccountData()
+        private void LoadAccountData()
         {
             var adr = AccountDataRecord.GetAccountData(AccountId) ?? AccountDataRecord.InitializeNewAccount(AccountId);
 
             AccountData = adr;
         }
-		#endregion
 
-		public override string ToString()
-		{
-			return Name + " (Id: " + AccountId + ")";
-		}
+        #endregion Methods
 
-		/// <summary>
-		/// Called from within the IO-Context
-		/// </summary>
-		/// <param name="client"></param>
-		/// <param name="accountName"></param>
-		internal static void InitializeAccount(IRealmClient client, string accountName)
-		{
-			if (!client.IsConnected)
-			{
-				return;
-			}
+        public override string ToString()
+        {
+            return Name + " (Id: " + AccountId + ")";
+        }
 
-			if (RealmServer.Instance.IsAccountLoggedIn(accountName))
-			{
-				log.Info("Client ({0}) tried to use online Account: {1}.", client, accountName);
-				LoginHandler.SendAuthSessionErrorReply(client, LoginErrorCode.AUTH_ALREADY_ONLINE);
-			}
-			else if (!RealmServer.Instance.AuthClient.IsConnected)
-			{
-				LoginHandler.SendAuthSessionErrorReply(client, LoginErrorCode.AUTH_DB_BUSY);
-			}
-			else if (ValidateAuthentication(client, accountName))
-			{
-				// else request it from the AuthServer
-				var addr = client.ClientAddress;
-				if (addr == null)
-				{
-					return;
-				}
+        /// <summary>
+        /// Called from within the IO-Context
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="accountName"></param>
+        internal static void InitializeAccount(IRealmClient client, string accountName)
+        {
+            if (!client.IsConnected)
+            {
+                return;
+            }
 
-				var accountInfo = RealmServer.Instance.RequestAccountInfo(accountName, addr.GetAddressBytes());
+            if (RealmServer.Instance.IsAccountLoggedIn(accountName))
+            {
+                log.Info("Client ({0}) tried to use online Account: {1}.", client, accountName);
+                LoginHandler.SendAuthSessionErrorReply(client, LoginErrorCode.AUTH_ALREADY_ONLINE);
+            }
+            else if (!RealmServer.Instance.AuthClient.IsConnected)
+            {
+                LoginHandler.SendAuthSessionErrorReply(client, LoginErrorCode.AUTH_DB_BUSY);
+            }
+            else if (ValidateAuthentication(client, accountName))
+            {
+                // else request it from the AuthServer
+                var addr = client.ClientAddress;
+                if (addr == null)
+                {
+                    return;
+                }
 
-				if (accountInfo == null)
-				{
-					// Account not found
-					RealmServer.Instance.Error(client, Resources.FailedToRetrieveAccount, accountName);
+                var accountInfo = RealmServer.Instance.RequestAccountInfo(accountName, addr.GetAddressBytes());
 
-					LoginHandler.SendAuthSessionErrorReply(client, LoginErrorCode.AUTH_UNKNOWN_ACCOUNT);
-					return;
-				}
+                if (accountInfo == null)
+                {
+                    // Account not found
+                    RealmServer.Instance.Error(client, Resources.FailedToRetrieveAccount, accountName);
 
-				// create new Account with newly fetched account-info
-				var account = new RealmAccount(accountName, accountInfo);
+                    LoginHandler.SendAuthSessionErrorReply(client, LoginErrorCode.AUTH_UNKNOWN_ACCOUNT);
+                    return;
+                }
 
-				//if (!account.IsActive)
-				//{
-				//    // Account is inactive (banned)
-				//    LoginHandler.SendAuthSessionErrorReply(client, LoginErrorCode.AUTH_BANNED);
-				//    return;
-				//}
+                // create new Account with newly fetched account-info
+                var account = new RealmAccount(accountName, accountInfo);
 
-				if (RealmServerConfiguration.Status != RealmStatus.Open && !account.Role.IsStaff)
-				{
-					// RealmServer is locked and only staff members may join
-					LoginHandler.SendAuthSessionErrorReply(client, LoginErrorCode.AUTH_LOCKED_ENFORCED);
-					return;
-				}
+                //if (!account.IsActive)
+                //{
+                //    // Account is inactive (banned)
+                //    LoginHandler.SendAuthSessionErrorReply(client, LoginErrorCode.AUTH_BANNED);
+                //    return;
+                //}
 
-				RealmServer.Instance.RegisterAccount(account);
-				account.LoadCharacters();
-			    account.LoadAccountData();
+                if (RealmServerConfiguration.Status != RealmStatus.Open && !account.Role.IsStaff)
+                {
+                    // RealmServer is locked and only staff members may join
+                    LoginHandler.SendAuthSessionErrorReply(client, LoginErrorCode.AUTH_LOCKED_ENFORCED);
+                    return;
+                }
 
-				account.Client = client;
-				client.Account = account;
+                RealmServer.Instance.RegisterAccount(account);
+                account.LoadCharacters();
+                account.LoadAccountData();
 
-				log.Info("Account \"{0}\" logged in from {1}.", accountName, client.ClientAddress);
+                account.Client = client;
+                client.Account = account;
 
-				if (RealmServer.Instance.ClientCount > RealmServerConfiguration.MaxClientCount &&
-					!account.Role.MaySkipAuthQueue)
-				{
-					AuthQueue.EnqueueClient(client);
-				}
-				else
-				{
-					LoginHandler.InviteToRealm(client);
-				}
-			}
-		}
+                log.Info("Account \"{0}\" logged in from {1}.", accountName, client.ClientAddress);
 
-		/// <summary>
-		/// Validates the auth-info sent by the client.
-		/// Called within the IO-Queue's Context
-		/// </summary>
-		/// <returns>The session key or null if authentication failed</returns>
-		private static bool ValidateAuthentication(IRealmClient client, string accountName)
-		{
-			var authInfo = RealmServer.Instance.GetAuthenticationInfo(accountName);
+                if (RealmServer.Instance.ClientCount > RealmServerConfiguration.MaxClientCount &&
+                    !account.Role.MaySkipAuthQueue)
+                {
+                    AuthQueue.EnqueueClient(client);
+                }
+                else
+                {
+                    LoginHandler.InviteToRealm(client);
+                }
+            }
+        }
 
-			if (authInfo == null)
-			{
-				RealmServer.Instance.Error(client, Resources.FailedToRetrieveAccount, accountName);
+        /// <summary>
+        /// Validates the auth-info sent by the client.
+        /// Called within the IO-Queue's Context
+        /// </summary>
+        /// <returns>The session key or null if authentication failed</returns>
+        private static bool ValidateAuthentication(IRealmClient client, string accountName)
+        {
+            var authInfo = RealmServer.Instance.GetAuthenticationInfo(accountName);
 
-				LoginHandler.SendAuthSessionErrorReply(client, LoginErrorCode.AUTH_FAILED);
-			}
-			else
-			{
-				try
-				{
-					client.SessionKey = authInfo.SessionKey;
-					client.Info = ClientInformation.Deserialize(authInfo.SystemInformation);
+            if (authInfo == null)
+            {
+                RealmServer.Instance.Error(client, Resources.FailedToRetrieveAccount, accountName);
 
-					var srp = new SecureRemotePassword(accountName, authInfo.Verifier, authInfo.Salt);
+                LoginHandler.SendAuthSessionErrorReply(client, LoginErrorCode.AUTH_FAILED);
+            }
+            else
+            {
+                try
+                {
+                    client.SessionKey = authInfo.SessionKey;
+                    client.Info = ClientInformation.Deserialize(authInfo.SystemInformation);
 
-					BigInteger clientVerifier = srp.Hash(srp.Username, new byte[4], client.ClientSeed, RealmServer.Instance.AuthSeed, client.SessionKey);
+                    var srp = new SecureRemotePassword(accountName, authInfo.Verifier, authInfo.Salt);
 
-					if (clientVerifier != client.ClientDigest)
-					{
-						LoginHandler.SendAuthSessionErrorReply(client, LoginErrorCode.AUTH_FAILED);
-					}
-					else
-					{
-						return true;
-					}
-				}
-				catch (Exception e)
-				{
-					LogUtil.ErrorException(e, false, "Failed to validate authentication of Account " + accountName);
-					LoginHandler.SendAuthSessionErrorReply(client, LoginErrorCode.AUTH_FAILED);
-				}
-			}
-			return false;
-		}
+                    BigInteger clientVerifier = srp.Hash(srp.Username, new byte[4], client.ClientSeed, RealmServer.Instance.AuthSeed, client.SessionKey);
 
-		internal void OnLogin()
-		{
-			var evt = LoggedIn;
-			if (evt != null)
-			{
-				evt(this);
-			}
-		}
+                    if (clientVerifier != client.ClientDigest)
+                    {
+                        LoginHandler.SendAuthSessionErrorReply(client, LoginErrorCode.AUTH_FAILED);
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                }
+                catch (Exception e)
+                {
+                    LogUtil.ErrorException(e, false, "Failed to validate authentication of Account " + accountName);
+                    LoginHandler.SendAuthSessionErrorReply(client, LoginErrorCode.AUTH_FAILED);
+                }
+            }
+            return false;
+        }
 
-		internal void OnLogout()
-		{
-		    AccountData.Update();
+        internal void OnLogin()
+        {
+            var evt = LoggedIn;
+            if (evt != null)
+            {
+                evt(this);
+            }
+        }
 
-			var evt = LoggedOut;
-			if (evt != null)
-			{
-				evt(this);
-			}
-		}
-	}
+        internal void OnLogout()
+        {
+            AccountData.Update();
+
+            var evt = LoggedOut;
+            if (evt != null)
+            {
+                evt(this);
+            }
+        }
+    }
 }

@@ -22,9 +22,9 @@ using WCell.RealmServer.Network;
 
 namespace WCell.RealmServer.Handlers
 {
-	/// <summary>
-	/// These commands can be used by GMs through WoW's internal console
-	/// </summary>
+    /// <summary>
+    /// These commands can be used by GMs through WoW's internal console
+    /// </summary>
     public static class ClientConsoleCommandHandler
     {
         // console command "setrawpos x y z o"
@@ -34,11 +34,11 @@ namespace WCell.RealmServer.Handlers
             var pos = packet.ReadVector3();
             float orientation = packet.ReadFloat();
 
-			var map = client.ActiveCharacter.Map;
-			if (map != null)
-			{
-				client.ActiveCharacter.TeleportTo(map, ref pos);
-			}
+            var map = client.ActiveCharacter.Map;
+            if (map != null)
+            {
+                client.ActiveCharacter.TeleportTo(map, ref pos);
+            }
         }
 
         // console command "worldport mapId x y z o"
@@ -46,16 +46,16 @@ namespace WCell.RealmServer.Handlers
         public static void HandleWorldTeleport(IRealmClient client, RealmPacketIn packet)
         {
             uint time = packet.ReadUInt32();
-			MapId mapId = (MapId)packet.ReadUInt32();
+            MapId mapId = (MapId)packet.ReadUInt32();
 
-			var pos = packet.ReadVector3();
+            var pos = packet.ReadVector3();
             float orientation = packet.ReadFloat(); // in client specified as degrees
 
-			var map = World.GetNonInstancedMap(mapId);
-			if (map != null)
-			{
-				client.ActiveCharacter.TeleportTo(map, ref pos);
-			}
+            var map = World.GetNonInstancedMap(mapId);
+            if (map != null)
+            {
+                client.ActiveCharacter.TeleportTo(map, ref pos);
+            }
         }
 
         // console command "whois accountName"

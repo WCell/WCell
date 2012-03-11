@@ -21,51 +21,51 @@ using WCell.RealmServer.Spells.Auras.Misc;
 
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
-	public class ManaShieldHandler : AttackEventEffectHandler
-	{
-		private float factor, factorInverse;
-		private int remaining;
+    public class ManaShieldHandler : AttackEventEffectHandler
+    {
+        private float factor, factorInverse;
+        private int remaining;
 
-		protected override void Apply()
-		{
-			factor = (SpellEffect.ProcValue != 0 ? SpellEffect.ProcValue : 1);
-			factorInverse = 1 / factor;
-			remaining = EffectValue;
+        protected override void Apply()
+        {
+            factor = (SpellEffect.ProcValue != 0 ? SpellEffect.ProcValue : 1);
+            factorInverse = 1 / factor;
+            remaining = EffectValue;
 
-			base.Apply();
-		}
+            base.Apply();
+        }
 
-		public override void OnDefend(DamageAction action)
-		{
-			var defender = Owner;	// same as action.Victim
-			var power = defender.Power;
-			var damage = action.Damage;
+        public override void OnDefend(DamageAction action)
+        {
+            var defender = Owner;	// same as action.Victim
+            var power = defender.Power;
+            var damage = action.Damage;
 
-			var drainAmount = Math.Min(damage, (int)(power * factorInverse));	// figure out how much to drain
-			if (remaining < drainAmount)
-			{
-				// shield is used up
-				drainAmount = remaining;
-				remaining = 0;
-				m_aura.Remove(false);
-			}
-			else
-			{
-				remaining -= drainAmount;
-			}
+            var drainAmount = Math.Min(damage, (int)(power * factorInverse));	// figure out how much to drain
+            if (remaining < drainAmount)
+            {
+                // shield is used up
+                drainAmount = remaining;
+                remaining = 0;
+                m_aura.Remove(false);
+            }
+            else
+            {
+                remaining -= drainAmount;
+            }
 
-			drainAmount = (int)(drainAmount * factor);
+            drainAmount = (int)(drainAmount * factor);
 
-			var caster = Aura.CasterUnit;
-			if (caster != null)
-			{
-				// see MageArcaneArcaneShielding
-				drainAmount = caster.Auras.GetModifiedInt(SpellModifierType.HealingOrPowerGain, m_spellEffect.Spell, drainAmount);
-			}
-			defender.Power = power - drainAmount;					// drain power
-			damage -= drainAmount;									// reduce damage
+            var caster = Aura.CasterUnit;
+            if (caster != null)
+            {
+                // see MageArcaneArcaneShielding
+                drainAmount = caster.Auras.GetModifiedInt(SpellModifierType.HealingOrPowerGain, m_spellEffect.Spell, drainAmount);
+            }
+            defender.Power = power - drainAmount;					// drain power
+            damage -= drainAmount;									// reduce damage
 
-			action.Damage = damage;
-		}
-	}
+            action.Damage = damage;
+        }
+    }
 };

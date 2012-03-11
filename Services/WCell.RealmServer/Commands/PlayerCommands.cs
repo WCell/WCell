@@ -17,361 +17,377 @@ using WCell.Util.Variables;
 
 namespace WCell.RealmServer.Commands
 {
-	#region Save
-	public class SaveCommand : RealmServerCommand
-	{
-		protected SaveCommand() { }
+    #region Save
 
-		protected override void Initialize()
-		{
-			Init("Save");
-			EnglishParamInfo = "";
-			EnglishDescription = "Updates all changes on the given Character";
-		}
+    public class SaveCommand : RealmServerCommand
+    {
+        protected SaveCommand() { }
 
-		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
-		{
-			trigger.Reply("Saving...");
-			var chr = (Character)trigger.Args.Target;
+        protected override void Initialize()
+        {
+            Init("Save");
+            EnglishParamInfo = "";
+            EnglishDescription = "Updates all changes on the given Character";
+        }
 
-			RealmServer.IOQueue.AddMessage(new Message(() =>
-			{
-				if (chr == null)
-				{
-					return;
-				}
+        public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+        {
+            trigger.Reply("Saving...");
+            var chr = (Character)trigger.Args.Target;
 
-				if (chr.SaveNow())
-				{
-					trigger.Reply("Done.");
-				}
-				else
-				{
-					trigger.Reply("Could not save \"" + chr + "\" to DB.");
-				}
-			}));
-		}
+            RealmServer.IOQueue.AddMessage(new Message(() =>
+            {
+                if (chr == null)
+                {
+                    return;
+                }
 
-		public override ObjectTypeCustom TargetTypes
-		{
-			get { return ObjectTypeCustom.Player; }
-		}
-	}
-	#endregion
+                if (chr.SaveNow())
+                {
+                    trigger.Reply("Done.");
+                }
+                else
+                {
+                    trigger.Reply("Could not save \"" + chr + "\" to DB.");
+                }
+            }));
+        }
 
-	#region Email
-	public class EmailCommand : RealmServerCommand
-	{
-		protected EmailCommand() { }
+        public override ObjectTypeCustom TargetTypes
+        {
+            get { return ObjectTypeCustom.Player; }
+        }
+    }
 
-		protected override void Initialize()
-		{
-			Init("Email", "SetEmail");
-			EnglishParamInfo = "<email>";
-			EnglishDescription = "Sets the Account's current email address.";
-		}
+    #endregion Save
 
-		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
-		{
-			var email = trigger.Text.NextWord();
+    #region Email
 
-			if (!Utility.IsValidEMailAddress(email))
-			{
-				trigger.Reply("Invalid Mail address.");
-			}
-			else
-			{
-				trigger.Reply("Setting mail address to " + email + "...");
+    public class EmailCommand : RealmServerCommand
+    {
+        protected EmailCommand() { }
 
-				RealmServer.IOQueue.AddMessage(new Message(() =>
-				{
-					var chr = ((Character)trigger.Args.Target);
+        protected override void Initialize()
+        {
+            Init("Email", "SetEmail");
+            EnglishParamInfo = "<email>";
+            EnglishDescription = "Sets the Account's current email address.";
+        }
 
-					if (chr.Account.SetEmail(email))
-					{
-						trigger.Reply("Done.");
-					}
-					else
-					{
-						trigger.Reply("Could not change email-address.");
-					}
-				}));
-			}
-		}
-	}
-	#endregion
+        public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+        {
+            var email = trigger.Text.NextWord();
 
-	#region Password
-	/// <summary>
-	/// TODO: Figure out how to verify password
-	/// TODO: PW should be queried after the command has been executed
-	/// </summary>
-	public class PasswordCommand : RealmServerCommand
-	{
-		private static Logger log = LogManager.GetCurrentClassLogger();
+            if (!Utility.IsValidEMailAddress(email))
+            {
+                trigger.Reply("Invalid Mail address.");
+            }
+            else
+            {
+                trigger.Reply("Setting mail address to " + email + "...");
 
-		protected PasswordCommand() { }
+                RealmServer.IOQueue.AddMessage(new Message(() =>
+                {
+                    var chr = ((Character)trigger.Args.Target);
 
-		protected override void Initialize()
-		{
-			Init("Password", "Pass");
-			EnglishParamInfo = "<oldpw> <newpw> <newpw>";
-			EnglishDescription = "Changes your password.";
-		}
+                    if (chr.Account.SetEmail(email))
+                    {
+                        trigger.Reply("Done.");
+                    }
+                    else
+                    {
+                        trigger.Reply("Could not change email-address.");
+                    }
+                }));
+            }
+        }
+    }
 
-		public override RoleStatus RequiredStatusDefault
-		{
-			get { return RoleStatus.Player; }
-		}
+    #endregion Email
 
-		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
-		{
-			var self = trigger.Args.Character == trigger.Args.Target;
-			if (!self && trigger.Args.Character != null &&
-				trigger.Args.Character.Role < RoleStatus.Admin)
-			{
-				trigger.Reply("Only Admins or Account-owners are allowed to change Account passwords.");
-				return;
-			}
+    #region Password
 
-			string oldPass;
-			if (self)
-			{
-				oldPass = trigger.Text.NextWord();
-			}
-			else
-			{
-				oldPass = null;
-			}
+    /// <summary>
+    /// TODO: Figure out how to verify password
+    /// TODO: PW should be queried after the command has been executed
+    /// </summary>
+    public class PasswordCommand : RealmServerCommand
+    {
+        private static Logger log = LogManager.GetCurrentClassLogger();
 
-			var pass = trigger.Text.NextWord();
-			var newPassConfirm = trigger.Text.NextWord();
+        protected PasswordCommand() { }
 
-			if (pass.Length < SecureRemotePassword.MinPassLength)
-			{
-				trigger.Reply("Account password must at least be {0} characters long.", SecureRemotePassword.MinPassLength);
-			}
-			else if (pass.Length > SecureRemotePassword.MaxPassLength)
-			{
-				trigger.Reply("Account password length must not exceed {0} characters.", SecureRemotePassword.MaxPassLength);
-			}
-			else if (pass != newPassConfirm)
-			{
-				trigger.Reply("Passwords don't match.");
-			}
-			else
-			{
-				trigger.Reply("Setting password...");
-				//if (trigger.Args.Target != trigger.Args.Character && trigger.Args.Character != null)
-				//{
-				//    log.Info("{0} is changing {1}'s Password.", trigger.Args.Character, trigger.Args.Target);
-				//}
+        protected override void Initialize()
+        {
+            Init("Password", "Pass");
+            EnglishParamInfo = "<oldpw> <newpw> <newpw>";
+            EnglishDescription = "Changes your password.";
+        }
 
-				RealmServer.IOQueue.AddMessage(new Message(() =>
-				{
-					var chr = ((Character)trigger.Args.Target);
+        public override RoleStatus RequiredStatusDefault
+        {
+            get { return RoleStatus.Player; }
+        }
 
-					if (chr.Account.SetPass(oldPass, pass))
-					{
-						trigger.Reply("Done.");
-					}
-					else
-					{
-						trigger.Reply("Unable to set Password. Make sure your old password is correct.");
-					}
-				}));
-			}
-		}
+        public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+        {
+            var self = trigger.Args.Character == trigger.Args.Target;
+            if (!self && trigger.Args.Character != null &&
+                trigger.Args.Character.Role < RoleStatus.Admin)
+            {
+                trigger.Reply("Only Admins or Account-owners are allowed to change Account passwords.");
+                return;
+            }
 
-		public override ObjectTypeCustom TargetTypes
-		{
-			get { return ObjectTypeCustom.Player; }
-		}
-	}
-	#endregion
+            string oldPass;
+            if (self)
+            {
+                oldPass = trigger.Text.NextWord();
+            }
+            else
+            {
+                oldPass = null;
+            }
 
-	#region Account
-	//public class AccountCommand : RealmServerCommand
-	//{
-	//    protected override void Initialize()
-	//    {
-	//        Init("Account", "Acc");
-	//        ParamInfo = "";
-	//        Description = "Provides several commands to retrieve and change Account information.";
-	//    }
+            var pass = trigger.Text.NextWord();
+            var newPassConfirm = trigger.Text.NextWord();
 
-	//    public override ObjectTypeCustom TargetTypes
-	//    {
-	//        get
-	//        {
-	//            return ObjectTypeCustom.Player;
-	//        }
-	//    }
-	//}
-	#endregion
+            if (pass.Length < SecureRemotePassword.MinPassLength)
+            {
+                trigger.Reply("Account password must at least be {0} characters long.", SecureRemotePassword.MinPassLength);
+            }
+            else if (pass.Length > SecureRemotePassword.MaxPassLength)
+            {
+                trigger.Reply("Account password length must not exceed {0} characters.", SecureRemotePassword.MaxPassLength);
+            }
+            else if (pass != newPassConfirm)
+            {
+                trigger.Reply("Passwords don't match.");
+            }
+            else
+            {
+                trigger.Reply("Setting password...");
+                //if (trigger.Args.Target != trigger.Args.Character && trigger.Args.Character != null)
+                //{
+                //    log.Info("{0} is changing {1}'s Password.", trigger.Args.Character, trigger.Args.Target);
+                //}
 
-	#region Where
-	public class WhereCommand : RealmServerCommand
-	{
-		protected WhereCommand() { }
+                RealmServer.IOQueue.AddMessage(new Message(() =>
+                {
+                    var chr = ((Character)trigger.Args.Target);
 
-		protected override void Initialize()
-		{
-			Init("Where", "Wh");
-			EnglishDescription = "Tells you information about your location";
-		}
+                    if (chr.Account.SetPass(oldPass, pass))
+                    {
+                        trigger.Reply("Done.");
+                    }
+                    else
+                    {
+                        trigger.Reply("Unable to set Password. Make sure your old password is correct.");
+                    }
+                }));
+            }
+        }
 
-		public override RoleStatus RequiredStatusDefault
-		{
-			get { return RoleStatus.Player; }
-		}
+        public override ObjectTypeCustom TargetTypes
+        {
+            get { return ObjectTypeCustom.Player; }
+        }
+    }
 
-		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
-		{
-			WorldObject obj = trigger.Args.Target;
+    #endregion Password
 
-			var zone = obj.Zone;
-			string zoneStr;
-			if (zone != null)
-			{
-				zoneStr = zone.Id.ToString();
+    #region Account
 
-				while ((zone = zone.ParentZone) != null)
-				{
-					zoneStr += " in " + zone;
-				}
-			}
-			else
-			{
-				zoneStr = "<null>";
-			}
+    //public class AccountCommand : RealmServerCommand
+    //{
+    //    protected override void Initialize()
+    //    {
+    //        Init("Account", "Acc");
+    //        ParamInfo = "";
+    //        Description = "Provides several commands to retrieve and change Account information.";
+    //    }
 
-			var height = obj.TerrainHeight;
-			trigger.Reply("Map: " + obj.Map + ", Zone: " + zoneStr);
-			trigger.Reply("Position X: " + obj.Position.X + ", Y: " + obj.Position.Y + ", Z: " + obj.Position.Z + ", O: " + obj.Orientation +
-				"(" + Math.Abs(obj.Position.Z - height) + " yds from Ground)");
+    //    public override ObjectTypeCustom TargetTypes
+    //    {
+    //        get
+    //        {
+    //            return ObjectTypeCustom.Player;
+    //        }
+    //    }
+    //}
 
-			int tileX, tileY;
-			PositionUtil.GetTileXYForPos(obj.Position, out tileX, out tileY);
-			trigger.ReplyFormat("Tile: X={0}, Y={1} (Collision Data {2})", tileX, tileY, 
-				obj.Map.Terrain.IsAvailable(tileX, tileY) ? 
-					ChatUtility.Colorize("Available", Color.Green) :
-					ChatUtility.Colorize("Unavailable", Color.Red));
-		}
+    #endregion Account
 
-		public override ObjectTypeCustom TargetTypes
-		{
-			get { return ObjectTypeCustom.All; }
-		}
-	}
-	#endregion
+    #region Where
 
-	#region Info
-	public class InfoCommand : RealmServerCommand
-	{
-		[Variable("MaxPlayerListCount")]
-		public static int MaxListCount = 100;
+    public class WhereCommand : RealmServerCommand
+    {
+        protected WhereCommand() { }
 
-		protected InfoCommand() { }
+        protected override void Initialize()
+        {
+            Init("Where", "Wh");
+            EnglishDescription = "Tells you information about your location";
+        }
 
-		public override RoleStatus RequiredStatusDefault
-		{
-			get { return RoleStatus.Player; }
-		}
+        public override RoleStatus RequiredStatusDefault
+        {
+            get { return RoleStatus.Player; }
+        }
 
-		protected override void Initialize()
-		{
-			Init("Info", "I", "Address", "Addr");
-			EnglishParamInfo = "[-l]";
-			EnglishDescription = "Gives some server info. -l lists all players (if not too many).";
-		}
+        public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+        {
+            WorldObject obj = trigger.Args.Target;
 
-		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
-		{
-			trigger.Reply(RealmServer.Title + " located at: " + RealmServerConfiguration.ExternalAddress + " (Required Client: " + WCellInfo.RequiredVersion.BasicString + ")");
-			trigger.Reply("Server has been running for {0}.", RealmServer.RunTime.Format());
-			trigger.Reply("There are {0} players online (Alliance: {1}, Horde: {2}).",
-						  World.CharacterCount, World.AllianceCharCount, World.HordeCharCount);
+            var zone = obj.Zone;
+            string zoneStr;
+            if (zone != null)
+            {
+                zoneStr = zone.Id.ToString();
 
-			var mod = trigger.Text.NextModifiers();
-			if (mod == "l")
-			{
-				if (World.CharacterCount <= MaxListCount)
-				{
-					var i = 0;
-					foreach (var chr in World.GetAllCharacters())
-					{
-						i++;
-						trigger.Reply("{0}. {1} ({2})", i, chr.Name, chr.FactionGroup);
-					}
-				}
-				else
-				{
-					trigger.Reply("Too many players to list.");
-				}
-			}
-		}
-	}
-	#endregion
+                while ((zone = zone.ParentZone) != null)
+                {
+                    zoneStr += " in " + zone;
+                }
+            }
+            else
+            {
+                zoneStr = "<null>";
+            }
 
-	#region GodMode
-	public class GodModeCommand : RealmServerCommand
-	{
-		protected GodModeCommand() { }
+            var height = obj.TerrainHeight;
+            trigger.Reply("Map: " + obj.Map + ", Zone: " + zoneStr);
+            trigger.Reply("Position X: " + obj.Position.X + ", Y: " + obj.Position.Y + ", Z: " + obj.Position.Z + ", O: " + obj.Orientation +
+                "(" + Math.Abs(obj.Position.Z - height) + " yds from Ground)");
 
-		protected override void Initialize()
-		{
-			Init("GodMode", "GM");
-			EnglishParamInfo = "[0|1]";
-			EnglishDescription = "Toggles the GodMode";
-		}
+            int tileX, tileY;
+            PositionUtil.GetTileXYForPos(obj.Position, out tileX, out tileY);
+            trigger.ReplyFormat("Tile: X={0}, Y={1} (Collision Data {2})", tileX, tileY,
+                obj.Map.Terrain.IsAvailable(tileX, tileY) ?
+                    ChatUtility.Colorize("Available", Color.Green) :
+                    ChatUtility.Colorize("Unavailable", Color.Red));
+        }
 
-		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
-		{
-			var target = (Character)trigger.Args.Target;
-			var mode = (!trigger.Text.HasNext && !target.GodMode) || trigger.Text.NextBool();
-			target.GodMode = mode;
-			trigger.Reply("GodMode " + (mode ? "ON" : "OFF"));
-		}
+        public override ObjectTypeCustom TargetTypes
+        {
+            get { return ObjectTypeCustom.All; }
+        }
+    }
 
-		public override ObjectTypeCustom TargetTypes
-		{
-			get
-			{
-				return ObjectTypeCustom.Player;
-			}
-		}
-	}
-	#endregion
+    #endregion Where
 
-	#region Notify
-	public class NotifyCommand : RealmServerCommand
-	{
-		protected NotifyCommand() { }
+    #region Info
 
-		protected override void Initialize()
-		{
-			Init("Notify", "SendNotification");
-			EnglishParamInfo = "<text>";
-			EnglishDescription = "Notifies the target with a flashing message.";
-		}
+    public class InfoCommand : RealmServerCommand
+    {
+        [Variable("MaxPlayerListCount")]
+        public static int MaxListCount = 100;
 
-		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
-		{
-			var msg = trigger.Text.Remainder;
-			if (msg.Length > 0)
-			{
-				((Character)trigger.Args.Target).Notify(msg);
-			}
-		}
+        protected InfoCommand() { }
 
-		public override ObjectTypeCustom TargetTypes
-		{
-			get
-			{
-				return ObjectTypeCustom.Player;
-			}
-		}
-	}
-	#endregion
+        public override RoleStatus RequiredStatusDefault
+        {
+            get { return RoleStatus.Player; }
+        }
+
+        protected override void Initialize()
+        {
+            Init("Info", "I", "Address", "Addr");
+            EnglishParamInfo = "[-l]";
+            EnglishDescription = "Gives some server info. -l lists all players (if not too many).";
+        }
+
+        public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+        {
+            trigger.Reply(RealmServer.Title + " located at: " + RealmServerConfiguration.ExternalAddress + " (Required Client: " + WCellInfo.RequiredVersion.BasicString + ")");
+            trigger.Reply("Server has been running for {0}.", RealmServer.RunTime.Format());
+            trigger.Reply("There are {0} players online (Alliance: {1}, Horde: {2}).",
+                          World.CharacterCount, World.AllianceCharCount, World.HordeCharCount);
+
+            var mod = trigger.Text.NextModifiers();
+            if (mod == "l")
+            {
+                if (World.CharacterCount <= MaxListCount)
+                {
+                    var i = 0;
+                    foreach (var chr in World.GetAllCharacters())
+                    {
+                        i++;
+                        trigger.Reply("{0}. {1} ({2})", i, chr.Name, chr.FactionGroup);
+                    }
+                }
+                else
+                {
+                    trigger.Reply("Too many players to list.");
+                }
+            }
+        }
+    }
+
+    #endregion Info
+
+    #region GodMode
+
+    public class GodModeCommand : RealmServerCommand
+    {
+        protected GodModeCommand() { }
+
+        protected override void Initialize()
+        {
+            Init("GodMode", "GM");
+            EnglishParamInfo = "[0|1]";
+            EnglishDescription = "Toggles the GodMode";
+        }
+
+        public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+        {
+            var target = (Character)trigger.Args.Target;
+            var mode = (!trigger.Text.HasNext && !target.GodMode) || trigger.Text.NextBool();
+            target.GodMode = mode;
+            trigger.Reply("GodMode " + (mode ? "ON" : "OFF"));
+        }
+
+        public override ObjectTypeCustom TargetTypes
+        {
+            get
+            {
+                return ObjectTypeCustom.Player;
+            }
+        }
+    }
+
+    #endregion GodMode
+
+    #region Notify
+
+    public class NotifyCommand : RealmServerCommand
+    {
+        protected NotifyCommand() { }
+
+        protected override void Initialize()
+        {
+            Init("Notify", "SendNotification");
+            EnglishParamInfo = "<text>";
+            EnglishDescription = "Notifies the target with a flashing message.";
+        }
+
+        public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+        {
+            var msg = trigger.Text.Remainder;
+            if (msg.Length > 0)
+            {
+                ((Character)trigger.Args.Target).Notify(msg);
+            }
+        }
+
+        public override ObjectTypeCustom TargetTypes
+        {
+            get
+            {
+                return ObjectTypeCustom.Player;
+            }
+        }
+    }
+
+    #endregion Notify
 }

@@ -20,33 +20,33 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Effects
 {
-	public class InterruptCastEffectHandler : SpellEffectHandler
-	{
-		public InterruptCastEffectHandler(SpellCast cast, SpellEffect effect)
-			: base(cast, effect)
-		{
-		}
+    public class InterruptCastEffectHandler : SpellEffectHandler
+    {
+        public InterruptCastEffectHandler(SpellCast cast, SpellEffect effect)
+            : base(cast, effect)
+        {
+        }
 
-		public override SpellFailedReason InitializeTarget(WorldObject target)
-		{
-			//if (!target.IsUsingSpell)
-			//{
-			//    return SpellFailedReason.
-			//}
-			return base.InitializeTarget(target);
-		}
+        public override SpellFailedReason InitializeTarget(WorldObject target)
+        {
+            //if (!target.IsUsingSpell)
+            //{
+            //    return SpellFailedReason.
+            //}
+            return base.InitializeTarget(target);
+        }
 
-		protected override void Apply(WorldObject target)
-		{
-			if (target.IsUsingSpell)
-			{
-				target.SpellCast.Cancel(SpellFailedReason.Interrupted);	
-			}
-		}
+        protected override void Apply(WorldObject target)
+        {
+            if (target.IsUsingSpell)
+            {
+                target.SpellCast.Cancel(SpellFailedReason.Interrupted);
+            }
+        }
 
-		public override ObjectTypes TargetType
-		{
-			get { return ObjectTypes.Unit; }
-		}
-	}
+        public override ObjectTypes TargetType
+        {
+            get { return ObjectTypes.Unit; }
+        }
+    }
 }

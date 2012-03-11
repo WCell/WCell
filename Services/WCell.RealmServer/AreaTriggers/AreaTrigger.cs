@@ -9,53 +9,54 @@ using WCell.Util.Graphics;
 
 namespace WCell.RealmServer.AreaTriggers
 {
-	/// <summary>
-	/// AreaTriggers are invisible areas ingame that are always known by the client.
-	/// An AreaTrigger is triggered when a Character steps on it.
-	/// </summary>
-	public partial class AreaTrigger
-	{
-		public readonly uint Id;
-		public readonly AreaTriggerId ATId;
+    /// <summary>
+    /// AreaTriggers are invisible areas ingame that are always known by the client.
+    /// An AreaTrigger is triggered when a Character steps on it.
+    /// </summary>
+    public partial class AreaTrigger
+    {
+        public readonly uint Id;
+        public readonly AreaTriggerId ATId;
 
-		public readonly MapId MapId;
-		public Vector3 Position;
-		public readonly float Radius;
+        public readonly MapId MapId;
+        public Vector3 Position;
+        public readonly float Radius;
         public readonly float BoxLength;
         public readonly float BoxWidth;
         public readonly float BoxHeight;
         public readonly float BoxYaw;
 
-		const float tollerance = 55.0f;
-		[NotPersistent] public readonly float MaxDistSq;
-        
-		[NotPersistent]
-		public ATTemplate Template;
+        const float tollerance = 55.0f;
+        [NotPersistent]
+        public readonly float MaxDistSq;
 
-		public AreaTrigger(uint id, MapId mapId, float x, float y, float z, float radius, float boxLength, float boxWidth, float boxHeight, float boxYaw)
-		{
-			Id = id;
-			ATId = (AreaTriggerId)Id;
-			MapId = mapId;
-			Position.X = x;
-			Position.Y = y;
-			Position.Z = z;
-			Radius = radius;
+        [NotPersistent]
+        public ATTemplate Template;
+
+        public AreaTrigger(uint id, MapId mapId, float x, float y, float z, float radius, float boxLength, float boxWidth, float boxHeight, float boxYaw)
+        {
+            Id = id;
+            ATId = (AreaTriggerId)Id;
+            MapId = mapId;
+            Position.X = x;
+            Position.Y = y;
+            Position.Z = z;
+            Radius = radius;
             BoxLength = boxLength;
             BoxWidth = boxWidth;
             BoxHeight = boxHeight;
             BoxYaw = boxYaw;
 
-			MaxDistSq = (Radius + tollerance) * (Radius + tollerance);
-		}
+            MaxDistSq = (Radius + tollerance) * (Radius + tollerance);
+        }
 
-		/// <summary>
-		/// Returns whether the given object is within the bounds of this AreaTrigger.
-		/// </summary>
-		/// <param name="chr"></param>
-		/// <returns></returns>
-		public bool IsInArea(Character chr)
-		{
+        /// <summary>
+        /// Returns whether the given object is within the bounds of this AreaTrigger.
+        /// </summary>
+        /// <param name="chr"></param>
+        /// <returns></returns>
+        public bool IsInArea(Character chr)
+        {
             if (chr.Map.Id != MapId)
             {
                 return false;
@@ -67,8 +68,8 @@ namespace WCell.RealmServer.AreaTriggers
 
                 if (distSq > MaxDistSq)
                 {
-                	LogManager.GetCurrentClassLogger().Warn("Character {0} tried to trigger {1} while being {2} yards away.",
-						chr, this, Math.Sqrt(distSq));
+                    LogManager.GetCurrentClassLogger().Warn("Character {0} tried to trigger {1} while being {2} yards away.",
+                        chr, this, Math.Sqrt(distSq));
                     return false;
                 }
             }
@@ -90,96 +91,98 @@ namespace WCell.RealmServer.AreaTriggers
                 var dy = rotPlayerY - Position.Y;
                 var dz = chr.Position.Z - Position.Z;
 
-				if ((Math.Abs(dx) > BoxLength / 2 + tollerance) ||
-					(Math.Abs(dy) > BoxWidth / 2 + tollerance) ||
-					(Math.Abs(dz) > BoxHeight / 2 + tollerance))
+                if ((Math.Abs(dx) > BoxLength / 2 + tollerance) ||
+                    (Math.Abs(dy) > BoxWidth / 2 + tollerance) ||
+                    (Math.Abs(dz) > BoxHeight / 2 + tollerance))
                 {
                     return false;
                 }
             }
 
-		    return true;
-		}
+            return true;
+        }
 
-		/// <summary>
-		/// Does general checks, for whether the given Character may trigger this and sends
-		/// an error response if not.
-		/// </summary>
-		/// <param name="chr"></param>
-		/// <returns></returns>
-		public bool CheckTrigger(Character chr)
-		{
-			if (!IsInArea(chr))
-			{
-				return false;
-			}
+        /// <summary>
+        /// Does general checks, for whether the given Character may trigger this and sends
+        /// an error response if not.
+        /// </summary>
+        /// <param name="chr"></param>
+        /// <returns></returns>
+        public bool CheckTrigger(Character chr)
+        {
+            if (!IsInArea(chr))
+            {
+                return false;
+            }
             if (chr.IsOnTaxi)
             {
                 return false;
             }
-		    if (Template != null && chr.Level < Template.RequiredLevel)
-			{
-				Handlers.AreaTriggerHandler.SendAreaTriggerMessage(chr.Client, "You need at least level " + Template.RequiredLevel + ".");
-				return false;
-			}
-			return true;
-		}
+            if (Template != null && chr.Level < Template.RequiredLevel)
+            {
+                Handlers.AreaTriggerHandler.SendAreaTriggerMessage(chr.Client, "You need at least level " + Template.RequiredLevel + ".");
+                return false;
+            }
+            return true;
+        }
 
-		/// <summary>
-		/// Triggers this trigger
-		/// </summary>
-		/// <remarks>Requires map context.</remarks>
-		public bool Trigger(Character chr)
-		{
-			if (CheckTrigger(chr))
-			{
-				NotifyTriggered(this, chr);
-				if (Template != null)
-				{
-					return Template.Handler(chr, this);
-				}
-				return true;
-			}
-			return false;
-		}
+        /// <summary>
+        /// Triggers this trigger
+        /// </summary>
+        /// <remarks>Requires map context.</remarks>
+        public bool Trigger(Character chr)
+        {
+            if (CheckTrigger(chr))
+            {
+                NotifyTriggered(this, chr);
+                if (Template != null)
+                {
+                    return Template.Handler(chr, this);
+                }
+                return true;
+            }
+            return false;
+        }
 
-		#region Events
-		internal void NotifyTriggered(AreaTrigger at, Character chr)
-		{
-			var evt = Triggered;
-			if (evt != null)
-			{
-				evt(at, chr);
-			}
-		}
-		#endregion
+        #region Events
 
-		public override string ToString()
-		{
+        internal void NotifyTriggered(AreaTrigger at, Character chr)
+        {
+            var evt = Triggered;
+            if (evt != null)
+            {
+                evt(at, chr);
+            }
+        }
+
+        #endregion Events
+
+        public override string ToString()
+        {
             if (Template != null)
             {
-                return Template.Name + " (Id: " + Id + " [" + ATId +"])";
+                return Template.Name + " (Id: " + Id + " [" + ATId + "])";
             }
             return ATId + " (Id: " + Id + ")";
-		}
+        }
 
-		public void Write(IndentTextWriter writer)
-		{
-			writer.WriteLine(this);
-			writer.IndentLevel++;
-			writer.WriteLine("MapId: " + MapId);
-			writer.WriteLine("Position: " + Position);
-			writer.WriteLineNotDefault(Radius, "Radius: " + Radius);
-			writer.WriteLineNotDefault(BoxLength + BoxWidth + BoxHeight + BoxYaw, 
-				"Box Length: " + BoxLength +
-				", Width: " + BoxWidth +
-				", Height: " + BoxHeight + 
-				", Yaw: " + BoxYaw);
-			if (Template != null)
-			{
-				Template.Write(writer);	
-			}
-			writer.IndentLevel--;
-		}
-	}
+        public void Write(IndentTextWriter writer)
+        {
+            writer.WriteLine(this);
+            writer.IndentLevel++;
+            writer.WriteLine("MapId: " + MapId);
+            writer.WriteLine("Position: " + Position);
+            writer.WriteLineNotDefault(Radius, "Radius: " + Radius);
+            writer.WriteLineNotDefault(BoxLength + BoxWidth + BoxHeight + BoxYaw,
+                "Box Length: " + BoxLength +
+                ", Width: " + BoxWidth +
+                ", Height: " + BoxHeight +
+                ", Yaw: " + BoxYaw);
+            if (Template != null)
+            {
+                Template.Write(writer);
+            }
+            writer.IndentLevel--;
+        }
+    }
 }

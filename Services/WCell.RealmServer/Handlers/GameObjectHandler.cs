@@ -7,28 +7,28 @@ using WCell.RealmServer.Network;
 
 namespace WCell.RealmServer.Entities
 {
-	public partial class GameObject
-	{
-		public void SendCustomAnim(uint anim)
-		{
-			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_GAMEOBJECT_CUSTOM_ANIM, 12))
-			{
-				packet.Write(EntityId);
-				packet.Write(anim);
-				SendPacketToArea(packet);
-			}
-		}
+    public partial class GameObject
+    {
+        public void SendCustomAnim(uint anim)
+        {
+            using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_GAMEOBJECT_CUSTOM_ANIM, 12))
+            {
+                packet.Write(EntityId);
+                packet.Write(anim);
+                SendPacketToArea(packet);
+            }
+        }
 
-		public void SendDespawn()
-		{
-			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_GAMEOBJECT_DESPAWN_ANIM, 8))
-			{
-				packet.Write(EntityId);
+        public void SendDespawn()
+        {
+            using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_GAMEOBJECT_DESPAWN_ANIM, 8))
+            {
+                packet.Write(EntityId);
 
-				SendPacketToArea(packet);
-			}
-		}
-	}
+                SendPacketToArea(packet);
+            }
+        }
+    }
 }
 
 namespace WCell.RealmServer.GameObjects
@@ -36,33 +36,33 @@ namespace WCell.RealmServer.GameObjects
     public static partial class GOMgr
     {
         [ClientPacketHandler(RealmServerOpCode.CMSG_GAMEOBJECT_QUERY)]
-		public static void HandleGOQuery(IRealmClient client, RealmPacketIn packet)
-		{
-			var entryId = packet.ReadUInt32();
-			//EntityId goId = packet.ReadEntityId();
+        public static void HandleGOQuery(IRealmClient client, RealmPacketIn packet)
+        {
+            var entryId = packet.ReadUInt32();
+            //EntityId goId = packet.ReadEntityId();
 
-			if (Loaded)
-			{
-				var entry = GetEntry(entryId);
-				if (entry != null)
-				{
-					SendGameObjectInfo(client, entry);
-				}
-			}
-		}
+            if (Loaded)
+            {
+                var entry = GetEntry(entryId);
+                if (entry != null)
+                {
+                    SendGameObjectInfo(client, entry);
+                }
+            }
+        }
 
-		[ClientPacketHandler(RealmServerOpCode.CMSG_GAMEOBJECT_USE)]
-		public static void HandleGameObjectUse(IRealmClient client, RealmPacketIn packet)
-		{
-			var goId = packet.ReadEntityId();
+        [ClientPacketHandler(RealmServerOpCode.CMSG_GAMEOBJECT_USE)]
+        public static void HandleGameObjectUse(IRealmClient client, RealmPacketIn packet)
+        {
+            var goId = packet.ReadEntityId();
 
-			var go = client.ActiveCharacter.Map.GetObject(goId) as GameObject;
-			var chr = client.ActiveCharacter;
-			if (go != null && go.CanUseInstantly(chr) && (chr.LooterEntry.Loot == null || !object.ReferenceEquals(chr.LooterEntry.Loot.Lootable, go) ))
-			{
-				go.Use(client.ActiveCharacter);
-			}
-		}
+            var go = client.ActiveCharacter.Map.GetObject(goId) as GameObject;
+            var chr = client.ActiveCharacter;
+            if (go != null && go.CanUseInstantly(chr) && (chr.LooterEntry.Loot == null || !object.ReferenceEquals(chr.LooterEntry.Loot.Lootable, go)))
+            {
+                go.Use(client.ActiveCharacter);
+            }
+        }
 
         public static void SendGameObjectInfo(IRealmClient client, GOEntry entry)
         {

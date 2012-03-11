@@ -8,8 +8,8 @@ using WCell.Util;
 
 namespace WCell.RealmServer.AI.Brains
 {
-
     #region Constants
+
     public enum NPCEmoteType
     {
         /// <summary>
@@ -29,6 +29,7 @@ namespace WCell.RealmServer.AI.Brains
         /// </summary>
         NPC_Whisper = 4
     }
+
     public enum NPCBrainEvents
     {
         /// <summary>
@@ -71,46 +72,45 @@ namespace WCell.RealmServer.AI.Brains
         public uint mSoundId;
     }
 
-    #endregion
+    #endregion Constants
 
-	/// <summary>
-	/// TODO: Consider visibility of targets - Don't pursue target nor remove it from Threat list if not visible
-	/// </summary>
-    /// 
-	public class MobBrain : BaseBrain
+    /// <summary>
+    /// TODO: Consider visibility of targets - Don't pursue target nor remove it from Threat list if not visible
+    /// </summary>
+    ///
+    public class MobBrain : BaseBrain
     {
         #region Private Members
+
         private List<EmoteData>[] m_emoteData;
-        #endregion
+
+        #endregion Private Members
 
         #region Constructors
 
         public MobBrain(NPC owner)
-			: base(owner)
-		{
-            
-		}
+            : base(owner)
+        {
+        }
 
-		public MobBrain(NPC owner, BrainState defaultState)
-			: base(owner, defaultState)
-		{
+        public MobBrain(NPC owner, BrainState defaultState)
+            : base(owner, defaultState)
+        {
+        }
 
-		}
+        public MobBrain(NPC owner, IAIActionCollection actions)
+            : this(owner, actions, BrainState.Idle)
+        {
+        }
 
-		public MobBrain(NPC owner, IAIActionCollection actions) : this(owner, actions, BrainState.Idle)
-		{
-		}
+        public MobBrain(NPC owner, IAIActionCollection actions, BrainState defaultState) :
+            base(owner, actions, defaultState)
+        {
+        }
 
-		public MobBrain(NPC owner, IAIActionCollection actions, BrainState defaultState) :
-			base(owner, actions, defaultState)
-		{
-
-		}
-
-		#endregion
+        #endregion Constructors
 
         #region Emotes
-        
 
         /// <summary>
         /// Makes npc Yell text.
@@ -152,7 +152,7 @@ namespace WCell.RealmServer.AI.Brains
         /// <param name="pSoundId">Id of sound(Found in DBC).</param>
         public void DoEmote(string pText, NPCEmoteType pType, uint pSoundId)
         {
-            if( pSoundId != 0 )
+            if (pSoundId != 0)
                 NPC.PlaySound(pSoundId);
 
             DoEmote(pText, pType);
@@ -169,7 +169,7 @@ namespace WCell.RealmServer.AI.Brains
             if (m_emoteData != null)
             {
                 // Select random
-            	var evt = m_emoteData[evtId];
+                var evt = m_emoteData[evtId];
                 var count = evt.Count;
                 if (count < 1)
                     return;
@@ -196,23 +196,23 @@ namespace WCell.RealmServer.AI.Brains
                 m_emoteData = new List<EmoteData>[(int)NPCBrainEvents.End];
 
             uint Event = (uint)pEmoteData.mEvent;
-            if( m_emoteData[Event] == null ) 
+            if (m_emoteData[Event] == null)
                 m_emoteData[Event] = new List<EmoteData>();
 
             m_emoteData[Event].Add(pEmoteData);
         }
 
-        #endregion
+        #endregion Emotes
 
         public override void OnHeal(Unit healer, Unit healed, int amtHealed)
-		{
-			if (m_owner is NPC && m_owner.IsInCombat && m_owner.CanBeAggroedBy(healer))
-			{
-				((NPC) m_owner).ThreatCollection[healer] += amtHealed/2;
-			}
-		}
+        {
+            if (m_owner is NPC && m_owner.IsInCombat && m_owner.CanBeAggroedBy(healer))
+            {
+                ((NPC)m_owner).ThreatCollection[healer] += amtHealed / 2;
+            }
+        }
 
-		#region Event Handlers
+        #region Event Handlers
 
         public override void OnEnterCombat()
         {
@@ -220,16 +220,16 @@ namespace WCell.RealmServer.AI.Brains
             DoEmoteForEvent(NPCBrainEvents.OnEnterCombat);
         }
 
-		public override void OnLeaveCombat()
-		{
+        public override void OnLeaveCombat()
+        {
             // Do assigned emotes
             DoEmoteForEvent(NPCBrainEvents.OnLeaveCombat);
 
-			if (m_owner is NPC)
-			{
-				((NPC)m_owner).ThreatCollection.Clear();
-			}
-		}
+            if (m_owner is NPC)
+            {
+                ((NPC)m_owner).ThreatCollection.Clear();
+            }
+        }
 
         public override void OnKilled(Unit killerUnit, Unit victimUnit)
         {
@@ -248,49 +248,48 @@ namespace WCell.RealmServer.AI.Brains
             base.OnDeath();
         }
 
-		/// <summary>
-		/// Called when owner received a debuff by the given caster
-		/// </summary>
-		/// <param name="caster"></param>
-		/// <param name="cast"></param>
-		/// <param name="debuff"></param>
-		public override void OnDebuff(Unit caster, SpellCast cast, Aura debuff)
-		{
-			if (!m_IsRunning || caster == null)
-				return;
+        /// <summary>
+        /// Called when owner received a debuff by the given caster
+        /// </summary>
+        /// <param name="caster"></param>
+        /// <param name="cast"></param>
+        /// <param name="debuff"></param>
+        public override void OnDebuff(Unit caster, SpellCast cast, Aura debuff)
+        {
+            if (!m_IsRunning || caster == null)
+                return;
 
-			// TODO: How much threat do debuffs cause?
-			if (m_owner is NPC && m_owner.CanBeAggroedBy(caster))
-			{
-				((NPC)m_owner).ThreatCollection[caster] += 1;
-			}
-		}
+            // TODO: How much threat do debuffs cause?
+            if (m_owner is NPC && m_owner.CanBeAggroedBy(caster))
+            {
+                ((NPC)m_owner).ThreatCollection[caster] += 1;
+            }
+        }
 
-		/// <summary>
-		/// Called whenever someone performs a harmful action on this Mob.
-		/// </summary>
-		/// <param name="action"></param>
-		public override void OnDamageReceived(IDamageAction action)
-		{
-			if (!m_IsRunning)
-				return;
+        /// <summary>
+        /// Called whenever someone performs a harmful action on this Mob.
+        /// </summary>
+        /// <param name="action"></param>
+        public override void OnDamageReceived(IDamageAction action)
+        {
+            if (!m_IsRunning)
+                return;
 
-			if (action.Attacker == null)
-			{
-				return;
-			}
+            if (action.Attacker == null)
+            {
+                return;
+            }
 
-			if (m_owner is NPC)
-			{
-				((NPC)m_owner).ThreatCollection[action.Attacker] += action.Attacker.GetGeneratedThreat(action);
-			}
-		}
+            if (m_owner is NPC)
+            {
+                ((NPC)m_owner).ThreatCollection[action.Attacker] += action.Attacker.GetGeneratedThreat(action);
+            }
+        }
 
-		public override void OnCombatTargetOutOfRange()
-		{
+        public override void OnCombatTargetOutOfRange()
+        {
+        }
 
-		}
-
-		#endregion
-	}
+        #endregion Event Handlers
+    }
 }

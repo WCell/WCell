@@ -20,23 +20,22 @@ using WCell.Constants.Updates;
 namespace WCell.RealmServer.Entities
 {
     public partial class DynamicObject
-	{
-
-		public SpellId SpellId
-		{
-			get { return (SpellId)GetUInt32(DynamicObjectFields.SPELLID); }
-			internal set { SetUInt32(DynamicObjectFields.SPELLID, (uint)value); }
-		}
+    {
+        public SpellId SpellId
+        {
+            get { return (SpellId)GetUInt32(DynamicObjectFields.SPELLID); }
+            internal set { SetUInt32(DynamicObjectFields.SPELLID, (uint)value); }
+        }
 
         #region DYNAMICOBJET_BYTES
 
-		protected internal uint Bytes
+        protected internal uint Bytes
         {
             get { return GetUInt32(DynamicObjectFields.BYTES); }
             internal set { SetUInt32(DynamicObjectFields.BYTES, value); }
         }
 
-        #endregion
+        #endregion DYNAMICOBJET_BYTES
 
         protected internal float Radius
         {
@@ -50,14 +49,12 @@ namespace WCell.RealmServer.Entities
             set { SetUInt32(DynamicObjectFields.CASTTIME, value); }
         }
 
-
-
-		public override ObjectTypeCustom CustomType
-		{
-			get
-			{
-				return ObjectTypeCustom.Object | ObjectTypeCustom.DynamicObject;
-			}
-		}
+        public override ObjectTypeCustom CustomType
+        {
+            get
+            {
+                return ObjectTypeCustom.Object | ObjectTypeCustom.DynamicObject;
+            }
+        }
     }
 }

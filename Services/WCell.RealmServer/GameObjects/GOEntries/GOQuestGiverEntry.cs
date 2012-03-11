@@ -12,13 +12,13 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         {
             get { return Fields[0]; }
         }
-		
+
         /// <summary>
         /// Id of quest-list
         /// </summary>
         public uint QuestListId
         {
-            get { return (uint) Fields[1]; }
+            get { return (uint)Fields[1]; }
         }
 
         /// <summary>
@@ -34,9 +34,9 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         /// </summary>
         public override uint GossipId
         {
-            get { return (uint) Fields[3]; }
+            get { return (uint)Fields[3]; }
         }
-		
+
         /// <summary>
         /// Constrained to values 1-4
         /// </summary>
@@ -60,7 +60,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         {
             get { return Fields[6]; }
         }
-		
+
         /// <summary>
         /// Unknown
         /// </summary>
@@ -69,12 +69,11 @@ namespace WCell.RealmServer.GameObjects.GOEntries
             get { return Fields[9] > 0; }
         }
 
-
-		protected internal override void InitEntry()
-		{
-			Lock = LockEntry.Entries.Get((uint)LockId);
-			LosOk = Fields[7] > 0;
-			AllowMounted = Fields[8] > 0;
-		}
-	}
+        protected internal override void InitEntry()
+        {
+            Lock = LockEntry.Entries.Get((uint)LockId);
+            LosOk = Fields[7] > 0;
+            AllowMounted = Fields[8] > 0;
+        }
+    }
 }

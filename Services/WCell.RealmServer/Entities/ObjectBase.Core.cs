@@ -97,16 +97,17 @@ namespace WCell.RealmServer.Entities
 
         public int GetInt32(ItemFields field)
         {
-            return m_updateValues[(int) field].Int32;
+            return m_updateValues[(int)field].Int32;
         }
+
         public int GetInt32(ContainerFields field)
         {
-            return m_updateValues[(int) field].Int32;
+            return m_updateValues[(int)field].Int32;
         }
 
         public int GetInt32(GameObjectFields field)
         {
-            return m_updateValues[(int) field].Int32;
+            return m_updateValues[(int)field].Int32;
         }
 
         public int GetInt32(CorpseFields field)
@@ -119,7 +120,7 @@ namespace WCell.RealmServer.Entities
             return m_updateValues[(int)field].Int32;
         }
 
-        #endregion
+        #endregion GetInt32
 
         #region GetUInt32
 
@@ -168,13 +169,13 @@ namespace WCell.RealmServer.Entities
             return m_updateValues[(int)field].UInt32;
         }
 
-        #endregion
+        #endregion GetUInt32
 
         public ulong GetUInt64(int field)
         {
             uint low = m_updateValues[field].UInt32;
             uint high = m_updateValues[field + 1].UInt32;
-			return low | ((ulong)high << 32);
+            return low | ((ulong)high << 32);
         }
 
         public ulong GetUInt64(UpdateFieldId field)
@@ -192,12 +193,12 @@ namespace WCell.RealmServer.Entities
         public EntityId GetEntityId(int field)
         {
             return new EntityId(m_updateValues[field].UInt32, m_updateValues[field + 1].UInt32);
-		}
+        }
 
-		public byte[] GetByteArray(UpdateFieldId field)
-		{
-			return m_updateValues[field.RawId].ByteArray;
-		}
+        public byte[] GetByteArray(UpdateFieldId field)
+        {
+            return m_updateValues[field.RawId].ByteArray;
+        }
 
         public byte GetByte(int field, int index)
         {
@@ -209,7 +210,7 @@ namespace WCell.RealmServer.Entities
             return m_updateValues[field.RawId].GetByte(index);
         }
 
-        #endregion
+        #endregion Get[...]
 
         #region Set[...]
 
@@ -222,7 +223,6 @@ namespace WCell.RealmServer.Entities
         {
             if (m_updateValues[field].Float == value)
                 return;
-
 
             m_updateValues[field].Float = value;
 
@@ -254,7 +254,6 @@ namespace WCell.RealmServer.Entities
             if (m_updateValues[field].Int16High == value)
                 return;
 
-
             m_updateValues[field].Int16High = value;
 
             MarkUpdate(field);
@@ -269,7 +268,6 @@ namespace WCell.RealmServer.Entities
         {
             if (m_updateValues[field].UInt16Low == value)
                 return;
-
 
             m_updateValues[field].UInt16Low = value;
 
@@ -286,7 +284,6 @@ namespace WCell.RealmServer.Entities
             if (m_updateValues[field].UInt16High == value)
                 return;
 
-
             m_updateValues[field].UInt16High = value;
 
             MarkUpdate(field);
@@ -301,7 +298,6 @@ namespace WCell.RealmServer.Entities
         {
             if (m_updateValues[field].Int32 == value)
                 return;
-
 
             m_updateValues[field].Int32 = value;
 
@@ -325,8 +321,8 @@ namespace WCell.RealmServer.Entities
 
         public void SetInt64(int field, long value)
         {
-            SetInt32(field, (int) (value & 0xFFFFFFFF));
-            SetInt32(field + 1, (int) (value >> 32));
+            SetInt32(field, (int)(value & 0xFFFFFFFF));
+            SetInt32(field + 1, (int)(value >> 32));
         }
 
         public void SetInt64(UpdateFieldId field, long value)
@@ -397,7 +393,6 @@ namespace WCell.RealmServer.Entities
             if (m_updateValues[field].GetByte(index) == value)
                 return;
 
-
             m_updateValues[field].SetByte(index, value);
 
             MarkUpdate(field);
@@ -438,7 +433,6 @@ namespace WCell.RealmServer.Entities
             }
         }
 
-
         /// <summary>
         /// Marks the given UpdateField for an Update.
         /// Marked UpdateFields will be re-sent to all surrounding Characters.
@@ -448,6 +442,6 @@ namespace WCell.RealmServer.Entities
             MarkUpdate(index.RawId);
         }
 
-        #endregion
+        #endregion Set[...]
     }
 }

@@ -21,55 +21,55 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.UpdateFields
 {
-	[Serializable]
-	public class SerializedFields
-	{
-		private CompoundType[] m_values;
+    [Serializable]
+    public class SerializedFields
+    {
+        private CompoundType[] m_values;
 
-		private SerializedFields()
-		{
-		}
+        private SerializedFields()
+        {
+        }
 
-		public CompoundType[] Values
-		{
-			get
-			{
-				return m_values;
-			}
-			set
-			{
-				m_values = value;
-			}
-		}
+        public CompoundType[] Values
+        {
+            get
+            {
+                return m_values;
+            }
+            set
+            {
+                m_values = value;
+            }
+        }
 
-		public void SetValues(ObjectBase obj)
-		{
-			m_values = obj.UpdateValues;
-		}
+        public void SetValues(ObjectBase obj)
+        {
+            m_values = obj.UpdateValues;
+        }
 
-		public static byte[] GetSerializedFields(ObjectBase obj)
-		{
-			MemoryStream outputStream = new MemoryStream();
-			BinaryFormatter bFormatter = new BinaryFormatter();
+        public static byte[] GetSerializedFields(ObjectBase obj)
+        {
+            MemoryStream outputStream = new MemoryStream();
+            BinaryFormatter bFormatter = new BinaryFormatter();
 
-			SerializedFields sUpdates = new SerializedFields();
-			sUpdates.SetValues(obj);
+            SerializedFields sUpdates = new SerializedFields();
+            sUpdates.SetValues(obj);
 
-			bFormatter.Serialize(outputStream, sUpdates);
+            bFormatter.Serialize(outputStream, sUpdates);
 
-			return outputStream.ToArray();
-		}
+            return outputStream.ToArray();
+        }
 
-		public static CompoundType[] GetDeserializedFields(byte[] serializedFields)
-		{
-			MemoryStream inputStream = new MemoryStream(serializedFields);
-			BinaryFormatter bFormatter = new BinaryFormatter();
+        public static CompoundType[] GetDeserializedFields(byte[] serializedFields)
+        {
+            MemoryStream inputStream = new MemoryStream(serializedFields);
+            BinaryFormatter bFormatter = new BinaryFormatter();
 
-			SerializedFields sUpdates;
+            SerializedFields sUpdates;
 
-			sUpdates = (SerializedFields)bFormatter.Deserialize(inputStream);
+            sUpdates = (SerializedFields)bFormatter.Deserialize(inputStream);
 
-			return sUpdates.Values;
-		}
-	}
+            return sUpdates.Values;
+        }
+    }
 }

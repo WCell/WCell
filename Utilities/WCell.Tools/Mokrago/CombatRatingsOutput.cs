@@ -30,7 +30,7 @@ namespace WCell.Tools.Mokrago
             var names = Enum.GetNames(typeof(CombatRating));
             using (var writer = new StreamWriter(DumpFile))
             {
-                for (int i = 0; i < names.Length; i++ )
+                for (int i = 0; i < names.Length; i++)
                 {
                     writer.WriteLine(names[i]);
                     WriteTable((CombatRating)i + 1, writer);
@@ -92,7 +92,7 @@ namespace WCell.Tools.Mokrago
 
                 for (int k = 1; k < 101; k++)
                 {
-                    writer.WriteLine("Level {0}: {1}", (k), table[100*i+k-101]);
+                    writer.WriteLine("Level {0}: {1}", (k), table[100 * i + k - 101]);
                 }
                 writer.WriteLine();
             }

@@ -2,12 +2,12 @@ using System.Text;
 
 namespace WCell.PacketAnalysis.Xml
 {
-	public static class ChangeLog
-	{
-		/// <summary>
-		/// Used to allow simple conversion etc
-		/// </summary>
-		public static string[][] Changes = new string[][] {
+    public static class ChangeLog
+    {
+        /// <summary>
+        /// Used to allow simple conversion etc
+        /// </summary>
+        public static string[][] Changes = new string[][] {
 			// 0 to 1
 			new string[] {
 				"Switch: Conditions renamed to Condition",
@@ -40,18 +40,18 @@ namespace WCell.PacketAnalysis.Xml
 			}
 		};
 
-		public static string GetChangeLog(int oldVersion, int newVersion)
-		{
-			StringBuilder sb = new StringBuilder();
-			for (var i = oldVersion; i < newVersion; i++)
-			{
-				sb.AppendFormat("Changes from {0} to {1}:\n", i , i+1);
-				foreach (var line in Changes[i])
-				{
-					sb.AppendLine("\t" + line);
-				}
-			}
-			return sb.ToString();
-		}
-	}
+        public static string GetChangeLog(int oldVersion, int newVersion)
+        {
+            StringBuilder sb = new StringBuilder();
+            for (var i = oldVersion; i < newVersion; i++)
+            {
+                sb.AppendFormat("Changes from {0} to {1}:\n", i, i + 1);
+                foreach (var line in Changes[i])
+                {
+                    sb.AppendLine("\t" + line);
+                }
+            }
+            return sb.ToString();
+        }
+    }
 }

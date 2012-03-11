@@ -19,24 +19,24 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Effects
 {
-	public class ResurrectEffectHandler : SpellEffectHandler
-	{
-		public ResurrectEffectHandler(SpellCast cast, SpellEffect effect)
-			: base(cast, effect)
-		{
-		}
+    public class ResurrectEffectHandler : SpellEffectHandler
+    {
+        public ResurrectEffectHandler(SpellCast cast, SpellEffect effect)
+            : base(cast, effect)
+        {
+        }
 
-		protected override void Apply(WorldObject target)
-		{
-			((Unit) target).Health = ((Unit) target).MaxHealth * CalcEffectValue() / 100;
-		}
+        protected override void Apply(WorldObject target)
+        {
+            ((Unit)target).Health = ((Unit)target).MaxHealth * CalcEffectValue() / 100;
+        }
 
-		public override ObjectTypes TargetType
-		{
-			get
-			{
-				return ObjectTypes.Unit;
-			}
-		}
-	}
+        public override ObjectTypes TargetType
+        {
+            get
+            {
+                return ObjectTypes.Unit;
+            }
+        }
+    }
 }

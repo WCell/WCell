@@ -34,7 +34,7 @@ namespace WCell.RealmServer.Handlers
 
             switch (animation)
             {
-                    //The client seems to handle these on its own.
+                //The client seems to handle these on its own.
                 case EmoteType.StateSleep:
                 case EmoteType.StateSit:
                 case EmoteType.StateKneel:

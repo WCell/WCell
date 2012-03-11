@@ -21,31 +21,31 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Effects
 {
-	/// <summary>
-	/// Learns a new Skill-Tier
-	/// </summary>
-	public class SkillStepEffectHandler : SpellEffectHandler
-	{
-		public SkillStepEffectHandler(SpellCast cast, SpellEffect effect)
-			: base(cast, effect)
-		{
-		}
+    /// <summary>
+    /// Learns a new Skill-Tier
+    /// </summary>
+    public class SkillStepEffectHandler : SpellEffectHandler
+    {
+        public SkillStepEffectHandler(SpellCast cast, SpellEffect effect)
+            : base(cast, effect)
+        {
+        }
 
-		protected override void Apply(WorldObject target)
-		{
-			var skillId = (SkillId)Effect.MiscValue;
-			var tier = (SkillTierId)Effect.BasePoints;
+        protected override void Apply(WorldObject target)
+        {
+            var skillId = (SkillId)Effect.MiscValue;
+            var tier = (SkillTierId)Effect.BasePoints;
 
-			if (!((Character)target).Skills.TryLearn(skillId, tier))
-			{
-				//m_cast.Cancel(SpellFailedReason.TooManySkills);
-				m_cast.Cancel(SpellFailedReason.MinSkill);// TODO: find new correct reason
-			}
-		}
+            if (!((Character)target).Skills.TryLearn(skillId, tier))
+            {
+                //m_cast.Cancel(SpellFailedReason.TooManySkills);
+                m_cast.Cancel(SpellFailedReason.MinSkill);// TODO: find new correct reason
+            }
+        }
 
-		public override ObjectTypes TargetType
-		{
-			get{ return ObjectTypes.Player | ObjectTypes.Unit; }
-		}
-	}
+        public override ObjectTypes TargetType
+        {
+            get { return ObjectTypes.Player | ObjectTypes.Unit; }
+        }
+    }
 }

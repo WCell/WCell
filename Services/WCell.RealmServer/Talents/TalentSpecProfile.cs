@@ -144,7 +144,6 @@
 //            //record.Delete();
 //        }
 
-
 //        #region Groups
 //        /// <summary>
 //        /// The Id of the Talent Group currently in use.
@@ -155,7 +154,6 @@
 //            get;
 //            set;
 //        }
-
 
 //        /// <summary>
 //        /// The number of TalentSpecs this IHasTalents can store.
@@ -173,7 +171,6 @@
 //                ReSizeTalentGroupList(value);
 //            }
 //        }
-
 
 //        public TalentSpec[] TalentSpecs
 //        {
@@ -245,7 +242,6 @@
 
 //            TalentHandler.SendTalentGroupList(m_owner);
 //        }
-
 
 //        public void LearnTalentGroupTalents(List<SimpleTalentDescriptor> newTalents)
 //        {

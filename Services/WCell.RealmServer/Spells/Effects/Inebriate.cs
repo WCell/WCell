@@ -20,7 +20,7 @@ namespace WCell.RealmServer.Spells.Effects
             var state = target.DrunkState;
             state += (byte)Effect.BasePoints;
             target.DrunkState = state;
-            if(state > 100)
+            if (state > 100)
                 target.SpellCast.TriggerSelf(SpellId.DrunkenVomit);
 
             // 1 drunk point is removed every 2173ms

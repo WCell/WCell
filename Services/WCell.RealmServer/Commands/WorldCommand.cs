@@ -5,54 +5,56 @@ using WCell.Util.Commands;
 
 namespace WCell.RealmServer.Commands
 {
-	public class WorldCommand : RealmServerCommand
-	{
-		protected override void Initialize()
-		{
-			Init("World");
-			EnglishDescription = "Provides command to macro-manage the ingame World.";
-		}
+    public class WorldCommand : RealmServerCommand
+    {
+        protected override void Initialize()
+        {
+            Init("World");
+            EnglishDescription = "Provides command to macro-manage the ingame World.";
+        }
 
-		#region Save
-		public class SaveWorldCommand : SubCommand
-		{
-			public override RoleStatus DefaultRequiredStatus
-			{
-				get
-				{
-					return RoleStatus.Admin;
-				}
-			}
+        #region Save
 
-			protected override void Initialize()
-			{
-				Init("Save", "S");
-				EnglishDescription = "Saves all current progress in the ingame world.";
-			}
+        public class SaveWorldCommand : SubCommand
+        {
+            public override RoleStatus DefaultRequiredStatus
+            {
+                get
+                {
+                    return RoleStatus.Admin;
+                }
+            }
 
-			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
-			{
-				World.Broadcast("Saving world...");
-				World.Save(false);
-				World.Broadcast("World saved.");
-			}
-		}
-		#endregion
+            protected override void Initialize()
+            {
+                Init("Save", "S");
+                EnglishDescription = "Saves all current progress in the ingame world.";
+            }
 
-		public override bool RequiresCharacter
-		{
-			get
-			{
-				return false;
-			}
-		}
+            public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+            {
+                World.Broadcast("Saving world...");
+                World.Save(false);
+                World.Broadcast("World saved.");
+            }
+        }
 
-		public override ObjectTypeCustom TargetTypes
-		{
-			get
-			{
-				return ObjectTypeCustom.None;
-			}
-		}
-	}
+        #endregion Save
+
+        public override bool RequiresCharacter
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        public override ObjectTypeCustom TargetTypes
+        {
+            get
+            {
+                return ObjectTypeCustom.None;
+            }
+        }
+    }
 }

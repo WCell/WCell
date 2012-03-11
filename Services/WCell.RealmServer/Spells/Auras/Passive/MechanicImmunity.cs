@@ -18,18 +18,16 @@ using WCell.Constants.Spells;
 
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
-	public class MechanicImmunityHandler : AuraEffectHandler
-	{
+    public class MechanicImmunityHandler : AuraEffectHandler
+    {
+        protected override void Apply()
+        {
+            m_aura.Auras.Owner.IncMechImmunityCount((SpellMechanic)m_spellEffect.MiscValue, m_aura.Spell);
+        }
 
-		protected override void Apply()
-		{
-			m_aura.Auras.Owner.IncMechImmunityCount((SpellMechanic)m_spellEffect.MiscValue, m_aura.Spell);
-		}
-
-		protected override void Remove(bool cancelled)
-		{
-			m_aura.Auras.Owner.DecMechImmunityCount((SpellMechanic)m_spellEffect.MiscValue);
-		}
-
-	}
+        protected override void Remove(bool cancelled)
+        {
+            m_aura.Auras.Owner.DecMechImmunityCount((SpellMechanic)m_spellEffect.MiscValue);
+        }
+    }
 };

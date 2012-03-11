@@ -17,25 +17,26 @@ namespace WCell.RealmServer.Handlers
      <- SMSG_BATTLEFIELD_STATUS (ready)
      -> CMSG_BATTLEFIELD_PORT
      <- SMSG_BATTLEFIELD_PORT_DENIED (may not port)
-	 
+
      -> MSG_BATTLEGROUND_PLAYER_POSITIONS
      <- MSG_BATTLEGROUND_PLAYER_POSITIONS
-	 
+
      -> CMSG_BATTLEFIELD_STATUS (on login)
      <- SMSG_BATTLEFIELD_STATUS
-	 
+
      -> CMSG_BATTLEFIELD_LIST
      <- SMSG_BATTLEFIELD_LIST
-	 
+
      -> CMSG_LEAVE_BATTLEFIELD
-	 
+
      SMSG_BATTLEGROUND_PLAYER_JOINED
      SMSG_BATTLEGROUND_PLAYER_LEFT
-	 
+
      MSG_PVP_LOG_DATA
-	 
+
      SMSG_GROUP_JOINED_BATTLEGROUND
     */
+
     public static class BattlegroundHandler
     {
         [PacketHandler(RealmServerOpCode.CMSG_BATTLEMASTER_HELLO)]
@@ -59,38 +60,38 @@ namespace WCell.RealmServer.Handlers
         public static void HandleBattlemasterJoin(IRealmClient client, RealmPacketIn packet)
         {
             var battlemasterGuid = packet.ReadEntityId();
-			var bgId = (BattlegroundId)packet.ReadUInt32();
+            var bgId = (BattlegroundId)packet.ReadUInt32();
             var instanceId = packet.ReadUInt32();
             var asGroup = packet.ReadBoolean();
 
-			// check to make sure bg id was valid
-			if (bgId <= BattlegroundId.None || bgId >= BattlegroundId.End)
-				return;
+            // check to make sure bg id was valid
+            if (bgId <= BattlegroundId.None || bgId >= BattlegroundId.End)
+                return;
 
             var chr = client.ActiveCharacter;
 
-			BattlegroundMgr.EnqueuePlayers(chr, bgId, instanceId, asGroup);
+            BattlegroundMgr.EnqueuePlayers(chr, bgId, instanceId, asGroup);
         }
 
-		[ClientPacketHandler(RealmServerOpCode.CMSG_LEAVE_BATTLEFIELD)]
-		public static void HandleBattlefieldLeave(IRealmClient client, RealmPacketIn packet)
-		{
-			// Start 64-bit BGID
-			var unk1 = packet.ReadInt16();
-			var bgId = (BattlegroundId)packet.ReadUInt32();
-			var unk2 = packet.ReadInt16();
-			// End BGID
+        [ClientPacketHandler(RealmServerOpCode.CMSG_LEAVE_BATTLEFIELD)]
+        public static void HandleBattlefieldLeave(IRealmClient client, RealmPacketIn packet)
+        {
+            // Start 64-bit BGID
+            var unk1 = packet.ReadInt16();
+            var bgId = (BattlegroundId)packet.ReadUInt32();
+            var unk2 = packet.ReadInt16();
+            // End BGID
 
-			var bgs = client.ActiveCharacter.Battlegrounds;
-			// check to make sure player is in a bg and one of the given type
-			if(!bgs.IsParticipating(bgId))
-				return;
+            var bgs = client.ActiveCharacter.Battlegrounds;
+            // check to make sure player is in a bg and one of the given type
+            if (!bgs.IsParticipating(bgId))
+                return;
 
-			// port em out
-			bgs.TeleportBack();
-		}
+            // port em out
+            bgs.TeleportBack();
+        }
 
-    	[ClientPacketHandler(RealmServerOpCode.CMSG_BATTLEMASTER_JOIN_ARENA)]
+        [ClientPacketHandler(RealmServerOpCode.CMSG_BATTLEMASTER_JOIN_ARENA)]
         public static void HandleBattlemasterJoinArena(IRealmClient client, RealmPacketIn packet)
         {
             var battlemasterGuid = packet.ReadEntityId();
@@ -151,44 +152,45 @@ namespace WCell.RealmServer.Handlers
             if (!chr.Battlegrounds.IsEnqueuedForBattleground) return;
 
             var relations = chr.Battlegrounds.Relations;
-        	var count = chr.Battlegrounds.Relations.Length;
+            var count = chr.Battlegrounds.Relations.Length;
             for (var i = 0; i < count; i++)
             {
                 var relation = relations[i];
-				if (relation != null)
-				{
-					if (relation.IsEnqueued)
-					{
-						SendStatusEnqueued(chr, i, relation, relation.Queue.ParentQueue);
-					}
-					else if (chr.Map is Battleground && 
-						relation.BattlegroundId == ((Battleground)chr.Map).Template.Id)
-					{
-						SendStatusActive(chr, (Battleground)chr.Map, i);
-					}
-				}
+                if (relation != null)
+                {
+                    if (relation.IsEnqueued)
+                    {
+                        SendStatusEnqueued(chr, i, relation, relation.Queue.ParentQueue);
+                    }
+                    else if (chr.Map is Battleground &&
+                        relation.BattlegroundId == ((Battleground)chr.Map).Template.Id)
+                    {
+                        SendStatusActive(chr, (Battleground)chr.Map, i);
+                    }
+                }
             }
         }
 
         #region List
+
         [ClientPacketHandler(RealmServerOpCode.CMSG_BATTLEFIELD_LIST)]
-		public static void HandleBattlefieldList(IRealmClient client, RealmPacketIn packet)
-		{
-        	var bgId = (BattlegroundId)packet.ReadUInt32();
-        	var fromGui = packet.ReadBoolean();
+        public static void HandleBattlefieldList(IRealmClient client, RealmPacketIn packet)
+        {
+            var bgId = (BattlegroundId)packet.ReadUInt32();
+            var fromGui = packet.ReadBoolean();
             var unk1 = packet.ReadByte();
-			
-			var templ = BattlegroundMgr.GetTemplate(bgId);
-        	var chr = client.ActiveCharacter;
-			if (templ != null)
-			{
-				var queue = templ.GetQueue(chr.Level);
-				if (queue != null)
-				{
-					SendBattlefieldList(chr, queue);
-				}
-			}
-		}
+
+            var templ = BattlegroundMgr.GetTemplate(bgId);
+            var chr = client.ActiveCharacter;
+            if (templ != null)
+            {
+                var queue = templ.GetQueue(chr.Level);
+                if (queue != null)
+                {
+                    SendBattlefieldList(chr, queue);
+                }
+            }
+        }
 
         public static void SendBattlefieldList(Character chr, GlobalBattlegroundQueue queue)
         {
@@ -198,9 +200,9 @@ namespace WCell.RealmServer.Handlers
 
                 packet.Write((long)0);
                 packet.Write(fromGUI);							// since 3.1.1
-				packet.Write((uint)queue.Template.Id);
-				packet.Write((byte)queue.BracketId);			// BracketId
-				packet.Write((byte)0);							// since 3.3
+                packet.Write((uint)queue.Template.Id);
+                packet.Write((byte)queue.BracketId);			// BracketId
+                packet.Write((byte)0);							// since 3.3
 
                 var pos = packet.Position;
                 packet.Position += 4;
@@ -222,9 +224,11 @@ namespace WCell.RealmServer.Handlers
                 chr.Send(packet);
             }
         }
-        #endregion
+
+        #endregion List
 
         #region Status
+
         public static void ClearStatus(IPacketReceiver client, int queueIndex)
         {
             using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_BATTLEFIELD_STATUS))
@@ -240,15 +244,15 @@ namespace WCell.RealmServer.Handlers
         }
 
         public static void SendStatusEnqueued(Character chr,
-			int index,
+            int index,
             BattlegroundRelation relation,
-			BattlegroundQueue queue)
+            BattlegroundQueue queue)
         {
             var status = BattlegroundStatus.Enqueued;
 
             using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_BATTLEFIELD_STATUS))
             {
-				packet.Write(index);
+                packet.Write(index);
 
                 var bgId = queue.Template.Id;
 
@@ -259,8 +263,8 @@ namespace WCell.RealmServer.Handlers
                 packet.Write((ushort)8080);
                 // 64-bit guid stop
 
-				packet.Write((byte)0);				// since 3.3
-				packet.Write((byte)0);				// since 3.3
+                packet.Write((byte)0);				// since 3.3
+                packet.Write((byte)0);				// since 3.3
                 packet.Write(queue.InstanceId);     // instance id
                 packet.Write(false);                // bool isRatedMatch
                 packet.Write((int)status);
@@ -299,13 +303,13 @@ namespace WCell.RealmServer.Handlers
                 packet.Write((ushort)8080);
                 // 64-bit guid stop
 
-				packet.Write((byte)0);				// since 3.3
-				packet.Write((byte)0);				// since 3.3
+                packet.Write((byte)0);				// since 3.3
+                packet.Write((byte)0);				// since 3.3
                 packet.Write(bg.InstanceId); // instance id
                 packet.Write((byte)chr.FactionGroup.GetBattlegroundSide()); // bool isRatedMatch
                 packet.Write((int)status);
 
-				packet.Write((int)bg.Id);
+                packet.Write((int)bg.Id);
                 packet.Write(inviteTimeout);
 
                 chr.Send(packet);
@@ -319,7 +323,7 @@ namespace WCell.RealmServer.Handlers
 
             using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_BATTLEFIELD_STATUS))
             {
-				packet.Write(queueIndex);
+                packet.Write(queueIndex);
 
                 var bgId = bg.Template.Id;
 
@@ -330,8 +334,8 @@ namespace WCell.RealmServer.Handlers
                 packet.Write((ushort)8080);
                 // 64-bit guid stop
 
-				packet.Write((byte)0);				// since 3.3
-				packet.Write((byte)0);				// since 3.3
+                packet.Write((byte)0);				// since 3.3
+                packet.Write((byte)0);				// since 3.3
                 packet.Write(bg.InstanceId); // instance id
                 packet.Write((byte)0); // bool isRatedMatch
                 packet.Write((int)status);
@@ -348,23 +352,25 @@ namespace WCell.RealmServer.Handlers
                 chr.Send(packet);
             }
         }
-        #endregion
+
+        #endregion Status
 
         #region PvP Data
+
         [ClientPacketHandler(RealmServerOpCode.MSG_PVP_LOG_DATA)]
         public static void PvPLogDataRequest(IRealmClient client, RealmPacketIn packet)
         {
-        	var chr = client.ActiveCharacter;
-			if (!chr.IsInBattleground)
-			{
-				return;
-			}
+            var chr = client.ActiveCharacter;
+            if (!chr.IsInBattleground)
+            {
+                return;
+            }
 
-        	var team = chr.Battlegrounds.Team;
-			if (team != null)
-			{
-				SendPvpData(client, team.Side, team.Battleground);
-			}
+            var team = chr.Battlegrounds.Team;
+            if (team != null)
+            {
+                SendPvpData(client, team.Side, team.Battleground);
+            }
         }
 
         public static void SendPvpData(IPacketReceiver reciever, BattlegroundSide side, Battleground bg)
@@ -373,7 +379,7 @@ namespace WCell.RealmServer.Handlers
 
             using (var packet = new RealmPacketOut(RealmServerOpCode.MSG_PVP_LOG_DATA, 10 + bg.PlayerCount * 40))
             {
-            	var winner = bg.Winner;
+                var winner = bg.Winner;
 
                 packet.Write(bg.IsArena);
                 if (bg.IsArena)
@@ -397,47 +403,48 @@ namespace WCell.RealmServer.Handlers
                     packet.Write((byte)bg.Winner.Side);
                 }
 
-				var chrs = bg.Characters;
+                var chrs = bg.Characters;
                 List<BattlegroundStats> listStats = new List<BattlegroundStats>(chrs.Count);
                 chrs.ForEach(chr => listStats.Add(chr.Battlegrounds.Stats));
                 packet.Write(listStats.Count);
 
                 for (var i = 0; i < listStats.Count; i++)
                 {
-                	var chr = chrs[i];
-					if (!chr.IsInBattleground)
-					{
-						continue;
-					}
+                    var chr = chrs[i];
+                    if (!chr.IsInBattleground)
+                    {
+                        continue;
+                    }
 
-                	var stats = chr.Battlegrounds.Stats;
+                    var stats = chr.Battlegrounds.Stats;
 
                     packet.Write(chr.EntityId); // player guid
-					packet.Write(stats.KillingBlows);
+                    packet.Write(stats.KillingBlows);
 
                     if (bg.IsArena)
-					{
+                    {
                         packet.Write(winner != null && chr.Battlegrounds.Team == winner); // is on the winning team
                     }
                     else
                     {
-						packet.Write(stats.HonorableKills);
-						packet.Write(stats.Deaths);
-						packet.Write(stats.BonusHonor);
+                        packet.Write(stats.HonorableKills);
+                        packet.Write(stats.Deaths);
+                        packet.Write(stats.BonusHonor);
                     }
 
-					packet.Write(stats.TotalDamage);
-					packet.Write(stats.TotalHealing);
+                    packet.Write(stats.TotalDamage);
+                    packet.Write(stats.TotalHealing);
 
                     packet.Write(stats.SpecialStatCount);
 
-                	stats.WriteSpecialStats(packet);
+                    stats.WriteSpecialStats(packet);
                 }
 
                 reciever.Send(packet);
             }
         }
-        #endregion
+
+        #endregion PvP Data
 
         public static void SendPlayerJoined(IPacketReceiver rcv, Character joiningCharacter)
         {

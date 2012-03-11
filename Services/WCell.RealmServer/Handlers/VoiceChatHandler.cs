@@ -34,9 +34,7 @@ namespace WCell.RealmServer.Handlers
         [ClientPacketHandler(RealmServerOpCode.CMSG_SET_ACTIVE_VOICE_CHANNEL, IsGamePacket = false, RequiresLogin = false)]
         public static void HandleQuery(IRealmClient client, RealmPacketIn packet)
         {
-
         }
-		
 
         public static void SendSystemStatus(Character chr, VoiceSystemStatus status)
         {

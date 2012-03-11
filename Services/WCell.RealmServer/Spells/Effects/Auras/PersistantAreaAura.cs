@@ -19,28 +19,28 @@ using WCell.RealmServer.Spells.Auras;
 
 namespace WCell.RealmServer.Spells.Effects
 {
-	/// <summary>
-	/// Creates a Dynamic Object, which -contrary to what its name suggests- is a static animation in the world and
-	/// applies a static <see cref="AreaAura">AreaAura</see> to everyone who is within the radius of influence
-	/// </summary>
-	public class PersistantAreaAuraEffectHandler : SpellEffectHandler
-	{
-		public PersistantAreaAuraEffectHandler(SpellCast cast, SpellEffect effect)
-			: base(cast, effect)
-		{
-		}
+    /// <summary>
+    /// Creates a Dynamic Object, which -contrary to what its name suggests- is a static animation in the world and
+    /// applies a static <see cref="AreaAura">AreaAura</see> to everyone who is within the radius of influence
+    /// </summary>
+    public class PersistantAreaAuraEffectHandler : SpellEffectHandler
+    {
+        public PersistantAreaAuraEffectHandler(SpellCast cast, SpellEffect effect)
+            : base(cast, effect)
+        {
+        }
 
-		public override void Apply()
-		{
-		}
+        public override void Apply()
+        {
+        }
 
-		protected override void Apply(WorldObject target)
-		{
-		}
+        protected override void Apply(WorldObject target)
+        {
+        }
 
-		public override bool HasOwnTargets
-		{
-			get { return false; }
-		}
-	}
+        public override bool HasOwnTargets
+        {
+            get { return false; }
+        }
+    }
 }

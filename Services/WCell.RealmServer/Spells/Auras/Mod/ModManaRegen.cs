@@ -20,23 +20,23 @@ using WCell.Util.Variables;
 
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
-	/// <summary>
-	/// Used by some Druid talents
-	/// Regenerates mana in % of a given stat periodically (default every 5 secs)
-	/// </summary>
-	public class ModManaRegenHandler : AuraEffectHandler
-	{
-		/// <summary>
-		/// Used for ModManaRegen effects that don't have an Amplitude
-		/// </summary>
-		[Variable("DefaultManaRegenBuffAmplitude")]
-		public static int DefaultAmplitude = 5000;
+    /// <summary>
+    /// Used by some Druid talents
+    /// Regenerates mana in % of a given stat periodically (default every 5 secs)
+    /// </summary>
+    public class ModManaRegenHandler : AuraEffectHandler
+    {
+        /// <summary>
+        /// Used for ModManaRegen effects that don't have an Amplitude
+        /// </summary>
+        [Variable("DefaultManaRegenBuffAmplitude")]
+        public static int DefaultAmplitude = 5000;
 
-		protected override void Apply()
-		{
-			var stat = (StatType)m_spellEffect.MiscValue;
-			var power = (int)Math.Round(m_aura.Auras.Owner.GetTotalStatValue(stat) * (EffectValue / 100f));
-			m_aura.Auras.Owner.Energize(power, m_aura.CasterUnit, m_spellEffect);
-		}
-	}
+        protected override void Apply()
+        {
+            var stat = (StatType)m_spellEffect.MiscValue;
+            var power = (int)Math.Round(m_aura.Auras.Owner.GetTotalStatValue(stat) * (EffectValue / 100f));
+            m_aura.Auras.Owner.Energize(power, m_aura.CasterUnit, m_spellEffect);
+        }
+    }
 };

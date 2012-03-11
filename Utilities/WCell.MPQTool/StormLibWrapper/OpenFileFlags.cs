@@ -5,11 +5,11 @@ namespace WCell.MPQTool.StormLibWrapper
         /// <summary>
         /// Open the file from the MPQ archive
         /// </summary>
-        FromMPQ = 0x00000000, 
+        FromMPQ = 0x00000000,
         /// <summary>
         /// The 'szFileName' parameter is actually the file index
         /// </summary>
-        ByIndex = 0x00000001, 
+        ByIndex = 0x00000001,
         /// <summary>
         /// Reserved for StormLib internal use
         /// </summary>
@@ -17,6 +17,6 @@ namespace WCell.MPQTool.StormLibWrapper
         /// <summary>
         /// Open the file from the MPQ archive
         /// </summary>
-        LocalFile = 0xFFFFFFFF 
+        LocalFile = 0xFFFFFFFF
     }
 }

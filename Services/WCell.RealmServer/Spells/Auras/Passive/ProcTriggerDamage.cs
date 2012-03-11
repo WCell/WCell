@@ -20,30 +20,30 @@ using WCell.RealmServer.Misc;
 
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
-	/// <summary>
-	/// Does school damage to its targets
-	/// </summary>
-	public class ProcTriggerDamageHandler : AuraEffectHandler
-	{
-		public override void OnProc(Unit triggerer, IUnitAction action)
-		{
-			var val = m_spellEffect.CalcEffectValue(m_aura.CasterReference);
+    /// <summary>
+    /// Does school damage to its targets
+    /// </summary>
+    public class ProcTriggerDamageHandler : AuraEffectHandler
+    {
+        public override void OnProc(Unit triggerer, IUnitAction action)
+        {
+            var val = m_spellEffect.CalcEffectValue(m_aura.CasterReference);
 
-			//if (action is IDamageAction)
-			//{
-			//    ((IDamageAction)action).Damage += val;
-			//}
-			//else
+            //if (action is IDamageAction)
+            //{
+            //    ((IDamageAction)action).Damage += val;
+            //}
+            //else
 
-			if (Owner.MayAttack(triggerer))
-			{
-				Owner.DealSpellDamage(triggerer, m_spellEffect, val);
-			}
-			else
-			{
-				LogManager.GetCurrentClassLogger().Warn("Invalid damage effect on Spell {0} was triggered by {1} who cannot be attacked by Aura-Owner {2}.",
-					m_aura.Spell, triggerer, Owner);
-			}
-		}
-	}
+            if (Owner.MayAttack(triggerer))
+            {
+                Owner.DealSpellDamage(triggerer, m_spellEffect, val);
+            }
+            else
+            {
+                LogManager.GetCurrentClassLogger().Warn("Invalid damage effect on Spell {0} was triggered by {1} who cannot be attacked by Aura-Owner {2}.",
+                    m_aura.Spell, triggerer, Owner);
+            }
+        }
+    }
 };

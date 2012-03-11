@@ -23,53 +23,53 @@ namespace WCell.RealmServer.Groups
     /// Represents a party group.
     /// </summary>
     public sealed class PartyGroup : Group, IGroupConverter<RaidGroup>
-	{
-		#region Fields
+    {
+        #region Fields
 
-		/// <summary>
-		/// Max Amount of allowed sub-groups
-		/// </summary>
-		public const byte MaxSubGroupCount = 1;
+        /// <summary>
+        /// Max Amount of allowed sub-groups
+        /// </summary>
+        public const byte MaxSubGroupCount = 1;
 
-		/// <summary>
-		/// Max amount of allowed members in a Party
-		/// </summary>
-		public new const int MaxMemberCount = MaxSubGroupCount * SubGroup.MaxMemberCount;
+        /// <summary>
+        /// Max amount of allowed members in a Party
+        /// </summary>
+        public new const int MaxMemberCount = MaxSubGroupCount * SubGroup.MaxMemberCount;
 
-		#endregion
+        #endregion Fields
 
-		/// <summary>
-		/// Creates a party group with the given character as the leader.
-		/// </summary>
-		/// <param name="leader"></param>
-		public PartyGroup(Character leader)
+        /// <summary>
+        /// Creates a party group with the given character as the leader.
+        /// </summary>
+        /// <param name="leader"></param>
+        public PartyGroup(Character leader)
             : base(leader, MaxSubGroupCount)
         {
-		}
+        }
 
-		#region Properties
+        #region Properties
 
-		/// <summary>
-		/// Tye type of group.
-		/// </summary>
+        /// <summary>
+        /// Tye type of group.
+        /// </summary>
         public override GroupFlags Flags
         {
             get { return GroupFlags.Party; }
-		}
+        }
 
-		#endregion
+        #endregion Properties
 
-		#region IGroupConverter<RaidGroup> Members
+        #region IGroupConverter<RaidGroup> Members
 
-		/// <summary>
-		/// Converts the group into a raid group.
-		/// </summary>
-		/// <returns>a <see cref"RaidGroup" /> object with all the members from the original party group present.</returns>
+        /// <summary>
+        /// Converts the group into a raid group.
+        /// </summary>
+        /// <returns>a <see cref"RaidGroup" /> object with all the members from the original party group present.</returns>
         public RaidGroup ConvertTo()
         {
             return new RaidGroup(this);
         }
 
-        #endregion
+        #endregion IGroupConverter<RaidGroup> Members
     }
 }

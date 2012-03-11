@@ -19,24 +19,24 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Effects
 {
-	/// <summary>
-	/// Does x extra swings
-	/// </summary>
-	public class AddExtraAttacksEffectHandler : SpellEffectHandler
-	{
-		public AddExtraAttacksEffectHandler(SpellCast cast, SpellEffect effect)
-			: base(cast, effect)
-		{
-		}
+    /// <summary>
+    /// Does x extra swings
+    /// </summary>
+    public class AddExtraAttacksEffectHandler : SpellEffectHandler
+    {
+        public AddExtraAttacksEffectHandler(SpellCast cast, SpellEffect effect)
+            : base(cast, effect)
+        {
+        }
 
-		protected override void Apply(WorldObject target)
-		{
-			((Unit)target).ExtraAttacks += CalcEffectValue();
-		}
+        protected override void Apply(WorldObject target)
+        {
+            ((Unit)target).ExtraAttacks += CalcEffectValue();
+        }
 
-		public override ObjectTypes TargetType
-		{
-			get { return ObjectTypes.Unit; }
-		}
-	}
+        public override ObjectTypes TargetType
+        {
+            get { return ObjectTypes.Unit; }
+        }
+    }
 }

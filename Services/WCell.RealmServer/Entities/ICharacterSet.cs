@@ -4,33 +4,33 @@ using WCell.RealmServer.Network;
 
 namespace WCell.RealmServer.Entities
 {
-	public interface ICharacterSet : IPacketReceiver
-	{
-		/// <summary>
-		/// Amount of Characters in this set
-		/// </summary>
-		int CharacterCount { get; }
+    public interface ICharacterSet : IPacketReceiver
+    {
+        /// <summary>
+        /// Amount of Characters in this set
+        /// </summary>
+        int CharacterCount { get; }
 
-		/// <summary>
-		/// FactionGroup or 0 if this is not a biased group
-		/// </summary>
-		FactionGroup FactionGroup { get; }
+        /// <summary>
+        /// FactionGroup or 0 if this is not a biased group
+        /// </summary>
+        FactionGroup FactionGroup { get; }
 
-		/// <summary>
-		/// Calls the given callback within each Character's context
-		/// </summary>
-		void ForeachCharacter(Action<Character> callback);
+        /// <summary>
+        /// Calls the given callback within each Character's context
+        /// </summary>
+        void ForeachCharacter(Action<Character> callback);
 
-		/// <summary>
-		/// Creates a Copy of the set
-		/// </summary>
-		Character[] GetAllCharacters();
-	}
+        /// <summary>
+        /// Creates a Copy of the set
+        /// </summary>
+        Character[] GetAllCharacters();
+    }
 
-	public interface ICharacterCollection : ICharacterSet
-	{
-		void AddCharacter(Character chr);
+    public interface ICharacterCollection : ICharacterSet
+    {
+        void AddCharacter(Character chr);
 
-		void RemoveCharacter(Character chr);
-	}
+        void RemoveCharacter(Character chr);
+    }
 }

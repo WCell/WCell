@@ -19,29 +19,29 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Effects
 {
-	/// <summary>
-	/// Used for weapon proficiencies
-	/// </summary>
-	public class WeaponEffectHandler : SpellEffectHandler
-	{
-		public WeaponEffectHandler(SpellCast cast, SpellEffect effect)
-			: base(cast, effect)
-		{
-		}
+    /// <summary>
+    /// Used for weapon proficiencies
+    /// </summary>
+    public class WeaponEffectHandler : SpellEffectHandler
+    {
+        public WeaponEffectHandler(SpellCast cast, SpellEffect effect)
+            : base(cast, effect)
+        {
+        }
 
-		protected override void Apply(WorldObject target)
-		{
-			// add/send proficiency?
-		}
+        protected override void Apply(WorldObject target)
+        {
+            // add/send proficiency?
+        }
 
-		public override ObjectTypes CasterType
-		{
-			get { return ObjectTypes.Unit; }
-		}
+        public override ObjectTypes CasterType
+        {
+            get { return ObjectTypes.Unit; }
+        }
 
-		public override ObjectTypes TargetType
-		{
-			get { return ObjectTypes.Unit; }
-		}
-	}
+        public override ObjectTypes TargetType
+        {
+            get { return ObjectTypes.Unit; }
+        }
+    }
 }

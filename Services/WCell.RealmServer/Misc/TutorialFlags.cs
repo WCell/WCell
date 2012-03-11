@@ -4,17 +4,17 @@ namespace WCell.RealmServer.Misc
 {
     public class TutorialFlags
     {
-		/// <summary>
-		/// Shares with the Character's record
-		/// </summary>
+        /// <summary>
+        /// Shares with the Character's record
+        /// </summary>
         private byte[] m_flagData;
 
         internal TutorialFlags(byte[] flagData)
         {
-			if (flagData.Length != 32)
-			{
-				throw new ArgumentOutOfRangeException("flagData", "byte array must be 32 bytes");
-			}
+            if (flagData.Length != 32)
+            {
+                throw new ArgumentOutOfRangeException("flagData", "byte array must be 32 bytes");
+            }
 
             m_flagData = flagData;
         }

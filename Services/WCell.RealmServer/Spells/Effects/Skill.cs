@@ -18,25 +18,25 @@ using WCell.Constants.Skills;
 
 namespace WCell.RealmServer.Spells.Effects
 {
-	/// <summary>
-	/// Uses a Skill (add skill checks here?)
-	/// </summary>
-	public class SkillEffectHandler : SpellEffectHandler
-	{
-		public SkillEffectHandler(SpellCast cast, SpellEffect effect)
-			: base(cast, effect)
-		{
-		}
+    /// <summary>
+    /// Uses a Skill (add skill checks here?)
+    /// </summary>
+    public class SkillEffectHandler : SpellEffectHandler
+    {
+        public SkillEffectHandler(SpellCast cast, SpellEffect effect)
+            : base(cast, effect)
+        {
+        }
 
-		public override void Apply()
-		{
-			var skillId = (SkillId)Effect.MiscValue;
-			var tier = (SkillTierId)Effect.BasePoints;
-		}
+        public override void Apply()
+        {
+            var skillId = (SkillId)Effect.MiscValue;
+            var tier = (SkillTierId)Effect.BasePoints;
+        }
 
-		public override bool HasOwnTargets
-		{
-			get { return false; }
-		}
-	}
+        public override bool HasOwnTargets
+        {
+            get { return false; }
+        }
+    }
 }

@@ -21,54 +21,54 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Effects
 {
-	/// <summary>
-	/// Tames the target
-	/// </summary>
-	public class TameCreatureEffectHandler : SpellEffectHandler
-	{
-		public TameCreatureEffectHandler(SpellCast cast, SpellEffect effect)
-			: base(cast, effect)
-		{
-		}
+    /// <summary>
+    /// Tames the target
+    /// </summary>
+    public class TameCreatureEffectHandler : SpellEffectHandler
+    {
+        public TameCreatureEffectHandler(SpellCast cast, SpellEffect effect)
+            : base(cast, effect)
+        {
+        }
 
-		public override SpellFailedReason InitializeTarget(WorldObject target)
-		{
-			if (!(target is NPC))
-			{
-				return SpellFailedReason.BadTargets;
-			}
+        public override SpellFailedReason InitializeTarget(WorldObject target)
+        {
+            if (!(target is NPC))
+            {
+                return SpellFailedReason.BadTargets;
+            }
 
-			if (SpellCast.CheckTame(m_cast.CasterObject as Character, (NPC)target) != TameFailReason.Ok)
-			{
-				return SpellFailedReason.DontReport;
-			}
-			return SpellFailedReason.Ok;
-		}
+            if (SpellCast.CheckTame(m_cast.CasterObject as Character, (NPC)target) != TameFailReason.Ok)
+            {
+                return SpellFailedReason.DontReport;
+            }
+            return SpellFailedReason.Ok;
+        }
 
-		protected override void Apply(WorldObject target)
-		{
-			var caster = (Unit)m_cast.CasterObject;
-			if (caster is Character)
-			{
-				((Character)caster).MakePet((NPC)target);
-			}
-			else
-			{
-				caster.Enslave((NPC)target);
+        protected override void Apply(WorldObject target)
+        {
+            var caster = (Unit)m_cast.CasterObject;
+            if (caster is Character)
+            {
+                ((Character)caster).MakePet((NPC)target);
+            }
+            else
+            {
+                caster.Enslave((NPC)target);
 
-				((NPC)target).Summoner = caster;
-				((NPC)target).Creator = caster.EntityId;
-			}
-		}
+                ((NPC)target).Summoner = caster;
+                ((NPC)target).Creator = caster.EntityId;
+            }
+        }
 
-		public override ObjectTypes TargetType
-		{
-			get { return ObjectTypes.Unit; }
-		}
+        public override ObjectTypes TargetType
+        {
+            get { return ObjectTypes.Unit; }
+        }
 
-		public override ObjectTypes CasterType
-		{
-			get { return ObjectTypes.Unit; }
-		}
-	}
+        public override ObjectTypes CasterType
+        {
+            get { return ObjectTypes.Unit; }
+        }
+    }
 }

@@ -1,9 +1,9 @@
 namespace WCell.RealmServer.Entities
 {
-	public struct MoveControl
-	{
-		public WorldObject Mover;
+    public struct MoveControl
+    {
+        public WorldObject Mover;
 
-		public bool CanControl;
-	}
+        public bool CanControl;
+    }
 }
