@@ -24,63 +24,63 @@ using WCell.RealmServer.Items;
 
 namespace WCell.RealmServer.Spells.Effects
 {
-	/// <summary>
-	/// Creates a new Item and puts it in the caster's backpack
-	/// </summary>
-	public class CreateItemEffectHandler : SpellEffectHandler
-	{
-		private static Logger log = LogManager.GetCurrentClassLogger();
+    /// <summary>
+    /// Creates a new Item and puts it in the caster's backpack
+    /// </summary>
+    public class CreateItemEffectHandler : SpellEffectHandler
+    {
+        private static Logger log = LogManager.GetCurrentClassLogger();
 
-		private SimpleSlotId slotId;
-		private int amount;
-		private ItemTemplate templ;
+        private SimpleSlotId slotId;
+        private int amount;
+        private ItemTemplate templ;
 
-		public CreateItemEffectHandler(SpellCast cast, SpellEffect effect)
-			: base(cast, effect)
-		{
-		}
+        public CreateItemEffectHandler(SpellCast cast, SpellEffect effect)
+            : base(cast, effect)
+        {
+        }
 
-		public override SpellFailedReason InitializeTarget(WorldObject target)
-		{
-			var templId = Effect.ItemId;
-			templ = ItemMgr.GetTemplate(templId);
-			amount = CalcEffectValue();
+        public override SpellFailedReason InitializeTarget(WorldObject target)
+        {
+            var templId = Effect.ItemId;
+            templ = ItemMgr.GetTemplate(templId);
+            amount = CalcEffectValue();
 
-			if (templ == null)
-			{
-				log.Warn("Spell {0} referred to invalid Item {1}", Effect.Spell, templId);
-				return SpellFailedReason.ItemNotFound;
-			}
+            if (templ == null)
+            {
+                log.Warn("Spell {0} referred to invalid Item {1}", Effect.Spell, templId);
+                return SpellFailedReason.ItemNotFound;
+            }
 
-			// find a free slot
-			// TODO: Add & use HoldFreeSlotCheck instead, so slot won't get occupied
-			InventoryError error;
-			slotId = ((Character)target).Inventory.FindFreeSlotCheck(templ, amount, out error);
-			if (error != InventoryError.OK)
-			{
-				ItemHandler.SendInventoryError((Character)target, error);
-				return SpellFailedReason.DontReport;
-			}
+            // find a free slot
+            // TODO: Add & use HoldFreeSlotCheck instead, so slot won't get occupied
+            InventoryError error;
+            slotId = ((Character)target).Inventory.FindFreeSlotCheck(templ, amount, out error);
+            if (error != InventoryError.OK)
+            {
+                ItemHandler.SendInventoryError((Character)target, error);
+                return SpellFailedReason.DontReport;
+            }
 
-			return SpellFailedReason.Ok;
-		}
+            return SpellFailedReason.Ok;
+        }
 
-		protected override void Apply(WorldObject target)
-		{
-			if (slotId.Container[slotId.Slot] == null)
-			{
-				slotId.Container.TryAdd(templ, ref amount, slotId.Slot, ItemReceptionType.YouCreated);
-			}
-			else
-			{
-				// slot got occupied in the meantime (should usually not happen)
-				((Character)target).Inventory.TryAdd(templ, ref amount, ItemReceptionType.YouCreated);
-			}
-		}
+        protected override void Apply(WorldObject target)
+        {
+            if (slotId.Container[slotId.Slot] == null)
+            {
+                slotId.Container.TryAdd(templ, ref amount, slotId.Slot, ItemReceptionType.YouCreated);
+            }
+            else
+            {
+                // slot got occupied in the meantime (should usually not happen)
+                ((Character)target).Inventory.TryAdd(templ, ref amount, ItemReceptionType.YouCreated);
+            }
+        }
 
-		public override ObjectTypes TargetType
-		{
-			get { return ObjectTypes.Player; }
-		}
-	}
+        public override ObjectTypes TargetType
+        {
+            get { return ObjectTypes.Player; }
+        }
+    }
 }

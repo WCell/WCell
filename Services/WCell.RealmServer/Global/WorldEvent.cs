@@ -6,29 +6,29 @@ using WCell.Util.Data;
 
 namespace WCell.RealmServer.Global
 {
-	/// <summary>
-	/// Holds all information regarding a World Event
-	/// such as Darkmoon Faire
-	/// </summary>
-	[DataHolder]
-	public class WorldEvent : IDataHolder
-	{
+    /// <summary>
+    /// Holds all information regarding a World Event
+    /// such as Darkmoon Faire
+    /// </summary>
+    [DataHolder]
+    public class WorldEvent : IDataHolder
+    {
         /// <summary>
         /// Id of the game event
         /// </summary>
-		public uint Id;
+        public uint Id;
 
         /// <summary>
         /// Absolute start date, the event will never start before
         /// </summary>
-		public DateTime From;
+        public DateTime From;
 
         /// <summary>
         /// Absolute end date, the event will never start after
         /// </summary>
-		public DateTime Until;
+        public DateTime Until;
 
-	    [NotPersistent]
+        [NotPersistent]
         public TimeSpan? TimeUntilNextStart;
 
         [NotPersistent]
@@ -50,22 +50,22 @@ namespace WCell.RealmServer.Global
         /// Delay in minutes between occurences of the event
         /// </summary>
         [NotPersistent]
-	    public TimeSpan Occurence;
+        public TimeSpan Occurence;
 
         /// <summary>
         /// Length in minutes of the event
         /// </summary>
         [NotPersistent]
-	    public TimeSpan Duration;
+        public TimeSpan Duration;
 
         /// <summary>
         /// Client side holiday id
         /// </summary>
-	    public uint HolidayId;
+        public uint HolidayId;
 
-	    /// <summary>
-	    /// Generally the event's name
-	    /// </summary>
+        /// <summary>
+        /// Generally the event's name
+        /// </summary>
         public string Description;
 
         [NotPersistent]
@@ -74,7 +74,7 @@ namespace WCell.RealmServer.Global
         public List<WorldEventGameObject> GOSpawns = new List<WorldEventGameObject>();
         [NotPersistent]
         public List<WorldEventNpcData> ModelEquips = new List<WorldEventNpcData>();
-	    [NotPersistent]
+        [NotPersistent]
         public List<uint> QuestIds = new List<uint>();
 
         public void FinalizeDataHolder()
@@ -87,48 +87,48 @@ namespace WCell.RealmServer.Global
             WorldEventMgr.AddEvent(this);
         }
 
-	    public static void CalculateEventDelays(WorldEvent worldEvent)
-	    {
-	        var time = DateTime.Now;
+        public static void CalculateEventDelays(WorldEvent worldEvent)
+        {
+            var time = DateTime.Now;
 
-	        //Only work out start times for events that will ever be able to start
+            //Only work out start times for events that will ever be able to start
             if (time < worldEvent.Until)
-	        {
-	            //If the first time this event can start is in the
-	            //future then this is easy
+            {
+                //If the first time this event can start is in the
+                //future then this is easy
                 if (worldEvent.From > time)
                     worldEvent.TimeUntilNextStart = worldEvent.From - time;
-	            else
-	            {
-	                //If the first time this event started was in the
-	                //past work out which cycle of the event we are up
-	                //to
+                else
+                {
+                    //If the first time this event started was in the
+                    //past work out which cycle of the event we are up
+                    //to
                     DateTime timeToCheck = worldEvent.From;
-	                while (timeToCheck < time)
-	                {
-	                    //if we are in the middle of a cycle
+                    while (timeToCheck < time)
+                    {
+                        //if we are in the middle of a cycle
                         if ((timeToCheck + worldEvent.Duration) > time && (timeToCheck + worldEvent.Duration) < (timeToCheck + worldEvent.Occurence))
-	                        break;
+                            break;
 
                         timeToCheck += worldEvent.Occurence;
-	                }
+                    }
                     worldEvent.TimeUntilNextStart = timeToCheck - time;
-	            }
+                }
 
                 worldEvent.TimeUntilEnd = worldEvent.TimeUntilNextStart + worldEvent.Duration;
-	        }
+            }
             else
             {
                 worldEvent.TimeUntilNextStart = null;
                 worldEvent.TimeUntilEnd = null;
             }
-	    }
-	}
+        }
+    }
 
     /// <summary>
-	/// Holds all information regarding a spawn
-	/// involved in a WorldEvent
-	/// </summary>
+    /// Holds all information regarding a spawn
+    /// involved in a WorldEvent
+    /// </summary>
     public class WorldEventNPC
     {
         /// <summary>
@@ -250,7 +250,7 @@ namespace WCell.RealmServer.Global
         }
     }
 
-        /// <summary>
+    /// <summary>
     /// Holds all information regarding a quest
     /// involved in a WorldEvent
     /// </summary>
@@ -271,7 +271,7 @@ namespace WCell.RealmServer.Global
         {
             WorldEventMgr.WorldEventQuests.Add(this);
             var worldEvent = WorldEventMgr.GetEvent(EventId);
-            if(worldEvent != null)
+            if (worldEvent != null)
                 worldEvent.QuestIds.Add(QuestId);
         }
     }

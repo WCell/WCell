@@ -2,7 +2,7 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Calendars
 {
-    class CalendarEventInvite
+    internal class CalendarEventInvite
     {
         //private Character m_owner;
         private uint m_id;
@@ -19,11 +19,13 @@ namespace WCell.RealmServer.Calendars
             get { return m_id; }
             set { m_id = value; }
         }
+
         public CalendarEvent EventId
         {
             get { return m_event; }
             set { m_event = value; }
         }
+
         public Character Inviter
         {
             get { return m_inviter; }

@@ -29,380 +29,379 @@ using WCell.Util.Data;
 
 namespace WCell.RealmServer.Quests
 {
-	public class Quest
-	{
-		public byte Entry;
+    public class Quest
+    {
+        public byte Entry;
 
-		private readonly QuestLog m_Log;
-		private bool m_saved;
+        private readonly QuestLog m_Log;
+        private bool m_saved;
 
-		private readonly QuestRecord m_record;
+        private readonly QuestRecord m_record;
 
-		public Character Owner
-		{
-			get { return m_Log.Owner; }
-		}
+        public Character Owner
+        {
+            get { return m_Log.Owner; }
+        }
 
-		/// <summary>
-		/// Template on which is this quest based, we might actually somehow cache only used templates
-		/// in case someone would requested uncached template, we'd load it from DB/XML
-		/// </summary>
-		public readonly QuestTemplate Template;
+        /// <summary>
+        /// Template on which is this quest based, we might actually somehow cache only used templates
+        /// in case someone would requested uncached template, we'd load it from DB/XML
+        /// </summary>
+        public readonly QuestTemplate Template;
 
-		/// <summary>
-		/// The time at which this Quest will expire for timed quests.
-		/// </summary>
-		public DateTime Until;
+        /// <summary>
+        /// The time at which this Quest will expire for timed quests.
+        /// </summary>
+        public DateTime Until;
 
-		[NotPersistent]
-		public readonly List<QuestTemplate> RequiredQuests = new List<QuestTemplate>(3);
+        [NotPersistent]
+        public readonly List<QuestTemplate> RequiredQuests = new List<QuestTemplate>(3);
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Quest"/> class.
-		/// Which represents one item in character's <seealso cref="QuestLog"/>
-		/// </summary>
-		/// <param name="template">The Quest Template.</param>
-		internal Quest(QuestLog log, QuestTemplate template, int slot)
-			: this(log, template, new QuestRecord(template.Id, log.Owner.EntityId.Low))
-		{
-			if (template.HasObjectOrSpellInteractions)
-			{
-				Interactions = new uint[template.ObjectOrSpellInteractions.Length];
-			}
-			if (template.AreaTriggerObjectives.Length > 0)
-			{
-				VisitedATs = new bool[template.AreaTriggerObjectives.Length];
-			}
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Quest"/> class.
+        /// Which represents one item in character's <seealso cref="QuestLog"/>
+        /// </summary>
+        /// <param name="template">The Quest Template.</param>
+        internal Quest(QuestLog log, QuestTemplate template, int slot)
+            : this(log, template, new QuestRecord(template.Id, log.Owner.EntityId.Low))
+        {
+            if (template.HasObjectOrSpellInteractions)
+            {
+                Interactions = new uint[template.ObjectOrSpellInteractions.Length];
+            }
+            if (template.AreaTriggerObjectives.Length > 0)
+            {
+                VisitedATs = new bool[template.AreaTriggerObjectives.Length];
+            }
 
-			Slot = slot;
-		}
+            Slot = slot;
+        }
 
-		/// <summary>
-		/// Load Quest progress
-		/// </summary>
-		internal Quest(QuestLog log, QuestRecord record, QuestTemplate template)
-			: this(log, template, record)
-		{
-			m_saved = true;
+        /// <summary>
+        /// Load Quest progress
+        /// </summary>
+        internal Quest(QuestLog log, QuestRecord record, QuestTemplate template)
+            : this(log, template, record)
+        {
+            m_saved = true;
 
-			// reset initial state
+            // reset initial state
 
-			if (template.HasObjectOrSpellInteractions)
-			{
-				if (Interactions == null ||
-				//template has been changed, probably due to a quest fix
-				template.ObjectOrSpellInteractions.Count() != Interactions.Count())
-				{
-					Interactions = new uint[template.ObjectOrSpellInteractions.Length];
-				}
+            if (template.HasObjectOrSpellInteractions)
+            {
+                if (Interactions == null ||
+                    //template has been changed, probably due to a quest fix
+                template.ObjectOrSpellInteractions.Count() != Interactions.Count())
+                {
+                    Interactions = new uint[template.ObjectOrSpellInteractions.Length];
+                }
 
-				for (var i = 0; i < Template.ObjectOrSpellInteractions.Length; i++)
-				{
-					var interaction = Template.ObjectOrSpellInteractions[i];
-					
-					if (interaction == null || !interaction.IsValid) continue;
+                for (var i = 0; i < Template.ObjectOrSpellInteractions.Length; i++)
+                {
+                    var interaction = Template.ObjectOrSpellInteractions[i];
 
-					log.Owner.SetQuestCount(Slot, interaction.Index, (byte)Interactions[i]);
-				}
-			}
-			UpdateStatus();
-		}
+                    if (interaction == null || !interaction.IsValid) continue;
 
-		private Quest(QuestLog log, QuestTemplate template, QuestRecord record)
-		{
-			m_record = record;
+                    log.Owner.SetQuestCount(Slot, interaction.Index, (byte)Interactions[i]);
+                }
+            }
+            UpdateStatus();
+        }
 
-			if (template.CollectableItems.Length > 0)
-			{
-				CollectedItems = new int[template.CollectableItems.Length];
-			}
+        private Quest(QuestLog log, QuestTemplate template, QuestRecord record)
+        {
+            m_record = record;
+
+            if (template.CollectableItems.Length > 0)
+            {
+                CollectedItems = new int[template.CollectableItems.Length];
+            }
 
             if (template.CollectableSourceItems.Length > 0)
             {
                 CollectedSourceItems = new int[template.CollectableSourceItems.Length];
             }
 
-			m_Log = log;
-			Template = template;
-		}
+            m_Log = log;
+            Template = template;
+        }
 
-		/// <summary>
-		/// Amounts of picked up Items
-		/// </summary>
-		public readonly int[] CollectedItems;
+        /// <summary>
+        /// Amounts of picked up Items
+        /// </summary>
+        public readonly int[] CollectedItems;
 
         /// <summary>
         /// Amounts of picked up Items
         /// </summary>
         public readonly int[] CollectedSourceItems;
 
-		/// <summary>
-		/// Amounts interactions
-		/// </summary>
-		public uint[] Interactions
-		{
-			get { return m_record.Interactions; }
-			private set { m_record.Interactions = value; }
-		}
+        /// <summary>
+        /// Amounts interactions
+        /// </summary>
+        public uint[] Interactions
+        {
+            get { return m_record.Interactions; }
+            private set { m_record.Interactions = value; }
+        }
 
-		/// <summary>
-		/// Visited AreaTriggers
-		/// </summary>
-		public bool[] VisitedATs
-		{
-			get { return m_record.VisitedATs; }
-			private set { m_record.VisitedATs = value; }
-		}
+        /// <summary>
+        /// Visited AreaTriggers
+        /// </summary>
+        public bool[] VisitedATs
+        {
+            get { return m_record.VisitedATs; }
+            private set { m_record.VisitedATs = value; }
+        }
 
-		public int Slot
-		{
-			get { return m_record.Slot; }
-			set { m_record.Slot = value; }
-		}
+        public int Slot
+        {
+            get { return m_record.Slot; }
+            set { m_record.Slot = value; }
+        }
 
-		public uint TemplateId
-		{
-			get { return m_record.QuestTemplateId; }
-			set { m_record.QuestTemplateId = value; }
-		}
+        public uint TemplateId
+        {
+            get { return m_record.QuestTemplateId; }
+            set { m_record.QuestTemplateId = value; }
+        }
 
-		/// <summary>
-		/// Current status of quest in QuestLog
-		/// 
-		/// </summary>
-		public QuestStatus Status
-		{
-			get
-			{
-				var chr = m_Log.Owner;
-				if (Template.IsTooHighLevel(chr))
-				{
-					return QuestStatus.TooHighLevel;
-				}
+        /// <summary>
+        /// Current status of quest in QuestLog
+        ///
+        /// </summary>
+        public QuestStatus Status
+        {
+            get
+            {
+                var chr = m_Log.Owner;
+                if (Template.IsTooHighLevel(chr))
+                {
+                    return QuestStatus.TooHighLevel;
+                }
 
-				if (CompleteStatus == QuestCompleteStatus.Completed)
-				{
-					return Template.Repeatable ? QuestStatus.RepeateableCompletable : QuestStatus.Completable;
-				}
-				return QuestStatus.NotCompleted;
-			}
-		}
+                if (CompleteStatus == QuestCompleteStatus.Completed)
+                {
+                    return Template.Repeatable ? QuestStatus.RepeateableCompletable : QuestStatus.Completable;
+                }
+                return QuestStatus.NotCompleted;
+            }
+        }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns>
+        /// 	<c>true</c> if [is quest completed] [the specified qt]; otherwise, <c>false</c>.
+        /// </returns>
+        public QuestCompleteStatus CompleteStatus
+        {
+            get { return m_Log.Owner.GetQuestState(Slot); }
+            set { m_Log.Owner.SetQuestState(Slot, value); }
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns>
-		/// 	<c>true</c> if [is quest completed] [the specified qt]; otherwise, <c>false</c>.
-		/// </returns>
-		public QuestCompleteStatus CompleteStatus
-		{
-			get { return m_Log.Owner.GetQuestState(Slot); }
-			set { m_Log.Owner.SetQuestState(Slot, value); }
-		}
+        public bool IsSaved
+        {
+            get { return m_saved; }
+        }
 
-		public bool IsSaved
-		{
-			get { return m_saved; }
-		}
+        public bool CheckCompletedStatus()
+        {
+            if (Template.CompleteHandler != null &&
+                Template.CompleteHandler(this))
+            {
+                return true;
+            }
 
-		public bool CheckCompletedStatus()
-		{
-			if (Template.CompleteHandler != null &&
-				Template.CompleteHandler(this))
-			{
-				return true;
-			}
+            for (var i = 0; i < Template.CollectableItems.Length; i++)
+            {
+                if (CollectedItems[i] < Template.CollectableItems[i].Amount)
+                {
+                    return false;
+                }
+            }
 
-			for (var i = 0; i < Template.CollectableItems.Length; i++)
-			{
-				if (CollectedItems[i] < Template.CollectableItems[i].Amount)
-				{
-					return false;
-				}
-			}
+            if (Template.HasObjectOrSpellInteractions)
+            {
+                for (var i = 0; i < Template.ObjectOrSpellInteractions.Length; i++)
+                {
+                    var templ = Template.ObjectOrSpellInteractions[i];
+                    if (templ == null || !templ.IsValid) continue;
 
-			if (Template.HasObjectOrSpellInteractions)
-			{
-				for (var i = 0; i < Template.ObjectOrSpellInteractions.Length; i++)
-				{
-					var templ = Template.ObjectOrSpellInteractions[i];
-					if (templ == null || !templ.IsValid) continue;
+                    var count = Interactions[i];
+                    var reqAmount = templ.ObjectType != ObjectTypeId.None || templ.Amount == 0;
+                    if ((!reqAmount && count == 0) ||
+                        (reqAmount && count < Template.ObjectOrSpellInteractions[i].Amount))
+                    {
+                        return false;
+                    }
+                }
+            }
 
-					var count = Interactions[i];
-					var reqAmount = templ.ObjectType != ObjectTypeId.None || templ.Amount == 0;
-					if ((!reqAmount && count == 0) ||
-						(reqAmount && count < Template.ObjectOrSpellInteractions[i].Amount))
-					{
-						return false;
-					}
-				}
-			}
+            // TODO: Fix it
+            //if ((Template.ObjTriggerIds[i] != 0) && CurrentCounts[i] == 1)
+            //{
+            //    return false;
+            //}
+            //if (!string.IsNullOrEmpty(Template.ObjTexts[i]) && CurrentCounts[i] != 1)
+            //{
+            //    return false;
+            //}
+            return true;
+        }
 
-			// TODO: Fix it
-			//if ((Template.ObjTriggerIds[i] != 0) && CurrentCounts[i] == 1)
-			//{
-			//    return false;
-			//}
-			//if (!string.IsNullOrEmpty(Template.ObjTexts[i]) && CurrentCounts[i] != 1)
-			//{
-			//    return false;
-			//}
-			return true;
-		}
+        public void SignalATVisited(uint id)
+        {
+            if (VisitedATs == null)
+            {
+                return;
+            }
 
-		public void SignalATVisited(uint id)
-		{
-			if (VisitedATs == null)
-			{
-				return;
-			}
+            for (var i = 0; i < Template.AreaTriggerObjectives.Length; i++)
+            {
+                var atId = Template.AreaTriggerObjectives[i];
+                if (atId == id)
+                {
+                    VisitedATs[i] = true;
+                    UpdateStatus();
+                    break;
+                }
+            }
+        }
 
-			for (var i = 0; i < Template.AreaTriggerObjectives.Length; i++)
-			{
-				var atId = Template.AreaTriggerObjectives[i];
-				if (atId == id)
-				{
-					VisitedATs[i] = true;
-					UpdateStatus();
-					break;
-				}
-			}
-		}
+        public void OfferQuestReward(IQuestHolder qHolder)
+        {
+            QuestHandler.SendQuestGiverOfferReward(qHolder, Template, m_Log.Owner);
+        }
 
-		public void OfferQuestReward(IQuestHolder qHolder)
-		{
-			QuestHandler.SendQuestGiverOfferReward(qHolder, Template, m_Log.Owner);
-		}
+        /// <summary>
+        /// Tries to hand out the rewards, archives this quest and sends details about the next quest in the chain (if any).
+        /// </summary>
+        /// <param name="qHolder"></param>
+        /// <param name="rewardSlot"></param>
+        public bool TryFinish(IQuestHolder qHolder, uint rewardSlot)
+        {
+            var chr = m_Log.Owner;
+            chr.OnInteract(qHolder as WorldObject);
 
-		/// <summary>
-		/// Tries to hand out the rewards, archives this quest and sends details about the next quest in the chain (if any).
-		/// </summary>
-		/// <param name="qHolder"></param>
-		/// <param name="rewardSlot"></param>
-		public bool TryFinish(IQuestHolder qHolder, uint rewardSlot)
-		{
-			var chr = m_Log.Owner;
-			chr.OnInteract(qHolder as WorldObject);
+            if (qHolder is WorldObject && !chr.IsInRadius((WorldObject)qHolder, NPCMgr.DefaultInteractionDistance))
+            {
+                NPCHandler.SendNPCError(chr, qHolder, VendorInventoryError.TooFarAway);
+                return false;
+            }
 
-			if (qHolder is WorldObject && !chr.IsInRadius((WorldObject)qHolder, NPCMgr.DefaultInteractionDistance))
-			{
-				NPCHandler.SendNPCError(chr, qHolder, VendorInventoryError.TooFarAway);
-				return false;
-			}
+            if (Template.TryGiveRewards(m_Log.Owner, qHolder, rewardSlot))
+            {
+                ArchiveQuest();
+                QuestHandler.SendComplete(Template, chr);
 
-			if (Template.TryGiveRewards(m_Log.Owner, qHolder, rewardSlot))
-			{
-				ArchiveQuest();
-				QuestHandler.SendComplete(Template, chr);
-
-				if (Template.FollowupQuestId != 0)
-				{
-					var nq = QuestMgr.GetTemplate(Template.FollowupQuestId);
-					if (nq != null && qHolder.QuestHolderInfo.QuestStarts.Contains(nq))
-					{
-						// Offer the next Quest if its also offered by the same QuestGiver
-						QuestHandler.SendDetails(qHolder, nq, chr, true);
+                if (Template.FollowupQuestId != 0)
+                {
+                    var nq = QuestMgr.GetTemplate(Template.FollowupQuestId);
+                    if (nq != null && qHolder.QuestHolderInfo.QuestStarts.Contains(nq))
+                    {
+                        // Offer the next Quest if its also offered by the same QuestGiver
+                        QuestHandler.SendDetails(qHolder, nq, chr, true);
                         if (nq.Flags.HasFlag(QuestFlags.AutoAccept))
                             chr.QuestLog.TryAddQuest(nq, qHolder);
-					}
-				}
+                    }
+                }
 
-				if(!Template.Repeatable)
-				{
-					chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.CompleteQuestCount, 1);
-					chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.CompleteQuest, Entry);
-					if (Template.ZoneTemplate != null)
-					{
-						chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.CompleteQuestsInZone,
-																		 (uint)Template.ZoneTemplate.Id);
-					}
-				}
+                if (!Template.Repeatable)
+                {
+                    chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.CompleteQuestCount, 1);
+                    chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.CompleteQuest, Entry);
+                    if (Template.ZoneTemplate != null)
+                    {
+                        chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.CompleteQuestsInZone,
+                                                                         (uint)Template.ZoneTemplate.Id);
+                    }
+                }
 
-				if(Template.IsDaily)
-				{
-					chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.CompleteDailyQuest, 1);
-				}
+                if (Template.IsDaily)
+                {
+                    chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.CompleteDailyQuest, 1);
+                }
 
-				return true;
-			}
-			return false;
-		}
+                return true;
+            }
+            return false;
+        }
 
-		/// <summary>
-		/// Removes Quest from Active log and adds it to the finished Quests
-		/// </summary>
-		public void ArchiveQuest()
-		{
-			if (!m_Log.m_FinishedQuests.Contains(Template.Id))
-			{
-				m_Log.m_FinishedQuests.Add(Template.Id);
-				Template.NotifyFinished(this);
-				if (Template.IsDaily)
-				{
-					//TODO Add Daily Quest logic
-					//m_CurrentDailyCount++;
-				}
-			}
-			m_Log.RemoveQuest(this);
-		}
+        /// <summary>
+        /// Removes Quest from Active log and adds it to the finished Quests
+        /// </summary>
+        public void ArchiveQuest()
+        {
+            if (!m_Log.m_FinishedQuests.Contains(Template.Id))
+            {
+                m_Log.m_FinishedQuests.Add(Template.Id);
+                Template.NotifyFinished(this);
+                if (Template.IsDaily)
+                {
+                    //TODO Add Daily Quest logic
+                    //m_CurrentDailyCount++;
+                }
+            }
+            m_Log.RemoveQuest(this);
+        }
 
-		/// <summary>
-		/// Cancels the quest and removes it from the QuestLog
-		/// </summary>
-		public void Cancel(bool failed)
-		{
-			Template.NotifyCancelled(this, failed);
-			m_Log.RemoveQuest(this);
-		}
+        /// <summary>
+        /// Cancels the quest and removes it from the QuestLog
+        /// </summary>
+        public void Cancel(bool failed)
+        {
+            Template.NotifyCancelled(this, failed);
+            m_Log.RemoveQuest(this);
+        }
 
-		public void UpdateStatus()
-		{
-			if (CheckCompletedStatus())
-			{
-				m_Log.Owner.SetQuestState(Slot, QuestCompleteStatus.Completed);
-				QuestHandler.SendQuestUpdateComplete(m_Log.Owner, Template.Id);
-				//if (m_Log.Owner.GetQuestState(m_Slot) != QuestStatusLog.Completed)
-				//{
-				//    m_Log.Owner.SetQuestState(m_Slot, QuestStatusLog.Completed);
-				//    //QuestHandler.SendComplete(Template, m_Log.Owner);
-				//}
-			}
-			else
-			{
-				m_Log.Owner.SetQuestState(Slot, QuestCompleteStatus.NotCompleted);
-				//if (m_Log.Owner.GetQuestState(m_Slot) != QuestStatusLog.NotCompleted)
-				//{
-				//    m_Log.Owner.SetQuestState(m_Slot, QuestStatusLog.NotCompleted);
-				//}
-			}
-		}
+        public void UpdateStatus()
+        {
+            if (CheckCompletedStatus())
+            {
+                m_Log.Owner.SetQuestState(Slot, QuestCompleteStatus.Completed);
+                QuestHandler.SendQuestUpdateComplete(m_Log.Owner, Template.Id);
+                //if (m_Log.Owner.GetQuestState(m_Slot) != QuestStatusLog.Completed)
+                //{
+                //    m_Log.Owner.SetQuestState(m_Slot, QuestStatusLog.Completed);
+                //    //QuestHandler.SendComplete(Template, m_Log.Owner);
+                //}
+            }
+            else
+            {
+                m_Log.Owner.SetQuestState(Slot, QuestCompleteStatus.NotCompleted);
+                //if (m_Log.Owner.GetQuestState(m_Slot) != QuestStatusLog.NotCompleted)
+                //{
+                //    m_Log.Owner.SetQuestState(m_Slot, QuestStatusLog.NotCompleted);
+                //}
+            }
+        }
 
-		public void Save()
-		{
-			if (m_saved)
-			{
-				m_record.Update();
-			}
-			else
-			{
-				m_record.Create();
-				m_saved = true;
-			}
-		}
+        public void Save()
+        {
+            if (m_saved)
+            {
+                m_record.Update();
+            }
+            else
+            {
+                m_record.Create();
+                m_saved = true;
+            }
+        }
 
-		public void Delete()
-		{
-			if (m_saved)
-			{
-				m_record.Delete();
-				m_saved = false;
-			}
-		}
+        public void Delete()
+        {
+            if (m_saved)
+            {
+                m_record.Delete();
+                m_saved = false;
+            }
+        }
 
-		public override string ToString()
-		{
-			return Template.ToString();
-		}
-	}
+        public override string ToString()
+        {
+            return Template.ToString();
+        }
+    }
 }

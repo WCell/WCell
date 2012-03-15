@@ -7,169 +7,168 @@ using WCell.Util.Variables;
 
 namespace WCell.RealmServer.GameObjects
 {
-	/// <summary>
-	/// The Selection Manager keeps track of all GOs that have been selected by Staff members
-	/// </summary>
-	public class GOSelectMgr
-	{
-		[NotVariable]
-		/// <summary>
-		/// The SpellId of the DO to be used for marking the selected GO.
-		/// Use SpellId.None to disable marking.
-		/// </summary>
-		public static SpellId MarkerId = SpellId.ABOUTTOSPAWN;
+    /// <summary>
+    /// The Selection Manager keeps track of all GOs that have been selected by Staff members
+    /// </summary>
+    public class GOSelectMgr
+    {
+        [NotVariable]
+        /// <summary>
+        /// The SpellId of the DO to be used for marking the selected GO.
+        /// Use SpellId.None to disable marking.
+        /// </summary>
+        public static SpellId MarkerId = SpellId.ABOUTTOSPAWN;
 
-		[NotVariable]
-		/// <summary>
-		/// The radius of the Marker
-		/// </summary>
-		public static float MarkerRadius = 8f;
+        [NotVariable]
+        /// <summary>
+        /// The radius of the Marker
+        /// </summary>
+        public static float MarkerRadius = 8f;
 
-		[NotVariable]
-		/// <summary>
-		/// The radius in which to look for selectable GOs
-		/// </summary>
-		public static float MaxSearchRadius = 20f;
+        [NotVariable]
+        /// <summary>
+        /// The radius in which to look for selectable GOs
+        /// </summary>
+        public static float MaxSearchRadius = 20f;
 
-		[NotVariable]
-		public static float MinSearchAngle = (float)Math.PI;
+        [NotVariable]
+        public static float MinSearchAngle = (float)Math.PI;
 
+        public static readonly GOSelectMgr Instance = new GOSelectMgr();
 
-		public static readonly GOSelectMgr Instance = new GOSelectMgr();
+        private GOSelectMgr()
+        {
+        }
 
-		GOSelectMgr()
-		{
-		}
+        /// <summary>
+        /// Tries to select the nearest GO that is in front of the character
+        /// </summary>
+        /// <returns>The newly selected GO.</returns>
+        public GameObject SelectClosest(Character chr)
+        {
+            var gos = chr.GetObjectsInRadius(MaxSearchRadius, ObjectTypes.GameObject, true, 0);
 
-		/// <summary>
-		/// Tries to select the nearest GO that is in front of the character
-		/// </summary>
-		/// <returns>The newly selected GO.</returns>
-		public GameObject SelectClosest(Character chr)
-		{
-			var gos = chr.GetObjectsInRadius(MaxSearchRadius, ObjectTypes.GameObject, true, 0);
+            var distSq = float.MaxValue;
+            GameObject sel = null;
+            foreach (GameObject go in gos)
+            {
+                // TODO: Go by angle instead of distance
+                //var angle = chr.GetAngleTowards(go);
+                var thisDistSq = chr.GetDistanceSq(go);
+                if (sel == null ||
+                    (go.IsInFrontOf(chr) && thisDistSq < distSq))
+                {
+                    sel = go;
+                    distSq = thisDistSq;
+                }
+            }
 
-			var distSq = float.MaxValue;
-			GameObject sel = null;
-			foreach (GameObject go in gos)
-			{
-				// TODO: Go by angle instead of distance
-				//var angle = chr.GetAngleTowards(go);
-				var thisDistSq = chr.GetDistanceSq(go);
-				if (sel == null ||
-					(go.IsInFrontOf(chr) && thisDistSq < distSq))
-				{
-					sel = go;
-					distSq = thisDistSq;
-				}
-			}
+            this[chr] = sel;
 
-			this[chr] = sel;
+            return sel;
+        }
 
-			return sel;
-		}
+        /// <summary>
+        /// Sets the Character's selected GameObject
+        /// </summary>
+        internal GameObject this[Character chr]
+        {
+            get
+            {
+                return chr.ExtraInfo.SelectedGO;
+            }
+            set
+            {
+                var info = chr.ExtraInfo;
+                Deselect(info);
 
-		/// <summary>
-		/// Sets the Character's selected GameObject
-		/// </summary>
-		internal GameObject this[Character chr]
-		{
-			get
-			{
-				return chr.ExtraInfo.SelectedGO;
-			}
-			set
-			{
-				var info = chr.ExtraInfo;
-				Deselect(info);
+                if (value != null)
+                {
+                    var selection = new GOSelection(value);
+                    if (MarkerId != SpellId.None)
+                    {
+                        var marker = new DynamicObject(chr, MarkerId, MarkerRadius, value.Map, value.Position);
+                        selection.Marker = marker;
 
-				if (value != null)
-				{
-					var selection = new GOSelection(value);
-					if (MarkerId != SpellId.None)
-					{
-						var marker = new DynamicObject(chr, MarkerId, MarkerRadius, value.Map, value.Position);
-						selection.Marker = marker;
+                        // also delete marker
+                        marker.CallPeriodically(2000, obj =>
+                                                    {
+                                                        if (!chr.IsInWorld || chr.Map != marker.Map || selection.GO == null || !selection.GO.IsInWorld)
+                                                        {
+                                                            marker.Delete();
+                                                        }
+                                                    });
+                    }
+                    info.m_goSelection = selection;
+                }
+            }
+        }
 
-						// also delete marker
-						marker.CallPeriodically(2000, obj =>
-													{
-														if (!chr.IsInWorld || chr.Map != marker.Map || selection.GO == null || !selection.GO.IsInWorld)
-														{
-															marker.Delete();
-														}
-													});
-					}
-					info.m_goSelection = selection;
-				}
-			}
-		}
+        /// <summary>
+        /// Deselects the given Character's current GO
+        /// </summary>
+        internal void Deselect(ExtraInfo info)
+        {
+            GOSelection selection = info.m_goSelection;
+            if (selection != null)
+            {
+                selection.Dispose();
+                info.m_goSelection = null;
+            }
+        }
+    }
 
-		/// <summary>
-		/// Deselects the given Character's current GO
-		/// </summary>
-		internal void Deselect(ExtraInfo info)
-		{
-			GOSelection selection = info.m_goSelection;
-			if (selection != null)
-			{
-				selection.Dispose();
-				info.m_goSelection = null;
-			}
-		}
-	}
+    public class GOSelection : IDisposable
+    {
+        private GameObject m_GO;
 
-	public class GOSelection : IDisposable
-	{
-		private GameObject m_GO;
+        private DynamicObject m_Marker;
 
-		private DynamicObject m_Marker;
+        public GOSelection(GameObject go)
+        {
+            GO = go;
+        }
 
-		public GOSelection(GameObject go)
-		{
-			GO = go;
-		}
+        public GameObject GO
+        {
+            get
+            {
+                if (m_GO != null && !m_GO.IsInWorld)
+                {
+                    return null;
+                }
+                return m_GO;
+            }
+            set { m_GO = value; }
+        }
 
-		public GameObject GO
-		{
-			get
-			{
-				if (m_GO != null && !m_GO.IsInWorld)
-				{
-					return null;
-				}
-				return m_GO;
-			}
-			set { m_GO = value; }
-		}
+        public DynamicObject Marker
+        {
+            get
+            {
+                if (m_Marker != null && !m_Marker.IsInWorld)
+                {
+                    return null;
+                }
+                return m_Marker;
+            }
+            set { m_Marker = value; }
+        }
 
-		public DynamicObject Marker
-		{
-			get
-			{
-				if (m_Marker != null && !m_Marker.IsInWorld)
-				{
-					return null;
-				}
-				return m_Marker;
-			}
-			set { m_Marker = value; }
-		}
+        #region IDisposable Members
 
-		#region IDisposable Members
+        public void Dispose()
+        {
+            GO = null;
 
-		public void Dispose()
-		{
-			GO = null;
+            var marker = Marker;
+            if (marker != null)
+            {
+                marker.Delete();
+                Marker = null;
+            }
+        }
 
-			var marker = Marker;
-			if (marker != null)
-			{
-				marker.Delete();
-				Marker = null;
-			}
-		}
-
-		#endregion
-	}
+        #endregion IDisposable Members
+    }
 }

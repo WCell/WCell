@@ -2,27 +2,25 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Auras.Mod
 {
-	/// <summary>
-	/// TODO: Only used for WarriorArmsEndlessRage
-	/// </summary>
-	public class ModRageFromDamageDealtPercentHandler : AuraEffectHandler
-	{
-		protected override void Apply()
-		{
-			var owner = Owner as Character;
-			if (owner != null)
-			{
+    /// <summary>
+    /// TODO: Only used for WarriorArmsEndlessRage
+    /// </summary>
+    public class ModRageFromDamageDealtPercentHandler : AuraEffectHandler
+    {
+        protected override void Apply()
+        {
+            var owner = Owner as Character;
+            if (owner != null)
+            {
+            }
+        }
 
-			}
-		}
-
-		protected override void Remove(bool cancelled)
-		{
-			var owner = Owner as Character;
-			if (owner != null)
-			{
-
-			}
-		}
-	}
+        protected override void Remove(bool cancelled)
+        {
+            var owner = Owner as Character;
+            if (owner != null)
+            {
+            }
+        }
+    }
 }

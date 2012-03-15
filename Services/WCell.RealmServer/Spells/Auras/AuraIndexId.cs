@@ -18,41 +18,41 @@ using System.Runtime.InteropServices;
 
 namespace WCell.RealmServer.Spells.Auras
 {
-	/// <summary>
-	/// Represents a unique Aura-identifier: 2 Auras are exactly the same, only
-	/// if they have the same spell-id and are both either positive or negative.
-	/// </summary>
-	[StructLayout(LayoutKind.Explicit, Size = 4)]
-	public struct AuraIndexId
-	{
-		public const uint AuraIdMask = 0x00FFFFFF;
-		public static readonly AuraIndexId None;
+    /// <summary>
+    /// Represents a unique Aura-identifier: 2 Auras are exactly the same, only
+    /// if they have the same spell-id and are both either positive or negative.
+    /// </summary>
+    [StructLayout(LayoutKind.Explicit, Size = 4)]
+    public struct AuraIndexId
+    {
+        public const uint AuraIdMask = 0x00FFFFFF;
+        public static readonly AuraIndexId None;
 
-		[FieldOffset(0)]
-		public uint AuraUID;
+        [FieldOffset(0)]
+        public uint AuraUID;
 
-		[FieldOffset(3)]
-		public bool IsPositive;
+        [FieldOffset(3)]
+        public bool IsPositive;
 
-		public AuraIndexId(uint auraUID, bool isPositive)
-		{
-			AuraUID = auraUID;
-			IsPositive = isPositive;
-		}
+        public AuraIndexId(uint auraUID, bool isPositive)
+        {
+            AuraUID = auraUID;
+            IsPositive = isPositive;
+        }
 
-		public override bool Equals(object obj)
-		{
-			return obj is AuraIndexId && (((AuraIndexId)obj).AuraUID == AuraUID);
-		}
+        public override bool Equals(object obj)
+        {
+            return obj is AuraIndexId && (((AuraIndexId)obj).AuraUID == AuraUID);
+        }
 
-		public override int GetHashCode()
-		{
-			return AuraUID.GetHashCode();
-		}
+        public override int GetHashCode()
+        {
+            return AuraUID.GetHashCode();
+        }
 
-		public override string ToString()
-		{
-			return (AuraUID & AuraIdMask) + (IsPositive ? " (Beneficial)" : " (Harmful)");
-		}
-	}
+        public override string ToString()
+        {
+            return (AuraUID & AuraIdMask) + (IsPositive ? " (Beneficial)" : " (Harmful)");
+        }
+    }
 }

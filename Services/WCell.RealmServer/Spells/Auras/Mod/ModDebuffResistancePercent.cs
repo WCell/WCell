@@ -18,18 +18,18 @@ using WCell.Constants;
 
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
-	public class ModDebuffResistancePercentHandler : AuraEffectHandler
-	{
-		protected override void Apply()
-		{
-			var type = (DamageSchool)m_spellEffect.MiscValue;
-			m_aura.Auras.Owner.ModDebuffResistance(type, EffectValue);
-		}
+    public class ModDebuffResistancePercentHandler : AuraEffectHandler
+    {
+        protected override void Apply()
+        {
+            var type = (DamageSchool)m_spellEffect.MiscValue;
+            m_aura.Auras.Owner.ModDebuffResistance(type, EffectValue);
+        }
 
-		protected override void Remove(bool cancelled)
-		{
-			var type = (DamageSchool)m_spellEffect.MiscValue;
-			m_aura.Auras.Owner.ModDebuffResistance(type, -EffectValue);
-		}
-	}
+        protected override void Remove(bool cancelled)
+        {
+            var type = (DamageSchool)m_spellEffect.MiscValue;
+            m_aura.Auras.Owner.ModDebuffResistance(type, -EffectValue);
+        }
+    }
 };

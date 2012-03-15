@@ -4,11 +4,12 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Effects
 {
-    class RemoveImpairingEffectsHandler : SpellEffectHandler
-	{
-		public RemoveImpairingEffectsHandler(SpellCast cast, SpellEffect effect)
-			: base(cast, effect)
-		{}
+    internal class RemoveImpairingEffectsHandler : SpellEffectHandler
+    {
+        public RemoveImpairingEffectsHandler(SpellCast cast, SpellEffect effect)
+            : base(cast, effect)
+        { }
+
         protected override void Apply(WorldObject target)
         {
             var chr = target as Character;
@@ -17,5 +18,5 @@ namespace WCell.RealmServer.Spells.Effects
                 chr.Auras.RemoveWhere(aura => SpellConstants.MoveMechanics[(int)aura.Spell.Mechanic] || aura.Handlers.Any(handler => SpellConstants.MoveMechanics[(int)handler.SpellEffect.Mechanic]));
             }
         }
-	}
+    }
 }

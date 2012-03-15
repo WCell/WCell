@@ -19,28 +19,28 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Effects
 {
-	/// <summary>
-	/// Only resurrects oneself and no one else! :)
-	/// </summary>
-	public class SelfResurrectEffectHandler : SpellEffectHandler
-	{
-		public SelfResurrectEffectHandler(SpellCast cast, SpellEffect effect)
-			: base(cast, effect)
-		{
-		}
+    /// <summary>
+    /// Only resurrects oneself and no one else! :)
+    /// </summary>
+    public class SelfResurrectEffectHandler : SpellEffectHandler
+    {
+        public SelfResurrectEffectHandler(SpellCast cast, SpellEffect effect)
+            : base(cast, effect)
+        {
+        }
 
-		public override void Apply()
-		{
-			Cast.CasterUnit.Health = (int)(Cast.CasterUnit.MaxHealth * CalcEffectValue() / 100);
-		}
+        public override void Apply()
+        {
+            Cast.CasterUnit.Health = (int)(Cast.CasterUnit.MaxHealth * CalcEffectValue() / 100);
+        }
 
-		protected override void Apply(WorldObject target)
-		{
-		}
+        protected override void Apply(WorldObject target)
+        {
+        }
 
-		public override ObjectTypes CasterType
-		{
-			get { return ObjectTypes.Unit; }
-		}
-	}
+        public override ObjectTypes CasterType
+        {
+            get { return ObjectTypes.Unit; }
+        }
+    }
 }

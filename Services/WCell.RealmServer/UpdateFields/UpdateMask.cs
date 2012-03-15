@@ -22,16 +22,16 @@ namespace WCell.RealmServer.UpdateFields
     public class UpdateMask
     {
         private int m_maxBlockCount;
-		private uint[] m_blocks;
+        private uint[] m_blocks;
 
-		protected internal int m_lowestIndex;
-		protected internal int m_highestIndex;
+        protected internal int m_lowestIndex;
+        protected internal int m_highestIndex;
 
         public UpdateMask(int highestField)
-		{
-			//m_maxBlockCount = (highestField + 31) >> 5;
-			m_maxBlockCount = (highestField >> 5) + 1;
-			Clear();
+        {
+            //m_maxBlockCount = (highestField + 31) >> 5;
+            m_maxBlockCount = (highestField >> 5) + 1;
+            Clear();
         }
 
         public int MaxBlockCount
@@ -44,41 +44,40 @@ namespace WCell.RealmServer.UpdateFields
             get { return m_blocks; }
         }
 
-    	public int LowestIndex
-    	{
-			get { return m_lowestIndex; }
-    	}
+        public int LowestIndex
+        {
+            get { return m_lowestIndex; }
+        }
 
-		public int HighestIndex
-		{
-			get
-			{
-				return m_highestIndex;
-			}
-			set
-			{
-				m_maxBlockCount = (value >> 5) + 1;
+        public int HighestIndex
+        {
+            get
+            {
+                return m_highestIndex;
+            }
+            set
+            {
+                m_maxBlockCount = (value >> 5) + 1;
 
-				if (m_maxBlockCount > m_blocks.Length)
-				{
-					Array.Resize(ref m_blocks, m_maxBlockCount);
-				}
+                if (m_maxBlockCount > m_blocks.Length)
+                {
+                    Array.Resize(ref m_blocks, m_maxBlockCount);
+                }
+            }
+        }
 
-			}
-		}
-
-		public bool HasBitsSet
-		{
-			get
-			{
-				return m_highestIndex >= m_lowestIndex;
-			}
-		}
+        public bool HasBitsSet
+        {
+            get
+            {
+                return m_highestIndex >= m_lowestIndex;
+            }
+        }
 
         public void Clear()
-		{
-			m_highestIndex = 0;
-			m_lowestIndex = int.MaxValue;
+        {
+            m_highestIndex = 0;
+            m_lowestIndex = int.MaxValue;
             m_blocks = new uint[m_maxBlockCount];
         }
 
@@ -99,18 +98,18 @@ namespace WCell.RealmServer.UpdateFields
         /// <summary>
         /// Writes the bit mask of all required fields
         /// </summary>
-		/// <param name="packet">The packet to write to</param>
-		public void WriteTo(PrimitiveWriter packet)
-		{
-			//var valueCount = (m_highestIndex + 31) >> 5;
-			var valueCount = (m_highestIndex >> 5) + 1;
+        /// <param name="packet">The packet to write to</param>
+        public void WriteTo(PrimitiveWriter packet)
+        {
+            //var valueCount = (m_highestIndex + 31) >> 5;
+            var valueCount = (m_highestIndex >> 5) + 1;
 
-			packet.Write((byte)valueCount);
-			for (var i = 0; i < valueCount; i++)
-			{
-				packet.Write(m_blocks[i]);
-			}
-		}
+            packet.Write((byte)valueCount);
+            for (var i = 0; i < valueCount; i++)
+            {
+                packet.Write(m_blocks[i]);
+            }
+        }
 
         public void UnsetBit(int index)
         {
@@ -128,14 +127,14 @@ namespace WCell.RealmServer.UpdateFields
         public void SetBit(int index)
         {
             m_blocks[index >> 5] |= (uint)(1 << (index & 31));
-			if (index > m_highestIndex)
-			{
-				m_highestIndex = index;
-			}
-			if (index < m_lowestIndex)
-			{
-				m_lowestIndex = index;
-			}
+            if (index > m_highestIndex)
+            {
+                m_highestIndex = index;
+            }
+            if (index < m_lowestIndex)
+            {
+                m_lowestIndex = index;
+            }
         }
 
         public bool GetBit(int index)

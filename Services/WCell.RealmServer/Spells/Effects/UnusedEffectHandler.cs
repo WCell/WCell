@@ -7,14 +7,14 @@ namespace WCell.RealmServer.Spells.Effects
     /// Technically should not be called since no spells have the effect this takes the place of
     /// </summary>
     public class UnusedEffectHandler : SpellEffectHandler
-	{
-		public UnusedEffectHandler(SpellCast cast, SpellEffect effect)
-			: base(cast, effect)
-		{
-		}
+    {
+        public UnusedEffectHandler(SpellCast cast, SpellEffect effect)
+            : base(cast, effect)
+        {
+        }
 
-		protected override void Apply(WorldObject target)
-		{
-		}
-	}
+        protected override void Apply(WorldObject target)
+        {
+        }
+    }
 }

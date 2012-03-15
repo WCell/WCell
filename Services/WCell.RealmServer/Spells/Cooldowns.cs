@@ -3,209 +3,221 @@ using Castle.ActiveRecord;
 
 namespace WCell.RealmServer.Spells
 {
-	public interface ICooldown
-	{
-		DateTime Until { get; set; }
-		IConsistentCooldown AsConsistent();
-	}
+    public interface ICooldown
+    {
+        DateTime Until { get; set; }
 
-	public interface IConsistentCooldown : ICooldown
-	{
-		uint CharId { get; set; }
+        IConsistentCooldown AsConsistent();
+    }
 
-		void Save();
-		void Update();
-		void Create();
-		void Delete();
-	}
+    public interface IConsistentCooldown : ICooldown
+    {
+        uint CharId { get; set; }
 
-	public interface ISpellIdCooldown : ICooldown
-	{
-		uint SpellId { get; set; }
-		uint ItemId { get; set; }
-	}
+        void Save();
 
-	public interface ISpellCategoryCooldown : ICooldown
-	{
-		uint SpellId { get; set; }
-		uint CategoryId { get; set; }
-		uint ItemId { get; set; }
-	}
+        void Update();
 
-	public class SpellIdCooldown : ISpellIdCooldown
-	{
-		public DateTime Until
-		{
-			get;
-			set;
-		}
-		public uint SpellId
-		{
-			get;
-			set;
-		}
-		public uint ItemId
-		{
-			get;
-			set;
-		}
+        void Create();
 
-		public IConsistentCooldown AsConsistent()
-		{
-			return new PersistentSpellIdCooldown
-			{
-				Until = Until,
-				SpellId = SpellId,
-				ItemId = ItemId
-			};
-		}
-	}
+        void Delete();
+    }
 
-	public class SpellCategoryCooldown : ISpellCategoryCooldown
-	{
-		public DateTime Until
-		{
-			get;
-			set;
-		}
-		public uint SpellId
-		{
-			get;
-			set;
-		}
-		public uint CategoryId
-		{
-			get;
-			set;
-		}
-		public uint ItemId
-		{
-			get;
-			set;
-		}
+    public interface ISpellIdCooldown : ICooldown
+    {
+        uint SpellId { get; set; }
 
-		public IConsistentCooldown AsConsistent()
-		{
-			return new PersistentSpellCategoryCooldown
-			{
-				Until = Until,
-				CategoryId = CategoryId,
-				ItemId = ItemId
-			};
-		}
-	}
+        uint ItemId { get; set; }
+    }
 
-	[ActiveRecord("SpellIdCooldown", Access = PropertyAccess.Property)]
-	public class PersistentSpellIdCooldown : ActiveRecordBase<PersistentSpellIdCooldown>, ISpellIdCooldown, IConsistentCooldown
-	{
-		public static PersistentSpellIdCooldown[] LoadIdCooldownsFor(uint lowId)
-		{
-			return FindAllByProperty("_charId", (int)lowId);
-		}
+    public interface ISpellCategoryCooldown : ICooldown
+    {
+        uint SpellId { get; set; }
 
-		[Field("SpellId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
-		private int _spellId;
-		[Field("ItemId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
-		private int _itemId;
-		[Field("CharId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
-		private int _charId;
+        uint CategoryId { get; set; }
 
-		[PrimaryKey(PrimaryKeyType.Increment)]
-		private long Id
-		{
-			get;
-			set;
-		}
+        uint ItemId { get; set; }
+    }
 
-		public uint CharId
-		{
-			get { return (uint)_charId; }
-			set { _charId = (int)value; }
-		}
+    public class SpellIdCooldown : ISpellIdCooldown
+    {
+        public DateTime Until
+        {
+            get;
+            set;
+        }
 
-		[Property]
-		public DateTime Until
-		{
-			get;
-			set;
-		}
+        public uint SpellId
+        {
+            get;
+            set;
+        }
 
-		public uint SpellId
-		{
-			get { return (uint)_spellId; }
-			set { _spellId = (int)value; }
-		}
+        public uint ItemId
+        {
+            get;
+            set;
+        }
 
-		public uint ItemId
-		{
-			get { return (uint)_itemId; }
-			set { _itemId = (int)value; }
-		}
+        public IConsistentCooldown AsConsistent()
+        {
+            return new PersistentSpellIdCooldown
+            {
+                Until = Until,
+                SpellId = SpellId,
+                ItemId = ItemId
+            };
+        }
+    }
 
-		public IConsistentCooldown AsConsistent()
-		{
-			return this;
-		}
-	}
+    public class SpellCategoryCooldown : ISpellCategoryCooldown
+    {
+        public DateTime Until
+        {
+            get;
+            set;
+        }
 
-	[ActiveRecord("SpellCategoryCooldown", Access = PropertyAccess.Property)]
-	public class PersistentSpellCategoryCooldown : ActiveRecordBase<PersistentSpellCategoryCooldown>, ISpellCategoryCooldown, IConsistentCooldown
-	{
-		public static PersistentSpellCategoryCooldown[] LoadCategoryCooldownsFor(uint lowId)
-		{
-			return FindAllByProperty("_charId", (int)lowId);
-		}
+        public uint SpellId
+        {
+            get;
+            set;
+        }
 
-		[Field("CatId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
-		private int _catId;
-		[Field("ItemId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
-		private int _itemId;
-		[Field("CharId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
-		private int _charId;
-		[Field("SpellId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
-		private int _spellId;
+        public uint CategoryId
+        {
+            get;
+            set;
+        }
 
-		[PrimaryKey(PrimaryKeyType.Increment)]
-		private long Id
-		{
-			get;
-			set;
-		}
+        public uint ItemId
+        {
+            get;
+            set;
+        }
 
-		public uint SpellId
-		{
-			get { return (uint)_spellId; }
-			set { _spellId = (int)value; }
-		}
+        public IConsistentCooldown AsConsistent()
+        {
+            return new PersistentSpellCategoryCooldown
+            {
+                Until = Until,
+                CategoryId = CategoryId,
+                ItemId = ItemId
+            };
+        }
+    }
 
-		public uint CharId
-		{
-			get { return (uint)_charId; }
-			set { _charId = (int)value; }
-		}
+    [ActiveRecord("SpellIdCooldown", Access = PropertyAccess.Property)]
+    public class PersistentSpellIdCooldown : ActiveRecordBase<PersistentSpellIdCooldown>, ISpellIdCooldown, IConsistentCooldown
+    {
+        public static PersistentSpellIdCooldown[] LoadIdCooldownsFor(uint lowId)
+        {
+            return FindAllByProperty("_charId", (int)lowId);
+        }
 
-		[Property]
-		public DateTime Until
-		{
-			get;
-			set;
-		}
+        [Field("SpellId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
+        private int _spellId;
+        [Field("ItemId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
+        private int _itemId;
+        [Field("CharId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
+        private int _charId;
 
-		public uint CategoryId
-		{
-			get { return (uint)_catId; }
-			set { _catId = (int)value; }
-		}
+        [PrimaryKey(PrimaryKeyType.Increment)]
+        private long Id
+        {
+            get;
+            set;
+        }
 
-		public uint ItemId
-		{
-			get { return (uint)_itemId; }
-			set { _itemId = (int)value; }
-		}
+        public uint CharId
+        {
+            get { return (uint)_charId; }
+            set { _charId = (int)value; }
+        }
 
-		public IConsistentCooldown AsConsistent()
-		{
-			return this;
-		}
-	}
+        [Property]
+        public DateTime Until
+        {
+            get;
+            set;
+        }
+
+        public uint SpellId
+        {
+            get { return (uint)_spellId; }
+            set { _spellId = (int)value; }
+        }
+
+        public uint ItemId
+        {
+            get { return (uint)_itemId; }
+            set { _itemId = (int)value; }
+        }
+
+        public IConsistentCooldown AsConsistent()
+        {
+            return this;
+        }
+    }
+
+    [ActiveRecord("SpellCategoryCooldown", Access = PropertyAccess.Property)]
+    public class PersistentSpellCategoryCooldown : ActiveRecordBase<PersistentSpellCategoryCooldown>, ISpellCategoryCooldown, IConsistentCooldown
+    {
+        public static PersistentSpellCategoryCooldown[] LoadCategoryCooldownsFor(uint lowId)
+        {
+            return FindAllByProperty("_charId", (int)lowId);
+        }
+
+        [Field("CatId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
+        private int _catId;
+        [Field("ItemId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
+        private int _itemId;
+        [Field("CharId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
+        private int _charId;
+        [Field("SpellId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
+        private int _spellId;
+
+        [PrimaryKey(PrimaryKeyType.Increment)]
+        private long Id
+        {
+            get;
+            set;
+        }
+
+        public uint SpellId
+        {
+            get { return (uint)_spellId; }
+            set { _spellId = (int)value; }
+        }
+
+        public uint CharId
+        {
+            get { return (uint)_charId; }
+            set { _charId = (int)value; }
+        }
+
+        [Property]
+        public DateTime Until
+        {
+            get;
+            set;
+        }
+
+        public uint CategoryId
+        {
+            get { return (uint)_catId; }
+            set { _catId = (int)value; }
+        }
+
+        public uint ItemId
+        {
+            get { return (uint)_itemId; }
+            set { _itemId = (int)value; }
+        }
+
+        public IConsistentCooldown AsConsistent()
+        {
+            return this;
+        }
+    }
 }

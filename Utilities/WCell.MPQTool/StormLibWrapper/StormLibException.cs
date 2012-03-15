@@ -15,7 +15,6 @@ namespace WCell.MPQTool.StormLibWrapper
         {
         }
 
-
         /// <summary>
         /// Initializes a new instance of the <see cref="StormLibException"/> class.
         /// </summary>

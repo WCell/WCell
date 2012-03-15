@@ -53,11 +53,11 @@ namespace WCell.RealmServer.Spells.Auras.Misc
             var chr = caster as Character;
             if (chr != null)
             {
-            	chr.Possess(duration, target);
+                chr.Possess(duration, target);
             }
         }
 
-    	protected override void Remove(bool cancelled)
+        protected override void Remove(bool cancelled)
         {
             var caster = (Unit)m_aura.CasterUnit;
             var target = m_aura.Auras.Owner;
@@ -69,7 +69,5 @@ namespace WCell.RealmServer.Spells.Auras.Misc
                 chr.UnPossess(target);
             }
         }
-
-    	
     }
 }

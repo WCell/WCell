@@ -9,9 +9,9 @@ namespace WCell.RealmServer.Interaction
     /// </summary>
     public sealed class IgnoredRelation : PersistedRelation
     {
-		public IgnoredRelation(uint charId, uint relatedCharId)
+        public IgnoredRelation(uint charId, uint relatedCharId)
             : base(charId, relatedCharId)
-        { 
+        {
         }
 
         public override bool RequiresOnlineNotification
@@ -33,7 +33,7 @@ namespace WCell.RealmServer.Interaction
                 return false;
             }
 
-            //Checks if the relation target char exist 
+            //Checks if the relation target char exist
             if (relatedCharInfo == null)
             {
                 relResult = RelationResult.IGNORE_NOT_FOUND;

@@ -16,7 +16,7 @@ namespace WCell.RealmServer.Handlers
         {
             using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_TITLE_EARNED, 4 + 4))
             {
-                packet.WriteUInt((uint) titleEntry.BitIndex);
+                packet.WriteUInt((uint)titleEntry.BitIndex);
                 packet.WriteUInt(lost ? 0 : 1);
                 character.Send(packet);
             }
@@ -38,7 +38,6 @@ namespace WCell.RealmServer.Handlers
             {
                 titleBit = 0;
             }
-
 
             client.ActiveCharacter.ChosenTitle = (TitleBitId)titleBit;
         }

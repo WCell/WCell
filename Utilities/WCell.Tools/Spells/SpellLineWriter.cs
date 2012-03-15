@@ -17,332 +17,333 @@ using WCell.Util.Toolshed;
 
 namespace WCell.Tools.Spells
 {
-	public class SpellLineWriter
-	{
-		private static readonly Logger log = LogManager.GetCurrentClassLogger();
+    public class SpellLineWriter
+    {
+        private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-		private static CodeFileWriter writer;
-		public static Dictionary<string, HashSet<Spell>>[] Maps
-		{
-			get;
-			private set;
-		}
+        private static CodeFileWriter writer;
 
-		private static HashSet<SkillId> LineSkills = new HashSet<SkillId>();
+        public static Dictionary<string, HashSet<Spell>>[] Maps
+        {
+            get;
+            private set;
+        }
 
-		[Tool("Lines")]
-		public static void WriteSpellLines()
-		{
-			WriteSpellLines(ToolConfig.RealmServerRoot + "Spells/SpellLines.Def.cs");
-		}
+        private static HashSet<SkillId> LineSkills = new HashSet<SkillId>();
 
-		public static void WriteSpellLines(string outputFileName)
-		{
-			WCellEnumWriter.WriteSpellLinesEnum();
+        [Tool("Lines")]
+        public static void WriteSpellLines()
+        {
+            WriteSpellLines(ToolConfig.RealmServerRoot + "Spells/SpellLines.Def.cs");
+        }
 
-			using (writer = new CodeFileWriter(outputFileName, "WCell.RealmServer.Spells", "SpellLines", "static partial class", "",
-				"WCell.Constants",
-				"WCell.Constants.Spells"))
-			{
-				writer.WriteMethod("private", "static void", "SetupSpellLines", "", WriteSpellLinesMethod);
-			}
-		}
+        public static void WriteSpellLines(string outputFileName)
+        {
+            WCellEnumWriter.WriteSpellLinesEnum();
 
-		private static void WriteSpellLinesMethod()
-		{
-			writer.WriteLine("SpellLine[] lines;");
-			writer.WriteLine();
+            using (writer = new CodeFileWriter(outputFileName, "WCell.RealmServer.Spells", "SpellLines", "static partial class", "",
+                "WCell.Constants",
+                "WCell.Constants.Spells"))
+            {
+                writer.WriteMethod("private", "static void", "SetupSpellLines", "", WriteSpellLinesMethod);
+            }
+        }
 
-			for (var i = 0; i < Maps.Length; i++)
-			{
-				var map = Maps[i];
-				var clss = (ClassId)i;
+        private static void WriteSpellLinesMethod()
+        {
+            writer.WriteLine("SpellLine[] lines;");
+            writer.WriteLine();
 
-				if (map != null)
-				{
-					var listCount = map.Count;
-					var s = 0;
+            for (var i = 0; i < Maps.Length; i++)
+            {
+                var map = Maps[i];
+                var clss = (ClassId)i;
 
-					writer.WriteMap((clss != 0 ? clss.ToString() : "Other") + " (" + listCount + ")");
-					writer.WriteLine("lines = new SpellLine[]");
-					writer.OpenBracket();
+                if (map != null)
+                {
+                    var listCount = map.Count;
+                    var s = 0;
 
-					foreach (var set in map.Values)
-					{
-						var spells = set.ToList();
-						var lineName = GetSpellLineName(spells.First());
+                    writer.WriteMap((clss != 0 ? clss.ToString() : "Other") + " (" + listCount + ")");
+                    writer.WriteLine("lines = new SpellLine[]");
+                    writer.OpenBracket();
 
-						spells.Sort((a, b) => a.Id.CompareTo(b.Id));		// first sort by rank and then by id
-						spells.Sort((a, b) => a.Rank.CompareTo(b.Rank));
+                    foreach (var set in map.Values)
+                    {
+                        var spells = set.ToList();
+                        var lineName = GetSpellLineName(spells.First());
 
-						writer.WriteLine("new SpellLine(SpellLineId." + lineName + ", ");
-						writer.IndentLevel++;
-						var j = 0;
-						foreach (var spell in spells)
-						{
-							j++;
-							writer.WriteIndent("SpellHandler.Get(SpellId." + spell.SpellId + ")");
-							if (j < set.Count)
-							{
-								writer.WriteLine(",");
-							}
-						}
-						writer.IndentLevel--;
-						writer.Write(")");
-						if (s < listCount - 1)
-						{
-							writer.WriteLine(",");
-						}
-						++s;
-					}
-					writer.CloseBracket(true);
-					writer.WriteLine("AddSpellLines(ClassId.{0}, lines);", clss);
-					writer.WriteEndMap();
-					writer.WriteLine();
-				}
-			}
-		}
+                        spells.Sort((a, b) => a.Id.CompareTo(b.Id));		// first sort by rank and then by id
+                        spells.Sort((a, b) => a.Rank.CompareTo(b.Rank));
 
-		public static string GetSpellLineName(Spell spell)
-		{
-			var name = spell.Name;
-			
-			if (spell.Talent != null)
-			{
-				name = spell.Ability.Skill.Name + name;
-			}
+                        writer.WriteLine("new SpellLine(SpellLineId." + lineName + ", ");
+                        writer.IndentLevel++;
+                        var j = 0;
+                        foreach (var spell in spells)
+                        {
+                            j++;
+                            writer.WriteIndent("SpellHandler.Get(SpellId." + spell.SpellId + ")");
+                            if (j < set.Count)
+                            {
+                                writer.WriteLine(",");
+                            }
+                        }
+                        writer.IndentLevel--;
+                        writer.Write(")");
+                        if (s < listCount - 1)
+                        {
+                            writer.WriteLine(",");
+                        }
+                        ++s;
+                    }
+                    writer.CloseBracket(true);
+                    writer.WriteLine("AddSpellLines(ClassId.{0}, lines);", clss);
+                    writer.WriteEndMap();
+                    writer.WriteLine();
+                }
+            }
+        }
 
-			var clss = spell.ClassId;
-			if (clss == 0)
-			{
-				var ids = spell.Ability.ClassMask.GetIds();
-				if (ids.Length == 1)
-				{
-					clss = ids.First();
-				}
-			}
-			if (clss == ClassId.PetTalents && spell.Talent != null)
-			{
-				name = "HunterPet" + name;
-			}
-			else
-			{
-				name = spell.ClassId + name;
-			}
+        public static string GetSpellLineName(Spell spell)
+        {
+            var name = spell.Name;
 
-			return WCellEnumWriter.BeautifyName(name);
-		}
+            if (spell.Talent != null)
+            {
+                name = spell.Ability.Skill.Name + name;
+            }
 
-		public static void CreateMaps()
-		{
-			if (Maps != null)
-			{
-				return;
-			}
+            var clss = spell.ClassId;
+            if (clss == 0)
+            {
+                var ids = spell.Ability.ClassMask.GetIds();
+                if (ids.Length == 1)
+                {
+                    clss = ids.First();
+                }
+            }
+            if (clss == ClassId.PetTalents && spell.Talent != null)
+            {
+                name = "HunterPet" + name;
+            }
+            else
+            {
+                name = spell.ClassId + name;
+            }
 
-			RealmDBMgr.Initialize();
-			ContentMgr.Initialize();
-			SpellHandler.LoadSpells();
-			SpellHandler.Initialize2();
+            return WCellEnumWriter.BeautifyName(name);
+        }
 
-			World.InitializeWorld();
-			World.LoadDefaultMaps();
-			ArchetypeMgr.EnsureInitialize();		// for default spells
+        public static void CreateMaps()
+        {
+            if (Maps != null)
+            {
+                return;
+            }
 
-			NPCMgr.LoadNPCDefs();					// for trainers
+            RealmDBMgr.Initialize();
+            ContentMgr.Initialize();
+            SpellHandler.LoadSpells();
+            SpellHandler.Initialize2();
 
-			Maps = new Dictionary<string, HashSet<Spell>>[(int)ClassId.End];
+            World.InitializeWorld();
+            World.LoadDefaultMaps();
+            ArchetypeMgr.EnsureInitialize();		// for default spells
 
-			FindTalents();
-			FindAbilities();
+            NPCMgr.LoadNPCDefs();					// for trainers
 
-			foreach (var spell in SpellHandler.ById)
-			{
-				if (spell != null && spell.Ability != null && LineSkills.Contains(spell.Ability.Skill.Id))
-				{
-					AddSpell(spell, true);
-				}
-			}
+            Maps = new Dictionary<string, HashSet<Spell>>[(int)ClassId.End];
 
-			// remove empty lines
-			foreach (var dict in Maps)
-			{
-				if (dict != null)
-				{
-					foreach (var pair in dict.ToArray())
-					{
-						if (pair.Value.Count == 0)
-						{
-							dict.Remove(pair.Key);
-						}
-					}
-				}
-			}
-		}
+            FindTalents();
+            FindAbilities();
 
-		/// <summary>
-		/// Find all class abilities that Trainers have to offer
-		/// </summary>
-		private static void FindAbilities()
-		{
-			// Add initial abilities
-			foreach (var arr in ArchetypeMgr.Archetypes)
-			{
-				if (arr != null)
-				{
-					foreach (var archetype in arr)
-					{
-						if (archetype == null)
-						{
-							continue;
-						}
+            foreach (var spell in SpellHandler.ById)
+            {
+                if (spell != null && spell.Ability != null && LineSkills.Contains(spell.Ability.Skill.Id))
+                {
+                    AddSpell(spell, true);
+                }
+            }
 
-						foreach (var spell in archetype.Spells)
-						{
-							AddSpell(spell);
-						}
-					}
-				}
-			}
+            // remove empty lines
+            foreach (var dict in Maps)
+            {
+                if (dict != null)
+                {
+                    foreach (var pair in dict.ToArray())
+                    {
+                        if (pair.Value.Count == 0)
+                        {
+                            dict.Remove(pair.Key);
+                        }
+                    }
+                }
+            }
+        }
 
-			// Add trainable abilities
-			foreach (var npc in NPCMgr.GetAllEntries())
-			{
-				if (npc.TrainerEntry != null)
-				{
-					foreach (var spellEntry in npc.TrainerEntry.Spells.Values)
-					{
-						var spell = spellEntry.Spell;
-						if (spell.Ability != null && spell.Ability.Skill.Category == SkillCategory.ClassSkill)
-						{
-							AddSpell(spell);
-						}
-					}
-				}
-			}
-		}
+        /// <summary>
+        /// Find all class abilities that Trainers have to offer
+        /// </summary>
+        private static void FindAbilities()
+        {
+            // Add initial abilities
+            foreach (var arr in ArchetypeMgr.Archetypes)
+            {
+                if (arr != null)
+                {
+                    foreach (var archetype in arr)
+                    {
+                        if (archetype == null)
+                        {
+                            continue;
+                        }
 
-		/// <summary>
-		/// Add all Talents
-		/// </summary>
-		private static void FindTalents()
-		{
-			foreach (var spell in SpellHandler.ById)
-			{
-				if (spell == null ||
-					((spell.Talent == null || spell.ClassId == 0) && (spell.Ability == null || spell.Rank == 0 || spell.Ability.Skill.Category != SkillCategory.Profession)) ||
-					spell.IsTriggeredSpell ||
-					spell.HasEffectWith(effect => effect.EffectType == SpellEffectType.LearnPetSpell || effect.EffectType == SpellEffectType.LearnSpell))
-				{
-					continue;
-				}
+                        foreach (var spell in archetype.Spells)
+                        {
+                            AddSpell(spell);
+                        }
+                    }
+                }
+            }
 
-				var clss = spell.ClassId;
-				if (spell.Ability == null || spell.Ability.ClassMask == 0 || spell.Ability.ClassMask.HasAnyFlag(clss))
-				{
-					//if (spell.SpellId.ToString().Contains("_"))
-					//{
-					//    log.Warn("Duplicate: " + spell);
-					//    continue;
-					//}
-					if (string.IsNullOrEmpty(spell.Description))
-					{
-						continue;
-					}
+            // Add trainable abilities
+            foreach (var npc in NPCMgr.GetAllEntries())
+            {
+                if (npc.TrainerEntry != null)
+                {
+                    foreach (var spellEntry in npc.TrainerEntry.Spells.Values)
+                    {
+                        var spell = spellEntry.Spell;
+                        if (spell.Ability != null && spell.Ability.Skill.Category == SkillCategory.ClassSkill)
+                        {
+                            AddSpell(spell);
+                        }
+                    }
+                }
+            }
+        }
 
-					AddSpell(spell);
-				}
-			}
-		}
+        /// <summary>
+        /// Add all Talents
+        /// </summary>
+        private static void FindTalents()
+        {
+            foreach (var spell in SpellHandler.ById)
+            {
+                if (spell == null ||
+                    ((spell.Talent == null || spell.ClassId == 0) && (spell.Ability == null || spell.Rank == 0 || spell.Ability.Skill.Category != SkillCategory.Profession)) ||
+                    spell.IsTriggeredSpell ||
+                    spell.HasEffectWith(effect => effect.EffectType == SpellEffectType.LearnPetSpell || effect.EffectType == SpellEffectType.LearnSpell))
+                {
+                    continue;
+                }
 
-		private static void AddSpell(Spell spell, bool force = false)
-		{
-			if (!force)
-			{
-				if (spell.Ability.Skill == null ||
-					(spell.Ability.Skill.Category != SkillCategory.ClassSkill && spell.Ability.Skill.Category != SkillCategory.Invalid))
-				{
-					return;
-				}
+                var clss = spell.ClassId;
+                if (spell.Ability == null || spell.Ability.ClassMask == 0 || spell.Ability.ClassMask.HasAnyFlag(clss))
+                {
+                    //if (spell.SpellId.ToString().Contains("_"))
+                    //{
+                    //    log.Warn("Duplicate: " + spell);
+                    //    continue;
+                    //}
+                    if (string.IsNullOrEmpty(spell.Description))
+                    {
+                        continue;
+                    }
 
-				LineSkills.Add(spell.Ability.Skill.Id);
-			}
+                    AddSpell(spell);
+                }
+            }
+        }
 
-			var clss = spell.ClassId;
-			if (clss == 0)
-			{
-				var ids = spell.Ability.ClassMask.GetIds();
-				if (ids.Length == 1)
-				{
-					clss = ids.First();
-				}
-				else
-				{
-					// not a single class spell
-					return;
-				}
-			}
-			if (clss == ClassId.PetTalents && spell.Talent != null)
-			{
-				clss = ClassId.Hunter;
-			}
+        private static void AddSpell(Spell spell, bool force = false)
+        {
+            if (!force)
+            {
+                if (spell.Ability.Skill == null ||
+                    (spell.Ability.Skill.Category != SkillCategory.ClassSkill && spell.Ability.Skill.Category != SkillCategory.Invalid))
+                {
+                    return;
+                }
 
-			//var name = GetSpellLineName(spell);
-			var name = spell.Name;
-			var map = Maps[(int)clss];
-			if (map == null)
-			{
-				Maps[(int)clss] = map = new Dictionary<string, HashSet<Spell>>(100);
-			}
-			var line = map.GetOrCreate(name);
+                LineSkills.Add(spell.Ability.Skill.Id);
+            }
 
-			// don't add triggered spells
-			if (spell.IsTriggeredSpell)
-			{
-				return;
-			}
+            var clss = spell.ClassId;
+            if (clss == 0)
+            {
+                var ids = spell.Ability.ClassMask.GetIds();
+                if (ids.Length == 1)
+                {
+                    clss = ids.First();
+                }
+                else
+                {
+                    // not a single class spell
+                    return;
+                }
+            }
+            if (clss == ClassId.PetTalents && spell.Talent != null)
+            {
+                clss = ClassId.Hunter;
+            }
 
-			if (line.Count > 0)
-			{
-				if (line.Contains(spell))
-				{	
-					// already added
-					return;
-				}
+            //var name = GetSpellLineName(spell);
+            var name = spell.Name;
+            var map = Maps[(int)clss];
+            if (map == null)
+            {
+                Maps[(int)clss] = map = new Dictionary<string, HashSet<Spell>>(100);
+            }
+            var line = map.GetOrCreate(name);
 
-				// must have a rank
-				if (spell.Rank == 0 && line.Any(spll => spll.Rank != 0))
-				{
-					return;
-				}
-				if (spell.Rank > 0)
-				{
-					if (line.Any(spll => spll.Rank == spell.Rank && spll.Talent != null))
-					{
-						// already has one with the same rank and a talent
-						return;
-					}
-					line.RemoveWhere(spll => spll.Rank == 0 && spll.Talent == null);
-				}
+            // don't add triggered spells
+            if (spell.IsTriggeredSpell)
+            {
+                return;
+            }
 
-				// must not have a rank
-				if (line.Any(spll => spll.Rank == 0 && spll.Talent != null))
-				{
-					// there is only one
-					return;
-				}
+            if (line.Count > 0)
+            {
+                if (line.Contains(spell))
+                {
+                    // already added
+                    return;
+                }
 
-				 // don't add weird copies or unknown anonymous triggered effects
-				if (line.Any(spll => spell.Rank == spll.Rank &&
-					(spll.Description.Contains(spell.Id.ToString()) || spll.CategoryCooldownTime > 0 || (spll.CastDelay >0 && spell.CastDelay == 0))))
-				{
-					return;
-				}
-				line.RemoveWhere(spll => spell.Rank == spll.Rank &&
-					(spell.Description.Contains(spll.Id.ToString()) || spll.CategoryCooldownTime == 0 || (spll.CastDelay > 0 && spell.CastDelay == 0)));
-			}
+                // must have a rank
+                if (spell.Rank == 0 && line.Any(spll => spll.Rank != 0))
+                {
+                    return;
+                }
+                if (spell.Rank > 0)
+                {
+                    if (line.Any(spll => spll.Rank == spell.Rank && spll.Talent != null))
+                    {
+                        // already has one with the same rank and a talent
+                        return;
+                    }
+                    line.RemoveWhere(spll => spll.Rank == 0 && spll.Talent == null);
+                }
 
-			line.Add(spell);
-		}
-	}
+                // must not have a rank
+                if (line.Any(spll => spll.Rank == 0 && spll.Talent != null))
+                {
+                    // there is only one
+                    return;
+                }
+
+                // don't add weird copies or unknown anonymous triggered effects
+                if (line.Any(spll => spell.Rank == spll.Rank &&
+                    (spll.Description.Contains(spell.Id.ToString()) || spll.CategoryCooldownTime > 0 || (spll.CastDelay > 0 && spell.CastDelay == 0))))
+                {
+                    return;
+                }
+                line.RemoveWhere(spll => spell.Rank == spll.Rank &&
+                    (spell.Description.Contains(spll.Id.ToString()) || spll.CategoryCooldownTime == 0 || (spll.CastDelay > 0 && spell.CastDelay == 0)));
+            }
+
+            line.Add(spell);
+        }
+    }
 }

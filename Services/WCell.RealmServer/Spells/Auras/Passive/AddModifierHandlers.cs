@@ -18,58 +18,58 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
-	public class AddModifierEffectHandler : AuraEffectHandler
-	{
-		/// <summary>
-		/// The amount of remaining charges or 0 if it doesn't need any
-		/// </summary>
-		public int Charges;
-	}
+    public class AddModifierEffectHandler : AuraEffectHandler
+    {
+        /// <summary>
+        /// The amount of remaining charges or 0 if it doesn't need any
+        /// </summary>
+        public int Charges;
+    }
 
-	/// <summary>
-	/// All kinds of different Spell modifiers (mostly caused by talents)
-	/// </summary>
-	public class AddModifierFlatHandler : AddModifierEffectHandler
-	{
-		protected override void Apply()
-		{
-			var owner = m_aura.Auras.Owner as Character;
-			if (owner != null)
-			{
-				Charges = m_aura.Spell.ProcCharges;
-				owner.PlayerAuras.AddSpellModifierFlat(this);
-			}
-		}
+    /// <summary>
+    /// All kinds of different Spell modifiers (mostly caused by talents)
+    /// </summary>
+    public class AddModifierFlatHandler : AddModifierEffectHandler
+    {
+        protected override void Apply()
+        {
+            var owner = m_aura.Auras.Owner as Character;
+            if (owner != null)
+            {
+                Charges = m_aura.Spell.ProcCharges;
+                owner.PlayerAuras.AddSpellModifierFlat(this);
+            }
+        }
 
-		protected override void Remove(bool cancelled)
-		{
-			var owner = m_aura.Auras.Owner as Character;
-			if (owner != null)
-			{
-				owner.PlayerAuras.RemoveSpellModifierFlat(this);
-			}
-		}
-	}
+        protected override void Remove(bool cancelled)
+        {
+            var owner = m_aura.Auras.Owner as Character;
+            if (owner != null)
+            {
+                owner.PlayerAuras.RemoveSpellModifierFlat(this);
+            }
+        }
+    }
 
-	public class AddModifierPercentHandler : AddModifierEffectHandler
-	{
-		protected override void Apply()
-		{
-			var owner = m_aura.Auras.Owner as Character;
-			if (owner != null)
-			{
-				Charges = m_aura.Spell.ProcCharges;
-				owner.PlayerAuras.AddSpellModifierPercent(this);
-			}
-		}
+    public class AddModifierPercentHandler : AddModifierEffectHandler
+    {
+        protected override void Apply()
+        {
+            var owner = m_aura.Auras.Owner as Character;
+            if (owner != null)
+            {
+                Charges = m_aura.Spell.ProcCharges;
+                owner.PlayerAuras.AddSpellModifierPercent(this);
+            }
+        }
 
-		protected override void Remove(bool cancelled)
-		{
-			var owner = m_aura.Auras.Owner as Character;
-			if (owner != null)
-			{
-				owner.PlayerAuras.RemoveSpellModifierPercent(this);
-			}
-		}
-	}
+        protected override void Remove(bool cancelled)
+        {
+            var owner = m_aura.Auras.Owner as Character;
+            if (owner != null)
+            {
+                owner.PlayerAuras.RemoveSpellModifierPercent(this);
+            }
+        }
+    }
 };

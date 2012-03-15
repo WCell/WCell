@@ -18,16 +18,16 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Effects
 {
-	public class DismissPetEffectHandler : SpellEffectHandler
-	{
-		public DismissPetEffectHandler(SpellCast cast, SpellEffect effect)
-			: base(cast, effect)
-		{
-		}
+    public class DismissPetEffectHandler : SpellEffectHandler
+    {
+        public DismissPetEffectHandler(SpellCast cast, SpellEffect effect)
+            : base(cast, effect)
+        {
+        }
 
-		protected override void Apply(WorldObject target)
-		{
-			// TODO: DismissPetEffectHandler
-		}
-	}
+        protected override void Apply(WorldObject target)
+        {
+            // TODO: DismissPetEffectHandler
+        }
+    }
 }

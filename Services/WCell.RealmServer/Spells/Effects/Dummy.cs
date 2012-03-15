@@ -18,16 +18,16 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Effects
 {
-	public class DummyEffectHandler : SpellEffectHandler
-	{
-		public DummyEffectHandler(SpellCast cast, SpellEffect effect)
-			: base(cast, effect)
-		{
-		}
+    public class DummyEffectHandler : SpellEffectHandler
+    {
+        public DummyEffectHandler(SpellCast cast, SpellEffect effect)
+            : base(cast, effect)
+        {
+        }
 
-		protected override void Apply(WorldObject target)
-		{
-			// TODO: DummyEffectHandler
-		}
-	}
+        protected override void Apply(WorldObject target)
+        {
+            // TODO: DummyEffectHandler
+        }
+    }
 }

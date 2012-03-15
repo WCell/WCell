@@ -9,225 +9,237 @@ using WCell.Util.Commands;
 
 namespace WCell.RealmServer.Commands
 {
-	#region Kill
-	public class KillCommand : RealmServerCommand
-	{
-		protected KillCommand() { }
+    #region Kill
 
-		protected override void Initialize()
-		{
-			Init("Kill");
-			EnglishDescription = "Kills your current target.";
-		}
+    public class KillCommand : RealmServerCommand
+    {
+        protected KillCommand() { }
 
-		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
-		{
-			var target = trigger.Args.Target;
-			if (target == trigger.Args.Character)
-			{
-				target = target.Target;
-				if (target == null)
-				{
-					trigger.Reply("Invalid Target.");
-					return;
-				}
-			}
+        protected override void Initialize()
+        {
+            Init("Kill");
+            EnglishDescription = "Kills your current target.";
+        }
 
-			SpellHandler.SendVisual(target, SpellId.Lightning);
-			target.Kill(trigger.Args.Character);
-		}
+        public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+        {
+            var target = trigger.Args.Target;
+            if (target == trigger.Args.Character)
+            {
+                target = target.Target;
+                if (target == null)
+                {
+                    trigger.Reply("Invalid Target.");
+                    return;
+                }
+            }
 
-		public override bool RequiresCharacter
-		{
-			get
-			{
-				return true;
-			}
-		}
-	}
-	#endregion
+            SpellHandler.SendVisual(target, SpellId.Lightning);
+            target.Kill(trigger.Args.Character);
+        }
 
-	#region Resurrect
-	public class ResurrectCommand : RealmServerCommand
-	{
-		protected ResurrectCommand() { }
+        public override bool RequiresCharacter
+        {
+            get
+            {
+                return true;
+            }
+        }
+    }
 
-		protected override void Initialize()
-		{
-			Init("Resurrect", "Res");
-			EnglishDescription = "Resurrects the Unit";
-		}
+    #endregion Kill
 
-		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
-		{
-			var target = trigger.Args.Target;
-			if (target != null)
-			{
-				target.Resurrect();
-			}
-		}
+    #region Resurrect
 
-		public override ObjectTypeCustom TargetTypes
-		{
-			get { return ObjectTypeCustom.Unit; }
-		}
-	}
-	#endregion
+    public class ResurrectCommand : RealmServerCommand
+    {
+        protected ResurrectCommand() { }
 
-	#region Health
-	public class HealthCommand : RealmServerCommand
-	{
-		protected HealthCommand() { }
+        protected override void Initialize()
+        {
+            Init("Resurrect", "Res");
+            EnglishDescription = "Resurrects the Unit";
+        }
 
-		protected override void Initialize()
-		{
-			Init("Health");
-			EnglishParamInfo = "<amount>";
-			EnglishDescription = "Sets Basehealth to the given value and fills up Health.";
-		}
+        public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+        {
+            var target = trigger.Args.Target;
+            if (target != null)
+            {
+                target.Resurrect();
+            }
+        }
 
-		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
-		{
-			var target = trigger.Args.Target;
-			if (target != null)
-			{
-				var val = trigger.Text.NextInt(1);
-				target.BaseHealth = val;
-				target.Heal(target.MaxHealth - target.Health);
-			}
-		}
+        public override ObjectTypeCustom TargetTypes
+        {
+            get { return ObjectTypeCustom.Unit; }
+        }
+    }
 
-		public override ObjectTypeCustom TargetTypes
-		{
-			get { return ObjectTypeCustom.Unit; }
-		}
-	}
-	#endregion
+    #endregion Resurrect
 
-	#region Resurrect
-	public class RaceCommand : RealmServerCommand
-	{
-		protected RaceCommand() { }
+    #region Health
 
-		protected override void Initialize()
-		{
-			Init("Race", "SetRace");
-			EnglishParamInfo = "<race>";
-			EnglishDescription = "Sets the Unit's race. Also adds the Race's language.";
-		}
+    public class HealthCommand : RealmServerCommand
+    {
+        protected HealthCommand() { }
 
-		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
-		{
-			var word = trigger.Text.NextWord();
-			RaceId race;
-			if (EnumUtil.TryParse(word, out race))
-			{
-				trigger.Args.Target.Race = race;
-				if (trigger.Args.Target is Character)
-				{
-					var desc = LanguageHandler.GetLanguageDescByRace(race);
-					((Character)trigger.Args.Target).AddLanguage(desc);
-				}
-			}
-			else
-			{
-				trigger.Reply("Invalid Race: " + word);
-			}
-		}
+        protected override void Initialize()
+        {
+            Init("Health");
+            EnglishParamInfo = "<amount>";
+            EnglishDescription = "Sets Basehealth to the given value and fills up Health.";
+        }
 
-		public override ObjectTypeCustom TargetTypes
-		{
-			get
-			{
-				return ObjectTypeCustom.Unit;
-			}
-		}
-	}
-	#endregion
+        public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+        {
+            var target = trigger.Args.Target;
+            if (target != null)
+            {
+                var val = trigger.Text.NextInt(1);
+                target.BaseHealth = val;
+                target.Heal(target.MaxHealth - target.Health);
+            }
+        }
 
-	#region Invul
-	public class InvulModeCommand : RealmServerCommand
-	{
-		protected InvulModeCommand() { }
+        public override ObjectTypeCustom TargetTypes
+        {
+            get { return ObjectTypeCustom.Unit; }
+        }
+    }
 
-		protected override void Initialize()
-		{
-			Init("Invul");
-			EnglishParamInfo = "[0|1]";
-			EnglishDescription = "Toggles Invulnerability";
-		}
+    #endregion Health
 
-		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
-		{
-			var target = trigger.Args.Target;
-			var mode = trigger.Text.NextBool(!target.IsInvulnerable);
-			target.IsInvulnerable = mode;
-			trigger.Reply("{0} is now " + (mode ? "Invulnerable" : "Vulnerable"), target.Name);
-		}
+    #region Resurrect
 
-		public override ObjectTypeCustom TargetTypes
-		{
-			get
-			{
-				return ObjectTypeCustom.Unit;
-			}
-		}
-	}
-	#endregion
+    public class RaceCommand : RealmServerCommand
+    {
+        protected RaceCommand() { }
 
-	#region Talking
-	public class SayCommand : RealmServerCommand
-	{
-		protected SayCommand() { }
+        protected override void Initialize()
+        {
+            Init("Race", "SetRace");
+            EnglishParamInfo = "<race>";
+            EnglishDescription = "Sets the Unit's race. Also adds the Race's language.";
+        }
 
-		protected override void Initialize()
-		{
-			Init("Say");
-			EnglishParamInfo = "<text>";
-			EnglishDescription = "Say something";
-		}
+        public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+        {
+            var word = trigger.Text.NextWord();
+            RaceId race;
+            if (EnumUtil.TryParse(word, out race))
+            {
+                trigger.Args.Target.Race = race;
+                if (trigger.Args.Target is Character)
+                {
+                    var desc = LanguageHandler.GetLanguageDescByRace(race);
+                    ((Character)trigger.Args.Target).AddLanguage(desc);
+                }
+            }
+            else
+            {
+                trigger.Reply("Invalid Race: " + word);
+            }
+        }
 
-		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
-		{
-			var target = trigger.Args.Target;
-			var text = trigger.Text.Remainder.Trim();
-			target.Say(text);
-		}
+        public override ObjectTypeCustom TargetTypes
+        {
+            get
+            {
+                return ObjectTypeCustom.Unit;
+            }
+        }
+    }
 
-		public override ObjectTypeCustom TargetTypes
-		{
-			get
-			{
-				return ObjectTypeCustom.All;
-			}
-		}
-	}
+    #endregion Resurrect
 
-	public class YellCommand : RealmServerCommand
-	{
-		protected YellCommand() { }
+    #region Invul
 
-		protected override void Initialize()
-		{
-			Init("Yell");
-			EnglishParamInfo = "<text>";
-			EnglishDescription = "Yell something";
-		}
+    public class InvulModeCommand : RealmServerCommand
+    {
+        protected InvulModeCommand() { }
 
-		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
-		{
-			var target = trigger.Args.Target;
-			var text = trigger.Text.Remainder.Trim();
-			target.Yell(text);
-		}
+        protected override void Initialize()
+        {
+            Init("Invul");
+            EnglishParamInfo = "[0|1]";
+            EnglishDescription = "Toggles Invulnerability";
+        }
 
-		public override ObjectTypeCustom TargetTypes
-		{
-			get
-			{
-				return ObjectTypeCustom.All;
-			}
-		}
-	}
-	#endregion
+        public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+        {
+            var target = trigger.Args.Target;
+            var mode = trigger.Text.NextBool(!target.IsInvulnerable);
+            target.IsInvulnerable = mode;
+            trigger.Reply("{0} is now " + (mode ? "Invulnerable" : "Vulnerable"), target.Name);
+        }
+
+        public override ObjectTypeCustom TargetTypes
+        {
+            get
+            {
+                return ObjectTypeCustom.Unit;
+            }
+        }
+    }
+
+    #endregion Invul
+
+    #region Talking
+
+    public class SayCommand : RealmServerCommand
+    {
+        protected SayCommand() { }
+
+        protected override void Initialize()
+        {
+            Init("Say");
+            EnglishParamInfo = "<text>";
+            EnglishDescription = "Say something";
+        }
+
+        public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+        {
+            var target = trigger.Args.Target;
+            var text = trigger.Text.Remainder.Trim();
+            target.Say(text);
+        }
+
+        public override ObjectTypeCustom TargetTypes
+        {
+            get
+            {
+                return ObjectTypeCustom.All;
+            }
+        }
+    }
+
+    public class YellCommand : RealmServerCommand
+    {
+        protected YellCommand() { }
+
+        protected override void Initialize()
+        {
+            Init("Yell");
+            EnglishParamInfo = "<text>";
+            EnglishDescription = "Yell something";
+        }
+
+        public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+        {
+            var target = trigger.Args.Target;
+            var text = trigger.Text.Remainder.Trim();
+            target.Yell(text);
+        }
+
+        public override ObjectTypeCustom TargetTypes
+        {
+            get
+            {
+                return ObjectTypeCustom.All;
+            }
+        }
+    }
+
+    #endregion Talking
 }

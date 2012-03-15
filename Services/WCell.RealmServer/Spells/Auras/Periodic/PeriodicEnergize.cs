@@ -18,28 +18,27 @@ using WCell.Constants;
 
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
-	public class PeriodicEnergizeHandler : AuraEffectHandler
-	{
+    public class PeriodicEnergizeHandler : AuraEffectHandler
+    {
+        protected override void Apply()
+        {
+            var type = (PowerType)m_spellEffect.MiscValue;
+            if (type == m_aura.Auras.Owner.PowerType)
+            {
+                m_aura.Auras.Owner.Energize(EffectValue, m_aura.CasterUnit, m_spellEffect);
+            }
+        }
+    }
 
-		protected override void Apply()
-		{
-			var type = (PowerType)m_spellEffect.MiscValue;
-			if (type == m_aura.Auras.Owner.PowerType)
-			{
-				m_aura.Auras.Owner.Energize(EffectValue, m_aura.CasterUnit, m_spellEffect);
-			}
-		}
-	}
-
-	public class PeriodicEnergizePctHandler : AuraEffectHandler
-	{
-		protected override void Apply()
-		{
-			var type = (PowerType)m_spellEffect.MiscValue;
-			if (type == Owner.PowerType)
-			{
-				m_aura.Auras.Owner.EnergizePercent(EffectValue, m_aura.CasterUnit, m_spellEffect);
-			}
-		}
-	}
+    public class PeriodicEnergizePctHandler : AuraEffectHandler
+    {
+        protected override void Apply()
+        {
+            var type = (PowerType)m_spellEffect.MiscValue;
+            if (type == Owner.PowerType)
+            {
+                m_aura.Auras.Owner.EnergizePercent(EffectValue, m_aura.CasterUnit, m_spellEffect);
+            }
+        }
+    }
 };

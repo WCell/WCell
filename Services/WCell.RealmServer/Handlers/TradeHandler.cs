@@ -24,237 +24,241 @@ using WCell.RealmServer.Trade;
 
 namespace WCell.RealmServer.Handlers
 {
-	public class TradeHandler
-	{
-		#region Incoming Packets
-		[ClientPacketHandler(RealmServerOpCode.CMSG_INITIATE_TRADE)]
-		public static void HandleProposeTrade(IRealmClient client, RealmPacketIn packet)
-		{
-			var targetGuid = packet.ReadEntityId();
-			var targetChr = World.GetCharacter(targetGuid.Low);
+    public class TradeHandler
+    {
+        #region Incoming Packets
 
-			if (TradeMgr.MayProposeTrade(client.ActiveCharacter, targetChr))
-			{
-				TradeMgr.Propose(client.ActiveCharacter, targetChr);
-			}
-		}
+        [ClientPacketHandler(RealmServerOpCode.CMSG_INITIATE_TRADE)]
+        public static void HandleProposeTrade(IRealmClient client, RealmPacketIn packet)
+        {
+            var targetGuid = packet.ReadEntityId();
+            var targetChr = World.GetCharacter(targetGuid.Low);
 
-		[ClientPacketHandler(RealmServerOpCode.CMSG_BEGIN_TRADE)]
-		public static void HandleBeginTrade(IRealmClient client, RealmPacketIn packet)
-		{
-			var trade = client.ActiveCharacter.TradeWindow;
+            if (TradeMgr.MayProposeTrade(client.ActiveCharacter, targetChr))
+            {
+                TradeMgr.Propose(client.ActiveCharacter, targetChr);
+            }
+        }
 
-			if (trade == null)
-			{
-				SendTradeStatus(client, TradeStatus.PlayerNotFound);
+        [ClientPacketHandler(RealmServerOpCode.CMSG_BEGIN_TRADE)]
+        public static void HandleBeginTrade(IRealmClient client, RealmPacketIn packet)
+        {
+            var trade = client.ActiveCharacter.TradeWindow;
 
-				return;
-			}
+            if (trade == null)
+            {
+                SendTradeStatus(client, TradeStatus.PlayerNotFound);
 
-			trade.AcceptTradeProposal();
-		}
+                return;
+            }
 
-		[ClientPacketHandler(RealmServerOpCode.CMSG_BUSY_TRADE)]
-		public static void HandleBusyTrade(IRealmClient client, RealmPacketIn packet)
-		{
-			var tradeInfo = client.ActiveCharacter.TradeWindow;
+            trade.AcceptTradeProposal();
+        }
 
-			if (tradeInfo == null)
-			{
-				SendTradeStatus(client, TradeStatus.PlayerNotFound);
+        [ClientPacketHandler(RealmServerOpCode.CMSG_BUSY_TRADE)]
+        public static void HandleBusyTrade(IRealmClient client, RealmPacketIn packet)
+        {
+            var tradeInfo = client.ActiveCharacter.TradeWindow;
 
-				return;
-			}
+            if (tradeInfo == null)
+            {
+                SendTradeStatus(client, TradeStatus.PlayerNotFound);
 
-			tradeInfo.StopTrade(TradeStatus.PlayerBusy, false);
-		}
+                return;
+            }
 
-		[ClientPacketHandler(RealmServerOpCode.CMSG_IGNORE_TRADE)]
-		public static void HandleIgnoreTrade(IRealmClient client, RealmPacketIn packet)
-		{
-			var tradeInfo = client.ActiveCharacter.TradeWindow;
+            tradeInfo.StopTrade(TradeStatus.PlayerBusy, false);
+        }
 
-			if (tradeInfo == null)
-			{
-				SendTradeStatus(client, TradeStatus.PlayerNotFound);
+        [ClientPacketHandler(RealmServerOpCode.CMSG_IGNORE_TRADE)]
+        public static void HandleIgnoreTrade(IRealmClient client, RealmPacketIn packet)
+        {
+            var tradeInfo = client.ActiveCharacter.TradeWindow;
 
-				return;
-			}
+            if (tradeInfo == null)
+            {
+                SendTradeStatus(client, TradeStatus.PlayerNotFound);
 
-			tradeInfo.StopTrade(TradeStatus.PlayerIgnored, false);
-		}
+                return;
+            }
 
-		[ClientPacketHandler(RealmServerOpCode.CMSG_CANCEL_TRADE, IsGamePacket = false, RequiresLogin = false)]
-		public static void HandleCancelTrade(IRealmClient client, RealmPacketIn packet)
-		{
-			if (client.ActiveCharacter == null || client.ActiveCharacter.TradeWindow == null)
-			{
-				return;
-			}
+            tradeInfo.StopTrade(TradeStatus.PlayerIgnored, false);
+        }
 
-			var tradeInfo = client.ActiveCharacter.TradeWindow;
+        [ClientPacketHandler(RealmServerOpCode.CMSG_CANCEL_TRADE, IsGamePacket = false, RequiresLogin = false)]
+        public static void HandleCancelTrade(IRealmClient client, RealmPacketIn packet)
+        {
+            if (client.ActiveCharacter == null || client.ActiveCharacter.TradeWindow == null)
+            {
+                return;
+            }
 
-			tradeInfo.Cancel();
-		}
+            var tradeInfo = client.ActiveCharacter.TradeWindow;
 
-		[ClientPacketHandler(RealmServerOpCode.CMSG_ACCEPT_TRADE)]
-		public static void HandleAcceptTrade(IRealmClient client, RealmPacketIn packet)
-		{
-			var tradeInfo = client.ActiveCharacter.TradeWindow;
+            tradeInfo.Cancel();
+        }
 
-			if (tradeInfo == null)
-			{
-				return;
-			}
+        [ClientPacketHandler(RealmServerOpCode.CMSG_ACCEPT_TRADE)]
+        public static void HandleAcceptTrade(IRealmClient client, RealmPacketIn packet)
+        {
+            var tradeInfo = client.ActiveCharacter.TradeWindow;
 
-			tradeInfo.AcceptTrade(false);
-		}
+            if (tradeInfo == null)
+            {
+                return;
+            }
 
-		[ClientPacketHandler(RealmServerOpCode.CMSG_UNACCEPT_TRADE)]
-		public static void HandleUnacceptTrade(IRealmClient client, RealmPacketIn packet)
-		{
-			var tradeInfo = client.ActiveCharacter.TradeWindow;
+            tradeInfo.AcceptTrade(false);
+        }
 
-			if (tradeInfo == null)
-			{
-				return;
-			}
+        [ClientPacketHandler(RealmServerOpCode.CMSG_UNACCEPT_TRADE)]
+        public static void HandleUnacceptTrade(IRealmClient client, RealmPacketIn packet)
+        {
+            var tradeInfo = client.ActiveCharacter.TradeWindow;
 
-			tradeInfo.UnacceptTrade(false);
-		}
+            if (tradeInfo == null)
+            {
+                return;
+            }
 
-		[ClientPacketHandler(RealmServerOpCode.CMSG_SET_TRADE_GOLD)]
-		public static void HandleSetTradeGold(IRealmClient client, RealmPacketIn packet)
-		{
-			var trade = client.ActiveCharacter.TradeWindow;
+            tradeInfo.UnacceptTrade(false);
+        }
 
-			if (trade == null)
-				return;
+        [ClientPacketHandler(RealmServerOpCode.CMSG_SET_TRADE_GOLD)]
+        public static void HandleSetTradeGold(IRealmClient client, RealmPacketIn packet)
+        {
+            var trade = client.ActiveCharacter.TradeWindow;
 
-			var money = packet.ReadUInt32();
+            if (trade == null)
+                return;
 
-			trade.SetMoney(money, false);
-		}
+            var money = packet.ReadUInt32();
 
-		[ClientPacketHandler(RealmServerOpCode.CMSG_SET_TRADE_ITEM)]
-		public static void HandleSetTradeItem(IRealmClient client, RealmPacketIn packet)
-		{
-			var trade = client.ActiveCharacter.TradeWindow;
+            trade.SetMoney(money, false);
+        }
 
-			if (trade == null)
-				return;
+        [ClientPacketHandler(RealmServerOpCode.CMSG_SET_TRADE_ITEM)]
+        public static void HandleSetTradeItem(IRealmClient client, RealmPacketIn packet)
+        {
+            var trade = client.ActiveCharacter.TradeWindow;
 
-			var tradeSlot = packet.ReadByte();
-			var bag = packet.ReadByte();
-			var slot = packet.ReadByte();
+            if (trade == null)
+                return;
 
-			trade.SetTradeItem(tradeSlot, bag, slot, false);
-		}
+            var tradeSlot = packet.ReadByte();
+            var bag = packet.ReadByte();
+            var slot = packet.ReadByte();
 
-		[ClientPacketHandler(RealmServerOpCode.CMSG_CLEAR_TRADE_ITEM)]
-		public static void HandleClearTradeItem(IRealmClient client, RealmPacketIn packet)
-		{
-			var tradeInfo = client.ActiveCharacter.TradeWindow;
+            trade.SetTradeItem(tradeSlot, bag, slot, false);
+        }
 
-			if (tradeInfo == null)
-				return;
+        [ClientPacketHandler(RealmServerOpCode.CMSG_CLEAR_TRADE_ITEM)]
+        public static void HandleClearTradeItem(IRealmClient client, RealmPacketIn packet)
+        {
+            var tradeInfo = client.ActiveCharacter.TradeWindow;
 
-			var tradeSlot = packet.ReadByte();
+            if (tradeInfo == null)
+                return;
 
-			tradeInfo.ClearTradeItem(tradeSlot, false);
-		}
-		#endregion
+            var tradeSlot = packet.ReadByte();
 
-		#region Outgoing Packets
-		public static void SendTradeProposal(IPacketReceiver client, Character initiater)
-		{
-			using (var pkt = new RealmPacketOut(RealmServerOpCode.SMSG_TRADE_STATUS))
-			{
-				pkt.WriteUInt((uint)TradeStatus.Proposed);
-				pkt.Write(initiater.EntityId);
+            tradeInfo.ClearTradeItem(tradeSlot, false);
+        }
 
-				client.Send(pkt);
-			}
-		}
+        #endregion Incoming Packets
 
-		public static void SendTradeStatus(IPacketReceiver client, TradeStatus tradeStatus)
-		{
-			using (var pkt = new RealmPacketOut(RealmServerOpCode.SMSG_TRADE_STATUS))
-			{
-				pkt.WriteUInt((uint)tradeStatus);
+        #region Outgoing Packets
 
-				client.Send(pkt);
-			}
-		}
+        public static void SendTradeProposal(IPacketReceiver client, Character initiater)
+        {
+            using (var pkt = new RealmPacketOut(RealmServerOpCode.SMSG_TRADE_STATUS))
+            {
+                pkt.WriteUInt((uint)TradeStatus.Proposed);
+                pkt.Write(initiater.EntityId);
 
-		public static void SendTradeProposalAccepted(IPacketReceiver client)
-		{
-			using (var pkt = new RealmPacketOut(RealmServerOpCode.SMSG_TRADE_STATUS))
-			{
-				pkt.WriteUInt((uint)TradeStatus.Proposed);
-				pkt.Write(0);
+                client.Send(pkt);
+            }
+        }
 
-				client.Send(pkt);
-			}
-		}
+        public static void SendTradeStatus(IPacketReceiver client, TradeStatus tradeStatus)
+        {
+            using (var pkt = new RealmPacketOut(RealmServerOpCode.SMSG_TRADE_STATUS))
+            {
+                pkt.WriteUInt((uint)tradeStatus);
 
-		/// <summary>
-		/// Sends the new state of the trading window to other party
-		/// </summary>
-		/// <param name="otherParty">Whether this is sending the own info to the other party (or, if false, to oneself)</param>
-		/// <param name="client">receiving party</param>
-		/// <param name="money">new amount of money</param>
-		/// <param name="items">new items</param>
-		public static void SendTradeUpdate(IPacketReceiver client, bool otherParty, uint money, Item[] items)
-		{
-			using (var pkt = new RealmPacketOut(RealmServerOpCode.SMSG_TRADE_STATUS_EXTENDED, 30 + 18 * 4 * items.Length))
-			{
-				pkt.Write(otherParty);
-				pkt.Write(0);					// Trade id
-				pkt.Write(items.Length);
-				pkt.Write(items.Length);
-				pkt.Write(money);
-				pkt.Write(0);
+                client.Send(pkt);
+            }
+        }
 
-				for (var i = 0; i < items.Length; i++)
-				{
-					pkt.WriteByte(i);
-					var item = items[i];
+        public static void SendTradeProposalAccepted(IPacketReceiver client)
+        {
+            using (var pkt = new RealmPacketOut(RealmServerOpCode.SMSG_TRADE_STATUS))
+            {
+                pkt.WriteUInt((uint)TradeStatus.Proposed);
+                pkt.Write(0);
 
-					if (item != null)
-					{
-						pkt.Write(item.EntryId);
-						pkt.Write(item.Template.DisplayId);
-						pkt.Write(item.Amount);
-						pkt.Write(0);
+                client.Send(pkt);
+            }
+        }
 
-						pkt.Write(item.GiftCreator);
+        /// <summary>
+        /// Sends the new state of the trading window to other party
+        /// </summary>
+        /// <param name="otherParty">Whether this is sending the own info to the other party (or, if false, to oneself)</param>
+        /// <param name="client">receiving party</param>
+        /// <param name="money">new amount of money</param>
+        /// <param name="items">new items</param>
+        public static void SendTradeUpdate(IPacketReceiver client, bool otherParty, uint money, Item[] items)
+        {
+            using (var pkt = new RealmPacketOut(RealmServerOpCode.SMSG_TRADE_STATUS_EXTENDED, 30 + 18 * 4 * items.Length))
+            {
+                pkt.Write(otherParty);
+                pkt.Write(0);					// Trade id
+                pkt.Write(items.Length);
+                pkt.Write(items.Length);
+                pkt.Write(money);
+                pkt.Write(0);
 
-						var enchant = item.GetEnchantment(EnchantSlot.Permanent);
-						pkt.Write(enchant != null ? enchant.Entry.Id : 0);
+                for (var i = 0; i < items.Length; i++)
+                {
+                    pkt.WriteByte(i);
+                    var item = items[i];
 
-						pkt.Zero(4 * 3);
+                    if (item != null)
+                    {
+                        pkt.Write(item.EntryId);
+                        pkt.Write(item.Template.DisplayId);
+                        pkt.Write(item.Amount);
+                        pkt.Write(0);
 
-						pkt.Write(item.Creator);
-						pkt.Write(item.SpellCharges);
-						pkt.Write(item.Template.RandomSuffixFactor);
-						pkt.Write(item.RandomPropertiesId);
+                        pkt.Write(item.GiftCreator);
 
-						var itemLock = item.Lock;
-						pkt.Write(itemLock != null ? itemLock.Id : 0);
+                        var enchant = item.GetEnchantment(EnchantSlot.Permanent);
+                        pkt.Write(enchant != null ? enchant.Entry.Id : 0);
 
-						pkt.Write(item.MaxDurability);
-						pkt.Write(item.Durability);
-					}
-					else
-					{
-						pkt.Zero(18 * 4);
-					}
-				}
+                        pkt.Zero(4 * 3);
 
-				client.Send(pkt);
-			}
-		}
-		#endregion
-	}
+                        pkt.Write(item.Creator);
+                        pkt.Write(item.SpellCharges);
+                        pkt.Write(item.Template.RandomSuffixFactor);
+                        pkt.Write(item.RandomPropertiesId);
+
+                        var itemLock = item.Lock;
+                        pkt.Write(itemLock != null ? itemLock.Id : 0);
+
+                        pkt.Write(item.MaxDurability);
+                        pkt.Write(item.Durability);
+                    }
+                    else
+                    {
+                        pkt.Zero(18 * 4);
+                    }
+                }
+
+                client.Send(pkt);
+            }
+        }
+
+        #endregion Outgoing Packets
+    }
 }

@@ -14,33 +14,34 @@ namespace WCell.RealmServer.Guilds
             set;
         }
 
-		[Field("GuildId", NotNull = true)]
-    	private int _guildId;
+        [Field("GuildId", NotNull = true)]
+        private int _guildId;
 
-    	private GuildBank m_Bank;
+        private GuildBank m_Bank;
 
-		public GuildBankTab()
-		{
-			Items = new GuildBankTabItemMapping[GuildMgr.MAX_BANK_TAB_SLOTS];
+        public GuildBankTab()
+        {
+            Items = new GuildBankTabItemMapping[GuildMgr.MAX_BANK_TAB_SLOTS];
             ItemRecords = new ItemRecord[GuildMgr.MAX_BANK_TAB_SLOTS];
-		}
+        }
 
-		public GuildBankTab(GuildBank bank) : this()
-		{
-			Bank = bank;
-		}
+        public GuildBankTab(GuildBank bank)
+            : this()
+        {
+            Bank = bank;
+        }
 
-    	public GuildBank Bank
-    	{
-    		get { return m_Bank; }
-    		internal set
-    		{
-    			m_Bank = value;
-    			_guildId = (int) m_Bank.Guild.Id;
-    		}
-    	}
+        public GuildBank Bank
+        {
+            get { return m_Bank; }
+            internal set
+            {
+                m_Bank = value;
+                _guildId = (int)m_Bank.Guild.Id;
+            }
+        }
 
-    	[Property]
+        [Property]
         public string Name
         {
             get;

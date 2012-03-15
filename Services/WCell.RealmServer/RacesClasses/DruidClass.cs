@@ -22,11 +22,11 @@ namespace WCell.RealmServer.RacesClasses
     /// Defines the basics of the Druid class.
     /// </summary>
     public class DruidClass : BaseClass
-	{
-		public override ClassId Id
-		{
-			get { return ClassId.Druid; }
-		}
+    {
+        public override ClassId Id
+        {
+            get { return ClassId.Druid; }
+        }
 
         /// <summary>
         /// Calculates attack power for the class at a specific level, Strength and Agility.
@@ -38,12 +38,12 @@ namespace WCell.RealmServer.RacesClasses
         public override int CalculateMeleeAP(int level, int strength, int agility)
         {
             return (strength * 2 - 20);
-		}
+        }
 
-		public override int CalculateRangedAP(int level, int strength, int agility)
-		{
-			return agility - 10;
-		}
+        public override int CalculateRangedAP(int level, int strength, int agility)
+        {
+            return agility - 10;
+        }
 
         public override float CalculateMagicCritChance(int level, int intellect)
         {

@@ -19,21 +19,21 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Effects
 {
-	public class InstantKillEffectHandler : SpellEffectHandler
-	{
-		public InstantKillEffectHandler(SpellCast cast, SpellEffect effect)
-			: base(cast, effect)
-		{
-		}
+    public class InstantKillEffectHandler : SpellEffectHandler
+    {
+        public InstantKillEffectHandler(SpellCast cast, SpellEffect effect)
+            : base(cast, effect)
+        {
+        }
 
-		protected override void Apply(WorldObject target)
-		{
-			((Unit)target).Kill(m_cast.CasterUnit);
-		}
+        protected override void Apply(WorldObject target)
+        {
+            ((Unit)target).Kill(m_cast.CasterUnit);
+        }
 
-		public override ObjectTypes TargetType
-		{
-			get { return ObjectTypes.Unit; }
-		}
-	}
+        public override ObjectTypes TargetType
+        {
+            get { return ObjectTypes.Unit; }
+        }
+    }
 }

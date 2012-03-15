@@ -32,7 +32,7 @@ namespace WCell.RealmServer.Handlers
 
             var slot = effect.SummonEntry.Slot - 1;
 
-            using(var packet = new RealmPacketOut(RealmServerOpCode.SMSG_TOTEM_CREATED))
+            using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_TOTEM_CREATED))
             {
                 packet.Write(slot);
                 packet.Write(totemEntityId);

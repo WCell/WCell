@@ -10,17 +10,18 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
     /// </summary>
     public partial class ArenaTeamMember : INamed
     {
-		private Character m_chr;
-		private ArenaTeam m_Team;
+        private Character m_chr;
+        private ArenaTeam m_Team;
 
         #region Properties
+
         /// <summary>
         /// The low part of the Character's EntityId. Use EntityId.GetPlayerId(Id) to get a full EntityId
         /// </summary>
-		public uint Id
-		{
-			get { return (uint) CharacterLowId; }
-		}
+        public uint Id
+        {
+            get { return (uint)CharacterLowId; }
+        }
 
         /// <summary>
         /// The name of this ArenaTeamMember's character
@@ -103,11 +104,11 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
             get { return (uint)_personalRating; }
             set { _personalRating = (int)value; }
         }
-        
 
-        #endregion
+        #endregion Properties
 
         #region Methods
+
         internal void Init(ArenaTeam team)
         {
             Init(team, World.GetCharacter((uint)CharacterLowId));
@@ -126,6 +127,7 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
         {
             ArenaTeam.RemoveMember(this, true);
         }
-        #endregion
+
+        #endregion Methods
     }
 }

@@ -21,14 +21,14 @@ using WCell.Util;
 
 namespace WCell.RealmServer.Factions
 {
-	public class Reputation
-	{
-		public const int Max = (int)Standing.Exalted + 999;
-		public const int Min = (int)Standing.Hostile - 36000;
-		/// <summary>
-		/// Discounts indexed by StandingLevel
-		/// </summary>
-		public static uint[] DiscountPercents = new[] {
+    public class Reputation
+    {
+        public const int Max = (int)Standing.Exalted + 999;
+        public const int Min = (int)Standing.Hostile - 36000;
+        /// <summary>
+        /// Discounts indexed by StandingLevel
+        /// </summary>
+        public static uint[] DiscountPercents = new[] {
 			0u,
 			0u,
 			0u,
@@ -39,108 +39,108 @@ namespace WCell.RealmServer.Factions
 			20u
 		};
 
-		Standing m_standing;
-	    readonly ReputationRecord m_record;
+        Standing m_standing;
+        readonly ReputationRecord m_record;
 
-		public readonly Faction Faction;
+        public readonly Faction Faction;
 
-		/// <summary>
-		/// Loads an existing Reputation from the given Record.
-		/// </summary>
-		public Reputation(ReputationRecord record, Faction faction)
-		{
-			m_record = record;
-			Faction = faction;
-			m_standing = GetStanding(record.Value);
-		}
+        /// <summary>
+        /// Loads an existing Reputation from the given Record.
+        /// </summary>
+        public Reputation(ReputationRecord record, Faction faction)
+        {
+            m_record = record;
+            Faction = faction;
+            m_standing = GetStanding(record.Value);
+        }
 
-		public Reputation(ReputationRecord record, Faction faction, int defaultValue, ReputationFlags defaultFlags)
-		{
-			m_record = record;
-			m_record.ReputationIndex = faction.ReputationIndex;
-			m_record.Value = defaultValue;
-		    m_record.Flags = defaultFlags;
+        public Reputation(ReputationRecord record, Faction faction, int defaultValue, ReputationFlags defaultFlags)
+        {
+            m_record = record;
+            m_record.ReputationIndex = faction.ReputationIndex;
+            m_record.Value = defaultValue;
+            m_record.Flags = defaultFlags;
 
-			Faction = faction;
-			m_standing = GetStanding(defaultValue);
+            Faction = faction;
+            m_standing = GetStanding(defaultValue);
 
-		    m_record.Save();
-		}
+            m_record.Save();
+        }
 
-		#region Properties
+        #region Properties
 
-		/// <summary>
-		/// The reputation value
-		/// </summary>
-		public int Value
-		{
-			get { return m_record.Value; }
-		}
+        /// <summary>
+        /// The reputation value
+        /// </summary>
+        public int Value
+        {
+            get { return m_record.Value; }
+        }
 
-		public Standing Standing
-		{
-			get { return m_standing; }
-		}
+        public Standing Standing
+        {
+            get { return m_standing; }
+        }
 
         /// <summary>
         /// Exalted, Honored, Neutral, Hated
         /// </summary>
-		public StandingLevel StandingLevel
-		{
-			get { return GetStandingLevel(m_record.Value); }
-		}
-
-		public ReputationFlags Flags
-		{
-			get
-			{
-			    return m_record.Flags;
-			}
-		}
-
-		// The following properties' reputation requirements
-		// have been changed by blizzard before, it thus is recommended
-		// to use these properties and not check for the reputation value
-		// itself.
-
-		/// <summary>
-		/// Whether racial and faction mounts/tabards etc can be purchased.
-		/// </summary>
-		public bool SpecialItems
-		{
-			get { return m_standing >= Standing.Exalted; }
-		}
-
-		/// <summary>
-		/// Whether Heroic mode keys can be purchased for Outland dungeons.
-		/// <see href="http://www.wowwiki.com/Heroic"/>
-		/// </summary>
-		public bool HeroicModeAllowed
-		{
-			get { return m_standing >= Standing.Honored; }
-		}
-
-		/// <summary>
-		/// Enough reputation to interact with NPCs of that Faction
-		/// </summary>
-		public bool CanInteract
-		{
-			get { return m_standing >= Standing.Neutral; }
-		}
-
-		/// <summary>
-		/// Either very bad rep or the player declared war.
-		/// Will cause mobs to attack on sight.
-		/// </summary>
-		public bool Hostile
-		{
-			get
-			{
-				return DeclaredWar || IsHostileStanding(m_standing);
-			}
+        public StandingLevel StandingLevel
+        {
+            get { return GetStandingLevel(m_record.Value); }
         }
 
-        #endregion
+        public ReputationFlags Flags
+        {
+            get
+            {
+                return m_record.Flags;
+            }
+        }
+
+        // The following properties' reputation requirements
+        // have been changed by blizzard before, it thus is recommended
+        // to use these properties and not check for the reputation value
+        // itself.
+
+        /// <summary>
+        /// Whether racial and faction mounts/tabards etc can be purchased.
+        /// </summary>
+        public bool SpecialItems
+        {
+            get { return m_standing >= Standing.Exalted; }
+        }
+
+        /// <summary>
+        /// Whether Heroic mode keys can be purchased for Outland dungeons.
+        /// <see href="http://www.wowwiki.com/Heroic"/>
+        /// </summary>
+        public bool HeroicModeAllowed
+        {
+            get { return m_standing >= Standing.Honored; }
+        }
+
+        /// <summary>
+        /// Enough reputation to interact with NPCs of that Faction
+        /// </summary>
+        public bool CanInteract
+        {
+            get { return m_standing >= Standing.Neutral; }
+        }
+
+        /// <summary>
+        /// Either very bad rep or the player declared war.
+        /// Will cause mobs to attack on sight.
+        /// </summary>
+        public bool Hostile
+        {
+            get
+            {
+                return DeclaredWar || IsHostileStanding(m_standing);
+            }
+        }
+
+        #endregion Properties
 
         #region Flag based Properties
 
@@ -167,17 +167,17 @@ namespace WCell.RealmServer.Factions
             }
         }
 
-		/// <summary>
-		/// whether the player actively declared war
-		/// </summary>
-		public bool DeclaredWar
-		{
-			get
-			{
-			    return m_record.Flags.HasFlag(ReputationFlags.AtWar);
-			}
-			internal set
-			{
+        /// <summary>
+        /// whether the player actively declared war
+        /// </summary>
+        public bool DeclaredWar
+        {
+            get
+            {
+                return m_record.Flags.HasFlag(ReputationFlags.AtWar);
+            }
+            internal set
+            {
                 // We can't declare war if peace is forced
                 if (IsForcedAtPeace)
                     return;
@@ -190,15 +190,15 @@ namespace WCell.RealmServer.Factions
                 {
                     m_record.Flags &= ~ReputationFlags.AtWar;
                 }
-			}
-		}
+            }
+        }
 
-	    public bool IsHidden
-	    {
-	        get
-	        {
+        public bool IsHidden
+        {
+            get
+            {
                 return m_record.Flags.HasFlag(ReputationFlags.Hidden);
-	        }
+            }
             set
             {
                 if (value)
@@ -210,14 +210,14 @@ namespace WCell.RealmServer.Factions
                     m_record.Flags &= ~ReputationFlags.Hidden;
                 }
             }
-	    }
+        }
 
-	    public bool IsForcedInvisible
-	    {
-	        get
-	        {
+        public bool IsForcedInvisible
+        {
+            get
+            {
                 return m_record.Flags.HasFlag(ReputationFlags.ForcedInvisible);
-	        }
+            }
             internal set
             {
                 if (value)
@@ -229,14 +229,14 @@ namespace WCell.RealmServer.Factions
                     m_record.Flags &= ~ReputationFlags.ForcedInvisible;
                 }
             }
-	    }
+        }
 
-	    public bool IsForcedAtPeace
-	    {
-	        get
-	        {
-	            return m_record.Flags.HasFlag(ReputationFlags.ForcedPeace);
-	        }
+        public bool IsForcedAtPeace
+        {
+            get
+            {
+                return m_record.Flags.HasFlag(ReputationFlags.ForcedPeace);
+            }
             internal set
             {
                 if (value)
@@ -248,10 +248,10 @@ namespace WCell.RealmServer.Factions
                     m_record.Flags &= ~ReputationFlags.ForcedPeace;
                 }
             }
-	    }
+        }
 
-	    public bool IsInactive
-	    {
+        public bool IsInactive
+        {
             get { return m_record.Flags.HasFlag(ReputationFlags.Inactive); }
             set
             {
@@ -266,71 +266,72 @@ namespace WCell.RealmServer.Factions
             }
         }
 
-        #endregion
+        #endregion Flag based Properties
 
         /// <summary>
-		/// Changes the reputation value with a specific Faction.
-		/// Is called by ReputationCollect.SetValue
-		/// </summary>
-		/// <param name="value"></param>
-		/// <returns>Whether hostility changed due to the stending change</returns>
-		internal bool SetValue(int value)
-		{
-			var oldSt = m_standing;
-		    var wasHostile = Hostile;
+        /// Changes the reputation value with a specific Faction.
+        /// Is called by ReputationCollect.SetValue
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns>Whether hostility changed due to the stending change</returns>
+        internal bool SetValue(int value)
+        {
+            var oldSt = m_standing;
+            var wasHostile = Hostile;
 
-			m_standing = GetStanding(value);
-		    var nowHostile = Hostile;
-			
+            m_standing = GetStanding(value);
+            var nowHostile = Hostile;
+
             m_record.Value = value;
-		    return (oldSt != m_standing) && (wasHostile != nowHostile);
-		}
+            return (oldSt != m_standing) && (wasHostile != nowHostile);
+        }
 
-		#region Static Helpers
-		// Standings, sorted from highest to lowest
-		public static readonly Standing[] Standings = (Standing[])Enum.GetValues(typeof(Standing));
+        #region Static Helpers
 
-		static Reputation()
-		{
-			Array.Sort(Standings);
-		}
+        // Standings, sorted from highest to lowest
+        public static readonly Standing[] Standings = (Standing[])Enum.GetValues(typeof(Standing));
 
-		public static Standing GetStanding(int repValue)
-		{
-			// go from bottom to bottom
-			for (int i = Standings.Length - 1; i >= 0; i--)
-			{
-				if (repValue >= (int)Standings[i])
-				{
-					return Standings[i];
-				}
-			}
-			return Standing.Hated;
-		}
+        static Reputation()
+        {
+            Array.Sort(Standings);
+        }
 
-		public static StandingLevel GetStandingLevel(int repValue)
-		{
-			// go from top to bottom
-			for (int i = 0; i < Standings.Length; i++)
-			{
-				if (repValue >= (int)Standings[i])
-				{
-					return (StandingLevel)(Standings.Length - i);
-				}
-			}
-			return StandingLevel.Hated;
-		}
+        public static Standing GetStanding(int repValue)
+        {
+            // go from bottom to bottom
+            for (int i = Standings.Length - 1; i >= 0; i--)
+            {
+                if (repValue >= (int)Standings[i])
+                {
+                    return Standings[i];
+                }
+            }
+            return Standing.Hated;
+        }
 
-		public static bool IsHostileStanding(Standing standing)
-		{
-			return standing <= Standing.Hostile;
-		}
+        public static StandingLevel GetStandingLevel(int repValue)
+        {
+            // go from top to bottom
+            for (int i = 0; i < Standings.Length; i++)
+            {
+                if (repValue >= (int)Standings[i])
+                {
+                    return (StandingLevel)(Standings.Length - i);
+                }
+            }
+            return StandingLevel.Hated;
+        }
 
-		public static uint GetReputationDiscountPct(StandingLevel lvl)
-		{
-			return DiscountPercents.Get((uint)lvl);
-		}
+        public static bool IsHostileStanding(Standing standing)
+        {
+            return standing <= Standing.Hostile;
+        }
 
-		#endregion
-	}
+        public static uint GetReputationDiscountPct(StandingLevel lvl)
+        {
+            return DiscountPercents.Get((uint)lvl);
+        }
+
+        #endregion Static Helpers
+    }
 }

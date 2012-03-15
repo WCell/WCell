@@ -28,387 +28,390 @@ using WCell.Util.ObjectPools;
 
 namespace WCell.RealmServer.Spells
 {
-	/// <summary>
-	/// 
-	/// </summary>
-	public abstract class SpellCollection : IEnumerable<Spell>
-	{
-		public static readonly ObjectPool<List<Spell>> SpellListPool = ObjectPoolMgr.CreatePool(() => new List<Spell>(), true);
+    /// <summary>
+    ///
+    /// </summary>
+    public abstract class SpellCollection : IEnumerable<Spell>
+    {
+        public static readonly ObjectPool<List<Spell>> SpellListPool = ObjectPoolMgr.CreatePool(() => new List<Spell>(), true);
 
-		/// <summary>
-		/// All spells by id
-		/// </summary>
-		protected Dictionary<SpellId, Spell> m_byId;
+        /// <summary>
+        /// All spells by id
+        /// </summary>
+        protected Dictionary<SpellId, Spell> m_byId;
 
-		/// <summary>
-		/// Additional effects to be triggered when casting certain Spells
-		/// </summary>
-		private List<AddTargetTriggerHandler> m_TargetTriggers;
+        /// <summary>
+        /// Additional effects to be triggered when casting certain Spells
+        /// </summary>
+        private List<AddTargetTriggerHandler> m_TargetTriggers;
 
-		#region Init & Cleanup
-		protected SpellCollection()
-		{
-			m_byId = new Dictionary<SpellId, Spell>();
-		}
+        #region Init & Cleanup
 
-		protected virtual void Initialize(Unit owner)
-		{
-			Owner = owner;
-		}
+        protected SpellCollection()
+        {
+            m_byId = new Dictionary<SpellId, Spell>();
+        }
 
-		protected internal virtual void Recycle()
-		{
-			Owner = null;
+        protected virtual void Initialize(Unit owner)
+        {
+            Owner = owner;
+        }
 
-			m_byId.Clear();
-			if (m_TargetTriggers != null)
-			{
-				m_TargetTriggers.Clear();
-			}
-		}
-		#endregion
+        protected internal virtual void Recycle()
+        {
+            Owner = null;
 
-		/// <summary>
-		/// Required by SpellCollection
-		/// </summary>
-		public Unit Owner
-		{
-			get;
-			internal protected set;
-		}
+            m_byId.Clear();
+            if (m_TargetTriggers != null)
+            {
+                m_TargetTriggers.Clear();
+            }
+        }
 
-		/// <summary>
-		/// The amount of Spells in this Collection
-		/// </summary>
-		public int Count
-		{
-			get { return m_byId.Count; }
-		}
+        #endregion Init & Cleanup
 
-		public bool HasSpells
-		{
-			get { return m_byId.Count > 0; }
-		}
+        /// <summary>
+        /// Required by SpellCollection
+        /// </summary>
+        public Unit Owner
+        {
+            get;
+            internal protected set;
+        }
 
-		public IEnumerable<Spell> AllSpells
-		{
-			get { return m_byId.Values; }
-		}
+        /// <summary>
+        /// The amount of Spells in this Collection
+        /// </summary>
+        public int Count
+        {
+            get { return m_byId.Count; }
+        }
 
-		/// <summary>
-		/// Teaches a new spell to the unit. Also sends the spell learning animation, if applicable.
-		/// </summary>
-		public void AddSpell(uint spellId)
-		{
-			var spell = SpellHandler.ById[spellId];
-			AddSpell(spell);
-		}
+        public bool HasSpells
+        {
+            get { return m_byId.Count > 0; }
+        }
 
-		/// <summary>
-		/// Teaches a new spell to the unit. Also sends the spell learning animation, if applicable.
-		/// </summary>
-		public void AddSpell(SpellId spellId)
-		{
-			var spell = SpellHandler.Get(spellId);
-			AddSpell(spell);
-		}
+        public IEnumerable<Spell> AllSpells
+        {
+            get { return m_byId.Values; }
+        }
 
-		/// <summary>
-		/// Teaches a new spell to the unit. Also sends the spell learning animation, if applicable.
-		/// </summary>
-		public virtual void AddSpell(Spell spell)
-		{
-			//Add(id, spell, true);
-			m_byId[spell.SpellId] = spell;
-			OnAdd(spell);
-		}
+        /// <summary>
+        /// Teaches a new spell to the unit. Also sends the spell learning animation, if applicable.
+        /// </summary>
+        public void AddSpell(uint spellId)
+        {
+            var spell = SpellHandler.ById[spellId];
+            AddSpell(spell);
+        }
 
-		protected void OnAdd(Spell spell)
-		{
-			if (spell.IsPassive)
-			{
-				Owner.SpellCast.TriggerSelf(spell);
-			}
-			if (spell.AdditionallyTaughtSpells.Count > 0)
-			{
-				foreach (var spe in spell.AdditionallyTaughtSpells)
-				{
-					AddSpell(spe);
-				}
-			}
+        /// <summary>
+        /// Teaches a new spell to the unit. Also sends the spell learning animation, if applicable.
+        /// </summary>
+        public void AddSpell(SpellId spellId)
+        {
+            var spell = SpellHandler.Get(spellId);
+            AddSpell(spell);
+        }
+
+        /// <summary>
+        /// Teaches a new spell to the unit. Also sends the spell learning animation, if applicable.
+        /// </summary>
+        public virtual void AddSpell(Spell spell)
+        {
+            //Add(id, spell, true);
+            m_byId[spell.SpellId] = spell;
+            OnAdd(spell);
+        }
+
+        protected void OnAdd(Spell spell)
+        {
+            if (spell.IsPassive)
+            {
+                Owner.SpellCast.TriggerSelf(spell);
+            }
+            if (spell.AdditionallyTaughtSpells.Count > 0)
+            {
+                foreach (var spe in spell.AdditionallyTaughtSpells)
+                {
+                    AddSpell(spe);
+                }
+            }
             if (Owner is Character)
             {
                 ((Character)Owner).Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.LearnSpell, spell.Id);
             }
-		}
+        }
 
-		/// <summary>
-		/// Teaches a new spell to the unit. Also sends the spell learning animation, if applicable.
-		/// </summary>
-		public void AddSpell(IEnumerable<SpellId> spells)
-		{
-			foreach (var spell in spells)
-			{
-				AddSpell(spell);
-			}
-		}
+        /// <summary>
+        /// Teaches a new spell to the unit. Also sends the spell learning animation, if applicable.
+        /// </summary>
+        public void AddSpell(IEnumerable<SpellId> spells)
+        {
+            foreach (var spell in spells)
+            {
+                AddSpell(spell);
+            }
+        }
 
-		/// <summary>
-		/// Teaches a new spell to the unit. Also sends the spell learning animation, if applicable.
-		/// </summary>
-		public void AddSpell(params SpellId[] spells)
-		{
-			foreach (var spell in spells)
-			{
-				AddSpell(spell);
-			}
-		}
+        /// <summary>
+        /// Teaches a new spell to the unit. Also sends the spell learning animation, if applicable.
+        /// </summary>
+        public void AddSpell(params SpellId[] spells)
+        {
+            foreach (var spell in spells)
+            {
+                AddSpell(spell);
+            }
+        }
 
-		/// <summary>
-		/// Teaches a new spell to the unit. Also sends the spell learning animation, if applicable.
-		/// </summary>
-		public void AddSpell(IEnumerable<Spell> spells)
-		{
-			foreach (var spell in spells)
-			{
-				AddSpell(spell);
-			}
-		}
+        /// <summary>
+        /// Teaches a new spell to the unit. Also sends the spell learning animation, if applicable.
+        /// </summary>
+        public void AddSpell(IEnumerable<Spell> spells)
+        {
+            foreach (var spell in spells)
+            {
+                AddSpell(spell);
+            }
+        }
 
-		/// <summary>
-		/// Adds the spell without doing any further checks or adding any spell-related skills or showing animations
-		/// </summary>
-		public void OnlyAdd(SpellId id)
-		{
-			m_byId.Add(id, SpellHandler.ById.Get((uint)id));
-		}
+        /// <summary>
+        /// Adds the spell without doing any further checks or adding any spell-related skills or showing animations
+        /// </summary>
+        public void OnlyAdd(SpellId id)
+        {
+            m_byId.Add(id, SpellHandler.ById.Get((uint)id));
+        }
 
-		public void OnlyAdd(Spell spell)
-		{
-			m_byId.Add(spell.SpellId, spell);
-		}
+        public void OnlyAdd(Spell spell)
+        {
+            m_byId.Add(spell.SpellId, spell);
+        }
 
-		public bool Contains(uint id)
-		{
-			return m_byId.ContainsKey((SpellId)id);
-		}
+        public bool Contains(uint id)
+        {
+            return m_byId.ContainsKey((SpellId)id);
+        }
 
-		public bool Contains(SpellId id)
-		{
-			return m_byId.ContainsKey(id);
-		}
+        public bool Contains(SpellId id)
+        {
+            return m_byId.ContainsKey(id);
+        }
 
-		public Spell this[SpellId id]
-		{
-			get
-			{
-				Spell spell;
-				m_byId.TryGetValue(id, out spell);
-				return spell;
-			}
-		}
+        public Spell this[SpellId id]
+        {
+            get
+            {
+                Spell spell;
+                m_byId.TryGetValue(id, out spell);
+                return spell;
+            }
+        }
 
-		public Spell this[uint id]
-		{
-			get
-			{
-				Spell spell;
-				m_byId.TryGetValue((SpellId)id, out spell);
-				return spell;
-			}
-		}
+        public Spell this[uint id]
+        {
+            get
+            {
+                Spell spell;
+                m_byId.TryGetValue((SpellId)id, out spell);
+                return spell;
+            }
+        }
 
-		/// <summary>
-		/// Gets the highest rank of the line that this SpellCollection contains
-		/// </summary>
-		public Spell GetHighestRankOf(SpellLineId lineId)
-		{
-			return GetHighestRankOf(lineId.GetLine());
-		}
+        /// <summary>
+        /// Gets the highest rank of the line that this SpellCollection contains
+        /// </summary>
+        public Spell GetHighestRankOf(SpellLineId lineId)
+        {
+            return GetHighestRankOf(lineId.GetLine());
+        }
 
-		/// <summary>
-		/// Gets the highest rank of the line that this SpellCollection contains
-		/// </summary>
-		public Spell GetHighestRankOf(SpellLine line)
-		{
-			var rank = line.HighestRank;
-			do
-			{
-				if (Contains(rank.SpellId))
-				{
-					return rank;
-				}
-			} while ((rank = rank.PreviousRank) != null);
-			return null;
-		}
+        /// <summary>
+        /// Gets the highest rank of the line that this SpellCollection contains
+        /// </summary>
+        public Spell GetHighestRankOf(SpellLine line)
+        {
+            var rank = line.HighestRank;
+            do
+            {
+                if (Contains(rank.SpellId))
+                {
+                    return rank;
+                }
+            } while ((rank = rank.PreviousRank) != null);
+            return null;
+        }
 
-		public void Remove(SpellId spellId)
-		{
-			Replace(SpellHandler.Get(spellId), null);
-		}
+        public void Remove(SpellId spellId)
+        {
+            Replace(SpellHandler.Get(spellId), null);
+        }
 
-		public bool Remove(uint spellId)
-		{
-			Remove((SpellId)spellId);
-			return true;
-		}
+        public bool Remove(uint spellId)
+        {
+            Remove((SpellId)spellId);
+            return true;
+        }
 
-		public virtual bool Remove(Spell spell)
-		{
-			return Replace(spell, null);
-		}
+        public virtual bool Remove(Spell spell)
+        {
+            return Replace(spell, null);
+        }
 
-		public virtual void Clear()
-		{
-			foreach (var spell in m_byId.Values)
-			{
-				if (spell.IsPassive)
-				{
-					Owner.Auras.Remove(spell);
-				}
-			}
-			m_byId.Clear();
-		}
+        public virtual void Clear()
+        {
+            foreach (var spell in m_byId.Values)
+            {
+                if (spell.IsPassive)
+                {
+                    Owner.Auras.Remove(spell);
+                }
+            }
+            m_byId.Clear();
+        }
 
-		/// <summary>
-		/// Only works if you have 2 valid spell ids and oldSpellId already exists.
-		/// </summary>
-		public void Replace(SpellId oldSpellId, SpellId newSpellId)
-		{
-			Spell oldSpell, newSpell = SpellHandler.Get(newSpellId);
-			if (m_byId.TryGetValue(oldSpellId, out oldSpell))
-			{
-				Replace(oldSpell, newSpell);
-			}
-		}
+        /// <summary>
+        /// Only works if you have 2 valid spell ids and oldSpellId already exists.
+        /// </summary>
+        public void Replace(SpellId oldSpellId, SpellId newSpellId)
+        {
+            Spell oldSpell, newSpell = SpellHandler.Get(newSpellId);
+            if (m_byId.TryGetValue(oldSpellId, out oldSpell))
+            {
+                Replace(oldSpell, newSpell);
+            }
+        }
 
-		/// <summary>
-		/// Replaces or (if newSpell == null) removes oldSpell; does nothing if oldSpell doesn't exist.
-		/// </summary>
-		public virtual bool Replace(Spell oldSpell, Spell newSpell)
-		{
-			//if (m_byId.Remove((uint)oldSpell))
-			if (m_byId.Remove(oldSpell.SpellId))
-			{
-				if (oldSpell.IsPassive)
-				{
-					Owner.Auras.Remove(oldSpell);
-				}
-				if (newSpell != null)
-				{
-					AddSpell(newSpell);
-				}
-				return true;
-			}
+        /// <summary>
+        /// Replaces or (if newSpell == null) removes oldSpell; does nothing if oldSpell doesn't exist.
+        /// </summary>
+        public virtual bool Replace(Spell oldSpell, Spell newSpell)
+        {
+            //if (m_byId.Remove((uint)oldSpell))
+            if (m_byId.Remove(oldSpell.SpellId))
+            {
+                if (oldSpell.IsPassive)
+                {
+                    Owner.Auras.Remove(oldSpell);
+                }
+                if (newSpell != null)
+                {
+                    AddSpell(newSpell);
+                }
+                return true;
+            }
 
-			if (newSpell != null)
-			{
-				AddSpell(newSpell);
-			}
-			return false;
-		}
+            if (newSpell != null)
+            {
+                AddSpell(newSpell);
+            }
+            return false;
+        }
 
-		public virtual void AddDefaultSpells()
-		{
-		}
+        public virtual void AddDefaultSpells()
+        {
+        }
 
-		public abstract void AddCooldown(Spell spell, Item casterItem);
+        public abstract void AddCooldown(Spell spell, Item casterItem);
 
-		public abstract void ClearCooldowns();
+        public abstract void ClearCooldowns();
 
-		public abstract bool IsReady(Spell spell);
+        public abstract bool IsReady(Spell spell);
 
-		/// <summary>
-		/// Clears the cooldown for the given spell
-		/// </summary>
-		public void ClearCooldown(SpellId spellId, bool alsoClearCategory = true)
-		{
-			var spell = SpellHandler.Get(spellId);
-			if (spell == null)
-			{
-				try
-				{
-					throw new ArgumentException("No spell given for cooldown", "spellId");
-				}
-				catch (Exception e)
-				{
-					LogUtil.WarnException(e);
-				}
-				return;
-			}
-			ClearCooldown(spell, alsoClearCategory);
-		}
+        /// <summary>
+        /// Clears the cooldown for the given spell
+        /// </summary>
+        public void ClearCooldown(SpellId spellId, bool alsoClearCategory = true)
+        {
+            var spell = SpellHandler.Get(spellId);
+            if (spell == null)
+            {
+                try
+                {
+                    throw new ArgumentException("No spell given for cooldown", "spellId");
+                }
+                catch (Exception e)
+                {
+                    LogUtil.WarnException(e);
+                }
+                return;
+            }
+            ClearCooldown(spell, alsoClearCategory);
+        }
 
-		public void ClearCooldown(SpellLineId id, bool alsoClearCategory = true)
-		{
-			var line = id.GetLine();
-			if (line != null)
-			{
-				foreach (var spell in line)
-				{
-					ClearCooldown(spell, alsoClearCategory);
-				}
-			}
-		}
+        public void ClearCooldown(SpellLineId id, bool alsoClearCategory = true)
+        {
+            var line = id.GetLine();
+            if (line != null)
+            {
+                foreach (var spell in line)
+                {
+                    ClearCooldown(spell, alsoClearCategory);
+                }
+            }
+        }
 
-		public abstract void ClearCooldown(Spell cooldownSpell, bool alsoClearCategory = true);
+        public abstract void ClearCooldown(Spell cooldownSpell, bool alsoClearCategory = true);
 
-		#region Special Spell Casting behavior
+        #region Special Spell Casting behavior
 
-		public List<AddTargetTriggerHandler> TargetTriggers
-		{
-			get
-			{
-				if (m_TargetTriggers == null)
-				{
-					m_TargetTriggers = new List<AddTargetTriggerHandler>(3);
-				}
-				return m_TargetTriggers;
-			}
-		}
+        public List<AddTargetTriggerHandler> TargetTriggers
+        {
+            get
+            {
+                if (m_TargetTriggers == null)
+                {
+                    m_TargetTriggers = new List<AddTargetTriggerHandler>(3);
+                }
+                return m_TargetTriggers;
+            }
+        }
 
-		/// <summary>
-		/// Trigger all spells that might be triggered by the given Spell
-		/// </summary>
-		/// <param name="spell"></param>
-		internal void TriggerSpellsFor(SpellCast cast)
-		{
-			if (m_TargetTriggers == null) return;
+        /// <summary>
+        /// Trigger all spells that might be triggered by the given Spell
+        /// </summary>
+        /// <param name="spell"></param>
+        internal void TriggerSpellsFor(SpellCast cast)
+        {
+            if (m_TargetTriggers == null) return;
 
-			int val;
-			var spell = cast.Spell;
-			for (var i = 0; i < m_TargetTriggers.Count; i++)
-			{
-				var triggerHandler = m_TargetTriggers[i];
-				var effect = triggerHandler.SpellEffect;
-				if (effect.EffectType == SpellEffectType.TriggerSpellFromTargetWithCasterAsTarget) continue;
-				if (spell.SpellClassSet == effect.Spell.SpellClassSet &&
-					effect.MatchesSpell(spell) &&
-					(((val = effect.CalcEffectValue(Owner)) >= 100) || Utility.Random(0, 101) <= val) &&
-					spell != effect.TriggerSpell)	// prevent inf loops
-				{
-					var caster = triggerHandler.Aura.CasterUnit;
-					if (caster != null)
-					{
-						//cast.Trigger(effect.TriggerSpell, cast.Targets.MakeArray());
-						cast.Trigger(effect.TriggerSpell);
-					}
-				}
-			}
-		}
-		#endregion
+            int val;
+            var spell = cast.Spell;
+            for (var i = 0; i < m_TargetTriggers.Count; i++)
+            {
+                var triggerHandler = m_TargetTriggers[i];
+                var effect = triggerHandler.SpellEffect;
+                if (effect.EffectType == SpellEffectType.TriggerSpellFromTargetWithCasterAsTarget) continue;
+                if (spell.SpellClassSet == effect.Spell.SpellClassSet &&
+                    effect.MatchesSpell(spell) &&
+                    (((val = effect.CalcEffectValue(Owner)) >= 100) || Utility.Random(0, 101) <= val) &&
+                    spell != effect.TriggerSpell)	// prevent inf loops
+                {
+                    var caster = triggerHandler.Aura.CasterUnit;
+                    if (caster != null)
+                    {
+                        //cast.Trigger(effect.TriggerSpell, cast.Targets.MakeArray());
+                        cast.Trigger(effect.TriggerSpell);
+                    }
+                }
+            }
+        }
 
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return GetEnumerator();
-		}
+        #endregion Special Spell Casting behavior
 
-		public IEnumerator<Spell> GetEnumerator()
-		{
-			foreach (var spell in m_byId.Values)
-			{
-				yield return spell;
-			}
-		}
-	}
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public IEnumerator<Spell> GetEnumerator()
+        {
+            foreach (var spell in m_byId.Values)
+            {
+                yield return spell;
+            }
+        }
+    }
 }

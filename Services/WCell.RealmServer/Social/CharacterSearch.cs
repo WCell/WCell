@@ -27,7 +27,7 @@ namespace WCell.RealmServer.Interaction
     /// <remarks>
     /// This class provides common character searching criterias, if you need to include your own custom criterias
     /// just derive from this class and override the <see cref="IncludeCharacter"/> method.
-    /// By default this class compares the online characters matching the search criterias. If you need to conduct 
+    /// By default this class compares the online characters matching the search criterias. If you need to conduct
     /// searches on offline or custom Characters, you can do so overriding the <see cref="GetCharacters"/> method.
     /// </remarks>
     /// </summary>
@@ -40,8 +40,9 @@ namespace WCell.RealmServer.Interaction
         private uint m_maxResultCount;
 
         #region Public Properties
+
         /// <summary>
-		/// Character name search filter. If not set this filter is ignored when performing the search.
+        /// Character name search filter. If not set this filter is ignored when performing the search.
         /// </summary>
         public string Name
         {
@@ -50,7 +51,7 @@ namespace WCell.RealmServer.Interaction
         }
 
         /// <summary>
-		/// Character <see cref="EntityId"/> search filter. If not set this filter is ignored when performing the search.
+        /// Character <see cref="EntityId"/> search filter. If not set this filter is ignored when performing the search.
         /// </summary>
         public EntityId EntityId
         {
@@ -59,7 +60,7 @@ namespace WCell.RealmServer.Interaction
         }
 
         /// <summary>
-		/// Character min level search filter. If not set this filter is ignored when performing the search.
+        /// Character min level search filter. If not set this filter is ignored when performing the search.
         /// </summary>
         public byte MinLevel
         {
@@ -68,14 +69,14 @@ namespace WCell.RealmServer.Interaction
         }
 
         /// <summary>
-		/// Character max level search filter. If not set this filter is ignored when performing the search.
+        /// Character max level search filter. If not set this filter is ignored when performing the search.
         /// </summary>
         public byte MaxLevel
         {
             get { return m_maxLevel; }
             set { m_maxLevel = value; }
         }
-        
+
         /// <summary>
         /// The maximum ammount of Characters matching the search criterias to return
         /// </summary>
@@ -84,31 +85,32 @@ namespace WCell.RealmServer.Interaction
             get { return m_maxResultCount; }
             set { m_maxResultCount = value; }
         }
-        #endregion
+
+        #endregion Public Properties
 
         /// <summary>
         /// Retrieves a list of the matched characters based on the search criterias.
         /// </summary>
         /// <returns>A list of the matched characters</returns>
         public ICollection<Character> RetrieveMatchedCharacters()
-        { 
+        {
             var matchedCharacters = new List<Character>();
             var characters = GetCharacters();
 
             uint totalMatches = 0;
             foreach (var character in characters)
             {
-                if (!IncludeCharacter(character)) 
-					continue;
+                if (!IncludeCharacter(character))
+                    continue;
 
                 totalMatches++;
 
                 //If all checks passed the player matched all criterias, so we add it to the matched list
                 //If we reached the result count then we stop adding matches
-				if (totalMatches <= m_maxResultCount)
-					matchedCharacters.Add(character);
-				else
-					break;
+                if (totalMatches <= m_maxResultCount)
+                    matchedCharacters.Add(character);
+                else
+                    break;
             }
             return matchedCharacters;
         }
@@ -121,7 +123,7 @@ namespace WCell.RealmServer.Interaction
         /// <returns>The character list to be searched</returns>
         protected virtual ICollection<Character> GetCharacters()
         {
-			return World.GetAllCharacters();
+            return World.GetAllCharacters();
         }
 
         /// <summary>

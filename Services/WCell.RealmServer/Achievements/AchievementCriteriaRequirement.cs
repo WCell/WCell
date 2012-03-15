@@ -45,12 +45,12 @@ namespace WCell.RealmServer.Achievements
         public void FinalizeDataHolder()
         {
             var criteriaEntry = AchievementMgr.GetCriteriaEntryById(CriteriaId);
-			if (criteriaEntry == null)
+            if (criteriaEntry == null)
             {
                 ContentMgr.OnInvalidDBData("{0} had an invalid criteria id.", this);
                 return;
             }
-			criteriaEntry.RequirementSet.Add(this);
+            criteriaEntry.RequirementSet.Add(this);
         }
 
         public virtual bool Meets(Character chr, Unit target, uint miscValue)
@@ -60,6 +60,7 @@ namespace WCell.RealmServer.Achievements
     }
 
     #region Criteria Requirement Type
+
     public class AchievementCriteriaRequirementCreature : AchievementCriteriaRequirement
     {
         public override bool Meets(Character chr, Unit target, uint miscValue)
@@ -69,6 +70,7 @@ namespace WCell.RealmServer.Achievements
             else return Value1 == target.EntryId;
         }
     }
+
     public class AchievementCriteriaRequirementPlayerClassRace : AchievementCriteriaRequirement
     {
         public override bool Meets(Character chr, Unit target, uint miscValue)
@@ -83,51 +85,43 @@ namespace WCell.RealmServer.Achievements
         }
     }
 
-    
     public class AchievementCriteriaRequirementPlayerLessHealth : AchievementCriteriaRequirement
     {
         public override bool Meets(Character chr, Unit target, uint miscValue)
         {
             if (target == null || !(target is Character))
                 return false;
-           return target.HealthPct == Value1;
+            return target.HealthPct == Value1;
         }
     }
 
-    
     public class AchievementCriteriaRequirementPlayerDead : AchievementCriteriaRequirement
     {
-        
     }
 
-    
     public class AchievementCriteriaRequirementAura1 : AchievementCriteriaRequirement
     {
         //SpellId spellId;
         //uint effectIndex;
     }
 
-    
     public class AchievementCriteriaRequirementArea : AchievementCriteriaRequirement
     {
         //public ZoneId zoneId;
         //public uint areaId;
     }
 
-    
     public class AchievementCriteriaRequirementAura2 : AchievementCriteriaRequirement
     {
         //public SpellId spellId;
         //public uint effectIndex;
     }
 
-    
     public class AchievementCriteriaRequirementValue : AchievementCriteriaRequirement
     {
         //public uint minValue;
     }
 
-    
     public class AchievementCriteriaRequirementLevel : AchievementCriteriaRequirement
     {
         // 9
@@ -146,7 +140,6 @@ namespace WCell.RealmServer.Achievements
         }
     }
 
-    
     public class AchievementCriteriaRequirementGender : AchievementCriteriaRequirement
     {
         // 10
@@ -158,7 +151,6 @@ namespace WCell.RealmServer.Achievements
         }
     }
 
-    
     public class AchievementCriteriaRequirementDisabled : AchievementCriteriaRequirement
     {
         // 11
@@ -168,7 +160,6 @@ namespace WCell.RealmServer.Achievements
         }
     }
 
-    
     public class AchievementCriteriaRequirementMapDifficulty : AchievementCriteriaRequirement
     {
         // 12
@@ -179,7 +170,6 @@ namespace WCell.RealmServer.Achievements
         }
     }
 
-    
     public class AchievementCriteriaRequirementMapPlayerCount : AchievementCriteriaRequirement
     {
         // 13
@@ -187,10 +177,9 @@ namespace WCell.RealmServer.Achievements
         public override bool Meets(Character chr, Unit target, uint miscValue)
         {
             return chr.Map.PlayerCount <= Value1;
-        } 
+        }
     }
 
-    
     public class AchievementCriteriaRequirementTeam : AchievementCriteriaRequirement
     {
         // 14
@@ -203,7 +192,6 @@ namespace WCell.RealmServer.Achievements
         }
     }
 
-    
     public class AchievementCriteriaRequirementDrunk : AchievementCriteriaRequirement
     {
         // 15
@@ -213,7 +201,6 @@ namespace WCell.RealmServer.Achievements
         }
     }
 
-    
     public class AchievementCriteriaRequirementHoliday : AchievementCriteriaRequirement
     {
         // 16
@@ -223,7 +210,6 @@ namespace WCell.RealmServer.Achievements
         }
     }
 
-    
     public class AchievementCriteriaRequirementBgLossTeamScore : AchievementCriteriaRequirement
     {
         // 17
@@ -231,13 +217,11 @@ namespace WCell.RealmServer.Achievements
         //public uint maxScore;
     }
 
-    
     public class AchievementCriteriaRequirementInstanceScript : AchievementCriteriaRequirement
     {
         // 18
     }
 
-    
     public class AchievementCriteriaRequirementEquippedItemLevel : AchievementCriteriaRequirement
     {
         // 19
@@ -263,19 +247,20 @@ namespace WCell.RealmServer.Achievements
             return chr != null && chr.HasTitle(title.TitleId);
         }
     }
-    #endregion
 
-	[Serializable]
-	[StructLayout(LayoutKind.Sequential)]
+    #endregion Criteria Requirement Type
+
+    [Serializable]
+    [StructLayout(LayoutKind.Sequential)]
     public class AchievementCriteriaRequirementSet
     {
         public readonly uint CriteriaId;
         public readonly List<AchievementCriteriaRequirementCreator> Requirements = new List<AchievementCriteriaRequirementCreator>();
 
-		public AchievementCriteriaRequirementSet(uint id)
-		{
-			CriteriaId = id;
-		}
+        public AchievementCriteriaRequirementSet(uint id)
+        {
+            CriteriaId = id;
+        }
 
         public void Add(AchievementCriteriaRequirement requirement)
         {
@@ -285,7 +270,7 @@ namespace WCell.RealmServer.Achievements
 
         public bool Meets(Character chr, Unit involved, uint miscValue)
         {
-            foreach(AchievementCriteriaRequirementCreator requirementCreator in Requirements)
+            foreach (AchievementCriteriaRequirementCreator requirementCreator in Requirements)
             {
                 var requirement = requirementCreator();
                 if (!(requirement.Meets(chr, involved, miscValue)))
@@ -294,6 +279,6 @@ namespace WCell.RealmServer.Achievements
                     return true;
             }
             return true;
-	    }
+        }
     }
 }

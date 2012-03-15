@@ -22,11 +22,11 @@ namespace WCell.RealmServer.RacesClasses
     /// Defines the basics of the Mage class.
     /// </summary>
     public class MageClass : BaseClass
-	{
-		public override ClassId Id
-		{
-			get { return ClassId.Mage; }
-		}
+    {
+        public override ClassId Id
+        {
+            get { return ClassId.Mage; }
+        }
 
         /// <summary>
         /// Calculates attack power for the class at a specific level, Strength and Agility.

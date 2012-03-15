@@ -7,21 +7,21 @@ namespace WCell.Tools.Commands
         protected override void Initialize()
         {
             Init("SpellStudies", "ST");
-			EnglishDescription = "Provides commands to study spells.";
+            EnglishDescription = "Provides commands to study spells.";
         }
 
         public class StudySpellCommand : SubCommand
-		{
-			protected override void Initialize()
-			{
-				Init("MatchSpellClassMask", "MSCM");
-				EnglishDescription = "Matches spells with the given spell class mask.";
-			}
+        {
+            protected override void Initialize()
+            {
+                Init("MatchSpellClassMask", "MSCM");
+                EnglishDescription = "Matches spells with the given spell class mask.";
+            }
 
-			public override void Process(CmdTrigger<ToolCmdArgs> trigger)
-			{
+            public override void Process(CmdTrigger<ToolCmdArgs> trigger)
+            {
                 Ralek.SpellStudies.FindFubecasFrickinSpells();
             }
-		}
+        }
     }
 }

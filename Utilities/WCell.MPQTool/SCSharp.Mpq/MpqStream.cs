@@ -46,26 +46,26 @@ namespace MpqReader
             mStream = File.BaseStream;
             mBlockSize = File.BlockSize;
 
-            if(mBlock.IsCompressed)
+            if (mBlock.IsCompressed)
                 LoadBlockPositions();
         }
 
         // Compressed files start with an array of offsets to make seeking possible
         private void LoadBlockPositions()
         {
-            int blockposcount = (int) ((mBlock.FileSize + mBlockSize - 1) / mBlockSize) + 1;
+            int blockposcount = (int)((mBlock.FileSize + mBlockSize - 1) / mBlockSize) + 1;
 
             mBlockPositions = new uint[blockposcount];
 
-            lock(mStream)
+            lock (mStream)
             {
                 mStream.Seek(mBlock.FilePos, SeekOrigin.Begin);
                 BinaryReader br = new BinaryReader(mStream);
-                for(int i = 0; i < blockposcount; i++)
+                for (int i = 0; i < blockposcount; i++)
                     mBlockPositions[i] = br.ReadUInt32();
             }
 
-            uint blockpossize = (uint) blockposcount * 4;
+            uint blockpossize = (uint)blockposcount * 4;
 
             // OW:
 
@@ -75,21 +75,21 @@ namespace MpqReader
             // there's one additional entry in the block table. If this flag
             // is present, we skip this test to keep the file readable.
 
-            if((mBlock.Flags & MpqFileFlags.FileHasMetadata) == 0)
+            if ((mBlock.Flags & MpqFileFlags.FileHasMetadata) == 0)
             {
-                if(mBlockPositions[0] != blockpossize)
+                if (mBlockPositions[0] != blockpossize)
                     mBlock.Flags |= MpqFileFlags.Encrypted;
             }
 
-            if(mBlock.IsEncrypted)
+            if (mBlock.IsEncrypted)
             {
-                if(mSeed1 == 0)
+                if (mSeed1 == 0)
                 {
                     mSeed1 = MpqArchive.DetectFileSeed(mBlockPositions, blockpossize);
                     if (mSeed1 == 0)
                         throw new MpqParserException("Unable to determine encyption seed");
                 }
-                
+
                 MpqArchive.DecryptBlock(mBlockPositions, mSeed1);
                 mSeed1++; // Add 1 because the first block is the offset list
             }
@@ -140,15 +140,15 @@ namespace MpqReader
                 {
                     uint value0 = BitConverter.ToUInt32(data, 0);
                     uint value1 = BitConverter.ToUInt32(data, 4);
-					mSeed1 = MpqArchive.DetectFileSeed(value0, value1, 0x2fbfbbef, 0x3d3d3d2f); // .J unicode magic
+                    mSeed1 = MpqArchive.DetectFileSeed(value0, value1, 0x2fbfbbef, 0x3d3d3d2f); // .J unicode magic
                     if (mSeed1 == 0)
                     {
                         mSeed1 = MpqArchive.DetectFileSeed(value0, value1, 0x3d3d2f2f, 0x3d3d3d3d); // .J ascii
-	                    if (mSeed1 == 0)
-	                    {
+                        if (mSeed1 == 0)
+                        {
                             mSeed1 = MpqArchive.DetectFileSeed(value0, value1, 0x46464952, mBlock.FileSize - 8); // RIFF
                             if (mSeed1 == 0) throw new MpqParserException("Unable to determine encryption key");
-                    	}
+                        }
                     }
                 }
                 MpqArchive.DecryptBlock(data, (uint)(mSeed1 + BlockIndex));
@@ -166,6 +166,7 @@ namespace MpqReader
         }
 
         #region Stream overrides
+
         public override bool CanRead
         { get { return true; } }
 
@@ -251,7 +252,7 @@ namespace MpqReader
             // OW: avoid reading past the contents of the file
             if (mPosition >= Length)
                 return 0;
-            
+
             BufferData();
 
             int localposition = (int)(mPosition % mBlockSize);
@@ -290,7 +291,8 @@ namespace MpqReader
         {
             throw new NotSupportedException("Writing is not supported");
         }
-        #endregion Strem overrides
+
+        #endregion Stream overrides
 
         /* Compression types in order:
 		 *  10 = BZip2
@@ -300,6 +302,7 @@ namespace MpqReader
 		 *  80 = IMA ADPCM Stereo
 		 *  40 = IMA ADPCM Mono
 		 */
+
         private static byte[] DecompressMulti(byte[] Input, int OutputLength)
         {
             Stream sinput = new MemoryStream(Input);
@@ -355,7 +358,7 @@ namespace MpqReader
             {
                 byte[] result = MpqWavCompression.Decompress(sinput, 1);
                 comptype &= 0xbf;
-                if (comptype == 0) 
+                if (comptype == 0)
                     return result;
             }
             throw new MpqParserException(String.Format("Unhandled compression flags: 0x{0:X}", comptype));

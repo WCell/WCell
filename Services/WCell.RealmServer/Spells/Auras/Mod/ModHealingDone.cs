@@ -6,23 +6,23 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
     /// Increases healing done
     /// </summary>
     public class ModHealingDoneHandler : AuraEffectHandler
-	{
-		protected override void Apply()
-		{
-			var owner = Owner as Character;
-			if (owner != null)
-			{
-				owner.HealingDoneMod += EffectValue;
-			}
-		}
+    {
+        protected override void Apply()
+        {
+            var owner = Owner as Character;
+            if (owner != null)
+            {
+                owner.HealingDoneMod += EffectValue;
+            }
+        }
 
-		protected override void Remove(bool cancelled)
-		{
-			var owner = Owner as Character;
-			if (owner != null)
-			{
-				owner.HealingDoneMod -= EffectValue;
-			}
-		}
+        protected override void Remove(bool cancelled)
+        {
+            var owner = Owner as Character;
+            if (owner != null)
+            {
+                owner.HealingDoneMod -= EffectValue;
+            }
+        }
     }
 };

@@ -22,66 +22,66 @@ using WCell.RealmServer.Items.Enchanting;
 
 namespace WCell.RealmServer.Spells.Effects
 {
-	public class EnchantItemEffectHandler : SpellEffectHandler
-	{
-		private static Logger log = LogManager.GetCurrentClassLogger();
-		ItemEnchantmentEntry enchantEntry;
+    public class EnchantItemEffectHandler : SpellEffectHandler
+    {
+        private static Logger log = LogManager.GetCurrentClassLogger();
+        ItemEnchantmentEntry enchantEntry;
 
-		public EnchantItemEffectHandler(SpellCast cast, SpellEffect effect)
-			: base(cast, effect)
-		{
-		}
+        public EnchantItemEffectHandler(SpellCast cast, SpellEffect effect)
+            : base(cast, effect)
+        {
+        }
 
-		public override SpellFailedReason Initialize()
-		{
-			if (m_cast.TargetItem == null)
-			{
-				return SpellFailedReason.ItemGone;
-			}
+        public override SpellFailedReason Initialize()
+        {
+            if (m_cast.TargetItem == null)
+            {
+                return SpellFailedReason.ItemGone;
+            }
 
-			if (m_cast.TargetItem.Template.Level < Effect.Spell.BaseLevel)
-			{
-				return SpellFailedReason.TargetLowlevel;
-			}
+            if (m_cast.TargetItem.Template.Level < Effect.Spell.BaseLevel)
+            {
+                return SpellFailedReason.TargetLowlevel;
+            }
 
-			enchantEntry = EnchantMgr.GetEnchantmentEntry((uint)Effect.MiscValue);
-			if (enchantEntry == null)
-			{
-				log.Error("Spell {0} refers to invalid EnchantmentEntry {1}", Effect.Spell, Effect.MiscValue);
-				return SpellFailedReason.Error;
-			}
-			if (!enchantEntry.CheckRequirements(m_cast.CasterUnit))
-			{
-				return SpellFailedReason.MinSkill;
-			}
+            enchantEntry = EnchantMgr.GetEnchantmentEntry((uint)Effect.MiscValue);
+            if (enchantEntry == null)
+            {
+                log.Error("Spell {0} refers to invalid EnchantmentEntry {1}", Effect.Spell, Effect.MiscValue);
+                return SpellFailedReason.Error;
+            }
+            if (!enchantEntry.CheckRequirements(m_cast.CasterUnit))
+            {
+                return SpellFailedReason.MinSkill;
+            }
 
-			return SpellFailedReason.Ok;
-		}
+            return SpellFailedReason.Ok;
+        }
 
-		public virtual EnchantSlot EnchantSlot
-		{
-			get { return EnchantSlot.Permanent; }
-		}
+        public virtual EnchantSlot EnchantSlot
+        {
+            get { return EnchantSlot.Permanent; }
+        }
 
-		public override void Apply()
-		{
-			var item = m_cast.TargetItem;
-			var duration = CalcEffectValue();
-			if (duration < 0)
-			{
-				duration = 0;
-			}
-			item.ApplyEnchant(enchantEntry, EnchantSlot, duration, 0, true);
-		}
+        public override void Apply()
+        {
+            var item = m_cast.TargetItem;
+            var duration = CalcEffectValue();
+            if (duration < 0)
+            {
+                duration = 0;
+            }
+            item.ApplyEnchant(enchantEntry, EnchantSlot, duration, 0, true);
+        }
 
-		public override bool HasOwnTargets
-		{
-			get { return false; }
-		}
+        public override bool HasOwnTargets
+        {
+            get { return false; }
+        }
 
-		public override ObjectTypes CasterType
-		{
-			get { return ObjectTypes.Unit; }
-		}
-	}
+        public override ObjectTypes CasterType
+        {
+            get { return ObjectTypes.Unit; }
+        }
+    }
 }

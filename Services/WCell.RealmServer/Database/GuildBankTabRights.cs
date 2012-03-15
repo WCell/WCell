@@ -7,17 +7,17 @@ namespace WCell.RealmServer.Database
     [ActiveRecord("GuildBankTabRights", Access = PropertyAccess.Property)]
     public class GuildBankTabRights : ActiveRecordBase<GuildBankTabRights>
     {
-		public GuildBankTabRights()
-		{
-		}
+        public GuildBankTabRights()
+        {
+        }
 
-		public GuildBankTabRights(int tabId, uint rankId)
-		{
-			Privileges = GuildBankTabPrivileges.None;
-			WithdrawlAllowance = 0;
-			TabId = tabId;
-			GuildRankId = rankId;
-		}
+        public GuildBankTabRights(int tabId, uint rankId)
+        {
+            Privileges = GuildBankTabPrivileges.None;
+            WithdrawlAllowance = 0;
+            TabId = tabId;
+            GuildRankId = rankId;
+        }
 
         [PrimaryKey(PrimaryKeyType.Increment)]
         internal long Id
@@ -26,14 +26,14 @@ namespace WCell.RealmServer.Database
             set;
         }
 
-		[Field("GuildRankId", NotNull = true)]
-    	private int m_GuildRankId;
+        [Field("GuildRankId", NotNull = true)]
+        private int m_GuildRankId;
 
-    	public uint GuildRankId
-    	{
-    		get { return (uint) m_GuildRankId; }
-    		set { m_GuildRankId = (int) value; }
-    	}
+        public uint GuildRankId
+        {
+            get { return (uint)m_GuildRankId; }
+            set { m_GuildRankId = (int)value; }
+        }
 
         [Field("Privileges", NotNull = true)]
         private int _priveleges;

@@ -20,30 +20,30 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Effects
 {
-	public class HealMaxHealthEffectHandler : SpellEffectHandler
-	{
-		public HealMaxHealthEffectHandler(SpellCast cast, SpellEffect effect)
-			: base(cast, effect)
-		{
-		}
+    public class HealMaxHealthEffectHandler : SpellEffectHandler
+    {
+        public HealMaxHealthEffectHandler(SpellCast cast, SpellEffect effect)
+            : base(cast, effect)
+        {
+        }
 
-		public override SpellFailedReason InitializeTarget(WorldObject target)
-		{
-			//if (((Unit)target).Health >= ((Unit)target).MaxHealth) {
-			//    return SpellFailedReason.AlreadyAtFullHealth;
-			//}
-			return SpellFailedReason.Ok;
-		}
+        public override SpellFailedReason InitializeTarget(WorldObject target)
+        {
+            //if (((Unit)target).Health >= ((Unit)target).MaxHealth) {
+            //    return SpellFailedReason.AlreadyAtFullHealth;
+            //}
+            return SpellFailedReason.Ok;
+        }
 
-		protected override void Apply(WorldObject target)
-		{
-			var unit = (Unit)target;
-			unit.Heal((m_cast.CasterUnit ?? unit).MaxHealth, m_cast.CasterUnit, Effect);
-		}
+        protected override void Apply(WorldObject target)
+        {
+            var unit = (Unit)target;
+            unit.Heal((m_cast.CasterUnit ?? unit).MaxHealth, m_cast.CasterUnit, Effect);
+        }
 
-		public override ObjectTypes TargetType
-		{
-			get { return ObjectTypes.Unit; }
-		}
-	}
+        public override ObjectTypes TargetType
+        {
+            get { return ObjectTypes.Unit; }
+        }
+    }
 }

@@ -12,13 +12,12 @@ namespace WCell.RealmServer.GameObjects.GOEntries
             get { return (SpellFocus)Fields[0]; }
         }
 
-		/// <summary>
-		/// Caster must be within this distance of the object in order to cast the associated spell
-		/// </summary>
+        /// <summary>
+        /// Caster must be within this distance of the object in order to cast the associated spell
+        /// </summary>
         public int Radius
         {
             get { return Fields[1]; }
-
         }
 
         /// <summary>
@@ -29,13 +28,13 @@ namespace WCell.RealmServer.GameObjects.GOEntries
             get { return Fields[3]; }
         }
 
-		/// <summary>
-		/// The Id of the quest required to be active
-		/// </summary>
-		public override uint QuestId
-		{
-			get { return (uint)Fields[4]; }
-		}
+        /// <summary>
+        /// The Id of the quest required to be active
+        /// </summary>
+        public override uint QuestId
+        {
+            get { return (uint)Fields[4]; }
+        }
 
         public bool Large
         {
@@ -47,9 +46,9 @@ namespace WCell.RealmServer.GameObjects.GOEntries
             get { return Fields[6]; }
         }
 
-    	protected internal override void InitEntry()
-		{
-			LinkedTrapId = (uint) Fields[2];
-		}
+        protected internal override void InitEntry()
+        {
+            LinkedTrapId = (uint)Fields[2];
+        }
     }
 }

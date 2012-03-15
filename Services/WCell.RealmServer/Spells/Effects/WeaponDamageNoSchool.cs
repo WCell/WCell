@@ -19,26 +19,26 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Effects
 {
-	public class WeaponDamageNoSchoolEffectHandler : SpellEffectHandler
-	{
-		public WeaponDamageNoSchoolEffectHandler(SpellCast cast, SpellEffect effect)
-			: base(cast, effect)
-		{
-		}
+    public class WeaponDamageNoSchoolEffectHandler : SpellEffectHandler
+    {
+        public WeaponDamageNoSchoolEffectHandler(SpellCast cast, SpellEffect effect)
+            : base(cast, effect)
+        {
+        }
 
-		protected override void Apply(WorldObject target)
-		{
-			// does nothing, extra damage is applied on Hit
-		}
+        protected override void Apply(WorldObject target)
+        {
+            // does nothing, extra damage is applied on Hit
+        }
 
-		public override ObjectTypes CasterType
-		{
-			get { return ObjectTypes.Unit; }
-		}
+        public override ObjectTypes CasterType
+        {
+            get { return ObjectTypes.Unit; }
+        }
 
-		public override ObjectTypes TargetType
-		{
-			get { return ObjectTypes.Unit; }
-		}
-	}
+        public override ObjectTypes TargetType
+        {
+            get { return ObjectTypes.Unit; }
+        }
+    }
 }

@@ -19,33 +19,33 @@ using WCell.RealmServer.Modifiers;
 
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
-	public class ModPowerRegenPercentHandler : AuraEffectHandler
-	{
-		//protected internal override void CheckInitialize(SpellCast creatingCast, ObjectReference casterReference, Unit target, ref SpellFailedReason failReason)
-		//{
-		//    var type = (PowerType)m_spellEffect.MiscValue;
-		//    if (target.PowerType != type)
-		//    {
-		//        failReason = SpellFailedReason.BadTargets;
-		//    }
-		//}
+    public class ModPowerRegenPercentHandler : AuraEffectHandler
+    {
+        //protected internal override void CheckInitialize(SpellCast creatingCast, ObjectReference casterReference, Unit target, ref SpellFailedReason failReason)
+        //{
+        //    var type = (PowerType)m_spellEffect.MiscValue;
+        //    if (target.PowerType != type)
+        //    {
+        //        failReason = SpellFailedReason.BadTargets;
+        //    }
+        //}
 
-		protected override void Apply()
-		{
-			var type = (PowerType)m_spellEffect.MiscValue;
-			if (m_aura.Auras.Owner.PowerType == type)
-			{
-				m_aura.Auras.Owner.ChangeModifier(StatModifierInt.PowerRegenPercent, EffectValue);
-			}
-		}
+        protected override void Apply()
+        {
+            var type = (PowerType)m_spellEffect.MiscValue;
+            if (m_aura.Auras.Owner.PowerType == type)
+            {
+                m_aura.Auras.Owner.ChangeModifier(StatModifierInt.PowerRegenPercent, EffectValue);
+            }
+        }
 
-		protected override void Remove(bool cancelled)
-		{
-			var type = (PowerType)m_spellEffect.MiscValue;
-			if (m_aura.Auras.Owner.PowerType == type)
-			{
-				m_aura.Auras.Owner.ChangeModifier(StatModifierInt.PowerRegenPercent, -EffectValue);
-			}
-		}
-	}
+        protected override void Remove(bool cancelled)
+        {
+            var type = (PowerType)m_spellEffect.MiscValue;
+            if (m_aura.Auras.Owner.PowerType == type)
+            {
+                m_aura.Auras.Owner.ChangeModifier(StatModifierInt.PowerRegenPercent, -EffectValue);
+            }
+        }
+    }
 };

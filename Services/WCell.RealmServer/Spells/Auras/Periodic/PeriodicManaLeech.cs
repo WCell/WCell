@@ -20,27 +20,26 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
-	public class PeriodicManaLeechHandler : AuraEffectHandler
-	{
+    public class PeriodicManaLeechHandler : AuraEffectHandler
+    {
+        protected internal override void CheckInitialize(SpellCast creatingCast, ObjectReference casterReference, Unit target, ref SpellFailedReason failReason)
+        {
+            if (target.MaxPower == 0 || target.PowerType != (PowerType)m_spellEffect.MiscValue)
+            {
+                failReason = SpellFailedReason.BadTargets;
+            }
+        }
 
-		protected internal override void CheckInitialize(SpellCast creatingCast, ObjectReference casterReference, Unit target, ref SpellFailedReason failReason)
-		{
-			if (target.MaxPower == 0 || target.PowerType != (PowerType)m_spellEffect.MiscValue)
-			{
-				failReason = SpellFailedReason.BadTargets;
-			}
-		}
-
-		protected override void Apply()
-		{
-			var val = EffectValue;
-			var target = m_aura.Auras.Owner;
-			if (m_aura.Spell.HasEffectWith((effect) => effect.AuraType == AuraType.Dummy))
-			{
-				// ugly fix around
-				val = target.BasePower * val / 100;
-			}
-			target.LeechPower(val, 1f, m_aura.CasterUnit, m_spellEffect);
-		}
-	}
+        protected override void Apply()
+        {
+            var val = EffectValue;
+            var target = m_aura.Auras.Owner;
+            if (m_aura.Spell.HasEffectWith((effect) => effect.AuraType == AuraType.Dummy))
+            {
+                // ugly fix around
+                val = target.BasePower * val / 100;
+            }
+            target.LeechPower(val, 1f, m_aura.CasterUnit, m_spellEffect);
+        }
+    }
 };

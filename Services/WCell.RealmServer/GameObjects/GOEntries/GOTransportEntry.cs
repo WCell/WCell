@@ -4,32 +4,31 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 {
     public class GOTransportEntry : GOEntry
     {
-		private static readonly Logger sLog = LogManager.GetCurrentClassLogger();
+        private static readonly Logger sLog = LogManager.GetCurrentClassLogger();
 
+        /// <summary>
+        /// (ms)
+        /// </summary>
+        public int WhenToPause
+        {
+            get { return Fields[0]; }
+        }
 
-    	/// <summary>
-    	/// (ms)
-    	/// </summary>
-    	public int WhenToPause
-    	{
-    		get { return Fields[ 0 ]; }
-    	}
+        /// <summary>
+        /// ???
+        /// </summary>
+        public int StartOpen
+        {
+            get { return Fields[1]; }
+        }
 
-		/// <summary>
-		/// ???
-		/// </summary>
-    	public int StartOpen
-    	{
-    		get { return Fields[ 1 ]; }
-    	}
-
-		/// <summary>
-		/// ???
-		/// </summary>
-    	public int AutoClose
-    	{
-			get { return Fields[ 2 ]; }
-    	}
+        /// <summary>
+        /// ???
+        /// </summary>
+        public int AutoClose
+        {
+            get { return Fields[2]; }
+        }
 
         public int Pause1EventId
         {
@@ -41,12 +40,12 @@ namespace WCell.RealmServer.GameObjects.GOEntries
             get { return Fields[4]; }
         }
 
-		public override bool IsTransport
-		{
-			get
-			{
-				return true;
-			}
-		}
+        public override bool IsTransport
+        {
+            get
+            {
+                return true;
+            }
+        }
     }
 }

@@ -20,54 +20,53 @@ using WCell.Util.Commands;
 
 namespace WCell.RealmServer.Commands
 {
+    public class LoveAllCommand : RealmServerCommand
+    {
+        protected LoveAllCommand() { }
 
-	public class LoveAllCommand : RealmServerCommand
-	{
-		protected LoveAllCommand() { }
+        protected override void Initialize()
+        {
+            Init("LoveAll");
+            EnglishDescription = "Makes all factions fall in love with the Owner";
+        }
 
-		protected override void Initialize()
-		{
-			Init("LoveAll");
-			EnglishDescription = "Makes all factions fall in love with the Owner";
-		}
+        public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+        {
+            ((Character)trigger.Args.Target).Reputations.LoveAll();
+            trigger.Reply("Everyone loves {0} now.", trigger.Args.Target);
+        }
 
-		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
-		{
-			((Character)trigger.Args.Target).Reputations.LoveAll();
-			trigger.Reply("Everyone loves {0} now.", trigger.Args.Target);
-		}
+        public override ObjectTypeCustom TargetTypes
+        {
+            get
+            {
+                return ObjectTypeCustom.Player;
+            }
+        }
+    }
 
-		public override ObjectTypeCustom TargetTypes
-		{
-			get
-			{
-				return ObjectTypeCustom.Player;
-			}
-		}
-	}
+    public class HateAllCommand : RealmServerCommand
+    {
+        protected HateAllCommand() { }
 
-	public class HateAllCommand : RealmServerCommand
-	{
-		protected HateAllCommand() { }
+        protected override void Initialize()
+        {
+            Init("HateAll");
+            EnglishDescription = "Makes all factions hate the Owner";
+        }
 
-		protected override void Initialize()
-		{
-			Init("HateAll");
-			EnglishDescription = "Makes all factions hate the Owner";
-		}
+        public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+        {
+            ((Character)trigger.Args.Target).Reputations.HateAll();
+            trigger.Reply("Everyone dispises of {0} now.", trigger.Args.Target);
+        }
 
-		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
-		{
-			((Character)trigger.Args.Target).Reputations.HateAll();
-			trigger.Reply("Everyone dispises of {0} now.", trigger.Args.Target);
-		}
-
-		public override ObjectTypeCustom TargetTypes
-		{
-			get
-			{
-				return ObjectTypeCustom.Player;
-			}
-		}
-	}
+        public override ObjectTypeCustom TargetTypes
+        {
+            get
+            {
+                return ObjectTypeCustom.Player;
+            }
+        }
+    }
 }

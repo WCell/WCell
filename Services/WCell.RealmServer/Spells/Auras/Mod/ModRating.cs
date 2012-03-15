@@ -18,23 +18,23 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
-	/// <summary>
-	/// Modifies CombatRatings
-	/// </summary>
-	public class ModRatingHandler : AuraEffectHandler
-	{
-		protected override void Apply()
-		{
-			var owner = m_aura.Auras.Owner as Character;
-			if (owner != null)
-				owner.ModCombatRating(m_spellEffect.MiscBitSet, EffectValue);
-		}
+    /// <summary>
+    /// Modifies CombatRatings
+    /// </summary>
+    public class ModRatingHandler : AuraEffectHandler
+    {
+        protected override void Apply()
+        {
+            var owner = m_aura.Auras.Owner as Character;
+            if (owner != null)
+                owner.ModCombatRating(m_spellEffect.MiscBitSet, EffectValue);
+        }
 
-		protected override void Remove(bool cancelled)
-		{
-			var owner = m_aura.Auras.Owner as Character;
-			if (owner != null)
-				owner.ModCombatRating(m_spellEffect.MiscBitSet, -EffectValue);
-		}
-	}
+        protected override void Remove(bool cancelled)
+        {
+            var owner = m_aura.Auras.Owner as Character;
+            if (owner != null)
+                owner.ModCombatRating(m_spellEffect.MiscBitSet, -EffectValue);
+        }
+    }
 };

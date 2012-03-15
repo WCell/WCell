@@ -4,7 +4,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 {
     public class GODestructibleBuildingEntry : GOEntry
     {
-		private static readonly Logger sLog = LogManager.GetCurrentClassLogger();
+        private static readonly Logger sLog = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// Intact: Num hits
@@ -46,10 +46,12 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         {
             get { return Fields[6]; }
         }
+
         public int Field103_7
         {
             get { return Fields[7]; }
         }
+
         public int Field103_8
         {
             get { return Fields[8]; }
@@ -59,18 +61,22 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         {
             get { return Fields[9]; }
         }
+
         public int Field103_10
         {
             get { return Fields[10]; }
         }
+
         public int Field103_11
         {
             get { return Fields[11]; }
         }
+
         public int Field103_12
         {
             get { return Fields[12]; }
         }
+
         public int Field103_13
         {
             get { return Fields[13]; }
@@ -116,6 +122,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         {
             get { return Fields[20]; }
         }
+
         public int Field103_21
         {
             get { return Fields[21]; }
@@ -130,5 +137,5 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         {
             get { return Fields[23]; }
         }
-	}
+    }
 }

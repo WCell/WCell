@@ -1,8 +1,9 @@
 ﻿namespace WCell.RealmServer.Spells.Auras.Mod
 {
-    class ModArmorByPercentOfIntellectHandler : AuraEffectHandler
+    internal class ModArmorByPercentOfIntellectHandler : AuraEffectHandler
     {
         private int value;
+
         protected override void Apply()
         {
             value = (Owner.Intellect * 100 + 50) / EffectValue;

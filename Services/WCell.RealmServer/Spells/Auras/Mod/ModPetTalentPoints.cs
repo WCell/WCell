@@ -10,36 +10,36 @@ namespace WCell.RealmServer.Spells.Auras.Mod
     public class ModPetTalentPointsHandler : AuraEffectHandler
     {
         protected internal override void CheckInitialize(SpellCast creatingCast, ObjectReference casterReference, Unit target, ref SpellFailedReason failReason)
-		{
-			if (!(target is Character)) return;
+        {
+            if (!(target is Character)) return;
             var chr = (Character)target;
             if (chr.Class != ClassId.Hunter)
             {
                 failReason = SpellFailedReason.BadTargets;
             }
-		}
+        }
 
         protected override void Apply()
-		{
+        {
             var chr = m_aura.Auras.Owner as Character;
-            if (chr != null) 
-		    {
-				chr.PetBonusTalentPoints += BonusPoints;
-		    }
-		}
+            if (chr != null)
+            {
+                chr.PetBonusTalentPoints += BonusPoints;
+            }
+        }
 
-		protected override void Remove(bool cancelled)
-		{
-		    var chr = m_aura.Auras.Owner as Character;
-		    if (chr != null)
-		    {
-				chr.PetBonusTalentPoints -= BonusPoints;
-		    }
-		}
+        protected override void Remove(bool cancelled)
+        {
+            var chr = m_aura.Auras.Owner as Character;
+            if (chr != null)
+            {
+                chr.PetBonusTalentPoints -= BonusPoints;
+            }
+        }
 
-    	public int BonusPoints
-    	{
-			get { return m_aura.Spell.Effects[0].BasePoints + 1; }
-    	}
+        public int BonusPoints
+        {
+            get { return m_aura.Spell.Effects[0].BasePoints + 1; }
+        }
     }
 }

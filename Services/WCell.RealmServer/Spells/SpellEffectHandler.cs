@@ -21,236 +21,245 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells
 {
-	/// <summary>
-	/// A SpellEffectHandler handles one SpellEffect during a SpellCast. 
-	/// Supplied Caster and Target arguments will be checked against the Handler's CasterType and TargetType 
-	/// properties before the Application of the Effect begins.
-	/// The following methods will be called after another, on each of a Spell's SpellEffects:
-	/// Before starting:
-	/// 1. Init - Initializes all targets (by default adds standard targets) and checks whether this effect can succeed
-	/// When performing:
-	/// 2. CheckValidTarget - Checks whether this effect may be applied upon the given target
-	/// 3. Apply - If none of the effects failed, applies the effect (by default to all targets)
-	/// After performing:
-	/// 4. Cleanup - Cleans up everything that is not wanted anymore
-	/// </summary>
-	public abstract class SpellEffectHandler
-	{
-		private static readonly Logger log = LogManager.GetCurrentClassLogger();
+    /// <summary>
+    /// A SpellEffectHandler handles one SpellEffect during a SpellCast.
+    /// Supplied Caster and Target arguments will be checked against the Handler's CasterType and TargetType
+    /// properties before the Application of the Effect begins.
+    /// The following methods will be called after another, on each of a Spell's SpellEffects:
+    /// Before starting:
+    /// 1. Init - Initializes all targets (by default adds standard targets) and checks whether this effect can succeed
+    /// When performing:
+    /// 2. CheckValidTarget - Checks whether this effect may be applied upon the given target
+    /// 3. Apply - If none of the effects failed, applies the effect (by default to all targets)
+    /// After performing:
+    /// 4. Cleanup - Cleans up everything that is not wanted anymore
+    /// </summary>
+    public abstract class SpellEffectHandler
+    {
+        private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-		public readonly SpellEffect Effect;
+        public readonly SpellEffect Effect;
 
-		protected SpellCast m_cast;
-		internal protected SpellTargetCollection m_targets;
+        protected SpellCast m_cast;
+        internal protected SpellTargetCollection m_targets;
 
-		private int CurrentTargetNo;
+        private int CurrentTargetNo;
 
-		protected SpellEffectHandler(SpellCast cast, SpellEffect effect)
-		{
-			m_cast = cast;
-			Effect = effect;
-		}
+        protected SpellEffectHandler(SpellCast cast, SpellEffect effect)
+        {
+            m_cast = cast;
+            Effect = effect;
+        }
 
-		#region Properties
-		public SpellCast Cast
-		{
-			get { return m_cast; }
-		}
+        #region Properties
 
-		public SpellTargetCollection Targets
-		{
-			get { return m_targets; }
-		}
+        public SpellCast Cast
+        {
+            get { return m_cast; }
+        }
 
-		/// <summary>
-		/// whether Targets need to be initialized
-		/// </summary>
-		public virtual bool HasOwnTargets
-		{
-			get { return Effect.HasTargets; }
-		}
+        public SpellTargetCollection Targets
+        {
+            get { return m_targets; }
+        }
 
-		/// <summary>
-		/// The required Type for the Caster
-		/// </summary>
-		public virtual ObjectTypes CasterType
-		{
-			get { return ObjectTypes.None; }
-		}
+        /// <summary>
+        /// whether Targets need to be initialized
+        /// </summary>
+        public virtual bool HasOwnTargets
+        {
+            get { return Effect.HasTargets; }
+        }
 
-		/// <summary>
-		/// The required Type for all Targets
-		/// </summary>
-		public virtual ObjectTypes TargetType
-		{
-			get { return ObjectTypes.All; }
-		}
-		#endregion
+        /// <summary>
+        /// The required Type for the Caster
+        /// </summary>
+        public virtual ObjectTypes CasterType
+        {
+            get { return ObjectTypes.None; }
+        }
 
-		#region Validate & Initialize
-		internal SpellFailedReason ValidateAndInitializeTarget(WorldObject target)
-		{
-			if (!target.CheckObjType(TargetType))
-			{
-				return SpellFailedReason.BadTargets;
-			}
+        /// <summary>
+        /// The required Type for all Targets
+        /// </summary>
+        public virtual ObjectTypes TargetType
+        {
+            get { return ObjectTypes.All; }
+        }
 
-			return InitializeTarget(target);
-		}
+        #endregion Properties
 
-		/// <summary>
-		/// Initializes this effect and checks whether the effect can be casted *before* Targets have been initialized.
-		/// Use CheckValidTarget to validate Targets.
-		/// </summary>
-		public virtual SpellFailedReason Initialize()
-		{
-			return SpellFailedReason.Ok;
-		}
+        #region Validate & Initialize
 
-		/// <summary>
-		/// This method is called on every target during CheckApply(). 
-		/// Invalid targets either lead to Spell-Fail or the target being removed from Target-List.
-		/// </summary>
-		/// <returns>whether the given target is valid.</returns>
-		public virtual SpellFailedReason InitializeTarget(WorldObject target)
-		{
-			return SpellFailedReason.Ok;
-		}
-		#endregion
+        internal SpellFailedReason ValidateAndInitializeTarget(WorldObject target)
+        {
+            if (!target.CheckObjType(TargetType))
+            {
+                return SpellFailedReason.BadTargets;
+            }
 
-		/// <summary>
-		/// Apply the effect (by default to all targets of the targettype)
-		/// Returns the reason for why it went wrong or SpellFailedReason.None
-		/// </summary>
-		public virtual void Apply()
-		{
-			if (m_targets != null)
-			{
-				for (CurrentTargetNo = 0; CurrentTargetNo < m_targets.Count; CurrentTargetNo++)
-				{
-					var target = m_targets[CurrentTargetNo];
-					if (!target.IsInContext)
-					{
-						continue;
-					}
-					Apply(target);
-					if (m_cast == null)
-					{
-						// spell got cancelled
-						return;
-					}
-				}
-			}
-			else
-			{
-				log.Warn("SpellEffectHandler has no targets, but Apply() is not overridden: " + this);
-			}
-		}
+            return InitializeTarget(target);
+        }
 
-		// needed?
-		#region Channeling
+        /// <summary>
+        /// Initializes this effect and checks whether the effect can be casted *before* Targets have been initialized.
+        /// Use CheckValidTarget to validate Targets.
+        /// </summary>
+        public virtual SpellFailedReason Initialize()
+        {
+            return SpellFailedReason.Ok;
+        }
 
-		protected internal void OnChannelTick()
-		{
-			Apply();
-		}
+        /// <summary>
+        /// This method is called on every target during CheckApply().
+        /// Invalid targets either lead to Spell-Fail or the target being removed from Target-List.
+        /// </summary>
+        /// <returns>whether the given target is valid.</returns>
+        public virtual SpellFailedReason InitializeTarget(WorldObject target)
+        {
+            return SpellFailedReason.Ok;
+        }
 
-		protected internal void OnChannelClose(bool cancelled)
-		{
-			Cleanup();
-		}
+        #endregion Validate & Initialize
 
-		#endregion
+        /// <summary>
+        /// Apply the effect (by default to all targets of the targettype)
+        /// Returns the reason for why it went wrong or SpellFailedReason.None
+        /// </summary>
+        public virtual void Apply()
+        {
+            if (m_targets != null)
+            {
+                for (CurrentTargetNo = 0; CurrentTargetNo < m_targets.Count; CurrentTargetNo++)
+                {
+                    var target = m_targets[CurrentTargetNo];
+                    if (!target.IsInContext)
+                    {
+                        continue;
+                    }
+                    Apply(target);
+                    if (m_cast == null)
+                    {
+                        // spell got cancelled
+                        return;
+                    }
+                }
+            }
+            else
+            {
+                log.Warn("SpellEffectHandler has no targets, but Apply() is not overridden: " + this);
+            }
+        }
 
-		#region Protected
-		/// <summary>
-		/// Apply the effect to a single target
-		/// </summary>
-		/// <param name="target"></param>
-		protected virtual void Apply(WorldObject target) { }
+        // needed?
 
-		/// <summary>
-		/// Cleans up (if there is anything to clean)
-		/// </summary>
-		internal protected virtual void Cleanup()
-		{
-			m_cast = null;
-			if (m_targets != null)
-			{
-				m_targets.Dispose();
-				m_targets = null;
-			}
-		}
+        #region Channeling
 
-		/// <summary>
-		/// Called automatically after Effect creation, to check for valid caster type: 
-		/// If invalid, a developer allowed a spell to be casted from the wrong context (or not?)
-		/// </summary>
-		protected internal void CheckCasterType(ref SpellFailedReason failReason)
-		{
-			if (CasterType != ObjectTypes.None && (m_cast.CasterObject == null || !m_cast.CasterObject.CheckObjType(CasterType)))
-			{
-				failReason = SpellFailedReason.Error;
-				log.Warn("Invalid caster {0} for spell {1} in EffectHandler: {2}", Effect.Spell, m_cast.CasterObject, this);
-			}
-		}
+        protected internal void OnChannelTick()
+        {
+            Apply();
+        }
 
-		/// <summary>
-		/// Used for one-shot damage and healing effects
-		/// </summary>
-		public int CalcDamageValue()
-		{
-			var val = CalcEffectValue();
-			if (CurrentTargetNo > 0)
-			{
-				// chain target damage comes with diminishing returns
-				return Effect.GetMultipliedValue(m_cast.CasterUnit, val, CurrentTargetNo);
-			}
-			return val;
-		}
+        protected internal void OnChannelClose(bool cancelled)
+        {
+            Cleanup();
+        }
 
-		/// <summary>
-		/// Used for one-shot damage and healing effects
-		/// </summary>
-		public int CalcDamageValue(int targetNo)
-		{
-			var val = CalcEffectValue();
-			if (targetNo > 0)
-			{
-				// chain target damage comes with diminishing returns
-				return Effect.GetMultipliedValue(m_cast.CasterUnit, val, targetNo);
-			}
-			return val;
-		}
+        #endregion Channeling
 
-		public int CalcEffectValue()
-		{
-			if (m_cast.TriggerEffect != null && m_cast.TriggerEffect.OverrideEffectValue)
-			{
-				return m_cast.TriggerEffect.CalcEffectValue(m_cast.CasterReference);
-			}
-			return Effect.CalcEffectValue(m_cast.CasterReference);
-		}
+        #region Protected
 
-		public float GetRadius()
-		{
-			return Effect.GetRadius(m_cast.CasterReference);
-		}
-		#endregion
+        /// <summary>
+        /// Apply the effect to a single target
+        /// </summary>
+        /// <param name="target"></param>
+        protected virtual void Apply(WorldObject target) { }
 
-		#region Debugging / Testing
-		public void SendEffectInfoToCaster(string extra)
-		{
-			if (m_cast.CasterChar != null)
-			{
-				m_cast.CasterChar.SendSystemMessage("SpellEffect {0} {1}", GetType(), extra);
-			}
-		}
-		#endregion
+        /// <summary>
+        /// Cleans up (if there is anything to clean)
+        /// </summary>
+        internal protected virtual void Cleanup()
+        {
+            m_cast = null;
+            if (m_targets != null)
+            {
+                m_targets.Dispose();
+                m_targets = null;
+            }
+        }
 
-		public override string ToString()
-		{
-			return GetType().Name + " - Spell: " + Effect.Spell.FullName + (m_cast != null ? (", Caster: " + m_cast.CasterObject) : "");
-		}
-	}
+        /// <summary>
+        /// Called automatically after Effect creation, to check for valid caster type:
+        /// If invalid, a developer allowed a spell to be casted from the wrong context (or not?)
+        /// </summary>
+        protected internal void CheckCasterType(ref SpellFailedReason failReason)
+        {
+            if (CasterType != ObjectTypes.None && (m_cast.CasterObject == null || !m_cast.CasterObject.CheckObjType(CasterType)))
+            {
+                failReason = SpellFailedReason.Error;
+                log.Warn("Invalid caster {0} for spell {1} in EffectHandler: {2}", Effect.Spell, m_cast.CasterObject, this);
+            }
+        }
+
+        /// <summary>
+        /// Used for one-shot damage and healing effects
+        /// </summary>
+        public int CalcDamageValue()
+        {
+            var val = CalcEffectValue();
+            if (CurrentTargetNo > 0)
+            {
+                // chain target damage comes with diminishing returns
+                return Effect.GetMultipliedValue(m_cast.CasterUnit, val, CurrentTargetNo);
+            }
+            return val;
+        }
+
+        /// <summary>
+        /// Used for one-shot damage and healing effects
+        /// </summary>
+        public int CalcDamageValue(int targetNo)
+        {
+            var val = CalcEffectValue();
+            if (targetNo > 0)
+            {
+                // chain target damage comes with diminishing returns
+                return Effect.GetMultipliedValue(m_cast.CasterUnit, val, targetNo);
+            }
+            return val;
+        }
+
+        public int CalcEffectValue()
+        {
+            if (m_cast.TriggerEffect != null && m_cast.TriggerEffect.OverrideEffectValue)
+            {
+                return m_cast.TriggerEffect.CalcEffectValue(m_cast.CasterReference);
+            }
+            return Effect.CalcEffectValue(m_cast.CasterReference);
+        }
+
+        public float GetRadius()
+        {
+            return Effect.GetRadius(m_cast.CasterReference);
+        }
+
+        #endregion Protected
+
+        #region Debugging / Testing
+
+        public void SendEffectInfoToCaster(string extra)
+        {
+            if (m_cast.CasterChar != null)
+            {
+                m_cast.CasterChar.SendSystemMessage("SpellEffect {0} {1}", GetType(), extra);
+            }
+        }
+
+        #endregion Debugging / Testing
+
+        public override string ToString()
+        {
+            return GetType().Name + " - Spell: " + Effect.Spell.FullName + (m_cast != null ? (", Caster: " + m_cast.CasterObject) : "");
+        }
+    }
 }

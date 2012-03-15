@@ -22,7 +22,7 @@
 
 //            public bool Equals(BaseClass x, BaseClass y)
 //            {
-//                return x.ClassID == y.ClassID; 
+//                return x.ClassID == y.ClassID;
 //            }
 
 //            public int GetHashCode(BaseClass obj)

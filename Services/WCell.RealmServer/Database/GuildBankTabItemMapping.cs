@@ -8,11 +8,11 @@ namespace WCell.RealmServer.Database
     public class GuildBankTabItemMapping : ActiveRecordBase<GuildBankTabItemMapping>
     {
         [PrimaryKey(PrimaryKeyType.Assigned)]
-		public long Guid
-		{
-			get;
-			set;
-		}
+        public long Guid
+        {
+            get;
+            set;
+        }
 
         [BelongsTo("Items")]
         public GuildBankTab BankTab
@@ -30,8 +30,8 @@ namespace WCell.RealmServer.Database
 
         [Version(UnsavedValue = "null")]
         public DateTime? LastModifiedOn
-        { 
-            get; 
+        {
+            get;
             set;
         }
     }

@@ -3,9 +3,9 @@ using WCell.Core.Database;
 
 namespace WCell.RealmServer.Battlegrounds.Arenas
 {
-	[ActiveRecord("ArenaTeamStats", Access = PropertyAccess.Property)]
-	public partial class ArenaTeamStats : WCellRecord<ArenaTeamStats>
-	{
+    [ActiveRecord("ArenaTeamStats", Access = PropertyAccess.Property)]
+    public partial class ArenaTeamStats : WCellRecord<ArenaTeamStats>
+    {
         [PrimaryKey(PrimaryKeyType.Assigned, "ArenaTeamId")]
         private int _teamId
         {
@@ -30,6 +30,5 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
 
         [Field("Rank", NotNull = true)]
         private int _rank;
-
     }
 }

@@ -27,178 +27,177 @@ using WCell.Util.Variables;
 
 namespace WCell.RealmServer.UpdateFields
 {
-	/// <summary>
-	/// Similar to an UpdateMask, it filters out the bits only needed for the player
-	/// </summary>
-	public static class UpdateFieldHandler
-	{
-		/// <summary>
-		/// Handles writing of Dynamic UpdateFields. Be sure to definitely
-		/// *always* write 4 bytes when a Handler is called.
-		/// </summary>
-		/// <param name="obj"></param>
-		/// <param name="receiver"></param>
-		/// <param name="packet"></param>
-		public delegate void DynamicUpdateFieldHandler(ObjectBase obj, Character receiver, UpdatePacket packet);
+    /// <summary>
+    /// Similar to an UpdateMask, it filters out the bits only needed for the player
+    /// </summary>
+    public static class UpdateFieldHandler
+    {
+        /// <summary>
+        /// Handles writing of Dynamic UpdateFields. Be sure to definitely
+        /// *always* write 4 bytes when a Handler is called.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="receiver"></param>
+        /// <param name="packet"></param>
+        public delegate void DynamicUpdateFieldHandler(ObjectBase obj, Character receiver, UpdatePacket packet);
 
-		[NotVariable]
-		public static DynamicUpdateFieldHandler[] DynamicObjectFieldHandlers;
+        [NotVariable]
+        public static DynamicUpdateFieldHandler[] DynamicObjectFieldHandlers;
 
-		[NotVariable]
-		public static DynamicUpdateFieldHandler[] DynamicItemFieldHandlers;
+        [NotVariable]
+        public static DynamicUpdateFieldHandler[] DynamicItemFieldHandlers;
 
-		[NotVariable]
-		public static DynamicUpdateFieldHandler[] DynamicContainerFieldHandlers;
+        [NotVariable]
+        public static DynamicUpdateFieldHandler[] DynamicContainerFieldHandlers;
 
-		[NotVariable]
-		public static DynamicUpdateFieldHandler[] DynamicDOFieldHandlers;
+        [NotVariable]
+        public static DynamicUpdateFieldHandler[] DynamicDOFieldHandlers;
 
-		[NotVariable]
-		public static DynamicUpdateFieldHandler[] DynamicGOHandlers;
+        [NotVariable]
+        public static DynamicUpdateFieldHandler[] DynamicGOHandlers;
 
-		[NotVariable]
-		public static DynamicUpdateFieldHandler[] DynamicCorpseHandlers;
+        [NotVariable]
+        public static DynamicUpdateFieldHandler[] DynamicCorpseHandlers;
 
-		[NotVariable]
-		public static DynamicUpdateFieldHandler[] DynamicUnitHandlers;
+        [NotVariable]
+        public static DynamicUpdateFieldHandler[] DynamicUnitHandlers;
 
-		[NotVariable]
-		public static DynamicUpdateFieldHandler[] DynamicPlayerHandlers;
+        [NotVariable]
+        public static DynamicUpdateFieldHandler[] DynamicPlayerHandlers;
 
-		[Initialization(InitializationPass.First)]
-		public static void Init()
-		{
-			UpdateFieldMgr.Init();
+        [Initialization(InitializationPass.First)]
+        public static void Init()
+        {
+            UpdateFieldMgr.Init();
 
-			DynamicObjectFieldHandlers = new DynamicUpdateFieldHandler[UpdateFieldMgr.Get(ObjectTypeId.Object).TotalLength];
-			DynamicItemFieldHandlers = new DynamicUpdateFieldHandler[UpdateFieldMgr.Get(ObjectTypeId.Item).TotalLength];
-			DynamicContainerFieldHandlers = new DynamicUpdateFieldHandler[UpdateFieldMgr.Get(ObjectTypeId.Container).TotalLength];
-			DynamicDOFieldHandlers = new DynamicUpdateFieldHandler[UpdateFieldMgr.Get(ObjectTypeId.DynamicObject).TotalLength];
-			DynamicGOHandlers = new DynamicUpdateFieldHandler[UpdateFieldMgr.Get(ObjectTypeId.GameObject).TotalLength];
-			DynamicCorpseHandlers = new DynamicUpdateFieldHandler[UpdateFieldMgr.Get(ObjectTypeId.Corpse).TotalLength];
-			DynamicUnitHandlers = new DynamicUpdateFieldHandler[UpdateFieldMgr.Get(ObjectTypeId.Unit).TotalLength];
-			DynamicPlayerHandlers = new DynamicUpdateFieldHandler[UpdateFieldMgr.Get(ObjectTypeId.Player).TotalLength];
+            DynamicObjectFieldHandlers = new DynamicUpdateFieldHandler[UpdateFieldMgr.Get(ObjectTypeId.Object).TotalLength];
+            DynamicItemFieldHandlers = new DynamicUpdateFieldHandler[UpdateFieldMgr.Get(ObjectTypeId.Item).TotalLength];
+            DynamicContainerFieldHandlers = new DynamicUpdateFieldHandler[UpdateFieldMgr.Get(ObjectTypeId.Container).TotalLength];
+            DynamicDOFieldHandlers = new DynamicUpdateFieldHandler[UpdateFieldMgr.Get(ObjectTypeId.DynamicObject).TotalLength];
+            DynamicGOHandlers = new DynamicUpdateFieldHandler[UpdateFieldMgr.Get(ObjectTypeId.GameObject).TotalLength];
+            DynamicCorpseHandlers = new DynamicUpdateFieldHandler[UpdateFieldMgr.Get(ObjectTypeId.Corpse).TotalLength];
+            DynamicUnitHandlers = new DynamicUpdateFieldHandler[UpdateFieldMgr.Get(ObjectTypeId.Unit).TotalLength];
+            DynamicPlayerHandlers = new DynamicUpdateFieldHandler[UpdateFieldMgr.Get(ObjectTypeId.Player).TotalLength];
 
-			InitHandlers();
+            InitHandlers();
 
-			Inherit(DynamicItemFieldHandlers, DynamicObjectFieldHandlers);
-			Inherit(DynamicContainerFieldHandlers, DynamicItemFieldHandlers);
-			Inherit(DynamicDOFieldHandlers, DynamicObjectFieldHandlers);
-			Inherit(DynamicGOHandlers, DynamicObjectFieldHandlers);
-			Inherit(DynamicCorpseHandlers, DynamicObjectFieldHandlers);
-			Inherit(DynamicUnitHandlers, DynamicObjectFieldHandlers);
-			Inherit(DynamicPlayerHandlers, DynamicUnitHandlers);
-		}
+            Inherit(DynamicItemFieldHandlers, DynamicObjectFieldHandlers);
+            Inherit(DynamicContainerFieldHandlers, DynamicItemFieldHandlers);
+            Inherit(DynamicDOFieldHandlers, DynamicObjectFieldHandlers);
+            Inherit(DynamicGOHandlers, DynamicObjectFieldHandlers);
+            Inherit(DynamicCorpseHandlers, DynamicObjectFieldHandlers);
+            Inherit(DynamicUnitHandlers, DynamicObjectFieldHandlers);
+            Inherit(DynamicPlayerHandlers, DynamicUnitHandlers);
+        }
 
-		private static void Inherit(DynamicUpdateFieldHandler[] handlers, DynamicUpdateFieldHandler[] baseHandlers)
-		{
-			Array.Copy(baseHandlers, 0, handlers, 0, baseHandlers.Length);
-		}
+        private static void Inherit(DynamicUpdateFieldHandler[] handlers, DynamicUpdateFieldHandler[] baseHandlers)
+        {
+            Array.Copy(baseHandlers, 0, handlers, 0, baseHandlers.Length);
+        }
 
-		private static void InitHandlers()
-		{
-			DynamicGOHandlers[(int)GameObjectFields.DYNAMIC] = WriteGODynamic;
-			DynamicCorpseHandlers[(int)CorpseFields.DYNAMIC_FLAGS] = WriteCorpseDynFlags;
-			DynamicUnitHandlers[(int)UnitFields.NPC_FLAGS] = WriteNPCFlags;
-			DynamicUnitHandlers[(int)UnitFields.DYNAMIC_FLAGS] = WriteUnitDynFlags;
-			DynamicUnitHandlers[(int)UnitFields.AURASTATE] = WriteAuraStateFlags;
-		}
+        private static void InitHandlers()
+        {
+            DynamicGOHandlers[(int)GameObjectFields.DYNAMIC] = WriteGODynamic;
+            DynamicCorpseHandlers[(int)CorpseFields.DYNAMIC_FLAGS] = WriteCorpseDynFlags;
+            DynamicUnitHandlers[(int)UnitFields.NPC_FLAGS] = WriteNPCFlags;
+            DynamicUnitHandlers[(int)UnitFields.DYNAMIC_FLAGS] = WriteUnitDynFlags;
+            DynamicUnitHandlers[(int)UnitFields.AURASTATE] = WriteAuraStateFlags;
+        }
 
-		private static void WriteAuraStateFlags(ObjectBase obj, Character reciever, UpdatePacket packet)
-		{
-			var unit = (Unit)obj;
-			Spell immolateAura = unit.GetStrongestImmolate();
-			//if there is a immolate aura on this object and the reciver casted it we can send that aurastate to him
-			if (immolateAura != null && unit.Auras[immolateAura].SpellCast.CasterChar == reciever)
-			{
-				packet.Write((uint)(unit.AuraState | AuraStateMask.Immolate));
-			}
-			else
-				packet.Write((uint)(unit.AuraState & ~AuraStateMask.Immolate));
-		}
+        private static void WriteAuraStateFlags(ObjectBase obj, Character reciever, UpdatePacket packet)
+        {
+            var unit = (Unit)obj;
+            Spell immolateAura = unit.GetStrongestImmolate();
+            //if there is a immolate aura on this object and the reciver casted it we can send that aurastate to him
+            if (immolateAura != null && unit.Auras[immolateAura].SpellCast.CasterChar == reciever)
+            {
+                packet.Write((uint)(unit.AuraState | AuraStateMask.Immolate));
+            }
+            else
+                packet.Write((uint)(unit.AuraState & ~AuraStateMask.Immolate));
+        }
 
-		private static void WriteNPCFlags(ObjectBase obj, Character chr, UpdatePacket packet)
-		{
-			var flags = (NPCFlags)obj.GetUInt32(UnitFields.NPC_FLAGS);
-			if (obj is NPC)
-			{
-				var npc = (NPC)obj;
-				if (npc.IsTrainer && !npc.TrainerEntry.CanTrain(chr))
-				{
-					// Cannot talk to this Guy
-					flags = 0;
-				}
-			}
-			packet.Write((uint)flags);
-		}
+        private static void WriteNPCFlags(ObjectBase obj, Character chr, UpdatePacket packet)
+        {
+            var flags = (NPCFlags)obj.GetUInt32(UnitFields.NPC_FLAGS);
+            if (obj is NPC)
+            {
+                var npc = (NPC)obj;
+                if (npc.IsTrainer && !npc.TrainerEntry.CanTrain(chr))
+                {
+                    // Cannot talk to this Guy
+                    flags = 0;
+                }
+            }
+            packet.Write((uint)flags);
+        }
 
-		private static void WriteGODynamic(ObjectBase obj, Character receiver, UpdatePacket packet)
-		{
-			var go = (GameObject)obj;
-			if (go is Transport || !go.Flags.HasAnyFlag(GameObjectFlags.ConditionalInteraction))
-			{
-				packet.Write(obj.GetUInt32(GameObjectFields.DYNAMIC));
-			}
-			else
-			{
-				GODynamicLowFlags lowFlags;
-				if (go.CanBeUsedBy(receiver))
-				{
-					lowFlags = GODynamicLowFlags.Clickable | GODynamicLowFlags.Sparkle;
-				}
-				else
-				{
-					lowFlags = GODynamicLowFlags.None;
-				}
-				packet.Write((ushort)lowFlags);
-				packet.Write(ushort.MaxValue);
-			}
-		}
+        private static void WriteGODynamic(ObjectBase obj, Character receiver, UpdatePacket packet)
+        {
+            var go = (GameObject)obj;
+            if (go is Transport || !go.Flags.HasAnyFlag(GameObjectFlags.ConditionalInteraction))
+            {
+                packet.Write(obj.GetUInt32(GameObjectFields.DYNAMIC));
+            }
+            else
+            {
+                GODynamicLowFlags lowFlags;
+                if (go.CanBeUsedBy(receiver))
+                {
+                    lowFlags = GODynamicLowFlags.Clickable | GODynamicLowFlags.Sparkle;
+                }
+                else
+                {
+                    lowFlags = GODynamicLowFlags.None;
+                }
+                packet.Write((ushort)lowFlags);
+                packet.Write(ushort.MaxValue);
+            }
+        }
 
-		private static void WriteUnitDynFlags(ObjectBase obj, Character receiver, UpdatePacket packet)
-		{
-			var unit = (Unit)obj;
-			//var flags = UnitDynamicFlags.None;
-			var flags = unit.DynamicFlags;
+        private static void WriteUnitDynFlags(ObjectBase obj, Character receiver, UpdatePacket packet)
+        {
+            var unit = (Unit)obj;
+            //var flags = UnitDynamicFlags.None;
+            var flags = unit.DynamicFlags;
 
-			var loot = obj.Loot;
-			if (loot != null && receiver.LooterEntry.MayLoot(loot) && !unit.IsAlive)
-			{
-				flags |= UnitDynamicFlags.Lootable;
-			}
-			else
-			{
-				var firstAttacker = unit.FirstAttacker;
-				if (firstAttacker != null)
-				{
-					if ((firstAttacker == receiver ||
-						 firstAttacker.IsAlliedWith(receiver)) &&
-						unit.IsAlive)
-					{
-						flags |= UnitDynamicFlags.TaggedByMe;
-					}
-					else
-					{
-						flags |= UnitDynamicFlags.TaggedByOther;
-					}
-				}
-			}
+            var loot = obj.Loot;
+            if (loot != null && receiver.LooterEntry.MayLoot(loot) && !unit.IsAlive)
+            {
+                flags |= UnitDynamicFlags.Lootable;
+            }
+            else
+            {
+                var firstAttacker = unit.FirstAttacker;
+                if (firstAttacker != null)
+                {
+                    if ((firstAttacker == receiver ||
+                         firstAttacker.IsAlliedWith(receiver)) &&
+                        unit.IsAlive)
+                    {
+                        flags |= UnitDynamicFlags.TaggedByMe;
+                    }
+                    else
+                    {
+                        flags |= UnitDynamicFlags.TaggedByOther;
+                    }
+                }
+            }
 
-			// TODO: TrackUnit, SpecialInfo
-			packet.Write((uint)flags);
-		}
+            // TODO: TrackUnit, SpecialInfo
+            packet.Write((uint)flags);
+        }
 
-
-		private static void WriteCorpseDynFlags(ObjectBase obj, Character receiver, UpdatePacket packet)
-		{
-			if (((Corpse)obj).Owner == receiver)
-			{
-				packet.Write((uint)CorpseDynamicFlags.PlayerLootable);
-			}
-			else
-			{
-				packet.Write((uint)CorpseDynamicFlags.None);
-			}
-		}
-	}
+        private static void WriteCorpseDynFlags(ObjectBase obj, Character receiver, UpdatePacket packet)
+        {
+            if (((Corpse)obj).Owner == receiver)
+            {
+                packet.Write((uint)CorpseDynamicFlags.PlayerLootable);
+            }
+            else
+            {
+                packet.Write((uint)CorpseDynamicFlags.None);
+            }
+        }
+    }
 }

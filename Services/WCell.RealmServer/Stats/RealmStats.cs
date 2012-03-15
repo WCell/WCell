@@ -24,61 +24,61 @@ using WCell.Util;
 namespace WCell.RealmServer.Stats
 {
     public class RealmStats : Statistics<RealmStats>
-	{
-		[Initialization(InitializationPass.Tenth)]
-		public static void Init()
-		{
-			inited = true;
-			StatsPostDelay = s_interval;
-		}
+    {
+        [Initialization(InitializationPass.Tenth)]
+        public static void Init()
+        {
+            inited = true;
+            StatsPostDelay = s_interval;
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public static int StatsPostDelay
-		{
-			get { return instance != null ? instance.StatsPostInterval : 0; }
-			set
-			{
-				if (!inited)
-				{
-					s_interval = value;
-					return;
-				}
+        /// <summary>
+        ///
+        /// </summary>
+        public static int StatsPostDelay
+        {
+            get { return instance != null ? instance.StatsPostInterval : 0; }
+            set
+            {
+                if (!inited)
+                {
+                    s_interval = value;
+                    return;
+                }
 
-				if (instance == null)
-				{
-					if (value > 0)
-					{
-						// init
-						instance = new RealmStats();
-					}
-					else
-					{
-						return;
-					}
-				}
-				Instance.StatsPostInterval = value;
-			}
-		}
+                if (instance == null)
+                {
+                    if (value > 0)
+                    {
+                        // init
+                        instance = new RealmStats();
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+                Instance.StatsPostInterval = value;
+            }
+        }
 
-		public override void GetStats(ICollection<string> list)
-		{
-			list.Add(string.Format("+ Uptime: {0}", Utility.Format(RealmServer.RunTime)));
-			list.Add(string.Format("+ Players Online: {0} (Horde: {1}, Alliance: {2})",
-				World.CharacterCount, World.HordeCharCount, World.AllianceCharCount));
-			base.GetStats(list);
-			list.Add("+ Map Load Average: " + Map.LoadAvgStr);
-		}
+        public override void GetStats(ICollection<string> list)
+        {
+            list.Add(string.Format("+ Uptime: {0}", Utility.Format(RealmServer.RunTime)));
+            list.Add(string.Format("+ Players Online: {0} (Horde: {1}, Alliance: {2})",
+                World.CharacterCount, World.HordeCharCount, World.AllianceCharCount));
+            base.GetStats(list);
+            list.Add("+ Map Load Average: " + Map.LoadAvgStr);
+        }
 
-    	public override long TotalBytesSent
-    	{
-			get { return RealmClient.TotalBytesSent; }
-    	}
+        public override long TotalBytesSent
+        {
+            get { return RealmClient.TotalBytesSent; }
+        }
 
-    	public override long TotalBytesReceived
-    	{
-			get { return RealmClient.TotalBytesReceived; }
-    	}
+        public override long TotalBytesReceived
+        {
+            get { return RealmClient.TotalBytesReceived; }
+        }
     }
 }

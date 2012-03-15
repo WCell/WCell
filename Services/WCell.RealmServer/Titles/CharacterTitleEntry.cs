@@ -23,10 +23,9 @@ namespace WCell.RealmServer.Titles
         public override void Convert(byte[] rawData)
         {
             var characterTitleEntry = new CharacterTitleEntry();
-            characterTitleEntry.TitleId = (TitleId) GetUInt32(rawData, 0);
-			characterTitleEntry.Names = GetStrings(rawData, 2);
-            characterTitleEntry.BitIndex = (TitleBitId) GetUInt32(rawData, 36);
-
+            characterTitleEntry.TitleId = (TitleId)GetUInt32(rawData, 0);
+            characterTitleEntry.Names = GetStrings(rawData, 2);
+            characterTitleEntry.BitIndex = (TitleBitId)GetUInt32(rawData, 36);
 
             TitleMgr.CharacterTitleEntries[characterTitleEntry.TitleId] = characterTitleEntry;
         }

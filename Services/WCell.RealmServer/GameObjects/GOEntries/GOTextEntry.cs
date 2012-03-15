@@ -9,7 +9,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         /// </summary>
         public override uint PageId
         {
-            get { return (uint) Fields[0]; }
+            get { return (uint)Fields[0]; }
         }
 
         /// <summary>
@@ -20,14 +20,14 @@ namespace WCell.RealmServer.GameObjects.GOEntries
             get { return (ChatLanguage)Fields[1]; }
         }
 
-		/// <summary>
-		/// The PageTextMaterialId from PageTextMaterial.dbc
-		/// </summary>
-		public int PageTextMaterialId;
+        /// <summary>
+        /// The PageTextMaterialId from PageTextMaterial.dbc
+        /// </summary>
+        public int PageTextMaterialId;
 
-		protected internal override void InitEntry()
-		{
-			AllowMounted = Fields[3] > 0;
-		}
-	}
+        protected internal override void InitEntry()
+        {
+            AllowMounted = Fields[3] > 0;
+        }
+    }
 }

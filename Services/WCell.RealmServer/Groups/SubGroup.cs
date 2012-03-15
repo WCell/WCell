@@ -23,204 +23,204 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Groups
 {
-	public class SubGroup : IEnumerable<GroupMember>, ICharacterSet
-	{
-		public const int MaxMemberCount = 5;
+    public class SubGroup : IEnumerable<GroupMember>, ICharacterSet
+    {
+        public const int MaxMemberCount = 5;
 
-		protected internal IList<GroupMember> m_members;
-		private readonly Group m_group;
-		private readonly byte m_Id;
+        protected internal IList<GroupMember> m_members;
+        private readonly Group m_group;
+        private readonly byte m_Id;
 
-		#region Constructors
+        #region Constructors
 
-		public SubGroup(Group group, byte groupUnitId)
-		{
-			m_group = group;
-			m_Id = groupUnitId;
-			m_members = new List<GroupMember>(MaxMemberCount);
-		}
+        public SubGroup(Group group, byte groupUnitId)
+        {
+            m_group = group;
+            m_Id = groupUnitId;
+            m_members = new List<GroupMember>(MaxMemberCount);
+        }
 
-		#endregion
+        #endregion Constructors
 
-		#region Properties
+        #region Properties
 
-		public Group Group
-		{
-			get { return m_group; }
-		}
+        public Group Group
+        {
+            get { return m_group; }
+        }
 
-		/// <summary>
-		/// Whether this SubGroup has already the max amount of members
-		/// </summary>
-		public bool IsFull
-		{
-			get { return (m_members.Count == MaxMemberCount); }
-		}
+        /// <summary>
+        /// Whether this SubGroup has already the max amount of members
+        /// </summary>
+        public bool IsFull
+        {
+            get { return (m_members.Count == MaxMemberCount); }
+        }
 
-		public byte Id
-		{
-			get { return m_Id; }
-		}
+        public byte Id
+        {
+            get { return m_Id; }
+        }
 
-		public int CharacterCount
-		{
-			get { return m_members.Count; }
-		}
+        public int CharacterCount
+        {
+            get { return m_members.Count; }
+        }
 
-		public FactionGroup FactionGroup
-		{
-			get { return m_group.FactionGroup; }
-		}
+        public FactionGroup FactionGroup
+        {
+            get { return m_group.FactionGroup; }
+        }
 
-		public void ForeachCharacter(Action<Character> callback)
-		{
-			using (Group.SyncRoot.EnterReadLock())
-			{
-				foreach (var member in m_members)
-				{
-					var chr = member.Character;
-					if (chr != null)
-					{
-						callback(chr);
-					}
-				}
-			}
-		}
+        public void ForeachCharacter(Action<Character> callback)
+        {
+            using (Group.SyncRoot.EnterReadLock())
+            {
+                foreach (var member in m_members)
+                {
+                    var chr = member.Character;
+                    if (chr != null)
+                    {
+                        callback(chr);
+                    }
+                }
+            }
+        }
 
-		public void ForeachMember(Action<GroupMember> callback)
-		{
-			using (Group.SyncRoot.EnterReadLock())
-			{
-				foreach (var member in m_members)
-				{
-					callback(member);
-				}
-			}
-		}
+        public void ForeachMember(Action<GroupMember> callback)
+        {
+            using (Group.SyncRoot.EnterReadLock())
+            {
+                foreach (var member in m_members)
+                {
+                    callback(member);
+                }
+            }
+        }
 
-		public Character[] GetAllCharacters()
-		{
-			using (Group.SyncRoot.EnterReadLock())
-			{
-				var chrs = new Character[Members.Length];
-				var i = 0;
-				foreach (var member in m_members)
-				{
-					var chr = member.Character;
-					if (chr != null)
-					{
-						chrs[i++] = chr;
-					}
-				}
-				if (i < Members.Length)
-				{
-					Array.Resize(ref chrs, i);
-				}
-				return chrs;
-			}
-		}
+        public Character[] GetAllCharacters()
+        {
+            using (Group.SyncRoot.EnterReadLock())
+            {
+                var chrs = new Character[Members.Length];
+                var i = 0;
+                foreach (var member in m_members)
+                {
+                    var chr = member.Character;
+                    if (chr != null)
+                    {
+                        chrs[i++] = chr;
+                    }
+                }
+                if (i < Members.Length)
+                {
+                    Array.Resize(ref chrs, i);
+                }
+                return chrs;
+            }
+        }
 
-		public GroupMember[] Members
-		{
-			get { return m_members.ToArray(); }
-		}
+        public GroupMember[] Members
+        {
+            get { return m_members.ToArray(); }
+        }
 
-		#endregion
+        #endregion Properties
 
-		#region Methods
+        #region Methods
 
-		public bool AddMember(GroupMember member)
-		{
-			if (!IsFull)
-			{
-				m_members.Add(member);
-				member.SubGroup = this;
-				return true;
-			}
-			return false;
-		}
+        public bool AddMember(GroupMember member)
+        {
+            if (!IsFull)
+            {
+                m_members.Add(member);
+                member.SubGroup = this;
+                return true;
+            }
+            return false;
+        }
 
-		internal bool RemoveMember(GroupMember member)
-		{
-			if (m_members.Remove(member))
-			{
-				member.SubGroup = null;
-				return true;
-			}
-			return false;
-		}
+        internal bool RemoveMember(GroupMember member)
+        {
+            if (m_members.Remove(member))
+            {
+                member.SubGroup = null;
+                return true;
+            }
+            return false;
+        }
 
-		public GroupMember this[uint lowMemberId]
-		{
-			get
-			{
-				foreach (var member in m_members)
-				{
-					if (member.Id == lowMemberId)
-					{
-						return member;
-					}
-				}
-				return null;
-			}
-		}
+        public GroupMember this[uint lowMemberId]
+        {
+            get
+            {
+                foreach (var member in m_members)
+                {
+                    if (member.Id == lowMemberId)
+                    {
+                        return member;
+                    }
+                }
+                return null;
+            }
+        }
 
-		public GroupMember this[string name]
-		{
-			get
-			{
-				var capName = name.ToLower();
+        public GroupMember this[string name]
+        {
+            get
+            {
+                var capName = name.ToLower();
 
-				foreach (var member in m_members)
-				{
-					if (member.Name.ToLower() == capName)
-						return member;
-				}
-				return null;
-			}
-		}
+                foreach (var member in m_members)
+                {
+                    if (member.Name.ToLower() == capName)
+                        return member;
+                }
+                return null;
+            }
+        }
 
-		#endregion
+        #endregion Methods
 
-		#region IEnumerable
+        #region IEnumerable
 
-		public IEnumerator<GroupMember> GetEnumerator()
-		{
-			return m_members.GetEnumerator();
-		}
+        public IEnumerator<GroupMember> GetEnumerator()
+        {
+            return m_members.GetEnumerator();
+        }
 
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return m_members.GetEnumerator();
-		}
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return m_members.GetEnumerator();
+        }
 
-		#endregion
+        #endregion IEnumerable
 
-		/// <summary>
-		/// Send a packet to every group member except for the one specified.
-		/// </summary>
-		/// <param name="packet">the packet to send</param>
-		/// <param name="ignored">the member that won't receive the packet</param>
-		public void Send(RealmPacketOut packet, GroupMember ignored)
-		{
-			Character charMember;
-			ForeachMember(member =>
-			{
-				if (member != ignored)
-				{
-					charMember = member.Character;
+        /// <summary>
+        /// Send a packet to every group member except for the one specified.
+        /// </summary>
+        /// <param name="packet">the packet to send</param>
+        /// <param name="ignored">the member that won't receive the packet</param>
+        public void Send(RealmPacketOut packet, GroupMember ignored)
+        {
+            Character charMember;
+            ForeachMember(member =>
+            {
+                if (member != ignored)
+                {
+                    charMember = member.Character;
 
-					if (charMember != null)
-					{
-						charMember.Client.Send(packet);
-					}
-				}
-			});
-		}
+                    if (charMember != null)
+                    {
+                        charMember.Client.Send(packet);
+                    }
+                }
+            });
+        }
 
-		public void Send(RealmPacketOut packet)
-		{
-			Send(packet, null);
-		}
-	}
+        public void Send(RealmPacketOut packet)
+        {
+            Send(packet, null);
+        }
+    }
 }

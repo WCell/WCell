@@ -2,56 +2,56 @@ using WCell.RealmServer.Instances;
 
 namespace WCell.RealmServer.Global
 {
-	public class MapDifficultyEntry : MapDifficultyDBCEntry
-	{
-		public static readonly int HeroicResetTime = 86400;
-		public static readonly int MaxDungeonPlayerCount = 5;
-		
-		public MapTemplate Map;
+    public class MapDifficultyEntry : MapDifficultyDBCEntry
+    {
+        public static readonly int HeroicResetTime = 86400;
+        public static readonly int MaxDungeonPlayerCount = 5;
 
-		public bool IsHeroic;
+        public MapTemplate Map;
 
-		public bool IsRaid;
+        public bool IsHeroic;
 
-		/// <summary>
-		/// Softly bound instances can always be reset but you only x times per hour.
-		/// </summary>
-		public BindingType BindingType;
+        public bool IsRaid;
 
-		internal void Finalize(MapTemplate map)
-		{
-			Map = map;
-			if (ResetTime == 0)
-			{
-				ResetTime = map.DefaultResetTime;
-			}
+        /// <summary>
+        /// Softly bound instances can always be reset but you only x times per hour.
+        /// </summary>
+        public BindingType BindingType;
 
-			//if (Map.Type == MapType.Dungeon)
-			//{
-			//    IsHeroic = Index == 1;
-			//}
-			//else if (MaxPlayerCount != 0)
-			//{
-			//    // use heuristics to determine whether we have heroic difficulty:
-			//    foreach (var diff in Map.Difficulties)
-			//    {
-			//        if (diff != null && diff.MaxPlayerCount == MaxPlayerCount)
-			//        {
-			//            // Second entry with the same player count -> Probably heroic
-			//            IsHeroic = true;
-			//            break;
-			//        }
-			//    }
-			//}
-			IsHeroic = ResetTime == HeroicResetTime;
-			IsRaid = MaxPlayerCount == MaxDungeonPlayerCount;
+        internal void Finalize(MapTemplate map)
+        {
+            Map = map;
+            if (ResetTime == 0)
+            {
+                ResetTime = map.DefaultResetTime;
+            }
 
-			BindingType = IsDungeon ? BindingType.Soft : BindingType.Hard;
-		}
+            //if (Map.Type == MapType.Dungeon)
+            //{
+            //    IsHeroic = Index == 1;
+            //}
+            //else if (MaxPlayerCount != 0)
+            //{
+            //    // use heuristics to determine whether we have heroic difficulty:
+            //    foreach (var diff in Map.Difficulties)
+            //    {
+            //        if (diff != null && diff.MaxPlayerCount == MaxPlayerCount)
+            //        {
+            //            // Second entry with the same player count -> Probably heroic
+            //            IsHeroic = true;
+            //            break;
+            //        }
+            //    }
+            //}
+            IsHeroic = ResetTime == HeroicResetTime;
+            IsRaid = MaxPlayerCount == MaxDungeonPlayerCount;
 
-		public bool IsDungeon
-		{
-			get { return !IsHeroic && !IsRaid; }
-		}
-	}
+            BindingType = IsDungeon ? BindingType.Soft : BindingType.Hard;
+        }
+
+        public bool IsDungeon
+        {
+            get { return !IsHeroic && !IsRaid; }
+        }
+    }
 }

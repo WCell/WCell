@@ -1,6 +1,6 @@
 namespace WCell.RealmServer.Quests
 {
-    class QuestTimer
+    internal class QuestTimer
     {
     }
 }

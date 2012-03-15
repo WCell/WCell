@@ -22,11 +22,11 @@ namespace WCell.RealmServer.RacesClasses
     /// Defines the basics of the Paladin class.
     /// </summary>
     public class PaladinClass : BaseClass
-	{
-		public override ClassId Id
-		{
-			get { return ClassId.Paladin; }
-		}
+    {
+        public override ClassId Id
+        {
+            get { return ClassId.Paladin; }
+        }
 
         /// <summary>
         /// Calculates attack power for the class at a specific level, Strength and Agility.
@@ -38,7 +38,7 @@ namespace WCell.RealmServer.RacesClasses
         public override int CalculateMeleeAP(int level, int strength, int agility)
         {
             return (level * 3 + strength * 2 - 20);
-		}
+        }
 
         public override float CalculateMagicCritChance(int level, int intellect)
         {

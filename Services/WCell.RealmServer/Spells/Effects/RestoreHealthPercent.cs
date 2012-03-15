@@ -19,21 +19,21 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Effects
 {
-	public class RestoreHealthPercentEffectHandler : SpellEffectHandler
-	{
-		public RestoreHealthPercentEffectHandler(SpellCast cast, SpellEffect effect)
-			: base(cast, effect)
-		{
-		}
+    public class RestoreHealthPercentEffectHandler : SpellEffectHandler
+    {
+        public RestoreHealthPercentEffectHandler(SpellCast cast, SpellEffect effect)
+            : base(cast, effect)
+        {
+        }
 
-		protected override void Apply(WorldObject target)
-		{
-			((Unit)target).HealPercent(CalcDamageValue(), m_cast.CasterUnit, Effect);
-		}
+        protected override void Apply(WorldObject target)
+        {
+            ((Unit)target).HealPercent(CalcDamageValue(), m_cast.CasterUnit, Effect);
+        }
 
-		public override ObjectTypes TargetType
-		{
-			get { return ObjectTypes.Unit; }
-		}
-	}
+        public override ObjectTypes TargetType
+        {
+            get { return ObjectTypes.Unit; }
+        }
+    }
 }

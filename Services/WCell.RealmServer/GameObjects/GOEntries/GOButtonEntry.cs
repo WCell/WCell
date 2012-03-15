@@ -20,7 +20,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         {
             get { return Fields[1]; }
         }
-		
+
         /// <summary>
         /// Possibly the time delay before the door auto-closes?
         /// </summary>
@@ -36,7 +36,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         {
             get { return Fields[4]; }
         }
-		
+
         /// <summary>
         /// ???
         /// </summary>
@@ -61,12 +61,11 @@ namespace WCell.RealmServer.GameObjects.GOEntries
             get { return Fields[7]; }
         }
 
-
-		protected internal override void InitEntry()
-		{
-			Lock = LockEntry.Entries.Get((uint)LockId); 
-			LinkedTrapId = (uint) Fields[3];
-			LosOk = Fields[8] == 1;
-		}
-	}
+        protected internal override void InitEntry()
+        {
+            Lock = LockEntry.Entries.Get((uint)LockId);
+            LinkedTrapId = (uint)Fields[3];
+            LosOk = Fields[8] == 1;
+        }
+    }
 }

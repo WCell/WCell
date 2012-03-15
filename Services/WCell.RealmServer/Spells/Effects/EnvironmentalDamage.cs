@@ -20,31 +20,31 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Effects
 {
-	/// <summary>
-	/// Mostly caused by burning fires
-	/// </summary>
-	public class EnvironmentalDamageEffectHandler : SpellEffectHandler
-	{
-		public EnvironmentalDamageEffectHandler(SpellCast cast, SpellEffect effect)
-			: base(cast, effect)
-		{
-		}
+    /// <summary>
+    /// Mostly caused by burning fires
+    /// </summary>
+    public class EnvironmentalDamageEffectHandler : SpellEffectHandler
+    {
+        public EnvironmentalDamageEffectHandler(SpellCast cast, SpellEffect effect)
+            : base(cast, effect)
+        {
+        }
 
-		protected override void Apply(WorldObject targetObj)
-		{
-			var dmg = CalcEffectValue();
-			var target = (Unit)targetObj;
-			if (dmg < 100)
-			{
-				// percentage
-				dmg = Math.Min(1, (dmg * target.MaxHealth) / 100);
-			}
-			target.DealSpellDamage(m_cast.CasterUnit, Effect, dmg);
-		}
+        protected override void Apply(WorldObject targetObj)
+        {
+            var dmg = CalcEffectValue();
+            var target = (Unit)targetObj;
+            if (dmg < 100)
+            {
+                // percentage
+                dmg = Math.Min(1, (dmg * target.MaxHealth) / 100);
+            }
+            target.DealSpellDamage(m_cast.CasterUnit, Effect, dmg);
+        }
 
-		public override ObjectTypes TargetType
-		{
-			get { return ObjectTypes.Unit; }
-		}
-	}
+        public override ObjectTypes TargetType
+        {
+            get { return ObjectTypes.Unit; }
+        }
+    }
 }

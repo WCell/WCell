@@ -1,6 +1,6 @@
 namespace WCell.RealmServer.Calendars
 {
-    class CalendarEvent
+    internal class CalendarEvent
     {
         //private uint m_eventId;
         //private string m_name;

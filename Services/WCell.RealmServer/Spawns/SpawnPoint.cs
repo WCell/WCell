@@ -7,263 +7,265 @@ using WCell.Util.Graphics;
 
 namespace WCell.RealmServer.Spawns
 {
-	public interface ISpawnPoint
-	{
-		Map Map
-		{
-			get;
-		}
+    public interface ISpawnPoint
+    {
+        Map Map
+        {
+            get;
+        }
 
-		MapId MapId
-		{
-			get;
-		}
+        MapId MapId
+        {
+            get;
+        }
 
-		Vector3 Position
-		{
-			get;
-		}
+        Vector3 Position
+        {
+            get;
+        }
 
-		uint Phase
-		{
-			get;
-		}
+        uint Phase
+        {
+            get;
+        }
 
-		bool HasSpawned
-		{
-			get;
-		}
+        bool HasSpawned
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Whether timer is running and will spawn a new NPC when the timer elapses
-		/// </summary>
-		bool IsSpawning
-		{
-			get;
-		}
+        /// <summary>
+        /// Whether timer is running and will spawn a new NPC when the timer elapses
+        /// </summary>
+        bool IsSpawning
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Inactive and autospawns
-		/// </summary>
-		bool IsReadyToSpawn
-		{
-			get;
-		}
+        /// <summary>
+        /// Inactive and autospawns
+        /// </summary>
+        bool IsReadyToSpawn
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Whether NPC is alread spawned or timer is running
-		/// </summary>
-		bool IsActive
-		{
-			get;
-		}
+        /// <summary>
+        /// Whether NPC is alread spawned or timer is running
+        /// </summary>
+        bool IsActive
+        {
+            get;
+        }
 
-		void Respawn();
+        void Respawn();
 
-		void SpawnNow();
+        void SpawnNow();
 
-		void SpawnLater();
+        void SpawnLater();
 
-		/// <summary>
-		/// Restarts the spawn timer with the given delay
-		/// </summary>
-		void SpawnAfter(int delay);
+        /// <summary>
+        /// Restarts the spawn timer with the given delay
+        /// </summary>
+        void SpawnAfter(int delay);
 
-		/// <summary>
-		/// Stops the Respawn timer, if it was running
-		/// </summary>
-		void StopTimer();
+        /// <summary>
+        /// Stops the Respawn timer, if it was running
+        /// </summary>
+        void StopTimer();
 
-		void RemoveSpawnedObject();
+        void RemoveSpawnedObject();
 
-		/// <summary>
-		/// Stops timer and deletes spawnling
-		/// </summary>
-		void Disable();
-	}
+        /// <summary>
+        /// Stops timer and deletes spawnling
+        /// </summary>
+        void Disable();
+    }
 
-	/// <summary>
-	/// Instance of SpawnEntry objects
-	/// </summary>
-	public abstract class SpawnPoint<T, E, O, POINT, POOL> : ISpawnPoint
-		where T : SpawnPoolTemplate<T, E, O, POINT, POOL>
-		where E : SpawnEntry<T, E, O, POINT, POOL>
-		where O : WorldObject
-		where POINT : SpawnPoint<T, E, O, POINT, POOL>, new()
-		where POOL : SpawnPool<T, E, O, POINT, POOL>
-	{
-		protected E m_spawnEntry;
-		protected internal TimerEntry m_timer;
-		protected int m_nextRespawn;
-		protected O m_spawnling;
+    /// <summary>
+    /// Instance of SpawnEntry objects
+    /// </summary>
+    public abstract class SpawnPoint<T, E, O, POINT, POOL> : ISpawnPoint
+        where T : SpawnPoolTemplate<T, E, O, POINT, POOL>
+        where E : SpawnEntry<T, E, O, POINT, POOL>
+        where O : WorldObject
+        where POINT : SpawnPoint<T, E, O, POINT, POOL>, new()
+        where POOL : SpawnPool<T, E, O, POINT, POOL>
+    {
+        protected E m_spawnEntry;
+        protected internal TimerEntry m_timer;
+        protected int m_nextRespawn;
+        protected O m_spawnling;
 
-		internal void InitPoint(POOL pool, E entry)
-		{
-			m_timer = new TimerEntry(SpawnNow);
-			Pool = pool;
-			m_spawnEntry = entry;
-		}
+        internal void InitPoint(POOL pool, E entry)
+        {
+            m_timer = new TimerEntry(SpawnNow);
+            Pool = pool;
+            m_spawnEntry = entry;
+        }
 
-		#region Properties
-		public POOL Pool
-		{
-			get;
-			protected set;
-		}
+        #region Properties
 
-		public E SpawnEntry
-		{
-			get { return m_spawnEntry; }
-		}
+        public POOL Pool
+        {
+            get;
+            protected set;
+        }
 
-		/// <summary>
-		/// The currently active NPC of this SpawnPoint (or null)
-		/// </summary>
-		public O ActiveSpawnling
-		{
-			get { return m_spawnling; }
-		}
+        public E SpawnEntry
+        {
+            get { return m_spawnEntry; }
+        }
 
-		public Map Map
-		{
-			get { return Pool.Map; }
-		}
+        /// <summary>
+        /// The currently active NPC of this SpawnPoint (or null)
+        /// </summary>
+        public O ActiveSpawnling
+        {
+            get { return m_spawnling; }
+        }
 
-		public MapId MapId
-		{
-			get { return Map.Id; }
-		}
+        public Map Map
+        {
+            get { return Pool.Map; }
+        }
 
-		public Vector3 Position
-		{
-			get { return m_spawnEntry.Position; }
-		}
+        public MapId MapId
+        {
+            get { return Map.Id; }
+        }
 
-		public uint Phase
-		{
-			get { return m_spawnEntry.Phase; }
-		}
+        public Vector3 Position
+        {
+            get { return m_spawnEntry.Position; }
+        }
 
-		public bool HasSpawned
-		{
-			get { return m_spawnling != null; }
-		}
+        public uint Phase
+        {
+            get { return m_spawnEntry.Phase; }
+        }
 
-		/// <summary>
-		/// Whether timer is running and will spawn a new NPC when the timer elapses
-		/// </summary>
-		public bool IsSpawning
-		{
-			get { return m_timer.IsRunning; }
-		}
+        public bool HasSpawned
+        {
+            get { return m_spawnling != null; }
+        }
 
-		/// <summary>
-		/// Pool active, but spawn inactive and npc autospawns
-		/// </summary>
-		public bool IsReadyToSpawn
-		{
+        /// <summary>
+        /// Whether timer is running and will spawn a new NPC when the timer elapses
+        /// </summary>
+        public bool IsSpawning
+        {
+            get { return m_timer.IsRunning; }
+        }
+
+        /// <summary>
+        /// Pool active, but spawn inactive and npc autospawns
+        /// </summary>
+        public bool IsReadyToSpawn
+        {
             get { return Pool.IsActive && !IsActive && m_spawnEntry.AutoSpawns && WorldEventMgr.IsEventActive(m_spawnEntry.EventId); }
-		}
+        }
 
-		/// <summary>
-		/// Whether NPC is already spawned or timer is running
-		/// </summary>
-		public bool IsActive
-		{
-			get { return HasSpawned || IsSpawning; }
-		}
-		#endregion
+        /// <summary>
+        /// Whether NPC is already spawned or timer is running
+        /// </summary>
+        public bool IsActive
+        {
+            get { return HasSpawned || IsSpawning; }
+        }
 
-		public void Respawn()
-		{
-			Disable();
-			SpawnNow();
-		}
+        #endregion Properties
 
-		private void SpawnNow(int dt)
-		{
-			SpawnNow();
-		}
+        public void Respawn()
+        {
+            Disable();
+            SpawnNow();
+        }
 
-		public void SpawnNow()
-		{
-			Map.AddMessage(() =>
-			{
-				SpawnEntry.SpawnObject((POINT)this);
+        private void SpawnNow(int dt)
+        {
+            SpawnNow();
+        }
 
-				Map.UnregisterUpdatable(m_timer);
-			});
-		}
+        public void SpawnNow()
+        {
+            Map.AddMessage(() =>
+            {
+                SpawnEntry.SpawnObject((POINT)this);
 
-		public void SpawnLater()
-		{
-			SpawnAfter(m_spawnEntry.GetRandomRespawnMillis());
-		}
+                Map.UnregisterUpdatable(m_timer);
+            });
+        }
 
-		/// <summary>
-		/// Restarts the spawn timer with the given delay
-		/// </summary>
-		public void SpawnAfter(int delay)
-		{
-			if (Pool.IsActive && !m_timer.IsRunning)
-			{
-				m_nextRespawn = Environment.TickCount + delay;
-				m_timer.Start(delay);
-				Map.RegisterUpdatableLater(m_timer);
-			}
-		}
+        public void SpawnLater()
+        {
+            SpawnAfter(m_spawnEntry.GetRandomRespawnMillis());
+        }
 
-		/// <summary>
-		/// Stops the Respawn timer, if it was running
-		/// </summary>
-		public void StopTimer()
-		{
-			m_timer.Stop();
-			Map.UnregisterUpdatableLater(m_timer);
-		}
+        /// <summary>
+        /// Restarts the spawn timer with the given delay
+        /// </summary>
+        public void SpawnAfter(int delay)
+        {
+            if (Pool.IsActive && !m_timer.IsRunning)
+            {
+                m_nextRespawn = Environment.TickCount + delay;
+                m_timer.Start(delay);
+                Map.RegisterUpdatableLater(m_timer);
+            }
+        }
 
-		public void RemoveSpawnedObject()
-		{
-			// thread-safety -> Get local reference
-			var spawnling = m_spawnling;
-			if (spawnling != null)
-			{
-				spawnling.Delete();
-			}
-		}
+        /// <summary>
+        /// Stops the Respawn timer, if it was running
+        /// </summary>
+        public void StopTimer()
+        {
+            m_timer.Stop();
+            Map.UnregisterUpdatableLater(m_timer);
+        }
 
-		/// <summary>
-		/// Stops timer and deletes spawnling
-		/// </summary>
-		public void Disable()
-		{
-			StopTimer();
-			RemoveSpawnedObject();
-		}
+        public void RemoveSpawnedObject()
+        {
+            // thread-safety -> Get local reference
+            var spawnling = m_spawnling;
+            if (spawnling != null)
+            {
+                spawnling.Delete();
+            }
+        }
 
-		/// <summary>
-		/// Called when object enters map
-		/// </summary>
-		protected internal void SignalSpawnlingActivated(O obj)
-		{
-			m_spawnling = obj;
-			Pool.SpawnedObjects.Add(m_spawnling);
-		}
+        /// <summary>
+        /// Stops timer and deletes spawnling
+        /// </summary>
+        public void Disable()
+        {
+            StopTimer();
+            RemoveSpawnedObject();
+        }
 
-		/// <summary>
-		/// Is called when the given spawn died or was removed from Map.
-		/// </summary>
-		protected internal void SignalSpawnlingDied(O obj)
-		{
-			// remove object from set of spawned objects
-			m_spawnling = null;
-			Pool.SpawnedObjects.Remove(obj);
+        /// <summary>
+        /// Called when object enters map
+        /// </summary>
+        protected internal void SignalSpawnlingActivated(O obj)
+        {
+            m_spawnling = obj;
+            Pool.SpawnedObjects.Add(m_spawnling);
+        }
 
-			if (Pool.IsActive && m_spawnEntry.AutoSpawns)
-			{
-				// select a spawn to respawn
-				Pool.SpawnOneLater();
-			}
-		}
-	}
+        /// <summary>
+        /// Is called when the given spawn died or was removed from Map.
+        /// </summary>
+        protected internal void SignalSpawnlingDied(O obj)
+        {
+            // remove object from set of spawned objects
+            m_spawnling = null;
+            Pool.SpawnedObjects.Remove(obj);
+
+            if (Pool.IsActive && m_spawnEntry.AutoSpawns)
+            {
+                // select a spawn to respawn
+                Pool.SpawnOneLater();
+            }
+        }
+    }
 }

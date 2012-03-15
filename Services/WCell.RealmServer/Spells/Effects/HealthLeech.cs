@@ -19,24 +19,24 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Effects
 {
-	public class HealthLeechEffectHandler : SpellEffectHandler
-	{
-		public HealthLeechEffectHandler(SpellCast cast, SpellEffect effect)
-			: base(cast, effect)
-		{
-		}
+    public class HealthLeechEffectHandler : SpellEffectHandler
+    {
+        public HealthLeechEffectHandler(SpellCast cast, SpellEffect effect)
+            : base(cast, effect)
+        {
+        }
 
-		protected override void Apply(WorldObject target)
-		{
-			((Unit)target).LeechHealth(m_cast.CasterUnit, CalcDamageValue(), Effect.ProcValue, Effect);
-		}
+        protected override void Apply(WorldObject target)
+        {
+            ((Unit)target).LeechHealth(m_cast.CasterUnit, CalcDamageValue(), Effect.ProcValue, Effect);
+        }
 
-		public override ObjectTypes TargetType
-		{
-			get
-			{
-				return ObjectTypes.Unit;
-			}
-		}
-	}
+        public override ObjectTypes TargetType
+        {
+            get
+            {
+                return ObjectTypes.Unit;
+            }
+        }
+    }
 }

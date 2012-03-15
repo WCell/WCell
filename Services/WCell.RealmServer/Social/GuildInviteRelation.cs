@@ -9,7 +9,7 @@ namespace WCell.RealmServer.Interaction
     {
         public GuildInviteRelation(uint charId, uint relatedCharId)
             : base(charId, relatedCharId)
-        { 
+        {
         }
 
         public override bool RequiresOnlineNotification

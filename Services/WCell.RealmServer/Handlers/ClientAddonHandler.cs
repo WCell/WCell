@@ -7,21 +7,21 @@ using WCell.RealmServer.Network;
 
 namespace WCell.RealmServer.Handlers
 {
-	public class ClientAddOn
-	{
-		public string Name;
-		public uint AddOnCRC;
-		public uint ExtraCRC;
-		public byte HasSignature;
-	}
+    public class ClientAddOn
+    {
+        public string Name;
+        public uint AddOnCRC;
+        public uint ExtraCRC;
+        public byte HasSignature;
+    }
 
-	public static class ClientAddonHandler
-	{
-		static Logger s_log = LogManager.GetCurrentClassLogger();
+    public static class ClientAddonHandler
+    {
+        static Logger s_log = LogManager.GetCurrentClassLogger();
 
-		const uint BlizzardAddOnCRC = 0x4C1C776D;
+        const uint BlizzardAddOnCRC = 0x4C1C776D;
 
-		private static readonly byte[] BlizzardPublicKey = {
+        private static readonly byte[] BlizzardPublicKey = {
 	                                                           0xC3, 0x5B, 0x50, 0x84, 0xB9, 0x3E, 0x32, 0x42, 0x8C, 0xD0,
 	                                                           0xC7, 0x48, 0xFA, 0x0E, 0x5D, 0x54, 0x5A, 0xA3, 0x0E, 0x14,
 	                                                           0xBA, 0x9E, 0x0D, 0xB9, 0x5D, 0x8B, 0xEE, 0xB6, 0x84, 0x93,
@@ -51,94 +51,91 @@ namespace WCell.RealmServer.Handlers
 	                                                           0x54, 0xF0, 0x72, 0xD8, 0x1E, 0xC7, 0x89, 0xD2
 	                                                       };
 
-		public static void SendAddOnInfoPacket(IRealmClient client)
-		{
-			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_ADDON_INFO))
-			{
-				//Fix for reading past the end of stream
-				//Due to fake clients!
-				if (client.Addons.Length > 0)
-				{
-					int unk;
-					using (var binReader = new BinaryReader(new MemoryStream(client.Addons)))
-					{
-						var addonCount = binReader.ReadInt32();
-						for (var i = 0; i < addonCount; i++)
-						{
-							var addon = ReadAddOn(binReader);
-							WriteAddOnInfo(packet, addon);
-						}
+        public static void SendAddOnInfoPacket(IRealmClient client)
+        {
+            using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_ADDON_INFO))
+            {
+                //Fix for reading past the end of stream
+                //Due to fake clients!
+                if (client.Addons.Length > 0)
+                {
+                    int unk;
+                    using (var binReader = new BinaryReader(new MemoryStream(client.Addons)))
+                    {
+                        var addonCount = binReader.ReadInt32();
+                        for (var i = 0; i < addonCount; i++)
+                        {
+                            var addon = ReadAddOn(binReader);
+                            WriteAddOnInfo(packet, addon);
+                        }
 
-						unk = binReader.ReadInt32();
-					}
-					Console.WriteLine("CMSG ADDON Unk: " + unk);
-				}
+                        unk = binReader.ReadInt32();
+                    }
+                    Console.WriteLine("CMSG ADDON Unk: " + unk);
+                }
 
-				
+                const int count = 0;
+                packet.Write(count);
 
-				const int count = 0;
-				packet.Write(count);
+                for (int i = 0; i < count; i++)
+                {
+                    packet.Write(0);
+                    packet.Write(new byte[16]);
+                    packet.Write(new byte[16]);
+                    packet.Write(0);
+                    packet.Write(0);
+                }
 
-				for (int i = 0; i < count; i++)
-				{
-					packet.Write(0);
-					packet.Write(new byte[16]);
-					packet.Write(new byte[16]);
-					packet.Write(0);
-					packet.Write(0);
-				}
+                client.Send(packet);
+            }
 
-				client.Send(packet);
-			}
+            client.Addons = null;
+        }
 
-			client.Addons = null;
-		}
+        private static ClientAddOn ReadAddOn(BinaryReader binReader)
+        {
+            var name = binReader.ReadCString();
+            if (binReader.BaseStream.Position + 9 > binReader.BaseStream.Length)
+            {
+                return new ClientAddOn { Name = name };
+            }
 
-		private static ClientAddOn ReadAddOn(BinaryReader binReader)
-		{
-			var name = binReader.ReadCString();
-			if (binReader.BaseStream.Position + 9 > binReader.BaseStream.Length)
-			{
-				return new ClientAddOn {Name = name};
-			}
+            var addon = new ClientAddOn
+                            {
+                                Name = name,
+                                HasSignature = binReader.ReadByte(),
+                                AddOnCRC = binReader.ReadUInt32(),
+                                ExtraCRC = binReader.ReadUInt32()
+                            };
+            //Console.WriteLine("AddOn: {0} - {1} - {2} - {3}", addon.Name, addon.HasSignature, addon.AddOnCRC, addon.ExtraCRC);
+            return addon;
+        }
 
-			var addon = new ClientAddOn
-							{
-								Name = name,
-								HasSignature = binReader.ReadByte(),
-								AddOnCRC = binReader.ReadUInt32(),
-								ExtraCRC = binReader.ReadUInt32()
-							};
-			//Console.WriteLine("AddOn: {0} - {1} - {2} - {3}", addon.Name, addon.HasSignature, addon.AddOnCRC, addon.ExtraCRC);
-			return addon;
-		}
+        // TODO: go back and add addon filtering
 
-		// TODO: go back and add addon filtering
+        private enum AddOnType
+        {
+            Enabled = 1,
+            Blizzard = 2,
+        }
 
-		enum AddOnType
-		{
-			Enabled = 1,
-			Blizzard = 2,
-		}
-		private static void WriteAddOnInfo(RealmPacketOut packet, ClientAddOn addOn)
-		{
-			packet.Write((byte)AddOnType.Blizzard);
-			packet.Write(true);
+        private static void WriteAddOnInfo(RealmPacketOut packet, ClientAddOn addOn)
+        {
+            packet.Write((byte)AddOnType.Blizzard);
+            packet.Write(true);
 
-			// If the CRC32 of the addon's modulus doesnt match the CRC32 of the official blizzard public key
-			// We could support 
-			bool hasDifferentPublicKey = (addOn.AddOnCRC != BlizzardAddOnCRC);
-			packet.Write(hasDifferentPublicKey);
-			if (hasDifferentPublicKey)
-			{
-				// This is actually the modulus used in the SSignature verification
-				packet.Write(BlizzardPublicKey);
-			}
-			packet.Write(0);
+            // If the CRC32 of the addon's modulus doesnt match the CRC32 of the official blizzard public key
+            // We could support
+            bool hasDifferentPublicKey = (addOn.AddOnCRC != BlizzardAddOnCRC);
+            packet.Write(hasDifferentPublicKey);
+            if (hasDifferentPublicKey)
+            {
+                // This is actually the modulus used in the SSignature verification
+                packet.Write(BlizzardPublicKey);
+            }
+            packet.Write(0);
 
-
-			packet.Write(false);
-
-		}
-	}
+            packet.Write(false);
+        }
+    }
 }

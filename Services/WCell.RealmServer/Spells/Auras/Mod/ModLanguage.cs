@@ -19,26 +19,26 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
-	/// <summary>
-	/// Temporarily changes the language of the holder
-	/// </summary>
-	public class ModLanguageHandler : AuraEffectHandler
-	{
-		protected override void Apply()
-		{
-			if (m_aura.Auras.Owner is Character)
-			{
-				ChatLanguage lang = (ChatLanguage)m_spellEffect.MiscValue;
-				m_aura.Auras.Owner.SpokenLanguage = lang;
-			}
-		}
+    /// <summary>
+    /// Temporarily changes the language of the holder
+    /// </summary>
+    public class ModLanguageHandler : AuraEffectHandler
+    {
+        protected override void Apply()
+        {
+            if (m_aura.Auras.Owner is Character)
+            {
+                ChatLanguage lang = (ChatLanguage)m_spellEffect.MiscValue;
+                m_aura.Auras.Owner.SpokenLanguage = lang;
+            }
+        }
 
-		protected override void Remove(bool cancelled)
-		{
-			if (m_aura.Auras.Owner is Character)
-			{
-				m_aura.Auras.Owner.SpokenLanguage = ChatLanguage.Universal;
-			}
-		}
-	}
+        protected override void Remove(bool cancelled)
+        {
+            if (m_aura.Auras.Owner is Character)
+            {
+                m_aura.Auras.Owner.SpokenLanguage = ChatLanguage.Universal;
+            }
+        }
+    }
 };

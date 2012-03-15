@@ -56,7 +56,7 @@ namespace WCell.RealmServer.Achievements
 
             if (character.FactionGroup == FactionGroup.Alliance && AllianceTitle != 0)
             {
-                character.SetTitle(AllianceTitle,false);
+                character.SetTitle(AllianceTitle, false);
             }
             else if (character.FactionGroup == FactionGroup.Horde && HordeTitle != 0)
             {
@@ -65,23 +65,23 @@ namespace WCell.RealmServer.Achievements
 
             if (Item != 0)
             {
-				var mailMessage = new MailMessage(Subjects.Localize(character.Locale), Bodies.Localize(character.Locale))
-            	                  	{
-            	                  		ReceiverId = character.EntityId.Low,
-            	                  		DeliveryTime = DateTime.Now,
-            	                  		SendTime = DateTime.Now,
-            	                  		ExpireTime = DateTime.Now.AddMonths(1),
-            	                  		MessageStationary = MailStationary.Normal
-            	                  	};
-            	mailMessage.AddItem(Item);
-            	MailMgr.SendMail(mailMessage);
+                var mailMessage = new MailMessage(Subjects.Localize(character.Locale), Bodies.Localize(character.Locale))
+                                    {
+                                        ReceiverId = character.EntityId.Low,
+                                        DeliveryTime = DateTime.Now,
+                                        SendTime = DateTime.Now,
+                                        ExpireTime = DateTime.Now.AddMonths(1),
+                                        MessageStationary = MailStationary.Normal
+                                    };
+                mailMessage.AddItem(Item);
+                MailMgr.SendMail(mailMessage);
             }
         }
 
         public void FinalizeDataHolder()
         {
             var achievementEntry = AchievementMgr.AchievementEntries[AchievementEntryId];
-            if(achievementEntry == null)
+            if (achievementEntry == null)
             {
                 ContentMgr.OnInvalidDBData("{0} had an invalid AchievementEntryId.", this);
                 return;

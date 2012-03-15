@@ -3,53 +3,54 @@ using WCell.Constants.Spells;
 
 namespace WCell.RealmServer.Spells.Auras.Misc
 {
-	/// <summary>
-	/// Applies another aura while active and removes it when turning inactive
-	/// </summary>
-	public class ToggleAuraHandler : AuraEffectHandler
-	{
-		public Spell ToggleAuraSpell { get; set; }
-		private Aura activeToggleAura;
+    /// <summary>
+    /// Applies another aura while active and removes it when turning inactive
+    /// </summary>
+    public class ToggleAuraHandler : AuraEffectHandler
+    {
+        public Spell ToggleAuraSpell { get; set; }
 
-		public ToggleAuraHandler()
-		{
-		}
+        private Aura activeToggleAura;
 
-		public ToggleAuraHandler(SpellId auraId)
-		{
-			ToggleAuraSpell = SpellHandler.Get(auraId);
-		}
+        public ToggleAuraHandler()
+        {
+        }
 
-		protected override void Apply()
-		{
-			// add aura
-			// first check, if Aura already exists (eg. because it was loaded from DB)
-			if (ToggleAuraSpell == null)
-			{
-				ToggleAuraSpell = m_spellEffect.TriggerSpell;
-			}
+        public ToggleAuraHandler(SpellId auraId)
+        {
+            ToggleAuraSpell = SpellHandler.Get(auraId);
+        }
 
-			activeToggleAura = Owner.Auras[ToggleAuraSpell];
-			if (activeToggleAura == null)
-			{
-				activeToggleAura = Owner.Auras.CreateAndStartAura(m_aura.CasterReference, ToggleAuraSpell, true);
-				activeToggleAura.CanBeSaved = false;
-			}
-			else
-			{
-				LogManager.GetCurrentClassLogger().Warn("Tried to toggle on already created Aura \"{0}\" on {1}", activeToggleAura, Owner);
-				activeToggleAura.IsActivated = true;
-			}
-		}
+        protected override void Apply()
+        {
+            // add aura
+            // first check, if Aura already exists (eg. because it was loaded from DB)
+            if (ToggleAuraSpell == null)
+            {
+                ToggleAuraSpell = m_spellEffect.TriggerSpell;
+            }
 
-		protected override void Remove(bool cancelled)
-		{
-			if (activeToggleAura != null)
-			{
-				// remove aura
-				activeToggleAura.Cancel();
-				activeToggleAura = null;
-			}
-		}
-	}
+            activeToggleAura = Owner.Auras[ToggleAuraSpell];
+            if (activeToggleAura == null)
+            {
+                activeToggleAura = Owner.Auras.CreateAndStartAura(m_aura.CasterReference, ToggleAuraSpell, true);
+                activeToggleAura.CanBeSaved = false;
+            }
+            else
+            {
+                LogManager.GetCurrentClassLogger().Warn("Tried to toggle on already created Aura \"{0}\" on {1}", activeToggleAura, Owner);
+                activeToggleAura.IsActivated = true;
+            }
+        }
+
+        protected override void Remove(bool cancelled)
+        {
+            if (activeToggleAura != null)
+            {
+                // remove aura
+                activeToggleAura.Cancel();
+                activeToggleAura = null;
+            }
+        }
+    }
 }

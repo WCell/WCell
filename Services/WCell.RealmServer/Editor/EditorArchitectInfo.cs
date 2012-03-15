@@ -3,32 +3,32 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Editor
 {
-	/// <summary>
-	/// Represents a Character who works with an editor
-	/// </summary>
-	public class EditorArchitectInfo
-	{
-		public EditorArchitectInfo(Character chr)
-		{
-			Character = chr;
-		}
+    /// <summary>
+    /// Represents a Character who works with an editor
+    /// </summary>
+    public class EditorArchitectInfo
+    {
+        public EditorArchitectInfo(Character chr)
+        {
+            Character = chr;
+        }
 
-		public Character Character
-		{
-			get;
-			private set;
-		}
+        public Character Character
+        {
+            get;
+            private set;
+        }
 
-		public MapEditor Editor
-		{
-			get;
-			internal set;
-		}
+        public MapEditor Editor
+        {
+            get;
+            internal set;
+        }
 
-		public EditorFigurine CurrentTarget
-		{
-			get;
-			internal set;
-		}
-	}
+        public EditorFigurine CurrentTarget
+        {
+            get;
+            internal set;
+        }
+    }
 }

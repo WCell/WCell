@@ -4,8 +4,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 {
     public class GOGuardPostEntry : GOEntry
     {
-		private static readonly Logger sLog = LogManager.GetCurrentClassLogger();
-
+        private static readonly Logger sLog = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// The Id of the creature associated with this guard post.
@@ -22,5 +21,5 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         {
             get { return Fields[1]; }
         }
-	}
+    }
 }

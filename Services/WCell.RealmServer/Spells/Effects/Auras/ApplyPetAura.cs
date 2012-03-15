@@ -18,16 +18,16 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Effects
 {
-	public class ApplyPetAuraEffectHandler : SpellEffectHandler
-	{
-		public ApplyPetAuraEffectHandler(SpellCast cast, SpellEffect effect)
-			: base(cast, effect)
-		{
-		}
+    public class ApplyPetAuraEffectHandler : SpellEffectHandler
+    {
+        public ApplyPetAuraEffectHandler(SpellCast cast, SpellEffect effect)
+            : base(cast, effect)
+        {
+        }
 
-		protected override void Apply(WorldObject target)
-		{
-			// TODO: ApplyPetAuraEffectHandler
-		}
-	}
+        protected override void Apply(WorldObject target)
+        {
+            // TODO: ApplyPetAuraEffectHandler
+        }
+    }
 }

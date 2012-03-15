@@ -25,9 +25,9 @@ namespace WCell.RealmServer.Interaction
     /// </summary>
     public sealed class MutedRelation : PersistedRelation
     {
-		public MutedRelation(uint charId, uint relatedCharId)
+        public MutedRelation(uint charId, uint relatedCharId)
             : base(charId, relatedCharId)
-        { 
+        {
         }
 
         public override bool RequiresOnlineNotification
@@ -49,7 +49,7 @@ namespace WCell.RealmServer.Interaction
                 return false;
             }
 
-            //Checks if the relation target char exist 
+            //Checks if the relation target char exist
             if (relatedCharInfo == null)
             {
                 relResult = RelationResult.MUTED_NOT_FOUND;
@@ -63,12 +63,12 @@ namespace WCell.RealmServer.Interaction
                 return false;
             }
 
-			////Checks if both chars are in the same faction
-			//if (Factions.FactionMgr.GetFactionGroup(charInfo.Race) != Factions.FactionMgr.GetFactionGroup((RaceType)relatedCharInfo.Race))
-			//{
-			//    relResult = RelationResult.MUTED_ENEMY;
-			//    return false;
-			//}
+            ////Checks if both chars are in the same faction
+            //if (Factions.FactionMgr.GetFactionGroup(charInfo.Race) != Factions.FactionMgr.GetFactionGroup((RaceType)relatedCharInfo.Race))
+            //{
+            //    relResult = RelationResult.MUTED_ENEMY;
+            //    return false;
+            //}
 
             //Checks if the relation currently exist
             if (RelationMgr.Instance.HasRelation(charInfo.EntityLowId, relatedCharInfo.EntityLowId, this.Type))

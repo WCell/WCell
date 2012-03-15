@@ -4,7 +4,6 @@ namespace WCell.RealmServer.Guilds
 {
     public partial class GuildRank
     {
-
         /// <summary>
         /// The daily money withdrawl allowance from the Guild Bank
         /// </summary>
@@ -30,8 +29,7 @@ namespace WCell.RealmServer.Guilds
         }
 
         public GuildRank()
-		{
-			
-		}
+        {
+        }
     }
 }

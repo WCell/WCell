@@ -4,91 +4,91 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.NPCs.Pets
 {
-	public interface IPetRecord
-	{
-		uint OwnerId
-		{
-			get;
-			set;
-		}
+    public interface IPetRecord
+    {
+        uint OwnerId
+        {
+            get;
+            set;
+        }
 
-		NPCId EntryId
-		{
-			get;
-			set;
-		}
+        NPCId EntryId
+        {
+            get;
+            set;
+        }
 
-		uint PetNumber
-		{
-			get;
-			set;
-		}
+        uint PetNumber
+        {
+            get;
+            set;
+        }
 
-		NPCEntry Entry
-		{
-			get;
-			set;
-		}
+        NPCEntry Entry
+        {
+            get;
+            set;
+        }
 
-		bool IsActivePet
-		{
-			get;
-			set;
-		}
+        bool IsActivePet
+        {
+            get;
+            set;
+        }
 
-		string Name
-		{
-			get;
-			set;
-		}
+        string Name
+        {
+            get;
+            set;
+        }
 
-		uint NameTimeStamp
-		{
-			get;
-			set;
-		}
+        uint NameTimeStamp
+        {
+            get;
+            set;
+        }
 
-		PetState PetState
-		{
-			get;
-			set;
-		}
+        PetState PetState
+        {
+            get;
+            set;
+        }
 
-		PetAttackMode AttackMode
-		{
-			get;
-			set;
-		}
+        PetAttackMode AttackMode
+        {
+            get;
+            set;
+        }
 
-		PetFlags Flags
-		{
-			get;
-			set;
-		}
+        PetFlags Flags
+        {
+            get;
+            set;
+        }
 
-		bool IsStabled
-		{
-			get;
-			set;
-		}
+        bool IsStabled
+        {
+            get;
+            set;
+        }
 
-		bool IsDirty
-		{
-			get;
-		}
+        bool IsDirty
+        {
+            get;
+        }
 
-		uint[] ActionButtons
-		{
-			get;
-			set;
-		}
+        uint[] ActionButtons
+        {
+            get;
+            set;
+        }
 
-		void Save();
+        void Save();
 
-		void Delete();
+        void Delete();
 
-		void SetupPet(NPC pet);
+        void SetupPet(NPC pet);
 
-		void UpdateRecord(NPC pet);
-	}
+        void UpdateRecord(NPC pet);
+    }
 }

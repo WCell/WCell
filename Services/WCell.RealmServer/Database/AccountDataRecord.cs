@@ -9,14 +9,14 @@ namespace WCell.RealmServer.Database
         [PrimaryKey(PrimaryKeyType.Assigned)]
         public long accountId { get; set; }
 
-        [Field] 
+        [Field]
         public byte[][] DataHolder = new byte[8][];
 
-		/// <summary>
-		/// TODO: Can be changed to uint (unix time)
-		/// </summary>
+        /// <summary>
+        /// TODO: Can be changed to uint (unix time)
+        /// </summary>
         [Field]
-		public int[] TimeStamps = new int[8];
+        public int[] TimeStamps = new int[8];
 
         [Field]
         public int[] SizeHolder = new int[8];
@@ -34,7 +34,7 @@ namespace WCell.RealmServer.Database
         /// <returns>An AccountDataRecord reference</returns>
         public static AccountDataRecord InitializeNewAccount(long accountID)
         {
-            var newData = new AccountDataRecord {accountId = accountID};
+            var newData = new AccountDataRecord { accountId = accountID };
 
             for (uint i = 7; i > 0; i--)
             {
@@ -50,7 +50,7 @@ namespace WCell.RealmServer.Database
         {
             DataHolder[dataType] = data;
             //TimeHolder[dataType] = DateTime.Now;
-			TimeStamps[dataType] = (int) time;
+            TimeStamps[dataType] = (int)time;
             SizeHolder[dataType] = (int)compressedSize;
         }
     }

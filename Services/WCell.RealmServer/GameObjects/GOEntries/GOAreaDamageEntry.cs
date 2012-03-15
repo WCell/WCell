@@ -70,9 +70,9 @@ namespace WCell.RealmServer.GameObjects.GOEntries
             get { return Fields[7]; }
         }
 
-		protected internal override void InitEntry()
-		{
-			Lock = LockEntry.Entries.Get((uint)LockId);
-		}
+        protected internal override void InitEntry()
+        {
+            Lock = LockEntry.Entries.Get((uint)LockId);
+        }
     }
 }

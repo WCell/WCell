@@ -10,247 +10,247 @@ using WCell.Util.Graphics;
 
 namespace WCell.RealmServer.Battlegrounds
 {
-	/// <summary>
-	/// Battleground information
-	/// </summary>
-	[DataHolder]
-	public class BattlegroundTemplate : IDataHolder
-	{
-		public BattlegroundId Id;
+    /// <summary>
+    /// Battleground information
+    /// </summary>
+    [DataHolder]
+    public class BattlegroundTemplate : IDataHolder
+    {
+        public BattlegroundId Id;
 
-		[NotPersistent]
-		public MapId MapId;
+        [NotPersistent]
+        public MapId MapId;
 
-		public int MinPlayersPerTeam, MaxPlayersPerTeam;
+        public int MinPlayersPerTeam, MaxPlayersPerTeam;
 
-		public int MinLevel, MaxLevel;
+        public int MinLevel, MaxLevel;
 
-		/// <summary>
-		/// Load pos from DBCs
-		/// </summary>
-		public int AllianceStartPosIndex, HordeStartPosIndex;
+        /// <summary>
+        /// Load pos from DBCs
+        /// </summary>
+        public int AllianceStartPosIndex, HordeStartPosIndex;
 
-		public Vector3 AllianceStartPosition, HordeStartPosition;
-		public float AllianceStartOrientation, HordeStartOrientation;
+        public Vector3 AllianceStartPosition, HordeStartPosition;
+        public float AllianceStartOrientation, HordeStartOrientation;
 
-		[NotPersistent]
-		public BattlegroundCreator Creator;
+        [NotPersistent]
+        public BattlegroundCreator Creator;
 
-		[NotPersistent]
-		public MapTemplate MapTemplate;
+        [NotPersistent]
+        public MapTemplate MapTemplate;
 
-		[NotPersistent]
-		public GlobalBattlegroundQueue[] Queues;
+        [NotPersistent]
+        public GlobalBattlegroundQueue[] Queues;
 
-		[NotPersistent]
-		public PvPDifficultyEntry[] Difficulties;
+        [NotPersistent]
+        public PvPDifficultyEntry[] Difficulties;
 
-		public int MinPlayerCount
-		{
-			get { return MinPlayersPerTeam * 2; }
-		}
+        public int MinPlayerCount
+        {
+            get { return MinPlayersPerTeam * 2; }
+        }
 
-		public uint GetId()
-		{
-			return (uint)Id;
-		}
+        public uint GetId()
+        {
+            return (uint)Id;
+        }
 
-		public DataHolderState DataHolderState
-		{
-			get;
-			set;
-		}
+        public DataHolderState DataHolderState
+        {
+            get;
+            set;
+        }
 
-		public void FinalizeDataHolder()
-		{
-			MapId = BattlegroundMgr.BattlemasterListReader.Entries[(int)Id].MapId;
+        public void FinalizeDataHolder()
+        {
+            MapId = BattlegroundMgr.BattlemasterListReader.Entries[(int)Id].MapId;
 
-			MapTemplate = World.GetMapTemplate(MapId);
-			if (MapTemplate == null)
-			{
-				ContentMgr.OnInvalidDBData("BattlegroundTemplate had invalid MapId: {0} (#{1})",
-					MapId, (int)MapId);
-				return;
-			}
+            MapTemplate = World.GetMapTemplate(MapId);
+            if (MapTemplate == null)
+            {
+                ContentMgr.OnInvalidDBData("BattlegroundTemplate had invalid MapId: {0} (#{1})",
+                    MapId, (int)MapId);
+                return;
+            }
 
-			if (BattlegroundMgr.Templates.Length <= (int)Id)
-			{
-				ContentMgr.OnInvalidDBData("BattlegroundTemplate had invalid BG-Id: {0} (#{1})",
-					Id, (int)Id);
-				return;
-			}
-			MapTemplate.BattlegroundTemplate = this;
+            if (BattlegroundMgr.Templates.Length <= (int)Id)
+            {
+                ContentMgr.OnInvalidDBData("BattlegroundTemplate had invalid BG-Id: {0} (#{1})",
+                    Id, (int)Id);
+                return;
+            }
+            MapTemplate.BattlegroundTemplate = this;
 
-			Difficulties = new PvPDifficultyEntry[BattlegroundMgr.PVPDifficultyReader.Entries.Values.Count(entry => (entry.mapId == MapId))];
+            Difficulties = new PvPDifficultyEntry[BattlegroundMgr.PVPDifficultyReader.Entries.Values.Count(entry => (entry.mapId == MapId))];
 
-			foreach (var entry in BattlegroundMgr.PVPDifficultyReader.Entries.Values.Where(entry => (entry.mapId == MapId)))
-			{
-				Difficulties[entry.bracketId] = entry;
-			}
+            foreach (var entry in BattlegroundMgr.PVPDifficultyReader.Entries.Values.Where(entry => (entry.mapId == MapId)))
+            {
+                Difficulties[entry.bracketId] = entry;
+            }
 
-			MinLevel = MapTemplate.MinLevel = Difficulties.First().minLevel;
-			MaxLevel = MapTemplate.MaxLevel = Difficulties.Last().maxLevel;
-			BattlegroundMgr.Templates[(int)Id] = this;
+            MinLevel = MapTemplate.MinLevel = Difficulties.First().minLevel;
+            MaxLevel = MapTemplate.MaxLevel = Difficulties.Last().maxLevel;
+            BattlegroundMgr.Templates[(int)Id] = this;
 
-			CreateQueues();
-			SetStartPos();
-		}
+            CreateQueues();
+            SetStartPos();
+        }
 
-		public int GetBracketIdForLevel(int level)
-		{
-			var diff = Difficulties.FirstOrDefault(entry => (level >= entry.minLevel && level <= entry.maxLevel));
-			if (diff != null)
-			{
-				return diff.bracketId;
-			}
-			else
-			{
-				return -1;
-			}
-		}
+        public int GetBracketIdForLevel(int level)
+        {
+            var diff = Difficulties.FirstOrDefault(entry => (level >= entry.minLevel && level <= entry.maxLevel));
+            if (diff != null)
+            {
+                return diff.bracketId;
+            }
+            else
+            {
+                return -1;
+            }
+        }
 
-		private void CreateQueues()
-		{
-			Queues = new GlobalBattlegroundQueue[Difficulties.Length];
-			foreach (var entry in Difficulties)
-			{
-				if (entry != null)
-				{
-					AddQueue(new GlobalBattlegroundQueue(this, entry.bracketId, entry.minLevel, entry.maxLevel));
-				}
-			}
-		}
+        private void CreateQueues()
+        {
+            Queues = new GlobalBattlegroundQueue[Difficulties.Length];
+            foreach (var entry in Difficulties)
+            {
+                if (entry != null)
+                {
+                    AddQueue(new GlobalBattlegroundQueue(this, entry.bracketId, entry.minLevel, entry.maxLevel));
+                }
+            }
+        }
 
-		void AddQueue(GlobalBattlegroundQueue queue)
-		{
-			Queues[queue.BracketId] = queue;
-		}
+        private void AddQueue(GlobalBattlegroundQueue queue)
+        {
+            Queues[queue.BracketId] = queue;
+        }
 
-		/// <summary>
-		/// Gets the appropriate queue for the given character.
-		/// </summary>
-		/// <param name="chr">the character</param>
-		/// <returns>the appropriate queue for the given character</returns>
-		public GlobalBattlegroundQueue GetQueue(Character character)
-		{
-			return GetQueue(character.Level);
-		}
+        /// <summary>
+        /// Gets the appropriate queue for the given character.
+        /// </summary>
+        /// <param name="chr">the character</param>
+        /// <returns>the appropriate queue for the given character</returns>
+        public GlobalBattlegroundQueue GetQueue(Character character)
+        {
+            return GetQueue(character.Level);
+        }
 
-		/// <summary>
-		/// Gets the appropriate queue for a character of the given level.
-		/// </summary>
-		/// <param name="level">the level of the character</param>
-		/// <returns>the appropriate queue for the given character level</returns>
-		public GlobalBattlegroundQueue GetQueue(int level)
-		{
-			return Queues.Get((uint)GetBracketIdForLevel(level));
-		}
+        /// <summary>
+        /// Gets the appropriate queue for a character of the given level.
+        /// </summary>
+        /// <param name="level">the level of the character</param>
+        /// <returns>the appropriate queue for the given character level</returns>
+        public GlobalBattlegroundQueue GetQueue(int level)
+        {
+            return Queues.Get((uint)GetBracketIdForLevel(level));
+        }
 
-		#region Enqueue
-		/// <summary>
-		/// Enqueues a single Character to the global Queue of this Template
-		/// </summary>
-		/// <param name="chr"></param>
-		/// <returns></returns>
-		public BattlegroundRelation EnqueueCharacter(Character chr, BattlegroundSide side)
-		{
-			return GetQueue(chr).Enqueue(chr, side);
-		}
+        #region Enqueue
 
-		/// <summary>
-		/// Tries to enqueue the given Character or -if specified- his/her entire Group
-		/// </summary>
-		/// <param name="chr"></param>
-		/// <param name="asGroup"></param>
-		public void TryEnqueue(Character chr, bool asGroup)
-		{
-			TryEnqueue(chr, asGroup, chr.FactionGroup.GetBattlegroundSide());
-		}
+        /// <summary>
+        /// Enqueues a single Character to the global Queue of this Template
+        /// </summary>
+        /// <param name="chr"></param>
+        /// <returns></returns>
+        public BattlegroundRelation EnqueueCharacter(Character chr, BattlegroundSide side)
+        {
+            return GetQueue(chr).Enqueue(chr, side);
+        }
 
-		/// <summary>
-		/// Tries to enqueue the given Character or -if specified- his/her entire Group
-		/// </summary>
-		/// <param name="chr"></param>
-		/// <param name="asGroup"></param>
-		public void TryEnqueue(Character chr, bool asGroup, BattlegroundSide side)
-		{
-			TryEnqueue(chr, asGroup, 0u, side);
-		}
+        /// <summary>
+        /// Tries to enqueue the given Character or -if specified- his/her entire Group
+        /// </summary>
+        /// <param name="chr"></param>
+        /// <param name="asGroup"></param>
+        public void TryEnqueue(Character chr, bool asGroup)
+        {
+            TryEnqueue(chr, asGroup, chr.FactionGroup.GetBattlegroundSide());
+        }
 
-		/// <summary>
-		/// Tries to enqueue the given Character or -if specified- his/her entire Group
-		/// </summary>
-		/// <param name="chr"></param>
-		/// <param name="asGroup"></param>
-		public void TryEnqueue(Character chr, bool asGroup, uint instanceId)
-		{
-			TryEnqueue(chr, asGroup, instanceId, chr.FactionGroup.GetBattlegroundSide());
-		}
+        /// <summary>
+        /// Tries to enqueue the given Character or -if specified- his/her entire Group
+        /// </summary>
+        /// <param name="chr"></param>
+        /// <param name="asGroup"></param>
+        public void TryEnqueue(Character chr, bool asGroup, BattlegroundSide side)
+        {
+            TryEnqueue(chr, asGroup, 0u, side);
+        }
 
-		/// <summary>
-		/// Tries to enqueue the given character or his whole group for the given battleground.
-		/// </summary>
-		/// <param name="chr">the character who enqueued</param>
-		/// <param name="asGroup">whether or not to enqueue the character or his/her group</param>
-		public void TryEnqueue(Character chr, bool asGroup, uint instanceId, BattlegroundSide side)
-		{
-			// specific instance given
-			if (instanceId != 0)
-			{
-				var queue = GetQueue(chr);
-				if (queue != null)
-				{
-					var bg = queue.GetBattleground(instanceId);
-					if (bg != null && bg.HasQueue)
-					{
-						bg.TryJoin(chr, asGroup, side);
-					}
-				}
-			}
-			else
-			{
-				var teamQueue = GetQueue(chr).GetTeamQueue(side);
-				teamQueue.Enqueue(chr, asGroup);
-			}
-		}
-		#endregion
+        /// <summary>
+        /// Tries to enqueue the given Character or -if specified- his/her entire Group
+        /// </summary>
+        /// <param name="chr"></param>
+        /// <param name="asGroup"></param>
+        public void TryEnqueue(Character chr, bool asGroup, uint instanceId)
+        {
+            TryEnqueue(chr, asGroup, instanceId, chr.FactionGroup.GetBattlegroundSide());
+        }
 
-		public override string ToString()
-		{
-			return GetType().Name +
-				string.Format(" (Id: {0} (#{1}), Map: {2} (#{3})",
-				Id, (int)Id, MapId, (int)MapId);
-		}
+        /// <summary>
+        /// Tries to enqueue the given character or his whole group for the given battleground.
+        /// </summary>
+        /// <param name="chr">the character who enqueued</param>
+        /// <param name="asGroup">whether or not to enqueue the character or his/her group</param>
+        public void TryEnqueue(Character chr, bool asGroup, uint instanceId, BattlegroundSide side)
+        {
+            // specific instance given
+            if (instanceId != 0)
+            {
+                var queue = GetQueue(chr);
+                if (queue != null)
+                {
+                    var bg = queue.GetBattleground(instanceId);
+                    if (bg != null && bg.HasQueue)
+                    {
+                        bg.TryJoin(chr, asGroup, side);
+                    }
+                }
+            }
+            else
+            {
+                var teamQueue = GetQueue(chr).GetTeamQueue(side);
+                teamQueue.Enqueue(chr, asGroup);
+            }
+        }
 
-		public void SetStartPos()
-		{
-			WorldSafeLocation allianceStartPos;
-			BattlegroundMgr.WorldSafeLocs.TryGetValue(AllianceStartPosIndex, out allianceStartPos);
-			if (allianceStartPos != null)
-			{
-				var allianceStartPosVector = new Vector3(allianceStartPos.X, allianceStartPos.Y, allianceStartPos.Z);
+        #endregion Enqueue
 
-				if (allianceStartPosVector.X != 0.0f && allianceStartPosVector.Y != 0.0f && allianceStartPosVector.Z != 0.0f)
-					AllianceStartPosition = allianceStartPosVector;
+        public override string ToString()
+        {
+            return GetType().Name +
+                string.Format(" (Id: {0} (#{1}), Map: {2} (#{3})",
+                Id, (int)Id, MapId, (int)MapId);
+        }
 
-			}
+        public void SetStartPos()
+        {
+            WorldSafeLocation allianceStartPos;
+            BattlegroundMgr.WorldSafeLocs.TryGetValue(AllianceStartPosIndex, out allianceStartPos);
+            if (allianceStartPos != null)
+            {
+                var allianceStartPosVector = new Vector3(allianceStartPos.X, allianceStartPos.Y, allianceStartPos.Z);
 
-			WorldSafeLocation hordeStartPos;
-			BattlegroundMgr.WorldSafeLocs.TryGetValue(HordeStartPosIndex, out hordeStartPos);
-			if (hordeStartPos != null)
-			{
-				var hordeStartPosVector = new Vector3(hordeStartPos.X, hordeStartPos.Y, hordeStartPos.Z);
+                if (allianceStartPosVector.X != 0.0f && allianceStartPosVector.Y != 0.0f && allianceStartPosVector.Z != 0.0f)
+                    AllianceStartPosition = allianceStartPosVector;
+            }
 
-				if (hordeStartPosVector.X != 0.0f && hordeStartPosVector.Y != 0.0f && hordeStartPosVector.Z != 0.0f)
-					HordeStartPosition = hordeStartPosVector;
-			}
-		}
-	}
+            WorldSafeLocation hordeStartPos;
+            BattlegroundMgr.WorldSafeLocs.TryGetValue(HordeStartPosIndex, out hordeStartPos);
+            if (hordeStartPos != null)
+            {
+                var hordeStartPosVector = new Vector3(hordeStartPos.X, hordeStartPos.Y, hordeStartPos.Z);
+
+                if (hordeStartPosVector.X != 0.0f && hordeStartPosVector.Y != 0.0f && hordeStartPosVector.Z != 0.0f)
+                    HordeStartPosition = hordeStartPosVector;
+            }
+        }
+    }
 }
 
-
 /*
- * 
+ *
 	Logic required to enqueue all group-members (into different Queues):
  *		public void EnqueueGroup(Group group, BattlegroundSide side)
 		{
@@ -297,7 +297,7 @@ namespace WCell.RealmServer.Battlegrounds
 			    }
 			}
 		}
- * 
+ *
 		/// <summary>
 		/// Adds a new Character to the set of request-lists, according to the default ruleset
 		/// </summary>

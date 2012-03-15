@@ -10,433 +10,444 @@ using WCell.Util.Commands;
 
 namespace WCell.RealmServer.Commands
 {
-	public class QuestCommand : RealmServerCommand
-	{
-		protected override void Initialize()
-		{
-			Init("Quest");
-			EnglishParamInfo = "";
-			EnglishDescription = "Provides a set of commands to dynamically change status of Quests and more.";
-		}
+    public class QuestCommand : RealmServerCommand
+    {
+        protected override void Initialize()
+        {
+            Init("Quest");
+            EnglishParamInfo = "";
+            EnglishDescription = "Provides a set of commands to dynamically change status of Quests and more.";
+        }
 
-		#region Reset
-		public class ResetQuestCommand : SubCommand
-		{
-			protected override void Initialize()
-			{
-				Init("Reset", "Start");
-				EnglishParamInfo = "<questid>";
-				EnglishDescription = "Removes all progress of the given Quest (if present) and starts it (again).";
-			}
+        #region Reset
 
-			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
-			{
-				var target = trigger.Args.Target;
+        public class ResetQuestCommand : SubCommand
+        {
+            protected override void Initialize()
+            {
+                Init("Reset", "Start");
+                EnglishParamInfo = "<questid>";
+                EnglishDescription = "Removes all progress of the given Quest (if present) and starts it (again).";
+            }
 
-				if (!(target is Character))
-				{
-					trigger.Reply("Invalid target: {0} - Character-target required.", target);
-				}
-				else
-				{
-					var chr = (Character)target;
-					var id = trigger.Text.NextUInt(0);
+            public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+            {
+                var target = trigger.Args.Target;
 
-					QuestTemplate templ = null;
-					if (id > 0)
-					{
-						templ = QuestMgr.GetTemplate(id);
-					}
+                if (!(target is Character))
+                {
+                    trigger.Reply("Invalid target: {0} - Character-target required.", target);
+                }
+                else
+                {
+                    var chr = (Character)target;
+                    var id = trigger.Text.NextUInt(0);
 
-					if (templ == null)
-					{
-						trigger.Reply("Invalid QuestId: {0}", id);
-					}
-					else
-					{
-						if (!chr.QuestLog.RemoveFinishedQuest(id))
-						{
-							// if its not already been finished, maybe it's still in progress?
-							chr.QuestLog.Cancel(id);
-						}
+                    QuestTemplate templ = null;
+                    if (id > 0)
+                    {
+                        templ = QuestMgr.GetTemplate(id);
+                    }
 
-						var quest = chr.QuestLog.AddQuest(templ);
-						if (quest == null)
-						{
-							trigger.Reply("Could not add Quest: " + templ);
-						}
-						else
-						{
-							trigger.Reply("Quest added: " + templ);
-						}
-					}
-				}
-			}
-		}
-		#endregion
+                    if (templ == null)
+                    {
+                        trigger.Reply("Invalid QuestId: {0}", id);
+                    }
+                    else
+                    {
+                        if (!chr.QuestLog.RemoveFinishedQuest(id))
+                        {
+                            // if its not already been finished, maybe it's still in progress?
+                            chr.QuestLog.Cancel(id);
+                        }
 
-		#region Cancel
-		public class CancelQuestCommand : SubCommand
-		{
-			protected override void Initialize()
-			{
-				Init("Remove", "Cancel");
-				EnglishParamInfo = "<questid>";
-				EnglishDescription = "Removes the given finished or active Quest.";
-			}
+                        var quest = chr.QuestLog.AddQuest(templ);
+                        if (quest == null)
+                        {
+                            trigger.Reply("Could not add Quest: " + templ);
+                        }
+                        else
+                        {
+                            trigger.Reply("Quest added: " + templ);
+                        }
+                    }
+                }
+            }
+        }
 
-			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
-			{
-				var target = trigger.Args.Target;
+        #endregion Reset
 
-				if (!(target is Character))
-				{
-					trigger.Reply("Invalid target: {0} - Character-target required.", target);
-				}
-				else
-				{
-					var chr = (Character)target;
-					var id = trigger.Text.NextUInt(0);
+        #region Cancel
 
-					QuestTemplate quest = null;
-					if (id > 0)
-					{
-						quest = QuestMgr.GetTemplate(id);
-					}
+        public class CancelQuestCommand : SubCommand
+        {
+            protected override void Initialize()
+            {
+                Init("Remove", "Cancel");
+                EnglishParamInfo = "<questid>";
+                EnglishDescription = "Removes the given finished or active Quest.";
+            }
 
-					if (quest == null)
-					{
-						trigger.Reply("Invalid QuestId: {0}", id);
-					}
-					else
-					{
-						if (!chr.QuestLog.RemoveFinishedQuest(id))
-						{
-							// if its not already been finished, maybe it's still in progress?
-							chr.QuestLog.Cancel(id);
-							trigger.Reply("Removed active quest: {0}", quest);
-						}
-						else
-						{
-							trigger.Reply("Removed finished quest: {0}", quest);
-						}
-					}
-				}
-			}
-		}
-		#endregion
+            public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+            {
+                var target = trigger.Args.Target;
 
-		#region GiveReward
-		public class GiveQuestRewardCommand : SubCommand
-		{
-			protected override void Initialize()
-			{
-				Init("GiveReward", "Reward");
-				EnglishParamInfo = "<questid> [<choiceSlot>]";
-				EnglishDescription = "Gives the reward of the given quest to the Character. " +
-					"The optional choiceSlot determines the choosable item (if any)";
-			}
+                if (!(target is Character))
+                {
+                    trigger.Reply("Invalid target: {0} - Character-target required.", target);
+                }
+                else
+                {
+                    var chr = (Character)target;
+                    var id = trigger.Text.NextUInt(0);
 
-			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
-			{
-				var target = trigger.Args.Target;
+                    QuestTemplate quest = null;
+                    if (id > 0)
+                    {
+                        quest = QuestMgr.GetTemplate(id);
+                    }
 
-				if (!(target is Character))
-				{
-					trigger.Reply("Invalid target: {0} - Character-target required.", target);
-				}
-				else
-				{
-					var chr = (Character)target;
-					var id = trigger.Text.NextUInt(0);
-					var slot = trigger.Text.NextUInt(0);
+                    if (quest == null)
+                    {
+                        trigger.Reply("Invalid QuestId: {0}", id);
+                    }
+                    else
+                    {
+                        if (!chr.QuestLog.RemoveFinishedQuest(id))
+                        {
+                            // if its not already been finished, maybe it's still in progress?
+                            chr.QuestLog.Cancel(id);
+                            trigger.Reply("Removed active quest: {0}", quest);
+                        }
+                        else
+                        {
+                            trigger.Reply("Removed finished quest: {0}", quest);
+                        }
+                    }
+                }
+            }
+        }
 
-					QuestTemplate quest = null;
-					if (id > 0)
-					{
-						quest = QuestMgr.GetTemplate(id);
-					}
+        #endregion Cancel
 
-					if (quest == null)
-					{
-						trigger.Reply("Invalid QuestId: {0}", id);
-					}
-					else
-					{
-						quest.GiveRewards(chr, slot);
-						trigger.Reply("Done.");
-					}
-				}
-			}
-		}
-		#endregion
+        #region GiveReward
 
-		#region Goto
-		public class QuestGotoCommand : QuestSubCmd
-		{
-			protected override void Initialize()
-			{
-				Init("Goto");
-				EnglishParamInfo = "<id>[ <starter index>[ <template index>]";
-				EnglishDescription = "Teleports the target to the first starter of the given quest or the one at the given index.";
-			}
+        public class GiveQuestRewardCommand : SubCommand
+        {
+            protected override void Initialize()
+            {
+                Init("GiveReward", "Reward");
+                EnglishParamInfo = "<questid> [<choiceSlot>]";
+                EnglishDescription = "Gives the reward of the given quest to the Character. " +
+                    "The optional choiceSlot determines the choosable item (if any)";
+            }
 
-			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
-			{
-				var target = trigger.Args.Target;
-				if (target == null)
-				{
-					trigger.Reply("No target given.");
-					return;
-				}
-				var quest = GetTemplate(trigger);
+            public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+            {
+                var target = trigger.Args.Target;
 
-				if (quest != null)
-				{
-					var starters = quest.Starters;
-					if (starters.Count == 0)
-					{
-						trigger.Reply("Quest {0} has no Starters.", quest);
-					}
-					else
-					{
-						trigger.Reply("Found {0} Starters: " + starters.ToString(", "), starters.Count);
-						int index;
-						if (trigger.Text.HasNext)
-						{
-							index = trigger.Text.NextInt(-1);
-							if (index < 0 || index >= starters.Count)
-							{
-								trigger.Reply("Invalid starter-index.");
-								return;
-							}
-						}
-						else
-						{
-							index = 0;
-						}
+                if (!(target is Character))
+                {
+                    trigger.Reply("Invalid target: {0} - Character-target required.", target);
+                }
+                else
+                {
+                    var chr = (Character)target;
+                    var id = trigger.Text.NextUInt(0);
+                    var slot = trigger.Text.NextUInt(0);
 
-						var starter = starters[index];
-						var templates = starter.GetInWorldTemplates();
+                    QuestTemplate quest = null;
+                    if (id > 0)
+                    {
+                        quest = QuestMgr.GetTemplate(id);
+                    }
 
-						if (templates == null)
-						{
-							trigger.Reply("Quest starters are not accessible.");
-						}
-						else
-						{
-							trigger.Reply("Found {0} templates: " + templates.ToString(", "), templates.Length);
+                    if (quest == null)
+                    {
+                        trigger.Reply("Invalid QuestId: {0}", id);
+                    }
+                    else
+                    {
+                        quest.GiveRewards(chr, slot);
+                        trigger.Reply("Done.");
+                    }
+                }
+            }
+        }
 
-							int templIndex;
-							if (trigger.Text.HasNext)
-							{
-								templIndex = trigger.Text.NextInt(-1);
-								if (templIndex < 0 || templIndex >= templates.Length)
-								{
-									trigger.Reply("Invalid template-index.");
-									return;
-								}
-							}
-							else
-							{
-								templIndex = 0;
-							}
+        #endregion GiveReward
 
-							var template = templates[templIndex];
+        #region Goto
 
-							if (target.TeleportTo(template))
-							{
-								if (templates.Length > 1 || starters.Count > 1)
-								{
-									trigger.Reply("Going to {0} ({1})", starter, template);
-								}
-							}
-							else
-							{
-								trigger.Reply("Template is located in {0} ({1}) and not accessible.",
-									template.MapId, template.Position);
-							}
-						}
-					}
-				}
-			}
-		}
-		#endregion
+        public class QuestGotoCommand : QuestSubCmd
+        {
+            protected override void Initialize()
+            {
+                Init("Goto");
+                EnglishParamInfo = "<id>[ <starter index>[ <template index>]";
+                EnglishDescription = "Teleports the target to the first starter of the given quest or the one at the given index.";
+            }
 
-		#region Lookup
-		public class QuestLookupCommand : QuestSubCmd
-		{
-			protected override void Initialize()
-			{
-				Init("Lookup", "Find");
-				EnglishParamInfo = "<search terms>";
-				EnglishDescription = "Lists all quests matching the given search term.";
-			}
+            public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+            {
+                var target = trigger.Args.Target;
+                if (target == null)
+                {
+                    trigger.Reply("No target given.");
+                    return;
+                }
+                var quest = GetTemplate(trigger);
 
-			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
-			{
-				var searchTerms = trigger.Text.Remainder.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-				var templates = QuestMgr.Templates.Where(templ => templ != null &&
-					searchTerms.Iterate(term => !templ.DefaultTitle.ContainsIgnoreCase(term)));
+                if (quest != null)
+                {
+                    var starters = quest.Starters;
+                    if (starters.Count == 0)
+                    {
+                        trigger.Reply("Quest {0} has no Starters.", quest);
+                    }
+                    else
+                    {
+                        trigger.Reply("Found {0} Starters: " + starters.ToString(", "), starters.Count);
+                        int index;
+                        if (trigger.Text.HasNext)
+                        {
+                            index = trigger.Text.NextInt(-1);
+                            if (index < 0 || index >= starters.Count)
+                            {
+                                trigger.Reply("Invalid starter-index.");
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            index = 0;
+                        }
 
-				var count = templates.Count();
-				trigger.Reply("Found {0} matching Quests.", count);
+                        var starter = starters[index];
+                        var templates = starter.GetInWorldTemplates();
 
-				var cap = 100;
-				if (count > cap)
-				{
-					trigger.Reply("Cannot display more than " + cap + " matches at a time.");
-				}
-				else
-				{
-					foreach (var templ in templates)
-					{
-						trigger.Reply(templ.ToString());
-					}
-				}
-			}
-		}
-		#endregion
+                        if (templates == null)
+                        {
+                            trigger.Reply("Quest starters are not accessible.");
+                        }
+                        else
+                        {
+                            trigger.Reply("Found {0} templates: " + templates.ToString(", "), templates.Length);
 
-		public abstract class QuestSubCmd : SubCommand
-		{
-			public QuestTemplate GetTemplate(CmdTrigger<RealmServerCmdArgs> trigger)
-			{
-				var id = GetQuestId(trigger);
-				if (id != 0)
-				{
-					var template = QuestMgr.GetTemplate(id);
+                            int templIndex;
+                            if (trigger.Text.HasNext)
+                            {
+                                templIndex = trigger.Text.NextInt(-1);
+                                if (templIndex < 0 || templIndex >= templates.Length)
+                                {
+                                    trigger.Reply("Invalid template-index.");
+                                    return;
+                                }
+                            }
+                            else
+                            {
+                                templIndex = 0;
+                            }
 
-					if (template == null)
-					{
-						trigger.Reply("Invalid Id - Use: 'Quest Lookup <search term>' to find quest-ids.");
-					}
-					return template;
-				}
-				return null;
-			}
+                            var template = templates[templIndex];
 
-			public uint GetQuestId(CmdTrigger<RealmServerCmdArgs> trigger)
-			{
-				var id = trigger.Text.NextUInt(0);
-				if (id == 0)
-				{
-					trigger.Reply("Invalid Id - Use: 'Quest Lookup <search term>' to find quest-ids.");
-					return 0;
-				}
-				return id;
-			}
-		}
-	}
+                            if (target.TeleportTo(template))
+                            {
+                                if (templates.Length > 1 || starters.Count > 1)
+                                {
+                                    trigger.Reply("Going to {0} ({1})", starter, template);
+                                }
+                            }
+                            else
+                            {
+                                trigger.Reply("Template is located in {0} ({1}) and not accessible.",
+                                    template.MapId, template.Position);
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
-	#region SendQuest
-	public class SendQuestCommand : RealmServerCommand
-	{
+        #endregion Goto
 
-		protected override void Initialize()
-		{
-			Init("QuestSend", "SendQuest");
-			EnglishParamInfo = "";
-			EnglishDescription = "Provides a set of debug commands to send quest packets dynamically.";
-		}
+        #region Lookup
 
-		public override ObjectTypeCustom TargetTypes
-		{
-			get { return ObjectTypeCustom.Player; }
-		}
+        public class QuestLookupCommand : QuestSubCmd
+        {
+            protected override void Initialize()
+            {
+                Init("Lookup", "Find");
+                EnglishParamInfo = "<search terms>";
+                EnglishDescription = "Lists all quests matching the given search term.";
+            }
 
-		public class SendQuestInvalidCommand : SubCommand
-		{
-			protected SendQuestInvalidCommand() { }
+            public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+            {
+                var searchTerms = trigger.Text.Remainder.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                var templates = QuestMgr.Templates.Where(templ => templ != null &&
+                    searchTerms.Iterate(term => !templ.DefaultTitle.ContainsIgnoreCase(term)));
 
-			protected override void Initialize()
-			{
-				Init("Invalid");
-				EnglishParamInfo = "<reason>";
-				EnglishDescription = "Sends the SendQuestInvalid packet with the given reason";
-			}
+                var count = templates.Count();
+                trigger.Reply("Found {0} matching Quests.", count);
 
-			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
-			{
-				var value = trigger.Text.NextEnum(QuestInvalidReason.Ok);
-				var target = trigger.Args.Character.Target as Character;
-				if (target != null)
-				{
-					QuestHandler.SendQuestInvalid(target, value);
-				}
-				trigger.Reply("Done.");
-			}
-		}
+                var cap = 100;
+                if (count > cap)
+                {
+                    trigger.Reply("Cannot display more than " + cap + " matches at a time.");
+                }
+                else
+                {
+                    foreach (var templ in templates)
+                    {
+                        trigger.Reply(templ.ToString());
+                    }
+                }
+            }
+        }
 
-		public class SendQuestPushResultCommand : SubCommand
-		{
-			protected override void Initialize()
-			{
-				Init("PushResult");
-				EnglishParamInfo = "<reason>";
-				EnglishDescription = "Sends the SendQuestPushResult packet with the given reason, currently sends from triggering char";
-			}
+        #endregion Lookup
 
-			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
-			{
-				var value = trigger.Text.NextEnum(QuestPushResponse.Busy);
-				var target = trigger.Args.Character.Target as Character;
-				if (target != null)
-				{
-					QuestHandler.SendQuestPushResult(trigger.Args.Character, value, target);
-				}
-				trigger.Reply("Done.");
-			}
-		}
+        public abstract class QuestSubCmd : SubCommand
+        {
+            public QuestTemplate GetTemplate(CmdTrigger<RealmServerCmdArgs> trigger)
+            {
+                var id = GetQuestId(trigger);
+                if (id != 0)
+                {
+                    var template = QuestMgr.GetTemplate(id);
 
-		public class SendQuestGiverQuestDetailsCommand : SubCommand
-		{
-			protected override void Initialize()
-			{
-				Init("GiverQuestDetails");
-				EnglishParamInfo = "<quest id>";
-				EnglishDescription = "Sends the QuestGiverQuestDetails packet with the given quest id";
-			}
+                    if (template == null)
+                    {
+                        trigger.Reply("Invalid Id - Use: 'Quest Lookup <search term>' to find quest-ids.");
+                    }
+                    return template;
+                }
+                return null;
+            }
 
-			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
-			{
-				var qt = QuestMgr.GetTemplate(trigger.Text.NextUInt());
-				if (qt != null)
-				{
-					var questGiver = trigger.Args.Character as IQuestHolder;
-					var questReceiver = (Character)trigger.Args.Character.Target;
-					if (questGiver != null)
-					{
-						QuestHandler.SendDetails(questGiver, qt, questReceiver, false);
-					}
-				}
-				trigger.Reply("Done.");
-			}
-		}
+            public uint GetQuestId(CmdTrigger<RealmServerCmdArgs> trigger)
+            {
+                var id = trigger.Text.NextUInt(0);
+                if (id == 0)
+                {
+                    trigger.Reply("Invalid Id - Use: 'Quest Lookup <search term>' to find quest-ids.");
+                    return 0;
+                }
+                return id;
+            }
+        }
+    }
 
-		public class SendQuestGiverQuestQuestComplete : SubCommand
-		{
-			protected override void Initialize()
-			{
-				Init("GiverQuestComplete");
-				EnglishParamInfo = "<quest id>";
-				EnglishDescription = "Sends the QuestGiverQuestComplete packet with the given quest id";
-			}
+    #region SendQuest
 
-			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
-			{
-				var qt = QuestMgr.GetTemplate(trigger.Text.NextUInt());
-				if (qt != null)
-				{
-					var questReceiver = trigger.Args.Character.Target as Character;
-					if (questReceiver != null)
-					{
-						QuestHandler.SendComplete(qt, questReceiver);
-					}
-				}
-				trigger.Reply("Done.");
-			}
-		}
-	}
-	#endregion
+    public class SendQuestCommand : RealmServerCommand
+    {
+        protected override void Initialize()
+        {
+            Init("QuestSend", "SendQuest");
+            EnglishParamInfo = "";
+            EnglishDescription = "Provides a set of debug commands to send quest packets dynamically.";
+        }
+
+        public override ObjectTypeCustom TargetTypes
+        {
+            get { return ObjectTypeCustom.Player; }
+        }
+
+        public class SendQuestInvalidCommand : SubCommand
+        {
+            protected SendQuestInvalidCommand() { }
+
+            protected override void Initialize()
+            {
+                Init("Invalid");
+                EnglishParamInfo = "<reason>";
+                EnglishDescription = "Sends the SendQuestInvalid packet with the given reason";
+            }
+
+            public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+            {
+                var value = trigger.Text.NextEnum(QuestInvalidReason.Ok);
+                var target = trigger.Args.Character.Target as Character;
+                if (target != null)
+                {
+                    QuestHandler.SendQuestInvalid(target, value);
+                }
+                trigger.Reply("Done.");
+            }
+        }
+
+        public class SendQuestPushResultCommand : SubCommand
+        {
+            protected override void Initialize()
+            {
+                Init("PushResult");
+                EnglishParamInfo = "<reason>";
+                EnglishDescription = "Sends the SendQuestPushResult packet with the given reason, currently sends from triggering char";
+            }
+
+            public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+            {
+                var value = trigger.Text.NextEnum(QuestPushResponse.Busy);
+                var target = trigger.Args.Character.Target as Character;
+                if (target != null)
+                {
+                    QuestHandler.SendQuestPushResult(trigger.Args.Character, value, target);
+                }
+                trigger.Reply("Done.");
+            }
+        }
+
+        public class SendQuestGiverQuestDetailsCommand : SubCommand
+        {
+            protected override void Initialize()
+            {
+                Init("GiverQuestDetails");
+                EnglishParamInfo = "<quest id>";
+                EnglishDescription = "Sends the QuestGiverQuestDetails packet with the given quest id";
+            }
+
+            public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+            {
+                var qt = QuestMgr.GetTemplate(trigger.Text.NextUInt());
+                if (qt != null)
+                {
+                    var questGiver = trigger.Args.Character as IQuestHolder;
+                    var questReceiver = (Character)trigger.Args.Character.Target;
+                    if (questGiver != null)
+                    {
+                        QuestHandler.SendDetails(questGiver, qt, questReceiver, false);
+                    }
+                }
+                trigger.Reply("Done.");
+            }
+        }
+
+        public class SendQuestGiverQuestQuestComplete : SubCommand
+        {
+            protected override void Initialize()
+            {
+                Init("GiverQuestComplete");
+                EnglishParamInfo = "<quest id>";
+                EnglishDescription = "Sends the QuestGiverQuestComplete packet with the given quest id";
+            }
+
+            public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+            {
+                var qt = QuestMgr.GetTemplate(trigger.Text.NextUInt());
+                if (qt != null)
+                {
+                    var questReceiver = trigger.Args.Character.Target as Character;
+                    if (questReceiver != null)
+                    {
+                        QuestHandler.SendComplete(qt, questReceiver);
+                    }
+                }
+                trigger.Reply("Done.");
+            }
+        }
+    }
+
+    #endregion SendQuest
 }

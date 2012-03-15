@@ -22,11 +22,11 @@ namespace WCell.RealmServer.RacesClasses
     /// Defines the basics of the Shaman class.
     /// </summary>
     public class ShamanClass : BaseClass
-	{
-		public override ClassId Id
-		{
-			get { return ClassId.Shaman; }
-		}
+    {
+        public override ClassId Id
+        {
+            get { return ClassId.Shaman; }
+        }
 
         /// <summary>
         /// Calculates attack power for the class at a specific level, Strength and Agility.

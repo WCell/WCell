@@ -1,6 +1,6 @@
 namespace WCell.RealmServer.Calendars
 {
-    class CalendarMgr
+    internal class CalendarMgr
     {
     }
 }

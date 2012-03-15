@@ -22,11 +22,11 @@ namespace WCell.RealmServer.RacesClasses
     /// Defines the basics of the Warlock class.
     /// </summary>
     public class WarlockClass : BaseClass
-	{
-		public override ClassId Id
-		{
-			get { return ClassId.Warlock; }
-		}
+    {
+        public override ClassId Id
+        {
+            get { return ClassId.Warlock; }
+        }
 
         /// <summary>
         /// Calculates attack power for the class at a specific level, Strength and Agility.

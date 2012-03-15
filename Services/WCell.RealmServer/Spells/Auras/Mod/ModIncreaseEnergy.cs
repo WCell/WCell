@@ -19,20 +19,20 @@ using WCell.RealmServer.Modifiers;
 
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
-	/// <summary>
-	/// Increase MaxPower
-	/// </summary>
-	public class ModIncreaseEnergyHandler : AuraEffectHandler
-	{
-		protected override void Apply()
-		{
-			//var powerType = (PowerType)m_spellEffect.MiscValue;
-			m_aura.Auras.Owner.ChangeModifier(StatModifierInt.Power, EffectValue);
-		}
+    /// <summary>
+    /// Increase MaxPower
+    /// </summary>
+    public class ModIncreaseEnergyHandler : AuraEffectHandler
+    {
+        protected override void Apply()
+        {
+            //var powerType = (PowerType)m_spellEffect.MiscValue;
+            m_aura.Auras.Owner.ChangeModifier(StatModifierInt.Power, EffectValue);
+        }
 
-		protected override void Remove(bool cancelled)
-		{
-			m_aura.Auras.Owner.ChangeModifier(StatModifierInt.Power, -EffectValue);
-		}
-	}
+        protected override void Remove(bool cancelled)
+        {
+            m_aura.Auras.Owner.ChangeModifier(StatModifierInt.Power, -EffectValue);
+        }
+    }
 };

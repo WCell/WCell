@@ -16,12 +16,13 @@ using WCell.Util.Threading;
 
 namespace WCell.RealmServer.Battlegrounds.Arenas
 {
-	[ActiveRecord("ArenaTeam", Access = PropertyAccess.Property)]
-	public class ArenaTeam : WCellRecord<ArenaTeam>, INamed, IEnumerable<ArenaTeamMember>, IChatTarget
-	{
+    [ActiveRecord("ArenaTeam", Access = PropertyAccess.Property)]
+    public class ArenaTeam : WCellRecord<ArenaTeam>, INamed, IEnumerable<ArenaTeamMember>, IChatTarget
+    {
         private static readonly NHIdGenerator _idGenerator = new NHIdGenerator(typeof(ArenaTeam), "_id");
 
-		#region Database Fields
+        #region Database Fields
+
         [PrimaryKey(PrimaryKeyType.Assigned, "Id")]
         private long _id
         {
@@ -42,43 +43,47 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
 
         [Field("Type", NotNull = true)]
         private int _type;
-		#endregion
 
-		#region Fields
-		private SpinWaitLock m_syncRoot;
-		private ArenaTeamMember m_leader;
+        #endregion Database Fields
+
+        #region Fields
+
+        private SpinWaitLock m_syncRoot;
+        private ArenaTeamMember m_leader;
         private ArenaTeamStats m_stats;
         private ArenaTeamSlot m_slot;
 
-		public readonly ImmutableDictionary<uint, ArenaTeamMember> Members = new ImmutableDictionary<uint, ArenaTeamMember>();
-		#endregion
+        public readonly ImmutableDictionary<uint, ArenaTeamMember> Members = new ImmutableDictionary<uint, ArenaTeamMember>();
 
-		#region Properties
-		/// <summary>
-		/// The SyncRoot against which to synchronize this arena team(when iterating over it or making certain changes)
-		/// </summary>
-		public SpinWaitLock SyncRoot
-		{
-			get { return m_syncRoot; }
-		}
+        #endregion Fields
 
-		/// <summary>
-		/// Id of this team
-		/// </summary>
-		public uint Id
-		{
-			get { return (uint)_id; }
-		}
+        #region Properties
 
-		/// <summary>
-		/// Arena team's name
-		/// </summary>
-		/// <remarks>length is limited with MAX_ARENATEAM_LENGTH</remarks>
-		public string Name
-		{
+        /// <summary>
+        /// The SyncRoot against which to synchronize this arena team(when iterating over it or making certain changes)
+        /// </summary>
+        public SpinWaitLock SyncRoot
+        {
+            get { return m_syncRoot; }
+        }
+
+        /// <summary>
+        /// Id of this team
+        /// </summary>
+        public uint Id
+        {
+            get { return (uint)_id; }
+        }
+
+        /// <summary>
+        /// Arena team's name
+        /// </summary>
+        /// <remarks>length is limited with MAX_ARENATEAM_LENGTH</remarks>
+        public string Name
+        {
             get { return _name; }
         }
-        
+
         /// <summary>
         /// Type of this arena team
         /// </summary>
@@ -121,7 +126,7 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
             set { m_stats = value; }
             get { return m_stats; }
         }
-         
+
         /// <summary>
         /// Number of arena team's members
         /// </summary>
@@ -130,41 +135,44 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
             get { return Members.Count; }
         }
 
-        #endregion
+        #endregion Properties
 
         #region Constructor
-        public ArenaTeam() 
+
+        public ArenaTeam()
         {
         }
-      
-		/// <summary>
-		/// Creates a new ArenaTeamRecord row in the database with the given information.
-		/// </summary>
-		/// <param name="leader">leader's character record</param>
-		/// <param name="name">the name of the new character</param>
-		/// <returns>the <seealso cref="ArenaTeam"/> object</returns>
-		public ArenaTeam(CharacterRecord leader, string name, uint type)
-			: this()
-		{
-			_id = _idGenerator.Next();
-			_leaderLowId = (int)leader.EntityLowId;
-			_name = name;
+
+        /// <summary>
+        /// Creates a new ArenaTeamRecord row in the database with the given information.
+        /// </summary>
+        /// <param name="leader">leader's character record</param>
+        /// <param name="name">the name of the new character</param>
+        /// <returns>the <seealso cref="ArenaTeam"/> object</returns>
+        public ArenaTeam(CharacterRecord leader, string name, uint type)
+            : this()
+        {
+            _id = _idGenerator.Next();
+            _leaderLowId = (int)leader.EntityLowId;
+            _name = name;
             _type = (int)type;
 
             m_slot = ArenaMgr.GetSlotByType(type);
 
-			m_leader = new ArenaTeamMember(leader, this, true);
+            m_leader = new ArenaTeamMember(leader, this, true);
             m_stats = new ArenaTeamStats(this);
 
-			Members.Add(m_leader.Id, m_leader);
+            Members.Add(m_leader.Id, m_leader);
             m_leader.Create();
-			
+
             RealmServer.IOQueue.AddMessage(Create);
             Register();
-		}
-        #endregion
+        }
+
+        #endregion Constructor
 
         #region Init
+
         /// <summary>
         /// Load & initialize the Team
         /// </summary>
@@ -197,9 +205,11 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
         {
             ArenaMgr.RegisterArenaTeam(this);
         }
-        #endregion
+
+        #endregion Init
 
         #region ArenaTeamMembers
+
         public ArenaTeamMember AddMember(Character chr)
         {
             var member = AddMember(chr.Record);
@@ -220,7 +230,7 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
         {
             ArenaTeamMember newMember;
 
-            if(Members.Count >= Type*2)
+            if (Members.Count >= Type * 2)
                 return null;
 
             SyncRoot.Enter();
@@ -236,7 +246,7 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
 
                 Members.Add(newMember.Id, newMember);
 
-            	newMember.Create();
+                newMember.Create();
                 Update();
             }
             catch (Exception e)
@@ -368,7 +378,7 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
             ArenaTeamMember highestMember = null;
             foreach (var member in Members.Values)
             {
-                    highestMember = member;
+                highestMember = member;
             }
 
             if (highestMember == null)
@@ -380,7 +390,8 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
                 ChangeLeader(highestMember);
             }
         }
-        #endregion
+
+        #endregion ArenaTeamMembers
 
         #region IEnumerable<ArenaTeamMember> Members
 
@@ -400,7 +411,7 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
             }
         }
 
-        #endregion
+        #endregion IEnumerable<ArenaTeamMember> Members
 
         #region IChatTarget
 
@@ -422,14 +433,16 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
 
         /// <summary>
         /// Say something to this target
-        /// </summary>		
+        /// </summary>
         public void SendMessage(IChatter sender, string message)
         {
             //ChatMgr.SendGuildMessage(sender, this, message);
         }
-        #endregion
+
+        #endregion IChatTarget
 
         #region Other
+
         /// <summary>
         /// Requests member by his low id
         /// </summary>
@@ -444,89 +457,91 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
                     if (member.Id == lowMemberId)
                         return member;
                 }
-                
+
                 return null;
             }
         }
+
         /// <summary>
-		/// Requests member by his name
-		/// </summary>
-		/// <param name="name">name of member's character (not case-sensitive)</param>
-		/// <returns>requested member</returns>
-		public ArenaTeamMember this[string name]
-		{
-			get
-			{
-				name = name.ToLower();
+        /// Requests member by his name
+        /// </summary>
+        /// <param name="name">name of member's character (not case-sensitive)</param>
+        /// <returns>requested member</returns>
+        public ArenaTeamMember this[string name]
+        {
+            get
+            {
+                name = name.ToLower();
 
-				foreach (var member in Members.Values)
-				{
-					if (member.Name.ToLower() == name)
-						return member;
-				}
+                foreach (var member in Members.Values)
+                {
+                    if (member.Name.ToLower() == name)
+                        return member;
+                }
 
-				return null;
-			}
-		}
+                return null;
+            }
+        }
 
-		/// <summary>
-		/// Disbands the arena team
-		/// </summary>
-		/// <param name="update">if true, sends event to the team</param>
-		public void Disband()
-		{
-			m_syncRoot.Enter();
-			try
-			{
-				//ArenaTeamHandler.SendEventToTeam(this, ArenaTeamEvents.DISBANDED_S);
+        /// <summary>
+        /// Disbands the arena team
+        /// </summary>
+        /// <param name="update">if true, sends event to the team</param>
+        public void Disband()
+        {
+            m_syncRoot.Enter();
+            try
+            {
+                //ArenaTeamHandler.SendEventToTeam(this, ArenaTeamEvents.DISBANDED_S);
 
-				var members = Members.Values.ToArray();
+                var members = Members.Values.ToArray();
 
-				foreach (var member in members)
-				{
-					RemoveMember(member, false);
-				}
+                foreach (var member in members)
+                {
+                    RemoveMember(member, false);
+                }
 
-				ArenaMgr.UnregisterArenaTeam(this);
-				RealmServer.IOQueue.AddMessage(() => Delete());
-			}
-			finally
-			{
-				m_syncRoot.Exit();
-			}
-		}
+                ArenaMgr.UnregisterArenaTeam(this);
+                RealmServer.IOQueue.AddMessage(() => Delete());
+            }
+            finally
+            {
+                m_syncRoot.Exit();
+            }
+        }
 
-		/// <summary>
-		/// Changes leader of the arena team
-		/// </summary>
-		/// <param name="newLeader">ArenaTeamMember of new leader</param>
-		/// <param name="update">if true, sends event to the team</param>
-		public void ChangeLeader(ArenaTeamMember newLeader)
-		{
-			if (newLeader.ArenaTeam != this)
-				return;
+        /// <summary>
+        /// Changes leader of the arena team
+        /// </summary>
+        /// <param name="newLeader">ArenaTeamMember of new leader</param>
+        /// <param name="update">if true, sends event to the team</param>
+        public void ChangeLeader(ArenaTeamMember newLeader)
+        {
+            if (newLeader.ArenaTeam != this)
+                return;
 
-			var currentLeader = Leader;
+            var currentLeader = Leader;
             currentLeader.Character.SetArenaTeamInfoField(Slot, ArenaTeamInfoType.ARENA_TEAM_MEMBER, 1);
 
-			Leader = newLeader;
+            Leader = newLeader;
             newLeader.Character.SetArenaTeamInfoField(Slot, ArenaTeamInfoType.ARENA_TEAM_MEMBER, 0);
 
-			RealmServer.IOQueue.AddMessage(new Message(() =>
-			{
-				if (currentLeader != null)
-				{
-					currentLeader.Update();
-				}
-				newLeader.Update();
-				Update();
-			}));
+            RealmServer.IOQueue.AddMessage(new Message(() =>
+            {
+                if (currentLeader != null)
+                {
+                    currentLeader.Update();
+                }
+                newLeader.Update();
+                Update();
+            }));
 
-			if (currentLeader != null)
-			{
-				//ArenaTeamHandler.SendEventToTeam(this, ArenaTeamEvents.LEADER_CHANGED_SSS, newLeader, currentLeader);
-			}
+            if (currentLeader != null)
+            {
+                //ArenaTeamHandler.SendEventToTeam(this, ArenaTeamEvents.LEADER_CHANGED_SSS, newLeader, currentLeader);
+            }
         }
-        #endregion
+
+        #endregion Other
     };
 }

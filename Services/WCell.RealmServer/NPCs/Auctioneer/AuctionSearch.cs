@@ -1,23 +1,26 @@
 using System.Collections.Generic;
 using WCell.Constants.Items;
 
-namespace WCell.RealmServer.NPCs.Auctioneer 
+namespace WCell.RealmServer.NPCs.Auctioneer
 {
-    public class AuctionSearch 
+    public class AuctionSearch
     {
         private uint m_maxResultCount = 0;
 
-        public uint MaxResultCount {
+        public uint MaxResultCount
+        {
             get { return m_maxResultCount; }
             set { m_maxResultCount = value; }
         }
 
-        public uint StartIndex {
+        public uint StartIndex
+        {
             get;
             set;
         }
 
-        public string Name {
+        public string Name
+        {
             get;
             set;
         }
@@ -36,13 +39,11 @@ namespace WCell.RealmServer.NPCs.Auctioneer
 
         public bool IsUsable { get; set; }
 
-
-
-        public ICollection<Auction> RetrieveMatchedAuctions(AuctionHouse auctionHouse) 
+        public ICollection<Auction> RetrieveMatchedAuctions(AuctionHouse auctionHouse)
         {
             var matchedAuctions = new List<Auction>();
             var auctions = auctionHouse.Auctions;
-            foreach (var auction in auctions.Values) 
+            foreach (var auction in auctions.Values)
             {
                 var item = AuctionMgr.Instance.AuctionItems[auction.ItemLowId];
                 if (item == null)
@@ -55,7 +56,7 @@ namespace WCell.RealmServer.NPCs.Auctioneer
                 }
 
                 //if (LevelRange1 > 0 && item.Template.Level < LevelRange1)
-                //    continue;               
+                //    continue;
 
                 //if (LevelRange2 > 0 && item.Template.Level > LevelRange2)
                 //    continue;

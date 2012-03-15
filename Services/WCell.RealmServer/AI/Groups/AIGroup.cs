@@ -7,175 +7,175 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.AI.Groups
 {
-	/// <summary>
-	/// 
-	/// </summary>
-	public class AIGroup : IList<NPC>
-	{
-		private NPC m_Leader;
-		private readonly List<NPC> groupList;
+    /// <summary>
+    ///
+    /// </summary>
+    public class AIGroup : IList<NPC>
+    {
+        private NPC m_Leader;
+        private readonly List<NPC> groupList;
 
-		public AIGroup()
-		{
-			groupList = new List<NPC>();
-		}
+        public AIGroup()
+        {
+            groupList = new List<NPC>();
+        }
 
-		public AIGroup(NPC leader)
-			: this()
-		{
-			m_Leader = leader;
-			if (leader != null && !Contains(leader))
-			{
-				Add(leader);
-			}
-		}
+        public AIGroup(NPC leader)
+            : this()
+        {
+            m_Leader = leader;
+            if (leader != null && !Contains(leader))
+            {
+                Add(leader);
+            }
+        }
 
-		public AIGroup(IEnumerable<NPC> mobs)
-		{
-			groupList = new List<NPC>(mobs);
-		}
+        public AIGroup(IEnumerable<NPC> mobs)
+        {
+            groupList = new List<NPC>(mobs);
+        }
 
-		public NPC Leader
-		{
-			get { return m_Leader; }
-			set
-			{
-				m_Leader = value;
-				if (value != null && !Contains(value))
-				{
-					Add(value);
-				}
-			}
-		}
+        public NPC Leader
+        {
+            get { return m_Leader; }
+            set
+            {
+                m_Leader = value;
+                if (value != null && !Contains(value))
+                {
+                    Add(value);
+                }
+            }
+        }
 
-		public virtual BrainState DefaultState
-		{
-			get { return BaseBrain.DefaultBrainState; }
-		}
+        public virtual BrainState DefaultState
+        {
+            get { return BaseBrain.DefaultBrainState; }
+        }
 
-		public virtual UpdatePriority UpdatePriority
-		{
-			get { return UpdatePriority.Background; }
-		}
+        public virtual UpdatePriority UpdatePriority
+        {
+            get { return UpdatePriority.Background; }
+        }
 
-		public void Aggro(Unit unit)
-		{
-			foreach (var mob in this)
-			{
-				mob.ThreatCollection.AddNewIfNotExisted(unit);
-			}
-		}
+        public void Aggro(Unit unit)
+        {
+            foreach (var mob in this)
+            {
+                mob.ThreatCollection.AddNewIfNotExisted(unit);
+            }
+        }
 
-		#region Implementation of IEnumerable
+        #region Implementation of IEnumerable
 
-		public IEnumerator<NPC> GetEnumerator()
-		{
-			return groupList.GetEnumerator();
-		}
+        public IEnumerator<NPC> GetEnumerator()
+        {
+            return groupList.GetEnumerator();
+        }
 
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return GetEnumerator();
-		}
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
 
-		#endregion
+        #endregion Implementation of IEnumerable
 
-		#region Implementation of ICollection<NPC>
+        #region Implementation of ICollection<NPC>
 
-		/// <summary>
-		/// Adds the given NPC to this group
-		/// </summary>
-		public void Add(NPC npc)
-		{
-			if (!npc.IsAlive) return;
+        /// <summary>
+        /// Adds the given NPC to this group
+        /// </summary>
+        public void Add(NPC npc)
+        {
+            if (!npc.IsAlive) return;
 
-			groupList.Add(npc);
-			npc.Group = this;
-			if (Leader == null)
-			{
-				m_Leader = npc;
-			}
-			else if (npc != Leader)
-			{
-				var mainTarget = Leader.ThreatCollection.CurrentAggressor;
-				if (mainTarget != null)
-				{
-					// double threat of leader's main target for the new NPC
-					npc.ThreatCollection[mainTarget] = 2 * npc.ThreatCollection[mainTarget] + 1;
+            groupList.Add(npc);
+            npc.Group = this;
+            if (Leader == null)
+            {
+                m_Leader = npc;
+            }
+            else if (npc != Leader)
+            {
+                var mainTarget = Leader.ThreatCollection.CurrentAggressor;
+                if (mainTarget != null)
+                {
+                    // double threat of leader's main target for the new NPC
+                    npc.ThreatCollection[mainTarget] = 2 * npc.ThreatCollection[mainTarget] + 1;
 
-					// generate threat on all other enemies, too
-					foreach (var hostile in m_Leader.ThreatCollection)
-					{
-						npc.ThreatCollection.AddNewIfNotExisted(hostile.Key);
-					}
-				}
-			}
-		}
+                    // generate threat on all other enemies, too
+                    foreach (var hostile in m_Leader.ThreatCollection)
+                    {
+                        npc.ThreatCollection.AddNewIfNotExisted(hostile.Key);
+                    }
+                }
+            }
+        }
 
-		public void Clear()
-		{
-			groupList.Clear();
-		}
+        public void Clear()
+        {
+            groupList.Clear();
+        }
 
-		public bool Contains(NPC item)
-		{
-			return groupList.Contains(item);
-		}
+        public bool Contains(NPC item)
+        {
+            return groupList.Contains(item);
+        }
 
-		void ICollection<NPC>.CopyTo(NPC[] array, int arrayIndex)
-		{
-			groupList.CopyTo(array, arrayIndex);
-		}
+        void ICollection<NPC>.CopyTo(NPC[] array, int arrayIndex)
+        {
+            groupList.CopyTo(array, arrayIndex);
+        }
 
-		public bool Remove(NPC npc)
-		{
-			if (groupList.Remove(npc))
-			{
-				if (npc == m_Leader)
-				{
-					m_Leader = null;
-				}
-				npc.Group = null;
-				return true;
-			}
-			return false;
-		}
+        public bool Remove(NPC npc)
+        {
+            if (groupList.Remove(npc))
+            {
+                if (npc == m_Leader)
+                {
+                    m_Leader = null;
+                }
+                npc.Group = null;
+                return true;
+            }
+            return false;
+        }
 
-		public int Count
-		{
-			get { return groupList.Count; }
-		}
+        public int Count
+        {
+            get { return groupList.Count; }
+        }
 
-		public bool IsReadOnly
-		{
-			get { return false; }
-		}
+        public bool IsReadOnly
+        {
+            get { return false; }
+        }
 
-		#endregion
+        #endregion Implementation of ICollection<NPC>
 
-		#region Implementation of IList<NPC>
+        #region Implementation of IList<NPC>
 
-		public int IndexOf(NPC item)
-		{
-			return groupList.IndexOf(item);
-		}
+        public int IndexOf(NPC item)
+        {
+            return groupList.IndexOf(item);
+        }
 
-		void IList<NPC>.Insert(int index, NPC item)
-		{
-			throw new NotImplementedException();
-		}
+        void IList<NPC>.Insert(int index, NPC item)
+        {
+            throw new NotImplementedException();
+        }
 
-		public void RemoveAt(int index)
-		{
-			groupList.RemoveAt(index);
-		}
+        public void RemoveAt(int index)
+        {
+            groupList.RemoveAt(index);
+        }
 
-		public NPC this[int index]
-		{
-			get { return groupList[index]; }
-			set { groupList[index] = value; }
-		}
+        public NPC this[int index]
+        {
+            get { return groupList[index]; }
+            set { groupList[index] = value; }
+        }
 
-		#endregion
-	}
+        #endregion Implementation of IList<NPC>
+    }
 }

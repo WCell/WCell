@@ -2,6 +2,6 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 {
     public class GOGuildBankEntry : GOEntry
     {
-		// Does this object have fields (?)
+        // Does this object have fields (?)
     }
 }
