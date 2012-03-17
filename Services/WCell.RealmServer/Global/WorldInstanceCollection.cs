@@ -61,8 +61,8 @@ namespace WCell.RealmServer.Global
 		    _lck.EnterWriteLock();
 		    try
 		    {
-		        // get again, to make sure that the list was not already created while the lock was being acquired
-			instances = m_instances.Get(map.ToUInt32(null));
+		        // get again, to make sure that the list was not already created while the lock was being acquiredinstances = Instances.Get(map.ToUInt32(null));
+			instances = Instances.Get(map.ToUInt32(null));
 			if (instances == null)
 				Instances[map.ToUInt32(null)] = instances = new TM[10];
 		    }
