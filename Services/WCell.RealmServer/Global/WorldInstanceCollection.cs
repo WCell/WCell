@@ -62,7 +62,9 @@ namespace WCell.RealmServer.Global
 		    try
 		    {
 		        // get again, to make sure that the list was not already created while the lock was being acquired
-		        Instances[map.ToUInt32(null)] = instances = new TM[10];
+			instances = m_instances.Get(map.ToUInt32(null));
+			if (instances == null)
+				Instances[map.ToUInt32(null)] = instances = new TM[10];
 		    }
 		    finally
 		    {
