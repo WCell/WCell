@@ -344,7 +344,16 @@ namespace WCell.AuthServer.IPC
             var id = GetCurrentId();
             var realm = AuthenticationServer.GetRealmById(id);
             var ep = GetCurrentEndPoint();
-        	string epAddress = epAddress = ep == null ? channel.RemoteAddress.Uri.Host : ep.Address;
+            if(ep == null)
+            {
+            	epAddress = channel.RemoteAddress.Uri.Host;
+            	log.Warn("IPC::RegisterRealmServer Endpoint is null, falling back to: {0}", channel.RemoteAddress.Uri.Host);
+            }
+            else
+            {
+            	epAddress = ep.Address;
+            	log.Info("IPC::RegisterRealmServer Endpoint address is: {0}", ep.Address);
+            }
 			
 
             // find out whether this server is just re-registering (came back online)
