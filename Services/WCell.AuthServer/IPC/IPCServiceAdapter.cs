@@ -344,6 +344,7 @@ namespace WCell.AuthServer.IPC
             var id = GetCurrentId();
             var realm = AuthenticationServer.GetRealmById(id);
             var ep = GetCurrentEndPoint();
+            string epAddress = "";
             if(ep == null)
             {
             	epAddress = channel.RemoteAddress.Uri.Host;
