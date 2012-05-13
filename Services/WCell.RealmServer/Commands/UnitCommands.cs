@@ -28,7 +28,7 @@ namespace WCell.RealmServer.Commands
 				target = target.Target;
 				if (target == null)
 				{
-					trigger.Reply("Invalid Target.");
+					trigger.Reply("Invalid target.");
 					return;
 				}
 			}

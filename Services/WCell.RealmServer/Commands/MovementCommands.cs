@@ -394,7 +394,7 @@ namespace WCell.RealmServer.Commands
 
 			if (target == null)
 			{
-				trigger.Reply("Invalid Target: " + targetName);
+				trigger.Reply("Invalid target: " + targetName);
 			}
 			else
 			{

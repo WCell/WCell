@@ -595,7 +595,7 @@ namespace WCell.RealmServer.Commands
 	//            var target = targetObj as NPC;
 	//            if (target == null)
 	//            {
-	//                trigger.Reply("Invalid Target.");
+	//                trigger.Reply("Invalid target.");
 	//                return;
 	//            }
 
@@ -635,7 +635,7 @@ namespace WCell.RealmServer.Commands
 	//            var target = targetObj as NPC;
 	//            if (target == null)
 	//            {
-	//                trigger.Reply("Invalid Target.");
+	//                trigger.Reply("Invalid target.");
 	//                return;
 	//            }
 
