@@ -164,7 +164,7 @@ namespace WCell.RealmServer.Commands
 			}
 			if (chr == null || ReferenceEquals(chr, banner))
 			{
-				trigger.Reply("Invalid Target.");
+				trigger.Reply("Invalid target.");
 				return;
 			}
 
