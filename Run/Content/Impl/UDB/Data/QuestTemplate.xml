@@ -64,7 +64,8 @@
     <!--http://wiki.udbforums.org/index.php/Quest_template#RewOrReqMoney-->
     <Flat Name="RewMoney" Column="RewOrReqMoney" />
     <Flat Name="MoneyAtMaxLevel" Column="RewMoneyMaxLevel" />
-    <Flat Name="RewSpell" Column="RewSpellCast" />
+    <flat name="RewSpell" Comumn="RewSpell" />
+    <Flat Name="RewSpellCast" Column="RewSpellCast" />
 	<Flat Name="RewHonorMultiplier" Column="RewHonorMultiplier" />
 	<Flat Name="RewHonorAddition" Column="RewHonorAddition" />
 	

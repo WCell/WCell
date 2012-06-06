@@ -280,6 +280,10 @@ namespace WCell.RealmServer.Quests
 					QuestHandler.SendQuestInvalid(m_Owner, QuestInvalidReason.NoRequiredItems);
 					return null;
 				}
+                if (!qt.CastInitialSpell(m_Owner))
+                {
+                    //This should always return true
+                }
 			}
 
 			if ((qt.TimeLimit > 0) && m_timedQuest == null)
