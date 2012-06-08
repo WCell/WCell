@@ -625,9 +625,9 @@ namespace WCell.RealmServer.Quests
 						{
 							UpdateInteractionCount(quest, interaction, npc);
 						}
-						for (i = 0; i < UnitConstants.MaxKillCredits; i++)
+						for (var j = 0; j < UnitConstants.MaxKillCredits; j++)
 						{
-							if (interaction.TemplateId.Contains(npc.Entry.KillCreditIds[i]))
+							if (interaction.TemplateId.Contains(npc.Entry.KillCreditIds[j]))
 							{
 								UpdateInteractionCount(quest, interaction, npc);
 							}
