@@ -83,6 +83,16 @@ namespace WCell.Constants
 		Leader
 	}
 
+    /// <summary>
+    /// Values sent int the SMSG_PARTY_COMMAND_RESULT packet
+    /// </summary>
+    public enum GroupResultType
+    {
+        Invite = 0,
+        Leave = 2,
+        Swap = 4
+    }
+
 	/// <summary>
 	/// Values sent in the SMSG_PARTY_COMMAND_RESULT packet
 	/// </summary>
