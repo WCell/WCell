@@ -29,14 +29,14 @@ namespace WCell.Core
 		}
 
 		[NotVariable]
-		public static bool ConsoleActive = true;
+		public bool ConsoleActive = true;
 
 		static ServerApp()
 		{
 			StartTime = DateTime.Now;
 		}
 
-		protected static Logger s_log = LogManager.GetCurrentClassLogger();
+		protected static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
 		protected static string s_entryLocation;
 		protected static readonly string[] EmptyStringArr = new string[0];
@@ -48,7 +48,7 @@ namespace WCell.Core
 
 		protected ServerApp()
 		{
-			s_log.Debug(Resources.ServerStarting);
+			Log.Debug(Resources.ServerStarting);
 
 			AppUtil.AddApplicationExitHandler(_OnShutdown);
 //#if !DEBUG
@@ -255,12 +255,12 @@ namespace WCell.Core
 
 				if (!(_running = TcpEnabledEnabled))
 				{
-					s_log.Fatal(Resources.InitFailed);
+					Log.Fatal(Resources.InitFailed);
 					Stop();
 					return;
 				}
 
-				s_log.Info("Server started - Max Working Set Size: {0}", Process.GetCurrentProcess().MaxWorkingSet);
+				Log.Info("Server started - Max Working Set Size: {0}", Process.GetCurrentProcess().MaxWorkingSet);
 				//GC.Collect(2, GCCollectionMode.Optimized);
 				UpdateTitle();
 
@@ -272,7 +272,7 @@ namespace WCell.Core
 			}
 			else
 			{
-				s_log.Fatal(Resources.InitFailed);
+				Log.Fatal(Resources.InitFailed);
 				Stop();
 			}
 		}
@@ -337,7 +337,7 @@ namespace WCell.Core
 			OnShutdown();
 
 			Stop();
-			s_log.Info(Resources.ProcessExited);
+			Log.Info(Resources.ProcessExited);
 			Thread.Sleep(1000);		// any last words?
 
 			Process.GetCurrentProcess().CloseMainWindow();

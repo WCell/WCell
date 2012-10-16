@@ -13,17 +13,14 @@ namespace WCell.RealmServer.Spells.Effects
 		{
 		}
 
-		public override void Initialize(ref SpellFailedReason failReason)
+		public override SpellFailedReason Initialize()
 		{
 			if ((m_cast.TargetLoc.X == 0 || m_cast.TargetLoc.Y == 0))
 			{
-				failReason = SpellFailedReason.BadTargets;
+				return SpellFailedReason.BadTargets;
 			}
 
-			//if (zone != null && !zone.Flags.And(ZoneFlags.CanHearthAndResurrectFromArea))
-			//{
-			//    failReason = SpellFailedReason.NotHere;
-			//}
+			return SpellFailedReason.Ok;
 		}
 
 		public override void Apply()

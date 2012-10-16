@@ -33,24 +33,25 @@ namespace WCell.RealmServer.Spells.Effects
 		{
 		}
 
-		public override void Initialize(ref SpellFailedReason failReason)
+		public override SpellFailedReason Initialize()
 		{
 			if (m_cast.TargetItem == null)
 			{
-				failReason = SpellFailedReason.ItemNotReady;
+				return SpellFailedReason.ItemNotReady;
 			}
-			else
+
+			var templ = m_cast.TargetItem.Template;
+			if (templ.RequiredDisenchantingLevel == -1)
 			{
-				var templ = m_cast.TargetItem.Template;
-				if (templ.RequiredDisenchantingLevel == -1)
-				{
-					failReason = SpellFailedReason.CantBeDisenchanted;
-				}
-				else if (templ.RequiredDisenchantingLevel > m_cast.CasterChar.Skills.GetValue(SkillId.Enchanting))
-				{
-					failReason = SpellFailedReason.CantBeDisenchantedSkill;
-				}
+				return SpellFailedReason.CantBeDisenchanted;
 			}
+
+			if (templ.RequiredDisenchantingLevel > m_cast.CasterChar.Skills.GetValue(SkillId.Enchanting))
+			{
+				return SpellFailedReason.CantBeDisenchantedSkill;
+			}
+
+			return SpellFailedReason.Ok;
 		}
 
 		public override void Apply()

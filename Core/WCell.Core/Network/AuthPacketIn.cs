@@ -23,21 +23,21 @@ namespace WCell.AuthServer
     /// <summary>
     /// Represents an inbound packet from the client.
     /// </summary>
-    public class AuthPacketIn : PacketIn
+    public sealed class AuthPacketIn : PacketIn
     {
         #region Properties
 
         /// <summary>
         /// Constant indicating this <c>AuthPacketIn</c> header size.
         /// </summary>
-        private const int HEADER_SIZE = 1;
+        private const int _headerSize = 1;
 
         /// <summary>
         /// The <c>AuthPacketOut</c> header size.
         /// </summary>
         public override int HeaderSize
         {
-            get { return HEADER_SIZE; }
+            get { return _headerSize; }
         }
 
         #endregion

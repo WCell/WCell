@@ -300,4 +300,9 @@ namespace WCell.Constants
 		Moonkin = 0x40000000,
 		SpiritOfRedemption = 0x80000000
 	}
+
+	public static class UnitConstants
+	{
+		public const uint MaxKillCredits = 2;
+	}
 }

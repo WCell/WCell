@@ -1,11 +1,8 @@
 /*************************************************************************
  *
- *   file		: SystemInformation.cs
+ *   file		: ClientInformation.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
- *   last changed	: $LastChangedDate: 2008-07-27 16:18:17 +0800 (Sun, 27 Jul 2008) $
- 
- *   revision		: $Rev: 582 $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -15,11 +12,15 @@
  *************************************************************************/
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using Cell.Core;
+using NLog;
 using WCell.Constants;
+using WCell.Core.Localization;
 using WCell.Core.Network;
+using OperatingSystem = WCell.Constants.OperatingSystem;
 
 namespace WCell.Core
 {
@@ -30,14 +31,17 @@ namespace WCell.Core
 	[Serializable]
 	public class ClientInformation
 	{
-		private OperatingSystem m_operatingSys;
-		private ProcessorArchitecture m_architecture;
-		private ClientLocale m_Locale;
+	    private static readonly Logger Log = LogManager.GetCurrentClassLogger();
+        
+        private ClientType _clientInstallationType;
+		private OperatingSystem _operatingSys;
+		private ProcessorArchitecture _architecture;
+		private ClientLocale _locale;
 
 		public ClientInformation()
 		{
-			m_operatingSys = OperatingSystem.Win;
-			m_architecture = ProcessorArchitecture.x86;
+			_operatingSys = OperatingSystem.Win;
+			_architecture = ProcessorArchitecture.x86;
 			Locale = ClientLocale.English;
 			TimeZone = 0x258;
 			IPAddress = new XmlIPAddress(System.Net.IPAddress.Loopback);
@@ -45,59 +49,36 @@ namespace WCell.Core
 
 		private ClientInformation(PacketIn packet)
 		{
-			packet.SkipBytes(1);	// 0
+            try
+            {
+                ProtocolVersion = packet.ReadByte();
+                var claimedRemainingLength = packet.ReadUInt16();
+                if (packet.RemainingLength != claimedRemainingLength)
+                {
+                    Log.Warn(WCell_Core.Auth_Logon_with_invalid_length, claimedRemainingLength, packet.RemainingLength);
+                }
 
-			try
-			{
-				Version = new ClientVersion(packet.ReadBytes(5));
-				Architecture = packet.ReadReversedString();
-				OS = packet.ReadReversedString();
+                var clientInstallationType = packet.ReadFourCC();
+                _clientInstallationType = ClientTypeUtility.Lookup(clientInstallationType);
 
-				var localeStr = packet.ReadReversedPascalString(4);
-				if (!ClientLocales.Lookup(localeStr, out m_Locale))
-				{
-					m_Locale = WCellConstants.DefaultLocale;
-				}
+                Version = new ClientVersion(packet.ReadBytes(5));
+                Architecture = packet.ReadFourCC().TrimEnd('\0');
+                OS = packet.ReadFourCC().TrimEnd('\0');
 
-				TimeZone = BitConverter.ToUInt32(packet.ReadBytes(4), 0);
-				IPAddress = new XmlIPAddress(packet.ReadBytes(4));
-			}
-			catch
-			{
-			}
+                var locale = packet.ReadFourCC();
+                _locale = ClientLocaleUtility.Lookup(locale);
+
+                TimeZone = BitConverter.ToUInt32(packet.ReadBytes(4), 0);
+                IPAddress = new XmlIPAddress(packet.ReadBytes(4));
+
+                Log.Info(WCell_Core.ClientInformationFourCCs, ProtocolVersion, ClientInstallationType, Version, Architecture, OS, Locale, TimeZone, IPAddress);
+            }
+            catch
+            {
+            }
 		}
 
-		/// <summary>
-		/// Possible operating systems of the client
-		/// </summary>
-		public enum OperatingSystem
-		{
-			/// <summary>
-			/// Mac OSX
-			/// </summary>
-			OSX,
-			/// <summary>
-			/// Any supported version of Windows
-			/// </summary>
-			Win
-		}
-
-		/// <summary>
-		/// Possible CPU architectures of the client
-		/// </summary>
-		public enum ProcessorArchitecture
-		{
-			/// <summary>
-			/// x86 architecture (AMD, Intel, Via)
-			/// </summary>
-			x86,
-			/// <summary>
-			/// PowerPC architecture (all pre-2006Q1 Apple computers)
-			/// </summary>
-			PPC
-		}
-
-		/// <summary>
+	    /// <summary>
 		/// The game client version of the client.
 		/// </summary>
 		public ClientVersion Version
@@ -106,17 +87,35 @@ namespace WCell.Core
 			set;
 		}
 
+        /// <summary>
+        /// The game client version of the client.
+        /// </summary>
+        public byte ProtocolVersion
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// The type of client that is attempting to connect.
+        /// </summary>
+        public ClientType ClientInstallationType
+        {
+            get { return _clientInstallationType; }
+            set { _clientInstallationType = value; }
+        }
+
 		/// <summary>
 		/// The operating system of the client.
 		/// </summary>
 		public string OS
 		{
-			get { return Enum.GetName(typeof(OperatingSystem), m_operatingSys); }
+			get { return Enum.GetName(typeof(OperatingSystem), _operatingSys); }
 			set
 			{
 				try
 				{
-					m_operatingSys = (OperatingSystem)Enum.Parse(typeof(OperatingSystem), value);
+					_operatingSys = (OperatingSystem)Enum.Parse(typeof(OperatingSystem), value);
 				}
 				catch (ArgumentException)
 				{
@@ -129,12 +128,12 @@ namespace WCell.Core
 		/// </summary>
 		public string Architecture
 		{
-			get { return Enum.GetName(typeof(ProcessorArchitecture), m_architecture); }
+			get { return Enum.GetName(typeof(ProcessorArchitecture), _architecture); }
 			set
 			{
 				try
 				{
-					m_architecture = (ProcessorArchitecture)Enum.Parse(typeof(ProcessorArchitecture), value);
+					_architecture = (ProcessorArchitecture)Enum.Parse(typeof(ProcessorArchitecture), value);
 				}
 				catch (ArgumentException)
 				{
@@ -147,8 +146,8 @@ namespace WCell.Core
 		/// </summary>
 		public ClientLocale Locale
 		{
-			get { return m_Locale; }
-			set { m_Locale = value; }
+			get { return _locale; }
+			set { _locale = value; }
 		}
 
 		/// <summary>
@@ -188,12 +187,15 @@ namespace WCell.Core
 		/// <returns>the binary representation of the <see cref="ClientInformation" /> object</returns>
 		public static byte[] Serialize(ClientInformation clientInfo)
 		{
-			MemoryStream memStream = new MemoryStream();
-			BinaryFormatter bFormatter = new BinaryFormatter();
+		    byte[] memStreamArray;
+            using (var memStream = new MemoryStream())
+            {
+                var bFormatter = new BinaryFormatter();
 
-			bFormatter.Serialize(memStream, clientInfo);
-
-			return memStream.ToArray();
+                bFormatter.Serialize(memStream, clientInfo);
+                memStreamArray = memStream.ToArray();
+            }
+		    return memStreamArray;
 		}
 
 		/// <summary>
@@ -203,12 +205,15 @@ namespace WCell.Core
 		/// <returns>a <see cref="ClientInformation" /> object</returns>
 		public static ClientInformation Deserialize(byte[] rawInfoData)
 		{
-			MemoryStream memStream = new MemoryStream(rawInfoData);
-			BinaryFormatter bFormatter = new BinaryFormatter();
+		    ClientInformation sInfo;
+            using (var memStream = new MemoryStream(rawInfoData))
+            {
+                var bFormatter = new BinaryFormatter();
 
-			ClientInformation sInfo = (ClientInformation)bFormatter.Deserialize(memStream);
+                sInfo = (ClientInformation) bFormatter.Deserialize(memStream);
+            }
 
-			return sInfo;
+		    return sInfo;
 		}
 	}
 }

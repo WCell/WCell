@@ -42,6 +42,9 @@ namespace WCell.RealmServer.NPCs
 
 		public float Orientation { get; set; }
 
+		/// <summary>
+		/// Time to wait at this point in milliseconds
+		/// </summary>
 		public uint WaitTime { get; set; }
 
 		public float GetDistanceToNext()

@@ -13,8 +13,6 @@ using WCell.Terrain.Serialization;
 using WCell.Util.Graphics;
 using WCell.Util.NLog;
 
-using Terrain = WCell.Terrain.Terrain;
-
 namespace WCell.Terrain.GUI
 {
 	public static class TerrainViewerProgram

@@ -574,12 +574,12 @@ namespace WCell.RealmServer.Entities
 			var bar = new uint[PetConstants.PetActionCount];
 			var i = 0;
 
-			byte j;
+			byte j = 0;
 			if (Entry.Spells != null)
 			{
 				var spells = Entry.Spells.GetEnumerator();
 
-				for (j = 0; j < PetConstants.PetSpellCount; j++)
+				for (; j < PetConstants.PetSpellCount; j++)
 				{
 					if (!spells.MoveNext())
 					{
@@ -609,18 +609,8 @@ namespace WCell.RealmServer.Entities
 					}
 				}
 			}
-			else
-			{
-				for (j = 0; j < PetConstants.PetSpellCount; j++)
-				{
-					bar[i++] = new PetActionEntry
-					           	{
-					           		Type = PetActionType.CastSpell2 + j
-					           	}.Raw;
-				}
-			}
-
-			for (; j < PetConstants.PetActionCount; j++)
+            
+            for (; j < PetConstants.PetActionCount; j++)
 			{
 				bar[i++] = new PetActionEntry
 				           	{

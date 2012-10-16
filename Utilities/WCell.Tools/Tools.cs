@@ -57,7 +57,7 @@ namespace WCell.Tools
 	{
 		public static readonly ToolMgr Mgr = new ToolMgr();
 
-		private static readonly Logger log = LogManager.GetCurrentClassLogger();
+		private static readonly Logger Log = LogManager.GetCurrentClassLogger();
 		public static ToolConfig Config;
 
 		/// <summary>
@@ -83,7 +83,7 @@ namespace WCell.Tools
 
 			LogUtil.SetupConsoleLogging();
 
-			Console.WriteLine("Output Directory: " + new DirectoryInfo(ToolConfig.OutputDir).FullName);
+			Log.Info("Output Directory: {0}", new DirectoryInfo(ToolConfig.OutputDir).FullName);
 			if (!Directory.Exists(ToolConfig.OutputDir))
 			{
 				Directory.CreateDirectory(ToolConfig.OutputDir);
@@ -94,12 +94,12 @@ namespace WCell.Tools
 			RealmServerConfiguration.Initialize();
 			RealmAddonMgr.AddonDir = ToolConfig.AddonDir;
 
-			Console.WriteLine("Content Directory: " + new DirectoryInfo(RealmServerConfiguration.ContentDir).FullName);
+            Log.Info("Content Directory: " + new DirectoryInfo(RealmServerConfiguration.ContentDir).FullName);
 
 			if (!InitMgr.Initialize(typeof(Tools).Assembly) ||
 				!InitMgr.Initialize(typeof(PacketAnalyzer).Assembly))
 			{
-				log.Error("Cancelled - Press any key to exit...");
+				Log.Error("Cancelled - Press any key to exit...");
 				Console.ReadKey();
 				return false;
 			}
@@ -108,7 +108,7 @@ namespace WCell.Tools
 			{
 				if (!InitMgr.Initialize(asm))
 				{
-					log.Error("Unable to initialize Assembly: \"{0}\" - Press any key to exit...", asm);
+					Log.Error("Unable to initialize Assembly: \"{0}\" - Press any key to exit...", asm);
 					return false;
 				}
 				ToolCommandHandler.Instance.AddCmdsOfAsm(asm);
@@ -175,10 +175,10 @@ namespace WCell.Tools
 			Console.WriteLine(" to quit");
 
 			var defaultTrigger = new ToolCommandHandler.ConsoleCmdTrigger(new ToolCmdArgs());
-			string line;
-			do
+		    do
 			{
-				try
+			    string line;
+			    try
 				{
 					line = Console.ReadLine();
 				}

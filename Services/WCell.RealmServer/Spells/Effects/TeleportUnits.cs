@@ -28,7 +28,7 @@ namespace WCell.RealmServer.Spells.Effects
 		{
 		}
 
-		public override void Initialize(ref SpellFailedReason failReason)
+		public override SpellFailedReason Initialize()
 		{
 			var casterUnit = Cast.CasterUnit as NPC;
 			if(casterUnit != null && casterUnit.Entry.IsEventTrigger)
@@ -37,14 +37,10 @@ namespace WCell.RealmServer.Spells.Effects
 			else if (!Effect.Spell.IsHearthStoneSpell &&
 				(m_cast.TargetLoc.X == 0 || m_cast.TargetLoc.Y == 0))
 			{
-				failReason = SpellFailedReason.BadTargets;
+				return SpellFailedReason.BadTargets;
 			}
 
-			//var zone = m_cast.Caster.Zone;
-			//if (zone != null && !zone.Flags.And(ZoneFlags.CanHearthAndResurrectFromArea))
-			//{
-			//    failReason = SpellFailedReason.NotHere;
-			//}
+			return SpellFailedReason.Ok;
 		}
 
 		public override SpellFailedReason InitializeTarget(WorldObject target)

@@ -43,17 +43,13 @@ namespace WCell.RealmServer
 	[XmlRoot("WCellConfig")]
 	public class RealmServerConfiguration : WCellConfig<RealmServerConfiguration>
 	{
-		private static readonly Logger log = LogManager.GetCurrentClassLogger();
+		private static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
 		private const string ConfigFilename = "RealmServerConfig.xml";
 
-		private static RealmServerConfiguration s_instance;
-		public static RealmServerConfiguration Instance
-		{
-			get { return s_instance; }
-		}
+	    public static RealmServerConfiguration Instance { get; private set; }
 
-		public override string FilePath
+	    public override string FilePath
 		{
 			get { return GetFullPath(ConfigFilename); }
 			set
@@ -64,7 +60,7 @@ namespace WCell.RealmServer
 
 		public static readonly string BinaryRoot = "../";
 
-		private static string contentDirName = BinaryRoot + "Content/";
+		private static string _contentDirName = BinaryRoot + "Content/";
 
 		public readonly static HashSet<string> BadWords = new HashSet<string>();
 
@@ -75,14 +71,14 @@ namespace WCell.RealmServer
 			set;
 		}
 
-		private static bool m_Loaded;
+		private static bool _loaded;
 
 		public static bool Loaded
 		{
-			get { return m_Loaded; }
+			get { return _loaded; }
 			protected set
 			{
-				m_Loaded = value;
+				_loaded = value;
 				RealmServ.Instance.SetTitle("{0} - {1} ...", RealmServ.Instance, RealmLocalizer.Instance.Translate(DefaultLocale, RealmLangKey.Initializing));
 			}
 		}
@@ -94,14 +90,14 @@ namespace WCell.RealmServer
 			get { return GetContentPath(LangDirName) + "/"; }
 		}
 
-		private static ClientLocale defaultLocale = ClientLocale.English;
+		private static ClientLocale _defaultLocale = ClientLocale.English;
 
 		public static ClientLocale DefaultLocale
 		{
-			get { return defaultLocale; }
+			get { return _defaultLocale; }
 			set
 			{
-				defaultLocale = value;
+				_defaultLocale = value;
 				WCellConstants.DefaultLocale = value;
 			}
 		}
@@ -114,23 +110,23 @@ namespace WCell.RealmServer
 				Loaded = true;
 				BadWordString = "";
 
-				s_instance.AddVariablesOfAsm<VariableAttribute>(typeof(RealmServerConfiguration).Assembly);
+				Instance.AddVariablesOfAsm<VariableAttribute>(typeof(RealmServerConfiguration).Assembly);
 				//s_instance = Load(RealmServerConfiguration.ConfigPath);
 				try
 				{
-					if (!s_instance.Load())
+					if (!Instance.Load())
 					{
-						s_instance.Save(true, false);
-						log.Warn("Config-file \"{0}\" not found - Created new file.", Instance.FilePath);
-						log.Warn("Please take a little time to configure your server and then restart the Application.");
-						log.Warn("See http://wiki.wcell.org/index.php/Configuration for more information.");
+						Instance.Save(true, false);
+						Log.Warn("Config-file \"{0}\" not found - Created new file.", Instance.FilePath);
+						Log.Warn("Please take a little time to configure your server and then restart the Application.");
+						Log.Warn("See http://wiki.wcell.org/index.php/Configuration for more information.");
 						return false;
 					}
 				}
 				catch (Exception e)
 				{
 					LogUtil.ErrorException(e, "Unable to load Configuration.");
-					log.Error("Please correct the invalid values in your configuration file and restart the Applicaton.");
+					Log.Error("Please correct the invalid values in your configuration file and restart the Applicaton.");
 					return false;
 				}
 			}
@@ -142,38 +138,34 @@ namespace WCell.RealmServer
 		[Initialization(InitializationPass.Fifth)]
 		public static void InitializeRoles()
 		{
-			foreach (var def in s_instance.Definitions.Values)
-			{
-				//def.Initialize();
-			}
 		}
 
 		[Initialization(InitializationPass.Last)]
 		public static void PerformAutoSave()
 		{
-			if (s_instance.AutoSave)
+			if (Instance.AutoSave)
 			{
-				s_instance.Save(true, true);
+				Instance.Save(true, true);
 			}
 		}
 
 		internal static void OnError(string msg)
 		{
-			log.Warn("<Config>" + msg);
+			Log.Warn("<Config>" + msg);
 		}
 
 		internal static void OnError(string msg, params object[] args)
 		{
-			log.Warn("<Config>" + String.Format(msg, args));
+			Log.Warn("<Config>" + String.Format(msg, args));
 		}
 
-		private readonly AppConfig m_cfg;
+		private readonly AppConfig _cfg;
 
 		protected RealmServerConfiguration()
 			: base(OnError)
 		{
 			RootNodeName = "WCellConfig";
-			s_instance = this;
+			Instance = this;
 		}
 
 		/// <summary>
@@ -183,11 +175,11 @@ namespace WCell.RealmServer
 		public RealmServerConfiguration(string executablePath)
 			: this()
 		{
-			m_cfg = new AppConfig(executablePath);
+			_cfg = new AppConfig(executablePath);
 		}
 
 		/// <summary>
-		/// The host address to listen of for game connections.
+		/// The host address to listen on for game connections.
 		/// </summary>
 		public static string Host = IPAddress.Loopback.ToString();
 
@@ -201,17 +193,17 @@ namespace WCell.RealmServer
 		/// </summary>
 		public static int Port = 8085;
 
-		private static string realmName = "Change the RealmName in the Config!";
+		private static string _realmName = "Change the RealmName in the Config!";
 
 		/// <summary>
 		/// The name of this server
 		/// </summary>
 		public static string RealmName
 		{
-			get { return realmName; }
+			get { return _realmName; }
 			set
 			{
-				realmName = value;
+				_realmName = value;
 				if (RealmServ.Instance.IsRunning)
 				{
 					RealmServ.Instance.SetTitle(RealmServ.Instance.ToString());
@@ -225,19 +217,19 @@ namespace WCell.RealmServer
 		/// </summary>
 		//public static string ConfigDir = "cfg";
 
-		private static RealmServerType serverType = RealmServerType.PVP;
+		private static RealmServerType _serverType = RealmServerType.PVP;
 
 		/// <summary>
 		/// Type of server
 		/// </summary>
 		public static RealmServerType ServerType
 		{
-			get { return serverType; }
+			get { return _serverType; }
 			set
 			{
-				if (serverType != value)
+				if (_serverType != value)
 				{
-					serverType = value;
+					_serverType = value;
 					if (RealmServ.Instance.IsRunning)
 					{
 						RealmServ.Instance.UpdateRealm();
@@ -246,20 +238,20 @@ namespace WCell.RealmServer
 			}
 		}
 
-		private static RealmStatus status = RealmStatus.Open;
+		private static RealmStatus _status = RealmStatus.Open;
 
 		/// <summary>
 		/// The status can be Open or Locked (a Locked Realm can only be accessed by Staff members)
 		/// </summary>
 		public static RealmStatus Status
 		{
-			get { return status; }
+			get { return _status; }
 			set
 			{
-				if (status != value)
+				if (_status != value)
 				{
-					var oldStatus = status;
-					status = value;
+					var oldStatus = _status;
+					_status = value;
 					if (RealmServ.Instance.IsRunning)
 					{
 						RealmServ.Instance.OnStatusChange(oldStatus);
@@ -268,17 +260,17 @@ namespace WCell.RealmServer
 			}
 		}
 
-		private static RealmCategory category = RealmCategory.Development;
+		private static RealmCategory _category = RealmCategory.Development;
 
 		/// <summary>
 		/// The Category of this RealmServer
 		/// </summary>
 		public static RealmCategory Category
 		{
-			get { return category; }
+			get { return _category; }
 			set
 			{
-				category = value;
+				_category = value;
 				if (RealmServ.Instance.IsRunning)
 				{
 					RealmServ.Instance.UpdateRealm();
@@ -286,17 +278,17 @@ namespace WCell.RealmServer
 			}
 		}
 
-		private static RealmFlags flags = RealmFlags.Recommended;
+		private static RealmFlags _flags = RealmFlags.Recommended;
 
 		/// <summary>
 		/// The flags of this RealmServer
 		/// </summary>
 		public static RealmFlags Flags
 		{
-			get { return flags; }
+			get { return _flags; }
 			set
 			{
-				flags = value;
+				_flags = value;
 				if (RealmServ.Instance.IsRunning)
 				{
 					RealmServ.Instance.UpdateRealm();
@@ -321,7 +313,7 @@ namespace WCell.RealmServer
 			}
 		}
 
-		private static bool registerExternalAddress;
+		private static bool _registerExternalAddress;
 
 		/// <summary>
 		/// Whether or not to try and register the outside-most IP this computer
@@ -329,10 +321,10 @@ namespace WCell.RealmServer
 		/// </summary>
 		public static bool RegisterExternalAddress
 		{
-			get { return registerExternalAddress; }
+			get { return _registerExternalAddress; }
 			set
 			{
-				registerExternalAddress = value;
+				_registerExternalAddress = value;
 				if (RealmServ.Instance.IsRunning)
 				{
 					RealmServ.Instance.UpdateRealm();
@@ -343,9 +335,9 @@ namespace WCell.RealmServer
 		/// <summary>
 		/// The type of database we're connecting to. (e.g. MySQL, mssql2005, Oracle, etc)
 		/// </summary>
-		public static string DBType = "mysql5";
+		public static string DatabaseType = "mysql5";
 
-		private static string dbConnectionString = @"Server=127.0.0.1;Port=3306;Database=WCellRealmServer;CharSet=utf8;Uid=root;Pwd=;";
+		private static string _dbConnectionString = @"Server=127.0.0.1;Port=3306;Database=WCellRealmServer;CharSet=utf8;Uid=root;Pwd=;";
 
 		/// <summary>
 		/// The connection string for the authentication server database.
@@ -353,8 +345,8 @@ namespace WCell.RealmServer
 		[Variable(IsFileOnly = true)]
 		public static string DBConnectionString
 		{
-			get { return dbConnectionString; }
-			set { dbConnectionString = value; }
+			get { return _dbConnectionString; }
+			set { _dbConnectionString = value; }
 		}
 
 		/// <summary>
@@ -392,7 +384,7 @@ namespace WCell.RealmServer
 		/// </summary>
 		public static int CompressionLevel = 7;
 
-		private static float ingameMinutePerSecond = 0.0166666666666f;
+		private static float _ingameMinutePerSecond = 0.0166666666666f;
 
 		/// <summary>
 		/// The speed of time in ingame minute per real-time second.
@@ -402,7 +394,7 @@ namespace WCell.RealmServer
 		[Variable("TimeSpeed")]
 		public static float IngameMinutesPerSecond
 		{
-			get { return ingameMinutePerSecond; }
+			get { return _ingameMinutePerSecond; }
 			set
 			{
 				if (value > 60)
@@ -415,7 +407,7 @@ namespace WCell.RealmServer
 				{
 					// make sure to reset before changing the speed
 					RealmServ.ResetTimeStart();
-					ingameMinutePerSecond = value;
+					_ingameMinutePerSecond = value;
 					foreach (var chr in World.GetAllCharacters())
 					{
 						CharacterHandler.SendTimeSpeed(chr);
@@ -423,7 +415,7 @@ namespace WCell.RealmServer
 				}
 				else
 				{
-					ingameMinutePerSecond = value;
+					_ingameMinutePerSecond = value;
 				}
 			}
 		}
@@ -435,13 +427,13 @@ namespace WCell.RealmServer
 		[Variable("ContentDir")]
 		public static string ContentDirName
 		{
-			get { return contentDirName; }
-			set { contentDirName = value; }
+			get { return _contentDirName; }
+			set { _contentDirName = value; }
 		}
 
 		public static string ContentDir
 		{
-			get { return GetFullPath(contentDirName); }
+			get { return GetFullPath(ContentDirName); }
 		}
 
 		public static string DBCFolderName = "dbc" + WCellInfo.RequiredVersion.BasicString;
@@ -494,7 +486,8 @@ namespace WCell.RealmServer
 		{
 			if (!Path.IsPathRooted(file))
 			{
-				return Path.Combine(s_instance.m_cfg.ExecutableFile.Directory.FullName, file);
+			    if (Instance._cfg.ExecutableFile.Directory != null)
+			        return Path.Combine(Instance._cfg.ExecutableFile.Directory.FullName, file);
 			}
 			return file;
 		}

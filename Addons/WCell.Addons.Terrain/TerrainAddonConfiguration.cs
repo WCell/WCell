@@ -36,7 +36,7 @@ namespace WCell.Addons.Terrain
 			{
 				Loaded = true;
 				FilePath = Path.Combine(CollisionAddon.Instance.Context.File.DirectoryName,
-					"TerrainAddonConfig.xml");
+					ConfigFileName);
 				AutoSave = true;
 				AddVariablesOfAsm<VariableAttribute>(typeof(TerrainAddonConfiguration).Assembly);
 

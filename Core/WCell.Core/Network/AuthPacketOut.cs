@@ -27,14 +27,14 @@ namespace WCell.AuthServer
         /// <summary>
         /// Constant indicating this <c>AuthPacketOut</c> header size.
         /// </summary>
-        private const int HEADER_SIZE = 2;
+        private const int _headerSize = 2;
 
         /// <summary>
         /// The <c>AuthPacketOut</c> header size.
         /// </summary>
         public override int HeaderSize
         {
-            get { return HEADER_SIZE; }
+            get { return _headerSize; }
         }
 
         /// <summary>
@@ -60,11 +60,11 @@ namespace WCell.AuthServer
         /// <summary>
         /// Default constructor.
         /// </summary>
-        /// <param name="packetOpcode">the opcode of the packet</param>
-        public AuthPacketOut(AuthServerOpCode packetOpcode)
-            : base(new PacketId(packetOpcode))
+        /// <param name="packetOpCode">the opcode of the packet</param>
+        public AuthPacketOut(AuthServerOpCode packetOpCode)
+            : base(new PacketId(packetOpCode))
         {
-            base.WriteByte((byte)packetOpcode);
+            base.WriteByte((byte)packetOpCode);
         }
     }
 }

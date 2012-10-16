@@ -23,6 +23,7 @@ using WCell.Constants.Looting;
 using WCell.Constants.NPCs;
 using WCell.Constants.Quests;
 using WCell.Constants.Updates;
+using WCell.Constants;
 using WCell.Core;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
@@ -279,6 +280,10 @@ namespace WCell.RealmServer.Quests
 					QuestHandler.SendQuestInvalid(m_Owner, QuestInvalidReason.NoRequiredItems);
 					return null;
 				}
+                if (!qt.CastInitialSpell(m_Owner))
+                {
+                    //This should always return true
+                }
 			}
 
 			if ((qt.TimeLimit > 0) && m_timedQuest == null)
@@ -619,6 +624,13 @@ namespace WCell.RealmServer.Quests
 						if (interaction.TemplateId.Contains(npc.Entry.Id))
 						{
 							UpdateInteractionCount(quest, interaction, npc);
+						}
+						for (var j = 0; j < UnitConstants.MaxKillCredits; j++)
+						{
+							if (interaction.TemplateId.Contains(npc.Entry.KillCreditIds[j]))
+							{
+								UpdateInteractionCount(quest, interaction, npc);
+							}
 						}
 					}
 				}

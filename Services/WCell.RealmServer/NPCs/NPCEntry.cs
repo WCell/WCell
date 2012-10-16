@@ -136,10 +136,16 @@ namespace WCell.RealmServer.NPCs
 		}
 
 		/// <summary>
-		/// Ids of quests that this NPC is responsible for (sent in a packet)
+		/// Ids of creatures which simulate a death when this entry die
 		/// </summary>
-		[Persistent(4)]
-		public uint[] QuestIds = new uint[4];
+		[Persistent(2)]
+		public uint[] KillCreditIds = new uint[UnitConstants.MaxKillCredits];
+
+		/// <summary>
+		/// Ids of items this NPC drops in relation to quests (sent in a packet)
+		/// </summary>
+		[Persistent(6)]
+		public uint[] QuestItems = new uint[6];
 
 		[NotPersistent]
 		public bool GeneratesXp;
@@ -276,6 +282,10 @@ namespace WCell.RealmServer.NPCs
 		public int MinMana;
 
 		public int MaxMana;
+
+		public float ModHealth;
+
+		public float ModMana;
 
 		public DamageSchool DamageSchool;
 
@@ -481,7 +491,10 @@ namespace WCell.RealmServer.NPCs
 		#endregion
 
 		#region Movement & Speed
-		public MovementType MovementType;
+		//TODO: Rename to something more meaningful
+		public AIMotionGenerationType MovementType;
+
+		//public MovementType MovementType;
 
 		/// <summary>
 		/// The factor to be applied to the default speed for this kind of NPC
@@ -494,11 +507,7 @@ namespace WCell.RealmServer.NPCs
 
 		public float FlySpeed;
 
-		/// <summary>
-		/// Whether the spawns from this entry should roam on randomly generated WPs
-		/// </summary>
-		[NotPersistent]
-		public bool MovesRandomly = true;
+		public uint MovementId;
 		#endregion
 
 		#region Loot
@@ -847,8 +856,6 @@ namespace WCell.RealmServer.NPCs
 
 			AggroBaseRange = AggroBaseRangeDefault;
 
-			MovesRandomly = NPCFlags == NPCFlags.None;
-
 			NPCId = (NPCId)Id;
 
 			DefaultDecayDelayMillis = _DefaultDecayDelayMillis;
@@ -863,7 +870,6 @@ namespace WCell.RealmServer.NPCs
 			{
 				IsEventTrigger = true;
 				IsIdle = false;
-				MovesRandomly = false;
 			}
 
 			if (Resistances == null)
@@ -1260,6 +1266,26 @@ namespace WCell.RealmServer.NPCs
 				}
 				writer.WriteLine("DifficultyOverrides: {0}", parts.ToString("; "));
 			}
+
+			if (KillCreditIds != null && KillCreditIds.Any(id => id != 0))
+			{
+				var parts = new List<string>(2);
+				for (var i = 0u; i < UnitConstants.MaxKillCredits; i++)
+				{
+					var id = KillCreditIds[i];
+					if (id != 0)
+					{
+						var entry = NPCMgr.GetEntry(id);
+						if (entry != null)
+						{
+							parts.Add(id + " (" + (uint)id + ")");
+						}
+					}
+				}
+				writer.WriteLine("KillCredits: {0}", parts.ToString("; "));
+			}
+
+
 			//if (inclFaction)	
 			//{
 			//    writer.WriteLineNotDefault(DefaultFactionId, "Faction: " + DefaultFactionId);

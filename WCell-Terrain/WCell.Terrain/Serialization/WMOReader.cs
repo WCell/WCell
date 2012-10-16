@@ -629,7 +629,12 @@ namespace WCell.Terrain.Serialization
 		    var setDefs = new List<DoodadSet>(setIndices.Count);
 		    foreach (var index in setIndices)
 		    {
-		        setDefs.Add(wmoRoot.DoodadSets[index]);
+				if (index >= wmoRoot.DoodadSets.Length)
+				{
+					log.Error("Invalid index {0} into wmoRoot.DoodadSet array with id", index, curDoodadSet);
+					continue;
+				}
+		    	setDefs.Add(wmoRoot.DoodadSets[index]);
 		    }
 
 		    var m2List = new List<M2>();
@@ -640,6 +645,11 @@ namespace WCell.Terrain.Serialization
 				for (var i = doodadSetOffset; i < (doodadSetOffset + doodadSetCount); i++)
 				{
 					var curDoodadDef = wmoRoot.DoodadDefinitions[i];
+					if (string.IsNullOrEmpty(curDoodadDef.FilePath))
+					{
+						log.Error("Encountered Doodad with empty file path");
+						continue;
+					}
 					var curM2 = M2Reader.ReadM2(librarian, curDoodadDef.FilePath, true);
 
 					var tempIndices = new List<int>();

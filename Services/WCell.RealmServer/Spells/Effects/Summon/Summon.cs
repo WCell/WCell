@@ -39,16 +39,16 @@ namespace WCell.RealmServer.Spells.Effects
 			// 
 		}
 
-		public override void Initialize(ref SpellFailedReason failReason)
+		public override SpellFailedReason Initialize()
 		{
 			var id = (NPCId)Effect.MiscValue;
 			entry = NPCMgr.GetEntry(id);
 			if (entry == null)
 			{
 				LogManager.GetCurrentClassLogger().Warn("The NPC for Summon-Spell {0} does not exist: {1} (Are NPCs loaded?)", Effect.Spell, id);
-				failReason = SpellFailedReason.Error;
-				return;
+				return SpellFailedReason.Error;
 			}
+			return SpellFailedReason.Ok;
 		}
 
 		public virtual SummonType SummonType

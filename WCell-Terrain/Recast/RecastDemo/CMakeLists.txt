@@ -10,6 +10,7 @@ SET(recastdemo_SRCS
 	Source/InputGeom.cpp
 	Source/main.cpp
 	Source/MeshLoaderObj.cpp
+	Source/NavMeshPruneTool.cpp
 	Source/NavMeshTesterTool.cpp
 	Source/OffMeshConnectionTool.cpp
 	Source/PerfTimer.cpp
@@ -34,6 +35,7 @@ SET(recastdemo_HDRS
 	Include/imguiRenderGL.h
 	Include/InputGeom.h
 	Include/MeshLoaderObj.h
+	Include/NavMeshPruneTool.h
 	Include/NavMeshTesterTool.h
 	Include/OffMeshConnectionTool.h
 	Include/PerfTimer.h
@@ -49,14 +51,13 @@ SET(recastdemo_HDRS
 	Include/ValueHistory.h
 )
 
+IF(MSVC)
+	# Look in the Contrib directory for SDL when building with MSVC
+	SET(CMAKE_PREFIX_PATH Contrib/SDL)
+ENDIF(MSVC)
+
 FIND_PACKAGE(OpenGL REQUIRED)
-IF(WIN32)
-	FIND_LIBRARY(SDL_LIBRARY NAME SDL PATHS Contrib/SDL/lib)
-	FIND_LIBRARY(SDLMAIN_LIBRARY NAME SDLmain PATHS Contrib/SDL/lib)
-	SET(SDL_INCLUDE_DIR Contrib/SDL/include)
-ELSE(WIN32)
-	FIND_PACKAGE(SDL REQUIRED)
-ENDIF(WIN32)
+FIND_PACKAGE(SDL REQUIRED)
 
 INCLUDE_DIRECTORIES(Include 
 	Contrib

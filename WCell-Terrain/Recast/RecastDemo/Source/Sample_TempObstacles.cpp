@@ -914,6 +914,7 @@ void Sample_TempObstacles::handleRender()
 			duDebugDrawNavMeshPortals(&dd, *m_navMesh);
 		if (m_drawMode == DRAWMODE_NAVMESH_NODES)
 			duDebugDrawNavMeshNodes(&dd, *m_navQuery);
+		duDebugDrawNavMeshPolysWithFlags(&dd, *m_navMesh, SAMPLE_POLYFLAGS_DISABLED, duRGBA(0,0,0,128));
 	}
 	
 	
@@ -1165,6 +1166,18 @@ bool Sample_TempObstacles::handleBuild()
 	
 	m_cacheBuildTimeMs = m_ctx->getAccumulatedTime(RC_TIMER_TOTAL)/1000.0f;
 	m_cacheBuildMemUsage = m_talloc->high;
+	
+
+	const dtNavMesh* nav = m_navMesh;
+	int navmeshMemUsage = 0;
+	for (int i = 0; i < nav->getMaxTiles(); ++i)
+	{
+		const dtMeshTile* tile = nav->getTile(i);
+		if (tile->header)
+			navmeshMemUsage += tile->dataSize;
+	}
+	printf("navmeshMemUsage = %.1f kB", navmeshMemUsage/1024.0f);
+		
 	
 	if (m_tool)
 		m_tool->init(this);

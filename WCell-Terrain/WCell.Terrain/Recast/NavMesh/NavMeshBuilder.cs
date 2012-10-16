@@ -135,9 +135,19 @@ namespace WCell.Terrain.Recast.NavMesh
 
 			if (!exists)
 			{
-				Directory.CreateDirectory(new FileInfo(inputFile).Directory.FullName);
-				Directory.CreateDirectory(new FileInfo(navMeshFile).Directory.FullName);
-				// export input mesh to file
+			    var directory = new FileInfo(inputFile).Directory;
+			    if (directory != null)
+			    {
+			        Directory.CreateDirectory(directory.FullName);
+			    }
+
+                directory = new FileInfo(navMeshFile).Directory;
+                if (directory != null)
+                {
+                    Directory.CreateDirectory(directory.FullName);
+                }
+
+			    // export input mesh to file
 				ExportRecastInputMesh(tile, inputFile);
 
 				Console.WriteLine("Building new NavMesh...");

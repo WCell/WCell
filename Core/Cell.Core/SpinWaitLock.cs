@@ -15,7 +15,6 @@
  *************************************************************************/
 
 using System;
-using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace Cell.Core
@@ -86,19 +85,12 @@ namespace Cell.Core
 			}
 		}
 
-#if LINUX
-        private static void StallThread()
-        {
-            //Linux doesn't support SwitchToThread()
-            Thread.SpinWait(1);
-        }
-#else
 		private static void StallThread()
 		{
 			// On a single-CPU system, spinning does no good
 			if (IsSingleCpuMachine)
 			{
-				SwitchToThread();
+                NativeMethods.OsSwitchToThread();
 			}
 			else
 			{
@@ -106,9 +98,5 @@ namespace Cell.Core
 				Thread.SpinWait(1);
 			}
 		}
-
-		[DllImport("kernel32", ExactSpelling = true)]
-		private static extern void SwitchToThread();
-#endif
 	}
 }

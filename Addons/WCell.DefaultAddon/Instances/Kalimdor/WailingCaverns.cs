@@ -2,6 +2,7 @@ using System;
 using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
 using WCell.Core.Initialization;
+using WCell.RealmServer.AI;
 using WCell.RealmServer.AI.Actions.Combat;
 using WCell.RealmServer.AI.Brains;
 using WCell.RealmServer.Entities;
@@ -15,7 +16,7 @@ using WCell.RealmServer.Spells.Targeting;
 /// Date: 6/11/2009
 ///
 
-namespace WCell.Addons.Default.Instances.Kalimdor
+namespace WCell.Addons.Default.Instances
 {
 	public class WailingCaverns : BaseInstance
 	{
@@ -184,10 +185,6 @@ namespace WCell.Addons.Default.Instances.Kalimdor
 			{
 				FatalBite = SpellHandler.Get(SpellId.FatalBite);
 				FatalBite.AISettings.IdleTimeAfterCastMillis = 1000;
-				FatalBite.OverrideAITargetDefinitions(
-					DefaultTargetAdders.AddAreaSource, 									// Adder
-					DefaultTargetEvaluators.RandomEvaluator, 							// Evaluator
-					DefaultTargetFilters.IsHostile, DefaultTargetFilters.IsPlayer);		// Filters
 			}
 
 			public override void Start()
@@ -224,7 +221,6 @@ namespace WCell.Addons.Default.Instances.Kalimdor
 		public class LordCobrahnAttackAction : AIAttackAction
 		{
 			internal static Spell CobrahnSerpentForm, DruidsSlumber, LightningBolt, Poison;
-			private bool _isCastCobrahnSerpentForm;
 			private int _phase;
 
 			public LordCobrahnAttackAction(NPC lordCobrahn)
@@ -240,26 +236,14 @@ namespace WCell.Addons.Default.Instances.Kalimdor
 				DruidsSlumber = SpellHandler.Get(SpellId.DruidsSlumber);
 				DruidsSlumber.AISettings.SetCooldownRange(13000, 20000);
 				DruidsSlumber.AISettings.IdleTimeAfterCastMillis = 1000;
-				DruidsSlumber.OverrideAITargetDefinitions(
-					DefaultTargetAdders.AddAreaSource, 									// Adder
-					DefaultTargetEvaluators.RandomEvaluator, 							// Evaluator
-					DefaultTargetFilters.IsHostile, DefaultTargetFilters.IsPlayer);		// Filters
 
 				LightningBolt = SpellHandler.Get(SpellId.LightningBolt);
 				LightningBolt.AISettings.SetCooldownRange(2000, 4000);
 				LightningBolt.AISettings.IdleTimeAfterCastMillis = 1000;
-				LightningBolt.OverrideAITargetDefinitions(
-					DefaultTargetAdders.AddAreaSource, 									// Adder
-					DefaultTargetEvaluators.RandomEvaluator, 							// Evaluator
-					DefaultTargetFilters.IsHostile, DefaultTargetFilters.IsPlayer);		// Filters
 
 				Poison = SpellHandler.Get(SpellId.EffectPoison);
 				Poison.AISettings.SetCooldownRange(12000, 20000);
 				Poison.AISettings.IdleTimeAfterCastMillis = 1000;
-				Poison.OverrideAITargetDefinitions(
-					DefaultTargetAdders.AddAreaSource, 									// Adder
-					DefaultTargetEvaluators.RandomEvaluator, 							// Evaluator
-					DefaultTargetFilters.IsHostile, DefaultTargetFilters.IsPlayer);		// Filters
 			}
 			
 			public override void Update()
@@ -363,10 +347,6 @@ namespace WCell.Addons.Default.Instances.Kalimdor
 				LightningBolt = SpellHandler.Get(SpellId.LightningBolt);
 				LightningBolt.AISettings.SetCooldownRange(2000, 4000);
 				LightningBolt.AISettings.IdleTimeAfterCastMillis = 1000;
-				LightningBolt.OverrideAITargetDefinitions(
-					DefaultTargetAdders.AddAreaSource, 									// Adder
-					DefaultTargetEvaluators.RandomEvaluator, 							// Evaluator
-					DefaultTargetFilters.IsHostile, DefaultTargetFilters.IsPlayer);		// Filters
 			}
 
 			public override void Start()
@@ -874,15 +854,8 @@ namespace WCell.Addons.Default.Instances.Kalimdor
 
 		public class DruidoftheFangAttackAction : AIAttackAction
 		{
-			private const int Interval = 1;
 			internal static Spell LightningBolt, DruidsSlumber, HealingTouch, SerpentForm;
-
-			private int _druidsSlumberTick;
-			private int _healingTouchTick;
-			private int _lightningBoltTick;
-			private int _serpentFormTick;
-			private int _phase = 1;
-			private DateTime _timeSinceLastInterval;
+			private int _phase = 0;
 
 			public DruidoftheFangAttackAction(NPC druidoftheFang)
 				: base(druidoftheFang)
@@ -892,115 +865,69 @@ namespace WCell.Addons.Default.Instances.Kalimdor
 			[Initialization(InitializationPass.Second)]
 			public static void InitDruidoftheFang()
 			{
-				LightningBolt = SpellHandler.Get(SpellId.LightningBolt);
-				DruidsSlumber = SpellHandler.Get(SpellId.DruidsSlumber);
-				HealingTouch = SpellHandler.Get(SpellId.ClassSkillHealingTouchRank3);
-				SerpentForm = SpellHandler.Get(SpellId.SerpentFormShapeshift);
-			}
+                SerpentForm = SpellHandler.Get(SpellId.SerpentFormShapeshift);
 
-			public override void Start()
-			{
-				_timeSinceLastInterval = DateTime.Now;
-				base.Start();
+                DruidsSlumber = SpellHandler.Get(SpellId.DruidsSlumber);
+                DruidsSlumber.AISettings.SetCooldownRange(10000, 20000);
+                DruidsSlumber.AISettings.IdleTimeAfterCastMillis = 1000;
+
+                LightningBolt = SpellHandler.Get(SpellId.LightningBolt);
+                LightningBolt.AISettings.SetCooldownRange(2000, 4000);
+                LightningBolt.AISettings.IdleTimeAfterCastMillis = 1000;
+
+                HealingTouch = SpellHandler.Get(SpellId.ClassSkillHealingTouchRank3);
+                HealingTouch.AISettings.SetCooldownRange(12000, 18000);
+                HealingTouch.AISettings.IdleTimeAfterCastMillis = 1000;
 			}
 
 			public override void Update()
 			{
-				DateTime timeNow = DateTime.Now;
-				TimeSpan timeBetween = timeNow - _timeSinceLastInterval;
+                if (_phase == 0)
+                {
+                    _phase = 1;
+                    m_owner.Spells.AddSpell(LightningBolt);
+                    m_owner.Spells.AddSpell(DruidsSlumber);
+                    m_owner.Spells.AddSpell(HealingTouch);
+                }
+                
+                if (m_owner.PowerPct <= 15 && _phase == 1)
+                {
+                    _phase = 2;
+#if PEPSI_DEBUG
+                    m_owner.Say("Moving to Phase {0}", _phase);
+#endif
+                }
+                else if(m_owner.PowerPct >= 30 && _phase == 2)
+                {
+                    _phase = 1;
+#if PEPSI_DEBUG
+                    m_owner.Say("Moving to Phase {0}", _phase);
+#endif
+                }
+                
+                if (m_owner.HealthPct <= 50)
+                {
+                    if (m_owner.Auras[SerpentForm] == null)
+                    {
+                        m_owner.SpellCast.TriggerSelf(SerpentForm);
+                    }
+                }
 
-				if (m_owner.HealthPct <= 50)
-				{
-					_phase = 3;
-				}
-				if (m_owner.IsEvading)
-				{
-					_phase = 0;
-				}
-
-				if (timeBetween.TotalSeconds >= Interval)
-				{
-					_timeSinceLastInterval = timeNow;
-					if (CheckSpellCast())
-					{
-						// idle a little after casting a spell
-						m_owner.Idle(1000);
-						return;
-					}
-				}
+                if(_phase == 2 && m_owner.Brain.State != BrainState.Evade)
+                {
+                    m_owner.Brain.State = BrainState.Evade;
+                }
+                
+                //if (m_owner.IsEvading)
+                //{
+                //    _phase = 4;
+#if PEPSI_DEBUG
+                    //m_owner.Say("Moving to Phase {0}", _phase);
+#endif
+                //    m_owner.Spells.Clear();
+                //}
 
 				base.Update();
-			}
-
-			private bool CheckSpellCast()
-			{
-				_lightningBoltTick++;
-				_druidsSlumberTick++;
-				_healingTouchTick++;
-				_serpentFormTick++;
-
-				if (_phase == 1)
-				{
-					if (m_owner.PowerPct <= 15)
-					{
-						_phase = 2;
-					}
-
-					if (_lightningBoltTick >= Random.Next(2, 4))
-					{
-						Character chr = m_owner.GetNearbyRandomHostileCharacter();
-						if (chr != null)
-						{
-							_lightningBoltTick = 0;
-							m_owner.SpellCast.Start(LightningBolt, false, chr);
-							return true;
-						}
-					}
-
-					if (_druidsSlumberTick >= Random.Next(10, 20))
-					{
-						Character chr = m_owner.GetNearbyRandomHostileCharacter();
-						if (chr != null)
-						{
-							_druidsSlumberTick = 0;
-							m_owner.SpellCast.Start(DruidsSlumber, false, chr);
-							return true;
-						}
-					}
-
-					if (_healingTouchTick >= Random.Next(12, 18))
-					{
-						Unit chr = m_owner.GetNearbyRandomAlliedUnit(40);
-						if (chr != null && chr.Health <= chr.MaxHealth - 450)
-						{
-							_healingTouchTick = 0;
-							m_owner.SpellCast.Start(HealingTouch, false, chr);
-							return true;
-						}
-					}
-				}
-
-				else if (_phase == 2)
-				{
-					if (m_owner.PowerPct >= 30)
-					{
-						_phase = 1;
-					}
-				}
-
-				else if (_phase == 3)
-				{
-					if (_serpentFormTick >= Random.Next(20, 25))
-					{
-						if (m_owner != null)
-						{
-							_serpentFormTick = 0;
-							m_owner.SpellCast.Start(SerpentForm, false, m_owner);
-							return true;
-						}
-					}
-				}
-				return false;
 			}
 		}
 
@@ -1017,7 +944,7 @@ namespace WCell.Addons.Default.Instances.Kalimdor
 
 			public override void OnEnterCombat()
 			{
-				m_owner.SpellCast.Start(SpellHandler.Get(SpellId.LightningBolt), false, m_owner.GetNearbyRandomHostileCharacter());
+				m_owner.SpellCast.Start(SpellHandler.Get(SpellId.LightningBolt));
 
 				base.OnEnterCombat();
 			}

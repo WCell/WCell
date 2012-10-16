@@ -429,7 +429,7 @@ namespace WCell.RealmServer
 			}
 			else
 			{
-				s_log.Warn("Tried to unregister non-registered account: " + acc);
+				Log.Warn("Tried to unregister non-registered account: " + acc);
 			}
 		}
 

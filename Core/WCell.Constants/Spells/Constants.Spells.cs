@@ -698,7 +698,7 @@ namespace WCell.Constants.Spells
 		UnkUnit_0x100 = 0x100,
 		PvPCorpse = 0x200,
 		UnitCorpse = 0x400,
-		Object = 0x800,
+		GameObject = 0x800,
 		TradeItem = 0x1000,
 		String = 0x2000,
 		/// <summary>
@@ -708,8 +708,10 @@ namespace WCell.Constants.Spells
 		Corpse = 0x8000,
 		SpellTargetFlag_Dynamic_0x10000 = 0x10000,
 		Glyph = 0x20000,
-
 		Flag_0x200000 = 0x200000,
+
+		WorldObject = Unit | GameObject | Corpse | PvPCorpse | SpellTargetFlag_Dynamic_0x10000,
+		AnyItem = Item | TradeItem
 	}
 	#endregion
 
@@ -1069,13 +1071,13 @@ namespace WCell.Constants.Spells
 	}
 
 	/// <summary>
-	/// Displayed above target head when spell fails to hit
+	/// In-game displayed above target head when spell fails to affect target
 	/// </summary>
 	public enum CastMissReason : byte
 	{
 		None = 0,
 		Miss = 1,
-		FullResist = 2,
+		Resist = 2,
 		Dodge = 3,
 		Parry = 4,
 		Block = 5,

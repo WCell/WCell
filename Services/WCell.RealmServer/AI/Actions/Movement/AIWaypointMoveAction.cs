@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using WCell.Constants.NPCs;
 using WCell.Constants.Updates;
@@ -12,28 +13,28 @@ namespace WCell.RealmServer.AI.Actions.Movement
 	/// </summary>
 	public class AIWaypointMoveAction : AIAction
 	{
-		protected LinkedList<WaypointEntry> m_waypoints;
-		protected LinkedListNode<WaypointEntry> m_currentWaypoint;
-		protected LinkedListNode<WaypointEntry> m_targetWaypoint;
+		protected LinkedList<WaypointEntry> Waypoints;
+		protected LinkedListNode<WaypointEntry> CurrentWaypoint;
+		protected LinkedListNode<WaypointEntry> TargetWaypoint;
 
 
 		/// <summary>
 		/// The direction of movement on waypoints. True - moving backwards, false - moving forward
 		/// Only used for AIMovementType.ForwardThenBack
 		/// </summary>
-		protected bool m_goingBack;
+		protected bool GoingBack;
 
 		/// <summary>
 		/// Whether we are staying on a waypoint (pause)
 		/// </summary>
-		protected bool m_stayingOnWaypoint;
+		protected bool StayingOnWaypoint;
 
 		/// <summary>
 		/// When to start moving again
 		/// </summary>
-		protected uint m_desiredStartMovingTime;
+		protected uint DesiredStartMovingTime;
 
-		protected AIMovementType _waypointSequence;
+		protected AIMovementType WaypointSequence;
 
 		public AIWaypointMoveAction(Unit owner)
 			: this(owner, AIMovementType.ForwardThenStop)
@@ -43,65 +44,47 @@ namespace WCell.RealmServer.AI.Actions.Movement
 		public AIWaypointMoveAction(Unit owner, AIMovementType waypointSequence)
 			: base(owner)
 		{
-			m_waypoints = new LinkedList<WaypointEntry>();
+			Waypoints = new LinkedList<WaypointEntry>();
 
-			_waypointSequence = waypointSequence;
+			WaypointSequence = waypointSequence;
 		}
 
 		public AIWaypointMoveAction(Unit owner, AIMovementType waypointSequence,
 			LinkedList<WaypointEntry> waypoints)
 			: this(owner, waypointSequence)
 		{
-			if (waypoints == null)
-			{
-				m_waypoints = WaypointEntry.EmptyList;
-			}
-			else
-			{
-				m_waypoints = waypoints;
-			}
+			Waypoints = waypoints ?? WaypointEntry.EmptyList;
 		}
 
 		/// <summary>
 		/// Amount of Waypoints
 		/// </summary>
-		public int Count { get { return m_waypoints.Count; } }
+		public int Count { get { return Waypoints.Count; } }
 
 		public bool IsStayingOnWaypoint
 		{
-			get { return m_stayingOnWaypoint; }
+			get { return StayingOnWaypoint; }
 		}
 
 		public override void Start()
 		{
-			m_stayingOnWaypoint = true;
-			m_desiredStartMovingTime = 0;
+			StayingOnWaypoint = true;
+			DesiredStartMovingTime = 0;
 			m_owner.Movement.MoveType = AIMoveType.Walk;
-
-			var spawn = m_owner.SpawnPoint;
-			if (spawn != null)
-			{
-				var spawnEntry = spawn.SpawnEntry;
-
-				if (spawnEntry != null)
-				{
-					_waypointSequence = spawnEntry.MoveType;
-				}
-			}
 		}
 
 		public override void Update()
 		{
-			if (m_waypoints.Count == 0)
+			if (Waypoints.Count == 0)
 			{
 				return;
 			}
 
-			if (m_stayingOnWaypoint)
+			if (StayingOnWaypoint)
 			{
-				if (Utility.GetSystemTime() >= m_desiredStartMovingTime)
+				if (Utility.GetSystemTime() >= DesiredStartMovingTime)
 				{
-					m_targetWaypoint = GetNextWaypoint();
+					TargetWaypoint = GetNextWaypoint();
 					MoveToTargetWaypoint();
 				}
 			}
@@ -109,17 +92,17 @@ namespace WCell.RealmServer.AI.Actions.Movement
 			{
 				if (m_owner.Movement.Update())
 				{
-					m_currentWaypoint = m_targetWaypoint;
-					if (m_currentWaypoint.Value.Orientation != 0)
+					CurrentWaypoint = TargetWaypoint;
+					if (Math.Abs(CurrentWaypoint.Value.Orientation - 0) > float.Epsilon)
 					{
-						m_owner.Face(m_currentWaypoint.Value.Orientation);
+						m_owner.Face(CurrentWaypoint.Value.Orientation);
 					}
 
-					var waitTime = m_targetWaypoint.Value.WaitTime;
+					var waitTime = TargetWaypoint.Value.WaitTime;
 
 					// need to wait on this waypoint
-					m_stayingOnWaypoint = true;
-					m_desiredStartMovingTime = Utility.GetSystemTime() + waitTime;
+					StayingOnWaypoint = true;
+					DesiredStartMovingTime = Utility.GetSystemTime() + waitTime;
 				}
 				//else if (m_owner.MayMove)
 				//{
@@ -135,65 +118,65 @@ namespace WCell.RealmServer.AI.Actions.Movement
 
 		protected void MoveToTargetWaypoint()
 		{
-			if (m_targetWaypoint == null)
+			if (TargetWaypoint == null)
 			{
 				// there is no next Waypoint (usually means there are no waypoints at all)
 				//m_owner.Movement.MoveTo(m_owner.Position, false);
 			}
 			else
 			{
-				m_stayingOnWaypoint = false;
+				StayingOnWaypoint = false;
 
-				m_owner.Brain.SourcePoint = m_targetWaypoint.Value.Position;
-				m_owner.Movement.MoveTo(m_targetWaypoint.Value.Position, false);
+				m_owner.Brain.SourcePoint = TargetWaypoint.Value.Position;
+				m_owner.Movement.MoveTo(TargetWaypoint.Value.Position, false);
 			}
 		}
 
 		protected LinkedListNode<WaypointEntry> GetNextWaypoint()
 		{
-			if (m_waypoints.Count == 0)
+			if (Waypoints.Count == 0)
 				return null;
 
-			if (m_currentWaypoint == null)
-				return m_waypoints.First;
+			if (CurrentWaypoint == null)
+				return Waypoints.First;
 
-			switch (_waypointSequence)
+			switch (WaypointSequence)
 			{
 				case AIMovementType.ForwardThenStop:
-					return m_currentWaypoint.Next;
+					return CurrentWaypoint.Next;
 
 				case AIMovementType.ForwardThenBack:
-					if (!m_goingBack)
+					if (!GoingBack)
 					{
-						if (m_currentWaypoint.Next != null)
-							return m_currentWaypoint.Next;
+						if (CurrentWaypoint.Next != null)
+							return CurrentWaypoint.Next;
 
-						if (m_currentWaypoint.Previous != null)
+						if (CurrentWaypoint.Previous != null)
 						{
-							m_goingBack = true;
-							return m_currentWaypoint.Previous;
+							GoingBack = true;
+							return CurrentWaypoint.Previous;
 						}
 					}
 
-					if (m_goingBack)
+					if (GoingBack)
 					{
-						if (m_currentWaypoint.Previous != null)
-							return m_currentWaypoint.Previous;
+						if (CurrentWaypoint.Previous != null)
+							return CurrentWaypoint.Previous;
 
-						if (m_currentWaypoint.Next != null)
+						if (CurrentWaypoint.Next != null)
 						{
-							m_goingBack = false;
-							return m_currentWaypoint.Next;
+							GoingBack = false;
+							return CurrentWaypoint.Next;
 						}
 					}
 
 					return null;
 
 				case AIMovementType.ForwardThenFirst:
-					if (m_currentWaypoint.Next != null)
-						return m_currentWaypoint.Next;
+					if (CurrentWaypoint.Next != null)
+						return CurrentWaypoint.Next;
 
-					return m_waypoints.First;
+					return Waypoints.First;
 			}
 
 			return null;

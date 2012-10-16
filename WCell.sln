@@ -170,6 +170,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Packets", "Packets", "{D18C
 		Run\Content\Packets\World.xml = Run\Content\Packets\World.xml
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.PerformanceCounterInstaller", "WCell.PerformanceCounterInstaller\WCell.PerformanceCounterInstaller.csproj", "{33CF6371-AC7C-4245-AF3A-42C2DA34002D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -422,6 +424,22 @@ Global
 		{5F96293A-1276-4515-8048-EBC49CD81D71}.Release|x64.Build.0 = Release|x64
 		{5F96293A-1276-4515-8048-EBC49CD81D71}.Release|x86.ActiveCfg = Release|x86
 		{5F96293A-1276-4515-8048-EBC49CD81D71}.Release|x86.Build.0 = Release|x86
+		{33CF6371-AC7C-4245-AF3A-42C2DA34002D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33CF6371-AC7C-4245-AF3A-42C2DA34002D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33CF6371-AC7C-4245-AF3A-42C2DA34002D}.Debug|Itanium.ActiveCfg = Debug|Itanium
+		{33CF6371-AC7C-4245-AF3A-42C2DA34002D}.Debug|Itanium.Build.0 = Debug|Itanium
+		{33CF6371-AC7C-4245-AF3A-42C2DA34002D}.Debug|x64.ActiveCfg = Debug|x64
+		{33CF6371-AC7C-4245-AF3A-42C2DA34002D}.Debug|x64.Build.0 = Debug|x64
+		{33CF6371-AC7C-4245-AF3A-42C2DA34002D}.Debug|x86.ActiveCfg = Debug|x86
+		{33CF6371-AC7C-4245-AF3A-42C2DA34002D}.Debug|x86.Build.0 = Debug|x86
+		{33CF6371-AC7C-4245-AF3A-42C2DA34002D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33CF6371-AC7C-4245-AF3A-42C2DA34002D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33CF6371-AC7C-4245-AF3A-42C2DA34002D}.Release|Itanium.ActiveCfg = Release|Itanium
+		{33CF6371-AC7C-4245-AF3A-42C2DA34002D}.Release|Itanium.Build.0 = Release|Itanium
+		{33CF6371-AC7C-4245-AF3A-42C2DA34002D}.Release|x64.ActiveCfg = Release|x64
+		{33CF6371-AC7C-4245-AF3A-42C2DA34002D}.Release|x64.Build.0 = Release|x64
+		{33CF6371-AC7C-4245-AF3A-42C2DA34002D}.Release|x86.ActiveCfg = Release|x86
+		{33CF6371-AC7C-4245-AF3A-42C2DA34002D}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

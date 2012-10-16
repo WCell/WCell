@@ -150,6 +150,7 @@
     <Compile Include="Achievements\ProgressType.cs" />
     <Compile Include="AreaTriggerId.cs" />
     <Compile Include="ArenaTeams.cs" />
+    <Compile Include="Auth.cs" />
     <Compile Include="Battlegrounds.cs" />
     <Compile Include="Battlegrounds\ArathiBasin.cs" />
     <Compile Include="Battlegrounds\WarsongGulch.cs" />
@@ -170,6 +171,7 @@
     <Compile Include="Items\InventorySlotType.cs" />
     <Compile Include="Items\ItemFlags.cs" />
     <Compile Include="Items\ItemSubClass.cs" />
+    <Compile Include="LFG\LFG.cs" />
     <Compile Include="Login\Extensions.cs" />
     <Compile Include="Login\Login.cs" />
     <Compile Include="Looting\LootingMiscEnums.cs" />

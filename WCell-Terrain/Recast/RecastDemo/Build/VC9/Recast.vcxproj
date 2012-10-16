@@ -92,7 +92,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\Contrib\fastlz;..\..\Contrib\SDL\include;..\..\Include;..\..\..\DetourCrowd\Include;..\..\..\Detour\Include;..\..\..\DebugUtils\Include;..\..\..\Recast\Include;..\..\Contrib;..\..\dep\SDL-1.2.14\include\;..\..\..\DetourTileCache\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Contrib\fastlz;..\..\Contrib\SDL\include;..\..\Include;..\..\..\DetourCrowd\Include;..\..\..\Detour\Include;..\..\..\DebugUtils\Include;..\..\..\Recast\Include;..\..\Contrib;..\..\dep\SDL-1.2.14\include\;..\..\..\DetourTileCache\Include;..\..\..\boost-thread;..\..\..\boost-thread\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -103,7 +103,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>opengl32.lib;glu32.lib;sdlmain.lib;sdl.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\dep\SDL-1.2.14\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\dep\SDL-1.2.14\lib\;..\..\..\boost-thread\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
@@ -208,6 +208,7 @@ xcopy /Y ..\..\..\Bin\DroidSans.ttf $(OutDir)</Command>
     <ClInclude Include="..\..\Include\imguiRenderGL.h" />
     <ClInclude Include="..\..\Include\InputGeom.h" />
     <ClInclude Include="..\..\Include\MeshLoaderObj.h" />
+    <ClInclude Include="..\..\Include\NavmeshPruneTool.h" />
     <ClInclude Include="..\..\Include\NavMeshTesterTool.h" />
     <ClInclude Include="..\..\Include\OffMeshConnectionTool.h" />
     <ClInclude Include="..\..\Include\PerfTimer.h" />
@@ -263,6 +264,7 @@ xcopy /Y ..\..\..\Bin\DroidSans.ttf $(OutDir)</Command>
     <ClCompile Include="..\..\Source\InputGeom.cpp" />
     <ClCompile Include="..\..\Source\main.cpp" />
     <ClCompile Include="..\..\Source\MeshLoaderObj.cpp" />
+    <ClCompile Include="..\..\Source\NavmeshPruneTool.cpp" />
     <ClCompile Include="..\..\Source\NavMeshTesterTool.cpp" />
     <ClCompile Include="..\..\Source\OffMeshConnectionTool.cpp" />
     <ClCompile Include="..\..\Source\PerfTimer.cpp" />

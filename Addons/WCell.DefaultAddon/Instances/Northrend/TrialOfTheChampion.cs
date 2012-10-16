@@ -185,7 +185,6 @@ namespace WCell.Addons.Default.Instances
 			// Wrong DB datas...
 			battleworgEntry.HordeFactionId = warhorseEntry.AllianceFactionId = FactionTemplateId.Friendly;
 			warhorseEntry.HordeFactionId = battleworgEntry.AllianceFactionId = FactionTemplateId.Monster;
-			NPCMgr.GetEntry(NPCId.WorldTrigger).SpawnEntries.Find(spawn => spawn.MapId == MapId.TrialOfTheChampion).AutoSpawns = false;
 
 			jaerenEntry.UnitFlags = arelasEntry.UnitFlags |= UnitFlags.NotAttackable;
 			jaerenEntry.UnitFlags = arelasEntry.UnitFlags &= ~UnitFlags.Passive;

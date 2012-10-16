@@ -223,11 +223,11 @@ namespace WCell.RealmServer.Global
 
             if (!Template.Flags.HasFlag(ZoneFlags.Arena))
 			{
-                if (!Template.Flags.HasFlag(ZoneFlags.AlwaysContested))
-				{
-					AllianceChatChannels.Add(m_allianceLocalDefenseChannel = alliance.CreateLocalDefenseChannel(Template));
-					HordeChatChannels.Add(m_hordeLocalDefenseChannel = horde.CreateLocalDefenseChannel(Template));
-				}
+                //if (!Template.Flags.HasFlag(ZoneFlags.AlwaysContested))
+				//{
+				AllianceChatChannels.Add(m_allianceLocalDefenseChannel = alliance.CreateLocalDefenseChannel(Template));
+				HordeChatChannels.Add(m_hordeLocalDefenseChannel = horde.CreateLocalDefenseChannel(Template));
+				//}
 
 				AllianceChatChannels.Add(m_allianceGeneralChannel = alliance.CreateGeneralChannel(Template));
 				HordeChatChannels.Add(m_hordeGeneralChannel = horde.CreateGeneralChannel(Template));

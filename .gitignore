@@ -19,3 +19,7 @@ Addons/GossipMenus/bin
 wcelladdon/
 *.docstates
 TestResults/
+*.svn
+/Logs
+/Utilities/WCell.Tools/output
+/.code_swarm

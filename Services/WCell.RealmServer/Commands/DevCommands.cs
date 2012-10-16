@@ -21,6 +21,7 @@ using WCell.RealmServer.Spells;
 using WCell.Util.Commands;
 using WCell.Util.ObjectPools;
 using WCell.Util.Threading;
+using ObjectPoolMgr = WCell.RealmServer.Misc.ObjectPoolMgr;
 
 namespace WCell.RealmServer.Commands
 {

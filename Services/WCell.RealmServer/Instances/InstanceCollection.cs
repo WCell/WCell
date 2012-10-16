@@ -176,7 +176,7 @@ namespace WCell.RealmServer.Instances
 			if (binding != null)
 			{
 				var instance = InstanceMgr.Instances.GetInstance(binding.MapId, binding.InstanceId);
-				if (instance.IsActive)
+                if (instance != null && instance.IsActive)
 				{
 					return instance as BaseInstance;
 				}

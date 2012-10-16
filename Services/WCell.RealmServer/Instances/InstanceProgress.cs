@@ -3,22 +3,43 @@ using Castle.ActiveRecord;
 using WCell.Constants.World;
 using WCell.Core.Database;
 using WCell.RealmServer.Global;
+using WCell.Util;
 
 namespace WCell.RealmServer.Instances
 {
 	/// <summary>
 	/// Defines the progress inside an instance that can also be saved to DB
 	/// </summary>
+    [ActiveRecord(Access = PropertyAccess.Property)]
 	public class InstanceProgress : WCellRecord<InstanceProgress>, IMapId
 	{
 		[Field("InstanceId", NotNull = true, Access = PropertyAccess.Field)]
-		private int m_InstanceId;
+		private int _instanceId;
+
+        public InstanceProgress()
+        {
+            MapId = MapId.None;
+            InstanceId = 0;
+        }
 
 		public InstanceProgress(MapId mapId, uint instanceId)
 		{
 			MapId = mapId;
 			InstanceId = instanceId;
+            State = RecordState.New;
 		}
+
+        [PrimaryKey(PrimaryKeyType.Assigned)]
+        public long Guid
+        {
+            get { return Utility.MakeLong((int)MapId, _instanceId); }
+            set
+            {
+                int mapId = 0;
+                Utility.UnpackLong(value, ref mapId, ref _instanceId);
+                MapId = (MapId)mapId;
+            }
+        }
 
 		[Property(NotNull = true)]
 		public MapId MapId
@@ -29,8 +50,8 @@ namespace WCell.RealmServer.Instances
 
 		public uint InstanceId
 		{
-			get { return (uint) m_InstanceId; }
-			set { m_InstanceId = (int) value; }
+			get { return (uint) _instanceId; }
+			set { _instanceId = (int) value; }
 		}
 
 		[Property(NotNull = true)]

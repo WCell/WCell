@@ -24,8 +24,6 @@
 #include "RecastAlloc.h"
 #include "RecastAssert.h"
 
-#include <stdlib.h>
-
 
 static int getCornerHeight(int x, int y, int i, int dir,
 						   const rcCompactHeightfield& chf,
@@ -308,7 +306,6 @@ static void simplifyContour(rcIntArray& points, rcIntArray& simplified,
 	
 	// Add points until all raw points are within
 	// error tolerance to the simplified shape.
-
 	const int pn = points.size()/4;
 	for (int i = 0; i < simplified.size()/4; )
 	{
@@ -389,7 +386,6 @@ static void simplifyContour(rcIntArray& points, rcIntArray& simplified,
 	// Split too long edges.
 	if (maxEdgeLen > 0 && (buildFlags & (RC_CONTOUR_TESS_WALL_EDGES|RC_CONTOUR_TESS_AREA_EDGES)) != 0)
 	{
-		int iterations = 0;
 		for (int i = 0; i < simplified.size()/4; )
 		{
 			const int ii = (i+1) % (simplified.size()/4);
@@ -441,29 +437,6 @@ static void simplifyContour(rcIntArray& points, rcIntArray& simplified,
 			// add new point, else continue to next segment.
 			if (maxi != -1)
 			{
-				if (iterations++ == 2e4) {
-					const char* dumpFile = "bugcontext";
-					printf("Bug detected - Dumping context to file %s...\n", dumpFile);
-					FILE* file = fopen(dumpFile, "wb+");
-					if (file) {
-						int s = points.size();
-						fwrite(&s, sizeof(int), 1, file);
-						for (int x = 0; x < points.size(); x++) {
-							fwrite(&points[x], sizeof(int), 1, file);
-						}
-						s = simplified.size();
-						fwrite(&s, sizeof(int), 1, file);
-						for (int x = 0; x < simplified.size(); x++) {
-							fwrite(&simplified[x], sizeof(int), 1, file);
-						}
-						fwrite(&maxError, sizeof(float), 1, file);
-						fwrite(&maxEdgeLen, sizeof(int), 1, file);
-						fwrite(&buildFlags, sizeof(int), 1, file);
-						fclose(file);
-						exit(-1);
-					}
-				}
-
 				// Add space for the new point.
 				simplified.resize(simplified.size()+4);
 				const int n = simplified.size()/4;
@@ -483,7 +456,6 @@ static void simplifyContour(rcIntArray& points, rcIntArray& simplified,
 			else
 			{
 				++i;
-				iterations = 0;
 			}
 		}
 	}
@@ -620,6 +592,19 @@ static bool mergeContours(rcContour& ca, rcContour& cb, int ia, int ib)
 	return true;
 }
 
+/// @par
+///
+/// The raw contours will match the region outlines exactly. The @p maxError and @p maxEdgeLen
+/// parameters control how closely the simplified contours will match the raw contours.
+///
+/// Simplified contours are generated such that the vertices for portals between areas match up. 
+/// (They are considered mandatory vertices.)
+///
+/// Setting @p maxEdgeLength to zero will disabled the edge length feature.
+/// 
+/// See the #rcConfig documentation for more information on the configuration parameters.
+/// 
+/// @see rcAllocContourSet, rcCompactHeightfield, rcContourSet, rcConfig
 bool rcBuildContours(rcContext* ctx, rcCompactHeightfield& chf,
 					 const float maxError, const int maxEdgeLen,
 					 rcContourSet& cset, const int buildFlags)

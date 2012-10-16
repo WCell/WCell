@@ -1067,10 +1067,27 @@ namespace WCell.Util
 			return ((val <= (otherVal + Epsilon)) && (val >= (otherVal - Epsilon)));
 		}
 
-		public static long MakeLong(int low, int high)
+        public static bool IsLessOrNearlyEqual(this float val, float otherVal)
+        {
+            return ((val < otherVal) || val.IsWithinEpsilon(otherVal));
+        }
+
+	    public static long MakeLong(int low, int high)
 		{
 			return (uint)low | ((long)high << 32);
 		}
+
+        /// <summary>
+        /// Unpacks a long that was packed with <see cref="MakeLong"></see> into two ints
+        /// </summary>
+        /// <param name="val">The packed long</param>
+        /// <param name="low">the low part to unpack into</param>
+        /// <param name="high">the high part to unpack into</param>
+        public static void UnpackLong(long val, ref int low, ref int high)
+        {
+            low = (int)val;
+            high = (int)(val >> 32);
+        }
 	}
 
 	#region SingleEnumerator

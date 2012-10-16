@@ -13,20 +13,19 @@ namespace WCell.RealmServer.Spells.Effects
 		{
 		}
 
-		public override void Initialize(ref SpellFailedReason failReason)
+		public override SpellFailedReason Initialize()
 		{
-			if (!m_cast.Selected.IsInFrontOf(m_cast.CasterObject))
+			if (!m_cast.SelectedTarget.IsInFrontOf(m_cast.CasterObject))
 			{
-				failReason = SpellFailedReason.NotInfront;
+				return SpellFailedReason.NotInfront;
 			}
-			else if (m_cast.CasterUnit.IsInCombat)
+
+			if (m_cast.CasterUnit.IsInCombat)
 			{
-				failReason = SpellFailedReason.AffectingCombat;
+				return SpellFailedReason.AffectingCombat;
 			}
-			else
-			{
-				failReason = SpellFailedReason.Ok;
-			}
+
+			return SpellFailedReason.Ok;
 		}
 
 		protected override void Apply(WorldObject target)

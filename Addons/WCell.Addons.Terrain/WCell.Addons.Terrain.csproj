@@ -179,7 +179,7 @@
     <ProjectReference Include="..\..\Utilities\WCell.Util\WCell.Util.csproj">
       <Project>{F753AF28-A251-4C12-9335-07E8236184F2}</Project>
       <Name>WCell.Util</Name>
-      <Private>False</Private>
+      <Private>True</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\WCell-Terrain\WCell.Terrain\WCell.Terrain.csproj">
       <Project>{5F86593D-8412-46C2-9438-A0D7FE21DB14}</Project>
@@ -190,6 +190,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy $(SolutionDir)\Run\$(ConfigurationName)\RecastRaw.dll $(TargetDir)</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

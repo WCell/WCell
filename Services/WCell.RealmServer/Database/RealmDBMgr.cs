@@ -33,7 +33,7 @@ namespace WCell.RealmServer.Database
 				Initialized = true;
 				DatabaseUtil.DBErrorHook = exception => CharacterRecord.GetCount() < 100;
 
-				DatabaseUtil.DBType = RealmServerConfiguration.DBType;
+				DatabaseUtil.DBType = RealmServerConfiguration.DatabaseType;
 				DatabaseUtil.ConnectionString = RealmServerConfiguration.DBConnectionString;
 				DatabaseUtil.DefaultCharset = DefaultCharset;
 

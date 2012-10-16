@@ -9,6 +9,8 @@
       <Column Name="difficulty_entry_2"/>
       <Column Name="difficulty_entry_3"/>
     </FlatArray>
+	<FlatArray Name="KillCreditIds" Pattern="KillCredit{#}" Offset="1" />
+	
     <FlatArray Name="DisplayIds">
       <Column Name="modelid_1"/>
       <Column Name="modelid_2"/>
@@ -85,9 +87,11 @@
     <Flat Name="MoneyDrop" Column="maxgold" />
     <Flat Name="MovementType" Column="MovementType" />
     <Flat Name="InhabitType" Column="InhabitType" />
-    <Flat Name="Float1" Column="unk16" />
-    <Flat Name="Float2" Column="unk17" />
+    <Flat Name="ModHealth" Column="unk16" />
+    <Flat Name="ModMana" Column="unk17" />
     <Flat Name="IsLeader" Column="RacialLeader" />
+    <FlatArray Name="QuestItems" Pattern="questItem{#}" Offset="1" />
+	<Flat Name="MovementId" Column="movementId" />
     <Flat Name="Regenerates" Column="RegenHealth" />
     <Flat Name="EquipmentId" Column="equipment_id" />
     <!--<Flat Name="" Column="mechanic_immune_mask" />-->
@@ -129,6 +133,5 @@
     heroic_entry
     speed_run
     AiName
-    movementId     
 -->
 </DataHolders>

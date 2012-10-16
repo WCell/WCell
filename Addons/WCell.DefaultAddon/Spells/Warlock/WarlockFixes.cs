@@ -34,8 +34,16 @@ namespace WCell.Addons.Default.Spells.Warlock
             // Shadowflame DoT
             SpellHandler.Apply(spell => spell.AddTargetTriggerSpells(SpellId.Shadowflame_3), SpellId.ClassSkillShadowflameRank1);
             SpellHandler.Apply(spell => spell.AddTargetTriggerSpells(SpellId.Shadowflame_5), SpellId.ClassSkillShadowflameRank2);
-            SpellHandler.Apply(spell => spell.Effects[0].ImplicitTargetA = ImplicitSpellTargetType.ConeInFrontOfCaster, SpellId.Shadowflame_3);
-            SpellHandler.Apply(spell => spell.Effects[0].ImplicitTargetA = ImplicitSpellTargetType.ConeInFrontOfCaster, SpellId.Shadowflame_5);
+            SpellHandler.Apply(spell => 
+			{
+				spell.Effects[0].ImplicitTargetA = ImplicitSpellTargetType.ConeInFrontOfCaster;
+				spell.AddAuraEffect(() => new ApplyImmolateStateHandler(), ImplicitSpellTargetType.SingleEnemy);
+			}, SpellId.Shadowflame_3);
+            SpellHandler.Apply(spell => 
+			{
+				spell.Effects[0].ImplicitTargetA = ImplicitSpellTargetType.ConeInFrontOfCaster;
+				spell.AddAuraEffect(() => new ApplyImmolateStateHandler(), ImplicitSpellTargetType.SingleEnemy);
+			}, SpellId.Shadowflame_5);
 
             // Incinerate has extra damage if target has Immolate
             SpellLineId.WarlockIncinerate.Apply(spell =>
@@ -202,7 +210,7 @@ namespace WCell.Addons.Default.Spells.Warlock
 					var finalvalue = m_aura.Spell.Effects[2].CalcEffectValue() * totalbasepoints / (100 * m_aura.MaxTicks);//40% of total damage
 					m_aura.Spell.Effects[1].BasePoints = finalvalue;
 					UpdateEffectValue();
-					Owner.Auras.Remove(aura.Id);
+					Owner.Auras.Remove(aura.Spell);
 				}
 				base.Apply();
 			}

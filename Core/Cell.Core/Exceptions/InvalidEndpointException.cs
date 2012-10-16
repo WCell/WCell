@@ -1,5 +1,7 @@
 using System;
 using System.Net;
+using System.Runtime.Serialization;
+using System.Security.Permissions;
 
 namespace Cell.Core.Exceptions
 {
@@ -9,7 +11,6 @@ namespace Cell.Core.Exceptions
 		private IPEndPoint _endpoint;
 
 		public InvalidEndpointException(IPEndPoint ep)
-			: base()
 		{
 			_endpoint = ep;
 		}
@@ -27,5 +28,14 @@ namespace Cell.Core.Exceptions
 				return _endpoint;
 			}
 		}
+
+        [SecurityPermissionAttribute(SecurityAction.Demand, SerializationFormatter = true)]
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            if (info == null)
+                throw new ArgumentNullException("info");
+
+            base.GetObjectData(info, context);
+        }
 	}
 }

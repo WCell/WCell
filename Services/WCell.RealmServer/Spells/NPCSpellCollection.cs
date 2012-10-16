@@ -97,13 +97,11 @@ namespace WCell.RealmServer.Spells
 		#region Add / Remove
 		public override void AddSpell(Spell spell)
 		{
-			if (!m_byId.ContainsKey(spell.SpellId))
-			{
-				//NPCOwner.Brain.ActionCollection.AddFactory
-				base.AddSpell(spell);
+		    if (m_byId.ContainsKey(spell.SpellId)) return;
+		    //NPCOwner.Brain.ActionCollection.AddFactory
+		    base.AddSpell(spell);
 
-				OnNewSpell(spell);
-			}
+		    OnNewSpell(spell);
 		}
 
 		void OnNewSpell(Spell spell)
@@ -227,35 +225,27 @@ namespace WCell.RealmServer.Spells
 
 		public override void ClearCooldown(Spell spell, bool alsoCategory = true)
 		{
-			if (m_cooldowns != null)
-			{
-				for (var i = 0; i < m_cooldowns.Count; i++)
-				{
-					var cd = m_cooldowns[i];
-					if (cd.Spell.Id != spell.Id) continue;
+		    if (m_cooldowns == null) return;
+		    for (var i = 0; i < m_cooldowns.Count; i++)
+		    {
+		        var cd = m_cooldowns[i];
+		        if (cd.Spell.Id != spell.Id) continue;
 
-					m_cooldowns.Remove(cd);
-					AddReadySpell(cd.Spell);
-					break;
-				}
-			}
+		        m_cooldowns.Remove(cd);
+		        AddReadySpell(cd.Spell);
+		        break;
+		    }
 		}
 
-		/// <summary>
+	    /// <summary>
 		/// Returns the delay until the given spell has cooled down in milliseconds
 		/// </summary>
 		public int GetRemainingCooldownMillis(Spell spell)
 		{
 			if (m_cooldowns == null) return 0;
 
-			for (var i = 0; i < m_cooldowns.Count; i++)
-			{
-				var cd = m_cooldowns[i];
-				if (cd.Spell.Id != spell.Id) continue;
-
-				return cd.GetDelayUntilNextExecution(Owner);
-			}
-			return 0;
+		    var cooldown = m_cooldowns.Find(cd => cd.Spell.Id == spell.Id);
+            return cooldown == null ? 0 : cooldown.GetDelayUntilNextExecution(Owner);
 		}
 
 		protected class CooldownRemoveTimer : OneShotObjectUpdateTimer

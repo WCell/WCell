@@ -14,9 +14,7 @@ namespace WCell.RealmServer.AI.Actions.States
 	{
 		public static int DefaultRoamSpellCastDelay = 30000;
 
-		private DateTime lastSpellCast;
-
-		private AIAction _strategy;
+		private DateTime _lastSpellCast;
 
 		public AIRoamAction(Unit owner)
 			: base(owner)
@@ -28,7 +26,6 @@ namespace WCell.RealmServer.AI.Actions.States
 			base(owner)
 		{
 			Strategy = roamAction;
-			MinimumRoamSpellCastDelay = DefaultRoamSpellCastDelay;
 		}
 
 		public int MinimumRoamSpellCastDelay
@@ -40,14 +37,7 @@ namespace WCell.RealmServer.AI.Actions.States
 		/// <summary>
 		/// The strategy to be used while roaming
 		/// </summary>
-		public AIAction Strategy
-		{
-			get { return _strategy; }
-			set
-			{
-				_strategy = value;
-			}
-		}
+		public AIAction Strategy { get; set; }
 
 		public override void Start()
 		{
@@ -61,11 +51,11 @@ namespace WCell.RealmServer.AI.Actions.States
 		{
 			if (!m_owner.Brain.CheckCombat())
 			{
-				if (UsesSpells && HasSpellReady && m_owner.CanCastSpells && lastSpellCast + TimeSpan.FromMilliseconds(MinimumRoamSpellCastDelay) < DateTime.Now)
+				if (UsesSpells && HasSpellReady && m_owner.CanCastSpells && _lastSpellCast + TimeSpan.FromMilliseconds(MinimumRoamSpellCastDelay) < DateTime.Now)
 				{
 					if (TryCastSpell())
 					{
-						lastSpellCast = DateTime.Now;
+						_lastSpellCast = DateTime.Now;
 						m_owner.Movement.Stop();
 						return;
 					}

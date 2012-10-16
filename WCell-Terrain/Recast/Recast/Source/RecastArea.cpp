@@ -26,7 +26,14 @@
 #include "RecastAlloc.h"
 #include "RecastAssert.h"
 
-
+/// @par 
+/// 
+/// Basically, any spans that are closer to a boundary or obstruction than the specified radius 
+/// are marked as unwalkable.
+///
+/// This method is usually called immediately after the heightfield has been built.
+///
+/// @see rcCompactHeightfield, rcBuildCompactHeightfield, rcConfig::walkableRadius
 bool rcErodeWalkableArea(rcContext* ctx, int radius, rcCompactHeightfield& chf)
 {
 	rcAssert(ctx);
@@ -228,7 +235,12 @@ static void insertSort(unsigned char* a, const int n)
 	}
 }
 
-
+/// @par
+///
+/// This filter is usually applied after applying area id's using functions
+/// such as #rcMarkBoxArea, #rcMarkConvexPolyArea, and #rcMarkCylinderArea.
+/// 
+/// @see rcCompactHeightfield
 bool rcMedianFilterWalkableArea(rcContext* ctx, rcCompactHeightfield& chf)
 {
 	rcAssert(ctx);
@@ -303,6 +315,11 @@ bool rcMedianFilterWalkableArea(rcContext* ctx, rcCompactHeightfield& chf)
 	return true;
 }
 
+/// @par
+///
+/// The value of spacial parameters are in world units.
+/// 
+/// @see rcCompactHeightfield, rcMedianFilterWalkableArea
 void rcMarkBoxArea(rcContext* ctx, const float* bmin, const float* bmax, unsigned char areaId,
 				   rcCompactHeightfield& chf)
 {
@@ -363,6 +380,14 @@ static int pointInPoly(int nvert, const float* verts, const float* p)
 	return c;
 }
 
+/// @par
+///
+/// The value of spacial parameters are in world units.
+/// 
+/// The y-values of the polygon vertices are ignored. So the polygon is effectively 
+/// projected onto the xz-plane at @p hmin, then extruded to @p hmax.
+/// 
+/// @see rcCompactHeightfield, rcMedianFilterWalkableArea
 void rcMarkConvexPolyArea(rcContext* ctx, const float* verts, const int nverts,
 						  const float hmin, const float hmax, unsigned char areaId,
 						  rcCompactHeightfield& chf)
@@ -430,6 +455,11 @@ void rcMarkConvexPolyArea(rcContext* ctx, const float* verts, const int nverts,
 	ctx->stopTimer(RC_TIMER_MARK_CONVEXPOLY_AREA);
 }
 
+/// @par
+///
+/// The value of spacial parameters are in world units.
+/// 
+/// @see rcCompactHeightfield, rcMedianFilterWalkableArea
 void rcMarkCylinderArea(rcContext* ctx, const float* pos,
 						const float r, const float h, unsigned char areaId,
 						rcCompactHeightfield& chf)

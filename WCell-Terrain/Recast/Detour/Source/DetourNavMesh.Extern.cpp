@@ -113,8 +113,8 @@ void notifyTileAdded(const dtNavMesh *navMesh, const dtMeshTile *tile) {
 		memcpy(&pNeighbors[i * DT_VERTS_PER_POLYGON], poly.neis, DT_VERTS_PER_POLYGON * sizeof(unsigned short));
 		pFlags[i] = poly.flags;
 		pVertCounts[i] = poly.vertCount;
-		pAreas[i] = poly.area;
-		pTypes[i] = poly.type;
+		pAreas[i] = poly.getArea();
+		pTypes[i] = poly.getType();
 	}
 
 	// links

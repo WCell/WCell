@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using WCell.Constants;
 using WCell.Constants.GameObjects;
 using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
@@ -17,15 +18,19 @@ namespace WCell.Addons.Default.Events
         public const GOEntryId Blastenheimer5000ElwynnId = GOEntryId.Blastenheimer5000UltraCannon;
         public const GOEntryId Blastenheimer5000TerokkarId = GOEntryId.Blastenheimer5000UltraCannon_2;
         public const GOEntryId Blastenheimer5000MulgoreId = GOEntryId.Blastenheimer5000UltraCannon_3;
+        public const GOEntryId CannonTarget = GOEntryId.CannonTarget;
         public static SpellId MagicWingsId = SpellId.MagicWings_2;
+        public static SpellId MagicWingsMulgore = SpellId.MagicWings;
         public static SpellId CannonPrepId = SpellId.CannonPrep_3;
+        public static SpellId CannonPrepMulgore = SpellId.CannonPrep;
+        public static SpellId FireCannonSpellId = SpellId.FireCannon_3;
 
         public static Vector3 ElwynnTelePosition = new Vector3(-9571.3f, -18.8353f, 70.05f);
-        public static float ElwynnTeleOrientation = 4.90124f;
+        public static float ElwynnTeleOrientation = 4.89517641f;
         public static Vector3 TerokkarTelePosition = new Vector3(-1742.18f, 5457.85f, -7.92f);
         public static float TerokkarTeleOrientation = -1.71042f;
-        public static Vector3 MulgoreTelePosition = new Vector3(-1325.26f, 86.7761f, 133.09f);
-        public static float MulgoreTeleOrientation = 3.48324f;
+        public static Vector3 MulgoreTelePosition = new Vector3(-1327.66f, 85.9815f, 134.169f);
+        public static float MulgoreTeleOrientation = 3.559006f;
 
         [Initialization]
         [DependentInitialization(typeof(GOMgr))]
@@ -43,21 +48,38 @@ namespace WCell.Addons.Default.Events
         private static bool Blastenheimer5000Used(GameObject go, Character user)
         {
             var cast = user.SpellCast;
-            cast.Start(CannonPrepId);
-            user.IncMechanicCount(SpellMechanic.Rooted);
+            var target = go.GetNearbyGO(CannonTarget, 1000);
+            if(target != null)
+            {
+                var dist = go.GetDistance(target);
+            }
+            
             switch (go.EntryId)
             {
                 case (uint)Blastenheimer5000ElwynnId:
                     {
-                        user.TeleportTo(ElwynnTelePosition, ElwynnTeleOrientation);
+                        cast.Start(CannonPrepId);
+                        user.StandState = StandState.Sit;
+                        user.IncMechanicCount(SpellMechanic.Rooted);
+                        var facing = target != null ? go.GetAngleTowards(target) : ElwynnTeleOrientation;
+                        user.TeleportTo(ElwynnTelePosition, facing);
+
                     } break;
                 case (uint)Blastenheimer5000TerokkarId:
                     {
-                        user.TeleportTo(TerokkarTelePosition, TerokkarTeleOrientation);
+                        cast.Start(CannonPrepId);
+                        user.StandState = StandState.Sit;
+                        user.IncMechanicCount(SpellMechanic.Rooted);
+                        var facing = target != null ? go.GetAngleTowards(target) : TerokkarTeleOrientation;
+                        user.TeleportTo(TerokkarTelePosition, facing);
                     } break;
                 case (uint)Blastenheimer5000MulgoreId:
                     {
-                        user.TeleportTo(MulgoreTelePosition, MulgoreTeleOrientation);
+                        cast.Start(CannonPrepMulgore);
+                        user.StandState = StandState.Sit;
+                        user.IncMechanicCount(SpellMechanic.Rooted);
+                        var facing = target != null ? go.GetAngleTowards(target) : MulgoreTeleOrientation;
+                        user.TeleportTo(MulgoreTelePosition, facing);
                     } break;
                 default:
                     {
@@ -73,10 +95,14 @@ namespace WCell.Addons.Default.Events
 
         public static void FireCannon(Character user)
         {
-            user.DecMechanicCount(SpellMechanic.Rooted);
+            user.StandState = StandState.Stand;
+            user.CallDelayed(120000, obj =>  user.DecMechanicCount(SpellMechanic.Rooted));
             var cast = user.SpellCast;
             if (cast != null)
+            {
+                cast.Start(FireCannonSpellId);
                 cast.TriggerSelf(MagicWingsId);
+            }
         }
     }
 

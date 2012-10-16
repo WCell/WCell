@@ -410,7 +410,14 @@ namespace WCell.RealmServer.Handlers
 				}
 				pckt.Write(qt.MoneyAtMaxLevel);
 				pckt.Write((uint)qt.CastSpell);
-				pckt.Write((uint)qt.RewSpell);
+                if (qt.RewSpell > 0)
+                {
+                    pckt.Write((uint)qt.RewSpell);
+                }
+                else
+                {
+                    pckt.Write((uint)qt.RewSpellCast);
+                }
 
 				pckt.Write(qt.RewHonorAddition);
 				pckt.WriteFloat(qt.RewHonorMultiplier);										// since 3.3
@@ -617,7 +624,14 @@ namespace WCell.RealmServer.Handlers
 
 				pckt.Write(qt.RewHonorAddition);
 				pckt.Write(qt.RewHonorMultiplier);						// since 3.3
-				pckt.Write((uint)qt.RewSpell);
+                if (qt.RewSpell > 0)
+                {
+                    pckt.Write((uint)qt.RewSpell);
+                }
+                else
+                {
+                    pckt.Write((uint)qt.RewSpellCast);
+                }
 				pckt.Write((uint)qt.CastSpell);
 				pckt.Write((uint)qt.RewardTitleId);		// since 2.4.0
 				pckt.Write(qt.RewardTalents);
@@ -728,7 +742,14 @@ namespace WCell.RealmServer.Handlers
 				pckt.Write(qt.RewHonorMultiplier); // since 3.3
 
 				pckt.Write((uint)0x08); // unused by client
-				pckt.Write((uint)qt.RewSpell);
+                if (qt.RewSpell > 0)
+                {
+                    pckt.Write((uint)qt.RewSpell);
+                }
+                else
+                {
+                    pckt.Write((uint)qt.RewSpellCast);
+                }
 				pckt.Write((uint)qt.CastSpell);
 				pckt.Write((uint)qt.RewardTitleId);
 				pckt.Write(qt.RewardTalents); // reward talents

@@ -14,6 +14,7 @@
  *
  *************************************************************************/
 
+using System;
 using System.Diagnostics;
 using WCell.Core.Initialization;
 
@@ -24,8 +25,7 @@ namespace WCell.RealmServer.Stats
     /// </summary>
     public static class PerformanceCounters
     {
-        private const string CATEGORY_NAME = "WCellCounterCategory";
-        private const string CATEGORY_HELP = "Performance counters for the WCell server platform.";
+        private const string CategoryName = "WCell";
 
         /// <summary>
         /// Performance counter for the number of packets sent per second.
@@ -78,59 +78,40 @@ namespace WCell.RealmServer.Stats
         [Initialization(InitializationPass.Fifth, "Initialize performance counters")]
         public static void Initialize()
         {
-            CounterCreationDataCollection counterList = new CounterCreationDataCollection();
-
-            CounterCreationData sentPacketCounter = new CounterCreationData
-                                                    	{
-                CounterName = "Packets Sent/sec",
-                CounterType = PerformanceCounterType.RateOfCountsPerSecond64,
-                CounterHelp = "Number of packets sent per second."
-            };
-
-            CounterCreationData recvPacketCounter = new CounterCreationData
-                                                    	{
-                CounterName = "Packets Received/sec",
-                CounterType = PerformanceCounterType.RateOfCountsPerSecond64,
-                CounterHelp = "Number of packets received per second."
-            };
-
-            CounterCreationData bytesSentCounter = new CounterCreationData
-                                                   	{
-                CounterName = "Bytes Sent",
-                CounterType = PerformanceCounterType.NumberOfItems64,
-                CounterHelp = "Total number of bytes sent."
-            };
-
-            CounterCreationData bytesRecvCounter = new CounterCreationData
-                                                   	{
-                CounterName = "Bytes Received",
-                CounterType = PerformanceCounterType.NumberOfItems64,
-                CounterHelp = "Total number of bytes received."
-            };
-
-            CounterCreationData authQueueCounter = new CounterCreationData
-                                                   	{
-                CounterName = "Auth Queue Size",
-                CounterType = PerformanceCounterType.CountPerTimeInterval32,
-                CounterHelp = "Number of clients waiting in the auth queue."
-            };
-
-            counterList.Add(sentPacketCounter);
-            counterList.Add(recvPacketCounter);
-            counterList.Add(bytesSentCounter);
-            counterList.Add(bytesRecvCounter);
-            counterList.Add(authQueueCounter);
-
-            if (!PerformanceCounterCategory.Exists(CATEGORY_NAME))
+            if (!PerformanceCounterCategory.Exists(CategoryName))
             {
-                PerformanceCounterCategory.Create(CATEGORY_NAME, CATEGORY_HELP, PerformanceCounterCategoryType.SingleInstance, counterList);
+                Console.WriteLine("Installing Performance Counters...");
+                //Execute our perf counter installer
+                //which will request admin privs
+                var startInfo = new ProcessStartInfo("WCell.PerformanceCounterInstaller.exe") { UseShellExecute = true };
+                var p = Process.Start(startInfo);
+                //Wait for the process to end.
+                p.WaitForExit();
+                if(p.ExitCode == 0)
+                    Console.WriteLine("Done...");
+                else
+                {
+                    throw new Exception(
+                    "WCell.PerformanceCounterInstaller.exe has not been run. Please run it and restart the application");
+                }
             }
 
-            PacketsSentPerSecond = new PerformanceCounter(CATEGORY_NAME, "Packets Sent/sec", false);
-            PacketsReceivedPerSecond = new PerformanceCounter(CATEGORY_NAME, "Packets Received/sec", false);
-            TotalBytesSent = new PerformanceCounter(CATEGORY_NAME, "Bytes Sent", false);
-            TotalBytesReceived = new PerformanceCounter(CATEGORY_NAME, "Bytes Received", false);
-            NumbersOfClientsInAuthQueue = new PerformanceCounter(CATEGORY_NAME, "Auth Queue Size", false);
+            InitCounters();
+        }
+
+        public static void InitCounters()
+        {
+            if (!PerformanceCounterCategory.Exists(CategoryName))
+            {
+                throw new Exception(
+                    "WCell.PerformanceCounterInstaller.exe has not been run. Please run it and restart the application");
+            }
+
+            PacketsSentPerSecond = new PerformanceCounter(CategoryName, "Packets Sent/sec", false);
+            PacketsReceivedPerSecond = new PerformanceCounter(CategoryName, "Packets Received/sec", false);
+            TotalBytesSent = new PerformanceCounter(CategoryName, "Bytes Sent", false);
+            TotalBytesReceived = new PerformanceCounter(CategoryName, "Bytes Received", false);
+            NumbersOfClientsInAuthQueue = new PerformanceCounter(CategoryName, "Auth Queue Size", false);
         }
     }
 }

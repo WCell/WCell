@@ -484,13 +484,13 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			public override void Apply()
 			{
 				// find corpse
-				var corpse = m_cast.Selected as NPC;
+				var corpse = m_cast.SelectedTarget as NPC;
 				if (!IsValidCorpse(corpse))
 				{
 					corpse = null;
 
 					// find corpse nearby
-					var target = m_cast.Selected ?? m_cast.CasterUnit;
+					var target = m_cast.SelectedTarget ?? m_cast.CasterUnit;
 					if (target == null)
 					{
 						return;		// should not happen
@@ -508,7 +508,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 
 				if (corpse != null)
 				{
-					m_cast.Selected = corpse;
+					m_cast.SelectedTarget = corpse;
 					m_cast.TargetLoc = corpse.Position;
 
 					m_cast.Trigger(SpellId.CorpseExploded, corpse);	// "explode" & convert corpse

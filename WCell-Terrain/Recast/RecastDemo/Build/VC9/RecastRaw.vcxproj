@@ -91,13 +91,15 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\Contrib\fastlz;..\..\Include;..\..\..\Detour\Include;..\..\..\DebugUtils\Include;..\..\..\Recast\Include;..\..\Contrib;..\..\..\DetourTileCache\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Contrib\fastlz;..\..\Include;..\..\..\Detour\Include;..\..\..\DebugUtils\Include;..\..\..\Recast\Include;..\..\Contrib;..\..\..\DetourTileCache\Include;..\..\..\boost-thread;..\..\..\boost-thread\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
+      <AdditionalOptions>/MDd /showIncludes %(AdditionalOptions)</AdditionalOptions>
+      <ShowIncludes>true</ShowIncludes>
+      <ErrorReporting>None</ErrorReporting>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -106,6 +108,8 @@
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
+      <AdditionalOptions>/verbose:lib %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalLibraryDirectories>..\..\..\boost-thread\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -149,7 +153,14 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
     </Link>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/MD %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+  </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\boost-thread\boost\thread.hpp" />
+    <ClInclude Include="..\..\..\Detour\Include\DetourNavMesh.Extern.h" />
     <ClInclude Include="..\..\..\Recast\Include\Recast.h" />
     <ClInclude Include="..\..\..\Recast\Include\RecastAlloc.h" />
     <ClInclude Include="..\..\..\Recast\Include\RecastAssert.h" />
@@ -177,6 +188,7 @@
     <ClInclude Include="..\..\..\DetourTileCache\Include\DetourTileCacheBuilder.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\Detour\Source\DetourNavMesh.Extern.cpp" />
     <ClCompile Include="..\..\..\Recast\Source\Recast.cpp" />
     <ClCompile Include="..\..\..\Recast\Source\RecastAlloc.cpp" />
     <ClCompile Include="..\..\..\Recast\Source\RecastArea.cpp" />

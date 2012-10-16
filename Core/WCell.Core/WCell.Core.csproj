@@ -188,6 +188,7 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="Addons\WCellAddonAttribute.cs" />
+    <Compile Include="ClientInformationUtil.cs" />
     <Compile Include="CommandUtil.cs" />
     <Compile Include="Cryptography\ARC4.cs" />
     <Compile Include="Addons\WCellAddonBase.cs" />
@@ -215,6 +216,7 @@
     <Compile Include="Paths\IPathVertex.cs" />
     <Compile Include="Paths\Path.cs" />
     <Compile Include="Paths\PathQuery.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReflectUtil.cs" />
     <Compile Include="SelfRunningTaskQueue.cs" />
     <Compile Include="ServerApp.cs" />

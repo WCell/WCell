@@ -26,6 +26,7 @@
 #include "DetourDebugDraw.h"
 #include "DetourNavMesh.h"
 #include "DetourNavMeshQuery.h"
+#include "DetourCrowd.h"
 #include "imgui.h"
 #include "SDL.h"
 #include "SDL_opengl.h"
@@ -38,18 +39,21 @@ Sample::Sample() :
 	m_geom(0),
 	m_navMesh(0),
 	m_navQuery(0),
+	m_crowd(0),
 	m_navMeshDrawFlags(DU_DRAWNAVMESH_OFFMESHCONS|DU_DRAWNAVMESH_CLOSEDLIST),
 	m_tool(0),
 	m_ctx(0)
 {
 	resetCommonSettings();
 	m_navQuery = dtAllocNavMeshQuery();
+	m_crowd = dtAllocCrowd();
 }
 
 Sample::~Sample()
 {
 	dtFreeNavMeshQuery(m_navQuery);
 	dtFreeNavMesh(m_navMesh);
+	dtFreeCrowd(m_crowd);
 	delete m_tool;
 }
 
@@ -150,7 +154,7 @@ void Sample::handleCommonSettings()
 	imguiSlider("Height", &m_agentHeight, 0.1f, 5.0f, 0.1f);
 	imguiSlider("Radius", &m_agentRadius, 0.0f, 5.0f, 0.1f);
 	imguiSlider("Max Climb", &m_agentMaxClimb, 0.1f, 5.0f, 0.1f);
-	imguiSlider("Max Slope", &m_agentMaxSlope, 0.0f, 360.0f, 1.0f);	// Domi edit: Set max from 90 to 360
+	imguiSlider("Max Slope", &m_agentMaxSlope, 0.0f, 90.0f, 1.0f);
 	
 	imguiSeparator();
 	imguiLabel("Region");

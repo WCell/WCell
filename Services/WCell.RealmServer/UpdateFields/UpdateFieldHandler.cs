@@ -22,6 +22,7 @@ using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Spells;
 using WCell.Util.Variables;
 
 namespace WCell.RealmServer.UpdateFields
@@ -106,9 +107,9 @@ namespace WCell.RealmServer.UpdateFields
 		private static void WriteAuraStateFlags(ObjectBase obj, Character reciever, UpdatePacket packet)
 		{
 			var unit = (Unit)obj;
-			SpellId immolateAura = unit.GetStrongestImmolate();
+			Spell immolateAura = unit.GetStrongestImmolate();
 			//if there is a immolate aura on this object and the reciver casted it we can send that aurastate to him
-			if (immolateAura != SpellId.None && unit.Auras[immolateAura].SpellCast.CasterChar == reciever)
+			if (immolateAura != null && unit.Auras[immolateAura].SpellCast.CasterChar == reciever)
 			{
 				packet.Write((uint)(unit.AuraState | AuraStateMask.Immolate));
 			}

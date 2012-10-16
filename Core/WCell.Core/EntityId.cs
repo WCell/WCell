@@ -79,7 +79,11 @@ namespace WCell.Core
 		const uint High8Mask = 0xFF000000;
 
 		public static readonly EntityId Zero = new EntityId(0);
-		public static readonly byte[] ZeroRaw = new byte[8];
+	    public static byte[] ZeroRaw
+	    {
+            get { return _zeroRaw.Clone() as byte[]; }
+	    }
+        private static readonly byte[] _zeroRaw = new byte[8];
 
 		[FieldOffset(0)]
 		public ulong Full;

@@ -73,7 +73,7 @@ namespace WCell.RealmServer.Misc
 			{
 				return SpellFailedReason.CantDuelWhileStealthed;
 			}
-			if (challenger.Zone != null && challenger.Zone.Template.IsSanctuary)
+			if (challenger.Zone != null && !challenger.Zone.Flags.HasFlag(ZoneFlags.Duel))
 			{
 				return SpellFailedReason.NotHere;
 			}

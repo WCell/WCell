@@ -149,7 +149,7 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Wheter the Unit is allowed to attack and use physical abilities
+		/// Whether the Unit is allowed to attack and use physical abilities
 		/// </summary>
 		public bool CanDoPhysicalActivity
 		{
@@ -336,7 +336,7 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Increase the mechnanic modifier count for the given SpellMechanic
+        /// Increase the mechanic modifier count for the given SpellMechanic
 		/// </summary>
 		public void IncMechanicCount(SpellMechanic mechanic, bool isCustom = false)
 		{
@@ -383,7 +383,7 @@ namespace WCell.RealmServer.Entities
 						//UnitFlags |= UnitFlags.UnInteractable;
 					}
 
-					// harmfulnes
+					// harmfulness
 					if (m_canHarm && SpellConstants.HarmPreventionMechanics[(int)mechanic])
 					{
 						SetCanHarmState();
@@ -444,7 +444,7 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Decrease the mechnanic modifier count for the given SpellMechanic
+        /// Decrease the mechanic modifier count for the given SpellMechanic
 		/// </summary>
 		public void DecMechanicCount(SpellMechanic mechanic, bool isCustom = false)
 		{
@@ -617,7 +617,23 @@ namespace WCell.RealmServer.Entities
 			return m_dmgImmunities != null && m_dmgImmunities[(int)school] > 0;
 		}
 
-
+        public bool IsImmuneToSpell(Spell spell)
+        {
+            if (spell.Mechanic.IsNegative() && spell.IsAffectedByInvulnerability &&
+                (spell.Mechanic == SpellMechanic.Invulnerable_2 || spell.Mechanic == SpellMechanic.Invulnerable) &&
+                (
+                    IsInvulnerable ||
+                    IsImmune(SpellMechanic.Invulnerable_2) ||
+                    IsImmune(SpellMechanic.Invulnerable) ||
+                    IsImmune(spell.Mechanic) ||
+                    IsImmune(spell.DispelType)
+                )
+                )
+            {
+                return true;
+            }
+            return false;
+        }
 
 		/// <summary>
 		/// Adds immunity against given damage-school
@@ -1432,11 +1448,11 @@ namespace WCell.RealmServer.Entities
 			// must not be moving or logging out when being teleported
 			CancelMovement();
 			CancelAllActions();
+
 			if (this is Character)
 			{
-			    MovementHandler.SendStopMovementPacket(this);
-
-				((Character)this).CancelLogout();
+			    //MovementHandler.SendStopMovementPacket(this);
+                ((Character)this).CancelLogout();
 			}
 
 			if (ownerMap == map)
@@ -1450,6 +1466,11 @@ namespace WCell.RealmServer.Entities
 					{
 						var chr = ((Character)this);
 						chr.LastPosition = pos;
+
+                        // reset movement flags otherwise
+                        // the unit will continue move with these flags after teleport
+                        MovementFlags = MovementFlags.None;
+                        MovementFlags2 = MovementFlags2.None;
 
 						MovementHandler.SendMoved(chr);
 					}
@@ -1474,6 +1495,10 @@ namespace WCell.RealmServer.Entities
 						var chr = ((Character)this);
 						chr.LastPosition = pos;
 
+                        // reset movement flags otherwise
+                        // the unit will continue move with these flags after teleport
+                        MovementFlags = MovementFlags.None;
+                        MovementFlags2 = MovementFlags2.None;
 						MovementHandler.SendNewWorld(chr.Client, map.Id, ref pos, Orientation);
 					}
 				}
