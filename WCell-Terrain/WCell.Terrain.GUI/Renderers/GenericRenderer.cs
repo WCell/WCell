@@ -26,7 +26,8 @@ namespace WCell.Terrain.GUI.Renderers
 
 		public void SelectLine(WCell.Util.Graphics.Vector3 p1, WCell.Util.Graphics.Vector3 p2, Color color, bool doNotReplace = true)
 		{
-			const float halfLineWidth = 0.5f;
+			//const float halfLineWidth = 0.5f;
+			const float halfLineWidth = 0.05f;
 
 			var s1 = p1 - halfLineWidth;
 			var s2 = p1 + halfLineWidth;

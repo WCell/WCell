@@ -21,7 +21,8 @@ namespace WCell.Core.Network
 
 		public event Action<C, P> UnhandledPacket;
 
-		public static Action<C, P> DefaultUnhandledPacketHandler = (client, packet) => {
+		public static Action<C, P> DefaultUnhandledPacketHandler = (client, packet) =>
+		{
 			client.Server.Warning(client, Resources.UnhandledPacket, packet.PacketId, packet.PacketId.RawId, packet.Length);
 		};
 
@@ -71,14 +72,7 @@ namespace WCell.Core.Network
 				s_log.Debug(string.Format(Resources.HandlerAlreadyRegistered, packetId, m_handlers[packetId.RawId].Handler, fn));
 			}
 
-			if (fn != null)
-			{
-				m_handlers[packetId.RawId] = new PacketHandler<C, P>(fn, isGamePacket, requiresLogin);
-			}
-			else
-			{
-				m_handlers[packetId.RawId] = null;
-			}
+			m_handlers[packetId.RawId] = new PacketHandler<C, P>(fn, isGamePacket, requiresLogin);
 		}
 
 		public void Unregister(PacketId type)
@@ -142,7 +136,7 @@ namespace WCell.Core.Network
 				catch (Exception e)
 				{
 					var handlerStr = type.FullName + "." + method.Name;
-					throw new Exception("Unable to register PacketHandler " + handlerStr + 
+					throw new Exception("Unable to register PacketHandler " + handlerStr +
 						".\n Make sure its arguments are: " + typeof(C).FullName + ", " + typeof(P).FullName +
 						".\n" + e.Message);
 				}

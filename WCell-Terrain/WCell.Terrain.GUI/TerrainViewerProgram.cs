@@ -1,5 +1,7 @@
 //test
 using System;
+using System.Collections.Generic;
+using System.IO;
 using WCell.Constants;
 using WCell.Constants.World;
 
@@ -23,6 +25,8 @@ namespace WCell.Terrain.GUI
 		/// Parallel loading is still experimental
 		/// </summary>
 		public static bool UseMultiThreadedLoading = false;
+
+		private static World world;
 
 		/// <summary>
 		/// The main entry point for the application.
@@ -50,15 +54,9 @@ namespace WCell.Terrain.GUI
 
 			var defaultTileId = TileIdentifier.DefaultTileIdentifier;
 		    
-            var world = new World();
-		    var terrain = new SimpleWDTTerrain(defaultTileId.MapId, false);
-            world.WorldTerrain.Add(defaultTileId.MapId, terrain);
+            world = new World();
 
-            terrain.GetOrCreateTile(defaultTileId.MapId, defaultTileId.X, defaultTileId.Y);
-            
-			AvatarPosition = new Vector3(TerrainConstants.CenterPoint - (defaultTileId.X + 1)*TerrainConstants.TileSize,
-			                             TerrainConstants.CenterPoint - (defaultTileId.Y)*TerrainConstants.TileSize,
-			                             100.0f);
+			LoadInitialData(defaultTileId);
 
 
 			Console.WriteLine("All data has been loaded - Starting GUI...");
@@ -67,7 +65,19 @@ namespace WCell.Terrain.GUI
 			StartDefaultViewer(world, defaultTileId);
 		}
 
-		
+		public static List<Vector3[]> v = new List<Vector3[]>();
+		private static void LoadInitialData(TileIdentifier defaultTileId)
+		{
+			var terrain = new SimpleWDTTerrain(defaultTileId.MapId, false);
+			world.WorldTerrain.Add(defaultTileId.MapId, terrain);
+
+			terrain.GetOrCreateTile(defaultTileId.MapId, defaultTileId.X, defaultTileId.Y);
+
+			AvatarPosition = new Vector3(TerrainConstants.CenterPoint - (defaultTileId.X + 1) * TerrainConstants.TileSize,
+										 TerrainConstants.CenterPoint - (defaultTileId.Y) * TerrainConstants.TileSize,
+										 100.0f);
+		}
+
 
 		private static void StartDefaultViewer(World world, TileIdentifier tileId)
 		{

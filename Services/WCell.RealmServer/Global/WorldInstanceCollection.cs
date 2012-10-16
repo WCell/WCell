@@ -117,6 +117,7 @@ namespace WCell.RealmServer.Global
 					instances = GetOrCreateInstances(id);
 					Array.Resize(ref instances, (int)(map.InstanceId * ArrayUtil.LoadConstant));
 					m_instances[id.ToUInt32(null)] = instances;
+					++m_Count;
 				}
 				finally
 				{
@@ -124,17 +125,22 @@ namespace WCell.RealmServer.Global
 				}
 			}
 			instances[map.InstanceId] = map;
-
-			Interlocked.Increment(ref m_Count);
 		}
 
 		internal void RemoveInstance(E mapId, uint instanceId)
 		{
 			lck.EnterWriteLock();
-			var instances = GetOrCreateInstances(mapId);
-			instances[instanceId] = null;
+			try
+			{
+				var instances = GetOrCreateInstances(mapId);
+				instances[instanceId] = null;
 
-			Interlocked.Decrement(ref m_Count);
+				--m_Count;
+			}
+			finally
+			{
+				lck.ExitWriteLock();
+			}
 		}
 	}
 }

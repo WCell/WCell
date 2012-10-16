@@ -518,6 +518,7 @@ namespace WCell.Terrain.MPQ
                 }
             }
 
+
 		    foreach (var m2 in M2s)
 		    {
 		        clipper.ClipMesh(m2.Vertices, m2.Indices, out newVertices, out newIndices);

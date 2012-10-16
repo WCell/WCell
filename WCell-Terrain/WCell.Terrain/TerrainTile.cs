@@ -19,7 +19,7 @@ namespace WCell.Terrain
 	/// </summary>
 	public class TerrainTile : IShape
 	{
-        public TileIdentifier TileId { get; set; }
+		public TileIdentifier TileId { get; set; }
 	    
 	    public MapId Map
 	    {
@@ -126,7 +126,7 @@ namespace WCell.Terrain
 
 		public NavMesh EnsureNavMeshLoaded()
 		{
-			if (NavMesh == null)
+			if (NavMesh == null && NavMeshBuilder.AutoLoadNavmeshes)
 			{
 				var builder = new NavMeshBuilder(this);
 				builder.BuildMesh(this);

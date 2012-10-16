@@ -13,6 +13,7 @@ namespace WCell.MPQTool.StormLibWrapper
         private const uint priority = 0;
 
         private IntPtr handle;
+    	private string path;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MpqArchive"/> class.
@@ -23,6 +24,7 @@ namespace WCell.MPQTool.StormLibWrapper
             if (path == null)
                 throw new ArgumentNullException("path");
 
+        	this.path = path;
             ErrorHandler.ThrowOnFailure(NativeMethods.OpenArchive(path, priority, flags, out handle),
                                         "Could not open MPQ archive.");
         }
@@ -177,5 +179,10 @@ namespace WCell.MPQTool.StormLibWrapper
         {
             return NativeMethods.CloseSearch(searchHandle);
         }
+
+		public override string ToString()
+		{
+			return "MPQArchive: " + path;
+		}
     }
 }

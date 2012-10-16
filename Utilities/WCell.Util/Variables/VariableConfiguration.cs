@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -25,7 +26,7 @@ namespace WCell.Util.Variables
 		}
 	}
 
-	public class VariableConfiguration<V> : IConfiguration
+	public class VariableConfiguration<V> : IConfiguration, IEnumerable<V>
 		where V : TypeVariableDefinition, new()
 	{
 		protected string RootNodeName = "Config";
@@ -334,6 +335,8 @@ namespace WCell.Util.Variables
 
 			foreach (var type in types)
 			{
+				if ((type.Attributes & TypeAttributes.Public) == 0) continue;
+
 				var members = type.GetMembers(BindingFlags.Public | BindingFlags.Static);
 				InitMembers<A>(members);
 
@@ -437,6 +440,19 @@ namespace WCell.Util.Variables
 			{
 				Tree.AddChildInChain(def.FullName, def);
 			}
+		}
+
+		public IEnumerator<V> GetEnumerator()
+		{
+			foreach (var def in Definitions.Values)
+			{
+				yield return def;
+			}
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return GetEnumerator();
 		}
 	}
 }

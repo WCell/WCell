@@ -97,8 +97,8 @@ namespace WCell.Terrain.Recast.NavMesh
 						terrain.GetLiquidType(v2) != LiquidType.None &&
 						terrain.GetLiquidType(v3) != LiquidType.None)
 					{
-                        var triBottom = float.MaxValue;
-				        var triTop = float.MinValue;
+                        var triBottom = Single.MaxValue;
+				        var triTop = Single.MinValue;
 				        triBottom = Math.Min(triBottom, v1.Z);
                         triBottom = Math.Min(triBottom, v2.Z);
                         triBottom = Math.Min(triBottom, v3.Z);
@@ -227,8 +227,8 @@ namespace WCell.Terrain.Recast.NavMesh
 			List<Vector3> vertexList;
 			using (LargeObjectPools.Vector3ListPool.Borrow(out vertexList))
 			{
-				var min = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
-				var max = new Vector3(float.MinValue, float.MinValue, float.MinValue);
+				var min = new Vector3(Single.MaxValue, Single.MaxValue, Single.MaxValue);
+				var max = new Vector3(Single.MinValue, Single.MinValue, Single.MinValue);
 
 				for (int i = 0, v = 0; i < vertCount; i++, v += 3)
 				{
@@ -511,5 +511,10 @@ namespace WCell.Terrain.Recast.NavMesh
 				return newVertices.ToArray();
 			}
 		}
+
+		/// <summary>
+		/// Disable navmeshes for now
+		/// </summary>
+		public static bool AutoLoadNavmeshes = false;
 	}
 }

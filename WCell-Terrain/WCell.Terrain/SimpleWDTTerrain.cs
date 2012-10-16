@@ -20,7 +20,7 @@ namespace WCell.Terrain
 
         public TerrainTile GetOrCreateTile(MapId map, int x, int y)
         {
-            Console.Write("Trying to load simple tile... ");
+            Console.Write("Trying to load simple tile ({0}, {1}) from {2}... ", x, y, map);
             var tile = LoadTile(map, x, y);
 
             if (tile == null)

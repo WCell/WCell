@@ -132,6 +132,12 @@ namespace WCell.Util.Variables
 			set { m_Member.SetUnindexedValue(Object, value); }
 		}
 
+		public string ValueString
+		{
+			get { return Utility.GetStringRepresentation(Value); }
+			set { TrySet(value); }
+		}
+
 		public string TypeName
 		{
 			get { return VariableType.Name; }

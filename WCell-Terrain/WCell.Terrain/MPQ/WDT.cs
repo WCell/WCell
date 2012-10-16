@@ -81,7 +81,11 @@ namespace WCell.Terrain.MPQ
 			WMORoot wmo;
 			if (!WMOs.TryGetValue(definition.FilePath, out wmo))
 			{
-				WMOs.Add(definition.FilePath, wmo = WMOReader.ReadWMO(WCellTerrainSettings.GetDefaultMPQFinder(), definition));
+				wmo = WMOReader.ReadWMO(WCellTerrainSettings.GetDefaultMPQFinder(), definition);
+				if (wmo != null)
+				{
+					WMOs.Add(definition.FilePath, wmo);
+				}
 			}
 			return wmo;
 		}

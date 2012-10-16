@@ -109,19 +109,37 @@ namespace WCell.Terrain.Serialization
 
 			// add WMOs & M2s
 			adt.WMOs = new WMORoot[adt.ObjectDefinitions.Count];
+			var actualWMOCount = 0;
 			for (var i = 0; i < adt.ObjectDefinitions.Count; i++)
 			{
 				var def = adt.ObjectDefinitions[i];
 				var wmo = terrain.GetOrReadWMO(def);
 				adt.WMOs[i] = wmo;
+				if (wmo != null)
+				{
+					++actualWMOCount;
+				}
+			}
+			if (actualWMOCount == 0)
+			{
+				adt.WMOs = new WMORoot[0];		// No WMOs available -> unset
 			}
 
 			adt.M2s = new M2[adt.DoodadDefinitions.Count];
+			var actualM2Count = 0;
 			for (var i = 0; i < adt.DoodadDefinitions.Count; i++)
 			{
 				var def = adt.DoodadDefinitions[i];
 				var m2 = terrain.GetOrReadM2(def);
 				adt.M2s[i] = m2;
+				if (m2 != null)
+				{
+					++actualM2Count;
+				}
+			}
+			if (actualM2Count == 0)
+			{
+				adt.M2s = new M2[0];		// No M2s available -> unset
 			}
 
 

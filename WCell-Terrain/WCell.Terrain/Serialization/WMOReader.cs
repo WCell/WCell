@@ -25,6 +25,7 @@ namespace WCell.Terrain.Serialization
             if (!mpqLibrarian.FileExists(filePath))
             {
                 log.Error("WMO file does not exist: ", filePath);
+            	return null;
             }
 
             using (var stream = mpqLibrarian.OpenFile(filePath))
@@ -604,6 +605,8 @@ namespace WCell.Terrain.Serialization
 		{
 			// Parse the WMORoot
 			var wmoRoot = WMOReader.ReadWMO(librarian, currentMODF.FilePath);
+
+			if (wmoRoot == null) return null;
 
 			// Parse the WMOGroups
 			for (var wmoGroup = 0; wmoGroup < wmoRoot.Header.GroupCount; wmoGroup++)
