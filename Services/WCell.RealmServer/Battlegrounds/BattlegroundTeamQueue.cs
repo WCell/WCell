@@ -55,7 +55,7 @@ namespace WCell.RealmServer.Battlegrounds
 				if (group == null || !group.IsLeader(chr))
 				{
 					// invalid request
-					GroupHandler.SendResult(chr, GroupResult.DontHavePermission);
+					GroupHandler.SendResult(chr, GroupResultType.Swap, GroupResult.DontHavePermission);
 				}
 				else
 				{

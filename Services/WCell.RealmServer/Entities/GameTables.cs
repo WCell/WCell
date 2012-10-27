@@ -18,8 +18,6 @@ namespace WCell.RealmServer.Entities
 {
     public class GameTables
     {
-        
-
         private static float[] s_baseMeleeCritChance;
         private static float[] s_baseSpellCritChance;
 
@@ -347,7 +345,7 @@ namespace WCell.RealmServer.Entities
 
             if (!LoadGtBarberShopCostDBC(out s_barberShopCosts))
             {
-                s_log.Info(string.Format(Resources.DBCLoadFailed, WCellConstants.DBC_MELEECRITCLASS));
+                s_log.Info(string.Format(Resources.DBCLoadFailed, WCellConstants.DBC_BARBERSHOPCOST));
 
                 return false;
             }

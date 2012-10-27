@@ -641,7 +641,7 @@ namespace WCell.RealmServer.Groups
 
 				// notify user:
 				// SendGroupDestroyed(chr);
-				GroupHandler.SendResult(chr.Client, GroupResult.NoError);
+				GroupHandler.SendResult(chr.Client, GroupResultType.Leave, GroupResult.NoError);
 
 				//Remove the member from the subgroup
 				member.SubGroup.RemoveMember(member);
@@ -816,7 +816,7 @@ namespace WCell.RealmServer.Groups
 				}
 			}
 
-			SendResult(inviter.Client, err, 0, targetName);
+            GroupHandler.SendResult(inviter.Client, err, GroupResultType.Invite, targetName);
 			return err;
 		}
 
@@ -846,7 +846,7 @@ namespace WCell.RealmServer.Groups
 			var requester = requestMember.Character;
 			if (requester != null)
 			{
-				SendResult(requester.Client, err, 0, targetName);
+				GroupHandler.SendResult(requester.Client, err, targetName);
 			}
 			return err;
 		}
@@ -861,7 +861,7 @@ namespace WCell.RealmServer.Groups
 				var requester = member.Character;
 				if (requester != null)
 				{
-					GroupHandler.SendResult(requester.Client, GroupResult.DontHavePermission);
+					GroupHandler.SendResult(requester.Client, GroupResultType.Swap, GroupResult.DontHavePermission);
 				}
 				return false;
 			}
@@ -875,7 +875,7 @@ namespace WCell.RealmServer.Groups
 				var chr = member.Character;
 				if (chr != null)
 				{
-					GroupHandler.SendResult(chr.Client, GroupResult.GroupIsFull);
+					GroupHandler.SendResult(chr.Client, GroupResultType.Invite, GroupResult.GroupIsFull);
 				}
 				return false;
 			}
@@ -1009,59 +1009,14 @@ namespace WCell.RealmServer.Groups
 		}
 
 		/// <summary>
-		/// Send Group Uninvite packet
-		/// </summary>
-		public static void SendGroupUninvite(Character chr)
-		{
-			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_GROUP_UNINVITE, 0))
-			{
-				chr.Client.Send(packet);
-			}
-		}
-
-		/// <summary>
 		/// Send Party Disband Packet
 		/// </summary>
 		protected virtual void SendGroupDestroyed(Character chr)
 		{
-			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_GROUP_DESTROYED))
+			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_GROUP_DESTROYED, 0))
 			{
 				chr.Client.Send(packet);
 			}
-		}
-
-		/// <summary>
-		/// Sends result of actions connected with groups
-		/// </summary>
-		/// <param name="client">the client to send to</param>
-		/// <param name="resultType">The result type</param>
-		/// <param name="resultCode">The <see cref="GroupResult"/> result code</param>
-		/// <param name="name">name of player event has happened to</param>
-		public static void SendResult(IPacketReceiver client, GroupResult resultCode, uint resultType,
-			string name)
-		{
-			// TODO: add enum for resultType
-			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PARTY_COMMAND_RESULT))
-			{
-				packet.Write(resultType);
-				packet.WriteCString(name);
-				packet.Write((uint)resultCode);
-				packet.Write((uint)0); // 3.3.3, lfg cooldown?
-
-				client.Send(packet);
-			}
-		}
-
-		/// <summary>
-		/// Sends result of actions connected with groups
-		/// </summary>
-		/// <param name="client">the client to send to</param>
-		/// <param name="resultCode">The <see cref="GroupResult"/> result code</param>
-		/// <param name="name">name of player event has happened to</param>
-		public static void SendResult(IPacketReceiver client, GroupResult resultCode,
-			string name)
-		{
-			SendResult(client, resultCode, 0, name);
 		}
 
 		/// <summary>
@@ -1072,14 +1027,14 @@ namespace WCell.RealmServer.Groups
 		/// <param name="y">y coordinate of ping</param>
 		public virtual void SendPing(GroupMember pinger, float x, float y)
 		{
-			using (var packet = new RealmPacketOut(RealmServerOpCode.MSG_MINIMAP_PING))
-			{
-				packet.Write(EntityId.GetPlayerId(pinger.Id));
-				packet.WriteFloat(x);
-				packet.WriteFloat(y);
+            using (var packet = new RealmPacketOut(RealmServerOpCode.MSG_MINIMAP_PING, 8 + 4 + 4))
+            {
+                packet.Write(EntityId.GetPlayerId(pinger.Id));
+                packet.WriteFloat(x);
+                packet.WriteFloat(y);
 
-				SendAll(packet, pinger);
-			}
+                SendAll(packet, pinger);
+            }
 		}
 
 		/// <summary>
