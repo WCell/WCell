@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using WCell.MPQTool.StormLibWrapper;
+using WCell.Util.NLog;
+using WCell.Constants.World;
 
 //using MpqReader;
 
@@ -85,7 +87,7 @@ namespace WCell.MPQTool
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("Exception thrown in MpqManager constructor." + e);
+                    LogUtil.ErrorException("Exception thrown in MpqManager constructor.", e);
                 }
             }
         }
@@ -106,7 +108,12 @@ namespace WCell.MPQTool
 
         public bool FileExists(string fileName)
         {
-        	return MPQArchives.Any(archive => archive.FileExists(fileName));
+            return MPQArchives.Any(archive => archive.FileExists(fileName));
+        }
+
+        public MpqArchive GetArchive(string fileName)
+        {
+            return MPQArchives.FirstOrDefault(arch => arch.FileExists(fileName));
         }
 
 		public IEnumerable<string> GetAllFiles(string match)

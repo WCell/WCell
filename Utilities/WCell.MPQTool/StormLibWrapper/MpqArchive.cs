@@ -37,6 +37,20 @@ namespace WCell.MPQTool.StormLibWrapper
             get { return handle != IntPtr.Zero; }
         }
 
+        public long ArchiveSize
+        {
+            get { return MpqFile.GetFileSize(handle); }
+        }
+
+        public long GetFileSize(string fname)
+        {
+            long size;
+            using (var file = OpenFile(fname))
+                size = file != null ? file.Size : 0;
+                
+            return size;
+        }
+
         /// <summary>
         /// Checks for the existence of a file in the MPQ archive.
         /// </summary>
@@ -75,6 +89,11 @@ namespace WCell.MPQTool.StormLibWrapper
             IntPtr fileHandle;
             var retVal = NativeMethods.OpenFileEx(handle, filePath, OpenFileFlags.FromMPQ, out fileHandle);
             var success = (((long) retVal & 0xFF) > 0x00);
+
+            if (fileHandle == IntPtr.Zero)
+            {
+                return null;
+            }
 
             ErrorHandler.ThrowOnFailure((!success || (fileHandle != IntPtr.Zero)), "Could not open MPQ file.");
 

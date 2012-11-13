@@ -6,6 +6,9 @@ using WCell.Constants.World;
 using WCell.MPQTool;
 using WCell.Terrain.MPQ;
 using WCell.Terrain.Serialization;
+using WCell.Constants;
+using WCell.Core.Paths;
+using System.IO;
 
 namespace WCell.Terrain.Extractor
 {
@@ -64,53 +67,6 @@ namespace WCell.Terrain.Extractor
 						}
 
 						Console.WriteLine(@"Loading FAILED: Tile ({0}, {1}) in Map {2} could not be loaded", tileX, tileY, mapId);
-					}
-				}
-			}
-		}
-
-		public static void ExtractAllADTs()
-		{
-			foreach (MapId mapId in Enum.GetValues(typeof(MapId)))
-			{
-				var name = TileIdentifier.GetName(mapId);
-				if (string.IsNullOrEmpty(name))
-				{
-					Console.WriteLine(@"No ADT for map {0}.", mapId);
-					continue;
-				}
-
-				var wdt = new WDT(mapId);
-
-				for (var tileX = 0; tileX < 64; tileX++)
-				{
-					for (var tileY = 0; tileY < 64; tileY++)
-					{
-						string filePath;
-						MpqLibrarian mpqFinder;
-						if (!ADTReader.TryGetADTPath(mapId, tileX, tileY, out filePath, out mpqFinder))
-							continue;
-
-						try
-						{
-							wdt.TileProfile[tileX, tileY] = true;
-							var adt = ADTReader.ReadADT(wdt, tileX, tileY);
-							if (adt != null)
-							{
-								adt.GenerateMapWithNoSimplification();
-								Console.WriteLine(@"Tile ({0}, {1}) in Map {2} has been imported...", tileX, tileY, mapId);
-								Console.WriteLine(@"Writing to file...");
-
-								// export to file
-								SimpleTileWriter.WriteADT(adt);
-								continue;
-							}
-						}
-						catch (ArgumentException)
-						{
-						}
-
-						Console.WriteLine(@"Extracting FAILED: Tile ({0}, {1}) in Map {2} could not be loaded", tileX, tileY, mapId);
 					}
 				}
 			}

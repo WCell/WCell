@@ -2,6 +2,7 @@
 using WCell.MPQTool.StormLibWrapper;
 using WCell.Terrain.Serialization;
 using WCell.Util.NLog;
+using WCell.Constants.World;
 
 namespace WCell.Terrain.Extractor
 {
@@ -19,12 +20,14 @@ namespace WCell.Terrain.Extractor
             NativeMethods.StormLibFolder = WCellTerrainSettings.LibDir;
             //NativeMethods.InitAPI();
 
+
+            HeightfieldExtractor.ExtractHeightfield(MapId.EasternKingdoms);
 			
 
 			// TODO: Load tiles one by one and write them to disk
             //SimpleADTWriter.WriteAllWDTs();
 			//Extractor.ExtractAllADTs();
-        	Extractor.CreateAndWriteAllMeshes();
+        	//Extractor.CreateAndWriteAllMeshes();
         	//Extractor.ExtractAndWriteAll();
         }
 

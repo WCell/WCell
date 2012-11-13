@@ -88,7 +88,7 @@ namespace WCell.Terrain.MPQ
 
 		#region Vertex & Index generation
 
-		private static readonly bool[,] EmptyHolesArray = new bool[4, 4];
+		public static readonly bool[,] EmptyHolesArray = new bool[4, 4];
 
         public void GenerateMapWithQSlimSimplification()
         {
