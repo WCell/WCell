@@ -21,9 +21,13 @@ namespace WCell.Terrain.Extractor
             //NativeMethods.InitAPI();
 
 
-            HeightfieldExtractor.ExtractHeightfield(MapId.EasternKingdoms);
-			
+            //HeightfieldExtractor.ExtractHeightfield(MapId.EasternKingdoms);
+			HeightfieldExtractor.ExtractHeightfield(MapId.Kalimdor);
 
+
+        	Console.WriteLine();
+			Console.WriteLine("Press ANY key to exit...");
+			Console.ReadKey();
 			// TODO: Load tiles one by one and write them to disk
             //SimpleADTWriter.WriteAllWDTs();
 			//Extractor.ExtractAllADTs();

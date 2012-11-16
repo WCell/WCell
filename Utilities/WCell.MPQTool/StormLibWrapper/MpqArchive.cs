@@ -42,7 +42,12 @@ namespace WCell.MPQTool.StormLibWrapper
             get { return MpqFile.GetFileSize(handle); }
         }
 
-        public long GetFileSize(string fname)
+		/// <summary>
+		/// The path where this archive is located
+		/// </summary>
+		public string Path { get { return path; } }
+
+    	public long GetFileSize(string fname)
         {
             long size;
             using (var file = OpenFile(fname))

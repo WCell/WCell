@@ -55,37 +55,39 @@ namespace WCell.Terrain.Extractor
 
 			// get started
 			var mpqFinder = WCellTerrainSettings.GetDefaultMPQFinder();
-            var archive = ADTReader.GetArchive(mapId);
             
 
             // Create WDT
             var wdt = new WDT(mapId);
 
             var startTime = DateTime.Now;
-            long totalSize = 0;
 
             // compute total size
             Console.Write(@"Estimating workload... ");
-        	var archives = new HashSet<string>();
+            var totalAmount = 0;
+			var archives = new HashSet<string>();
             for (var tileX = 0; tileX < TerrainConstants.TilesPerMapSide; tileX++)
             {
                 for (var tileY = 0; tileY < TerrainConstants.TilesPerMapSide; tileY++)
                 {
 					var fname = ADTReader.GetFilename(mapId, tileX, tileY);
-					archive = mpqFinder.GetArchive(fname);
-					if (archive != null)
+					var archive = mpqFinder.GetArchive(fname);
+					if (archive != null && archive.GetFileSize(fname) > 0)
 					{
-						totalSize += archive.GetFileSize(fname);
-						archives.Add(archive.ToString());
+						//totalSize += archive.GetFileSize(fname);
+						++totalAmount;
+						archives.Add(archive.Path);
 					}
                 }
             }
-            Console.WriteLine(@"Done.");
+            Console.WriteLine(@"Done - Found {0} tiles in {1} files.", totalAmount, archives.Count);
 
-            // Get cooking:
+			// Get cooking:
+			Console.WriteLine();
+			Console.WriteLine("Extracting...");
             
             // Load all ADTs and write them to file
-            long processedSize = 0;
+        	var processedTiles = 0;
             for (var tileX = 0; tileX < TerrainConstants.TilesPerMapSide; tileX++)
             {
                 for (var tileY = 0; tileY < TerrainConstants.TilesPerMapSide; tileY++)
@@ -93,24 +95,31 @@ namespace WCell.Terrain.Extractor
                     try
                     {
 						var fname = ADTReader.GetFilename(mapId, tileX, tileY);
-						archive = mpqFinder.GetArchive(fname);
-                        if (archive != null)
+                    	long fsize;
+						var archive = mpqFinder.GetArchive(fname);
+                        if (archive != null && (fsize = archive.GetFileSize(fname)) > 0)
 						{
-							var fsize = archive.GetFileSize(fname);
-                            processedSize += fsize;
+                            //processedSize += fsize;
 
                             var adt = ADTReader.ReadADT(wdt, tileX, tileY, false);
-                            Console.Write(@"Tile ({0}, {1}) in Map {2} has been read from {3}. Writing... ", tileX, tileY, mapId, archive);
+                            Console.Write(@"Tile ({0}, {1}) in Map {2} has been read from {3}. Writing... ",
+								tileX, tileY, mapId, Path.GetFileName(archive.Path));
 
                             // write to file
                             WriteHeightfield(adt);
 
+							// stats
+							++processedTiles;
                             var timePassed = DateTime.Now - startTime;
-                            var progress = processedSize / (float)totalSize;
-                            var timeRemaining = new TimeSpan((uint)(timePassed.Ticks / progress));
-                            Console.WriteLine(@"Done. ({0}% - Time passed: {1} - Time remaining: {2})", 100 * progress,
+							var timePerTile = timePassed.Ticks / processedTiles;
+							var progress = processedTiles / (float)totalAmount;
+                            var timeRemaining = new TimeSpan((totalAmount - processedTiles) * timePerTile);
+                            Console.WriteLine(@"Done. [{0}/{1} {2:F2}% - {3} (Remaining: {4})]", 
+								processedTiles,
+								totalAmount,
+								100 * progress,
                                 timePassed.Format(),
-                                timeRemaining.Format());
+								timeRemaining.Format());
                             continue;
                         }
                     }
