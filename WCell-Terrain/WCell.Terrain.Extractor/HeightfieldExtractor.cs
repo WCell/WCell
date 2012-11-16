@@ -53,25 +53,31 @@ namespace WCell.Terrain.Extractor
                 return false;
             }
 
-            // find the archive
+			// get started
+			var mpqFinder = WCellTerrainSettings.GetDefaultMPQFinder();
             var archive = ADTReader.GetArchive(mapId);
             
 
             // Create WDT
             var wdt = new WDT(mapId);
 
-            var pct = .0f;
             var startTime = DateTime.Now;
             long totalSize = 0;
 
             // compute total size
             Console.Write(@"Estimating workload... ");
+        	var archives = new HashSet<string>();
             for (var tileX = 0; tileX < TerrainConstants.TilesPerMapSide; tileX++)
             {
                 for (var tileY = 0; tileY < TerrainConstants.TilesPerMapSide; tileY++)
                 {
-                    var fname = ADTReader.GetFilename(mapId, tileX, tileY);
-                    totalSize += archive.GetFileSize(fname);
+					var fname = ADTReader.GetFilename(mapId, tileX, tileY);
+					archive = mpqFinder.GetArchive(fname);
+					if (archive != null)
+					{
+						totalSize += archive.GetFileSize(fname);
+						archives.Add(archive.ToString());
+					}
                 }
             }
             Console.WriteLine(@"Done.");
@@ -86,14 +92,15 @@ namespace WCell.Terrain.Extractor
                 {
                     try
                     {
-                        var fname = ADTReader.GetFilename(mapId, tileX, tileY);
-                        var fsize = archive.GetFileSize(fname);
-                        if (fsize > 0)
-                        {
+						var fname = ADTReader.GetFilename(mapId, tileX, tileY);
+						archive = mpqFinder.GetArchive(fname);
+                        if (archive != null)
+						{
+							var fsize = archive.GetFileSize(fname);
                             processedSize += fsize;
 
                             var adt = ADTReader.ReadADT(wdt, tileX, tileY, false);
-                            Console.Write(@"Tile ({0}, {1}) in Map {2} has been read. Writing... ", tileX, tileY, mapId);
+                            Console.Write(@"Tile ({0}, {1}) in Map {2} has been read from {3}. Writing... ", tileX, tileY, mapId, archive);
 
                             // write to file
                             WriteHeightfield(adt);

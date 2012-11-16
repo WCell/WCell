@@ -61,63 +61,6 @@ namespace WCell.Terrain.Serialization
 		}
 
 		/// <summary>
-		/// Writes only a simplified (but slightly bigger) version of the heightfield of the ADT
-		/// </summary>
-		/// <param name="adt"></param>
-		public static void WriteHeightField(ADT adt)
-		{
-			var path = GetMapDirectory(adt.Terrain.MapId);
-			if (!Directory.Exists(path))
-			{
-				Directory.CreateDirectory(path);
-			}
-			using (var file = File.Create(GetFileName(adt.Terrain.MapId, adt.TileX, adt.TileY)))
-			{
-				using (var writer = new BinaryWriter(file))
-				{
-					writer.Write(HeightfieldFileTypeId);
-					writer.Write(Version);
-
-
-					for (var x = 0; x < TerrainConstants.ChunksPerTileSide; x++)
-					{
-						for (var y = 0; y < TerrainConstants.ChunksPerTileSide; y++)
-						{
-							var chunk = adt.Chunks[x, y];
-							var heights = chunk.Heights.GetLowResMapMatrix();
-							var holes = (chunk.HolesMask > 0) ? chunk.HolesMap : ADT.EmptyHolesArray;
-
-							// Add the height map values, inserting them into their correct positions
-							for (var unitX = 0; unitX <= TerrainConstants.UnitsPerChunkSide; unitX++)
-							{
-								for (var unitY = 0; unitY <= TerrainConstants.UnitsPerChunkSide; unitY++)
-								{
-									var tileX = (x*TerrainConstants.UnitsPerChunkSide) + unitX;
-									var tileY = (y*TerrainConstants.UnitsPerChunkSide) + unitY;
-
-									var vertIndex = tileVertLocations[tileX, tileY];
-									if (vertIndex == -1)
-									{
-										var xPos = TerrainConstants.CenterPoint
-										           - (adt.TileX*TerrainConstants.TileSize)
-										           - (tileX*TerrainConstants.UnitSize);
-										var yPos = TerrainConstants.CenterPoint
-												   - (adt.TileY * TerrainConstants.TileSize)
-										           - (tileY*TerrainConstants.UnitSize);
-										var zPos = (heights[unitX, unitY] + chunk.MedianHeight);
-										tileVertLocations[tileX, tileY] = tileVerts.Count;
-										tileVerts.Add(new Vector3(xPos, yPos, zPos));
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-
-		}
-
-		/// <summary>
 		/// Writes all height maps as trimeshes and liquid information to the default MapDir
 		/// </summary>
 		//public static void WriteADTs(WDT wdt)

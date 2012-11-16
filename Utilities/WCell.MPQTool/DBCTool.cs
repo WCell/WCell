@@ -172,6 +172,11 @@ namespace WCell.MPQTool
 		}
 		#endregion
 
+		public static string GetDataDir(string wowDir)
+		{
+			return Path.Combine(wowDir, "Data");
+		}
+
 		public static string FindWowDir()
 		{
 			return FindWowDir(null);
@@ -183,10 +188,11 @@ namespace WCell.MPQTool
 		/// <exception cref="Exception">If dir could not be found</exception>
 		public static string FindWowDir(string wowDir)
 		{
-			if (wowDir != null && Directory.Exists(wowDir))
+			if (wowDir != null && IsWoWDir(wowDir))
 			{
 				return wowDir;
 			}
+			
 			if (LookLocally() || LookInRegistry())
 			{
 				Console.WriteLine("Found WoW in: " + m_wowDir);
@@ -369,7 +375,7 @@ namespace WCell.MPQTool
 
 		private bool Export()
 		{
-			var dir = Path.Combine(m_wowDir, "Data");
+			var dir = GetDataDir(m_wowDir);
 
 			// Is there even a Data folder?
 			if (Directory.Exists(dir))
@@ -404,14 +410,19 @@ namespace WCell.MPQTool
 			throw new Exception("No Matching Locale Files were found");
 		}
 
+		private static bool IsWoWDir(string wowDir)
+		{
+			var fname = Path.Combine(wowDir, "Data/patch-3.MPQ");
+			return File.Exists(fname);
+		}
+
 		private static bool LookLocally()
 		{
 			Console.Write("Checking Local folder...");
 
 			m_wowDir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
 
-            var fname = Path.Combine(m_wowDir, "Data/patch-3.MPQ");
-			if (File.Exists(fname))
+			if (IsWoWDir(m_wowDir))
 			{
 				//DBCOutputDir = m_wowDir + "/DBC";
 				return true;
@@ -428,19 +439,15 @@ namespace WCell.MPQTool
 			Console.Write("Checking Install Folder...");
 
 			// Check the Registry for an installed folder -- HKEY_LOCAL_MACHINE\SOFTWARE\Blizzard Entertainment\World of Warcraft            
-			var key = Registry.LocalMachine.OpenSubKey("SOFTWARE");
-			if (key == null)
+			var parentKey = Registry.LocalMachine.OpenSubKey("SOFTWARE");
+			if (parentKey == null)
 			{
 				return false;
 			}
-
-		    if (!Environment.Is64BitProcess)
+			var key = parentKey.OpenSubKey("Blizzard Entertainment");
+		    if (key == null)
 			{
-				key = key.OpenSubKey("Blizzard Entertainment");
-			}
-			else
-			{
-                key = key.OpenSubKey("Wow6432Node");
+				key = parentKey.OpenSubKey("Wow6432Node");
 				if (key == null)
 				{
 					return false;
@@ -461,8 +468,6 @@ namespace WCell.MPQTool
 					m_wowDir = oWoWKey.GetValue("InstallPath").ToString();
 					return true;
 				}
-
-				throw new Exception("Could not find any WoW installation.");
 			}
 			return false;
 		}
