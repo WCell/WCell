@@ -24,7 +24,7 @@ namespace WCell.Constants
 		public const int UnitsPerChunkSide = 8;
 
 		/// <summary>
-		/// The Center of a full 64x64 map
+		/// The Center of a map is it's origin
 		/// </summary>
 		public const float CenterPoint = (TilesPerMapSide / 2f) * TileSize;
 		//public const float CenterPoint = 0;
@@ -37,7 +37,7 @@ namespace WCell.Constants
 		/// <summary>
 		/// The lowest possible Z component on a Map
 		/// </summary>
-		public const float MinHeight = 2048;
+		public const float MinHeight = -500;
 
 		/// <summary>
 		/// The length of a side of the 64x64 map
