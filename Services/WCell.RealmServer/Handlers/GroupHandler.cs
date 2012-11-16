@@ -33,8 +33,9 @@ using WCell.Util;
 namespace WCell.RealmServer.Handlers
 {
 	public static class GroupHandler
-	{
-		/// <summary>
+    {
+        #region IN
+        /// <summary>
 		/// Handles an incoming group invite request (/invite Player)
 		/// </summary>
 		/// <param name="client">the Session the incoming packet belongs to</param>
@@ -61,7 +62,7 @@ namespace WCell.RealmServer.Handlers
 					Singleton<RelationMgr>.Instance.AddRelation(inviteRelation);
 
 					// Target has been invited
-					Group.SendResult(inviter.Client, GroupResult.NoError, inviteeName);
+					SendResult(inviter.Client, GroupResult.NoError, GroupResultType.Invite, inviteeName);
 					SendGroupInvite(invitee.Client, inviter.Name);
 				}
 			}
@@ -367,7 +368,7 @@ namespace WCell.RealmServer.Handlers
 				{
 					Group newGroup = ((PartyGroup)group).ConvertTo();
 
-					SendResult(client, GroupResult.NoError); // Successful converted to raid
+					SendResult(client, GroupResultType.Swap, GroupResult.NoError); // Successful converted to raid
 					newGroup.SendUpdate();
 				}
 			}
@@ -406,7 +407,7 @@ namespace WCell.RealmServer.Handlers
 				}
 				else if (!group.MoveMember(targetMember, subGroup))
 				{
-					SendResult(client, GroupResult.GroupIsFull);
+					SendResult(client, GroupResultType.Swap, GroupResult.GroupIsFull);
 				}
 				else
 				{
@@ -563,10 +564,11 @@ namespace WCell.RealmServer.Handlers
             bool allow = packet.ReadBoolean();
             character.IsAllowedLowLevelRaid = allow;
         }
+        #endregion
 
-		#region Out
+        #region OUT
 
-		public static void SendLeaderChanged(GroupMember leader)
+        public static void SendLeaderChanged(GroupMember leader)
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_GROUP_SET_LEADER))
 			{
@@ -575,15 +577,60 @@ namespace WCell.RealmServer.Handlers
 			}
 		}
 
+
+        /// <summary>
+        /// Send Group Uninvite packet
+        /// </summary>
+        public static void SendGroupUninvite(Character chr)
+        {
+            using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_GROUP_UNINVITE, 0))
+            {
+                chr.Client.Send(packet);
+            }
+        }
+
 		/// <summary>
 		/// Sends result of actions connected with groups
 		/// </summary>
 		/// <param name="client">the client to send to</param>
 		/// <param name="resultCode">The <see cref="GroupResult"/> result code</param>
-		public static void SendResult(IPacketReceiver client, GroupResult resultCode)
+		public static void SendResult(IPacketReceiver client, GroupResultType resultType, GroupResult resultCode)
 		{
-			Group.SendResult(client, resultCode, 0, String.Empty);
+			SendResult(client, resultCode, resultType, String.Empty);
 		}
+
+        /// <summary>
+        /// Sends result of actions connected with groups
+        /// </summary>
+        /// <param name="client">the client to send to</param>
+        /// <param name="resultCode">The <see cref="GroupResult"/> result code</param>
+        /// <param name="name">name of player event has happened to</param>
+        public static void SendResult(IPacketReceiver client, GroupResult resultCode,
+            string name)
+        {
+            SendResult(client, resultCode, GroupResultType.Invite, name);
+        }
+
+        /// <summary>
+        /// Sends result of actions connected with groups
+        /// </summary>
+        /// <param name="client">the client to send to</param>
+        /// <param name="resultType">The result type</param>
+        /// <param name="resultCode">The <see cref="GroupResult"/> result code</param>
+        /// <param name="name">name of player event has happened to</param>
+        public static void SendResult(IPacketReceiver client, GroupResult resultCode, GroupResultType resultType,
+            string name)
+        {
+            using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PARTY_COMMAND_RESULT, 4 + name.Length + 4 + 4))
+            {
+                packet.Write((uint)resultType);
+                packet.WriteCString(name);
+                packet.Write((uint)resultCode);
+                packet.Write((uint)0); // 3.3.3, lfg cooldown?
+
+                client.Send(packet);
+            }
+        }
 
 		/// <summary>
 		/// Send Group Invite packet

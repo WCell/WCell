@@ -10,6 +10,7 @@ using WCell.Terrain.MPQ.ADTs;
 using WCell.Terrain.MPQ.WMOs;
 using WCell.Util;
 using WCell.Util.Graphics;
+using WCell.MPQTool.StormLibWrapper;
 
 namespace WCell.Terrain.Serialization
 {
@@ -34,13 +35,35 @@ namespace WCell.Terrain.Serialization
 			return Path.Combine(baseDir, fileName);
 		}
 
-		public static ADT ReadADT(WDT terrain, int x, int y)
+        /// <summary>
+        /// Returns the MpqArchive that contains the given map
+        /// </summary>
+        public static MpqArchive GetArchive(MapId mapId)
+        {
+            // find the archive
+            var mpqFinder = WCellTerrainSettings.GetDefaultMPQFinder();
+            MpqArchive archive = null;
+            for (var tileX = 0; tileX < TerrainConstants.TilesPerMapSide && archive == null; tileX++)
+            {
+                for (var tileY = 0; tileY < TerrainConstants.TilesPerMapSide && archive == null; tileY++)
+                {
+                    var fname = GetFilename(mapId, tileX, tileY);
+                    if (!mpqFinder.FileExists(fname))
+                        continue;
+
+                    archive = mpqFinder.GetArchive(fname);
+                }
+            }
+            return archive;
+        }
+
+		public static ADT ReadADT(WDT terrain, int x, int y, bool addWMOsAndM2s = true)
 		{
 			string filePath;
 			MpqLibrarian mpqFinder;
 			if (!TryGetADTPath(terrain.MapId, x, y, out filePath, out mpqFinder))
 			{
-				log.Error("ADT file does not exist: ", filePath); 
+				log.Error("ADT file does not exist: {0}", filePath); 
 				return null;
 			}
 
@@ -51,7 +74,7 @@ namespace WCell.Terrain.Serialization
 			{
 				if (stream.Length == 0)
 				{
-					log.Error("ADT file is empty: ", filePath); 
+					log.Error("ADT file is empty: {0}", filePath); 
 					return null;
 				}
 				ReadMVER(fileReader, adt);
@@ -112,55 +135,67 @@ namespace WCell.Terrain.Serialization
 				ReadMCNK(fileReader, adt);
 			}
 
-			// add WMOs & M2s
-			adt.WMOs = new WMORoot[adt.ObjectDefinitions.Count];
-			var actualWMOCount = 0;
-			for (var i = 0; i < adt.ObjectDefinitions.Count; i++)
-			{
-				var def = adt.ObjectDefinitions[i];
-				var wmo = terrain.GetOrReadWMO(def);
-				adt.WMOs[i] = wmo;
-				if (wmo != null)
-				{
-					++actualWMOCount;
-				}
-			}
-			if (actualWMOCount == 0)
-			{
-				adt.WMOs = new WMORoot[0];		// No WMOs available -> unset
-			}
+            if (addWMOsAndM2s)
+            {
+                // add WMOs & M2s
+                adt.WMOs = new WMORoot[adt.ObjectDefinitions.Count];
+                var actualWMOCount = 0;
+                for (var i = 0; i < adt.ObjectDefinitions.Count; i++)
+                {
+                    var def = adt.ObjectDefinitions[i];
+                    var wmo = terrain.GetOrReadWMO(def);
+                    adt.WMOs[i] = wmo;
+                    if (wmo != null)
+                    {
+                        ++actualWMOCount;
+                    }
+                }
+                if (actualWMOCount == 0)
+                {
+                    adt.WMOs = new WMORoot[0];		// No WMOs available -> unset
+                }
 
-			adt.M2s = new M2[adt.DoodadDefinitions.Count];
-			var actualM2Count = 0;
-			for (var i = 0; i < adt.DoodadDefinitions.Count; i++)
-			{
-				var def = adt.DoodadDefinitions[i];
-				var m2 = terrain.GetOrReadM2(def);
-				adt.M2s[i] = m2;
-				if (m2 != null)
-				{
-					++actualM2Count;
-				}
-			}
-			if (actualM2Count == 0)
-			{
-				adt.M2s = new M2[0];		// No M2s available -> unset
-			}
-
+                adt.M2s = new M2[adt.DoodadDefinitions.Count];
+                var actualM2Count = 0;
+                for (var i = 0; i < adt.DoodadDefinitions.Count; i++)
+                {
+                    var def = adt.DoodadDefinitions[i];
+                    var m2 = terrain.GetOrReadM2(def);
+                    adt.M2s[i] = m2;
+                    if (m2 != null)
+                    {
+                        ++actualM2Count;
+                    }
+                }
+                if (actualM2Count == 0)
+                {
+                    adt.M2s = new M2[0];		// No M2s available -> unset
+                }
+            }
 
 			return adt;
 		}
 
-		public static bool TryGetADTPath(MapId mapId, int x, int y, out string filePath, out MpqLibrarian mpqFinder)
-		{
-			mpqFinder = WCellTerrainSettings.GetDefaultMPQFinder();
-			filePath = GetFilename(mapId, x, y);
-			if (!mpqFinder.FileExists(filePath))
-			{
-				return false;
-			}
-			return true;
-		}
+        public static bool TryGetADTPath(MapId mapId, int x, int y, out string filePath, out MpqLibrarian mpqFinder)
+        {
+            mpqFinder = WCellTerrainSettings.GetDefaultMPQFinder();
+            filePath = GetFilename(mapId, x, y);
+            if (!mpqFinder.FileExists(filePath))
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public static bool TryGetADTPath(MapId mapId, int x, int y, out string filePath, MpqLibrarian mpqFinder)
+        {
+            filePath = GetFilename(mapId, x, y);
+            if (!mpqFinder.FileExists(filePath))
+            {
+                return false;
+            }
+            return true;
+        }
 
 		static void ReadMVER(BinaryReader fileReader, ADT adt)
 		{

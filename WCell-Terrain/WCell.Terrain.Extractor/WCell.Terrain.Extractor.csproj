@@ -111,6 +111,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HeightfieldExtractor.cs" />
     <Compile Include="Extractor.cs" />
     <Compile Include="ExtractorConfiguration.cs" />
     <Compile Include="Program.cs" />

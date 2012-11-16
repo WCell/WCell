@@ -53,6 +53,8 @@ namespace WCell.Terrain
 
 				RecastInputMeshFolder = MapDir + "RecastInput/";
 				RecastNavMeshFolder = MapDir + "RecastNavMeshes/";
+
+                WoWPath = ContentDir;
 			}
 		}
 
@@ -85,7 +87,7 @@ namespace WCell.Terrain
 		public static string RecastNavMeshFolder;
 
 		public static string MapDBCName = "Map.dbc";
-		public static string WoWPath = @"D:\Games\WoW";
+		public static string WoWPath;
 
 		public static ClientLocale DefaultLocale = ClientLocale.English;
 

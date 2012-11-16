@@ -120,7 +120,7 @@ namespace WCell.RealmServer.Groups
 				var chr = member.Character;
 				if (chr != null)
 				{
-					GroupHandler.SendResult(chr.Client, GroupResult.DontHavePermission);
+					GroupHandler.SendResult(chr.Client, GroupResultType.Invite, GroupResult.DontHavePermission);
 				}
 				return false;
 			}
@@ -134,7 +134,7 @@ namespace WCell.RealmServer.Groups
 			if (member == null)
 			{
 				// you can't uninvite people not from your group
-				GroupHandler.SendResult(requester.Client, GroupResult.NotInYourParty);
+				GroupHandler.SendResult(requester.Client, GroupResultType.Leave, GroupResult.NotInYourParty);
 				return false;
 			}
 			return true;
@@ -144,7 +144,7 @@ namespace WCell.RealmServer.Groups
 		{
 			if (requester.Group != character.Group)
 			{
-				Group.SendResult(requester.Client, GroupResult.NotInYourParty, character.Name);
+				GroupHandler.SendResult(requester.Client, GroupResult.NotInYourParty, character.Name);
 				return false;
 			}
 			return true;

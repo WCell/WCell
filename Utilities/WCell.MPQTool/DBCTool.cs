@@ -410,14 +410,8 @@ namespace WCell.MPQTool
 
 			m_wowDir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
 
-			const string wowExeName = "Wow.exe";
-
-			// Check if we can get this file; means we're in the top 
-			// directory and we have to append "Data" to the directory.
-
-			var configInfo = new FileInfo(Path.Combine(m_wowDir, wowExeName));
-
-			if (configInfo.Exists)
+            var fname = Path.Combine(m_wowDir, "Data/patch-3.MPQ");
+			if (File.Exists(fname))
 			{
 				//DBCOutputDir = m_wowDir + "/DBC";
 				return true;

@@ -59,7 +59,8 @@
             // * 120  121  122  123  124  125  126  127  128      Row 14
             // *   129  130  131  132  133  134  135  136         Row 15
             // * 137  138  139  140  141  142  143  144  145      Row 16
-            // We only want even rows
+
+            // We only want even rows (starting at 0)
             lowResHeightsMatrix = new float[9,9];
             
             var index = 0;
@@ -96,7 +97,8 @@
             // * 120  121  122  123  124  125  126  127  128      Row 14
             // *   129  130  131  132  133  134  135  136         Row 15
             // * 137  138  139  140  141  142  143  144  145      Row 16
-            // We only want odd rows
+
+            // We only want odd rows (starting at 1)
             highResHeightsMatrix = new float[8, 8];
 
             var index = 9;
