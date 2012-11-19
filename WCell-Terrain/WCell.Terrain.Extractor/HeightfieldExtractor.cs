@@ -158,9 +158,9 @@ namespace WCell.Terrain.Extractor
                             //var holes = (chunk.HolesMask > 0) ? chunk.HolesMap : ADT.EmptyHolesArray;
 
                             // Add the height map values, inserting them into their correct positions
-                            for (var unitX = 0; unitX <= TerrainConstants.UnitsPerChunkSide; unitX++)
+                            for (var unitX = 0; unitX < TerrainConstants.UnitsPerChunkSide; unitX++)
                             {
-                                for (var unitY = 0; unitY <= TerrainConstants.UnitsPerChunkSide; unitY++)
+                                for (var unitY = 0; unitY < TerrainConstants.UnitsPerChunkSide; unitY++)
                                 {
                                     //var tileX = (x * TerrainConstants.UnitsPerChunkSide) + unitX;
                                     //var tileY = (y * TerrainConstants.UnitsPerChunkSide) + unitY;
@@ -170,14 +170,11 @@ namespace WCell.Terrain.Extractor
                                     //var yPos = TerrainConstants.CenterPoint
                                     //           - (TileY * TerrainConstants.TileSize)
                                     //           - (tileY * TerrainConstants.UnitSize);
+									
                                     var h = (heights[unitX, unitY] + chunk.MedianHeight);
-
 
                                     // Write height
                                     writer.Write(h);
-
-                                    if (unitY == TerrainConstants.UnitsPerChunkSide) continue;
-                                    if (unitX == TerrainConstants.UnitsPerChunkSide) continue;
 
                                     //tileHolesMap[tileX, tileY] = holes[unitX / 2, unitY / 2];
                                 }
