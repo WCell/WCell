@@ -21,7 +21,7 @@ namespace WCell.Terrain.Extractor
             //NativeMethods.InitAPI();
 
 
-            //HeightfieldExtractor.ExtractHeightfield(MapId.EasternKingdoms);
+            HeightfieldExtractor.ExtractHeightfield(MapId.EasternKingdoms);
 			HeightfieldExtractor.ExtractHeightfield(MapId.Kalimdor);
 
 

@@ -149,18 +149,18 @@ namespace WCell.Terrain.Extractor
             {
                 using (var writer = new BinaryWriter(file))
                 {
-                    for (var x = 0; x < TerrainConstants.ChunksPerTileSide; x++)
+                    for (var y = 0; y < TerrainConstants.ChunksPerTileSide; ++y)
                     {
-                        for (var y = 0; y < TerrainConstants.ChunksPerTileSide; y++)
+                        for (var unitY = 0; unitY <= TerrainConstants.UnitsPerChunkSide; ++unitY)
                         {
-                            var chunk = adt.Chunks[x, y];
-                            var heights = chunk.Heights.GetLowResMapMatrix();
-                            //var holes = (chunk.HolesMask > 0) ? chunk.HolesMap : ADT.EmptyHolesArray;
-
-                            // Add the height map values, inserting them into their correct positions
-                            for (var unitX = 0; unitX < TerrainConstants.UnitsPerChunkSide; unitX++)
+                            for (var x = 0; x < TerrainConstants.ChunksPerTileSide; ++x)
                             {
-                                for (var unitY = 0; unitY < TerrainConstants.UnitsPerChunkSide; unitY++)
+                                var chunk = adt.Chunks[x, y];
+                                var heights = chunk.Heights.GetLowResMapMatrix();
+                                //var holes = (chunk.HolesMask > 0) ? chunk.HolesMap : ADT.EmptyHolesArray;
+
+                                // Add the height map values, inserting them into their correct positions
+                                for (var unitX = 0; unitX <= TerrainConstants.UnitsPerChunkSide; ++unitX)
                                 {
                                     //var tileX = (x * TerrainConstants.UnitsPerChunkSide) + unitX;
                                     //var tileY = (y * TerrainConstants.UnitsPerChunkSide) + unitY;

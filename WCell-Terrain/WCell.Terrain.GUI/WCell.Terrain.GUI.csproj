@@ -137,6 +137,9 @@
     <Compile Include="TerrainViewerProgram.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Renderers\NavMeshRenderer.cs" />
+    <Compile Include="UI\Images.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="UI\MapTreeView.cs" />
     <Compile Include="Util\XNAUtil.cs" />
     <Compile Include="VertexPositionNormalColored.cs" />

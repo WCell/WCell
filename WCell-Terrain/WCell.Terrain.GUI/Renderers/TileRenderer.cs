@@ -80,6 +80,8 @@ namespace WCell.Terrain.GUI.Renderers
             EnabledChanged += (sender, args) => EnabledToggled();
         }
 
+		public TerrainTile Tile { get; private set;  }
+
         private void EnabledToggled()
         {
             if (Enabled)
