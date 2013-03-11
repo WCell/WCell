@@ -1,5 +1,4 @@
-﻿using Castle.ActiveRecord;
-using WCell.Core.Database;
+﻿using WCell.Core.Database;
 using WCell.RealmServer.Database;
 
 namespace WCell.RealmServer.Battlegrounds.Arenas

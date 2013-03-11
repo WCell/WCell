@@ -1,5 +1,3 @@
-using System;
-using Castle.ActiveRecord;
 using NHibernate.Criterion;
 
 namespace WCell.RealmServer.Database
