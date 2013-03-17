@@ -15,7 +15,7 @@ namespace WCell.AuthServer.Database.Mappings
 			Id(x => x.AccountId);
 			Map(x => x.Created).Not.Nullable();
 			Map(x => x.Name).Not.Nullable().Unique().Length(16);
-			Map(x => x.Password).Not.Nullable().CustomSqlType("BinaryBlob").Length(20); //TODO: Find out if it specifying the column type is needed
+			Map(x => x.Password).Not.Nullable().Length(20); //TODO: Find out if it specifying the column type is needed
 			Map(x => x.EmailAddress);
 			Map(x => x.ClientId);
 			Map(x => x.ClientVersion);
