@@ -15,48 +15,45 @@
  *************************************************************************/
 
 using System;
-using Castle.ActiveRecord;
+using WCell.AuthServer.Accounts;
 using WCell.Util.Logging;
 using WCell.AuthServer.Network;
 using WCell.Constants;
-using WCell.Core.Database;
 using WCell.Intercommunication.DataTypes;
 using WCell.AuthServer.Commands;
 using System.Net;
-using WCell.RealmServer.Database;
 using WCell.Util;
+using WCell.Database;
 
-namespace WCell.AuthServer.Accounts
+namespace WCell.AuthServer.Database.Entities
 {
 	/// <summary>
 	/// Class for performing account-related tasks.
 	/// </summary>
-	[ActiveRecord(Access = PropertyAccess.Property)]
-	public class Account : WCellRecord<Account>, IAccount
+	public class Account : IAccount
 	{
-		private static readonly NHIdGenerator _idGenerator =
-			new NHIdGenerator(typeof(Account), "AccountId");
+		//private static readonly NHIdGenerator _idGenerator = new NHIdGenerator(typeof(Account), "AccountId");
 
-		/// <summary>
+		/*/// <summary>
 		/// Returns the next unique Id for a new SpellRecord
 		/// </summary>
 		public static long NextId()
 		{
 			return _idGenerator.Next();
-		}
+		}*/
 
 		private static readonly Logger s_log = LogManager.GetCurrentClassLogger();
 
 		private bool m_IsActive;
 
-		/// <summary>
+		/*/// <summary>
 		/// Queries the DB for the count of all existing Accounts.
 		/// </summary>
 		/// <returns></returns>
 		internal static int GetCount()
 		{
 			return Count();
-		}
+		}*/
 
 		/// <summary>
 		/// Event is raised when the given Account logs in successfully with the given client.
@@ -73,11 +70,9 @@ namespace WCell.AuthServer.Accounts
 			Password = hash;
 			EmailAddress = email;
 		    LastIP = IPAddress.Any.GetAddressBytes();
-			AccountId = NextId();
-			State = RecordState.New;
 		}
 
-		internal void OnLogin(IAuthClient client)
+		public virtual void OnLogin(IAuthClient client)
 		{
 			var addr = client.ClientAddress;
 			if (addr == null)
@@ -90,7 +85,7 @@ namespace WCell.AuthServer.Accounts
             LastLogin = DateTime.Now;
 			Locale = client.Info.Locale;
 			ClientVersion = client.Info.Version.ToString();
-			UpdateAndFlush();
+			//UpdateAndFlush(); TODO: I believe this saves the value to the database
 
 			AuthCommandHandler.AutoExecute(this);
 
@@ -103,7 +98,7 @@ namespace WCell.AuthServer.Accounts
 			s_log.Info("Account \"{0}\" logged in from {1}.", Name, client.ClientAddress);
 		}
 
-		public void Update(IAccount newInfo)
+		public virtual void Update(IAccount newInfo)
 		{
 			// TODO: Status changed - kick Account if banned?
 
@@ -115,63 +110,55 @@ namespace WCell.AuthServer.Accounts
 		}
 
 		#region Props
-		[PrimaryKey(PrimaryKeyType.Assigned)]
-		public long AccountId
+		public virtual long AccountId
 		{
 			get;
 			set;
 		}
 
-		[Property(NotNull = true)]
-		public DateTime Created
+		public virtual DateTime Created
 		{
 			get;
 			set;
 		}
 
-		[Property(Length = 16, NotNull = true, Unique = true)]
-		public string Name
+		public virtual string Name
 		{
 			get;
 			set;
 		}
 
-		[Property(ColumnType = "BinaryBlob", Length = 20, NotNull = true)]
-		public byte[] Password
+		public virtual byte[] Password
 		{
 			get;
 			set;
 		}
 
-		[Property]
-		public string EmailAddress
+		public virtual string EmailAddress
 		{
 			get;
 			set;
 		}
 
-		[Property]
-		public ClientId ClientId
+		public virtual ClientId ClientId
 		{
 			get;
 			set;
 		}
 
-		[Property]
-		public string ClientVersion
+		public virtual string ClientVersion
 		{
 			get;
 			set;
 		}
 
-		[Property(Length = 16, NotNull = true)]
-		public string RoleGroupName
+		public virtual string RoleGroupName
 		{
 			get;
 			set;
 		}
 
-		public RoleGroupInfo Role
+		public virtual RoleGroupInfo Role
 		{
 			get { return Privileges.PrivilegeMgr.Instance.GetRoleGroup(RoleGroupName); }
 		}
@@ -180,8 +167,7 @@ namespace WCell.AuthServer.Accounts
 		/// Whether the Account may currently be used 
 		/// (inactive Accounts are banned).
 		/// </summary>
-		[Property(NotNull = true)]
-		public bool IsActive
+		public virtual bool IsActive
 		{
 			get { return m_IsActive; }
 			set
@@ -196,8 +182,7 @@ namespace WCell.AuthServer.Accounts
 		/// the Active status of this account will be toggled
 		/// (from inactive to active or vice versa)
 		/// </summary>
-		[Property]
-		public DateTime? StatusUntil
+		public virtual DateTime? StatusUntil
 		{
 			get;
 			set;
@@ -207,36 +192,31 @@ namespace WCell.AuthServer.Accounts
 		/// The time of when this Account last changed from outside. Used for Synchronization.
 		/// </summary>
 		/// <remarks>Only Accounts that changed, will be fetched from DB during resync when caching is enabled.</remarks>
-		[Property]
-		public DateTime? LastChanged
+		public virtual DateTime? LastChanged
 		{
 			get;
 			set;
 		}
 
-		[Property]
-		public DateTime? LastLogin
+		public virtual DateTime? LastLogin
 		{
 			get;
 			set;
 		}
 
-		[Property]
-		public byte[] LastIP
+		public virtual byte[] LastIP
 		{
 			get;
 			set;
 		}
 
-		[Property]
-		public int HighestCharLevel
+		public virtual int HighestCharLevel
 		{
 			get;
 			set;
 		}
 
-		[Property]
-		public ClientLocale Locale
+		public virtual ClientLocale Locale
 		{
 			get;
 			set;
@@ -244,7 +224,7 @@ namespace WCell.AuthServer.Accounts
 
 		#endregion
 
-		public string LastIPStr
+		public virtual string LastIPStr
 		{
 			get
 			{
@@ -252,30 +232,31 @@ namespace WCell.AuthServer.Accounts
 			}
 		}
 
-		public bool CheckActive()
+		public virtual bool CheckActive()
 		{
 			if (StatusUntil != null && StatusUntil > DateTime.Now)
 			{
 				m_IsActive = !m_IsActive;
 				StatusUntil = null;
-				Save();
+				AuthDBMgr.DatabaseProvider.SaveOrUpdate(this);
+				//Save();
 			}
 			return m_IsActive;
 		}
 
-		public override void Delete()
+		/*public override void Delete()
 		{
 			AccountMgr.Instance.Remove(this);
 			base.Delete();
-		}
+		}*/
 
-		public override void DeleteAndFlush()
+		/*public override void DeleteAndFlush()
 		{
 			AccountMgr.Instance.Remove(this);
 			base.DeleteAndFlush();
-		}
+		}*/
 
-		public string Details
+		public virtual string Details
 		{
 			get
 			{

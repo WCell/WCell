@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Threading;
-
-namespace WCell.RealmServer.Database
+namespace WCell.Database
 {
-	/// <summary>
+	/*/// <summary>
 	/// Gives out next Primary Key for a table with assigned Primary Keys
 	/// </summary>
 	public class NHIdGenerator
@@ -88,5 +84,5 @@ namespace WCell.RealmServer.Database
 		{
 			return Interlocked.Increment(ref m_highestId);
 		}
-	}
+	}*/
 }

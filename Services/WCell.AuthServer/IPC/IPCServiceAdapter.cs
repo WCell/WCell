@@ -15,28 +15,21 @@
  *************************************************************************/
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Net;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
+using WCell.AuthServer.Database;
+using WCell.AuthServer.Database.Entities;
 using WCell.Util.Logging;
-using WCell.AuthServer;
 using resources = WCell.AuthServer.Res.WCell_AuthServer;
 using WCell.Constants;
 using WCell.Constants.Login;
 using WCell.Core.Cryptography;
 using WCell.Intercommunication;
 using WCell.Intercommunication.DataTypes;
-using NHibernate.Criterion;
 using WCell.AuthServer.Privileges;
 using WCell.AuthServer.Accounts;
-using WCell.Core.Database;
-using Cell.Core;
 using WCell.Constants.Realm;
-using WCell.Util;
-using WCell.AuthServer.Firewall;
 using WCell.AuthServer.Commands;
 
 namespace WCell.AuthServer.IPC
@@ -491,7 +484,7 @@ namespace WCell.AuthServer.IPC
             {
                 acc.RoleGroupName = role;
 
-				AuthenticationServer.IOQueue.AddMessage(acc.SaveAndFlush);
+				AuthenticationServer.IOQueue.AddMessage(() => AuthDBMgr.DatabaseProvider.SaveOrUpdate(acc));
                 return true;
             }
 
@@ -505,7 +498,7 @@ namespace WCell.AuthServer.IPC
             {
                 acc.EmailAddress = email;
 
-				AuthenticationServer.IOQueue.AddMessage(acc.SaveAndFlush);
+				AuthenticationServer.IOQueue.AddMessage(() => AuthDBMgr.DatabaseProvider.SaveOrUpdate(acc));
                 return true;
             }
 
@@ -522,7 +515,7 @@ namespace WCell.AuthServer.IPC
                     acc.IsActive = active;
                     acc.StatusUntil = statusUntil;
 
-					AuthenticationServer.IOQueue.AddMessage(acc.SaveAndFlush);
+					AuthenticationServer.IOQueue.AddMessage(() => AuthDBMgr.DatabaseProvider.SaveOrUpdate(acc));
                     return true;
                 }
             }
@@ -546,7 +539,7 @@ namespace WCell.AuthServer.IPC
 
                 acc.Password = pass;
 
-				AuthenticationServer.IOQueue.AddMessage(acc.SaveAndFlush);
+				AuthenticationServer.IOQueue.AddMessage(() => AuthDBMgr.DatabaseProvider.SaveOrUpdate(acc));
             	return true;
             }
 
@@ -560,7 +553,7 @@ namespace WCell.AuthServer.IPC
             {
                 acc.HighestCharLevel = level;
 
-				AuthenticationServer.IOQueue.AddMessage(acc.SaveAndFlush);
+				AuthenticationServer.IOQueue.AddMessage(() => AuthDBMgr.DatabaseProvider.SaveOrUpdate(acc));
             }
         }
 

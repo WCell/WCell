@@ -551,7 +551,7 @@
     <Compile Include="Commands\UnitCommands.cs" />
     <Compile Include="Content\NHibernateConverterProvider.cs" />
     <Compile Include="Content\NHibernateDbWrapper.cs" />
-    <Compile Include="Database\AccountDataRecord.cs" />
+    <Compile Include="Database\AccountData.cs" />
     <Compile Include="Database\EquipmentSet.cs" />
     <Compile Include="Database\EquipmentSetItemMapping.cs" />
     <Compile Include="Database\GuildBankTab.cs" />

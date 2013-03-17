@@ -15,8 +15,6 @@
  *************************************************************************/
 
 using WCell.Util.Logging;
-using System;
-using WCell.Core.Database;
 
 namespace WCell.AuthServer
 {

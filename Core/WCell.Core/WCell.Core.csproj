@@ -40,6 +40,7 @@
     <CodeAnalysisRules>-Microsoft.Naming#CA1702;-Microsoft.Naming#CA1700;-Microsoft.Naming#CA1712;-Microsoft.Naming#CA1713;-Microsoft.Naming#CA1714;-Microsoft.Naming#CA1709;-Microsoft.Naming#CA1704;-Microsoft.Naming#CA1708;-Microsoft.Naming#CA1715;-Microsoft.Naming#CA1710;-Microsoft.Naming#CA1720;-Microsoft.Naming#CA1707;-Microsoft.Naming#CA1722;-Microsoft.Naming#CA1711;-Microsoft.Naming#CA1716;-Microsoft.Naming#CA1717;-Microsoft.Naming#CA1725;-Microsoft.Naming#CA1719;-Microsoft.Naming#CA1721;-Microsoft.Naming#CA1701;-Microsoft.Naming#CA1703;-Microsoft.Naming#CA1724;-Microsoft.Naming#CA1726</CodeAnalysisRules>
     <NoWarn>1591,1587,1570,1573,1572</NoWarn>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -51,6 +52,7 @@
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
@@ -65,6 +67,7 @@
     <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
     <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
     <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <OutputPath>..\..\Run\Release\</OutputPath>
@@ -77,6 +80,7 @@
     <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
     <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
     <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
     <DebugSymbols>true</DebugSymbols>
@@ -91,6 +95,7 @@
     <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
     <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
     <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
     <OutputPath>..\..\Run\Release\</OutputPath>
@@ -103,6 +108,7 @@
     <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
     <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
     <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|Itanium' ">
     <DebugSymbols>true</DebugSymbols>
@@ -117,6 +123,7 @@
     <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
     <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
     <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|Itanium' ">
     <OutputPath>..\..\Run\Release\</OutputPath>
@@ -129,15 +136,13 @@
     <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
     <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
     <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.85.5.452, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Libraries\Binaries\Release\ICSharpCode\ICSharpCode.SharpZipLib.dll</HintPath>
       <Private>False</Private>
-    </Reference>
-    <Reference Include="NHibernate">
-      <HintPath>..\..\Libraries\Binaries\NHibernate\NHibernate.dll</HintPath>
     </Reference>
     <Reference Include="ParallelExtensionsExtras">
       <HintPath>..\..\Libraries\Binaries\ParallelExtensionsExtras\ParallelExtensionsExtras.dll</HintPath>
@@ -167,9 +172,6 @@
     <Compile Include="Addons\WCellAddonBase.cs" />
     <Compile Include="AsyncTaskPool.cs" />
     <Compile Include="Cryptography\PacketCrypt.cs" />
-    <Compile Include="Database\NHIdGenerator.cs" />
-    <Compile Include="Database\SqlUtil.cs" />
-    <Compile Include="Database\WCellRecord.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Addons\IWCellAddon.cs" />
     <Compile Include="Addons\WCellAddonContext.cs" />
@@ -209,8 +211,6 @@
     <Compile Include="Cryptography\HashUtilities.cs" />
     <Compile Include="Cryptography\SecureRemotePassword.cs" />
     <Compile Include="AppConfig.cs" />
-    <Compile Include="Database\DatabaseConfiguration.cs" />
-    <Compile Include="Database\DatabaseUtil.cs" />
     <Compile Include="DBC\DBCReader.cs" />
     <Compile Include="DBC\DBCRecordConverter.cs" />
     <Compile Include="DBC\DBCRecords.cs" />
@@ -257,19 +257,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>WCell.Core.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Database\Configurations\MySQLConfiguration.arconfig" />
-    <EmbeddedResource Include="Database\Configurations\SQLServer2005Configuration.arconfig" />
-    <EmbeddedResource Include="Database\Configurations\SQLServerConfiguration.arconfig" />
-    <EmbeddedResource Include="Database\Configurations\FireBirdConfiguration.arconfig" />
-    <EmbeddedResource Include="Database\Configurations\DB2Configuration.arconfig" />
-    <EmbeddedResource Include="Database\Configurations\SQLLiteConfiguration.arconfig" />
-    <EmbeddedResource Include="Database\Configurations\MySQL5Configuration.arconfig">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Database\Configurations\OracleConfiguration.arconfig" />
-    <EmbeddedResource Include="Database\Configurations\PostgreSQLConfiguration.arconfig" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Utilities\WCell.Util\WCell.Util.csproj">

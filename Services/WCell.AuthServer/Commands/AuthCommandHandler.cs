@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using WCell.AuthServer.Database.Entities;
 using WCell.Intercommunication.DataTypes;
 using WCell.Util;
 using WCell.Util.Commands;

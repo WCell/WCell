@@ -1,14 +1,10 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using NHibernate.SqlCommand;
-using DialectType = NHibernate.Dialect.Dialect;
-using WCell.Util.DB;
 
-namespace WCell.Core.Database
+namespace WCell.Database
 {
-	public class SqlUtil
+	//TODO: Find a way not to require this crap
+	/*public class SqlUtil
 	{
 		public static string BuildSelect(string[] columns, string from)
 		{
@@ -141,5 +137,5 @@ namespace WCell.Core.Database
 			sb.Append(") VALUES ");
 			return sb;
 		}
-	}
+	}*/
 }

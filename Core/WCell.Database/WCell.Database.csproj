@@ -1,0 +1,97 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{359D2064-8F94-4C6D-BEAD-5F0D28CB2939}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>WCell.Database</RootNamespace>
+    <AssemblyName>WCell.Database</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="FluentNHibernate">
+      <HintPath>..\..\Libraries\Binaries\FluentHibernate\FluentNHibernate.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net">
+      <HintPath>..\..\..\..\..\Promethium\Website\Jaddie.Logging.Log4net\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="NHibernate">
+      <HintPath>..\..\Libraries\Binaries\NHibernate\NHibernate.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AutoMapAttribute.cs" />
+    <Compile Include="DatabaseConfiguration.cs" />
+    <Compile Include="DatabaseProvider.cs" />
+    <Compile Include="DatabaseUtil.cs" />
+    <Compile Include="NHIdGenerator.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SqlUtil.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Configurations\DB2Configuration.arconfig" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Configurations\FireBirdConfiguration.arconfig" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Configurations\MySQL5Configuration.arconfig">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Configurations\MySQLConfiguration.arconfig" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Configurations\OracleConfiguration.arconfig" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Configurations\PostgreSQLConfiguration.arconfig" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Configurations\SQLLiteConfiguration.arconfig" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Configurations\SQLServer2005Configuration.arconfig" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Configurations\SQLServerConfiguration.arconfig" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

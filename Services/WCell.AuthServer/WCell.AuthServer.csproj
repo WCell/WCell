@@ -42,6 +42,7 @@
     <NoWarn>1591,1587,1570,1573,1572</NoWarn>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -53,6 +54,7 @@
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -61,12 +63,14 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <NoWarn>1591,1587,1570,1573,1572</NoWarn>
     <DocumentationFile>..\..\Run\Debug\WCell.AuthServer.xml</DocumentationFile>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
     <OutputPath>..\..\Run\Release\</OutputPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Optimize>true</Optimize>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
     <DebugSymbols>true</DebugSymbols>
@@ -78,6 +82,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DocumentationFile>..\..\Run\Debug\WCell.AuthServer.xml</DocumentationFile>
     <NoWarn>1591,1587,1570,1573,1572</NoWarn>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
     <OutputPath>..\..\Run\Release\</OutputPath>
@@ -86,6 +91,7 @@
     <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Optimize>true</Optimize>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|Itanium' ">
     <DebugSymbols>true</DebugSymbols>
@@ -97,6 +103,7 @@
     <DefineConstants>TRACE;DEBUG</DefineConstants>
     <DocumentationFile>..\..\Run\Debug\WCell.AuthServer.xml</DocumentationFile>
     <NoWarn>1591,1587,1570,1573,1572</NoWarn>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|Itanium' ">
     <OutputPath>..\..\Run\Release\</OutputPath>
@@ -105,11 +112,15 @@
     <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Optimize>true</Optimize>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FluentNHibernate">
+      <HintPath>..\..\Libraries\Binaries\FluentHibernate\FluentNHibernate.dll</HintPath>
+    </Reference>
     <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Libraries\Binaries\Castle.ActiveRecord\log4net.dll</HintPath>
+      <HintPath>..\..\Libraries\Binaries\Log4Net\log4net.dll</HintPath>
     </Reference>
     <Reference Include="MySql.Data, Version=5.0.8.1, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -117,7 +128,7 @@
     </Reference>
     <Reference Include="NHibernate, Version=2.1.2.4000, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Libraries\Binaries\Castle.ActiveRecord\NHibernate.dll</HintPath>
+      <HintPath>..\..\Core\WCell.Database\bin\Debug\NHibernate.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -134,7 +145,7 @@
     <Compile Include="..\..\Utilities\WCell.SolutionItems\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="Accounts\Account.cs" />
+    <Compile Include="Database\Entities\Account.cs" />
     <Compile Include="Accounts\AccountMgr.cs" />
     <Compile Include="Accounts\AuthenticationRecord.cs" />
     <Compile Include="Addons\AuthAddonMgr.cs" />
@@ -148,9 +159,11 @@
     <Compile Include="Commands\DevCommands.cs" />
     <Compile Include="Commands\RealmCommands.cs" />
     <Compile Include="Commands\IPCCommands.cs" />
-    <Compile Include="Firewall\BanEntry.cs" />
+    <Compile Include="Database\Mappings\AccountMap.cs" />
+    <Compile Include="Database\Entities\BanEntry.cs" />
     <Compile Include="Commands\MiscCommands.cs" />
     <Compile Include="Database\AuthDBMgr.cs" />
+    <Compile Include="Database\Mappings\BanEntryMap.cs" />
     <Compile Include="Firewall\BanMgr.cs" />
     <Compile Include="Firewall\IPRange.cs" />
     <Compile Include="IPC\IPCServiceAdapter.cs" />
@@ -194,6 +207,10 @@
       <Project>{EEA9DEB6-8EA6-46F1-B1B7-AB38D8BBCA6C}</Project>
       <Name>WCell.Core</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Core\WCell.Database\WCell.Database.csproj">
+      <Project>{359D2064-8F94-4C6D-BEAD-5F0D28CB2939}</Project>
+      <Name>WCell.Database</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Core\WCell.Intercommunication\WCell.Intercommunication.csproj">
       <Project>{5997613F-D2A5-4B86-BEE2-C823BC07D5AF}</Project>

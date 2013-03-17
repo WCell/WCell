@@ -5,9 +5,10 @@ using System.Text;
 using System.IO;
 using System.Reflection;
 
-namespace WCell.Core.Database
+namespace WCell.Database
 {
-    public static class DatabaseConfiguration
+	//TODO: Is this crap even needed anymore?
+    /*public static class DatabaseConfiguration
     {
         private static Dictionary<string, string> s_configurationMappings;
 
@@ -57,5 +58,5 @@ namespace WCell.Core.Database
 
             return new StringReader(config);
         }
-    }
+    }*/
 }

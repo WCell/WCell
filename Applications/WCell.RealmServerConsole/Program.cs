@@ -29,14 +29,7 @@ namespace WCell.RealmServerConsole
 
 		private static void Main(string[] args)
 		{
-			if (GCSettings.IsServerGC)
-			{
-				GCSettings.LatencyMode = GCLatencyMode.Batch;
-			}
-			else
-			{
-				GCSettings.LatencyMode = GCLatencyMode.Interactive;
-			}
+			GCSettings.LatencyMode = GCSettings.IsServerGC ? GCLatencyMode.Batch : GCLatencyMode.Interactive; //TODO: Surely this will make perf slower in server mode which is the opposite of what we want..
 
 			Thread.CurrentThread.IsBackground = true;
 

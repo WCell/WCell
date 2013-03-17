@@ -1,25 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Reflection;
-using System.Threading;
-using Castle.ActiveRecord;
-using Castle.ActiveRecord.Framework;
-using Castle.ActiveRecord.Framework.Config;
-using WCell.Util.Collections;
-using NHibernate.Cfg;
-using NHibernate.Dialect;
-using NHibernate.Engine;
-using NHibernate.Tool.hbm2ddl;
-using WCell.Util.Logging;
-using WCell.Util;
-using WCell.Util.Strings;
-using HibernateCfg = NHibernate.Cfg.Configuration;
-
-namespace WCell.Core.Database
+namespace WCell.Database
 {
-	/// <summary>
+	/*/// <summary>
 	/// Temporary class - Will need cleanup.
 	/// </summary>
 	public static class DatabaseUtil
@@ -313,5 +294,5 @@ namespace WCell.Core.Database
 				Monitor.Pulse(q);
 			}
 		}
-	}
+	}*/
 }

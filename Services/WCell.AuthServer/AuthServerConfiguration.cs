@@ -59,7 +59,7 @@ namespace WCell.AuthServer
 
 		public override string FilePath
 		{
-			get { return GetFullPath("AuthServerConfig.xml"); }
+			get { return GetFullPath("WCell.AuthServer.Config.xml"); }
 		}
 
 		public static string LangDirName = "Lang";
@@ -159,11 +159,36 @@ namespace WCell.AuthServer
 		/// </summary>
 		public static string DBType = "mysql5";
 
-		/// <summary>
+		/*/// <summary>
 		/// The connection string for the authentication server database.
 		/// </summary>
 		[Variable(IsFileOnly = true)]
-		public static string DBConnectionString = @"Server=127.0.0.1;Port=3306;Database=WCellAuthServer;CharSet=utf8;Uid=root;Pwd=;";
+		public static string DBConnectionString = @"Server=127.0.0.1;Port=3306;Database=WCellAuthServer;CharSet=utf8;Uid=root;Pwd=;";*/
+
+		/// <summary>
+		/// The address for the database server.
+		/// </summary>
+		public static string DBServer = "127.0.0.1";
+
+		/// <summary>
+		///  The port for the database server.
+		/// </summary>
+		public static int DBPort = 3306;
+
+		/// <summary>
+		/// The username for the database.
+		/// </summary>
+		public static string DBUsername = "Username";
+
+		/// <summary>
+		///  The password for the user on the database.
+		/// </summary>
+		public static string DBPassword = "Password";
+
+		/// <summary>
+		///  The database we are connecting to on the server.
+		/// </summary>
+		public static string DBDatabase = "Database";
 
 		/// <summary>
 		/// The listening address of the IPC service.

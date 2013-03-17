@@ -16,32 +16,25 @@
 
 using System;
 using System.Net;
-using NHibernate.Criterion;
-using WCell.RealmServer.Database;
-using PropertyAccess = Castle.ActiveRecord.PropertyAccess;
-using Castle.ActiveRecord;
-using System.Net.Sockets;
+using WCell.AuthServer.Firewall;
 using WCell.Util.Threading;
-using WCell.Core.Database;
 
-namespace WCell.AuthServer.Firewall
+namespace WCell.AuthServer.Database.Entities
 {
 	/// <summary>
 	/// Represents a Ban entry
 	/// </summary>
-	[ActiveRecord(Access = PropertyAccess.Property)]
-	public class BanEntry : WCellRecord<BanEntry>
+	public class BanEntry
 	{
-		private static readonly NHIdGenerator _idGenerator =
-			new NHIdGenerator(typeof(BanEntry), "BanId");
+		//private static readonly NHIdGenerator _idGenerator = new NHIdGenerator(typeof(BanEntry), "BanId");
 
-		/// <summary>
+		/*/// <summary>
 		/// Returns the next unique Id for a new SpellRecord
 		/// </summary>
 		public static long NextId()
 		{
 			return _idGenerator.Next();
-		}
+		}*/
 		private string m_mask;
 		private int[] m_MaskBytes;
 
@@ -51,36 +44,32 @@ namespace WCell.AuthServer.Firewall
 			Expires = expires;
 			BanMask = banmask;
 			Reason = reason;
-			State = RecordState.New;
+			//State = RecordState.New;
 		}
 
 		public BanEntry()
 		{
 		}
 
-		[PrimaryKey(PrimaryKeyType.Assigned)]
-		public long BanId
+		public virtual long BanId
 		{
 			get;
 			set;
 		}
 
-		[Property(NotNull = true)]
-		public DateTime Created
+		public virtual DateTime Created
 		{
 			get;
 			set;
 		}
 
-		[Property]
-		public DateTime? Expires
+		public virtual DateTime? Expires
 		{
 			get;
 			set;
 		}
 
-		[Property]
-		public string Reason
+		public virtual string Reason
 		{
 			get;
 			set;
@@ -91,8 +80,7 @@ namespace WCell.AuthServer.Firewall
 		/// 123.45.*.1 (also matches 123.45.*.1.*.*)
 		/// 41.3.*.23.*.243
 		/// </summary>
-		[Property(NotNull = true)]
-		public string BanMask
+		public virtual string BanMask
 		{
 			get
 			{
@@ -105,12 +93,12 @@ namespace WCell.AuthServer.Firewall
 			}
 		}
 
-		public bool Matches(IPAddress addr)
+		public virtual bool Matches(IPAddress addr)
 		{
 			return Matches(addr.GetAddressBytes());
 		}
 
-		public bool Matches(byte[] bytes)
+		public virtual bool Matches(byte[] bytes)
 		{
 			if (!CheckValid())
 			{
@@ -127,7 +115,7 @@ namespace WCell.AuthServer.Firewall
 			return false;
 		}
 
-		public bool Matches(int[] bytes)
+		public virtual bool Matches(int[] bytes)
 		{
 			if (!CheckValid())
 			{
@@ -145,12 +133,12 @@ namespace WCell.AuthServer.Firewall
 				string.IsNullOrEmpty(Reason) ? "" : ", Reason: " + Reason);
 		}
 
-		public bool CheckValid()
+		public virtual bool CheckValid()
 		{
 			if (Expires != null && Expires.Value <= DateTime.Now)
 			{
 				// remove the expired bans
-				AuthenticationServer.IOQueue.AddMessage(new Message(DeleteAndFlush));
+				AuthenticationServer.IOQueue.AddMessage(new Message(() => AuthDBMgr.DatabaseProvider.Delete(this))); //TODO: check this still works
 				return false;
 			}
 			else
@@ -159,7 +147,7 @@ namespace WCell.AuthServer.Firewall
 			}
 		}
 
-		public override void Delete()
+		/*public override void Delete()
 		{
 			BanMgr.Lock.EnterWriteLock();
 			try
@@ -171,9 +159,9 @@ namespace WCell.AuthServer.Firewall
 			{
 				BanMgr.Lock.ExitWriteLock();
 			}
-		}
+		}*/
 
-		public override void DeleteAndFlush()
+		/*public override void DeleteAndFlush()
 		{
 			BanMgr.Lock.EnterWriteLock();
 			try
@@ -185,6 +173,6 @@ namespace WCell.AuthServer.Firewall
 			{
 				BanMgr.Lock.ExitWriteLock();
 			}
-		}
+		}*/
 	}
 }

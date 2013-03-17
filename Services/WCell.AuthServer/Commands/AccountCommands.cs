@@ -200,7 +200,7 @@ namespace WCell.AuthServer.Commands
 				}
 				else
 				{
-					acc.DeleteAndFlush();
+					AuthDBMgr.DatabaseProvider.Delete(acc);
 					trigger.Reply("The account \"{0}\" has been deleted.", name);
 				}
 			}
@@ -268,12 +268,12 @@ namespace WCell.AuthServer.Commands
 					if (Utility.IsValidEMailAddress(mail))
 					{
 						trigger.Args.Account.EmailAddress = mail;
-						trigger.Args.Account.SaveAndFlush();
-						trigger.Reply("Changed eMail of Account {0} to: {1}", trigger.Args.Account, mail);
+						AuthDBMgr.DatabaseProvider.SaveOrUpdate(trigger.Args.Account); //TODO: This could end up making many versions of the same account
+						trigger.Reply("Changed Email of Account {0} to: {1}", trigger.Args.Account, mail);
 					}
 					else
 					{
-						trigger.Reply("Invalid EMail-Address: {0}", mail);
+						trigger.Reply("Invalid Email-Address: {0}", mail);
 					}
 				}
 			}
@@ -301,7 +301,7 @@ namespace WCell.AuthServer.Commands
 					else
 					{
 						trigger.Args.Account.Password = SecureRemotePassword.GenerateCredentialsHash(trigger.Args.Account.Name, pass);
-						trigger.Args.Account.SaveAndFlush();
+						AuthDBMgr.DatabaseProvider.SaveOrUpdate(trigger.Args.Account); //TODO: This could end up making many versions of the same account
 						trigger.Reply("Password has been changed.");
 					}
 				}
@@ -328,7 +328,7 @@ namespace WCell.AuthServer.Commands
 					else
 					{
 						trigger.Args.Account.RoleGroupName = role.Name;
-						trigger.Args.Account.SaveAndFlush();
+						AuthDBMgr.DatabaseProvider.SaveOrUpdate(trigger.Args.Account); //TODO: This could end up making many versions of the same account
 						trigger.Reply("Role of Account \"{0}\" changed to: " + role.Name, trigger.Args.Account);
 					}
 				}
@@ -353,7 +353,7 @@ namespace WCell.AuthServer.Commands
 					else
 					{
 						trigger.Args.Account.ClientId = clientId;
-						trigger.Args.Account.SaveAndFlush();
+						AuthDBMgr.DatabaseProvider.SaveOrUpdate(trigger.Args.Account);
 						trigger.Reply("ClientId of Account \"{0}\" changed to: " + clientId, trigger.Args.Account);
 					}
 				}

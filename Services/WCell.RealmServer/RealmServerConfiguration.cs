@@ -48,7 +48,7 @@ namespace WCell.RealmServer
 	{
 		private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-		private const string ConfigFilename = "RealmServerConfig.xml";
+		private const string ConfigFilename = "WCell.RealmServer.Config.xml";
 
 		private static RealmServerConfiguration s_instance;
 		public static RealmServerConfiguration Instance
@@ -351,7 +351,7 @@ namespace WCell.RealmServer
 		private static string dbConnectionString = @"Server=127.0.0.1;Port=3306;Database=WCellRealmServer;CharSet=utf8;Uid=root;Pwd=;";
 
 		/// <summary>
-		/// The connection string for the authentication server database.
+		/// The connection string for the realm server database.
 		/// </summary>
 		[Variable(IsFileOnly = true)]
 		public static string DBConnectionString

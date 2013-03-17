@@ -166,7 +166,7 @@ namespace WCell.Core.Initialization
 		{
 			foreach (var type in asm.GetTypes())
 			{
-				var mgrAttr = type.GetCustomAttributes<GlobalMgrAttribute>().FirstOrDefault();
+				var mgrAttr = type.GetCustomAttributes<GlobalMgrAttribute>().FirstOrDefault(); //TODO: This call is ambigious in net 4.5
 				if (mgrAttr != null)
 				{
 					UnresolvedDependencies.Add(type, new GlobalMgrInfo());
