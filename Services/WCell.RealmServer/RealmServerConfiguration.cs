@@ -348,17 +348,30 @@ namespace WCell.RealmServer
 		/// </summary>
 		public static string DBType = "mysql5";
 
-		private static string dbConnectionString = @"Server=127.0.0.1;Port=3306;Database=WCellRealmServer;CharSet=utf8;Uid=root;Pwd=;";
+		private static string dbWorldConnectionString = @"Server=127.0.0.1;Port=3306;Database=WCellRealmServerWorld;CharSet=utf8;Uid=root;Pwd=;";
 
 		/// <summary>
-		/// The connection string for the realm server database.
+		/// The connection string for the realm server world database.
 		/// </summary>
 		[Variable(IsFileOnly = true)]
-		public static string DBConnectionString
+		public static string DBWorldConnectionString
 		{
-			get { return dbConnectionString; }
-			set { dbConnectionString = value; }
+            get { return dbWorldConnectionString; }
+            set { dbWorldConnectionString = value; }
 		}
+
+
+        private static string dbContentConnectionString = @"Server=127.0.0.1;Port=3306;Database=WCellRealmServerContent;CharSet=utf8;Uid=root;Pwd=;";
+
+        /// <summary>
+        /// The connection string for the realm server content database.
+        /// </summary>
+        [Variable(IsFileOnly = true)]
+        public static string DBContentConnectionString
+        {
+            get { return dbContentConnectionString; }
+            set { dbContentConnectionString = value; }
+        }
 
 		/// <summary>
 		/// The address of the auth server.

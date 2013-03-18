@@ -462,9 +462,9 @@ Global
 		{B6E8E045-B27D-47A8-A2F1-94B7BB351A80} = {009B84F0-3E1E-4674-9318-7B6BECF748E1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		ISWCFSolution = True
-		Locked = False
 		UnLocked = True
+		Locked = False
+		ISWCFSolution = True
 	EndGlobalSection
 	GlobalSection(TextTemplating) = postSolution
 		TextTemplating = 1

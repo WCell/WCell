@@ -87,12 +87,12 @@ namespace WCell.RealmServer.Handlers
             var packet = new RealmPacketOut(RealmServerOpCode.SMSG_ARENA_TEAM_STATS, 4*7);
 
             packet.WriteUInt((byte)team.Id);
-            packet.WriteUInt(team.Stats.rating);
-            packet.WriteUInt(team.Stats.gamesWeek);
-            packet.WriteUInt(team.Stats.winsWeek);
-            packet.WriteUInt(team.Stats.gamesSeason);
-            packet.WriteUInt(team.Stats.winsSeason);
-            packet.WriteUInt(team.Stats.rank);
+            packet.WriteUInt(team.Stats.Rating);
+            packet.WriteUInt(team.Stats.GamesWeek);
+            packet.WriteUInt(team.Stats.WinsWeek);
+            packet.WriteUInt(team.Stats.GamesSeason);
+            packet.WriteUInt(team.Stats.WinsSeason);
+            packet.WriteUInt(team.Stats.Rank);
 
             return packet;
         }

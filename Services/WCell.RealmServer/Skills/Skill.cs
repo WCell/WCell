@@ -16,6 +16,7 @@
 
 using System;
 using WCell.Constants.Achievements;
+using WCell.RealmServer.Database.Entities;
 using WCell.Util.Logging;
 using WCell.Constants.Skills;
 using WCell.Constants.Updates;

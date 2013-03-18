@@ -1,9 +1,8 @@
 using System;
-using WCell.Core.Database;
+using WCell.Database;
 using WCell.Core.Initialization;
 using WCell.Util.Logging;
 using WCell.Util.Variables;
-using Castle.ActiveRecord;
 
 namespace WCell.RealmServer.Database
 {
@@ -11,31 +10,36 @@ namespace WCell.RealmServer.Database
 	/// TODO: Add method and command to re-create entire DB and resync server correspondingly
 	/// </summary>
 	[GlobalMgr]
-	public static class RealmDBMgr
+	public static class RealmWorldDBMgr
 	{
 		public static string DefaultCharset = "UTF8";
 
 		private static Logger log = LogManager.GetCurrentClassLogger();
 		[NotVariable]
 		public static bool Initialized;
+        public static DatabaseProvider DatabaseProvider;
 
 		public static void OnDBError(Exception e)
 		{
-			DatabaseUtil.OnDBError(e, "This will erase all Characters!");
+            log.Error("Database Error " + e.Message + " " + e.Source + " " + e.StackTrace, e);
+			//DatabaseUtil.OnDBError(e, "This will erase all Characters!");
 		}
 
 		[Initialization(InitializationPass.First, "Initialize database")]
 		public static bool Initialize()
 		{
-			if (!Initialized)
-			{
-				Initialized = true;
-				DatabaseUtil.DBErrorHook = exception => CharacterRecord.GetCount() < 100;
+		    if (!Initialized)
+		    {
+		        Initialized = true;
+		        DatabaseProvider = new DatabaseProvider(RealmServerConfiguration.DBWorldConnectionString);
+		    }
+		    //DatabaseUtil.DBErrorHook = exception => CharacterRecord.GetCount() < 100;
 
-				DatabaseUtil.DBType = RealmServerConfiguration.DBType;
-				DatabaseUtil.ConnectionString = RealmServerConfiguration.DBConnectionString;
-				DatabaseUtil.DefaultCharset = DefaultCharset;
+				//DatabaseUtil.DBType = RealmServerConfiguration.DBType;
+				//DatabaseUtil.ConnectionString = RealmServerConfiguration.DBConnectionString;
+				//DatabaseUtil.DefaultCharset = DefaultCharset;
 
+                /*
 				var asm = typeof(RealmDBMgr).Assembly;
 
 				try
@@ -81,32 +85,12 @@ namespace WCell.RealmServer.Database
 			{
 				// in case that the CharacterRecord table does not exist -> Recreate schema
 				DatabaseUtil.CreateSchema();
-			}
+			}*/
 
-			NHIdGenerator.InitializeCreators(OnDBError);
+			//NHIdGenerator.InitializeCreators(OnDBError);
 
-			RealmServer.InitMgr.SignalGlobalMgrReady(typeof(RealmDBMgr));
+            RealmServer.InitMgr.SignalGlobalMgrReady(typeof(RealmWorldDBMgr));
 			return true;
-		}
-
-		public static void UpdateLater(this ActiveRecordBase record)
-		{
-			RealmServer.IOQueue.AddMessage(() => record.Update());			// leave it as a Lambda Expr to get a complete stacktrace
-		}
-
-		public static void SaveLater(this ActiveRecordBase record)
-		{
-			RealmServer.IOQueue.AddMessage(() => record.Save());			// leave it as a Lambda Expr to get a complete stacktrace
-		}
-
-		public static void CreateLater(this ActiveRecordBase record)
-		{
-			RealmServer.IOQueue.AddMessage(() => record.Create());			// leave it as a Lambda Expr to get a complete stacktrace
-		}
-
-		public static void DeleteLater(this ActiveRecordBase record)
-		{
-			RealmServer.IOQueue.AddMessage(() => record.Delete());			// leave it as a Lambda Expr to get a complete stacktrace
 		}
 	}
 }

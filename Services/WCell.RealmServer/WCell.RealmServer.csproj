@@ -174,6 +174,36 @@
     <Compile Include="Achievements\AchievementReward.cs" />
     <Compile Include="Commands\WorldEventCommands.cs" />
     <Compile Include="Content\IModDataHolder.cs" />
+    <Compile Include="Database\AccountData.cs" />
+    <Compile Include="Database\Entities\ArenaTeamMember.cs" />
+    <Compile Include="Database\Entities\AuraRecord.cs" />
+    <Compile Include="Database\CharacterRecord.cs" />
+    <Compile Include="Database\CharacterRelationRecord.cs" />
+    <Compile Include="Database\Entities\ArenaTeamStats.cs" />
+    <Compile Include="Database\Entities\AuraRecordMap.cs" />
+    <Compile Include="Database\Entities\SkillRecord.cs" />
+    <Compile Include="Database\Entities\SpellRecord.cs" />
+    <Compile Include="Database\EquipmentSet.cs" />
+    <Compile Include="Database\EquipmentSetItemMapping.cs" />
+    <Compile Include="Database\Guild.cs" />
+    <Compile Include="Database\GuildBankLogEntry.cs" />
+    <Compile Include="Database\GuildBankTab.cs" />
+    <Compile Include="Database\GuildBankTabItemMapping.cs" />
+    <Compile Include="Database\GuildBankTabRights.cs" />
+    <Compile Include="Database\GuildEventLogEntry.cs" />
+    <Compile Include="Database\GuildMember.cs" />
+    <Compile Include="Database\GuildRank.cs" />
+    <Compile Include="Database\ItemRecord.cs" />
+    <Compile Include="Database\Mappings\ArenaTeamMemberMap.cs" />
+    <Compile Include="Database\Mappings\ArenaTeamStatsMap.cs" />
+    <Compile Include="Database\Mappings\GuildTabardMap.cs" />
+    <Compile Include="Database\Mappings\SkillRecordMap.cs" />
+    <Compile Include="Database\Mappings\SpellRecordMap.cs" />
+    <Compile Include="Database\QuestRecord.cs" />
+    <Compile Include="Database\RaidRecord.cs" />
+    <Compile Include="Database\RealmWorldDBMgr.cs" />
+    <Compile Include="Database\ReputationRecord.cs" />
+    <Compile Include="Database\RealmContentDBMgr.cs" />
     <Compile Include="Editor\Commands\EditorCommand.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -210,6 +240,7 @@
     <Compile Include="Handlers\TotemHandler.cs" />
     <Compile Include="Handlers\WorldStateHandler.cs" />
     <Compile Include="Instances\DungeonInstanceSettings.cs" />
+    <Compile Include="Instances\GlobalInstanceTimerMap.cs" />
     <Compile Include="Instances\InstanceProgress.cs" />
     <Compile Include="Instances\RaidInstanceSettings.cs" />
     <Compile Include="LFG\LFGMgr.cs" />
@@ -242,8 +273,6 @@
     <Compile Include="Commands\Extensions.cs" />
     <Compile Include="Commands\GossipCommand.cs" />
     <Compile Include="Commands\LocalizerCommand.cs" />
-    <Compile Include="Database\ArenaTeamMember.cs" />
-    <Compile Include="Database\ArenaTeamStats.cs" />
     <Compile Include="Entities\Character.Mechanics.cs" />
     <Compile Include="Entities\Character.StatUpdates.cs" />
     <Compile Include="Entities\ObjectTemplate.cs" />
@@ -324,7 +353,6 @@
     <Compile Include="Groups\IGroupConverter.cs" />
     <Compile Include="Groups\PartyGroup.cs" />
     <Compile Include="Groups\RaidGroup.cs" />
-    <Compile Include="Database\CharacterRelationRecord.cs" />
     <Compile Include="Social\CharacterSearch.cs" />
     <Compile Include="Social\RelationMgr.cs" />
     <Compile Include="Social\WhoList.cs" />
@@ -426,6 +454,10 @@
       <Project>{EEA9DEB6-8EA6-46F1-B1B7-AB38D8BBCA6C}</Project>
       <Name>WCell.Core</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Core\WCell.Database\WCell.Database.csproj">
+      <Project>{359d2064-8f94-4c6d-bead-5f0d28cb2939}</Project>
+      <Name>WCell.Database</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Core\WCell.Intercommunication\WCell.Intercommunication.csproj">
       <Project>{5997613F-D2A5-4B86-BEE2-C823BC07D5AF}</Project>
@@ -551,19 +583,12 @@
     <Compile Include="Commands\UnitCommands.cs" />
     <Compile Include="Content\NHibernateConverterProvider.cs" />
     <Compile Include="Content\NHibernateDbWrapper.cs" />
-    <Compile Include="Database\AccountData.cs" />
-    <Compile Include="Database\EquipmentSet.cs" />
-    <Compile Include="Database\EquipmentSetItemMapping.cs" />
-    <Compile Include="Database\GuildBankTab.cs" />
-    <Compile Include="Database\GuildBankTabItemMapping.cs" />
-    <Compile Include="Database\GuildBankTabRights.cs" />
     <Compile Include="NPCs\PetitionerEntry.cs" />
     <Compile Include="NPCs\Pets\IActivePetSettings.cs" />
     <Compile Include="NPCs\Pets\IPetRecord.cs" />
     <Compile Include="NPCs\Pets\PermanentPetRecord.cs" />
     <Compile Include="NPCs\Pets\PetRecordBase.cs" />
     <Compile Include="NPCs\Pets\PetTalentSpellRecord.cs" />
-    <Compile Include="Database\QuestRecord.cs" />
     <Compile Include="Entities\Character.Maintenance.cs" />
     <Compile Include="Entities\CharacterInformation.cs" />
     <Compile Include="Entities\MoveControl.cs" />
@@ -586,7 +611,6 @@
     <Compile Include="Handlers\AccountDataHandler.cs" />
     <Compile Include="Guilds\GuildBank.cs" />
     <Compile Include="Guilds\GuildBankLog.cs" />
-    <Compile Include="Database\GuildBankLogEntry.cs" />
     <Compile Include="Guilds\GuildBankTab.cs" />
     <Compile Include="Handlers\BattlegroundHandler.cs" />
     <Compile Include="Handlers\CalendarHandler.cs" />
@@ -650,15 +674,6 @@
     <Compile Include="Commands\WorldCommand.cs" />
     <Compile Include="Content\ContentException.cs" />
     <Compile Include="Content\ContentMgr.cs" />
-    <Compile Include="Database\AuraRecord.cs" />
-    <Compile Include="Database\Guild.cs" />
-    <Compile Include="Database\GuildEventLogEntry.cs" />
-    <Compile Include="Database\GuildMember.cs" />
-    <Compile Include="Database\GuildRank.cs" />
-    <Compile Include="Database\RaidRecord.cs" />
-    <Compile Include="Database\ReputationRecord.cs" />
-    <Compile Include="Database\SkillRecord.cs" />
-    <Compile Include="Database\SpellRecord.cs" />
     <Compile Include="Debugging\MapExtensions.cs" />
     <Compile Include="Misc\Duel.cs" />
     <Compile Include="Entities\IEntity.cs" />
@@ -911,9 +926,6 @@
     <Compile Include="Commands\SkillCommands.cs" />
     <Compile Include="Commands\SpellCommands.cs" />
     <Compile Include="Commands\TestCommands.cs" />
-    <Compile Include="Database\CharacterRecord.cs" />
-    <Compile Include="Database\ItemRecord.cs" />
-    <Compile Include="Database\RealmDBMgr.cs" />
     <Compile Include="Mail\MailMessage.cs" />
     <Compile Include="Items\Item.DBC.cs" />
     <Compile Include="Entities\Unit.Damage.cs" />

@@ -1,22 +1,22 @@
-using Castle.ActiveRecord;
+using NHibernate.Criterion;
+using WCell.Database;
 using WCell.Constants.World;
-using WCell.Core.Database;
 using System;
+using WCell.RealmServer.Database;
 using WCell.Util;
 using WCell.RealmServer.Global;
 using WCell.Constants;
 
 namespace WCell.RealmServer.Instances
 {
-	[ActiveRecord]
-	public class GlobalInstanceTimer : WCellRecord<GlobalInstanceTimer>
+	public class GlobalInstanceTimer
 	{
 		/// <summary>
 		/// Load and verify timers
 		/// </summary>
 		public static GlobalInstanceTimer[] LoadTimers()
 		{
-			var arr = FindAll();
+            var arr = RealmWorldDBMgr.DatabaseProvider.FindAll<GlobalInstanceTimer>();
 			var timers = new GlobalInstanceTimer[(int)MapId.End + 1000];
 			foreach (var timer in arr)
 			{
@@ -54,7 +54,7 @@ namespace WCell.RealmServer.Instances
 								timers[i] = timer = new GlobalInstanceTimer(rgn.Id);
 
 								timer.LastResets[d] = DateTime.Now;
-								timer.Save();
+                                RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(timer);
 							}
 						}
 					}
@@ -62,7 +62,7 @@ namespace WCell.RealmServer.Instances
 				else if (timer != null)
 				{
 					// is not an instance (anymore)
-					timer.Delete();
+                    RealmWorldDBMgr.DatabaseProvider.Delete(timer);
 					timers[i] = null;
 				}
 			}
@@ -73,7 +73,6 @@ namespace WCell.RealmServer.Instances
 
 		public GlobalInstanceTimer(MapId id)
 		{
-			State = RecordState.New;
 			MapId = id;
 			LastResets = new DateTime[InstanceMgr.MaxInstanceDifficulties];
 		}
@@ -82,14 +81,6 @@ namespace WCell.RealmServer.Instances
 		{
 		}
 
-		[PrimaryKey(PrimaryKeyType.Assigned, "MapId")]
-		private int m_MapId
-		{
-			get { return (int)MapId; }
-			set { MapId = (MapId)value; }
-		}
-
-		[Property(NotNull = true)]
 		public DateTime[] LastResets
 		{
 			get;

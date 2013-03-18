@@ -5,6 +5,7 @@ using System.Text;
 using Castle.ActiveRecord;
 using Castle.ActiveRecord.Queries;
 using NHibernate.Criterion;
+using WCell.RealmServer.Database.Entities;
 using WCell.Util.Logging;
 using WCell.Constants;
 using WCell.Constants.Login;
@@ -33,7 +34,6 @@ using Alias = System.Collections.Generic.KeyValuePair<string, string>;
 
 namespace WCell.RealmServer.Database
 {
-	[ActiveRecord(Access = PropertyAccess.Property)]
 	public class CharacterRecord : WCellRecord<CharacterRecord>, ILivingEntity, IMapId, IActivePetSettings
 	{
 		#region Static

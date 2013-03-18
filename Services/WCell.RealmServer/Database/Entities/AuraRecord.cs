@@ -1,5 +1,5 @@
+using System.Collections.Generic;
 using WCell.Core;
-using WCell.Core.Database;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Spells.Auras;
@@ -7,44 +7,28 @@ using WCell.RealmServer.Spells;
 using WCell.Util.Logging;
 using WCell.Util.ObjectPools;
 
-namespace WCell.RealmServer.Database
+namespace WCell.RealmServer.Database.Entities
 {
-	[ActiveRecord(Access = PropertyAccess.Property)]
-	public class AuraRecord : WCellRecord<AuraRecord>
+	public class AuraRecord
 	{
 		internal static readonly ObjectPool<AuraRecord> AuraRecordPool = new ObjectPool<AuraRecord>(() => new AuraRecord());
-
-		private static readonly NHIdGenerator _idGenerator =
-			new NHIdGenerator(typeof(AuraRecord), "RecordId");
-
-		/// <summary>
-		/// Returns the next unique Id for a new SpellRecord
-		/// </summary>
-		public static long NextId()
-		{
-			return _idGenerator.Next();
-		}
 
 		public static AuraRecord ObtainAuraRecord(Aura aura)
 		{
 			var record = AuraRecordPool.Obtain();
-			record.State = RecordState.New;
-			record.RecordId = NextId();
 			record.SyncData(aura);
 
 			return record;
 		}
 
-		public static AuraRecord[] LoadAuraRecords(uint lowId)
+		public static IEnumerable<AuraRecord> LoadAuraRecords(uint lowId)
 		{
-			return FindAllByProperty("m_OwnerId", (int)lowId);
+            //TODO: Use Detatched Criteria for this
+            return RealmWorldDBMgr.DatabaseProvider.Session.QueryOver<AuraRecord>().Where(x => x.OwnerId == (int)lowId).List();
 		}
 
 		public AuraRecord(Aura aura)
 		{
-			State = RecordState.New;
-			RecordId = NextId();
-
 			SyncData(aura);
 		}
 
@@ -70,39 +54,24 @@ namespace WCell.RealmServer.Database
 			IsBeneficial = aura.IsBeneficial;
 		}
 
-		[Field("OwnerId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
-		private int m_OwnerId;
-
 		private Spell m_spell;
 
-		[PrimaryKey(PrimaryKeyType.Assigned)]
-		public long RecordId
-		{
-			get;
-			set;
-		}
+	    public long RecordId;
 
-		public uint OwnerId
-		{
-			get { return (uint)m_OwnerId; }
-			set { m_OwnerId = (int)value; }
-		}
+	    public uint OwnerId;
 
-		[Property]
 		public long CasterId
 		{
 			get;
 			set;
 		}
 
-		[Property]
 		public int Level
 		{
 			get;
 			set;
 		}
 
-		[Property]
 		public int SpellId
 		{
 			get { return (int)m_spell.Id; }
@@ -121,26 +90,11 @@ namespace WCell.RealmServer.Database
 			get { return m_spell; }
 		}
 
-		[Property]
-		public int MillisLeft
-		{
-			get;
-			set;
-		}
+	    public int MillisLeft;
 
-		[Property]
-		public int StackCount
-		{
-			get;
-			set;
-		}
+	    public int StackCount;
 
-		[Property]
-		public bool IsBeneficial
-		{
-			get;
-			set;
-		}
+	    public bool IsBeneficial;
 
 		public ObjectReference GetCasterInfo(Map map)
 		{
@@ -153,9 +107,10 @@ namespace WCell.RealmServer.Database
 			return new ObjectReference(id, Level);
 		}
 
-		public override void Delete()
+        // TODO: integrate this into fluent, under Active Record this was called when the entity was deleted from the database
+        //pubic override void Delete()
+		public void Delete()
 		{
-			base.Delete();
 			AuraRecordPool.Recycle(this);
 		}
 

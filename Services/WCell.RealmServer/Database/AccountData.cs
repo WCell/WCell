@@ -15,21 +15,20 @@ namespace WCell.RealmServer.Database
 
 		public int[] SizeHolder = new int[8];
 
-		public static AccountData GetAccountData(long accountID)
+		public static AccountData GetAccountData(long accountId)
 		{
-			var databaseProvider = new DatabaseProvider();
-			return databaseProvider.FindOne<AccountData>(Restrictions.Eq("AccountId", accountID));
+			return RealmWorldDBMgr.DatabaseProvider.FindOne<AccountData>(Restrictions.Eq("AccountId", accountId));
 		}
 
 		/// <summary>
 		/// This is used to initialize *skeleton* data for accounts that do not already have data stored server side.
 		/// We initialize with DateTime.MinValue to cause the client to update the server side data.
 		/// </summary>
-		/// <param name="accountID">GUID of the account that needs to be initialized</param>
+		/// <param name="accountId">GUID of the account that needs to be initialized</param>
 		/// <returns>An AccountData reference</returns>
-		public static AccountData InitializeNewAccount(long accountID)
+		public static AccountData InitializeNewAccount(long accountId)
 		{
-			var newData = new AccountData {AccountId = accountID};
+			var newData = new AccountData {AccountId = accountId};
 
 			for (uint i = 7; i > 0; i--)
 			{

@@ -5,49 +5,17 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
 {
     public partial class ArenaTeamStats
     {
-        public ArenaTeam team
+        public ArenaTeam Team
         {
             set 
                 { 
-                    team = value;
-                    _teamId = (int)value.Id; 
+                    _team = value;
+                    Id = (int)value.Id; 
                 }
-        }
-                    
-        public uint rating
-        {
-            get { return (uint)_rating; }
-            set { _rating = (int)value; }
+            get { return _team; }
         }
 
-        public uint gamesWeek
-        {
-            get { return (uint)_gamesWeek; }
-            set { _gamesWeek = (int)value; }
-        }
-
-        public uint winsWeek
-        {
-            get { return (uint)_winsWeek; }
-            set { _winsWeek = (int)value; }
-        }
-
-        public uint gamesSeason
-        {
-            get { return (uint)_gamesSeason; }
-            set { _gamesSeason = (int)value; }
-        }
-
-        public uint winsSeason
-        {
-            get { return (uint)_winsSeason; }
-            set { _winsSeason = (int)value; }
-        }
-        public uint rank
-        {
-            get { return (uint)_rank; }
-            set { _rank = (int)value; }
-        }
+        private ArenaTeam _team;
 
         public ArenaTeamStats()
         {
@@ -56,14 +24,14 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
 
         public ArenaTeamStats(ArenaTeam arenaTeam)
         {
-            team = arenaTeam;
-            rating = 1500;
+            Team = arenaTeam;
+            Rating = 1500;
 
-            gamesWeek = 0;
-            winsWeek = 0;
-            gamesSeason = 0;
-            winsSeason = 0;
-            rank = 0;
+            GamesWeek = 0;
+            WinsWeek = 0;
+            GamesSeason = 0;
+            WinsSeason = 0;
+            Rank = 0;
         }
 
         public void SetStats(ArenaTeamStatsTypes stats, uint value)
@@ -71,26 +39,26 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
             switch(stats)
             {
                 case ArenaTeamStatsTypes.STAT_TYPE_RATING:
-                    rating = value;
+                    Rating = value;
                 break;
 
                 case ArenaTeamStatsTypes.STAT_TYPE_GAMES_WEEK:
-                    gamesWeek = value;
+                    GamesWeek = value;
                 break;
 
                 case ArenaTeamStatsTypes.STAT_TYPE_WINS_WEEK:
-                    winsWeek = value;
+                    WinsWeek = value;
                 break;
 
                 case ArenaTeamStatsTypes.STAT_TYPE_GAMES_SEASON:
-                    gamesSeason = value;
+                    GamesSeason = value;
                 break;
 
                 case ArenaTeamStatsTypes.STAT_TYPE_WINS_SEASON:
-                    winsSeason = value;
+                    WinsSeason = value;
                 break;
             }
-            UpdateAndFlush();          
+            RealmWorldDBMgr.DatabaseProvider.Save(this);
         }
     }
 }

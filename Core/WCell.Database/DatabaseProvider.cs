@@ -26,6 +26,8 @@ namespace WCell.Database
 		public Assembly SourceAssembly;
 		public Configuration NHibernateConfiguration;
 		public FluentConfiguration FluentNHibernateConfiguration;
+        public delegate void DeleteEntityEventHandler(object sender, EventArgs e);
+        public event DeleteEntityEventHandler OnDeleteEntity;
 		public Dialect CurrentDialect
 		{
 			get { return Dialect.GetDialect(NHibernateConfiguration.Properties); }
@@ -49,6 +51,20 @@ namespace WCell.Database
 			Transaction = Session.BeginTransaction();
 		}
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="connectionString">The connection string for the database server</param>
+        /// <param name="sourceAssembly">The assembly from which to load the tables, if not set defaults to calling assembly</param>
+        public DatabaseProvider(string connectionString,
+                                Assembly sourceAssembly = null)
+        {
+            SourceAssembly = sourceAssembly ?? Assembly.GetCallingAssembly();
+            SessionFactory = CreateSessionFactory(connectionString);
+            Session = SessionFactory.OpenSession();
+            Transaction = Session.BeginTransaction();
+        }
+
 		public class StoreConfiguration : DefaultAutomappingConfiguration
 		{
 			public override bool ShouldMap(Type type)
@@ -70,21 +86,35 @@ namespace WCell.Database
 					builder.Database(database);
 				});
 			fluconf.Database(dbconf);
-			var storeConfiguration = new StoreConfiguration(); //TODO: Hmm using Assembly as a property is kinda gash..
-			fluconf.Mappings(m =>
-				{
-					m.FluentMappings.AddFromAssembly(SourceAssembly);
-					m.AutoMappings.Add(AutoMap.Assembly(SourceAssembly, storeConfiguration));
-				});
-			FluentNHibernateConfiguration = fluconf.ExposeConfiguration(configuration =>
-				{
-					NHibernateConfiguration = configuration;
-					new SchemaUpdate(configuration).Execute(false, true);
-				});
-			return fluconf.BuildSessionFactory();
+		    return CreateSessionFactoryWithFluentConfiguration(fluconf);
 		}
 
-		public void CommitTransaction()
+        public ISessionFactory CreateSessionFactory(string connectionString)
+        {
+            var fluconf = Fluently.Configure();
+            //TODO: Support other database connection types (cleanly)
+            var dbconf = MySQLConfiguration.Standard.ConnectionString(builder => builder.Is(connectionString));
+            fluconf.Database(dbconf);
+            return CreateSessionFactoryWithFluentConfiguration(fluconf);
+        }
+
+	    private ISessionFactory CreateSessionFactoryWithFluentConfiguration(FluentConfiguration fluentConfiguration)
+	    {
+	        var storeConfiguration = new StoreConfiguration(); //TODO: Hmm using Assembly as a property is kinda gash..
+            fluentConfiguration.Mappings(m =>
+	            {
+	                m.FluentMappings.AddFromAssembly(SourceAssembly);
+	                m.AutoMappings.Add(AutoMap.Assembly(SourceAssembly, storeConfiguration));
+	            });
+            FluentNHibernateConfiguration = fluentConfiguration.ExposeConfiguration(configuration =>
+	            {
+	                NHibernateConfiguration = configuration;
+	                new SchemaUpdate(configuration).Execute(false, true);
+	            });
+            return fluentConfiguration.BuildSessionFactory();
+	    }
+
+	    public void CommitTransaction()
 		{
 			Transaction.Commit();
 			Transaction = Session.BeginTransaction();
@@ -264,12 +294,14 @@ namespace WCell.Database
 			{
 				Session.Delete(entity);
 				CommitTransaction();
-				return true;
 			}
 			catch (Exception e) //TODO: Catch exception and log
 			{
 				return false;
 			}
+
+            OnDeleteEntity(this, null);
+            return true;
 		}
 
 		/// <summary>

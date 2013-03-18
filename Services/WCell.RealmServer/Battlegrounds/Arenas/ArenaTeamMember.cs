@@ -14,8 +14,8 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
     /// </summary>
     public partial class ArenaTeamMember : INamed
     {
-		private Character m_chr;
-		private ArenaTeam m_Team;
+		private Character _character;
+		private ArenaTeam _team;
 
         #region Properties
         /// <summary>
@@ -36,10 +36,10 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
 
         public ArenaTeam ArenaTeam
         {
-            get { return m_Team; }
+            get { return _team; }
             private set
             {
-                m_Team = value;
+                _team = value;
                 ArenaTeamId = value.Id;
             }
         }
@@ -51,9 +51,9 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
         {
             get
             {
-                if (m_chr != null)
+                if (_character != null)
                 {
-                    return m_chr.Class;
+                    return _character.Class;
                 }
                 return (ClassId)_class;
             }
@@ -65,48 +65,28 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
         /// </summary>
         public Character Character
         {
-            get { return m_chr; }
+            get { return _character; }
             internal set
             {
-                m_chr = value;
+                _character = value;
 
-                if (m_chr != null)
+                if (_character != null)
                 {
-                    _name = m_chr.Name;
-                    m_chr.ArenaTeamMember[(int)this.ArenaTeam.Slot] = this;
+                    _name = _character.Name;
+                    _character.ArenaTeamMember[(int)this.ArenaTeam.Slot] = this;
                 }
             }
         }
 
-        public uint GamesWeek
-        {
-            get { return (uint)_gamesWeek; }
-            set { _gamesWeek = (int)value; }
-        }
+        public uint GamesWeek;
 
-        public uint WinsWeek
-        {
-            get { return (uint)_winsWeek; }
-            set { _winsWeek = (int)value; }
-        }
+        public uint WinsWeek;
 
-        public uint GamesSeason
-        {
-            get { return (uint)_gamesSeason; }
-            set { _gamesSeason = (int)value; }
-        }
+        public uint GamesSeason;
 
-        public uint WinsSeason
-        {
-            get { return (uint)_winsSeason; }
-            set { _winsSeason = (int)value; }
-        }
+        public uint WinsSeason;
 
-        public uint PersonalRating
-        {
-            get { return (uint)_personalRating; }
-            set { _personalRating = (int)value; }
-        }
+        public uint PersonalRating;
         
 
         #endregion

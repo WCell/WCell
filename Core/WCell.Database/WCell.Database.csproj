@@ -34,9 +34,6 @@
     <Reference Include="FluentNHibernate">
       <HintPath>..\..\Libraries\Binaries\FluentHibernate\FluentNHibernate.dll</HintPath>
     </Reference>
-    <Reference Include="log4net">
-      <HintPath>..\..\..\..\..\Promethium\Website\Jaddie.Logging.Log4net\log4net.dll</HintPath>
-    </Reference>
     <Reference Include="NHibernate">
       <HintPath>..\..\Libraries\Binaries\NHibernate\NHibernate.dll</HintPath>
     </Reference>
