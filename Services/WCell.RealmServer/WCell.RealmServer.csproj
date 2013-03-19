@@ -174,13 +174,12 @@
     <Compile Include="Achievements\AchievementReward.cs" />
     <Compile Include="Commands\WorldEventCommands.cs" />
     <Compile Include="Content\IModDataHolder.cs" />
-    <Compile Include="Database\AccountData.cs" />
+    <Compile Include="Database\Entities\AccountData.cs" />
     <Compile Include="Database\Entities\ArenaTeamMember.cs" />
     <Compile Include="Database\Entities\AuraRecord.cs" />
     <Compile Include="Database\Entities\CharacterRecord.cs" />
     <Compile Include="Database\CharacterRelationRecord.cs" />
     <Compile Include="Database\Entities\ArenaTeamStats.cs" />
-    <Compile Include="Database\Mappings\AuraRecordMap.cs" />
     <Compile Include="Database\Entities\SkillRecord.cs" />
     <Compile Include="Database\Entities\SpellRecord.cs" />
     <Compile Include="Database\EquipmentSet.cs" />
