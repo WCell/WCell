@@ -7,20 +7,9 @@ namespace WCell.RealmServer.Database.Mappings
 {
     internal class CharacterRecordMap : ClassMap<CharacterRecord>
     {
-        /// <summary>
-        /// Character will not have Ids below this threshold. 
-        /// You can use those unused ids for self-implemented mechanisms, eg to fake participants in chat-channels etc.
-        /// </summary>
-        /// <remarks>
-        /// Do not change this value once the first Character exists.
-        /// If you want to change this value to reserve more (or less) ids for other use, make sure
-        /// that none of the ids below this threshold are in the DB.
-        /// </remarks>
-        public const long LowestCharId = 1000;
-
         public CharacterRecordMap()
         {
-            Id(x => x.EntityLowId).GeneratedBy.Increment().Default(LowestCharId);
+            Id(x => x.EntityLowId).GeneratedBy.Assigned();
             Map(x => x.AccountId).Not.Nullable();
             Map(x => x.DisplayId).Not.Nullable();
             Map(x => x.WatchedFaction).Not.Nullable();

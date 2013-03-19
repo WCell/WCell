@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using NHibernate.Criterion;
 using WCell.Util.Logging;
 using WCell.Constants;
@@ -34,6 +35,58 @@ namespace WCell.RealmServer.Database.Entities
 
 		public static readonly CharacterRecord[] EmptyArray = new CharacterRecord[] { };
 
+	    private static bool _idGeneratorInitialised;
+	    private static long _highestId;
+        /// <summary>
+        /// Character will not have Ids below this threshold. 
+        /// You can use those unused ids for self-implemented mechanisms, eg to fake participants in chat-channels etc.
+        /// </summary>
+        /// <remarks>
+        /// Do not change this value once the first Character exists.
+        /// If you want to change this value to reserve more (or less) ids for other use, make sure
+        /// that none of the ids below this threshold are in the DB.
+        /// </remarks>
+        public const long LowestCharId = 1000;
+        private static void Init()
+        {
+            long highestId;
+            try
+            {
+                highestId = RealmWorldDBMgr.DatabaseProvider.Session.QueryOver<CharacterRecord>().Select(Projections.ProjectionList().Add(Projections.Max<CharacterRecord>(x => x.EntityLowId))).List<long>().First();
+            }
+            catch (Exception e)
+            {
+                RealmWorldDBMgr.OnDBError(e);
+                highestId = RealmWorldDBMgr.DatabaseProvider.Session.QueryOver<CharacterRecord>().Select(Projections.ProjectionList().Add(Projections.Max<CharacterRecord>(x => x.EntityLowId))).List<long>().First();
+            }
+
+            _highestId = (long)Convert.ChangeType(highestId, typeof(long));
+
+            if (_highestId < LowestCharId)
+            {
+                _highestId = LowestCharId;
+            }
+            _idGeneratorInitialised = true;
+        }
+
+        public static long LastId
+        {
+            get
+            {
+                if (!_idGeneratorInitialised)
+                    Init();
+                return Interlocked.Read(ref _highestId);
+            }
+        }
+
+        public static long NextId()
+        {
+            if (!_idGeneratorInitialised)
+                Init();
+
+            return Interlocked.Increment(ref _highestId);
+        }
+
 		/// <summary>
 		/// Creates a new CharacterRecord row in the database with the given information.
 		/// </summary>
@@ -48,6 +101,7 @@ namespace WCell.RealmServer.Database.Entities
 			{
 				record = new CharacterRecord(account.AccountId)
 				{
+                    EntityLowId = (uint)NextId(),
 					Name = name,
 					Created = DateTime.Now
 				};

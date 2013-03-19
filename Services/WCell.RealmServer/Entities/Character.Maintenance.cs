@@ -40,7 +40,6 @@ using WCell.RealmServer.Taxi;
 using WCell.RealmServer.Modifiers;
 using WCell.Util;
 using WCell.RealmServer.Battlegrounds;
-using Castle.ActiveRecord;
 
 namespace WCell.RealmServer.Entities
 {
@@ -266,7 +265,7 @@ namespace WCell.RealmServer.Entities
 				}
 				catch (Exception e)
 				{
-					RealmDBMgr.OnDBError(e);
+					RealmWorldDBMgr.OnDBError(e);
 					throw new Exception(string.Format("Failed to load Character \"{0}\" for Client: {1}", this, Client), e);
 				}
 
@@ -640,7 +639,7 @@ namespace WCell.RealmServer.Entities
 					{
 						try
 						{
-							m_record.Update();
+							RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(m_record);
 						}
 						catch (Exception ex)
 						{
@@ -876,68 +875,63 @@ namespace WCell.RealmServer.Entities
 				return false;
 			}
 
-			try
-			{
-				using (var saveScope = new SessionScope(FlushAction.Never))
-				{
-					// Interface settings
-					Account.AccountData.Save();
+		    try
+		    {
+		        // Interface settings
+		        RealmWorldDBMgr.DatabaseProvider.Save(Account.AccountData);
 
-					// Items
-					var items = new List<ItemRecord>();
-					m_inventory.SaveAll(items);
-					m_record.UpdateItems(items);
+		        // Items
+		        var items = new List<ItemRecord>();
+		        m_inventory.SaveAll(items);
+		        m_record.UpdateItems(items);
 
-					// Skills
-					foreach (var skill in m_skills)
-					{
-						skill.Save();
-					}
+		        // Skills
+		        foreach (var skill in m_skills)
+		        {
+		            skill.Save();
+		        }
 
-					// Pets
-					SaveEntourage();
+		        // Pets
+		        SaveEntourage();
 
-					// Quests
-					m_questLog.SaveQuests();
+		        // Quests
+		        m_questLog.SaveQuests();
 
-					// Specs
-					foreach (var spec in SpecProfiles)
-					{
-						if (spec.IsDirty)
-						{
-							spec.Save();
-						}
-					}
+		        // Specs
+		        foreach (var spec in SpecProfiles)
+		        {
+		            RealmWorldDBMgr.DatabaseProvider.Save(spec);
+		        }
 
-					// Achievements
-					m_achievements.SaveNow();
+		        // Achievements
+		        m_achievements.SaveNow();
 
-					// Auras
-					m_auras.SaveAurasNow();
+		        // Auras
+		        m_auras.SaveAurasNow();
 
-					// General Character data
-					m_record.Save();
+		        // General Character data
+		        RealmWorldDBMgr.DatabaseProvider.Save(m_record);
 
-					saveScope.Flush();
-				}
-				m_record.LastSaveTime = DateTime.Now;
+		        RealmWorldDBMgr.DatabaseProvider.CommitTransaction();
+                RealmWorldDBMgr.DatabaseProvider.Session.Flush();
+		        m_record.LastSaveTime = DateTime.Now;
 
-				if (DebugUtil.Dumps)
-				{
-					var writer = DebugUtil.GetTextWriter(m_client.Account);
-					writer.WriteLine("Saved {0} (Map: {1}).", Name, m_record.MapId);
-				}
+		        if (DebugUtil.Dumps)
+		        {
+		            var writer = DebugUtil.GetTextWriter(m_client.Account);
+		            writer.WriteLine("Saved {0} (Map: {1}).", Name, m_record.MapId);
+		        }
 
-				return true;
-			}
-			catch (Exception ex)
-			{
-				OnSaveFailed(ex);
-				return false;
-			}
-			finally
-			{
-			}
+		        return true;
+		    }
+		    catch (Exception ex)
+		    {
+		        OnSaveFailed(ex);
+		        return false;
+		    }
+		    finally
+		    {
+		    }
 		}
 
 		void OnSaveFailed(Exception ex)

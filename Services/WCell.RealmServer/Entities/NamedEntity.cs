@@ -16,7 +16,7 @@ namespace WCell.RealmServer.Entities
 	{
 		public static EntityId CreateId()
 		{
-			return EntityId.GetPlayerId(CharacterRecord.NextId());
+			return EntityId.GetPlayerId((uint)CharacterRecord.NextId());
 		}
 
 

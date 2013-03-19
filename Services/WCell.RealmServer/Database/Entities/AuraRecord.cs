@@ -107,10 +107,16 @@ namespace WCell.RealmServer.Database.Entities
 			return new ObjectReference(id, Level);
 		}
 
+        public void DeleteLater()
+        {
+            RealmServer.IOQueue.AddMessage(Delete);
+        }
+
         // TODO: integrate this into fluent, under Active Record this was called when the entity was deleted from the database
         //pubic override void Delete()
 		public void Delete()
 		{
+		    RealmWorldDBMgr.DatabaseProvider.Delete(this);
 			AuraRecordPool.Recycle(this);
 		}
 

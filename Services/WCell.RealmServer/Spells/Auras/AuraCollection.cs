@@ -1110,7 +1110,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// <summary>
 		/// Called after Character entered world to load all it's active Auras
 		/// </summary>
-		internal void InitializeAuras(AuraRecord[] records)
+		internal void InitializeAuras(IEnumerable<AuraRecord> records)
 		{
 			foreach (var record in records)
 			{
