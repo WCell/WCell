@@ -1,7 +1,4 @@
-using NHibernate.Criterion;
-using WCell.Database;
-
-namespace WCell.RealmServer.Database
+namespace WCell.RealmServer.Database.Entities
 {
 	public class AccountData
 	{
@@ -17,7 +14,7 @@ namespace WCell.RealmServer.Database
 
 		public static AccountData GetAccountData(long accountId)
 		{
-			return RealmWorldDBMgr.DatabaseProvider.FindOne<AccountData>(Restrictions.Eq("AccountId", accountId));
+			return RealmWorldDBMgr.DatabaseProvider.FindOne<AccountData>(x => x.AccountId == accountId));
 		}
 
 		/// <summary>
