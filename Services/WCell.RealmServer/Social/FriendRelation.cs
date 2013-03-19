@@ -16,6 +16,7 @@
 
 using WCell.Constants;
 using WCell.RealmServer.Database;
+using WCell.RealmServer.Database.Entities;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Factions;
 using WCell.RealmServer.Global;

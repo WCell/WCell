@@ -2,6 +2,7 @@ using System;
 using Castle.ActiveRecord;
 using WCell.Core.Database;
 using WCell.RealmServer.Database;
+using WCell.RealmServer.Database.Entities;
 using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Guilds

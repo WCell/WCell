@@ -171,6 +171,11 @@ namespace WCell.Database
 			return Session.QueryOver<T>().List();
 		}
 
+        public IEnumerable<T> FindAll<T>(Expression<Func<T, bool>> expression)
+        {
+            return FindAll<T>(DetachedCriteria.For<T>().Add(Restrictions.Where(expression)));
+        }
+
 		/// <summary>
 		/// Returns each entity that matches the given criteria
 		/// </summary>
@@ -230,6 +235,11 @@ namespace WCell.Database
 			return criteria.GetExecutableCriteria(Session).UniqueResult<T>();
 		}
 
+        public T FindOne<T>(Expression<Func<T, bool>> expression)
+        {
+            return FindOne<T>(DetachedCriteria.For<T>().Add(Restrictions.Where(expression)));
+        }
+
 		public T FindOne<T>(SimpleExpression expression)
 		{
 			return FindOne<T>(DetachedCriteria.For<T>().Add(expression));
@@ -268,6 +278,40 @@ namespace WCell.Database
 			              .Select(Projections.Count(Projections.Id()))
 			              .FutureValue<int>().Value;
 		}
+
+        /// <summary>
+        /// Returns the total number of entities that match the given criteria
+        /// </summary>
+        /// <param name="criteria"></param>
+        /// <returns></returns>
+        public long Count<T>(DetachedCriteria criteria) where T : class
+        {
+            var results = criteria.GetExecutableCriteria(Session).List<T>();
+
+			return results.Count;
+        }
+
+        /// <summary>
+        /// Returns the total number of entities that match the given criteria
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public long Count<T>(Expression<Func<T, bool>> expression) where T : class
+        {
+            return Count<T>(DetachedCriteria.For<T>().Add(Restrictions.Where(expression)));
+        }
+
+        /// <summary>
+        /// Returns the total number of entities that match the given criteria
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public long Count<T>(SimpleExpression expression) where T : class
+        {
+            return Session.QueryOver<T>().Where(expression)
+                          .Select(Projections.Count(Projections.Id()))
+                          .FutureValue<int>().Value;
+        }
 
 		/// <summary>
 		/// Returns true if at least one entity exists that matches the given criteria
@@ -318,6 +362,21 @@ namespace WCell.Database
 			}
 			CommitTransaction();
 		}
+
+        /// <summary>
+        /// Deletes every entity that matches the given criteria
+        /// </summary>
+        /// <param name="expression"></param>
+        public void Delete<T>(Expression<Func<T, bool>> expression)
+        {
+            // Note: If you use HQL then it won't honor the cascade operation either..
+            // This could be much improved most likely, as currently 2 trips are required however for now it works.
+            foreach (T entity in FindAll<T>(DetachedCriteria.For<T>().Add(Restrictions.Where(expression))))
+            {
+                Delete(entity);
+            }
+            CommitTransaction();
+        }
 
 		/*public void OnDBError(Exception exception, string thisWillEraseAllAccounts)
 		{

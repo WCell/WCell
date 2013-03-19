@@ -32,6 +32,7 @@ using WCell.RealmServer.AreaTriggers;
 using WCell.RealmServer.Battlegrounds.Arenas;
 using WCell.RealmServer.Chat;
 using WCell.RealmServer.Database;
+using WCell.RealmServer.Database.Entities;
 using WCell.RealmServer.Factions;
 using WCell.RealmServer.Formulas;
 using WCell.RealmServer.GameObjects.Handlers;

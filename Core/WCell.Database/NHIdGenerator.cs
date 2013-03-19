@@ -1,6 +1,11 @@
+using System;
+using System.Collections.Generic;
+using System.Threading;
+
 namespace WCell.Database
 {
-	/*/// <summary>
+    /*
+	/// <summary>
 	/// Gives out next Primary Key for a table with assigned Primary Keys
 	/// </summary>
 	public class NHIdGenerator
@@ -84,5 +89,6 @@ namespace WCell.Database
 		{
 			return Interlocked.Increment(ref m_highestId);
 		}
-	}*/
+	}
+    */
 }

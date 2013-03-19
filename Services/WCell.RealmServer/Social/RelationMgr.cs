@@ -23,6 +23,7 @@ using WCell.Constants.Relations;
 using WCell.Core;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Database;
+using WCell.RealmServer.Database.Entities;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Res;

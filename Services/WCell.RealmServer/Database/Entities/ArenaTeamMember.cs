@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using WCell.RealmServer.Database;
+using WCell.RealmServer.Database.Entities;
 
 namespace WCell.RealmServer.Battlegrounds.Arenas
 {

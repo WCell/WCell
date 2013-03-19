@@ -1,6 +1,7 @@
 using System.Linq;
 using WCell.Constants;
 using WCell.RealmServer.Database;
+using WCell.RealmServer.Database.Entities;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Guilds;
 using WCell.Util;

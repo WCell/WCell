@@ -17,6 +17,7 @@
 using System.Collections.Generic;
 using WCell.Constants;
 using WCell.RealmServer.Database;
+using WCell.RealmServer.Database.Entities;
 using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Interaction

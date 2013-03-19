@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using WCell.RealmServer.Database.Entities;
 using WCell.Util.Logging;
 using WCell.Constants;
 using WCell.Constants.Achievements;
