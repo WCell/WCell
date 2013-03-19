@@ -197,6 +197,7 @@
     <Compile Include="Database\Mappings\ArenaTeamMemberMap.cs" />
     <Compile Include="Database\Mappings\ArenaTeamStatsMap.cs" />
     <Compile Include="Database\Mappings\CharacterRecordMap.cs" />
+    <Compile Include="Database\Mappings\AuraRecordMap.cs" />
     <Compile Include="Database\Mappings\GuildTabardMap.cs" />
     <Compile Include="Database\Mappings\SkillRecordMap.cs" />
     <Compile Include="Database\Mappings\SpellRecordMap.cs" />
