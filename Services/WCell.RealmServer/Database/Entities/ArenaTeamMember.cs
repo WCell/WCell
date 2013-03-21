@@ -12,7 +12,7 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
 
         public static IEnumerable<ArenaTeamMember> FindAll(ArenaTeam team)
         {
-            //TODO: Use Detatched Criteria for this
+            //TODO: Use Detatched Criteria for this -- Via method in databaseprovider
 			return RealmWorldDBMgr.DatabaseProvider.Session.QueryOver<ArenaTeamMember>().Where(x => x.ArenaTeamId == (int)team.Id).List();
         }
 

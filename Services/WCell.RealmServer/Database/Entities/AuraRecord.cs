@@ -23,7 +23,7 @@ namespace WCell.RealmServer.Database.Entities
 
 		public static IEnumerable<AuraRecord> LoadAuraRecords(uint lowId)
 		{
-            //TODO: Use Detatched Criteria for this
+            //TODO: Use Detatched Criteria for this -- This should be done via the databaseprovider so as to keep nhibernate out of the source.
             return RealmWorldDBMgr.DatabaseProvider.Session.QueryOver<AuraRecord>().Where(x => x.OwnerId == (int)lowId).List();
 		}
 

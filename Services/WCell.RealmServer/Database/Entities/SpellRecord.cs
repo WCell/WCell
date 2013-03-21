@@ -11,7 +11,7 @@ namespace WCell.RealmServer.Database.Entities
 
 		public static IEnumerable<SpellRecord> LoadAllRecordsFor(uint lowId)
 		{
-            //TODO: Use Detatched Criteria for this
+            //TODO: Use Detatched Criteria for this -- This should be handled via databaseprovider -- Keep nhibernate out of the source
 			return RealmWorldDBMgr.DatabaseProvider.Session.QueryOver<SpellRecord>().Where(x => x.OwnerId == (int)lowId).List();
 		}
 

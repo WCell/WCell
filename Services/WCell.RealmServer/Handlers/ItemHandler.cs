@@ -5,6 +5,7 @@ using WCell.Constants.Spells;
 using WCell.Core;
 using WCell.Core.Network;
 using WCell.RealmServer.Database;
+using WCell.RealmServer.Database.Entities;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Items;
 using WCell.RealmServer.Lang;

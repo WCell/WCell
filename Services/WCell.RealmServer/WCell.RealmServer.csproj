@@ -178,11 +178,11 @@
     <Compile Include="Database\Entities\ArenaTeamMember.cs" />
     <Compile Include="Database\Entities\AuraRecord.cs" />
     <Compile Include="Database\Entities\CharacterRecord.cs" />
-    <Compile Include="Database\CharacterRelationRecord.cs" />
+    <Compile Include="Database\Entities\CharacterRelationRecord.cs" />
     <Compile Include="Database\Entities\ArenaTeamStats.cs" />
     <Compile Include="Database\Entities\SkillRecord.cs" />
     <Compile Include="Database\Entities\SpellRecord.cs" />
-    <Compile Include="Database\EquipmentSet.cs" />
+    <Compile Include="Database\Entities\EquipmentSet.cs" />
     <Compile Include="Database\EquipmentSetItemMapping.cs" />
     <Compile Include="Database\Guild.cs" />
     <Compile Include="Database\GuildBankLogEntry.cs" />
@@ -197,6 +197,8 @@
     <Compile Include="Database\Mappings\ArenaTeamStatsMap.cs" />
     <Compile Include="Database\Mappings\CharacterRecordMap.cs" />
     <Compile Include="Database\Mappings\AuraRecordMap.cs" />
+    <Compile Include="Database\Mappings\CharacterRelationRecordMap.cs" />
+    <Compile Include="Database\Mappings\EquipmentSetMap.cs" />
     <Compile Include="Database\Mappings\GuildTabardMap.cs" />
     <Compile Include="Database\Mappings\SkillRecordMap.cs" />
     <Compile Include="Database\Mappings\SpellRecordMap.cs" />

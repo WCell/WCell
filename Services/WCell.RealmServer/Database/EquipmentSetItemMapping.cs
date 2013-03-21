@@ -5,6 +5,7 @@ using System.Text;
 using Castle.ActiveRecord;
 using WCell.Constants.Items;
 using WCell.Core;
+using WCell.RealmServer.Database.Entities;
 
 namespace WCell.RealmServer.Database
 {

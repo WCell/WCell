@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using WCell.RealmServer.Database.Entities;
 using WCell.Util.Logging;
 using WCell.Constants.Items;
 using WCell.Constants.Spells;

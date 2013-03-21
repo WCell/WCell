@@ -14,33 +14,16 @@
  *
  *************************************************************************/
 
-using Castle.ActiveRecord;
 using WCell.RealmServer.Interaction;
-using WCell.Core.Database;
 
-namespace WCell.RealmServer.Database
+namespace WCell.RealmServer.Database.Entities
 {
 	/// <summary>
 	/// Represents a character relationship entry in the database
 	/// </summary>
-	[ActiveRecord(Access = PropertyAccess.Property)]
-	public class CharacterRelationRecord : WCellRecord<CharacterRelationRecord>
+	public class CharacterRelationRecord
 	{
-		private static readonly NHIdGenerator _idGenerator =
-			new NHIdGenerator(typeof(CharacterRelationRecord), "CharacterRelationGuid");
-
-		/// <summary>
-		/// Returns the next unique Id for a new SpellRecord
-		/// </summary>
-		public static long NextId()
-		{
-			return _idGenerator.Next();
-		}
-
-		[Field("CharacterId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
 		private long _characterId;
-
-		[Field("RelatedCharacterId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
 		private long _relatedCharacterId;
 
 		public CharacterRelationRecord()
@@ -49,14 +32,12 @@ namespace WCell.RealmServer.Database
 
 		public CharacterRelationRecord(uint charId, uint relatedCharId, CharacterRelationType type)
 		{
-			State = RecordState.New;
 			CharacterId = charId;
 			RelatedCharacterId = relatedCharId;
 			RelationType = type;
-			CharacterRelationGuid = NextId();
+			CharacterRelationGuid = 0;//TODO: Work out what best to do here
 		}
 
-		[PrimaryKey(PrimaryKeyType.Assigned)]
 		public long CharacterRelationGuid
 		{
 			get;
@@ -75,14 +56,12 @@ namespace WCell.RealmServer.Database
 			set { _relatedCharacterId = value; }
 		}
 
-		[Property(NotNull = true)]
 		public CharacterRelationType RelationType
 		{
 			get;
 			set;
 		}
 
-		[Property]
 		public string Note
 		{
 			get;
