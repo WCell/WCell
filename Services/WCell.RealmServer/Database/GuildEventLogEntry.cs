@@ -67,7 +67,7 @@ namespace WCell.RealmServer.Guilds
 			set;
 		}
 
-		public GuildEventLogEntry(Guild guild, GuildEventLogEntryType type,
+		public GuildEventLogEntry(Database.Entities.Guild guild, GuildEventLogEntryType type,
 			int character1LowId, int character2LowId, int newRankId, DateTime timeStamp)
 		{
 			GuildId = guild.Id;
@@ -83,7 +83,7 @@ namespace WCell.RealmServer.Guilds
 
 		}
 
-		public static GuildEventLogEntry[] FindAll(Guild guild)
+		public static GuildEventLogEntry[] FindAll(Database.Entities.Guild guild)
 		{
 			return FindAllByProperty("m_GuildId", (int)guild.Id);
 		}

@@ -87,16 +87,16 @@ namespace WCell.RealmServer.Guilds
 		/// Maps char-id to the corresponding GuildMember object so it can be looked up when char reconnects
 		/// </summary>
 		public static readonly IDictionary<uint, GuildMember> OfflineMembers;
-		public static readonly IDictionary<uint, Guild> GuildsById;
-		public static readonly IDictionary<string, Guild> GuildsByName;
+		public static readonly IDictionary<uint, Database.Entities.Guild> GuildsById;
+		public static readonly IDictionary<string, Database.Entities.Guild> GuildsByName;
 		private static readonly ReaderWriterLockWrapper guildsLock = new ReaderWriterLockWrapper();
 		private static readonly ReaderWriterLockWrapper membersLock = new ReaderWriterLockWrapper();
 
 		#region Init
 		static GuildMgr()
 		{
-			GuildsById = new SynchronizedDictionary<uint, Guild>();
-			GuildsByName = new SynchronizedDictionary<string, Guild>(StringComparer.InvariantCultureIgnoreCase);
+			GuildsById = new SynchronizedDictionary<uint, Database.Entities.Guild>();
+			GuildsByName = new SynchronizedDictionary<string, Database.Entities.Guild>(StringComparer.InvariantCultureIgnoreCase);
 			OfflineMembers = new SynchronizedDictionary<uint, GuildMember>();
 		}
 
@@ -112,19 +112,19 @@ namespace WCell.RealmServer.Guilds
 
 		private bool Start()
 		{
-			Guild[] guilds = null;
+			Database.Entities.Guild[] guilds = null;
 
 #if DEBUG
 			try
 			{
 #endif
-				guilds = ActiveRecordBase<Guild>.FindAll();
+				guilds = ActiveRecordBase<Database.Entities.Guild>.FindAll();
 #if DEBUG
 			}
 			catch (Exception e)
 			{
 				RealmDBMgr.OnDBError(e);
-				guilds = ActiveRecordBase<Guild>.FindAll();
+				guilds = ActiveRecordBase<Database.Entities.Guild>.FindAll();
 			}
 #endif
 
@@ -140,7 +140,7 @@ namespace WCell.RealmServer.Guilds
 		}
 		#endregion
 
-		public static ImmutableList<GuildRank> CreateDefaultRanks(Guild guild)
+		public static ImmutableList<GuildRank> CreateDefaultRanks(Database.Entities.Guild guild)
 		{
 			var ranks = new ImmutableList<GuildRank>();
 			var ranksNum = 0;
@@ -228,7 +228,7 @@ namespace WCell.RealmServer.Guilds
 		/// New or loaded Guild
 		/// </summary>
 		/// <param name="guild"></param>
-		internal void RegisterGuild(Guild guild)
+		internal void RegisterGuild(Database.Entities.Guild guild)
 		{
 			using (guildsLock.EnterWriteLock())
 			{
@@ -247,7 +247,7 @@ namespace WCell.RealmServer.Guilds
 			}
 		}
 
-		internal void UnregisterGuild(Guild guild)
+		internal void UnregisterGuild(Database.Entities.Guild guild)
 		{
 			using (guildsLock.EnterWriteLock())
 			{
@@ -277,21 +277,21 @@ namespace WCell.RealmServer.Guilds
 			}
 		}
 
-		public static Guild GetGuild(uint guildId)
+		public static Database.Entities.Guild GetGuild(uint guildId)
 		{
 			using (guildsLock.EnterReadLock())
 			{
-				Guild guild;
+				Database.Entities.Guild guild;
 				GuildsById.TryGetValue(guildId, out guild);
 				return guild;
 			}
 		}
 
-		public static Guild GetGuild(string name)
+		public static Database.Entities.Guild GetGuild(string name)
 		{
 			using (guildsLock.EnterReadLock())
 			{
-				Guild guild;
+				Database.Entities.Guild guild;
 				GuildsByName.TryGetValue(name, out guild);
 				return guild;
 			}

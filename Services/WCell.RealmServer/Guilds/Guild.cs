@@ -191,7 +191,7 @@ namespace WCell.RealmServer.Guilds
 		/// </summary>
 		/// <param name="leader">leader's character record</param>
 		/// <param name="name">the name of the new character</param>
-		/// <returns>the <seealso cref="Guild"/> object</returns>
+		/// <returns>the <seealso cref="Database.Entities.Guild"/> object</returns>
 		public Guild(CharacterRecord leader, string name)
 			: this(true)
 		{
@@ -884,7 +884,7 @@ namespace WCell.RealmServer.Guilds
 		/// <param name="commandId">executed command (used for sending result)</param>
 		/// <param name="reqPrivs">required privileges</param>
 		/// <returns>The Character's guild if the character has required privileges within the guild, otherwise null</returns>
-		public static Guild CheckPrivs(Character character, GuildCommandId commandId, GuildPrivileges reqPrivs)
+		public static Database.Entities.Guild CheckPrivs(Character character, GuildCommandId commandId, GuildPrivileges reqPrivs)
 		{
 			var member = character.GuildMember;
 			if (member == null)

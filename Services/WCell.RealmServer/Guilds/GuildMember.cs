@@ -31,7 +31,7 @@ namespace WCell.RealmServer.Guilds
     public partial class GuildMember : INamed
     {
 		private Character m_chr;
-		private Guild m_Guild;
+		private Database.Entities.Guild m_Guild;
 
         #region Properties
         /// <summary>
@@ -50,7 +50,7 @@ namespace WCell.RealmServer.Guilds
             get { return _name; }
         }
 
-    	public Guild Guild
+    	public Database.Entities.Guild Guild
     	{
     		get { return m_Guild; }
     		private set
@@ -233,7 +233,7 @@ namespace WCell.RealmServer.Guilds
         #endregion
 
         #region Methods
-		internal void Init(Guild guild, Character chr)
+		internal void Init(Database.Entities.Guild guild, Character chr)
 		{
 			Guild = guild;
 			Character = chr;

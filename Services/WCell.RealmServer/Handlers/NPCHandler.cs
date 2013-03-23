@@ -20,6 +20,7 @@ using WCell.RealmServer.NPCs.Armorer;
 using WCell.RealmServer.NPCs.Trainers;
 using WCell.RealmServer.NPCs.Vendors;
 using WCell.Constants.Guilds;
+using Guild = WCell.RealmServer.Database.Entities.Guild;
 
 namespace WCell.RealmServer.Handlers
 {

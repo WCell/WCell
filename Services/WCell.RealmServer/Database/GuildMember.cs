@@ -64,7 +64,7 @@ namespace WCell.RealmServer.Guilds
 			return FindAllByProperty("m_GuildId", (int)guildId);
 		}
 
-		public GuildMember(CharacterRecord chr, Guild guild, GuildRank rank)
+		public GuildMember(CharacterRecord chr, Database.Entities.Guild guild, GuildRank rank)
 			: this()
 		{
 			var zoneId = (int)chr.Zone;

@@ -58,7 +58,7 @@ namespace WCell.RealmServer.Guilds
 			set { m_BankTabRights = value; }
 		}
 
-		public GuildRank(Guild guild, string name, GuildPrivileges privileges, int id)
+		public GuildRank(Database.Entities.Guild guild, string name, GuildPrivileges privileges, int id)
 		{
 			_id = (int)_idGenerator.Next();
 			GuildId = guild.Id;
@@ -72,7 +72,7 @@ namespace WCell.RealmServer.Guilds
 			}
 		}
 
-		public static GuildRank[] FindAll(Guild guild)
+		public static GuildRank[] FindAll(Database.Entities.Guild guild)
 		{
 			return FindAllByProperty("m_GuildId", (int)guild.Id);
 		}

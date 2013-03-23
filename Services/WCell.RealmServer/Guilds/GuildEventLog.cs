@@ -16,10 +16,10 @@ namespace WCell.RealmServer.Guilds
 	{
 		protected const int MAX_ENTRIES_COUNT = 100;
 
-		protected readonly Guild m_guild;
+		protected readonly Database.Entities.Guild m_guild;
 		protected readonly StaticCircularList<GuildEventLogEntry> entries;
 
-		internal GuildEventLog(Guild guild, bool isNew)
+		internal GuildEventLog(Database.Entities.Guild guild, bool isNew)
 			: this(guild)
 		{
 			if (!isNew)
@@ -32,7 +32,7 @@ namespace WCell.RealmServer.Guilds
 			}
 		}
 
-		internal GuildEventLog(Guild guild)
+		internal GuildEventLog(Database.Entities.Guild guild)
 		{
 			m_guild = guild;
 			entries = new StaticCircularList<GuildEventLogEntry>(MAX_ENTRIES_COUNT, OnEntryDeleted);

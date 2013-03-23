@@ -64,6 +64,7 @@ using WCell.RealmServer.Trade;
 using WCell.Util.Graphics;
 using WCell.RealmServer.Achievements;
 using WCell.RealmServer.Titles;
+using Guild = WCell.RealmServer.Database.Entities.Guild;
 
 namespace WCell.RealmServer.Entities
 {

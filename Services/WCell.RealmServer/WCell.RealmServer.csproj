@@ -184,7 +184,7 @@
     <Compile Include="Database\Entities\SpellRecord.cs" />
     <Compile Include="Database\Entities\EquipmentSet.cs" />
     <Compile Include="Database\EquipmentSetItemMapping.cs" />
-    <Compile Include="Database\Guild.cs" />
+    <Compile Include="Database\Entities\Guild.cs" />
     <Compile Include="Database\GuildBankLogEntry.cs" />
     <Compile Include="Database\GuildBankTab.cs" />
     <Compile Include="Database\GuildBankTabItemMapping.cs" />
@@ -199,6 +199,7 @@
     <Compile Include="Database\Mappings\AuraRecordMap.cs" />
     <Compile Include="Database\Mappings\CharacterRelationRecordMap.cs" />
     <Compile Include="Database\Mappings\EquipmentSetMap.cs" />
+    <Compile Include="Database\Mappings\GuildMap.cs" />
     <Compile Include="Database\Mappings\GuildTabardMap.cs" />
     <Compile Include="Database\Mappings\SkillRecordMap.cs" />
     <Compile Include="Database\Mappings\SpellRecordMap.cs" />

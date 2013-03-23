@@ -28,7 +28,7 @@ namespace WCell.RealmServer.Guilds
 		/// <summary>
 		/// 
 		/// </summary>
-		internal GuildBank(Guild guild, bool isNew)
+		internal GuildBank(Database.Entities.Guild guild, bool isNew)
 		{
 			Guild = guild;
 			BankLog = new GuildBankLog(this);
@@ -52,7 +52,7 @@ namespace WCell.RealmServer.Guilds
 			}
 		}
 
-		public Guild Guild
+		public Database.Entities.Guild Guild
 		{
 			get;
 			private set;

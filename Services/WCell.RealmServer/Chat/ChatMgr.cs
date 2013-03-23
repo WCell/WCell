@@ -31,6 +31,7 @@ using WCell.RealmServer.Lang;
 using WCell.RealmServer.Network;
 using WCell.Util;
 using WCell.RealmServer.Groups;
+using Guild = WCell.RealmServer.Database.Entities.Guild;
 
 namespace WCell.RealmServer.Chat
 {
