@@ -13,7 +13,10 @@ namespace WCell.RealmServer.Database.Entities
 		public DateTime Created;
 		
 		private uint _leaderLowId;
-		public uint LeaderLowId {get { return _leaderLowId; }};
+		public uint LeaderLowId
+		{
+			get { return _leaderLowId; }
+		}
 
 		public GuildTabard Tabard;
 		public int PurchasedBankTabCount;
