@@ -15,21 +15,10 @@
  *************************************************************************/
 
 using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using WCell.Core;
-using WCell.Core.DBC;
 using WCell.RealmServer.Commands;
-using WCell.Core.Database;
-using System.IO;
 using WCell.Util.Logging;
 using System.Threading;
-using WCell.RealmServer.Entities;
 using WCell.Util.Commands;
-using WCell.Util;
-using System.Diagnostics;
-using System.Text.RegularExpressions;
 using WCell.Util.Strings;
 
 using RealmServ = WCell.RealmServer.RealmServer;
@@ -56,7 +45,7 @@ namespace WCell.RealmServerConsole
 
 		internal static void Run()
 		{
-			DatabaseUtil.ReleaseConsole();
+			//DatabaseUtil.ReleaseConsole(); TODO: Work out why the database util would ever have such a ridiculous console binding..
 			var server = RealmServ.Instance;
 
 			if (!server.IsRunning)
@@ -80,9 +69,9 @@ namespace WCell.RealmServerConsole
 					try
 					{
 						while (!Console.KeyAvailable && RealmServ.Instance.IsRunning)
-                        {
-                        	Thread.Sleep(100);
-                        }
+						{
+							Thread.Sleep(100);
+						}
 						if (!RealmServ.Instance.IsRunning)
 						{
 							break;
@@ -100,45 +89,45 @@ namespace WCell.RealmServerConsole
 					}
 					try
 					{
-						if (DatabaseUtil.IsWaiting)
+						/*if (DatabaseUtil.IsWaiting) TODO: More odd database blocking...
 						{
 							DatabaseUtil.Input.Write(line);
 						}
 						else
+						{*/
+						var text = new StringStream(line);
+						DefaultTrigger.Text = text;
+						if (!DefaultTrigger.InitTrigger())
 						{
-							var text = new StringStream(line);
-							DefaultTrigger.Text = text;
-							if (!DefaultTrigger.InitTrigger())
-							{
-								continue;
-							}
+							continue;
+						}
 
-							var isSelect = text.ConsumeNext(RealmCommandHandler.SelectCommandPrefix);
-							if (isSelect)
+						var isSelect = text.ConsumeNext(RealmCommandHandler.SelectCommandPrefix);
+						if (isSelect)
+						{
+							var cmd = RealmCommandHandler.Instance.SelectCommand(text);
+							if (cmd != null)
 							{
-								var cmd = RealmCommandHandler.Instance.SelectCommand(text);
-								if (cmd != null)
-								{
-									Console.WriteLine(@"Selected: {0}", cmd);
-									DefaultTrigger.SelectedCommand = cmd;
-								}
-								else if (DefaultTrigger.SelectedCommand != null)
-								{
-									Console.WriteLine(@"Cleared Command selection.");
-									DefaultTrigger.SelectedCommand = null;
-								}
+								Console.WriteLine(@"Selected: {0}", cmd);
+								DefaultTrigger.SelectedCommand = cmd;
 							}
-							else
+							else if (DefaultTrigger.SelectedCommand != null)
 							{
-								bool dbl;
-								RealmCommandHandler.ConsumeCommandPrefix(text, out dbl);
-								DefaultTrigger.Args.Double = dbl;
-
-								RealmCommandHandler.Instance.ExecuteInContext(DefaultTrigger,
-								                                              OnExecuted,
-								                                              OnFail);
+								Console.WriteLine(@"Cleared Command selection.");
+								DefaultTrigger.SelectedCommand = null;
 							}
 						}
+						else
+						{
+							bool dbl;
+							RealmCommandHandler.ConsumeCommandPrefix(text, out dbl);
+							DefaultTrigger.Args.Double = dbl;
+
+							RealmCommandHandler.Instance.ExecuteInContext(DefaultTrigger,
+																		  OnExecuted,
+																		  OnFail);
+						}
+						//}
 					}
 					catch (Exception e)
 					{

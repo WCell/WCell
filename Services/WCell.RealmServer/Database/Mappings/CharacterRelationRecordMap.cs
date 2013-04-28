@@ -7,7 +7,7 @@ using WCell.RealmServer.Database.Entities;
 
 namespace WCell.RealmServer.Database.Mappings
 {
-	class CharacterRelationRecordMap : ClassMap<CharacterRelationRecord>
+	public class CharacterRelationRecordMap : ClassMap<CharacterRelationRecord>
 	{
 		public CharacterRelationRecordMap()
 		{

@@ -1,45 +1,36 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using Castle.ActiveRecord;
 using NHibernate.Criterion;
-using WCell.Constants;
 using WCell.Constants.Guilds;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
+using WCell.RealmServer.Guilds;
 
-namespace WCell.RealmServer.Guilds
+namespace WCell.RealmServer.Database.Entities
 {
-	[ActiveRecord("GuildBankLogEntries", Access = PropertyAccess.Property)]
-	public class GuildBankLogEntry : ActiveRecordBase<GuildBankLogEntry>
+	public class GuildBankLogEntry
 	{
-		private static readonly Order CreatedOrder = new Order("Created", false);
+		//private static readonly Order CreatedOrder = new Order("Created", false);
 
-		public static GuildBankLogEntry[] LoadAll(uint guildId)
+		public static IEnumerable<GuildBankLogEntry> LoadAll(uint guildId)
 		{
-			return FindAll(CreatedOrder, Restrictions.Eq("GuildId", (int)guildId));
+			return RealmWorldDBMgr.DatabaseProvider.FindAll<GuildBankLogEntry>(x => x.GuildId == guildId).OrderBy(entry => entry.Created); //TODO: Check this is going to do things as we want
 		}
-
-		public GuildBankLogEntry()
+		
+		public GuildBankLogEntry(int guildId)
 		{
-
-		}
-
-		public GuildBankLogEntry(uint guildId)
-		{
-			GuildId = (int) guildId;
+			GuildId = guildId;
 		}
 
 		//[PrimaryKey(PrimaryKeyType.Assigned)]
-		[Property]
 		public int GuildId
 		{
 			get;
 			set;
 		}
 
-		[PrimaryKey(PrimaryKeyType.GuidComb)]
+		//[PrimaryKey(PrimaryKeyType.GuidComb)]
 		public long BankLogEntryRecordId
 		{
 			get;
@@ -52,37 +43,37 @@ namespace WCell.RealmServer.Guilds
 			set;
 		}
 
-		[Field]
+		//[Field]
 		private int bankLogEntryType;
 
-		[Field]
+		//[Field]
 		private int actorEntityLowId;
 
-		[Property]
+		//[Property]
 		public int ItemEntryId
 		{
 			get;
 			set;
 		}
 
-		[Property]
+		//[Property]
 		public int ItemStackCount
 		{
 			get;
 			set;
 		}
 
-		[Property]
+		//[Property]
 		public int Money
 		{
 			get;
 			set;
 		}
 
-		[Field]
+		//[Field]
 		public int DestinationTabId;
 
-		[Property]
+		//[Property]
 		public DateTime Created
 		{
 			get;

@@ -7,7 +7,7 @@ using WCell.RealmServer.Database.Entities;
 
 namespace WCell.RealmServer.Database.Mappings
 {
-    internal class SkillRecordMap : ClassMap<SkillRecord>
+    public class SkillRecordMap : ClassMap<SkillRecord>
     {
         public SkillRecordMap()
         {

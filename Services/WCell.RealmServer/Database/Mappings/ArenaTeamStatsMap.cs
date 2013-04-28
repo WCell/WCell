@@ -3,7 +3,7 @@ using WCell.RealmServer.Battlegrounds.Arenas;
 
 namespace WCell.RealmServer.Database.Mappings
 {
-    class ArenaTeamStatsMap : ClassMap<ArenaTeamStats>
+    public class ArenaTeamStatsMap : ClassMap<ArenaTeamStats>
     {
         public ArenaTeamStatsMap()
         {

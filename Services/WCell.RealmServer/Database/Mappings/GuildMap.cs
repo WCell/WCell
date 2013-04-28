@@ -8,7 +8,7 @@ using WCell.RealmServer.Database.Entities;
 
 namespace WCell.RealmServer.Database.Mappings
 {
-	class GuildMap : ClassMap<Guild>
+	public class GuildMap : ClassMap<Guild>
 	{
 		public GuildMap()
 		{

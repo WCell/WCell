@@ -3,7 +3,7 @@ using WCell.RealmServer.Database.Entities;
 
 namespace WCell.RealmServer.Database.Mappings
 {
-    class AuraRecordMap : ClassMap<AuraRecord>
+    public class AuraRecordMap : ClassMap<AuraRecord>
     {
         public AuraRecordMap()
         {

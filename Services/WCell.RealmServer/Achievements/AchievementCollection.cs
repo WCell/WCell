@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using WCell.RealmServer.Database.Entities;
 using WCell.Util.Logging;
 using WCell.Constants;
 using WCell.Constants.Achievements;
@@ -22,7 +23,7 @@ namespace WCell.RealmServer.Achievements
 	{
 		private static Logger log = LogManager.GetCurrentClassLogger();
 
-		internal Dictionary<uint, AchievementRecord> m_completedAchievements = new Dictionary<uint, AchievementRecord>();
+		internal Dictionary<int, AchievementRecord> m_completedAchievements = new Dictionary<int, AchievementRecord>();
 		internal Dictionary<uint, AchievementProgressRecord> m_progressRecords = new Dictionary<uint, AchievementProgressRecord>();
 		internal Character m_owner;
 
@@ -32,42 +33,42 @@ namespace WCell.RealmServer.Achievements
 		public static bool DisableStaffAchievements = true;
 #endif
 
-	    public static readonly uint[] ClassSpecificAchievementId = new uint[(int)ClassId.End];
-        public static readonly uint[] RaceSpecificAchievementId = new uint[(int)RaceId.End];
+		public static readonly uint[] ClassSpecificAchievementId = new uint[(int)ClassId.End];
+		public static readonly uint[] RaceSpecificAchievementId = new uint[(int)RaceId.End];
 
 
 		public AchievementCollection(Character chr)
 		{
 			m_owner = chr;
-			ClassSpecificAchievementId[(int) ClassId.PetTalents] = 0;
-			ClassSpecificAchievementId[(int) ClassId.Warrior] = 459;
-			ClassSpecificAchievementId[(int) ClassId.Paladin] = 465;
-			ClassSpecificAchievementId[(int) ClassId.Hunter] = 462;
-			ClassSpecificAchievementId[(int) ClassId.Rogue] = 458;
-			ClassSpecificAchievementId[(int) ClassId.Priest] = 464;
-			ClassSpecificAchievementId[(int) ClassId.DeathKnight] = 461;
-			ClassSpecificAchievementId[(int) ClassId.Shaman] = 467;
-			ClassSpecificAchievementId[(int) ClassId.Mage] = 460;
-			ClassSpecificAchievementId[(int) ClassId.Warlock] = 463;
+			ClassSpecificAchievementId[(int)ClassId.PetTalents] = 0;
+			ClassSpecificAchievementId[(int)ClassId.Warrior] = 459;
+			ClassSpecificAchievementId[(int)ClassId.Paladin] = 465;
+			ClassSpecificAchievementId[(int)ClassId.Hunter] = 462;
+			ClassSpecificAchievementId[(int)ClassId.Rogue] = 458;
+			ClassSpecificAchievementId[(int)ClassId.Priest] = 464;
+			ClassSpecificAchievementId[(int)ClassId.DeathKnight] = 461;
+			ClassSpecificAchievementId[(int)ClassId.Shaman] = 467;
+			ClassSpecificAchievementId[(int)ClassId.Mage] = 460;
+			ClassSpecificAchievementId[(int)ClassId.Warlock] = 463;
 			//??	= 10
-			ClassSpecificAchievementId[(int) ClassId.Druid] = 466;
+			ClassSpecificAchievementId[(int)ClassId.Druid] = 466;
 
-			RaceSpecificAchievementId[(int) RaceId.None] = 0;
-			RaceSpecificAchievementId[(int) RaceId.Human] = 1408;
-			RaceSpecificAchievementId[(int) RaceId.Orc] = 1410;
-			RaceSpecificAchievementId[(int) RaceId.Dwarf] = 1407;
-			RaceSpecificAchievementId[(int) RaceId.NightElf] = 1409;
-			RaceSpecificAchievementId[(int) RaceId.Undead] = 1413;
-			RaceSpecificAchievementId[(int) RaceId.Tauren] = 1411;
-			RaceSpecificAchievementId[(int) RaceId.Gnome] = 1404;
-			RaceSpecificAchievementId[(int) RaceId.Troll] = 1412;
-			RaceSpecificAchievementId[(int) RaceId.Goblin] = 0;
-			RaceSpecificAchievementId[(int) RaceId.BloodElf] = 1405;
-			RaceSpecificAchievementId[(int) RaceId.Draenei] = 1406;
-			RaceSpecificAchievementId[(int) RaceId.FelOrc] = 0;
-			RaceSpecificAchievementId[(int) RaceId.Naga] = 0;
-			RaceSpecificAchievementId[(int) RaceId.Broken] = 0;
-			RaceSpecificAchievementId[(int) RaceId.Skeleton] = 0;
+			RaceSpecificAchievementId[(int)RaceId.None] = 0;
+			RaceSpecificAchievementId[(int)RaceId.Human] = 1408;
+			RaceSpecificAchievementId[(int)RaceId.Orc] = 1410;
+			RaceSpecificAchievementId[(int)RaceId.Dwarf] = 1407;
+			RaceSpecificAchievementId[(int)RaceId.NightElf] = 1409;
+			RaceSpecificAchievementId[(int)RaceId.Undead] = 1413;
+			RaceSpecificAchievementId[(int)RaceId.Tauren] = 1411;
+			RaceSpecificAchievementId[(int)RaceId.Gnome] = 1404;
+			RaceSpecificAchievementId[(int)RaceId.Troll] = 1412;
+			RaceSpecificAchievementId[(int)RaceId.Goblin] = 0;
+			RaceSpecificAchievementId[(int)RaceId.BloodElf] = 1405;
+			RaceSpecificAchievementId[(int)RaceId.Draenei] = 1406;
+			RaceSpecificAchievementId[(int)RaceId.FelOrc] = 0;
+			RaceSpecificAchievementId[(int)RaceId.Naga] = 0;
+			RaceSpecificAchievementId[(int)RaceId.Broken] = 0;
+			RaceSpecificAchievementId[(int)RaceId.Skeleton] = 0;
 		}
 
 		#region Props
@@ -77,7 +78,7 @@ namespace WCell.RealmServer.Achievements
 		/// </summary>
 		/// <param name="achievementEntry"></param>
 		/// <returns></returns>
-		public bool HasCompleted(uint achievementEntry)
+		public bool HasCompleted(int achievementEntry)
 		{
 			return m_completedAchievements.ContainsKey(achievementEntry);
 		}
@@ -121,10 +122,10 @@ namespace WCell.RealmServer.Achievements
 			if (achievementEntry.Flags.HasFlag(AchievementFlags.Counter))
 				return false;
 
-            // The method will return false only if the achievement has RealmFirst flags
-            // and already achieved by someone.
-            if (!AchievementMgr.IsRealmFirst(achievementEntry.ID))
-                return false;
+			// The method will return false only if the achievement has RealmFirst flags
+			// and already achieved by someone.
+			if (!AchievementMgr.IsRealmFirst(achievementEntry.ID))
+				return false;
 
 			uint achievementForTestId = (achievementEntry.RefAchievement != 0)
 														? achievementEntry.RefAchievement
@@ -191,7 +192,7 @@ namespace WCell.RealmServer.Achievements
 		/// <param name="achievementRecord"></param>
 		public void AddAchievement(AchievementRecord achievementRecord)
 		{
-			m_completedAchievements.Add(achievementRecord.AchievementEntryId, achievementRecord);
+			m_completedAchievements.Add(achievementRecord.AchievementId, achievementRecord);
 		}
 
 		/// <summary>
@@ -200,9 +201,9 @@ namespace WCell.RealmServer.Achievements
 		/// <param name="achievementEntry"></param>
 		public void EarnAchievement(uint achievementEntryId)
 		{
-		    var achievementEntry = AchievementMgr.GetAchievementEntry(achievementEntryId);
-            if(achievementEntry!= null)
-                EarnAchievement(achievementEntry);
+			var achievementEntry = AchievementMgr.GetAchievementEntry(achievementEntryId);
+			if (achievementEntry != null)
+				EarnAchievement(achievementEntry);
 		}
 
 		/// <summary>
@@ -215,16 +216,16 @@ namespace WCell.RealmServer.Achievements
 			CheckPossibleAchievementUpdates(AchievementCriteriaType.CompleteAchievement, (uint)achievement.ID, 1);
 			RemoveAchievementProgress(achievement);
 
-            foreach (var achievementReward in achievement.Rewards)
-                achievementReward.GiveReward(Owner);
+			foreach (var achievementReward in achievement.Rewards)
+				achievementReward.GiveReward(Owner);
 
-            if (m_owner.IsInGuild)
-                m_owner.Guild.Broadcast(AchievementHandler.CreateAchievementEarnedToGuild(achievement.ID, m_owner));
+			if (m_owner.IsInGuild)
+				m_owner.Guild.Broadcast(AchievementHandler.CreateAchievementEarnedToGuild(achievement.ID, m_owner));
 
-            if (achievement.IsRealmFirstType())
-                AchievementHandler.SendServerFirstAchievement(achievement.ID, m_owner);
+			if (achievement.IsRealmFirstType())
+				AchievementHandler.SendServerFirstAchievement(achievement.ID, m_owner);
 
-		    AchievementHandler.SendAchievementEarned(achievement.ID, m_owner);
+			AchievementHandler.SendAchievementEarned(achievement.ID, m_owner);
 		}
 
 		/// <summary>
@@ -328,7 +329,7 @@ namespace WCell.RealmServer.Achievements
 		/// <returns></returns>
 		private bool IsAchieveable(AchievementCriteriaEntry achievementCriteriaEntry)
 		{
-			if(DisableStaffAchievements)
+			if (DisableStaffAchievements)
 			{
 				if (Owner.Role.IsStaff)
 					return false;
@@ -367,8 +368,8 @@ namespace WCell.RealmServer.Achievements
 				{
 					if (IsAchieveable(entry))
 					{
-                        if(entry.RequirementSet == null || entry.RequirementSet.Meets(Owner, involved, value1))
-						    entry.OnUpdate(this, value1, value2, involved);
+						if (entry.RequirementSet == null || entry.RequirementSet.Meets(Owner, involved, value1))
+							entry.OnUpdate(this, value1, value2, involved);
 					}
 				}
 			}
@@ -418,7 +419,7 @@ namespace WCell.RealmServer.Achievements
 				achievementProgressRecord.StartOrUpdateTime = now;
 			}
 
-		    AchievementHandler.SendAchievmentStatus(achievementProgressRecord, Owner);
+			AchievementHandler.SendAchievmentStatus(achievementProgressRecord, Owner);
 
 
 

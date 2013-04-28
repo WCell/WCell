@@ -1023,7 +1023,7 @@ namespace WCell.RealmServer.Database.Entities
 				RelationMgr.Instance.RemoveRelations(charId);
 				InstanceMgr.RemoveLog(charId);
 				GroupMgr.Instance.RemoveOfflineCharacter(charId);
-                RealmWorldDBMgr.DatabaseProvider.Delete<AchievementRecord>(x => x.CharacterGuid == charId);
+                RealmWorldDBMgr.DatabaseProvider.Delete<AchievementRecord>(x => x.CharacterId == charId);
                 RealmWorldDBMgr.DatabaseProvider.Delete<AchievementProgressRecord>(x => x.CharacterGuid == charId);
 
 				return true;

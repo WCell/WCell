@@ -1,17 +1,17 @@
 using System;
 using WCell.RealmServer.Guilds;
 
-namespace WCell.RealmServer.Database.Entities
+namespace WCell.RealmServer.Guilds
 {
-	public class Guild
+	public partial class Guild
 	{
 		//TODO: Decide which fields should exist at all, or made private
-		public long Id;
+		public int Id;
 		public string Name;
 		public string MOTD;
 		public string Info;
 		public DateTime Created;
-		
+
 		private uint _leaderLowId;
 		public uint LeaderLowId
 		{

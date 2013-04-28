@@ -5,6 +5,7 @@ using WCell.Core;
 using WCell.Core.DBC;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Content;
+using WCell.RealmServer.Database.Entities;
 
 namespace WCell.RealmServer.Achievements
 {

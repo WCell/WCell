@@ -5,7 +5,7 @@ using WCell.RealmServer.Database.Entities;
 
 namespace WCell.RealmServer.Database.Mappings
 {
-    internal class CharacterRecordMap : ClassMap<CharacterRecord>
+    public class CharacterRecordMap : ClassMap<CharacterRecord>
     {
         public CharacterRecordMap()
         {

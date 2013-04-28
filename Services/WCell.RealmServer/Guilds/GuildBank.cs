@@ -23,7 +23,7 @@ namespace WCell.RealmServer.Guilds
             50000000
         };
 
-		private GuildBankTab[] bankTabs;
+		private Database.Entities.GuildBankTab[] bankTabs;
 
 		/// <summary>
 		/// 
@@ -34,8 +34,8 @@ namespace WCell.RealmServer.Guilds
 			BankLog = new GuildBankLog(this);
 			if (isNew)
 			{
-				bankTabs = new [] {
-					new GuildBankTab(this)
+				bankTabs = new[] {
+					new Database.Entities.GuildBankTab(this)
 					{
 						BankSlot = 0,
 						Icon = "",
@@ -47,7 +47,7 @@ namespace WCell.RealmServer.Guilds
 			else
 			{
 				// load an existing guild bank
-				bankTabs = GuildBankTab.FindAllByProperty("_guildId", (int)guild.Id);
+				bankTabs = Database.Entities.GuildBankTab.FindAllByProperty("_guildId", (int)guild.Id);
 				BankLog.LoadLogs();
 			}
 		}
@@ -64,7 +64,7 @@ namespace WCell.RealmServer.Guilds
 			private set;
 		}
 
-		public GuildBankTab this[int tabId]
+		public Database.Entities.GuildBankTab this[int tabId]
 		{
 			get
 			{
@@ -332,7 +332,7 @@ namespace WCell.RealmServer.Guilds
 			{
 				// unoccupied slot
 				var newBagAmount = (int)amount;
-                var newBankAmount = fromItem.Amount - (int)amount;
+				var newBankAmount = fromItem.Amount - (int)amount;
 				var msg = bag.TryAdd(fromItem.Template, ref newBagAmount, slot);
 				if (msg != InventoryError.OK)
 				{
@@ -340,16 +340,16 @@ namespace WCell.RealmServer.Guilds
 					return;
 				}
 
-                // Does this slot have any of this item left in the bank?
-                if (newBankAmount <= 0)
-                {
-                    //None left in this slot in the bank, get rid of it
-                    fromBankTab[fromTabSlot] = null;
-                }
-                else
-                {
-                    fromItem.Amount -= amount;
-                }
+				// Does this slot have any of this item left in the bank?
+				if (newBankAmount <= 0)
+				{
+					//None left in this slot in the bank, get rid of it
+					fromBankTab[fromTabSlot] = null;
+				}
+				else
+				{
+					fromItem.Amount -= amount;
+				}
 			}
 			else
 			{
@@ -365,15 +365,15 @@ namespace WCell.RealmServer.Guilds
 						return;
 					}
 
-                    // Decrement the stack count of the item in the bank
-                    fromItem.Amount -= amtAdded;
+					// Decrement the stack count of the item in the bank
+					fromItem.Amount -= amtAdded;
 
-                    // Does this slot have any of this item left in the bank?
-                    if (fromItem.Amount <= 0)
-                    {
-                        //None left in this slot in the bank, get rid of it
-                        fromBankTab[fromTabSlot] = null;
-                    }
+					// Does this slot have any of this item left in the bank?
+					if (fromItem.Amount <= 0)
+					{
+						//None left in this slot in the bank, get rid of it
+						fromBankTab[fromTabSlot] = null;
+					}
 
 				}
 				else
@@ -408,15 +408,15 @@ namespace WCell.RealmServer.Guilds
 						return;
 					}
 
-                    // Decrement the stack count of the item in the bank
-                    fromItem.Amount -= amtAdded;
+					// Decrement the stack count of the item in the bank
+					fromItem.Amount -= amtAdded;
 
-                    // Does this slot have any of this item left in the bank?
-                    if (fromItem.Amount <= 0)
-                    {
-                        //None left in this slot in the bank, get rid of it
-                        fromBankTab[fromTabSlot] = null;
-                    }
+					// Does this slot have any of this item left in the bank?
+					if (fromItem.Amount <= 0)
+					{
+						//None left in this slot in the bank, get rid of it
+						fromBankTab[fromTabSlot] = null;
+					}
 
 					// add the Item from the character's bag to the bank.
 					fromBankTab[fromTabSlot] = item.Record;
@@ -520,64 +520,64 @@ namespace WCell.RealmServer.Guilds
 			if (toItem == null)
 			{
 				// unoccupied slot
-                bagItem = bagItem.Amount > amount ? bagItem.Split(amount) : bag.Remove(slot, true);
+				bagItem = bagItem.Amount > amount ? bagItem.Split(amount) : bag.Remove(slot, true);
 
 				toBankTab[toTabSlot] = bagItem.Record;
-                BankLog.LogEvent(GuildBankLogEntryType.DepositItem, chr, bagItem.Record, toBankTab);
-                Guild.SendGuildBankTabContentUpdateToAll(toBankTabId, toTabSlot);
-                return;
+				BankLog.LogEvent(GuildBankLogEntryType.DepositItem, chr, bagItem.Record, toBankTab);
+				Guild.SendGuildBankTabContentUpdateToAll(toBankTabId, toTabSlot);
+				return;
 			}
 
-				// occupied slot
-            if (bagItem.EntryId == toItem.EntryId)
-            {
-                // Same Item, try to merge the stacks
-                // If the whole stack is merged, the bagItem.Amount goes to zero and the bagItem is destroyed
-                // If a partial stack is merged, the bagItem.Amount is automatically updated.
-                var retItem = toBankTab.StoreItemInSlot(bagItem.Record, amount, toTabSlot, true);
+			// occupied slot
+			if (bagItem.EntryId == toItem.EntryId)
+			{
+				// Same Item, try to merge the stacks
+				// If the whole stack is merged, the bagItem.Amount goes to zero and the bagItem is destroyed
+				// If a partial stack is merged, the bagItem.Amount is automatically updated.
+				var retItem = toBankTab.StoreItemInSlot(bagItem.Record, amount, toTabSlot, true);
 				// TODO: What about the returned Item?
-            }
-            else
-            {
-                // Different Item
-                if (amount != bagItem.Amount)
-                {
-                    // Can't Swap a partial stack.
-                    ItemHandler.SendInventoryError(chr, InventoryError.COULDNT_SPLIT_ITEMS);
-                    return;
-                }
+			}
+			else
+			{
+				// Different Item
+				if (amount != bagItem.Amount)
+				{
+					// Can't Swap a partial stack.
+					ItemHandler.SendInventoryError(chr, InventoryError.COULDNT_SPLIT_ITEMS);
+					return;
+				}
 
-                // This necessitates a stack swap, check that the character has withdrawl permissions for the GuildBank
-                // Check that the character can deposit to the source BankTab
-                if (!(bankTabRights[toBankTabId].WithdrawlAllowance > 0))
-                {
-                    return;
-                }
+				// This necessitates a stack swap, check that the character has withdrawl permissions for the GuildBank
+				// Check that the character can deposit to the source BankTab
+				if (!(bankTabRights[toBankTabId].WithdrawlAllowance > 0))
+				{
+					return;
+				}
 
-                // Take the Item from the player's bag
-                var item = bagItem.Amount > amount ? bagItem.Split(amount) : bag.Remove(slot, true);
+				// Take the Item from the player's bag
+				var item = bagItem.Amount > amount ? bagItem.Split(amount) : bag.Remove(slot, true);
 
-                // Take the bank Item and add it to the character.
-                var amtAdded = (int)amount;
-                var msg = bag.TryAdd(toItem.Template, ref amtAdded, slot);
-                if (msg != InventoryError.OK)
-                {
-                    // put the old item back.
-                    bag.AddUnchecked(slot, item, true);
+				// Take the bank Item and add it to the character.
+				var amtAdded = (int)amount;
+				var msg = bag.TryAdd(toItem.Template, ref amtAdded, slot);
+				if (msg != InventoryError.OK)
+				{
+					// put the old item back.
+					bag.AddUnchecked(slot, item, true);
 
-                    ItemHandler.SendInventoryError(chr, msg);
-                    return;
-                }
+					ItemHandler.SendInventoryError(chr, msg);
+					return;
+				}
 
-                // add the Item from the character's bag to the bank.
-                toBankTab[toTabSlot] = item.Record;
+				// add the Item from the character's bag to the bank.
+				toBankTab[toTabSlot] = item.Record;
 
-                BankLog.LogEvent(GuildBankLogEntryType.WithdrawItem, chr, toItem, amount, toBankTab);
-                BankLog.LogEvent(GuildBankLogEntryType.DepositItem, chr, item.Record, toBankTab);
+				BankLog.LogEvent(GuildBankLogEntryType.WithdrawItem, chr, toItem, amount, toBankTab);
+				BankLog.LogEvent(GuildBankLogEntryType.DepositItem, chr, item.Record, toBankTab);
 
-                Guild.SendGuildBankTabContentUpdateToAll(toBankTabId, toTabSlot);
-                return;
-            }
+				Guild.SendGuildBankTabContentUpdateToAll(toBankTabId, toTabSlot);
+				return;
+			}
 
 			BankLog.LogEvent(GuildBankLogEntryType.WithdrawItem, chr, toItem, amount, toBankTab);
 			Guild.SendGuildBankTabContentUpdateToAll(toBankTabId, toTabSlot);
@@ -602,9 +602,9 @@ namespace WCell.RealmServer.Guilds
 
 			if (AddNewBankTab(tabId))
 			{
-			    rank.BankTabRights[tabId].Privileges = GuildBankTabPrivileges.Full;
-			    rank.BankTabRights[tabId].WithdrawlAllowance = 0xFFFFFFFF;
-                GuildHandler.SendGuildRosterToGuildMembers(Guild);
+				rank.BankTabRights[tabId].Privileges = GuildBankTabPrivileges.Full;
+				rank.BankTabRights[tabId].WithdrawlAllowance = 0xFFFFFFFF;
+				GuildHandler.SendGuildRosterToGuildMembers(Guild);
 				GuildHandler.SendGuildBankTabNames(chr, bank);
 			}
 		}
@@ -633,8 +633,8 @@ namespace WCell.RealmServer.Guilds
 
 		public void GetBankTabText(Character chr, byte tabId)
 		{
-            if (tabId < 0 || tabId >= GuildMgr.MAX_BANK_TABS) return;
-            if (tabId > Guild.PurchasedBankTabCount) return;
+			if (tabId < 0 || tabId >= GuildMgr.MAX_BANK_TABS) return;
+			if (tabId > Guild.PurchasedBankTabCount) return;
 
 			var tab = this[tabId];
 			if (tab == null) return;
@@ -694,13 +694,13 @@ namespace WCell.RealmServer.Guilds
 			if (bankTab != null) return false;
 
 			Guild.PurchasedBankTabCount++;
-			var tab = new GuildBankTab
+			var tab = new Database.Entities.GuildBankTab
 			{
 				Bank = this,
 				BankSlot = tabId,
-                Icon = "",
-                Name = "Slot " + (tabId + 1),
-                Text = ""
+				Icon = "",
+				Name = "Slot " + (tabId + 1),
+				Text = ""
 			};
 			ArrayUtil.AddOnlyOne(ref bankTabs, tab);
 

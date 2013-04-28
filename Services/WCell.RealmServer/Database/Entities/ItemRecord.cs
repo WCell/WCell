@@ -1,23 +1,12 @@
 using System;
-using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
 using System.Threading;
-using Castle.ActiveRecord;
-using Castle.ActiveRecord.Queries;
 using NHibernate.Criterion;
 using WCell.Util.Logging;
-using WCell.Constants;
 using WCell.Constants.Items;
-using WCell.Constants.Updates;
 using WCell.Core;
-using WCell.Core.Database;
-using WCell.Core.Initialization;
-using WCell.RealmServer.Entities;
 using WCell.RealmServer.Items;
 using WCell.RealmServer.Items.Enchanting;
-using WCell.Util;
-using WCell.RealmServer.Misc;
 
 namespace WCell.RealmServer.Database
 {
@@ -25,21 +14,52 @@ namespace WCell.RealmServer.Database
 	/// The DB-representation of an Item
 	/// TODO: Charges
 	/// </summary>
-	[ActiveRecord(Access = PropertyAccess.Property)]
-	public class ItemRecord : WCellRecord<ItemRecord>
+	public class ItemRecord
 	{
-		private static readonly Logger log = LogManager.GetCurrentClassLogger();
+		private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
 		static readonly Order ContOrder = new Order("ContainerSlots", false);
-		private static readonly NHIdGenerator _idGenerator =
-			new NHIdGenerator(typeof(ItemRecord), "Guid");
+
+		private static bool _idGeneratorInitialised;
+		private static long _highestId;
+
+		private static void Init()
+		{
+			long highestId;
+			try
+			{
+				highestId = RealmWorldDBMgr.DatabaseProvider.Session.QueryOver<ItemRecord>().Select(Projections.ProjectionList().Add(Projections.Max<ItemRecord>(x => x.EntityLowId))).List<long>().First();
+			}
+			catch (Exception e)
+			{
+				RealmWorldDBMgr.OnDBError(e);
+				highestId = RealmWorldDBMgr.DatabaseProvider.Session.QueryOver<ItemRecord>().Select(Projections.ProjectionList().Add(Projections.Max<ItemRecord>(x => x.EntityLowId))).List<long>().First();
+			}
+
+			_highestId = (long)Convert.ChangeType(highestId, typeof(long));
+
+			_idGeneratorInitialised = true;
+		}
 
 		/// <summary>
 		/// Returns the next unique Id for a new Item
 		/// </summary>
 		public static long NextId()
 		{
-			return _idGenerator.Next();
+			if (!_idGeneratorInitialised)
+				Init();
+
+			return Interlocked.Increment(ref _highestId);
+		}
+
+		public static long LastId
+		{
+			get
+			{
+				if (!_idGeneratorInitialised)
+					Init();
+				return Interlocked.Read(ref _highestId);
+			}
 		}
 
 		internal static ItemRecord CreateRecord()
@@ -47,14 +67,9 @@ namespace WCell.RealmServer.Database
 			try
 			{
 				var itemRecord = new ItemRecord
-				{
-					Guid = (uint)_idGenerator.Next(),
-					State = RecordState.New
-				};
-
-				//s_log.Debug("creating new item with EntityId {0}", itemRecord.EntityId);
-				//itemRecord.ItemRecordGuid = Guid.NewGuid();
-				//itemRecord.EntityId = EntityIdSetter.GetItemEntityId();
+					{
+						Guid = (uint) NextId(),
+					};
 
 				return itemRecord;
 			}
@@ -62,12 +77,6 @@ namespace WCell.RealmServer.Database
 			{
 				throw new WCellException(ex, "Unable to create new ItemRecord.");
 			}
-		}
-
-		void InitItemRecord()
-		{
-			var cfg = ActiveRecordMediator.GetSessionFactoryHolder().GetConfiguration(typeof(ActiveRecordBase));
-			// cfg.SetListener(MyIPostLoadEventListener);
 		}
 
 		[Field("EntryId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
@@ -510,7 +519,7 @@ namespace WCell.RealmServer.Database
 			}
 			else
 			{
-				log.Warn("ItemRecord has invalid EntryId: " + this);
+				Logger.Warn("ItemRecord has invalid EntryId: " + this);
 			}
 		}
 		#endregion

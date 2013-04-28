@@ -7,7 +7,7 @@ using WCell.RealmServer.Guilds;
 
 namespace WCell.RealmServer.Database.Mappings
 {
-    class GuildTabardMap : ClassMap<GuildTabard>
+    public class GuildTabardMap : ClassMap<GuildTabard>
     {
         public GuildTabardMap()
         {

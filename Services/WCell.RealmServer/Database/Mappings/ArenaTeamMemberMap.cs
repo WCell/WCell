@@ -4,7 +4,7 @@ using WCell.RealmServer.Battlegrounds.Arenas;
 
 namespace WCell.RealmServer.Database.Mappings
 {
-    class ArenaTeamMemberMap : ClassMap<ArenaTeamMember>
+    public class ArenaTeamMemberMap : ClassMap<ArenaTeamMember>
     {
         public ArenaTeamMemberMap()
         {

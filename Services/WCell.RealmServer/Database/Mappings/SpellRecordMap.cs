@@ -3,7 +3,7 @@ using WCell.RealmServer.Database.Entities;
 
 namespace WCell.RealmServer.Database.Mappings
 {
-    class SpellRecordMap : ClassMap<SpellRecord>
+    public class SpellRecordMap : ClassMap<SpellRecord>
     {
         public SpellRecordMap()
         {
