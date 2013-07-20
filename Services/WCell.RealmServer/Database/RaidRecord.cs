@@ -1,23 +1,17 @@
 using System;
-using Castle.ActiveRecord;
 using WCell.Constants.World;
 using WCell.RealmServer.Global;
 
-namespace WCell.RealmServer.Database
+namespace WCell.RealmServer.Database.Entities
 {
-    [ActiveRecord(Access = PropertyAccess.Property)]
-    public class RaidRecord : ActiveRecordBase<RaidRecord>,  IMapId
+    public class RaidRecord : IMapId
 	{
-		[Field("CharLowId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
 		private int _characterLow;
 
-		[Field("InstanceId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
 		private int _instanceId;
 
-		[Field("MapId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
 		private int m_MapId;
 
-        [PrimaryKey(PrimaryKeyType.Native, "InstanceRelationId")]
         public long RecordId
         {
             get;
@@ -54,7 +48,6 @@ namespace WCell.RealmServer.Database
     		set { m_MapId = (int) value; }
     	}
 
-    	[Property(NotNull = true)]
 		public DateTime Until
 		{
 			get;

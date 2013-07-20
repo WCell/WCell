@@ -1,13 +1,11 @@
 using System;
-using Castle.ActiveRecord;
 using WCell.Constants.World;
-using WCell.Core.Database;
 using WCell.RealmServer.Global;
 using WCell.Util;
 
 namespace WCell.RealmServer.Instances
 {
-	public class InstanceBinding : WCellRecord<InstanceBinding>, IMapId
+	public class InstanceBinding : IMapId
 	{
 		private int m_DifficultyIndex;
 
@@ -25,28 +23,25 @@ namespace WCell.RealmServer.Instances
 			set { _InstanceId = (int)value; }
 		}
 
-		[PrimaryKey]
+		
 		public MapId MapId
 		{
 			get;
 			set;
 		}
 
-		[PrimaryKey]
 		private int _InstanceId
 		{
 			get;
 			set;
 		}
 
-		[Property(NotNull = true)]
 		public uint DifficultyIndex
 		{
 			get { return (uint)m_DifficultyIndex; }
 			set { m_DifficultyIndex = (int)value; }
 		}
 
-		[Property(NotNull = true)]
 		public DateTime BindTime
 		{
 			get;

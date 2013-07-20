@@ -1,7 +1,7 @@
-using WCell.Core.Database;
 using WCell.Util.Commands;
 using HibernateCfg = NHibernate.Cfg.Configuration;
 using WCell.Intercommunication.DataTypes;
+using System;
 
 namespace WCell.RealmServer.Commands
 {
@@ -31,9 +31,10 @@ namespace WCell.RealmServer.Commands
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
-				trigger.Reply("Recreating Database Schema...");
-				DatabaseUtil.CreateSchema();
-				trigger.Reply("Done.");
+				throw new NotImplementedException("Needs re-implementing as per database rewrite");
+				/*trigger.Reply("Recreating Database Schema...");
+				//DatabaseUtil.CreateSchema(); TODO: Database: Re-implement
+				trgger.Reply("Done.");*/
 			}
 		}
 
@@ -48,13 +49,15 @@ namespace WCell.RealmServer.Commands
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
-				var settings = DatabaseUtil.Settings;
+				throw new NotImplementedException("Needs re-implementing as per database rewrite");
+				//TODO: Database: Re-implement
+				/*var settings = DatabaseUtil.Settings;
 				var session = DatabaseUtil.Session;
 
 				trigger.Reply("DB Provider: " + settings.Dialect.GetType().Name);
 				trigger.Reply(" State: " + session.Connection.State);
 				trigger.Reply(" Database: " + session.Connection.Database);
-				trigger.Reply(" Connection String: " + session.Connection.ConnectionString);
+				trigger.Reply(" Connection String: " + session.Connection.ConnectionString);*/
 			}
 		}
 	}

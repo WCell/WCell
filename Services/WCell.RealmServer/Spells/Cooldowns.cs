@@ -1,5 +1,4 @@
 using System;
-using Castle.ActiveRecord;
 
 namespace WCell.RealmServer.Spells
 {

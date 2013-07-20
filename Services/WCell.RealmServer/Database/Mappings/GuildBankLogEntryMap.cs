@@ -13,7 +13,6 @@ namespace WCell.RealmServer.Database.Mappings
 		public GuildBankLogEntryMap()
 		{
 			CompositeId().KeyProperty(x => x.GuildId).KeyProperty(x => x.BankLogEntryRecordId);
-			Map(x => x.BankLog);
 			Map(x => x.BankLog); //TODO: This should be a relation?
 			Map(Reveal.Member<GuildBankLogEntry>("bankLogEntryType"));
 			Map(Reveal.Member<GuildBankLogEntry>("actorEntityLowId"));

@@ -1,14 +1,11 @@
 using System;
-using Castle.ActiveRecord;
-using WCell.Core.Database;
+using System.Collections.Generic;
 
-namespace WCell.RealmServer.Database
+namespace WCell.RealmServer.Database.Entities
 {
-	[ActiveRecord(Access = PropertyAccess.Property)]
-	public class QuestRecord : WCellRecord<QuestRecord>
+	public class QuestRecord
 	{
-		private static readonly NHIdGenerator _idGenerator =
-			new NHIdGenerator(typeof(QuestRecord), "QuestRecordId");
+		//private static readonly NHIdGenerator _idGenerator = new NHIdGenerator(typeof(QuestRecord), "QuestRecordId");
 
 		/// <summary>
 		/// Returns the next unique Id for a new Record
@@ -18,10 +15,10 @@ namespace WCell.RealmServer.Database
 			return _idGenerator.Next();
 		}
 
-		[Field("QuestTemplateId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
+		//[Field("QuestTemplateId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
 		private long _questTemplateId;
 
-		[Field("OwnerId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
+		//[Field("OwnerId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
 		private long _ownerId;
 
 		public QuestRecord(uint qId, uint ownerId)
@@ -35,7 +32,7 @@ namespace WCell.RealmServer.Database
 		{
 		}
 
-		[PrimaryKey(PrimaryKeyType.Assigned)]
+		//[PrimaryKey(PrimaryKeyType.Assigned)]
 		public long QuestRecordId
 		{
 			get;
@@ -54,21 +51,21 @@ namespace WCell.RealmServer.Database
 			set { _questTemplateId = value; }
 		}
 
-		[Property(NotNull = true)]
+		//[Property(NotNull = true)]
 		public int Slot
 		{
 			get;
 			set;
 		}
 
-		[Property(NotNull = false)]
+		//[Property(NotNull = false)]
 		public DateTime? TimeUntil
 		{
 			get;
 			set;
 		}
 
-		[Property(NotNull = false)]
+		//[Property(NotNull = false)]
 		/// <summary>
 		/// Amounts of interactions
 		/// </summary>
@@ -78,7 +75,7 @@ namespace WCell.RealmServer.Database
 			set;
 		}
 
-		[Property(NotNull = false)]
+		//[Property(NotNull = false)]
 		/// <summary>
 		/// Visited AreaTriggers
 		/// </summary>
@@ -88,9 +85,9 @@ namespace WCell.RealmServer.Database
 			set;
 		}
 
-		public static QuestRecord[] GetQuestRecordForCharacter(uint chrId)
+		public static IEnumerable<QuestRecord> GetQuestRecordForCharacter(uint chrId)
 		{
-			return FindAllByProperty("_ownerId", (long)chrId);
+			return RealmWorldDBMgr.DatabaseProvider.FindAll<QuestRecord>(x => x.OwnerId == (long)chrId);
 		}
 	}
 }

@@ -1,16 +1,14 @@
 using System;
-using Castle.ActiveRecord;
 using WCell.Constants.Pets;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Spells;
 
-namespace WCell.RealmServer.NPCs.Pets
+namespace WCell.RealmServer.Database.Entities.Pets
 {
-	public class PetSpell //: ActiveRecordBase<PetSpell>
+	public class PetSpell
 	{
 		public static readonly PetSpell[] EmptyArray = new PetSpell[0];
 
-		[PrimaryKey(PrimaryKeyType.GuidComb, "PetSpellId")]
 		public long Guid
 		{
 			get;
@@ -25,14 +23,12 @@ namespace WCell.RealmServer.NPCs.Pets
 			set { m_Spell = value; }
 		}
 
-		[Property("SpellId", NotNull = true)]
 		public int SpellId
 		{
 			get { return m_Spell != null ? (int)m_Spell.Id : 0; }
 			set { m_Spell = SpellHandler.Get((uint)value); }
 		}
 
-		[Field("PetSpellState", NotNull = true)]
 		private int _petSpellState;
 
 		public PetSpellState State

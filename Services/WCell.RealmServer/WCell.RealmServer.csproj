@@ -206,13 +206,19 @@
     <Compile Include="Database\Mappings\GuildBankTabMap.cs" />
     <Compile Include="Database\Mappings\GuildEventLogEntryMap.cs" />
     <Compile Include="Database\Mappings\GuildMap.cs" />
+    <Compile Include="Database\Mappings\GuildMemberMap.cs" />
     <Compile Include="Database\Mappings\GuildTabardMap.cs" />
+    <Compile Include="Database\Mappings\InstanceBindingMap.cs" />
+    <Compile Include="Database\Mappings\PetSpellMap.cs" />
+    <Compile Include="Database\Mappings\QuestRecordMap.cs" />
+    <Compile Include="Database\Mappings\RaidRecordMap.cs" />
+    <Compile Include="Database\Mappings\ReputationRecordMap.cs" />
     <Compile Include="Database\Mappings\SkillRecordMap.cs" />
     <Compile Include="Database\Mappings\SpellRecordMap.cs" />
-    <Compile Include="Database\QuestRecord.cs" />
+    <Compile Include="Database\Entities\QuestRecord.cs" />
     <Compile Include="Database\RaidRecord.cs" />
     <Compile Include="Database\RealmWorldDBMgr.cs" />
-    <Compile Include="Database\ReputationRecord.cs" />
+    <Compile Include="Database\Entities\ReputationRecord.cs" />
     <Compile Include="Database\RealmContentDBMgr.cs" />
     <Compile Include="Editor\Commands\EditorCommand.cs">
       <SubType>Code</SubType>
@@ -784,7 +790,7 @@
     <Compile Include="Looting\LootRollEntry.cs" />
     <Compile Include="Looting\LootRollProgress.cs" />
     <Compile Include="Misc\CfgCategories.cs" />
-    <Compile Include="Instances\InstanceBinding.cs" />
+    <Compile Include="Database\Entities\InstanceBinding.cs" />
     <Compile Include="Social\IBaseRelation.cs" />
     <Compile Include="Looting\ILootable.cs" />
     <Compile Include="Looting\Loot.cs" />
@@ -824,7 +830,7 @@
     <Compile Include="Formulas\RestGenerator.cs" />
     <Compile Include="Misc\ExtraInfo.cs" />
     <Compile Include="NPCs\Pets\PetMgr.cs" />
-    <Compile Include="NPCs\Pets\PetSpell.cs" />
+    <Compile Include="Database\Entities\PetSpell.cs" />
     <Compile Include="NPCs\Vendors\VendorEntry.cs" />
     <Compile Include="Paths\PathVertex.cs" />
     <Compile Include="Paths\TransportPathVertex.cs" />
