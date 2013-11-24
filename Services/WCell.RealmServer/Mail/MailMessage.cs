@@ -96,7 +96,7 @@ namespace WCell.RealmServer.Mail
 			set;
 		}
 
-		public uint ReceiverId
+		public int ReceiverId
 		{
 			get { return (uint)_receiverId; }
 			set { _receiverId = (int)value; }

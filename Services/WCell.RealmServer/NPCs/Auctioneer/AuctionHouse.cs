@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using WCell.RealmServer.Database.Entities;
 using WCell.Util.Collections;
 using WCell.RealmServer.Database;
 

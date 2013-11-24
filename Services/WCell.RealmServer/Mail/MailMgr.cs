@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
-using Castle.ActiveRecord.Queries;
 using WCell.RealmServer.Database.Entities;
 using WCell.Util.Logging;
 using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Core;
-using WCell.Core.Database;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;

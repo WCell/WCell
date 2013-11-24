@@ -197,6 +197,7 @@
     <Compile Include="Database\Mappings\AchievementRecordMap.cs" />
     <Compile Include="Database\Mappings\ArenaTeamMemberMap.cs" />
     <Compile Include="Database\Mappings\ArenaTeamStatsMap.cs" />
+    <Compile Include="Database\Mappings\AuctionMap.cs" />
     <Compile Include="Database\Mappings\CharacterRecordMap.cs" />
     <Compile Include="Database\Mappings\AuraRecordMap.cs" />
     <Compile Include="Database\Mappings\CharacterRelationRecordMap.cs" />
@@ -923,7 +924,7 @@
     <Compile Include="NPCs\Armorer\ArmorerMgr.cs" />
     <Compile Include="NPCs\Armorer\DurabilityCost.cs" />
     <Compile Include="NPCs\Armorer\DurabilityQuality.cs" />
-    <Compile Include="NPCs\Auctioneer\Auction.cs" />
+    <Compile Include="Database\Entities\Auction.cs" />
     <Compile Include="NPCs\Auctioneer\AuctioneerEntry.cs" />
     <Compile Include="NPCs\Auctioneer\AuctionHouse.cs" />
     <Compile Include="NPCs\Auctioneer\AuctionMgr.cs" />
