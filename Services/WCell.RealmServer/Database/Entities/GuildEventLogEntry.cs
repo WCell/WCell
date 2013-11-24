@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using WCell.Constants.Guilds;
+using WCell.RealmServer.Guilds;
 
 namespace WCell.RealmServer.Database.Entities
 {
@@ -52,8 +53,7 @@ namespace WCell.RealmServer.Database.Entities
 			set;
 		}
 
-		public GuildEventLogEntry(Database.Entities.Guild guild, GuildEventLogEntryType type,
-			int character1LowId, int character2LowId, int newRankId, DateTime timeStamp)
+		public GuildEventLogEntry(Guild guild, GuildEventLogEntryType type, int character1LowId, int character2LowId, int newRankId, DateTime timeStamp)
 		{
 			GuildId = guild.Id;
 			Type = type;

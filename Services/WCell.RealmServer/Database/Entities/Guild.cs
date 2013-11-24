@@ -1,7 +1,7 @@
 using System;
 using WCell.RealmServer.Guilds;
 
-namespace WCell.RealmServer.Guilds
+namespace WCell.RealmServer.Database.Entities
 {
 	public partial class Guild
 	{

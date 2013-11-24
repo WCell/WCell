@@ -7,7 +7,7 @@ using WCell.RealmServer.Guilds;
 using WCell.Util;
 using WCell.Util.Commands;
 using System.Collections.Generic;
-using Guild = WCell.RealmServer.Database.Entities.Guild;
+using Guild = WCell.RealmServer.Guilds.Guild;
 
 namespace WCell.RealmServer.Commands
 {
