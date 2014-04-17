@@ -258,6 +258,11 @@ namespace WCell.Database
 			return results.Count > 0 ? results[0] : default(T);
 		}
 
+        public T FindFirst<T>(Expression<Func<T, bool>> expression)
+        {
+            return FindFirst<T>(DetachedCriteria.For<T>().Add(Restrictions.Where(expression)));
+        }
+
 		/// <summary>
 		/// Returns the total number of entities that match the given criteria
 		/// </summary>

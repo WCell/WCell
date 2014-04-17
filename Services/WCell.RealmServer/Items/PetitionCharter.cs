@@ -1,17 +1,13 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Castle.ActiveRecord;
 using WCell.Constants;
+using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
-using WCell.Core.Database;
 
 namespace WCell.RealmServer.Items
 {
 	public class PetitionCharter : Item
 	{
-		private PetitionRecord m_Petition;
+		private PetitionRecord _Petition;
 
 		public PetitionCharter()
 		{
@@ -19,36 +15,24 @@ namespace WCell.RealmServer.Items
 
 		protected override void OnLoad()
 		{
-			m_Petition = PetitionRecord.Find((int)Owner.EntityId.Low);
+			_Petition = RealmWorldDBMgr.DatabaseProvider.FindOne<PetitionRecord>(x => x.OwnerId == Owner.EntityId.Low);
 		}
 
         protected internal override void DoDestroy()
         {
-            Petition.Delete();
+            RealmWorldDBMgr.DatabaseProvider.Delete<PetitionRecord>(x => x.OwnerId == Owner.EntityId.Low);
             base.DoDestroy();
         }
 
 		public PetitionRecord Petition
 		{
-			get { return m_Petition; }
-            set { m_Petition = value; }
+			get { return _Petition; }
+            set { _Petition = value; }
 		}
 	}
 
-	[ActiveRecord("PetitionRecord", Access = PropertyAccess.Property)]
-	public class PetitionRecord : WCellRecord<PetitionRecord>
+	public class PetitionRecord
 	{
-
-		[Field("Type", NotNull = true)]
-		private int m_Type;
-
-        [PrimaryKey(PrimaryKeyType.Assigned, "OwnerId")]
-        private int m_OwnerId
-        {
-            get;
-            set;
-        }
-
         public PetitionRecord()
         {
         }
@@ -62,34 +46,31 @@ namespace WCell.RealmServer.Items
             Type = type;
 		}
 
-        [Property("ItemId", NotNull = true)]
-		private int ItemId
+		public int ItemId
 		{
 			get;
 			set;
 		}
 
-        [Property("Name", NotNull = true, Unique = true)]
         public string Name
         {
             get;
             set;
         }
 
-		public uint OwnerId
-		{
-			get { return (uint)m_OwnerId; }
-			set { m_OwnerId = (int)value; }
-		}
+        public uint OwnerId
+        {
+            get;
+            set;
+        }
 
         public PetitionType Type
         {
-            get { return (PetitionType)m_Type; }
-            set { m_Type = (int)value; }
+            get;
+            set;
         }
 
-		[Property("SignedIds", NotNull = true)]
-		public List<uint> SignedIds
+		public IList<uint> SignedIds
 		{
 			get;
 			set;
@@ -98,26 +79,22 @@ namespace WCell.RealmServer.Items
 		public void AddSignature(uint signedId)
 		{
 			SignedIds.Add(signedId);
-            Update();
+            RealmWorldDBMgr.DatabaseProvider.Update<PetitionRecord>(this);
 		}
 
 		public static PetitionRecord LoadRecord(int ownerId)
 		{
-			return Find(ownerId);
+			return RealmWorldDBMgr.DatabaseProvider.FindOne<PetitionRecord>(x => x.OwnerId == ownerId);
 		}
 
         public static bool CanBuyPetition(uint ownerId)
         {
-            if(Exists((int)ownerId))
-                return false;
-            else
-                return true;
+            return !RealmWorldDBMgr.DatabaseProvider.Exists<PetitionRecord>(x => x.OwnerId == ownerId);
         }
 
         public static PetitionRecord LoadRecordByItemId(uint itemId)
         {
-            var property = FindAllByProperty("ItemId", (int)itemId);
-            return property[0];
+            return RealmWorldDBMgr.DatabaseProvider.FindFirst<PetitionRecord>(x => x.ItemId == itemId);
         }
 	}
 }
