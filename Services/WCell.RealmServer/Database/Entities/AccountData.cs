@@ -14,7 +14,7 @@ namespace WCell.RealmServer.Database.Entities
 
 		public static AccountData GetAccountData(long accountId)
 		{
-			return RealmWorldDBMgr.DatabaseProvider.FindOne<AccountData>(x => x.AccountId == accountId));
+			return RealmWorldDBMgr.DatabaseProvider.FindOne<AccountData>(x => x.AccountId == accountId);
 		}
 
 		/// <summary>
