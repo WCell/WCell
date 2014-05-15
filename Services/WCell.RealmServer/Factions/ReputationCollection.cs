@@ -23,6 +23,7 @@ using WCell.Constants.Factions;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
+using WCell.RealmServer.Database.Entities;
 
 namespace WCell.RealmServer.Factions
 {

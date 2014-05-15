@@ -1,9 +1,8 @@
 using System;
-using GuildBankTab = WCell.RealmServer.Database.Entities.GuildBankTab;
 
-namespace WCell.RealmServer.Database
+namespace WCell.RealmServer.Guilds
 {
-	public class GuildBankTabItemMapping
+	public class GuildBankTabItem
 	{
 		public long Guid
 		{

@@ -11,6 +11,7 @@ namespace WCell.RealmServer.Database.Mappings
 	{
 		public EquipmentSetMap() //TODO: This looks as though it needs to have Items mapped as well
 		{
+			Not.LazyLoad();
 			Id(x => x.Id);
 			Map(x => x.Name);
 			Map(x => x.Icon);

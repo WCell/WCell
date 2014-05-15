@@ -2,6 +2,8 @@ namespace WCell.RealmServer.Guilds
 {
     public class GuildTabard
     {
+	    internal int Id;
+
         public int EmblemStyle;
 
 		public int EmblemColor;

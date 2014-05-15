@@ -80,7 +80,7 @@ namespace WCell.RealmServer.Interaction
 			}
 			catch (Exception e)
 			{
-				RealmDBMgr.OnDBError(e);
+				RealmWorldDBMgr.OnDBError(e);
 				found = PersistedRelation.GetAll();
 			}
 

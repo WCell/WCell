@@ -11,6 +11,7 @@ namespace WCell.RealmServer.Database.Mappings
 	{
 		public ReputationRecordMap()
 		{
+			Not.LazyLoad();
 			Id(x => x.RecordId).GeneratedBy.Native();
 			Map(x => x.OwnerId).Not.Nullable();
 			Map(x => x.ReputationIndex).Not.Nullable();

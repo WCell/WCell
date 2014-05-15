@@ -13,7 +13,9 @@ namespace WCell.RealmServer.Database.Mappings
 	{
 		public GuildEventLogEntryMap()
 		{
-			Id(x => Reveal.Member<GuildEventLogEntry>("Guild"));
+			Not.LazyLoad();
+			//Id(x => Reveal.Member<GuildEventLogEntry>("Guild")); TODO: Why would you have an incrementing long that is called Guid and never used either??
+			Id(x => x.Id);
 			Map(x => x.GuildId).Not.Nullable();
 			Map(x => x.Type).Not.Nullable();
 			Map(x => x.Character1LowId).Not.Nullable();

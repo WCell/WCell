@@ -30,10 +30,11 @@ namespace WCell.RealmServer.Database.Entities
 				record = new AchievementProgressRecord
 				{
 					CharacterGuid = (int)chr.EntityId.Low,
-					AchievementCriteriaId = (int)achievementCriteriaId,
-					Counter = (int)counter,
+					AchievementCriteriaId = achievementCriteriaId,
+					Counter = counter,
 					StartOrUpdateTime = DateTime.Now,
 				};//TODO: Should we not be adding this to the database here?
+				RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(record);
 			}
 			catch (Exception ex)
 			{
@@ -49,7 +50,7 @@ namespace WCell.RealmServer.Database.Entities
 		/// <summary>
 		/// Encode char id and achievement id into RecordId
 		/// </summary>
-		public long RecordId
+		public virtual long RecordId
 		{
 			get
 			{
@@ -65,13 +66,13 @@ namespace WCell.RealmServer.Database.Entities
 		/// <summary>
 		/// The time when this record was inserted or last updated (depends on the kind of criterion)
 		/// </summary>
-		public DateTime StartOrUpdateTime { get; set; }
+		public virtual DateTime StartOrUpdateTime { get; set; }
 
-		public int CharacterGuid { get; set; }
+		public virtual int CharacterGuid { get; set; }
 
-		public int AchievementCriteriaId { get; set; }
+		public virtual long AchievementCriteriaId { get; set; }
 
-		public int Counter { get; set; }
+		public virtual uint Counter { get; set; }
 
 		public static IEnumerable<AchievementProgressRecord> Load(int chrRecordId)
 		{

@@ -9,6 +9,7 @@ using WCell.Util;
 using WCell.RealmServer.Battlegrounds.Arenas;
 using WCell.RealmServer.Global;
 using WCell.Util.Logging;
+using WCell.RealmServer.Database.Entities;
 
 namespace WCell.RealmServer.Handlers
 {

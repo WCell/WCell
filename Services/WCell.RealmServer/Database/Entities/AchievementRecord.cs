@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Criterion;
 using WCell.Util.Logging;
 using WCell.RealmServer.Entities;
-using WCell.Util;
+using Utility = WCell.Util.Utility;
 
 namespace WCell.RealmServer.Database.Entities
 {
@@ -26,7 +27,7 @@ namespace WCell.RealmServer.Database.Entities
 			{
 				record = new AchievementRecord
 				{
-					AchievementId = (int)achievementEntryId,
+					AchievementId = achievementEntryId,
 					CharacterId = (int)chr.EntityId.Low,
 					CompleteDate = DateTime.Now
 				};
@@ -47,33 +48,33 @@ namespace WCell.RealmServer.Database.Entities
 		/// <summary>
 		/// Encode char id and achievement id into RecordId
 		/// </summary>
-		public long RecordId
+		public virtual long RecordId
 		{
 			get
 			{
-				return Utility.MakeLong(CharacterId, AchievementId);
+				return Utility.MakeLong(CharacterId, (int)AchievementId);
 			}
 			set
 			{
 				CharacterId = (int)value;
-				AchievementId = (int)(value >> 32);
+				AchievementId = (uint)(value >> 32);
 			}
 		}
 
-		public DateTime CompleteDate { get; set; }
+		public virtual DateTime CompleteDate { get; set; }
 
-		public int CharacterId { get; set; }
+		public virtual int CharacterId { get; set; }
 
-		public int AchievementId { get; set; }
+		public virtual uint AchievementId { get; set; }
 
 		public static IEnumerable<AchievementRecord> Load(int chrId)
 		{
-			return RealmWorldDBMgr.DatabaseProvider.FindAll<AchievementRecord>(record => record.CharacterId == chrId);
+			return RealmWorldDBMgr.DatabaseProvider.Query<AchievementRecord>().Where(record => record.CharacterId == chrId);
 		}
 
-        public static IEnumerable<AchievementRecord> Load(IEnumerable<int> achievementEntryIds)
+        public static IEnumerable<AchievementRecord> Load(IEnumerable<uint> achievementEntryIds)
         {
-	        return RealmWorldDBMgr.DatabaseProvider.FindAll<AchievementRecord>(record => achievementEntryIds.Contains(u => u == record.AchievementId));
+	        return RealmWorldDBMgr.DatabaseProvider.Query<AchievementRecord>().Where(record => achievementEntryIds.Contains(record.AchievementId));
         }
 
 		public override string ToString()

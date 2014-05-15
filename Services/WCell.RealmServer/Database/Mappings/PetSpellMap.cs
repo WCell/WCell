@@ -11,7 +11,8 @@ namespace WCell.RealmServer.Database.Mappings
     {
         public PetSpellMap()
         {
-            Id(x => x.Guid).GeneratedBy.GuidComb();
+			Not.LazyLoad();
+			Id(x => x.Guid).GeneratedBy.GuidComb(); //TODO: Work out what to do about the Guid -> Long type change & how it affects WoW (seems unused)
             Map(x => x.SpellId).Not.Nullable();
             Map(x => x.State).Not.Nullable();
         }

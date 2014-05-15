@@ -124,7 +124,7 @@ namespace WCell.RealmServer.Handlers
 		{
 			foreach (AchievementRecord completedAchievement in chr.Achievements.m_completedAchievements.Values)
 			{
-				packet.WriteUInt((uint)completedAchievement.AchievementEntryId);
+				packet.WriteUInt((uint)completedAchievement.AchievementId);
 				packet.WriteDateTime(completedAchievement.CompleteDate);
 			}
 			packet.WriteInt(0xFFFFFFFFu);

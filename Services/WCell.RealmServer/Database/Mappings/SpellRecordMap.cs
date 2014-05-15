@@ -7,11 +7,12 @@ namespace WCell.RealmServer.Database.Mappings
     {
         public SpellRecordMap()
         {
-            //SpellRecordId
-            Id(x => x.RecordId);
+			Not.LazyLoad();
+			//SpellRecordId
+			Id(x => x.RecordId);
             Map(x => x.OwnerId).Not.Nullable();
             Map(x => x.SpecIndex);
-            Map(x => x.Spell);
+            //Map(x => x.Spell);
             Map(x => x.SpellId).Not.Nullable();
         }
     }

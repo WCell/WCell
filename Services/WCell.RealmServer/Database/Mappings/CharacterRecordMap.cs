@@ -1,4 +1,5 @@
-﻿using FluentNHibernate;
+﻿using System;
+using FluentNHibernate;
 using FluentNHibernate.Mapping;
 using WCell.Constants;
 using WCell.RealmServer.Database.Entities;
@@ -9,7 +10,8 @@ namespace WCell.RealmServer.Database.Mappings
     {
         public CharacterRecordMap()
         {
-            Id(x => x.EntityLowId).GeneratedBy.Assigned();
+			Not.LazyLoad();
+			Id(x => x.EntityLowId).GeneratedBy.Assigned();
             Map(x => x.AccountId).Not.Nullable();
             Map(x => x.DisplayId).Not.Nullable();
             Map(x => x.WatchedFaction).Not.Nullable();
@@ -24,6 +26,7 @@ namespace WCell.RealmServer.Database.Mappings
             Map(x => x.LastLogin).Nullable();
             Map(x => x.LastLogout).Nullable();
             Map(x => x.CharacterFlags).Not.Nullable();
+	        Map(x => x.ActionBarMask).Not.Nullable();
             Map(x => x.Race).Not.Nullable();
             Map(x => x.Gender).Not.Nullable();
             Map(x => x.Skin).Not.Nullable();
@@ -82,7 +85,7 @@ namespace WCell.RealmServer.Database.Mappings
             Map(Reveal.Member<CharacterRecord>("_talentResetPriceTier")).Not.Nullable();
             Map(x => x.DungeonDifficulty);
             Map(x => x.RaidDifficulty);
-            Map(x => x.BattlegroundTeam).Default(BattlegroundSide.End.ToString());
+            Map(x => x.BattlegroundTeam).CustomType<BattlegroundSide>().Default(Convert.ToString((int)BattlegroundSide.End));
             Map(x => x.KillsTotal);
             Map(x => x.HonorToday);
             Map(x => x.HonorYesterday);

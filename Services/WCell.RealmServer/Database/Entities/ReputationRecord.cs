@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using WCell.Constants.Factions;
-using WCell.Database;
 
 namespace WCell.RealmServer.Database.Entities
 {

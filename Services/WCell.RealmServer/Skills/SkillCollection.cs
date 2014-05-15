@@ -27,6 +27,7 @@ using WCell.RealmServer.Formulas;
 using WCell.Util;
 using WCell.Constants.Items;
 using WCell.RealmServer.Handlers;
+using WCell.RealmServer.Database;
 
 namespace WCell.RealmServer.Skills
 {
@@ -459,7 +460,7 @@ namespace WCell.RealmServer.Skills
 			{
 				skill.RemoveAllAbilities();
 			}
-			skill.Record.DeleteAndFlush();
+			RealmWorldDBMgr.DatabaseProvider.Delete(skill.Record);
 		}
 
 		/// <summary>

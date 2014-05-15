@@ -3,7 +3,7 @@
  *   file		: Character.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
- *   last changed	: $LastChangedDate: 2010-02-20 06:16:32 +0100 (lï¿? 20 feb 2010) $
+ *   last changed	: $LastChangedDate: 2010-02-20 06:16:32 +0100 (l?? 20 feb 2010) $
 
  *   revision		: $Rev: 1257 $
  *

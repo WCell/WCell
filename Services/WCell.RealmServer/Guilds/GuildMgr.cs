@@ -16,19 +16,18 @@
 
 using System;
 using System.Collections.Generic;
-using Castle.ActiveRecord;
 using WCell.Util;
 using WCell.Util.Collections;
-using WCell.Constants;
 using WCell.Constants.Guilds;
 using WCell.Core;
 using WCell.Core.Initialization;
-using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Interaction;
 using WCell.RealmServer.NPCs;
 using WCell.Util.Logging;
+using WCell.RealmServer.Database;
+using System.Linq;
 
 namespace WCell.RealmServer.Guilds
 {
@@ -87,16 +86,16 @@ namespace WCell.RealmServer.Guilds
 		/// Maps char-id to the corresponding GuildMember object so it can be looked up when char reconnects
 		/// </summary>
 		public static readonly IDictionary<uint, GuildMember> OfflineMembers;
-		public static readonly IDictionary<uint, Database.Entities.Guild> GuildsById;
-		public static readonly IDictionary<string, Database.Entities.Guild> GuildsByName;
+		public static readonly IDictionary<uint, Guild> GuildsById;
+		public static readonly IDictionary<string, Guild> GuildsByName;
 		private static readonly ReaderWriterLockWrapper guildsLock = new ReaderWriterLockWrapper();
 		private static readonly ReaderWriterLockWrapper membersLock = new ReaderWriterLockWrapper();
 
 		#region Init
 		static GuildMgr()
 		{
-			GuildsById = new SynchronizedDictionary<uint, Database.Entities.Guild>();
-			GuildsByName = new SynchronizedDictionary<string, Database.Entities.Guild>(StringComparer.InvariantCultureIgnoreCase);
+			GuildsById = new SynchronizedDictionary<uint, Guild>();
+			GuildsByName = new SynchronizedDictionary<string, Guild>(StringComparer.InvariantCultureIgnoreCase);
 			OfflineMembers = new SynchronizedDictionary<uint, GuildMember>();
 		}
 
@@ -112,19 +111,19 @@ namespace WCell.RealmServer.Guilds
 
 		private bool Start()
 		{
-			Database.Entities.Guild[] guilds = null;
+			Guild[] guilds = null;
 
 #if DEBUG
 			try
 			{
 #endif
-				guilds = ActiveRecordBase<Database.Entities.Guild>.FindAll();
+				guilds = RealmWorldDBMgr.DatabaseProvider.Query<Guild>().ToArray(); //ActiveRecordBase<Guild>.FindAll();
 #if DEBUG
 			}
 			catch (Exception e)
 			{
-				RealmDBMgr.OnDBError(e);
-				guilds = ActiveRecordBase<Database.Entities.Guild>.FindAll();
+				RealmWorldDBMgr.OnDBError(e);
+				guilds = RealmWorldDBMgr.DatabaseProvider.Query<Guild>().ToArray();
 			}
 #endif
 
@@ -140,7 +139,7 @@ namespace WCell.RealmServer.Guilds
 		}
 		#endregion
 
-		public static ImmutableList<GuildRank> CreateDefaultRanks(Database.Entities.Guild guild)
+		public static ImmutableList<GuildRank> CreateDefaultRanks(Guild guild)
 		{
 			var ranks = new ImmutableList<GuildRank>();
 			var ranksNum = 0;
@@ -214,7 +213,7 @@ namespace WCell.RealmServer.Guilds
 
 			member.Character = null;
 
-			member.UpdateLater();
+			RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(member);
 
 			using (membersLock.EnterWriteLock())
 			{
@@ -228,11 +227,11 @@ namespace WCell.RealmServer.Guilds
 		/// New or loaded Guild
 		/// </summary>
 		/// <param name="guild"></param>
-		internal void RegisterGuild(Database.Entities.Guild guild)
+		internal void RegisterGuild(Guild guild)
 		{
 			using (guildsLock.EnterWriteLock())
 			{
-				GuildsById.Add(guild.Id, guild);
+				GuildsById.Add((uint)guild.Id, guild); //TODO: Conversion from int to uint, find a way to solve this
 				GuildsByName.Add(guild.Name, guild);
 				using (membersLock.EnterWriteLock())
 				{
@@ -247,11 +246,11 @@ namespace WCell.RealmServer.Guilds
 			}
 		}
 
-		internal void UnregisterGuild(Database.Entities.Guild guild)
+		internal void UnregisterGuild(Guild guild)
 		{
 			using (guildsLock.EnterWriteLock())
 			{
-				GuildsById.Remove(guild.Id);
+				GuildsById.Remove((uint)guild.Id);	//TODO: Conversion from int to uint, find a way to solve this
 				GuildsByName.Remove(guild.Name);
 				// no need to remove offline members, since, at this point
 				// all members have already been evicted
@@ -277,21 +276,21 @@ namespace WCell.RealmServer.Guilds
 			}
 		}
 
-		public static Database.Entities.Guild GetGuild(uint guildId)
+		public static Guild GetGuild(uint guildId)
 		{
 			using (guildsLock.EnterReadLock())
 			{
-				Database.Entities.Guild guild;
+				Guild guild;
 				GuildsById.TryGetValue(guildId, out guild);
 				return guild;
 			}
 		}
 
-		public static Database.Entities.Guild GetGuild(string name)
+		public static Guild GetGuild(string name)
 		{
 			using (guildsLock.EnterReadLock())
 			{
-				Database.Entities.Guild guild;
+				Guild guild;
 				GuildsByName.TryGetValue(name, out guild);
 				return guild;
 			}

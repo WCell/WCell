@@ -11,6 +11,7 @@ using WCell.Constants.Spells;
 using WCell.Constants.World;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Database;
+using WCell.RealmServer.Database.Entities;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Factions;
 using WCell.RealmServer.Items.Enchanting;
@@ -875,11 +876,11 @@ namespace WCell.RealmServer.Items
 		{
 			if (IsCharter)
 			{
-				if (!record.IsNew)
-				{
+				//if (!record.IsNew) TODO: Re-implement this asap due to unknown concequences
+				//{
 					// this is executed in the IO-context
 					PetitionRecord.LoadRecord(record.OwnerId);
-				}
+				//}
 			}
 		}
 

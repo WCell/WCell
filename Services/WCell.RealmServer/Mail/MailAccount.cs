@@ -442,7 +442,7 @@ namespace WCell.RealmServer.Mail
 
 			RealmServer.IOQueue.AddMessage(new Message(() =>
 			{
-				letter.Update();
+				RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(letter);
 				MailHandler.SendResult(m_chr.Client, (uint)letter.Guid, MailResult.ItemTaken, MailError.OK, itemId, count);
 			}));
 
@@ -510,7 +510,7 @@ namespace WCell.RealmServer.Mail
 
 			RealmServer.IOQueue.AddMessage(new Message(() =>
 			{
-				mail.Save();
+				RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(mail);
 				MailHandler.SendResult(m_chr, messageId, MailResult.MadePermanent, MailError.OK);
 			}));
 

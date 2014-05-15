@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using WCell.Constants.Skills;
 
 namespace WCell.RealmServer.Database.Entities
@@ -17,8 +18,8 @@ namespace WCell.RealmServer.Database.Entities
 
 		public static IEnumerable<SkillRecord> GetAllSkillsFor(long charRecordId)
 		{
-			//TODO: Use Detatched Criteria for this -- should be put into the databaseprovider instead so as to keep nhibernate out of the code
-            return RealmWorldDBMgr.DatabaseProvider.Session.QueryOver<SkillRecord>().Where(x => x.OwnerId == (int)charRecordId).List();
+			//return RealmWorldDBMgr.DatabaseProvider.Session.QueryOver<SkillRecord>().Where(x => x.OwnerId == (int)charRecordId).List();
+			return RealmWorldDBMgr.DatabaseProvider.Query<SkillRecord>().Where(x => x.OwnerId == (int)charRecordId);
 		}
 	}
 }

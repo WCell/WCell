@@ -12,7 +12,10 @@ namespace WCell.RealmServer.Database.Entities
 	public class GuildBankLogEntry
 	{
 		//private static readonly Order CreatedOrder = new Order("Created", false);
-
+		private GuildBankLogEntry()
+		{
+			
+		}
 		public static IEnumerable<GuildBankLogEntry> LoadAll(uint guildId)
 		{
 			return RealmWorldDBMgr.DatabaseProvider.FindAll<GuildBankLogEntry>(x => x.GuildId == guildId).OrderBy(entry => entry.Created); //TODO: Check this is going to do things as we want
@@ -97,6 +100,29 @@ namespace WCell.RealmServer.Database.Entities
 		{
 			get { return BankLog.Bank[DestinationTabId]; }
 			set { DestinationTabId = value.BankSlot; }
+		}
+
+		public override bool Equals(object obj)
+		{
+			var other = obj as GuildBankLogEntry;
+
+			if (ReferenceEquals(null, other)) return false;
+			if (ReferenceEquals(this, other)) return true;
+
+			return GuildId == other.GuildId &&
+				BankLogEntryRecordId == other.BankLogEntryRecordId;
+		}
+
+		public override int GetHashCode()
+		{
+			unchecked
+			{
+				int hash = GetType().GetHashCode();
+				hash = (hash * 31) ^ GuildId.GetHashCode();
+				hash = (hash * 31) ^ BankLogEntryRecordId.GetHashCode();
+
+				return hash;
+			}
 		}
 	}
 }

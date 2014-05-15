@@ -1,9 +1,7 @@
 using System;
-using WCell.AuthServer.Database.Entities;
 using WCell.Core.Initialization;
-using WCell.AuthServer.Accounts;
-using WCell.Database;
 using WCell.Util.Logging;
+using Jaddie.Database;
 
 namespace WCell.AuthServer.Database
 {
@@ -26,7 +24,7 @@ namespace WCell.AuthServer.Database
 			//DatabaseUtil.DBErrorHook = exception => AccountMgr.Instance.Count < 100; //TODO: This is a horrible way to find if we're on production, we need something better than this
 
 			//DatabaseUtil.DBType = AuthServerConfiguration.DBType;
-			DatabaseProvider = new DatabaseProvider(AuthServerConfiguration.DBServer,AuthServerConfiguration.DBUsername,AuthServerConfiguration.DBPassword,AuthServerConfiguration.DBDatabase);
+			DatabaseProvider = new DatabaseProvider(AuthServerConfiguration.DBServer,AuthServerConfiguration.DBUsername,AuthServerConfiguration.DBPassword,AuthServerConfiguration.DBDatabase,true);
 			//DatabaseUtil.DefaultCharset = DefaultCharset; TODO: Find if this is required anymore
 
 			/*var asm = typeof(AuthDBMgr).Assembly;

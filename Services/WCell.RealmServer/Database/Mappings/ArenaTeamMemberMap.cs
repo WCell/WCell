@@ -8,6 +8,7 @@ namespace WCell.RealmServer.Database.Mappings
     {
         public ArenaTeamMemberMap()
         {
+			Not.LazyLoad();
             Id(x => x.CharacterLowId);
             Map(x => x.ArenaTeamId);
             // Map the private field _name as there is no setter (rightly) for the Name property

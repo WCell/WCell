@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using Castle.ActiveRecord;
-using Cell.Core;
+using FluentNHibernate.Mapping;
 using WCell.RealmServer.Database.Entities;
 using WCell.Util.Logging;
 using WCell.Constants.Spells;
@@ -11,14 +9,10 @@ using WCell.RealmServer.Entities;
 using WCell.RealmServer.GameObjects;
 using WCell.RealmServer.GameObjects.GOEntries;
 using WCell.RealmServer.Items;
-using WCell.RealmServer.Spells.Auras;
-using WCell.RealmServer.Spells.Auras.Misc;
-using WCell.RealmServer.Talents;
 using WCell.Util.ObjectPools;
 using WCell.Util.Threading;
-using WCell.RealmServer.Database;
 using WCell.Util;
-using WCell.RealmServer.Spells.Auras.Handlers;
+using WCell.RealmServer.Database;
 
 namespace WCell.RealmServer.Spells
 {
@@ -193,7 +187,7 @@ namespace WCell.RealmServer.Spells
 				var specIndex = GetSpecIndex(spell);
 				var spells = GetSpellList(spell);
 				var newRecord = new SpellRecord(spell.SpellId, owner.EntityId.Low, specIndex);
-				newRecord.SaveLater();
+				RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(newRecord);
 				spells.Add(newRecord);
 
 				base.AddSpell(spell);
@@ -259,7 +253,7 @@ namespace WCell.RealmServer.Spells
 				if (record.SpellId == spell.SpellId)
 				{
 					// delete and remove
-					RealmServer.IOQueue.AddMessage(new Message(record.Delete));
+					RealmServer.IOQueue.AddMessage(() => RealmWorldDBMgr.DatabaseProvider.Delete(record));
 					spells.RemoveAt(i);
 					return;
 				}
@@ -581,17 +575,25 @@ namespace WCell.RealmServer.Spells
 			{
 				foreach (var cooldown in cds)
 				{
-					if (cooldown is ActiveRecordBase)
+					if (cooldown is PersistentSpellIdCooldown)
 					{
-						((ActiveRecordBase)cooldown).Delete();
+						RealmWorldDBMgr.DatabaseProvider.Delete(cooldown);
 					}
+					//if (cooldown is ActiveRecordBase)
+					//{
+					//	((ActiveRecordBase)cooldown).Delete();
+					//}
 				}
 				foreach (var cooldown in catCds)
 				{
-					if (cooldown is ActiveRecordBase)
+					if (cooldown is PersistentSpellCategoryCooldown)
 					{
-						((ActiveRecordBase)cooldown).Delete();
+						RealmWorldDBMgr.DatabaseProvider.Delete(cooldown);
 					}
+					//if (cooldown is ActiveRecordBase)
+					//{
+					//	((ActiveRecordBase)cooldown).Delete();
+					//}
 				}
 			}));
 
@@ -627,21 +629,30 @@ namespace WCell.RealmServer.Spells
 			ISpellCategoryCooldown catCooldown = m_categoryCooldowns.RemoveFirst(cd => cd.CategoryId == cooldownSpell.Category);
 
 			// enqueue task
-			if (idCooldown is ActiveRecordBase || catCooldown is ActiveRecordBase)
-			{
+			//if (idCooldown is ActiveRecordBase || catCooldown is ActiveRecordBase) TOOD: Check if this will have any unexpected side effects due to removal
+			//{
 				RealmServer.IOQueue.AddMessage(new Message(() =>
 				{
-					if (idCooldown is ActiveRecordBase)
+					if (idCooldown is PersistentSpellIdCooldown)
 					{
-						((ActiveRecordBase)idCooldown).Delete();
+						RealmWorldDBMgr.DatabaseProvider.Delete(idCooldown);
 					}
-					if (catCooldown is ActiveRecordBase)
+					if (catCooldown is PersistentSpellCategoryCooldown)
 					{
-						((ActiveRecordBase)catCooldown).Delete();
+						RealmWorldDBMgr.DatabaseProvider.Delete(catCooldown);
 					}
-				}
-				));
+
+					//if (idCooldown is ActiveRecordBase)
+					//{
+					//	((ActiveRecordBase)idCooldown).Delete();
+					//}
+					//if (catCooldown is ActiveRecordBase)
+					//{
+					//	((ActiveRecordBase)catCooldown).Delete();
+					//}
 			}
+				));
+			//}
 		}
 
 		private void SaveCooldowns()
@@ -658,11 +669,15 @@ namespace WCell.RealmServer.Spells
 				if (cooldown.Until < DateTime.Now.AddMilliseconds(SpellHandler.MinCooldownSaveTimeMillis))
 				{
 					// already expired or will expire very soon
-					if (cooldown is ActiveRecordBase)
+					//if (cooldown is ActiveRecordBase) TODO: Check if any side effects due to removal
+					//{
+					// delete
+					if (cooldown is PersistentSpellCategoryCooldown || cooldown is PersistentSpellIdCooldown)
 					{
-						// delete
-						((ActiveRecordBase)cooldown).Delete();
+						RealmWorldDBMgr.DatabaseProvider.Delete(cooldown);
 					}
+					//((ActiveRecordBase)cooldown).Delete();
+					//}
 					cooldowns.RemoveAt(i);
 				}
 				else

@@ -8,7 +8,7 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
 	{
 	    public int CharacterLowId;
 
-	    public uint ArenaTeamId;
+	    public long ArenaTeamId;
 
         public static IEnumerable<ArenaTeamMember> FindAll(ArenaTeam team)
         {

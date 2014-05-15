@@ -14,7 +14,10 @@
  *
  *************************************************************************/
 
+using System;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Security.Principal;
 using WCell.Core.Initialization;
 
 namespace WCell.RealmServer.Stats
@@ -75,7 +78,7 @@ namespace WCell.RealmServer.Stats
         /// <summary>
         /// Initializes the performance counters if they haven't already been created.
         /// </summary>
-        [Initialization(InitializationPass.Fifth, "Initialize performance counters")]
+        [Initialization(InitializationPass.Fifth, "Initialize performance counters",IsRequired = false)]
         public static void Initialize()
         {
             CounterCreationDataCollection counterList = new CounterCreationDataCollection();
@@ -123,7 +126,17 @@ namespace WCell.RealmServer.Stats
 
             if (!PerformanceCounterCategory.Exists(CATEGORY_NAME))
             {
-                PerformanceCounterCategory.Create(CATEGORY_NAME, CATEGORY_HELP, PerformanceCounterCategoryType.SingleInstance, counterList);
+				var identity = WindowsIdentity.GetCurrent();
+				if (identity == null) throw new InvalidOperationException("Couldn't get the current user identity");
+				var principal = new WindowsPrincipal(identity);
+	            if (principal.IsInRole(WindowsBuiltInRole.Administrator))
+	            {
+		            PerformanceCounterCategory.Create(CATEGORY_NAME, CATEGORY_HELP, PerformanceCounterCategoryType.SingleInstance, counterList);
+	            }
+	            else
+	            {
+					throw new WarningException("The user is not an administrator, unable to install performance counters.");
+	            }
             }
 
             PacketsSentPerSecond = new PerformanceCounter(CATEGORY_NAME, "Packets Sent/sec", false);

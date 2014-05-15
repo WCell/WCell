@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using FluentNHibernate.Mapping;
+﻿using FluentNHibernate.Mapping;
+using WCell.RealmServer.Instances;
 
-namespace WCell.RealmServer.Instances
+namespace WCell.RealmServer.Database.Mappings
 {
     class GlobalInstanceTimerMap : ClassMap<GlobalInstanceTimer>
     {
         public GlobalInstanceTimerMap()
 		{
+			Not.LazyLoad();
 			Id(x => x.MapId);
 			Map(x => x.LastResets).Not.Nullable();
 		}

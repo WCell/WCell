@@ -54,7 +54,7 @@ namespace WCell.Tools.Domi.Output
 
 		public static void Init()
 		{
-			RealmDBMgr.Initialize();
+			RealmWorldDBMgr.Initialize();
 		    var mgr = RealmServer.RealmServer.InitMgr;
             RealmAddonMgr.Initialize(mgr);
             mgr.PerformInitialization();

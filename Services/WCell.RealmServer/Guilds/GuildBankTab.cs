@@ -5,6 +5,7 @@ using System.Text;
 using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.RealmServer.Database;
+using WCell.RealmServer.Database.Entities;
 using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Guilds
@@ -34,7 +35,7 @@ namespace WCell.RealmServer.Guilds
 
                 value.Slot = slot;
 
-                Items[slot] = new GuildBankTabItemMapping {
+                Items[slot] = new GuildBankTabItem{
                     Guid = value.Guid,
                     TabSlot = (byte)slot
                 };

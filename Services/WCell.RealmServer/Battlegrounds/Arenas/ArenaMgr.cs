@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using WCell.Constants.ArenaTeams;
-using WCell.Core;
-using WCell.Core.Database;
-using WCell.Core.Initialization;
 using WCell.RealmServer.Database;
+using WCell.RealmServer.Database.Entities;
 using WCell.RealmServer.NPCs;
 using WCell.Util.Collections;
 
@@ -88,7 +87,7 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
         /// Maps char-id to the corresponding ArenaTeamMember object so it can be looked up when char reconnects
         /// </summary>
         public static readonly IDictionary<uint, ArenaTeamMember> OfflineChars = new SynchronizedDictionary<uint, ArenaTeamMember>();
-        public static readonly IDictionary<uint, ArenaTeam> ArenaTeamsById = new SynchronizedDictionary<uint, ArenaTeam>();
+        public static readonly IDictionary<long, ArenaTeam> ArenaTeamsById = new SynchronizedDictionary<long, ArenaTeam>();
         public static readonly IDictionary<string, ArenaTeam> ArenaTeamsByName = new SynchronizedDictionary<string, ArenaTeam>(StringComparer.InvariantCultureIgnoreCase);
 
         #region Init
@@ -104,14 +103,14 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
             try
             {
 #endif
-                teams = WCellRecord<ArenaTeam>.FindAll();
+				teams = RealmWorldDBMgr.DatabaseProvider.Query<ArenaTeam>().ToArray();
 #if DEBUG
             }
             catch (Exception e)
             {
-                RealmDBMgr.OnDBError(e);
-                teams = WCellRecord<ArenaTeam>.FindAll();
-            }
+				RealmWorldDBMgr.OnDBError(e);
+                teams = RealmWorldDBMgr.DatabaseProvider.Query<ArenaTeam>().ToArray();
+			}
 #endif
             if (teams != null)
             {

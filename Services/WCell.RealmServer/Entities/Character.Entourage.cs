@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using WCell.Constants;
 using WCell.Constants.GameObjects;
 using WCell.Core;
@@ -9,12 +8,10 @@ using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Modifiers;
 using WCell.RealmServer.NPCs.Pets;
 using WCell.RealmServer.NPCs;
-using WCell.RealmServer.Database;
 using WCell.Constants.NPCs;
 using WCell.Constants.Pets;
 using WCell.Util.Graphics;
-using Castle.ActiveRecord;
-
+using WCell.RealmServer.Database;
 
 namespace WCell.RealmServer.Entities
 {
@@ -548,10 +545,10 @@ namespace WCell.RealmServer.Entities
 				for (var i = 0; i < records.Count; i++)
 				{
 					var record = records[i];
-					if (record.IsDirty)
-					{
-						record.Save();
-					}
+					//if (record.IsDirty)
+					//{
+					RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(record);
+					//}
 				}
 			}
 		}
@@ -621,7 +618,7 @@ namespace WCell.RealmServer.Entities
 		internal SummonedPetRecord GetOrCreateSummonedPetRecord(NPCEntry entry)
 		{
 			var record = GetOrCreatePetRecord(entry, SummonedPetRecords);
-			record.PetNumber = (uint)PetMgr.PetNumberGenerator.Next();
+			record.PetNumber = (uint)PetMgr.NextPetNumberId();
 			return record;
 		}
 
@@ -685,7 +682,7 @@ namespace WCell.RealmServer.Entities
 				if (m_activePet.PetRecord != null)
 				{
 					m_activePet.UpdatePetData(m_record);
-					((ActiveRecordBase)m_activePet.PetRecord).SaveLater();
+					RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(m_activePet.PetRecord);
 				}
 			}
 			else if (minion.Entry.Type == CreatureType.Totem)

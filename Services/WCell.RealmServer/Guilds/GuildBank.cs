@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using WCell.Constants;
 using WCell.Constants.Guilds;
 using WCell.Constants.Items;
@@ -23,19 +24,19 @@ namespace WCell.RealmServer.Guilds
             50000000
         };
 
-		private Database.Entities.GuildBankTab[] bankTabs;
+		private GuildBankTab[] bankTabs;
 
 		/// <summary>
 		/// 
 		/// </summary>
-		internal GuildBank(Database.Entities.Guild guild, bool isNew)
+		internal GuildBank(Guild guild, bool isNew)
 		{
 			Guild = guild;
 			BankLog = new GuildBankLog(this);
 			if (isNew)
 			{
 				bankTabs = new[] {
-					new Database.Entities.GuildBankTab(this)
+					new GuildBankTab(this)
 					{
 						BankSlot = 0,
 						Icon = "",
@@ -47,12 +48,12 @@ namespace WCell.RealmServer.Guilds
 			else
 			{
 				// load an existing guild bank
-				bankTabs = Database.Entities.GuildBankTab.FindAllByProperty("_guildId", (int)guild.Id);
+				bankTabs = RealmWorldDBMgr.DatabaseProvider.Query<GuildBankTab>().Where(tab => tab.Guild == guild).ToArray(); //.FindAllByProperty("_guildId", (int)guild.Id); //TODO: Check this gets all guild bank tabs as intended
 				BankLog.LoadLogs();
 			}
 		}
 
-		public Database.Entities.Guild Guild
+		public Guild Guild
 		{
 			get;
 			private set;
@@ -64,7 +65,7 @@ namespace WCell.RealmServer.Guilds
 			private set;
 		}
 
-		public Database.Entities.GuildBankTab this[int tabId]
+		public GuildBankTab this[int tabId]
 		{
 			get
 			{
@@ -625,7 +626,7 @@ namespace WCell.RealmServer.Guilds
 			tab.Name = newName;
 			tab.Icon = newIcon;
 
-			tab.UpdateLater();
+			RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(tab);
 
 			GuildHandler.SendGuildBankTabNames(chr, bank);
 			GuildHandler.SendGuildBankTabContents(chr, bank, tabId);
@@ -660,7 +661,7 @@ namespace WCell.RealmServer.Guilds
 				return;
 
 			tab.Text = newText.Length < 501 ? newText : newText.Substring(0, 500);
-			tab.UpdateLater();
+			RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(tab);
 
 			Guild.Broadcast(GuildHandler.CreateBankTabTextPacket(tabId, newText));
 		}
@@ -694,7 +695,7 @@ namespace WCell.RealmServer.Guilds
 			if (bankTab != null) return false;
 
 			Guild.PurchasedBankTabCount++;
-			var tab = new Database.Entities.GuildBankTab
+			var tab = new GuildBankTab
 			{
 				Bank = this,
 				BankSlot = tabId,
@@ -704,7 +705,7 @@ namespace WCell.RealmServer.Guilds
 			};
 			ArrayUtil.AddOnlyOne(ref bankTabs, tab);
 
-			tab.CreateLater();
+			RealmWorldDBMgr.DatabaseProvider.Save(tab);
 
 			return true;
 		}

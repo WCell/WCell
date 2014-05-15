@@ -1,4 +1,5 @@
 using WCell.Constants.Items;
+using WCell.RealmServer.Database.Entities;
 using WCell.RealmServer.Items;
 using WCell.Util.Commands;
 using WCell.RealmServer.Mail;
@@ -68,7 +69,7 @@ namespace WCell.RealmServer.Commands
 					}
 					var item = ItemRecord.CreateRecord(template);
 					items.Add(item);
-					item.SaveLater();
+					RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(item);
 				}
 				
 				if (mod.Contains("c"))

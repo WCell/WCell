@@ -34,6 +34,7 @@ using WCell.RealmServer.Looting;
 using WCell.RealmServer.Spells;
 using WCell.Util.Logging;
 using WCell.Util.Threading;
+using WCell.RealmServer.Database.Entities;
 
 namespace WCell.RealmServer.Quests
 {
@@ -897,12 +898,12 @@ namespace WCell.RealmServer.Quests
 			QuestRecord[] records;
 			try
 			{
-				records = QuestRecord.GetQuestRecordForCharacter(Owner.EntityId.Low);
+				records = QuestRecord.GetQuestRecordForCharacter(Owner.EntityId.Low).ToArray();
 			}
 			catch (Exception e)
 			{
-				RealmDBMgr.OnDBError(e);
-				records = QuestRecord.GetQuestRecordForCharacter(Owner.EntityId.Low);
+				RealmWorldDBMgr.OnDBError(e);
+				records = QuestRecord.GetQuestRecordForCharacter(Owner.EntityId.Low).ToArray();
 			}
 
 			if (records != null)

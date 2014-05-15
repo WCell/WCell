@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using WCell.RealmServer.Database.Entities;
 using WCell.Util.Logging;
 using WCell.Constants;
 using WCell.Constants.Items;
@@ -417,7 +418,7 @@ namespace WCell.RealmServer.Entities
 				return;
 			}
 
-			m_record.SaveAndFlush();
+			RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(m_record);
 		}
 
 		/// <summary>
@@ -1327,7 +1328,7 @@ namespace WCell.RealmServer.Entities
 			if (record != null)
 			{
 				record.OwnerId = 0;
-				record.DeleteLater();
+				RealmWorldDBMgr.DatabaseProvider.Delete(record);
 				m_record = null;
 
 				Dispose();

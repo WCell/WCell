@@ -18,15 +18,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Castle.ActiveRecord;
-using Cell.Core;
 using WCell.RealmServer.Database.Entities;
 using WCell.Util.Logging;
-using WCell.Constants;
 using WCell.Constants.Guilds;
-using WCell.Constants.NPCs;
 using WCell.Core;
-using WCell.RealmServer.Database;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Handlers;
 using WCell.Util.Synchronization;
@@ -35,6 +30,8 @@ using WCell.RealmServer.Chat;
 using WCell.RealmServer.Entities;
 using WCell.Util;
 using WCell.Util.Collections;
+using WCell.RealmServer.Database;
+using System.Threading;
 
 namespace WCell.RealmServer.Guilds
 {
@@ -48,6 +45,13 @@ namespace WCell.RealmServer.Guilds
 		private ImmutableList<GuildRank> m_ranks;
 
 		public readonly IDictionary<uint, GuildMember> Members = new Dictionary<uint, GuildMember>();
+		private long _id;
+		private string _name;
+		private string _MOTD;
+		private string _info;
+		private DateTime _created;
+		private GuildTabard _tabard;
+		private uint _leaderLowId;
 		#endregion
 
 		#region Properties
@@ -55,9 +59,9 @@ namespace WCell.RealmServer.Guilds
 		/// Id of this guild
 		/// </summary>
 		/// <remarks>UpdateField's GuildId is equal to it</remarks>
-		public uint Id
+		public int Id
 		{
-			get { return (uint)_id; }
+			get { return (int)_id; } //TODO: long -> uint conversion find a way to solve this
 		}
 
 		/// <summary>
@@ -85,7 +89,7 @@ namespace WCell.RealmServer.Guilds
 
 				GuildHandler.SendGuildRosterToGuildMembers(this);
 				GuildHandler.SendEventToGuild(this, GuildEvents.MOTD);
-				this.UpdateLater();
+				RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(this);
 			}
 		}
 
@@ -104,7 +108,7 @@ namespace WCell.RealmServer.Guilds
 				_info = value;
 
 				GuildHandler.SendGuildRosterToGuildMembers(this);
-				this.UpdateLater();
+				RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(this);
 			}
 		}
 
@@ -129,9 +133,9 @@ namespace WCell.RealmServer.Guilds
 					return;
 
 				m_leader = value;
-				_leaderLowId = (int)value.Id;
+				_leaderLowId = value.Id;
 
-				this.UpdateLater();
+				RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(this);
 			}
 		}
 
@@ -144,9 +148,17 @@ namespace WCell.RealmServer.Guilds
 			set
 			{
 				_tabard = value;
-				this.UpdateLater();
+				RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(this);
 			}
 		}
+
+		public uint LeaderLowId
+		{
+			get { return _leaderLowId; }
+		}
+
+		public int PurchasedBankTabCount;
+		public long Money;
 
 		/// <summary>
 		/// Number of guild's members
@@ -171,6 +183,50 @@ namespace WCell.RealmServer.Guilds
 		#endregion
 
 		#region Constructors
+
+		private static bool _idGeneratorInitialised;
+		private static long _highestId;
+
+		private static void Init()
+		{
+			//long highestId;
+			try
+			{
+				_highestId = RealmWorldDBMgr.DatabaseProvider.Query<Guild>().Max(guild => guild.Id);
+			}
+			catch (Exception e)
+			{
+				RealmWorldDBMgr.OnDBError(e);
+				_highestId = RealmWorldDBMgr.DatabaseProvider.Query<Guild>().Max(guild => guild.Id);
+			}
+
+			//_highestId = (long)Convert.ChangeType(highestId, typeof(long));
+
+			_idGeneratorInitialised = true;
+		}
+
+		/// <summary>
+		/// Returns the next unique Id for a new Item
+		/// </summary>
+		public static long NextId()
+		{
+			if (!_idGeneratorInitialised)
+				Init();
+
+			return Interlocked.Increment(ref _highestId);
+		}
+
+		public static long LastId
+		{
+			get
+			{
+				if (!_idGeneratorInitialised)
+					Init();
+				return Interlocked.Read(ref _highestId);
+			}
+		}
+
+
 		/// <summary>
 		/// Constructor is implicitely called when Guild is loaded from DB
 		/// </summary>
@@ -191,13 +247,13 @@ namespace WCell.RealmServer.Guilds
 		/// </summary>
 		/// <param name="leader">leader's character record</param>
 		/// <param name="name">the name of the new character</param>
-		/// <returns>the <seealso cref="Database.Entities.Guild"/> object</returns>
+		/// <returns>the <seealso cref="Guild"/> object</returns>
 		public Guild(CharacterRecord leader, string name)
 			: this(true)
 		{
 			_created = DateTime.Now;
-			_id = _idGenerator.Next();
-			_leaderLowId = (int)leader.EntityLowId;
+			_id = NextId();
+			_leaderLowId = leader.EntityLowId;
 			_name = name;
 			_tabard = new GuildTabard();
 			_MOTD = "Default MOTD";
@@ -213,7 +269,7 @@ namespace WCell.RealmServer.Guilds
 			//Set the leader as guild master rank
 			m_leader.RankId = 0;
 
-			this.CreateLater();						// save to DB, asynchronously
+			RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(this);
 		}
 		#endregion
 
@@ -297,7 +353,7 @@ namespace WCell.RealmServer.Guilds
 				}
 				newMember = new GuildMember(chr, this, m_ranks.Last());
 				Members.Add(newMember.Id, newMember);
-				newMember.Create();
+				RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(this);
 			}
 
 			GuildMgr.Instance.RegisterGuildMember(newMember);
@@ -369,10 +425,10 @@ namespace WCell.RealmServer.Guilds
 
 			RealmServer.IOQueue.AddMessage(() =>
 			{
-				member.Delete();
+				RealmWorldDBMgr.DatabaseProvider.Delete(member);
 				if (update)
 				{
-					Update();
+					RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(this);
 				}
 			});
 			return true;
@@ -493,7 +549,7 @@ namespace WCell.RealmServer.Guilds
 
 				m_ranks.RemoveAt(lastRankId);
 
-				RealmServer.IOQueue.AddMessage(() => m_ranks[lastRankId].Delete());
+				RealmServer.IOQueue.AddMessage(() => RealmWorldDBMgr.DatabaseProvider.Delete(m_ranks[lastRankId]));
 			}
 			catch (Exception e)
 			{
@@ -555,7 +611,7 @@ namespace WCell.RealmServer.Guilds
 				return false;
 
 			member.RankId--;
-			member.UpdateLater();
+			RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(member);
 
 			return true;
 		}
@@ -571,7 +627,7 @@ namespace WCell.RealmServer.Guilds
 				return false;
 
 			member.RankId++;
-			member.UpdateLater();
+			RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(member);
 
 			return true;
 		}
@@ -634,7 +690,7 @@ namespace WCell.RealmServer.Guilds
 				}
 
 				GuildMgr.Instance.UnregisterGuild(this);
-				RealmServer.IOQueue.AddMessage(() => Delete());
+				RealmServer.IOQueue.AddMessage(() => RealmWorldDBMgr.DatabaseProvider.Delete(this));
 			}
 		}
 
@@ -664,10 +720,10 @@ namespace WCell.RealmServer.Guilds
 			{
 				if (currentLeader != null)
 				{
-					currentLeader.Update();
+					RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(currentLeader);
 				}
-				newLeader.Update();
-				Update();
+				RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(newLeader);
+				RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(this);
 			}));
 
 			if (currentLeader != null)
@@ -884,7 +940,7 @@ namespace WCell.RealmServer.Guilds
 		/// <param name="commandId">executed command (used for sending result)</param>
 		/// <param name="reqPrivs">required privileges</param>
 		/// <returns>The Character's guild if the character has required privileges within the guild, otherwise null</returns>
-		public static Database.Entities.Guild CheckPrivs(Character character, GuildCommandId commandId, GuildPrivileges reqPrivs)
+		public static Guild CheckPrivs(Character character, GuildCommandId commandId, GuildPrivileges reqPrivs)
 		{
 			var member = character.GuildMember;
 			if (member == null)

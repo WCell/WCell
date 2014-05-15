@@ -17,7 +17,7 @@ namespace WCell.Tools.Domi.Output
 
 		private static void Init()
 		{
-			RealmDBMgr.Initialize();
+			RealmWorldDBMgr.Initialize();
 			SpellHandler.LoadSpells();
 			AreaTriggerMgr.Initialize();
 		}

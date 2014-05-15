@@ -2,15 +2,36 @@ namespace WCell.RealmServer.Database.Entities
 {
 	public class AccountData
 	{
-		public long AccountId { get; set; }
+		public virtual long AccountId { get; set; }
 
-		public byte[][] DataHolder = new byte[8][];
+		public virtual int[] SizeHolder
+		{
+			get { return _sizeHolder; }
+			set { _sizeHolder = value; }
+		}
+
 		/// <summary>
 		/// TODO: Can be changed to uint (unix time)
 		/// </summary>
-		public int[] TimeStamps = new int[8];
+		public virtual int[] TimeStamps
+		{
+			get { return _timeStamps; }
+			set { _timeStamps = value; }
+		}
 
-		public int[] SizeHolder = new int[8];
+		public virtual byte[][] DataHolder
+		{
+			get { return _dataHolder; }
+			set { _dataHolder = value; }
+		}
+
+		private byte[][] _dataHolder = new byte[8][];
+		/// <summary>
+		/// TODO: Can be changed to uint (unix time)
+		/// </summary>
+		private int[] _timeStamps = new int[8];
+
+		private int[] _sizeHolder = new int[8];
 
 		public static AccountData GetAccountData(long accountId)
 		{

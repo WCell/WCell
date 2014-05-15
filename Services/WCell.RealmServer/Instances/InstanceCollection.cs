@@ -287,7 +287,7 @@ namespace WCell.RealmServer.Instances
 					if (binding.BindTime.AddMinutes(InstanceMgr.DungeonExpiryMinutes) > DateTime.Now)
 					{
 						bindings.RemoveAt(i);
-						binding.DeleteLater();
+						RealmWorldDBMgr.DatabaseProvider.Delete(binding);
 					}
 				}
 			}

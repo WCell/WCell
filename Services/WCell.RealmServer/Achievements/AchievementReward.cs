@@ -10,7 +10,6 @@ using WCell.RealmServer.Entities;
 using WCell.RealmServer.Lang;
 using WCell.RealmServer.Mail;
 using WCell.Util.Data;
-using WCell.Core.Database;
 
 namespace WCell.RealmServer.Achievements
 {

@@ -5,6 +5,7 @@ using System.Text;
 using FluentNHibernate;
 using FluentNHibernate.Mapping;
 using WCell.RealmServer.Database.Entities;
+using WCell.RealmServer.Guilds;
 
 namespace WCell.RealmServer.Database.Mappings
 {
@@ -12,6 +13,7 @@ namespace WCell.RealmServer.Database.Mappings
 	{
 		public GuildMap()
 		{
+			Not.LazyLoad();
 			Id(x => x.Id).Not.Nullable();
 			Id(Reveal.Member<Guild>("_leaderLowId")).Not.Nullable();
 			Map(x => x.Created).Not.Nullable();

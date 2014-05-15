@@ -4,6 +4,7 @@ using WCell.Constants.Skills;
 using WCell.Constants.Updates;
 using WCell.Core;
 using WCell.RealmServer.Database;
+using WCell.RealmServer.Database.Entities;
 using WCell.RealmServer.Items;
 
 namespace WCell.RealmServer.Entities

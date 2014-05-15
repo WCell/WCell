@@ -95,7 +95,7 @@ namespace WCell.RealmServer.Interaction
         /// </summary>
         public virtual void SaveToDB()
         {
-            m_charRelationRecord.Save();
+			RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(m_charRelationRecord);
         }
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace WCell.RealmServer.Interaction
         /// </summary>
         public virtual void Delete()
         {
-            m_charRelationRecord.Delete();
+			RealmWorldDBMgr.DatabaseProvider.Delete(m_charRelationRecord);
         }
 
         #region Static Methods
@@ -113,7 +113,7 @@ namespace WCell.RealmServer.Interaction
         /// <returns>The list of all characters relations.</returns>
         public static BaseRelation[] GetAll()
         {
-            CharacterRelationRecord[] relations = CharacterRelationRecord.FindAll();
+			CharacterRelationRecord[] relations = RealmWorldDBMgr.DatabaseProvider.Query<CharacterRelationRecord>().ToArray();
 
             return relations.Select(crr => RelationMgr.CreateRelation(crr)).ToArray();
         }
@@ -125,8 +125,8 @@ namespace WCell.RealmServer.Interaction
         /// <returns>The list of relations of the character.</returns>
         public static BaseRelation[] GetByCharacterId(uint charLowId)
         {
-            CharacterRelationRecord[] relations =
-				CharacterRelationRecord.FindAllByProperty("_characterId", (long)charLowId);
+			CharacterRelationRecord[] relations = RealmWorldDBMgr.DatabaseProvider.Query<CharacterRelationRecord>().Where(characterRelationRecord => characterRelationRecord.CharacterId == charLowId).ToArray();
+				//CharacterRelationRecord.FindAllByProperty("_characterId", (long)charLowId);
 
             return relations.Select(crr => RelationMgr.CreateRelation(crr)).ToArray();
         }

@@ -11,7 +11,14 @@ namespace WCell.RealmServer.Database.Mappings
 	{
 		public QuestRecordMap()
 		{
-			//TODO: Complete map
+			Not.LazyLoad();
+			Id(x => x.QuestRecordId).GeneratedBy.Assigned();
+			Map(x => x.QuestTemplateId).Not.Nullable(); // TODO: Camelcase?
+			Map(x => x.OwnerId).Not.Nullable();	// TODO: Camelcase?
+			Map(x => x.Slot).Not.Nullable();
+			Map(x => x.TimeUntil);
+			Map(x => x.Interactions);
+			Map(x => x.VisitedATs);
 		}
 	}
 }

@@ -6,6 +6,7 @@ using WCell.Util.Threading;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
 using WCell.Util;
+using WCell.RealmServer.Database.Entities;
 
 namespace WCell.RealmServer.Battlegrounds.Arenas
 {

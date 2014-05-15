@@ -20,7 +20,7 @@ using WCell.RealmServer.NPCs.Armorer;
 using WCell.RealmServer.NPCs.Trainers;
 using WCell.RealmServer.NPCs.Vendors;
 using WCell.Constants.Guilds;
-using Guild = WCell.RealmServer.Database.Entities.Guild;
+using WCell.RealmServer.Database.Entities;
 
 namespace WCell.RealmServer.Handlers
 {
@@ -284,7 +284,7 @@ namespace WCell.RealmServer.Handlers
 						{
 							var item = slotId.Container.AddUnchecked(slotId.Slot, templ, 1, true) as PetitionCharter;
                             item.Petition = new PetitionRecord(name, chr.EntityId.Low, item.EntityId.Low, type);
-                            item.Petition.Create();
+							RealmWorldDBMgr.DatabaseProvider.Save(item.Petition);
 
 							chr.Money -= cost;
                             
@@ -349,7 +349,7 @@ namespace WCell.RealmServer.Handlers
                 }
 
             charter.Petition.Name = newName;
-            charter.Petition.Update();
+			RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(charter.Petition);
 
             SendPetitionRename(client, charter);
         }

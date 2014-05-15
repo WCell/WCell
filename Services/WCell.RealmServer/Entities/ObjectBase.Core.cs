@@ -15,6 +15,9 @@
  *************************************************************************/
 
 using System;
+using WCell.PacketAnalysis.Updates;
+using WCell.RealmServer.Debugging;
+using WCell.Util;
 using WCell.Util.Logging;
 using WCell.Constants.Updates;
 using WCell.Core;
@@ -420,18 +423,18 @@ namespace WCell.RealmServer.Entities
                 m_publicUpdateMask.SetBit(index);
             }
 #if DEBUG
-            //var str = FieldRenderUtil.GetFieldStr(ObjectTypeId, index);
-            //str = string.Format("{0} updating: {1}", this is INamed ? ((INamed)this).Name : this.ToString(), str);
-            //if (this is Character)
-            //{
-            //    DebugUtil.Log(((Character)this).Account, str);
-            //}
-            //else
-            //{
-            //    Console.WriteLine(str);
-            //}
+			var str = FieldRenderUtil.GetFieldStr(ObjectTypeId, index);
+			str = string.Format("{0} updating: {1}", this is INamed ? ((INamed)this).Name : this.ToString(), str);
+			if (this is Character)
+			{
+				DebugUtil.Log(((Character)this).Account, str);
+			}
+			else
+			{
+				//Console.WriteLine(str);
+			}
 #endif
-            if (!m_requiresUpdate && IsInWorld)
+			if (!m_requiresUpdate && IsInWorld)
             {
                 RequestUpdate();
             }

@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using WCell.RealmServer.Database;
 
 namespace WCell.RealmServer.Spells
 {
@@ -94,22 +96,22 @@ namespace WCell.RealmServer.Spells
 		}
 	}
 
-	[ActiveRecord("SpellIdCooldown", Access = PropertyAccess.Property)]
-	public class PersistentSpellIdCooldown : ActiveRecordBase<PersistentSpellIdCooldown>, ISpellIdCooldown, IConsistentCooldown
+	//[ActiveRecord("SpellIdCooldown", Access = PropertyAccess.Property)]
+	public class PersistentSpellIdCooldown : ISpellIdCooldown, IConsistentCooldown
 	{
 		public static PersistentSpellIdCooldown[] LoadIdCooldownsFor(uint lowId)
 		{
-			return FindAllByProperty("_charId", (int)lowId);
+			return RealmWorldDBMgr.DatabaseProvider.Query<PersistentSpellIdCooldown>().Where(psic => psic.CharId == lowId).ToArray(); //FindAllByProperty("_charId", (int)lowId);
 		}
 
-		[Field("SpellId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
+		//[Field("SpellId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
 		private int _spellId;
-		[Field("ItemId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
+		//[Field("ItemId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
 		private int _itemId;
-		[Field("CharId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
+		//[Field("CharId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
 		private int _charId;
 
-		[PrimaryKey(PrimaryKeyType.Increment)]
+		//[PrimaryKey(PrimaryKeyType.Increment)]
 		private long Id
 		{
 			get;
@@ -122,7 +124,7 @@ namespace WCell.RealmServer.Spells
 			set { _charId = (int)value; }
 		}
 
-		[Property]
+		//[Property]
 		public DateTime Until
 		{
 			get;
@@ -145,26 +147,46 @@ namespace WCell.RealmServer.Spells
 		{
 			return this;
 		}
+
+		public void Save()
+		{
+			RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(this);
+		}
+
+		public void Update()
+		{
+			RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(this);
+		}
+
+		public void Create()
+		{
+			RealmWorldDBMgr.DatabaseProvider.Save(this);
+		}
+
+		public void Delete()
+		{
+			RealmWorldDBMgr.DatabaseProvider.Delete(this);
+		}
 	}
 
-	[ActiveRecord("SpellCategoryCooldown", Access = PropertyAccess.Property)]
-	public class PersistentSpellCategoryCooldown : ActiveRecordBase<PersistentSpellCategoryCooldown>, ISpellCategoryCooldown, IConsistentCooldown
+	//[ActiveRecord("SpellCategoryCooldown", Access = PropertyAccess.Property)]
+	public class PersistentSpellCategoryCooldown : ISpellCategoryCooldown, IConsistentCooldown
 	{
 		public static PersistentSpellCategoryCooldown[] LoadCategoryCooldownsFor(uint lowId)
 		{
-			return FindAllByProperty("_charId", (int)lowId);
+			return RealmWorldDBMgr.DatabaseProvider.Query<PersistentSpellCategoryCooldown>().Where(psic => psic.CharId == lowId).ToArray(); //FindAllByProperty("_charId", (int)lowId);
 		}
 
-		[Field("CatId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
+		//[Field("CatId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
 		private int _catId;
-		[Field("ItemId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
+		//[Field("ItemId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
 		private int _itemId;
-		[Field("CharId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
+		//[Field("CharId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
 		private int _charId;
-		[Field("SpellId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
+		//[Field("SpellId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
 		private int _spellId;
 
-		[PrimaryKey(PrimaryKeyType.Increment)]
+		//[PrimaryKey(PrimaryKeyType.Increment)]
 		private long Id
 		{
 			get;
@@ -183,7 +205,7 @@ namespace WCell.RealmServer.Spells
 			set { _charId = (int)value; }
 		}
 
-		[Property]
+		//[Property]
 		public DateTime Until
 		{
 			get;
@@ -205,6 +227,26 @@ namespace WCell.RealmServer.Spells
 		public IConsistentCooldown AsConsistent()
 		{
 			return this;
+		}
+
+		public void Save()
+		{
+			RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(this);
+		}
+
+		public void Update()
+		{
+			RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(this);
+		}
+
+		public void Create()
+		{
+			RealmWorldDBMgr.DatabaseProvider.Save(this);
+		}
+
+		public void Delete()
+		{
+			RealmWorldDBMgr.DatabaseProvider.Delete(this);
 		}
 	}
 }

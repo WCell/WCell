@@ -11,10 +11,11 @@ namespace WCell.RealmServer.Database.Mappings
 	{
 		public RaidRecordMap()
 		{
+			Not.LazyLoad();
 			Id(x => x.RecordId).GeneratedBy.Native();
-			Map(x => x.CharacterLow).Not.Nullable().Access.CamelCaseField();
-			Map(x => x.InstanceId).Not.Nullable().Access.CamelCaseField();
-			Map(x => x.MapId).Not.Nullable().Access.CamelCaseField();
+			Map(x => x.CharacterLow).Not.Nullable();
+			Map(x => x.InstanceId).Not.Nullable();
+			Map(x => x.MapId).Not.Nullable();
 			Map(x => x.Until).Not.Nullable();
 		}
 	}

@@ -127,8 +127,9 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FluentNHibernate">
-      <HintPath>..\..\Libraries\Binaries\FluentHibernate\FluentNHibernate.dll</HintPath>
+    <Reference Include="FluentNHibernate, Version=1.4.0.0, Culture=neutral, PublicKeyToken=8aa435e3cb308880, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Jaddie.Database\packages\FluentNHibernate.1.4.0.0\lib\net35\FluentNHibernate.dll</HintPath>
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.85.5.452, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -138,8 +139,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Libraries\Binaries\Release\MySql\MySql.Data.dll</HintPath>
     </Reference>
-    <Reference Include="NHibernate">
-      <HintPath>..\..\Libraries\Binaries\NHibernate\NHibernate.dll</HintPath>
+    <Reference Include="NHibernate, Version=3.3.1.4000, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Jaddie.Database\packages\NHibernate.3.3.3.4001\lib\Net35\NHibernate.dll</HintPath>
     </Reference>
     <Reference Include="ParallelExtensionsExtras, Version=1.2.0.0, Culture=neutral, PublicKeyToken=e46dcf2234ff274d, processorArchitecture=MSIL">
       <HintPath>..\..\Libraries\Binaries\ParallelExtensionsExtras\ParallelExtensionsExtras.dll</HintPath>
@@ -168,6 +170,10 @@
     <Compile Include="Achievements\AchievementCriteria.cs" />
     <Compile Include="Achievements\AchievementCategoryEntry.cs" />
     <Compile Include="Achievements\AchievementCollection.cs" />
+    <Compile Include="Database\Mappings\AccountDataMap.cs" />
+    <Compile Include="Database\Mappings\PetitionRecordMap.cs" />
+    <Compile Include="Database\Mappings\SpecProfileMap.cs" />
+    <Compile Include="Database\SqlUtil.cs" />
     <Compile Include="Database\Entities\AchievementRecord.cs" />
     <Compile Include="Database\Entities\AchievementProgressRecord.cs" />
     <Compile Include="Achievements\AchievementCriteriaRequirement.cs" />
@@ -188,29 +194,40 @@
     <Compile Include="Database\Entities\GuildBankLogEntry.cs" />
     <Compile Include="Database\Entities\GuildBankTab.cs" />
     <Compile Include="Database\Entities\GuildBankTabItemMapping.cs" />
-    <Compile Include="Database\GuildBankTabRights.cs" />
+    <Compile Include="Database\Entities\GuildBankTabRights.cs" />
     <Compile Include="Database\Entities\GuildEventLogEntry.cs" />
-    <Compile Include="Database\GuildMember.cs" />
+    <Compile Include="Database\Entities\GuildMember.cs" />
     <Compile Include="Database\GuildRank.cs" />
     <Compile Include="Database\Entities\ItemRecord.cs" />
     <Compile Include="Database\Mappings\AchievementProgressRecordMap.cs" />
     <Compile Include="Database\Mappings\AchievementRecordMap.cs" />
+    <Compile Include="Database\Mappings\ArenaTeamMap.cs" />
     <Compile Include="Database\Mappings\ArenaTeamMemberMap.cs" />
     <Compile Include="Database\Mappings\ArenaTeamStatsMap.cs" />
     <Compile Include="Database\Mappings\AuctionMap.cs" />
     <Compile Include="Database\Mappings\CharacterRecordMap.cs" />
     <Compile Include="Database\Mappings\AuraRecordMap.cs" />
     <Compile Include="Database\Mappings\CharacterRelationRecordMap.cs" />
+    <Compile Include="Database\Mappings\GuildRankMap.cs" />
+    <Compile Include="Database\Mappings\InstanceProgressMap.cs" />
+    <Compile Include="Database\Mappings\ItemRecordMap.cs" />
+    <Compile Include="Database\Mappings\MailMessageMap.cs" />
+    <Compile Include="Database\Mappings\SummonedPetRecordMap.cs" />
+    <Compile Include="Database\Mappings\PersistentSpellIdCooldown.cs" />
+    <Compile Include="Database\Mappings\PersistentSpellCategoryCooldownMap.cs" />
     <Compile Include="Database\Mappings\EquipmentSetMap.cs" />
     <Compile Include="Database\Mappings\GuildBankLogEntryMap.cs" />
-    <Compile Include="Database\Mappings\GuildBankTabItemMappingMap.cs" />
+    <Compile Include="Database\Mappings\GuildBankTabItemMap.cs" />
     <Compile Include="Database\Mappings\GuildBankTabMap.cs" />
+    <Compile Include="Database\Mappings\GuildBankTabRightsMap.cs" />
     <Compile Include="Database\Mappings\GuildEventLogEntryMap.cs" />
     <Compile Include="Database\Mappings\GuildMap.cs" />
     <Compile Include="Database\Mappings\GuildMemberMap.cs" />
     <Compile Include="Database\Mappings\GuildTabardMap.cs" />
     <Compile Include="Database\Mappings\InstanceBindingMap.cs" />
+    <Compile Include="Database\Mappings\PermanentPetRecordMap.cs" />
     <Compile Include="Database\Mappings\PetSpellMap.cs" />
+    <Compile Include="Database\Mappings\PetTalentSpellRecordMap.cs" />
     <Compile Include="Database\Mappings\QuestRecordMap.cs" />
     <Compile Include="Database\Mappings\RaidRecordMap.cs" />
     <Compile Include="Database\Mappings\ReputationRecordMap.cs" />
@@ -257,7 +274,7 @@
     <Compile Include="Handlers\TotemHandler.cs" />
     <Compile Include="Handlers\WorldStateHandler.cs" />
     <Compile Include="Instances\DungeonInstanceSettings.cs" />
-    <Compile Include="Instances\GlobalInstanceTimerMap.cs" />
+    <Compile Include="Database\Mappings\GlobalInstanceTimerMap.cs" />
     <Compile Include="Instances\InstanceProgress.cs" />
     <Compile Include="Instances\RaidInstanceSettings.cs" />
     <Compile Include="LFG\LFGMgr.cs" />
@@ -282,7 +299,7 @@
     <Compile Include="Spells\Effects\WMODamage.cs" />
     <Compile Include="Spells\Effects\WMORepair.cs" />
     <Compile Include="Spells\Targeting\AISpellTargetCollection.cs" />
-    <Compile Include="Battlegrounds\Arenas\ArenaTeam.cs" />
+    <Compile Include="Database\Entities\ArenaTeam.cs" />
     <Compile Include="Battlegrounds\Arenas\ArenaTeamMember.cs" />
     <Compile Include="Battlegrounds\Arenas\ArenaTeamStats.cs" />
     <Compile Include="Battlegrounds\PvPDifficulty.cs" />
@@ -480,6 +497,10 @@
       <Project>{5997613F-D2A5-4B86-BEE2-C823BC07D5AF}</Project>
       <Name>WCell.Intercommunication</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Utilities\Jaddie.Database\Jaddie.Database.csproj">
+      <Project>{719075d8-2017-4c6b-af9c-56fa7be9762c}</Project>
+      <Name>Jaddie.Database</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Utilities\WCell.PacketAnalyzer\WCell.PacketAnalyzer.csproj">
       <Project>{65B2B094-13BB-4685-95AD-402FC9A4473A}</Project>
@@ -1417,6 +1438,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="AI\Spells\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\Lang\Commands\English.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

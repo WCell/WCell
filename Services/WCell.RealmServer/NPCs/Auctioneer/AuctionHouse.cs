@@ -26,10 +26,10 @@ namespace WCell.RealmServer.NPCs.Auctioneer
 				return;
 			auctions.Add(newAuction.ItemLowId, newAuction);
 			items.Add(newAuction.ItemLowId);
-            //if this is a new one created by player, it should be save in database
-            if (newAuction.IsNew) 
+			//if this is a new one created by player, it should be save in database
+			if (newAuction.IsNew) 
             {
-                newAuction.Create();
+				RealmWorldDBMgr.DatabaseProvider.Save(newAuction);
             }
 		}
 
@@ -54,9 +54,9 @@ namespace WCell.RealmServer.NPCs.Auctioneer
             RealmServer.IOQueue.AddMessage(() => {
                 if (record != null) {
                     record.IsAuctioned = false;
-                    record.Save();
+					RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(record);
                 }
-                auction.Delete(); });
+				RealmWorldDBMgr.DatabaseProvider.Delete(auction); });
 		}
 
 		public void RemoveAuctionById(uint auctionId)

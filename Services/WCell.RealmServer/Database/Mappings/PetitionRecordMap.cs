@@ -7,6 +7,7 @@ namespace WCell.RealmServer.Database.Mappings
     {
         public PetitionRecordMap()
         {
+			Not.LazyLoad();
             Id(x => x.OwnerId);
             Map(x => x.Type).Not.Nullable();
             Map(x => x.ItemId).Not.Nullable();

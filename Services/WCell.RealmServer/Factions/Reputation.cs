@@ -17,6 +17,7 @@
 using System;
 using WCell.Constants.Factions;
 using WCell.RealmServer.Database;
+using WCell.RealmServer.Database.Entities;
 using WCell.Util;
 
 namespace WCell.RealmServer.Factions
@@ -64,7 +65,7 @@ namespace WCell.RealmServer.Factions
 			Faction = faction;
 			m_standing = GetStanding(defaultValue);
 
-		    m_record.Save();
+			RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(m_record);
 		}
 
 		#region Properties

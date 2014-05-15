@@ -16,24 +16,24 @@ namespace WCell.RealmServer.Database.Entities
 
 		public AuctionHouseFaction HouseFaction;
 
-		public int AuctionId
+		public uint AuctionId
 		{
 			get { return ItemLowId; }
 		}
 
 		public int ItemTemplateId;
 
-		public int ItemLowId;
+		public uint ItemLowId;
 
-		public int OwnerLowId;
+		public uint OwnerLowId;
 
-		public int BidderLowId;
+		public uint BidderLowId;
 
-		public int CurrentBid;
+		public uint CurrentBid;
 
-		public int BuyoutPrice;
+		public uint BuyoutPrice;
 
-		public int Deposit;
+		public uint Deposit;
 
 		public bool IsNew;
 
@@ -86,12 +86,12 @@ namespace WCell.RealmServer.Database.Entities
 			return RealmWorldDBMgr.DatabaseProvider.FindAll<Auction>(auction => auction.HouseFaction == houseFaction);
 		}
 
-		public static IEnumerable<Auction> GetAuctionsForCharacter(int charLowId)
+		public static IEnumerable<Auction> GetAuctionsForCharacter(uint charLowId)
 		{
 			return RealmWorldDBMgr.DatabaseProvider.FindAll<Auction>(auction => auction.OwnerLowId == charLowId);
 		}
 
-		public static IEnumerable<Auction> GetBidderAuctionsForCharacter(int charLowId)
+		public static IEnumerable<Auction> GetBidderAuctionsForCharacter(uint charLowId)
 		{
 			return RealmWorldDBMgr.DatabaseProvider.FindAll<Auction>(auction => auction.BidderLowId == charLowId);
 		}

@@ -11,13 +11,14 @@ namespace WCell.RealmServer.Database.Mappings
     {
         public SkillRecordMap()
         {
-            //EntityLowId
-            Id(x => x.Guid);
+			Not.LazyLoad();
+			//EntityLowId
+			Id(x => x.Guid);
             Map(x => x.OwnerId).Not.Nullable();
             Map(x => x.SkillId).Not.Nullable();
             Map(x => x.CurrentValue).Not.Nullable();
-            //MaxVal
-            Map(x => x.MaxValue).Not.Nullable();
+            //MaxVale
+            Map(x => x.MaxValue).Column("MaxVal").Not.Nullable();
         }
     }
 }

@@ -70,7 +70,7 @@ namespace WCell.RealmServer.Skills
 			CurrentValue = (ushort)value;
 			MaxValue = (ushort)max;
 
-			m_record.CreateLater();
+			RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(m_record);
 		}
 
 		/// <summary>
@@ -277,7 +277,7 @@ namespace WCell.RealmServer.Skills
 		/// </summary>
 		public void Save()
 		{
-			m_record.SaveAndFlush();
+			RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(m_record);
 		}
 
 		/// <summary>

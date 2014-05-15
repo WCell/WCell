@@ -9,6 +9,11 @@ namespace WCell.RealmServer.Instances
 	{
 		private int m_DifficultyIndex;
 
+		private InstanceBinding()
+		{
+			
+		}
+
 		public InstanceBinding(uint id, MapId mapId, uint difficultyIndex)
 		{
 			BindTime = DateTime.Now;

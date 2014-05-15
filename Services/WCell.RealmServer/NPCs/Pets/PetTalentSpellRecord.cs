@@ -1,26 +1,22 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Castle.ActiveRecord;
 using WCell.RealmServer.Spells;
 
 namespace WCell.RealmServer.NPCs.Pets
 {
-	[ActiveRecord("PetTalentSpellRecords", Access = PropertyAccess.Property)]
-	public class PetTalentSpellRecord : ActiveRecordBase<PetTalentSpellRecord>
+	//[ActiveRecord("PetTalentSpellRecords", Access = PropertyAccess.Property)]
+	public class PetTalentSpellRecord //: ActiveRecordBase<PetTalentSpellRecord>
 	{
-		[Field("SpellId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
+		//[Field("SpellId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
 		private long _spellId;
 
-		[PrimaryKey(PrimaryKeyType.Native, "TalentRecordId")]
+		//[PrimaryKey(PrimaryKeyType.Native, "TalentRecordId")]
 		public long RecordId
 		{
 			get;
 			set;
 		}
 
-		[Property("CooldownUntil", NotNull = true)]
+		//[Property("CooldownUntil", NotNull = true)]
 		public DateTime? CooldownUntil
 		{
 			get;

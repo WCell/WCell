@@ -1,9 +1,9 @@
+using Jaddie.Database;
 using WCell.Core;
-using WCell.Database;
 
 namespace WCell.RealmServer.Database.Entities
 {
-	[ShouldAutoMap]
+	//[ShouldAutoMap]
 	public class EquipmentSetItemMapping //TODO: Work out if there is any point even keeping this class?
 	{
 		private long Id

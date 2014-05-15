@@ -1,5 +1,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30110.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.AuthServerConsole", "Applications\WCell.AuthServerConsole\WCell.AuthServerConsole.csproj", "{4515099C-386E-4CF2-9441-B683481549DB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.RealmServerConsole", "Applications\WCell.RealmServerConsole\WCell.RealmServerConsole.csproj", "{A003175E-EA71-49CC-8660-C975BABC9A99}"
@@ -170,6 +172,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Packets", "Packets", "{D18C
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.Database", "Core\WCell.Database\WCell.Database.csproj", "{359D2064-8F94-4C6D-BEAD-5F0D28CB2939}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jaddie.Database", "Utilities\Jaddie.Database\Jaddie.Database.csproj", "{719075D8-2017-4C6B-AF9C-56FA7BE9762C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -433,6 +437,16 @@ Global
 		{359D2064-8F94-4C6D-BEAD-5F0D28CB2939}.Release|Itanium.ActiveCfg = Release|Any CPU
 		{359D2064-8F94-4C6D-BEAD-5F0D28CB2939}.Release|x64.ActiveCfg = Release|Any CPU
 		{359D2064-8F94-4C6D-BEAD-5F0D28CB2939}.Release|x86.ActiveCfg = Release|Any CPU
+		{719075D8-2017-4C6B-AF9C-56FA7BE9762C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{719075D8-2017-4C6B-AF9C-56FA7BE9762C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{719075D8-2017-4C6B-AF9C-56FA7BE9762C}.Debug|Itanium.ActiveCfg = Debug|Any CPU
+		{719075D8-2017-4C6B-AF9C-56FA7BE9762C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{719075D8-2017-4C6B-AF9C-56FA7BE9762C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{719075D8-2017-4C6B-AF9C-56FA7BE9762C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{719075D8-2017-4C6B-AF9C-56FA7BE9762C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{719075D8-2017-4C6B-AF9C-56FA7BE9762C}.Release|Itanium.ActiveCfg = Release|Any CPU
+		{719075D8-2017-4C6B-AF9C-56FA7BE9762C}.Release|x64.ActiveCfg = Release|Any CPU
+		{719075D8-2017-4C6B-AF9C-56FA7BE9762C}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -454,6 +468,7 @@ Global
 		{359D2064-8F94-4C6D-BEAD-5F0D28CB2939} = {372CB0F3-1BA6-4157-8CCB-E10D0912AD02}
 		{38846B91-92C5-4ED0-A77C-5480FA06EDBE} = {A5244776-5B87-4499-A1BA-4CC318FDAAE0}
 		{F753AF28-A251-4C12-9335-07E8236184F2} = {E858B607-246D-4056-A56E-A27312A4FDEE}
+		{719075D8-2017-4C6B-AF9C-56FA7BE9762C} = {E858B607-246D-4056-A56E-A27312A4FDEE}
 		{009B84F0-3E1E-4674-9318-7B6BECF748E1} = {352C7D18-D5CA-41EA-815F-65DECA33D17E}
 		{22AD2989-C47E-499D-B4EB-72A2D43EF5B7} = {352C7D18-D5CA-41EA-815F-65DECA33D17E}
 		{D18CDB4B-0134-41C0-AE6F-DEE59586F470} = {352C7D18-D5CA-41EA-815F-65DECA33D17E}
@@ -462,9 +477,9 @@ Global
 		{B6E8E045-B27D-47A8-A2F1-94B7BB351A80} = {009B84F0-3E1E-4674-9318-7B6BECF748E1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		UnLocked = True
-		Locked = False
 		ISWCFSolution = True
+		Locked = False
+		UnLocked = True
 	EndGlobalSection
 	GlobalSection(TextTemplating) = postSolution
 		TextTemplating = 1

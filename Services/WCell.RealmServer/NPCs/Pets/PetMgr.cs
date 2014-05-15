@@ -14,6 +14,7 @@ using WCell.RealmServer.Handlers;
 using WCell.Util;
 using WCell.Util.Variables;
 using WCell.RealmServer.Database;
+using System.Threading;
 
 namespace WCell.RealmServer.NPCs.Pets
 {
@@ -74,8 +75,58 @@ namespace WCell.RealmServer.NPCs.Pets
 		/// </summary>
 		public static readonly int PetSpellDamageOfOwnerPercent = 13;
 
-		internal static readonly NHIdGenerator PetNumberGenerator = new NHIdGenerator(typeof(PermanentPetRecord), "m_PetNumber");
+		//internal static readonly NHIdGenerator PetNumberGenerator = new NHIdGenerator(typeof(PermanentPetRecord), "m_PetNumber");
+		#region Pet Number IDGenerator
+		private static bool _petNumberIdGeneratorInitialised;
+		private static long _highestPetNumberId;
 
+		private static void InitIdGenerator()
+		{
+			//long highestId;
+			try
+			{
+				PermanentPetRecord highestItem = null;
+				highestItem = RealmWorldDBMgr.DatabaseProvider.Session.QueryOver<PermanentPetRecord>().OrderBy(record => record.PetNumber).Desc.Take(1).SingleOrDefault();
+				_highestPetNumberId = highestItem != null ? highestItem.PetNumber : 0;
+
+				//_highestPetNumberId = RealmWorldDBMgr.DatabaseProvider.Query<PermanentPetRecord>().Max(permanentPetRecord => permanentPetRecord.PetNumber);
+			}
+			catch (Exception e)
+			{
+				RealmWorldDBMgr.OnDBError(e);
+				PermanentPetRecord highestItem = null;
+				highestItem = RealmWorldDBMgr.DatabaseProvider.Session.QueryOver<PermanentPetRecord>().OrderBy(record => record.PetNumber).Desc.Take(1).SingleOrDefault();
+				_highestPetNumberId = highestItem != null ? highestItem.PetNumber : 0;
+
+				//_highestPetNumberId = RealmWorldDBMgr.DatabaseProvider.Query<PermanentPetRecord>().Max(permanentPetRecord => permanentPetRecord.PetNumber);
+			}
+
+			//_highestId = (long)Convert.ChangeType(highestId, typeof(long));
+
+			_petNumberIdGeneratorInitialised = true;
+		}
+
+		/// <summary>
+		/// Returns the next unique Id for a new Item
+		/// </summary>
+		public static long NextPetNumberId()
+		{
+			if (!_petNumberIdGeneratorInitialised)
+				InitIdGenerator();
+
+			return Interlocked.Increment(ref _highestPetNumberId);
+		}
+
+		public static long LastPetNumberId
+		{
+			get
+			{
+				if (!_petNumberIdGeneratorInitialised)
+					InitIdGenerator();
+				return Interlocked.Read(ref _highestPetNumberId);
+			}
+		}
+		#endregion
 
 		[NotVariable]
 		public static int MaxStableSlots;
@@ -392,8 +443,8 @@ namespace WCell.RealmServer.NPCs.Pets
 		internal static PermanentPetRecord CreatePermanentPetRecord(NPCEntry entry, uint ownerId)
 		{
 			var record = CreateDefaultPetRecord<PermanentPetRecord>(entry, ownerId);
-			record.PetNumber = (uint)PetNumberGenerator.Next();
-			record.IsDirty = true;
+			record.PetNumber = (uint)NextPetNumberId();
+			//record.IsDirty = true;
 			return record;
 		}
 

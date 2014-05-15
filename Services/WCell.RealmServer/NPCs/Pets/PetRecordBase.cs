@@ -1,36 +1,32 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Castle.ActiveRecord;
-using WCell.Constants;
 using WCell.Constants.NPCs;
 using WCell.Constants.Pets;
+using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.NPCs.Pets
 {
-	public abstract class PetRecordBase<R> : ActiveRecordBase<R>, IPetRecord
+	public abstract class PetRecordBase<R> : IPetRecord
 		where R : IPetRecord
 	{
-		[Field("OwnerLowId", NotNull = true)]
+		//[Field("OwnerLowId", NotNull = true)]
 		protected int _OwnerLowId;
 
-		[Field("NameTimeStamp")]
+		//[Field("NameTimeStamp")]
 		protected int _NameTimeStamp;
 
-		[Field("PetState", NotNull = true)]
+		//[Field("PetState", NotNull = true)]
 		protected int _PetState;
 
-		[Field("PetAttackMode", NotNull = true)]
+		//[Field("PetAttackMode", NotNull = true)]
 		protected int _petAttackMode;
 
-		[Field("PetFlags", NotNull = true)]
+		//[Field("PetFlags", NotNull = true)]
 		protected int _petFlags;
 
 		private uint[] m_ActionButtons;
 
-		[PrimaryKey(PrimaryKeyType.Assigned, "EntryId")]
+		//[PrimaryKey(PrimaryKeyType.Assigned, "EntryId")]
 		int _EntryId
 		{
 			get;
@@ -61,14 +57,14 @@ namespace WCell.RealmServer.NPCs.Pets
 			set { EntryId = value.NPCId; }
 		}
 
-		[Property]
+		//[Property]
 		public bool IsActivePet
 		{
 			get;
 			set;
 		}
 
-		[Property]
+		//[Property]
 		public string Name
 		{
 			get;
@@ -120,16 +116,16 @@ namespace WCell.RealmServer.NPCs.Pets
 		/// <summary>
 		/// Dirty records have uncommitted changes
 		/// </summary>
-		public bool IsDirty
-		{
-			get;
-			internal set;
-		}
+		//public bool IsDirty
+		//{
+		//	get;
+		//	internal set;
+		//}
 
 		/// <summary>
 		/// 
 		/// </summary>
-		[Property(NotNull = true)]
+		//[Property(NotNull = true)]
 		public uint[] ActionButtons
 		{
 			get { return m_ActionButtons; }
@@ -137,19 +133,29 @@ namespace WCell.RealmServer.NPCs.Pets
 		}
 
 		#region Create / Setup / Update
-		public override void Create()
+		public void Create()
 		{
-			base.Create();
-			IsDirty = false;
+			RealmWorldDBMgr.DatabaseProvider.Save(this);
+			//IsDirty = false;
 		}
 
-		public override void Update()
+		public void Update()
 		{
-			base.Update();
-			IsDirty = false;
+			RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(this);
+			//IsDirty = false;
 		}
 
-		public virtual void SetupPet(NPC pet)
+		public void Save()
+		{
+			RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(this);
+		}
+
+		public void Delete()
+		{
+			RealmWorldDBMgr.DatabaseProvider.Delete(this);
+		}
+
+		public virtual void SetupPet(NPC pet) //TODO: Check this is actually setting / saving the correct values
 		{
 			if (!string.IsNullOrEmpty(Name))
 			{
@@ -169,8 +175,10 @@ namespace WCell.RealmServer.NPCs.Pets
 			}
 			PetState = pet.PetState;
 			EntryId = (NPCId)pet.EntryId;
-			IsDirty = true;
+			RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(this);
+			//IsDirty = true;
 		}
+
 		#endregion
 	}
 }

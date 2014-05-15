@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Castle.ActiveRecord;
 using WCell.Constants.World;
-using WCell.Core.Database;
 using WCell.RealmServer.Global;
 
 namespace WCell.RealmServer.Instances
@@ -12,10 +7,15 @@ namespace WCell.RealmServer.Instances
 	/// <summary>
 	/// Defines the progress inside an instance that can also be saved to DB
 	/// </summary>
-	public class InstanceProgress : WCellRecord<InstanceProgress>, IMapId
+	public class InstanceProgress : IMapId //: WCellRecord<InstanceProgress>
 	{
-		[Field("InstanceId", NotNull = true, Access = PropertyAccess.Field)]
+		//[Field("InstanceId", NotNull = true, Access = PropertyAccess.Field)]
 		private int m_InstanceId;
+
+		private InstanceProgress()
+		{
+			
+		}
 
 		public InstanceProgress(MapId mapId, uint instanceId)
 		{
@@ -23,7 +23,9 @@ namespace WCell.RealmServer.Instances
 			InstanceId = instanceId;
 		}
 
-		[Property(NotNull = true)]
+		public int Id { get; set; }
+
+		//[Property(NotNull = true)]
 		public MapId MapId
 		{
 			get;
@@ -36,21 +38,21 @@ namespace WCell.RealmServer.Instances
 			set { m_InstanceId = (int) value; }
 		}
 
-		[Property(NotNull = true)]
+		//[Property(NotNull = true)]
 		public uint DifficultyIndex
 		{
 			get;
 			set;
 		}
 
-		[Property]
+		//[Property]
 		public DateTime ResetTime
 		{
 			get;
 			set;
 		}
 
-		[Property]
+		//[Property]
 		/// <summary>
 		/// The version number, so we know how CustomData looks like, even if we changed the layout
 		/// </summary>
@@ -60,7 +62,7 @@ namespace WCell.RealmServer.Instances
 			set;
 		}
 
-		[Property]
+		//[Property]
 		/// <summary>
 		/// Instance-dependent data: Many instances need custom data saved to DB, they can use this field for that.
 		/// TODO: Use SerializerCollection to make this safe to use

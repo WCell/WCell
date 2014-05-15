@@ -7,7 +7,8 @@ namespace WCell.RealmServer.Database.Mappings
     {
         public AuraRecordMap()
         {
-            Id(x => x.RecordId);
+			Not.LazyLoad();
+			Id(x => x.RecordId);
             Map(x => x.OwnerId).Not.Nullable();
             Map(x => x.CasterId);
             Map(x => x.Level);

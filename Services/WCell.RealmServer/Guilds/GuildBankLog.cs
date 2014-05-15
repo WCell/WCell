@@ -1,9 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Castle.ActiveRecord;
-using WCell.Constants;
 using WCell.Constants.Guilds;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Database.Entities;
@@ -39,7 +35,7 @@ namespace WCell.RealmServer.Guilds
 
 		internal void LoadLogs()
 		{
-			var logEntries = GuildBankLogEntry.LoadAll(Bank.Guild.Id);
+			var logEntries = GuildBankLogEntry.LoadAll((uint)Bank.Guild.Id); //TODO int -> uint conversion, check how to solve this
 			foreach (var entry in logEntries)
 			{
 				switch (entry.Type)
@@ -99,17 +95,17 @@ namespace WCell.RealmServer.Guilds
 			} // end foreach
 		}
 
-		public void LogEvent(GuildBankLogEntryType type, Character chr, ItemRecord item, Database.Entities.GuildBankTab intoTab)
+		public void LogEvent(GuildBankLogEntryType type, Character chr, ItemRecord item, GuildBankTab intoTab)
 		{
 			LogEvent(type, chr, item, item.Amount, intoTab);
 		}
 
-		public void LogEvent(GuildBankLogEntryType type, Character chr, ItemRecord item, int amount, Database.Entities.GuildBankTab intoTab)
+		public void LogEvent(GuildBankLogEntryType type, Character chr, ItemRecord item, int amount, GuildBankTab intoTab)
 		{
 			LogEvent(type, chr, 0, item, amount, intoTab);
 		}
 
-		public void LogEvent(GuildBankLogEntryType type, Character member, uint money, ItemRecord item, int amount, Database.Entities.GuildBankTab intoTab)
+		public void LogEvent(GuildBankLogEntryType type, Character member, uint money, ItemRecord item, int amount, GuildBankTab intoTab)
 		{
 			switch (type)
 			{
@@ -186,7 +182,7 @@ namespace WCell.RealmServer.Guilds
 			}
 		}
 
-		private void LogItemEvent(GuildBankLogEntryType type, Character actor, ItemRecord record, int amount, Database.Entities.GuildBankTab intoTab)
+		private void LogItemEvent(GuildBankLogEntryType type, Character actor, ItemRecord record, int amount, GuildBankTab intoTab)
 		{
 			var entry = new GuildBankLogEntry(Bank.Guild.Id)
 			{

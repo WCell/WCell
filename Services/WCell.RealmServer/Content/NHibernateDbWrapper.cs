@@ -1,16 +1,11 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using NHibernate.Persister.Entity;
-using WCell.Core.Database;
-using WCell.Util.Data;
 using WCell.Util.DB;
 using NHibernate.Engine;
 using System.Data;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
-using Castle.ActiveRecord;
+using WCell.RealmServer.Database;
 
 namespace WCell.RealmServer.Content
 {
@@ -33,11 +28,11 @@ namespace WCell.RealmServer.Content
 		{
 			//m_factory = (ISessionFactoryImplementor)ActiveRecordBase.Holder.GetSessionFactory(typeof(ActiveRecordBase));
 			//m_session = (ISessionImplementor)ActiveRecordBase.Holder.CreateSession(typeof(ActiveRecordBase));
-			m_factory = DatabaseUtil.SessionFactory;
-			m_session = DatabaseUtil.Session;
+			m_factory = RealmContentDBMgr.DatabaseProvider.SessionFactory as ISessionFactoryImplementor; //DatabaseUtil.SessionFactory;
+			m_session = RealmContentDBMgr.DatabaseProvider.Session as ISessionImplementor; //DatabaseUtil.Session;
 			if (m_factory == null || m_session == null)
 			{
-				throw new InvalidOperationException("ActiveRecord was not initialized.");
+				throw new InvalidOperationException("RealmContentDBMgr Content Database was not initialized.");
 			}
 		}
 
@@ -48,8 +43,8 @@ namespace WCell.RealmServer.Content
 			for (var i = 0; i < tables.Length; i++)
 			{
 				var table = tables[i];
-				var cmd = CreateCommand(SqlUtil.BuildSelect(table.AllColumns, table.Name)
-					//+ " ORDER BY " + table.PrimaryColumns[0].Name
+				var cmd = CreateCommand(string.Format("select {0} from {1}",string.Join(",",table.AllColumns), table.Name) //TODO: Check this generates the query as intended
+						//+ " ORDER BY " + table.PrimaryColumns[0].Name
 						);
 				//tables[i].QueryString, emptySqlTypeArr);
 				m_selectCommands[i] = cmd;
@@ -90,7 +85,7 @@ namespace WCell.RealmServer.Content
 		public IDbCommand CreateCommand(string sql)
 		{
 			return m_factory.ConnectionProvider.Driver.GenerateCommand(CommandType.Text,
-			                                                    new SqlString(sql), EmptySqlTypeArr);
+																new SqlString(sql), EmptySqlTypeArr);
 		}
 
 		public void ExecuteComand(string sql)
@@ -99,9 +94,9 @@ namespace WCell.RealmServer.Content
 			m_session.Batcher.ExecuteNonQuery(cmd);
 		}
 
-        /// <summary>
-        /// Should return a version string in the format of a float.
-        /// </summary>
+		/// <summary>
+		/// Should return a version string in the format of a float.
+		/// </summary>
 		public string GetDatabaseVersion(string tableName, string columnName)
 		{
 			var reader = Query(SqlUtil.BuildSelect(new[] { columnName }, tableName));

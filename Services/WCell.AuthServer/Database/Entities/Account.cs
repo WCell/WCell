@@ -23,7 +23,6 @@ using WCell.Intercommunication.DataTypes;
 using WCell.AuthServer.Commands;
 using System.Net;
 using WCell.Util;
-using WCell.Database;
 
 namespace WCell.AuthServer.Database.Entities
 {

@@ -1,21 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using Castle.ActiveRecord;
-using WCell.Constants;
-using WCell.Constants.NPCs;
-using WCell.Constants.Pets;
-using WCell.RealmServer.Entities;
-using WCell.Core;
 using WCell.RealmServer.Database;
+using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.NPCs.Pets
 {
 	/// <summary>
 	/// Record for Hunter pets with talents and everything
 	/// </summary>
-	[ActiveRecord("Pets_Permanent", Access = PropertyAccess.Property)]
+	//[ActiveRecord("Pets_Permanent", Access = PropertyAccess.Property)]
 	public class PermanentPetRecord : PetRecordBase<PermanentPetRecord>
 	{
 		public PermanentPetRecord()
@@ -28,7 +22,7 @@ namespace WCell.RealmServer.NPCs.Pets
 		//    private set;
 		//}
 
-		[Field("PetNumber", NotNull = true)]
+		//[Field("PetNumber", NotNull = true)]
 		private int m_PetNumber;
 
 		public override uint PetNumber
@@ -37,42 +31,42 @@ namespace WCell.RealmServer.NPCs.Pets
 			set { m_PetNumber = (int)value; }
 		}
 
-		[Property]
+		//[Property]
 		public int Experience
 		{
 			get;
 			set;
 		}
 
-		[Property]
+		//[Property]
 		public int Level
 		{
 			get;
 			set;
 		}
 
-		[Property]
+		//[Property]
 		public DateTime? StabledSince
 		{
 			get;
 			set;
 		}
 
-		[Property]
+		//[Property]
 		public DateTime? LastTalentResetTime
 		{
 			get;
 			set;
 		}
 
-		[Property]
+		//[Property]
 		public int TalentResetPriceTier
 		{
 			get;
 			set;
 		}
 
-		[Property(NotNull = true)]
+		//[Property(NotNull = true)]
 		public int FreeTalentPoints
 		{
 			get;
@@ -120,12 +114,12 @@ namespace WCell.RealmServer.NPCs.Pets
 		{
 			try
 			{
-				return FindAllByProperty("_OwnerLowId", (int)ownerId);
+				return RealmWorldDBMgr.DatabaseProvider.Query<PermanentPetRecord>().Where(permanentPetRecord => permanentPetRecord.OwnerId == ownerId).ToArray(); //FindAllByProperty("_OwnerLowId", (int)ownerId);
 			}
 			catch (Exception e)
 			{
-				RealmDBMgr.OnDBError(e);
-				return FindAllByProperty("_OwnerLowId", (int)ownerId);
+				RealmWorldDBMgr.OnDBError(e);
+				return RealmWorldDBMgr.DatabaseProvider.Query<PermanentPetRecord>().Where(permanentPetRecord => permanentPetRecord.OwnerId == ownerId).ToArray();  //FindAllByProperty("_OwnerLowId", (int)ownerId);
 			}
 		}
 	}

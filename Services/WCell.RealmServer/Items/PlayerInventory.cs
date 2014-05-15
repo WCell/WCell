@@ -27,7 +27,6 @@ using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
 using WCell.Util;
-using Castle.ActiveRecord;
 
 namespace WCell.RealmServer.Items
 {

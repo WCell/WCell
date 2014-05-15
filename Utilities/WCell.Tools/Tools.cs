@@ -347,7 +347,7 @@ namespace WCell.Tools
 		[Tool]
 		public static void WriteContentStubs()
 		{
-			Utility.Measure("DBSetup.Initialize()", 1, () => RealmDBMgr.Initialize());
+			Utility.Measure("DBSetup.Initialize()", 1, () => RealmWorldDBMgr.Initialize());
 			Utility.Measure("ContentHandler.SaveDefaultStubs()", 1, ContentMgr.SaveDefaultStubs);
 
 			ContentMgr.SaveDefaultStubs();

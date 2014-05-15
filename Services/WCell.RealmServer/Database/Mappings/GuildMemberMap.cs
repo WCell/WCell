@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using FluentNHibernate;
+﻿using FluentNHibernate;
 using FluentNHibernate.Mapping;
-using WCell.RealmServer.Database.Entities;
+using WCell.RealmServer.Guilds;
 
 namespace WCell.RealmServer.Database.Mappings
 {
@@ -12,18 +8,19 @@ namespace WCell.RealmServer.Database.Mappings
 	{
 		public GuildMemberMap()
 		{
+			Not.LazyLoad();
 			Id(x => x.CharacterLowId).GeneratedBy.Assigned();
-			Map(x => Reveal.Member<GuildMember>("_name")).Not.Nullable().Column("Name");
-			Map(x => Reveal.Member<GuildMember>("_lastLevel")).Not.Nullable().Column("LastLvl");
-			Map(x => Reveal.Member<GuildMember>("_lastLogin")).Not.Nullable().Column("LastLogin");
-			Map(x => Reveal.Member<GuildMember>("_lastZoneId")).Not.Nullable().Column("LastZone");
-			Map(x => Reveal.Member<GuildMember>("_class")).Not.Nullable().Column("Class");
-			Map(x => Reveal.Member<GuildMember>("_rankId")).Not.Nullable().Column("Rank");
-			Map(x => Reveal.Member<GuildMember>("m_GuildId")).Not.Nullable().Column("GuildId");
-			Map(x => Reveal.Member<GuildMember>("_publicNote")).Column("PublicNote");
-			Map(x => Reveal.Member<GuildMember>("_officerNote")).Column("OfficerNote");
-			Map(x => Reveal.Member<GuildMember>("_remainingMoneyAllowance")).Column("BankRemainingMoneyAllowance");
-			Map(x => Reveal.Member<GuildMember>("_moneyAllowanceResetTime")).Not.Nullable().Column("BankMoneyAllowanceResetTime");
+			Map(Reveal.Member<GuildMember>("_name"),"Name").Not.Nullable();
+			Map(Reveal.Member<GuildMember>("_lastLevel"),"LastLvl").Not.Nullable();
+			Map(Reveal.Member<GuildMember>("_lastLogin"),"LastLogin").Not.Nullable();
+			Map(Reveal.Member<GuildMember>("_lastZoneId"),"LastZone").Not.Nullable();
+			Map(Reveal.Member<GuildMember>("_class"),"Class").Not.Nullable();
+			Map(Reveal.Member<GuildMember>("_rankId"),"Rank").Not.Nullable();
+			Map(Reveal.Member<GuildMember>("m_GuildId"),"GuildId").Not.Nullable();
+			Map(Reveal.Member<GuildMember>("_publicNote"),"PublicNote");
+			Map(Reveal.Member<GuildMember>("_officerNote"),"OfficerNote");
+			Map(Reveal.Member<GuildMember>("_remainingMoneyAllowance"),"BankRemainingMoneyAllowance");
+			Map(Reveal.Member<GuildMember>("_moneyAllowanceResetTime"),"BankMoneyAllowanceResetTime").Not.Nullable();
 		}
 	}
 }

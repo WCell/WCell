@@ -44,13 +44,13 @@ namespace WCell.RealmServer.Achievements
         {
             var allRealmFirstRecords = (from achievementEntry in AchievementEntries.Values
                                         where achievementEntry.IsRealmFirstType()
-                                        select achievementEntry.ID).ToArray();
+										select achievementEntry.ID).ToList(); //TODO: Fix type cast
 
             var completedAchievements = AchievementRecord.Load(allRealmFirstRecords);
 
             foreach (var completedAchievement in completedAchievements)
             {
-                CompletedRealmFirstAchievements.Add(completedAchievement.AchievementEntryId);
+                CompletedRealmFirstAchievements.Add(completedAchievement.AchievementId);
             }
         }
 

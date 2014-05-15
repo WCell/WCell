@@ -12,8 +12,9 @@ namespace WCell.RealmServer.Database.Mappings
 	{
 		public GuildBankLogEntryMap()
 		{
+			Not.LazyLoad();
 			CompositeId().KeyProperty(x => x.GuildId).KeyProperty(x => x.BankLogEntryRecordId);
-			Map(x => x.BankLog); //TODO: This should be a relation?
+			//Map(x => x.BankLog); //TODO: This should be a relation? TODO: Find out how on earth this worked without being stored??
 			Map(Reveal.Member<GuildBankLogEntry>("bankLogEntryType"));
 			Map(Reveal.Member<GuildBankLogEntry>("actorEntityLowId"));
 			Map(x => x.ItemEntryId);

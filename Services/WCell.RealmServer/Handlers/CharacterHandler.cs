@@ -154,7 +154,7 @@ namespace WCell.RealmServer.Handlers
 			{
 				try
 				{
-					newCharRecord.CreateAndFlush();
+					RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(newCharRecord);
 				}
 				catch (Exception e)
 				{
@@ -162,8 +162,8 @@ namespace WCell.RealmServer.Handlers
 					//SendCharCreateReply(client, LoginErrorCode.CHAR_CREATE_ERROR);
 					try
 					{
-						RealmDBMgr.OnDBError(e);
-						newCharRecord.CreateAndFlush();
+						RealmWorldDBMgr.OnDBError(e);
+						RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(newCharRecord);
 					}
 					catch (Exception)
 					{
@@ -327,7 +327,7 @@ namespace WCell.RealmServer.Handlers
 
 						packet.Write(0); // TOOD: Customization flags
 
-						packet.Write((byte)1); // NEW 3.2.0 - first login y/n - set to 1 for now
+						packet.Write((byte)0); // NEW 3.2.0 - first login y/n - set to 1 for now TODO: Work out the affect of this value
 
 						// Deprecated: Rest State
 						// var restState = record.RestXp > 0 ? RestState.Resting : RestState.Normal;
@@ -427,8 +427,7 @@ namespace WCell.RealmServer.Handlers
 				LogUtil.ErrorException(e,
 									   "Could not create Char-Enum " +
 									   "for Character \"{0}\" (Race: {1}, Class: {2}, Level: {3}, Map: {4}{5}).",
-									   curRecord, curRecord.Race, curRecord.Class, curRecord.Level, curRecord.MapId,
-									   curRecord.IsNew ? ", [New]" : "");
+									   curRecord, curRecord.Race, curRecord.Class, curRecord.Level, curRecord.MapId);  //curRecord.IsNew ? ", [New]" : "" TODO: Re-implement IsNew
 			}
 		}
 		#endregion
@@ -638,7 +637,7 @@ namespace WCell.RealmServer.Handlers
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_ACTION_BUTTONS, chr.ActionButtons.Length))
 			{
-				packet.Write((byte)0); // talent spec
+				packet.Write((byte)1); // talent spec
 				packet.Write(chr.ActionButtons);
 
 				chr.Client.Send(packet);

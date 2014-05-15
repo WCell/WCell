@@ -10,6 +10,7 @@ using WCell.RealmServer.Formulas;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Network;
 using WCell.RealmServer.Handlers;
+using WCell.RealmServer.Database;
 
 namespace WCell.RealmServer.Instances
 {
@@ -245,7 +246,7 @@ namespace WCell.RealmServer.Instances
 				progress = new InstanceProgress(MapId, InstanceId);
 			}
 			PerformSave();
-			progress.Save();
+			RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(progress);
 		}
 
 		/// <summary>

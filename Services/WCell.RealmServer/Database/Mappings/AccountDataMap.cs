@@ -11,7 +11,8 @@ namespace WCell.RealmServer.Database.Mappings
     {
         public AccountDataMap()
         {
-            Id(x => x.AccountId);
+			Not.LazyLoad();
+            Id(x => x.AccountId).GeneratedBy.Assigned();
             Map(x => x.DataHolder);
             Map(x => x.SizeHolder);
             Map(x => x.TimeStamps);

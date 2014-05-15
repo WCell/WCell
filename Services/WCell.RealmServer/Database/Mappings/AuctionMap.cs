@@ -12,9 +12,9 @@ namespace WCell.RealmServer.Database.Mappings
 	{
 		public AuctionMap()
 		{
+			Not.LazyLoad();
 			Id(x => x.ItemLowId).GeneratedBy.Assigned();
 			Map(x => x.TimeEnds).Not.Nullable();
-			Map(x => x.AuctionId).Not.Nullable().Access.CamelCaseField();
 			Map(x => x.ItemTemplateId).Not.Nullable();
 			Map(x => x.OwnerLowId).Not.Nullable();
 			Map(x => x.BidderLowId).Not.Nullable();

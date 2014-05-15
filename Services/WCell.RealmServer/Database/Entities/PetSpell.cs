@@ -9,7 +9,7 @@ namespace WCell.RealmServer.Database.Entities.Pets
 	{
 		public static readonly PetSpell[] EmptyArray = new PetSpell[0];
 
-		public long Guid
+		public Guid Guid
 		{
 			get;
 			set;

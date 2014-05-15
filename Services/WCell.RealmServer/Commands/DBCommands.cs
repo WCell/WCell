@@ -1,3 +1,4 @@
+using WCell.RealmServer.Database;
 using WCell.Util.Commands;
 using HibernateCfg = NHibernate.Cfg.Configuration;
 using WCell.Intercommunication.DataTypes;
@@ -32,6 +33,9 @@ namespace WCell.RealmServer.Commands
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
 				throw new NotImplementedException("Needs re-implementing as per database rewrite");
+				//trigger.Reply("Re-creating schema...");
+				//RealmWorldDBMgr.DatabaseProvider.CreateSchema();
+				//trigger.Reply("Re-creation completed");
 				/*trigger.Reply("Recreating Database Schema...");
 				//DatabaseUtil.CreateSchema(); TODO: Database: Re-implement
 				trgger.Reply("Done.");*/

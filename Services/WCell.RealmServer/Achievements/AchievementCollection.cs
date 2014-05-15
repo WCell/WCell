@@ -7,6 +7,7 @@ using WCell.Constants.Achievements;
 using WCell.Constants.Factions;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
+using WCell.RealmServer.Database;
 
 namespace WCell.RealmServer.Achievements
 {
@@ -17,13 +18,13 @@ namespace WCell.RealmServer.Achievements
 	}
 
 	/// <summary>
-	/// Represents the Player's Achievements.
+	/// Represents the Player's Achievements. 
 	/// </summary>
 	public class AchievementCollection
 	{
 		private static Logger log = LogManager.GetCurrentClassLogger();
 
-		internal Dictionary<int, AchievementRecord> m_completedAchievements = new Dictionary<int, AchievementRecord>();
+		internal Dictionary<uint, AchievementRecord> m_completedAchievements = new Dictionary<uint, AchievementRecord>();
 		internal Dictionary<uint, AchievementProgressRecord> m_progressRecords = new Dictionary<uint, AchievementProgressRecord>();
 		internal Character m_owner;
 
@@ -78,7 +79,7 @@ namespace WCell.RealmServer.Achievements
 		/// </summary>
 		/// <param name="achievementEntry"></param>
 		/// <returns></returns>
-		public bool HasCompleted(int achievementEntry)
+		public bool HasCompleted(uint achievementEntry)
 		{
 			return m_completedAchievements.ContainsKey(achievementEntry);
 		}
@@ -192,7 +193,7 @@ namespace WCell.RealmServer.Achievements
 		/// <param name="achievementRecord"></param>
 		public void AddAchievement(AchievementRecord achievementRecord)
 		{
-			m_completedAchievements.Add(achievementRecord.AchievementId, achievementRecord);
+			m_completedAchievements.Add((uint)achievementRecord.AchievementId, achievementRecord); // TODO: Resolve type cast
 		}
 
 		/// <summary>
@@ -212,8 +213,9 @@ namespace WCell.RealmServer.Achievements
 		/// <param name="achievementEntry"></param>
 		public void EarnAchievement(AchievementEntry achievement)
 		{
-			AddAchievement(AchievementRecord.CreateNewAchievementRecord(m_owner, achievement.ID));
-			CheckPossibleAchievementUpdates(AchievementCriteriaType.CompleteAchievement, (uint)achievement.ID, 1);
+			var record = AchievementRecord.CreateNewAchievementRecord(m_owner, achievement.ID);
+            AddAchievement(record);
+			CheckPossibleAchievementUpdates(AchievementCriteriaType.CompleteAchievement, achievement.ID, 1);
 			RemoveAchievementProgress(achievement);
 
 			foreach (var achievementReward in achievement.Rewards)
@@ -223,7 +225,10 @@ namespace WCell.RealmServer.Achievements
 				m_owner.Guild.Broadcast(AchievementHandler.CreateAchievementEarnedToGuild(achievement.ID, m_owner));
 
 			if (achievement.IsRealmFirstType())
+			{
 				AchievementHandler.SendServerFirstAchievement(achievement.ID, m_owner);
+				AchievementMgr.CompletedRealmFirstAchievements.Add(record.AchievementId);
+			}
 
 			AchievementHandler.SendAchievementEarned(achievement.ID, m_owner);
 		}
@@ -250,7 +255,7 @@ namespace WCell.RealmServer.Achievements
 		/// <param name="achievementProgressRecord"></param>
 		void AddProgressRecord(AchievementProgressRecord achievementProgressRecord)
 		{
-			m_progressRecords.Add(achievementProgressRecord.AchievementCriteriaId, achievementProgressRecord);
+			m_progressRecords.Add((uint)achievementProgressRecord.AchievementCriteriaId, achievementProgressRecord); //TODO: Remove type cast
 		}
 
 		#endregion
@@ -279,7 +284,7 @@ namespace WCell.RealmServer.Achievements
 		/// <param name="achievementRecord"></param>
 		public void RemoveAchievement(AchievementRecord achievementRecord)
 		{
-			m_completedAchievements.Remove(achievementRecord.AchievementEntryId);
+			m_completedAchievements.Remove(achievementRecord.AchievementId);
 		}
 
 		/// <summary>
@@ -304,7 +309,7 @@ namespace WCell.RealmServer.Achievements
 		/// <param name="achievementProgressRecord"></param>
 		public void RemoveProgress(AchievementProgressRecord achievementProgressRecord)
 		{
-			m_progressRecords.Remove(achievementProgressRecord.AchievementCriteriaId);
+			m_progressRecords.Remove((uint)achievementProgressRecord.AchievementCriteriaId); //TODO: Remove type cast
 		}
 
 		/// <summary>
@@ -442,11 +447,11 @@ namespace WCell.RealmServer.Achievements
 		{
 			foreach (var mCompletedAchievement in m_completedAchievements.Values)
 			{
-				mCompletedAchievement.Save();
+				RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(mCompletedAchievement);
 			}
 			foreach (var mAchivementProgress in m_progressRecords.Values)
 			{
-				mAchivementProgress.Save();
+				RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(mAchivementProgress);
 			}
 		}
 
@@ -454,7 +459,7 @@ namespace WCell.RealmServer.Achievements
 		{
 			foreach (var mCompletedAchievement in AchievementRecord.Load((int)Owner.EntityId.Low))
 			{
-				var achievement = AchievementMgr.GetAchievementEntry(mCompletedAchievement.AchievementEntryId);
+				var achievement = AchievementMgr.GetAchievementEntry(mCompletedAchievement.AchievementId);
 				if (achievement != null)
 				{
 					if (m_completedAchievements.ContainsKey(achievement.ID))
@@ -468,7 +473,7 @@ namespace WCell.RealmServer.Achievements
 				}
 				else
 				{
-					log.Warn("Character {0} has invalid Achievement: {1}", m_owner, mCompletedAchievement.AchievementEntryId);
+					log.Warn("Character {0} has invalid Achievement: {1}", m_owner, mCompletedAchievement.AchievementId);
 				}
 			}
 
@@ -477,7 +482,7 @@ namespace WCell.RealmServer.Achievements
 				// how to check if there's no criteria
 				//if (achievement != null)
 				{
-					if (m_progressRecords.ContainsKey(achievementProgress.AchievementCriteriaId))
+					if (m_progressRecords.ContainsKey((uint)achievementProgress.AchievementCriteriaId)) //TODO: Remove type cast
 					{
 						log.Warn("Character {0} had progress for Achievement Criteria {1} more than once.", m_owner, achievementProgress.AchievementCriteriaId);
 					}

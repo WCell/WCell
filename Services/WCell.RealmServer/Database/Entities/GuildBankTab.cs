@@ -1,7 +1,8 @@
 using System.Collections.Generic;
-using WCell.RealmServer.Guilds;
+using WCell.RealmServer.Database;
+using WCell.RealmServer.Database.Entities;
 
-namespace WCell.RealmServer.Database.Entities
+namespace WCell.RealmServer.Guilds
 {
 	public partial class GuildBankTab
 	{
@@ -11,13 +12,13 @@ namespace WCell.RealmServer.Database.Entities
 			set;
 		}
 
-		private int _guildId;
+		//private Guild _guildId; TODO: Work out need for existance
 
 		private GuildBank m_Bank;
 
 		public GuildBankTab()
 		{
-			Items = new GuildBankTabItemMapping[GuildMgr.MAX_BANK_TAB_SLOTS];
+			Items = new GuildBankTabItem[GuildMgr.MAX_BANK_TAB_SLOTS];
 			ItemRecords = new ItemRecord[GuildMgr.MAX_BANK_TAB_SLOTS];
 		}
 
@@ -33,7 +34,7 @@ namespace WCell.RealmServer.Database.Entities
 			internal set
 			{
 				m_Bank = value;
-				_guildId = (int)m_Bank.Guild.Id;
+				Guild = m_Bank.Guild;
 			}
 		}
 
@@ -55,6 +56,12 @@ namespace WCell.RealmServer.Database.Entities
 			set;
 		}
 
+		public Guild Guild //TODO: Map this & Setup as reference
+		{
+			get;
+			set;
+		}
+
 		/// <summary>
 		/// The Slot in the Bank's Tabs that this BankTab belongs in
 		/// </summary>
@@ -64,7 +71,7 @@ namespace WCell.RealmServer.Database.Entities
 			set;
 		}
 
-		private IList<GuildBankTabItemMapping> Items
+		private IList<GuildBankTabItem> Items
 		{
 			get;
 			set;

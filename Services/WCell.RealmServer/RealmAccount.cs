@@ -31,6 +31,7 @@ using WCell.RealmServer.Global;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Network;
 using WCell.RealmServer.Privileges;
+using System.Linq;
 
 namespace WCell.RealmServer
 {
@@ -229,7 +230,7 @@ namespace WCell.RealmServer
         /// <summary>
         /// The account data cache, related to this account.
         /// </summary>
-        public AccountDataRecord AccountData
+        public AccountData AccountData
         {
             get;
             internal set;
@@ -374,12 +375,13 @@ namespace WCell.RealmServer
 		/// </summary>
 		void LoadCharacters()
 		{
-			var chrs = CharacterRecord.FindAllOfAccount(this);
-			for (var i = 0; i < chrs.Length; i++)
-			{
-				var chr = chrs[i];
-				Characters.Add(chr);
-			}
+			//var chrs = CharacterRecord.FindAllOfAccount(this);
+			//for (var i = 0; i < chrs.Length; i++)
+			//{
+			//	var chr = chrs[i];
+			//	Characters.Add(chr);
+			//}
+			Characters = CharacterRecord.FindAllOfAccount(this).ToList(); //TODO: Check this is the intended behaviour, since if we are reloading then we should start from scratch to prevent duplicates
 		}
 
 		/// <summary>
@@ -387,7 +389,7 @@ namespace WCell.RealmServer
         /// </summary>
         void LoadAccountData()
         {
-            var adr = AccountDataRecord.GetAccountData(AccountId) ?? AccountDataRecord.InitializeNewAccount(AccountId);
+            var adr = AccountData.GetAccountData(AccountId) ?? AccountData.InitializeNewAccount(AccountId);
 
             AccountData = adr;
         }
@@ -532,7 +534,7 @@ namespace WCell.RealmServer
 
 		internal void OnLogout()
 		{
-		    AccountData.Update();
+			RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(AccountData);
 
 			var evt = LoggedOut;
 			if (evt != null)

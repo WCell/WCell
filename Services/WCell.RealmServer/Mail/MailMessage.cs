@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Castle.ActiveRecord;
 using WCell.RealmServer.Database.Entities;
 using WCell.Util.Logging;
 using WCell.Constants;
@@ -10,34 +9,76 @@ using WCell.Core;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Items;
+using System.Threading;
 
 namespace WCell.RealmServer.Mail
 {
-	[ActiveRecord(Access = PropertyAccess.Property)]
-	public class MailMessage : ActiveRecordBase<MailMessage>
+	//[ActiveRecord(Access = PropertyAccess.Property)]
+	public class MailMessage //: ActiveRecordBase<MailMessage>
 	{
 		private static readonly Logger s_log = LogManager.GetCurrentClassLogger();
 
-		private static readonly NHIdGenerator s_idGenerator = new NHIdGenerator(typeof(MailMessage), "Guid");
+		//private static readonly NHIdGenerator s_idGenerator = new NHIdGenerator(typeof(MailMessage), "Guid");
+		#region ID Genereator
+		private static bool _idGeneratorInitialised;
+		private static long _highestId;
+
+		private static void Init()
+		{
+			//long highestId;
+			try
+			{
+				//_highestId = RealmWorldDBMgr.DatabaseProvider.Query<QuestRecord>().Max(questRecord => questRecord.QuestRecordId);
+				MailMessage highestItem = null;
+				highestItem = RealmWorldDBMgr.DatabaseProvider.Session.QueryOver<MailMessage>().OrderBy(record => record.Guid).Desc.Take(1).SingleOrDefault();
+				_highestId = highestItem != null ? highestItem.Guid : 0;
+
+			}
+			catch (Exception e)
+			{
+				RealmWorldDBMgr.OnDBError(e);
+				MailMessage highestItem = null;
+				highestItem = RealmWorldDBMgr.DatabaseProvider.Session.QueryOver<MailMessage>().OrderBy(record => record.Guid).Desc.Take(1).SingleOrDefault();
+				_highestId = highestItem != null ? highestItem.Guid : 0;
+			}
+
+			//_highestId = (long)Convert.ChangeType(highestId, typeof(long));
+
+			_idGeneratorInitialised = true;
+		}
 
 		/// <summary>
 		/// Returns the next unique Id for a new Item
 		/// </summary>
 		public static long NextId()
 		{
-			return s_idGenerator.Next();
+			if (!_idGeneratorInitialised)
+				Init();
+
+			return Interlocked.Increment(ref _highestId);
 		}
 
-		[Field("ReceiverId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
-		private int _receiverId;
+		public static long LastId
+		{
+			get
+			{
+				if (!_idGeneratorInitialised)
+					Init();
+				return Interlocked.Read(ref _highestId);
+			}
+		}
+		#endregion
 
-		[Field("SenderId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
+		//[Field("ReceiverId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
+		private uint _receiverId;
+
+		//[Field("SenderId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
 		private int _senderId;
 
-		[Field("IncludedMoney", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
+		//[Field("IncludedMoney", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
 		private long _includedMoney;
 
-		[Field("CashOnDelivery", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
+		//[Field("CashOnDelivery", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
 		private long _cashOnDelivery;
 
 		ICollection<ItemRecord> _items;
@@ -55,7 +96,7 @@ namespace WCell.RealmServer.Mail
 		public MailMessage(string subject, string body)
 		{
 			Guid = NextId();
-			TextId = (uint)MailMgr.TextIdGenerator.Next();
+			TextId = (uint)MailMgr.NextId(); //TODO: Re-implement textidgenerator
 
 			Subject = subject;
 			Body = body;
@@ -67,14 +108,14 @@ namespace WCell.RealmServer.Mail
 			set;
 		}
 
-		[PrimaryKey(PrimaryKeyType.Assigned, "Guid")]
+		//[PrimaryKey(PrimaryKeyType.Assigned, "Guid")]
 		public long Guid
 		{
 			get;
 			set;
 		}
 
-		[Version(UnsavedValue = "null")]
+		//[Version(UnsavedValue = "null")]
 		public DateTime? LastModifiedOn
 		{
 			get;
@@ -82,24 +123,24 @@ namespace WCell.RealmServer.Mail
 		}
 
 
-		[Property(NotNull = true)]
+		//[Property(NotNull = true)]
 		public MailType MessageType
 		{
 			get;
 			set;
 		}
 
-		[Property(NotNull = true)]
+		//[Property(NotNull = true)]
 		public MailStationary MessageStationary
 		{
 			get;
 			set;
 		}
 
-		public int ReceiverId
+		public uint ReceiverId
 		{
-			get { return (uint)_receiverId; }
-			set { _receiverId = (int)value; }
+			get { return _receiverId; }
+			set { _receiverId = value; }
 		}
 
 		public uint SenderId
@@ -111,7 +152,7 @@ namespace WCell.RealmServer.Mail
 		public EntityId ReceiverEntityId
 		{
 			get { return EntityId.GetPlayerId((uint)_receiverId); }
-			set { _receiverId = (int)value.Low; }
+			set { _receiverId = value.Low; }
 		}
 
 		public EntityId SenderEntityId
@@ -120,17 +161,17 @@ namespace WCell.RealmServer.Mail
 			set { _senderId = (int)value.Low; }
 		}
 
-		[Property(NotNull = true, Length = 512)]
+		//[Property(NotNull = true, Length = 512)]
 		public string Subject
 		{
 			get;
 			set;
 		}
 
+		//[Property(NotNull = true, Length = 1024*8)]
 		/// <summary>
 		/// The body of the message
 		/// </summary>
-		[Property(NotNull = true, Length = 1024*8)]
 		public string Body
 		{
 			get;
@@ -143,21 +184,21 @@ namespace WCell.RealmServer.Mail
 			set { _TextId = (int)value; }
 		}
 
-		[Property("TextId", NotNull = true)]
+		//[Property("TextId", NotNull = true)]
 		public int _TextId
 		{
 			get;
 			set;
 		}
 
-		[Property(NotNull = true)]
+		//[Property(NotNull = true)]
 		public DateTime SendTime
 		{
 			get;
 			set;
 		}
 
-		[Property(NotNull = true)]
+		//[Property(NotNull = true)]
 		public DateTime DeliveryTime
 		{
 			get;
@@ -174,21 +215,21 @@ namespace WCell.RealmServer.Mail
 			get { return ReadTime != null; }
 		}
 
-		[Property]
+		//[Property]
 		public DateTime? ReadTime
 		{
 			get;
 			set;
 		}
 
-		[Property(NotNull = true)]
+		//[Property(NotNull = true)]
 		public DateTime ExpireTime
 		{
 			get;
 			set;
 		}
 
-		[Property]
+		//[Property]
 		public DateTime? DeletedTime
 		{
 			get;
@@ -207,7 +248,7 @@ namespace WCell.RealmServer.Mail
 			set { _cashOnDelivery = value; }
 		}
 
-		[Property(NotNull = true)]
+		//[Property(NotNull = true)]
 		public bool CopiedToItem
 		{
 			get;
@@ -215,7 +256,7 @@ namespace WCell.RealmServer.Mail
 		}
 
 		#region Items
-		[Property]
+		//[Property]
 		public int IncludedItemCount
 		{
 			get;
@@ -243,7 +284,7 @@ namespace WCell.RealmServer.Mail
 					}
 					else
 					{
-						_items = ItemRecord.FindAllByProperty("MailId", Guid).ToList();
+						_items = RealmWorldDBMgr.DatabaseProvider.Query<ItemRecord>().Where(itemRecord => itemRecord.MailId == Guid).ToList(); //ItemRecord.FindAllByProperty("MailId", Guid).ToList();
 					}
 				}
 				return _items;
@@ -347,41 +388,41 @@ namespace WCell.RealmServer.Mail
 			}
 		}
 
-		public override void Create()
-		{
-			if (_items != null)
-			{
-				foreach (var item in _items)
-				{
-					item.Save();
-				}
-			}
-			base.Create();
-		}
+		//public override void Create()
+		//{
+		//	if (_items != null)
+		//	{
+		//		foreach (var item in _items)
+		//		{
+		//			item.Save();
+		//		}
+		//	}
+		//	base.Create();
+		//}
 
-		public override void Update()
-		{
-			if (_items != null)
-			{
-				foreach (var item in _items)
-				{
-					item.Save();
-				}
-			}
-			base.Update();
-		}
+		//public override void Update()
+		//{
+		//	if (_items != null)
+		//	{
+		//		foreach (var item in _items)
+		//		{
+		//			item.Save();
+		//		}
+		//	}
+		//	base.Update();
+		//}
 
-		public override void Save()
-		{
-			if (_items != null)
-			{
-				foreach (var item in _items)
-				{
-					item.Save();
-				}
-			}
-			base.Save();
-		}
+		//public override void Save()
+		//{
+		//	if (_items != null)
+		//	{
+		//		foreach (var item in _items)
+		//		{
+		//			item.Save();
+		//		}
+		//	}
+		//	base.Save();
+		//}
 
 		/// <summary>
 		/// Delete letter and all containing Items
@@ -390,10 +431,15 @@ namespace WCell.RealmServer.Mail
 		{
 			if (IncludedItemCount > 0)
 			{
-				ItemRecord.DeleteAll("MailId = " + Guid);
+				foreach(var itemRecord in RealmWorldDBMgr.DatabaseProvider.Query<ItemRecord>().Where(itemRecord => itemRecord.MailId == Guid))
+				{
+					RealmWorldDBMgr.DatabaseProvider.Delete(itemRecord);
+				}
+				//ItemRecord.DeleteAll("MailId = " + Guid);
 				_items = null;
 			}
-			Delete();
+			//Delete();
+			RealmWorldDBMgr.DatabaseProvider.Delete(this);
 		}
 
 		/// <summary>
@@ -426,7 +472,7 @@ namespace WCell.RealmServer.Mail
 
 		public static IEnumerable<MailMessage> FindAllMessagesFor(uint charLowId)
 		{
-			return FindAllByProperty("_receiverId", (int)charLowId);
+			return RealmWorldDBMgr.DatabaseProvider.Query<MailMessage>().Where(mailMessage => mailMessage.ReceiverId == charLowId); //FindAllByProperty("_receiverId", (int)charLowId);
 		}
 	}
 }

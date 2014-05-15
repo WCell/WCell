@@ -1,8 +1,8 @@
 using System;
-using WCell.Database;
 using WCell.Core.Initialization;
 using WCell.Util.Logging;
 using WCell.Util.Variables;
+using Jaddie.Database;
 
 namespace WCell.RealmServer.Database
 {
@@ -12,7 +12,7 @@ namespace WCell.RealmServer.Database
 	[GlobalMgr]
 	public static class RealmWorldDBMgr
 	{
-		public static string DefaultCharset = "UTF8";
+		//public static string DefaultCharset = "UTF8";
 
 		private static Logger log = LogManager.GetCurrentClassLogger();
 		[NotVariable]
@@ -25,13 +25,13 @@ namespace WCell.RealmServer.Database
 			//DatabaseUtil.OnDBError(e, "This will erase all Characters!");
 		}
 
-		[Initialization(InitializationPass.First, "Initialize database")]
+		[Initialization(InitializationPass.First, "Initialize world database")]
 		public static bool Initialize()
 		{
 		    if (!Initialized)
 		    {
-		        Initialized = true;
-		        DatabaseProvider = new DatabaseProvider(RealmServerConfiguration.DBWorldConnectionString);
+				Initialized = true;
+		        DatabaseProvider = new DatabaseProvider(RealmServerConfiguration.DBWorldConnectionString,true);
 		    }
 		    //DatabaseUtil.DBErrorHook = exception => CharacterRecord.GetCount() < 100;
 

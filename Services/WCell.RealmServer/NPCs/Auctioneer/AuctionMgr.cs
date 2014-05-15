@@ -89,7 +89,7 @@ namespace WCell.RealmServer.NPCs.Auctioneer
 			}
 			catch (Exception e)
 			{
-				RealmDBMgr.OnDBError(e);
+				RealmWorldDBMgr.OnDBError(e);
 				FetchAuctions();
 			}
 #endif
@@ -143,7 +143,7 @@ namespace WCell.RealmServer.NPCs.Auctioneer
 				}
 				catch (Exception e)
 				{
-					RealmDBMgr.OnDBError(e);
+					RealmWorldDBMgr.OnDBError(e);
 					foreach (var itemRecord in ItemRecord.LoadAuctionedItems())
 					{
 						_auctionedItems.Add(itemRecord.EntityLowId, itemRecord);
@@ -227,12 +227,12 @@ namespace WCell.RealmServer.NPCs.Auctioneer
 			                         {
 			                             BidderLowId = 0,
 			                             BuyoutPrice = buyout,
-			                             CurrentBid = bid,
-			                             Deposit = deposit,
-			                             HouseFaction = houseFaction,
-			                             ItemLowId = item.EntityId.Low,
-			                             ItemTemplateId = item.Template.Id,
-			                             OwnerLowId = chr.EntityId.Low,
+										 CurrentBid = bid,
+										 Deposit = deposit,
+										 HouseFaction = houseFaction,
+										 ItemLowId = item.EntityId.Low,
+										 ItemTemplateId = (int)item.Template.Id, //TODO: Remove type cast
+										 OwnerLowId = chr.EntityId.Low,
 			                             TimeEnds = DateTime.Now.AddMinutes(time),
 			                             IsNew = true
 			                         };
@@ -244,7 +244,7 @@ namespace WCell.RealmServer.NPCs.Auctioneer
 			                                                                  {
 			                                                                      ItemRecord record = item.Record;
 			                                                                      record.IsAuctioned = true;
-			                                                                      record.Save();
+																				  RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(record);
 			                                                                      auctioneer.AuctioneerEntry.Auctions.AddAuction(
 			                                                                          newAuction);
 			                                                                      AuctionItems.Add(newAuction.ItemLowId, record);
@@ -283,7 +283,7 @@ namespace WCell.RealmServer.NPCs.Auctioneer
 
 			if (bid < auction.BuyoutPrice || (auction.BuyoutPrice == 0))
 			{
-				if (auction.BidderLowId == chr.EntityId)
+				if (auction.BidderLowId == chr.EntityId.Low) //TODO: Check this comparison should be against the low, it was originally against the EntityId itself
 				{
 					chr.Money -= (bid - auction.CurrentBid);
 				}

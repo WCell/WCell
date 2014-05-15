@@ -52,13 +52,21 @@ namespace WCell.RealmServer.Database.Entities
             long highestId;
             try
             {
-                highestId = RealmWorldDBMgr.DatabaseProvider.Session.QueryOver<CharacterRecord>().Select(Projections.ProjectionList().Add(Projections.Max<CharacterRecord>(x => x.EntityLowId))).List<long>().First();
+				CharacterRecord highestItem = null;
+				highestItem = RealmWorldDBMgr.DatabaseProvider.Session.QueryOver<CharacterRecord>().OrderBy(record => record.EntityLowId).Desc.Take(1).SingleOrDefault();
+				highestId = highestItem != null ? highestItem.EntityLowId : 0;
+
+				//var records = RealmWorldDBMgr.DatabaseProvider.Query<CharacterRecord>().ToList();
+	            //highestId = records.Any() ? records.Max(characterRecord => characterRecord.EntityLowId) : 0;
+	            //highestId = RealmWorldDBMgr.DatabaseProvider.Session.QueryOver<CharacterRecord>().Select(Projections.ProjectionList().Add(Projections.Max<CharacterRecord>(x => x.Guid))).List<long>().First();
             }
             catch (Exception e)
             {
                 RealmWorldDBMgr.OnDBError(e);
-                highestId = RealmWorldDBMgr.DatabaseProvider.Session.QueryOver<CharacterRecord>().Select(Projections.ProjectionList().Add(Projections.Max<CharacterRecord>(x => x.EntityLowId))).List<long>().First();
-            }
+				CharacterRecord highestItem = null;
+				highestItem = RealmWorldDBMgr.DatabaseProvider.Session.QueryOver<CharacterRecord>().OrderBy(record => record.EntityLowId).Desc.Take(1).SingleOrDefault();
+				highestId = highestItem != null ? highestItem.EntityLowId : 0;
+			}
 
             _highestId = (long)Convert.ChangeType(highestId, typeof(long));
 
@@ -335,6 +343,8 @@ namespace WCell.RealmServer.Database.Entities
 			get;
 			set;
 		}
+
+		public byte ActionBarMask { get; set; }
 
 		public byte Skin
 		{

@@ -64,7 +64,6 @@ using WCell.RealmServer.Trade;
 using WCell.Util.Graphics;
 using WCell.RealmServer.Achievements;
 using WCell.RealmServer.Titles;
-using Guild = WCell.RealmServer.Database.Entities.Guild;
 
 namespace WCell.RealmServer.Entities
 {
@@ -658,9 +657,9 @@ namespace WCell.RealmServer.Entities
 			internal set { SetUInt32(PlayerFields.GUILDRANK, value); }
 		}
 
-		public void SetArenaTeamInfoField(ArenaTeamSlot slot, ArenaTeamInfoType type, uint value)
+		public void SetArenaTeamInfoField(ArenaTeamSlot slot, ArenaTeamInfoType type, long value)
 		{
-			SetUInt32((int)PlayerFields.ARENA_TEAM_INFO_1_1 + ((int)slot * (int)ArenaTeamInfoType.ARENA_TEAM_END) + (int)type, value);
+			SetUInt32((int)PlayerFields.ARENA_TEAM_INFO_1_1 + ((int)slot * (int)ArenaTeamInfoType.ARENA_TEAM_END) + (int)type, (uint)value); // TODO: Work around lazy fix for stupid long -> uint problem
 		}
 
 		/// <summary>
@@ -1171,7 +1170,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public void BindActionButton(uint btnIndex, uint action, byte type, bool update = true)
 		{
-			CurrentSpecProfile.State = Core.Database.RecordState.Dirty;
+			//CurrentSpecProfile.State = Core.Database.RecordState.Dirty;
 			var actions = CurrentSpecProfile.ActionButtons;
 			btnIndex = btnIndex * 4;
 			if (action == 0)
@@ -1191,6 +1190,7 @@ namespace WCell.RealmServer.Entities
 			{
 				CharacterHandler.SendActionButtons(this);
 			}
+			RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(CurrentSpecProfile);
 		}
 
 		public uint GetActionFromActionButton(int buttonIndex)
@@ -1228,7 +1228,7 @@ namespace WCell.RealmServer.Entities
 		public void BindActionButton(ActionButton btn, bool update = true)
 		{
 			btn.Set(CurrentSpecProfile.ActionButtons);
-			CurrentSpecProfile.State = Core.Database.RecordState.Dirty;
+			RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(CurrentSpecProfile);
 			if (update)
 			{
 				CharacterHandler.SendActionButtons(this);

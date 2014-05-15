@@ -7,7 +7,8 @@ namespace WCell.RealmServer.Database.Mappings
     {
         public ArenaTeamStatsMap()
         {
-            Id(x => x.Id);
+			Not.LazyLoad();
+			Id(x => x.Id);
             Map(x => x.Rating).Not.Nullable();
             Map(x => x.GamesWeek).Not.Nullable();
             Map(x => x.WinsWeek).Not.Nullable();

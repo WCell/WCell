@@ -74,7 +74,7 @@ namespace WCell.RealmServer.Entities
 			Archetype = ArchetypeMgr.GetArchetype(record.Race, record.Class);
 			MainWeapon = GenericWeapon.Fists;
 			PowerType = m_archetype.Class.DefaultPowerType;
-
+			
 			StandState = StandState.Sit;
 
 			Money = (uint)m_record.Money;
@@ -90,6 +90,9 @@ namespace WCell.RealmServer.Entities
 			UnitFlags = UnitFlags.PlayerControlled;
 			Experience = m_record.Xp;
 			RestXp = m_record.RestXp;
+
+			////TODO: Work out if this is the correct location for setting the mask
+			//ActionBarMask = m_record.ActionBarMask;
 
 			SetInt32(UnitFields.LEVEL, m_record.Level);
 			// cannot use Level property, since it will trigger certain events that we don't want triggered
@@ -242,6 +245,9 @@ namespace WCell.RealmServer.Entities
 						log.Warn("Character had invalid CurrentSpecIndex: {0} ({1})", this, m_record.CurrentSpecIndex);
 						m_record.CurrentSpecIndex = 0;
 					}
+
+					////TODO: Work out if this is the correct location to be setting this
+					//ActionBarMask = m_record.ActionBarMask;
 
 					// load all the rest
 					m_achievements.Load();
@@ -563,6 +569,10 @@ namespace WCell.RealmServer.Entities
 				LastLogin = DateTime.Now;
 				var isNew = m_record.JustCreated;
 
+
+				//TODO: Work out if there is a better location for this
+				ActionBarMask = m_record.ActionBarMask;
+
 				// perform some stuff ingame
 				AddMessage(() =>
 				{
@@ -639,7 +649,8 @@ namespace WCell.RealmServer.Entities
 					{
 						try
 						{
-							RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(m_record);
+							//RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(m_record);
+							SaveLater();
 						}
 						catch (Exception ex)
 						{
@@ -701,6 +712,7 @@ namespace WCell.RealmServer.Entities
 			CharacterHandler.SendBindUpdate(this, BindLocation);
 			TutorialHandler.SendTutorialFlags(this);
 			SpellHandler.SendSpellsAndCooldowns(this);
+			//TODO: Work out where this should be put instead
 			CharacterHandler.SendActionButtons(this);
 			FactionHandler.SendFactionList(this);
 			// SMSG_INIT_WORLD_STATES
@@ -790,6 +802,7 @@ namespace WCell.RealmServer.Entities
 				m_record.Race = Race;
 				m_record.Class = Class;
 				m_record.Gender = Gender;
+				m_record.ActionBarMask = ActionBarMask;
 				m_record.Skin = Skin;
 				m_record.Face = Facial;
 				m_record.HairStyle = HairStyle;
@@ -878,7 +891,7 @@ namespace WCell.RealmServer.Entities
 		    try
 		    {
 		        // Interface settings
-		        RealmWorldDBMgr.DatabaseProvider.Save(Account.AccountData);
+		        RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(Account.AccountData);
 
 		        // Items
 		        var items = new List<ItemRecord>();
@@ -900,7 +913,7 @@ namespace WCell.RealmServer.Entities
 		        // Specs
 		        foreach (var spec in SpecProfiles)
 		        {
-		            RealmWorldDBMgr.DatabaseProvider.Save(spec);
+		            RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(spec);
 		        }
 
 		        // Achievements
@@ -910,7 +923,7 @@ namespace WCell.RealmServer.Entities
 		        m_auras.SaveAurasNow();
 
 		        // General Character data
-		        RealmWorldDBMgr.DatabaseProvider.Save(m_record);
+		        RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(m_record);
 
 		        RealmWorldDBMgr.DatabaseProvider.CommitTransaction();
                 RealmWorldDBMgr.DatabaseProvider.Session.Flush();

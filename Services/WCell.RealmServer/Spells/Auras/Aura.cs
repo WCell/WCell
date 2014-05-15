@@ -1270,7 +1270,7 @@ namespace WCell.RealmServer.Spells.Auras
 			{
 				m_record.SyncData(this);
 			}
-			m_record.Save();
+			RealmWorldDBMgr.DatabaseProvider.Save(m_record);
 		}
 		#endregion
 

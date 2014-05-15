@@ -12,6 +12,8 @@ using WCell.RealmServer.Global;
 using WCell.RealmServer.Handlers;
 using WCell.Util.Variables;
 using WCell.RealmServer.Network;
+using System.Threading;
+using System.Linq;
 
 namespace WCell.RealmServer.Mail
 {
@@ -75,8 +77,82 @@ namespace WCell.RealmServer.Mail
 		public static uint PostagePrice = 30;
 
 		#region Internal
+		#region Text Id Generator
+		private static bool _idGeneratorInitialised;
+		private static long _highestId;
 
-		internal static NHIdGenerator TextIdGenerator;
+		private static void InitIdGenerator()
+		{
+			//long highestId;
+			try
+			{
+
+				MailMessage highestMailMessageItem = null;
+				highestMailMessageItem = RealmWorldDBMgr.DatabaseProvider.Session.QueryOver<MailMessage>().OrderBy(record => record.TextId).Desc.Take(1).SingleOrDefault();
+				var mailMessagehighestId = highestMailMessageItem != null ? highestMailMessageItem.TextId : 0;
+
+
+				//var mailMessagehighestId = RealmWorldDBMgr.DatabaseProvider.Query<MailMessage>().Max(mailMessage => mailMessage.TextId);
+
+				ItemRecord highestItemRecordItem = null;
+				highestItemRecordItem = RealmWorldDBMgr.DatabaseProvider.Session.QueryOver<ItemRecord>().OrderBy(record => record.ItemTextId).Desc.Take(1).SingleOrDefault();
+				var itemRecordHighestId = highestItemRecordItem != null ? highestItemRecordItem.ItemTextId : 0;
+
+
+				//var itemRecordHighestId = RealmWorldDBMgr.DatabaseProvider.Query<ItemRecord>().Max(itemRecord => itemRecord.ItemTextId);
+
+				_highestId = Math.Max(mailMessagehighestId, itemRecordHighestId);
+			}
+			catch (Exception e)
+			{
+				RealmWorldDBMgr.OnDBError(e);
+
+
+				MailMessage highestMailMessageItem = null;
+				highestMailMessageItem = RealmWorldDBMgr.DatabaseProvider.Session.QueryOver<MailMessage>().OrderBy(record => record.TextId).Desc.Take(1).SingleOrDefault();
+				var mailMessagehighestId = highestMailMessageItem != null ? highestMailMessageItem.TextId : 0;
+
+
+				//var mailMessagehighestId = RealmWorldDBMgr.DatabaseProvider.Query<MailMessage>().Max(mailMessage => mailMessage.TextId);
+
+
+				ItemRecord highestItemRecordItem = null;
+				highestItemRecordItem = RealmWorldDBMgr.DatabaseProvider.Session.QueryOver<ItemRecord>().OrderBy(record => record.ItemTextId).Desc.Take(1).SingleOrDefault();
+				var itemRecordHighestId = highestItemRecordItem != null ? highestItemRecordItem.ItemTextId : 0;
+
+
+				//var itemRecordHighestId = RealmWorldDBMgr.DatabaseProvider.Query<ItemRecord>().Max(itemRecord => itemRecord.ItemTextId);
+
+				_highestId = Math.Max(mailMessagehighestId, itemRecordHighestId);
+			}
+
+			//_highestId = (long)Convert.ChangeType(highestId, typeof(long));
+
+			_idGeneratorInitialised = true;
+		}
+
+		/// <summary>
+		/// Returns the next unique Id for a new Item
+		/// </summary>
+		public static long NextId()
+		{
+			if (!_idGeneratorInitialised)
+				InitIdGenerator();
+
+			return Interlocked.Increment(ref _highestId);
+		}
+
+		public static long LastId
+		{
+			get
+			{
+				if (!_idGeneratorInitialised)
+					InitIdGenerator();
+				return Interlocked.Read(ref _highestId);
+			}
+		}
+		#endregion
+		//internal static NHIdGenerator TextIdGenerator;
 
 		[Initialization(InitializationPass.Sixth)]	// init after NHIdGenerator init'ed (Fifth)
 		public static void Initialize()
@@ -87,23 +163,23 @@ namespace WCell.RealmServer.Mail
 			}
 			catch (Exception e)
 			{
-				RealmDBMgr.OnDBError(e);
+				RealmWorldDBMgr.OnDBError(e);
 				CreateIdGenerators();
 			}
 		}
 
 		private static void CreateIdGenerators()
 		{
-			var mailIdGenerator = new NHIdGenerator(typeof(MailMessage), "_TextId");
-			var itemTextIdGenerator = new NHIdGenerator(typeof(ItemRecord), "m_ItemTextId");
-			if (mailIdGenerator.LastId > itemTextIdGenerator.LastId)
-			{
-				TextIdGenerator = mailIdGenerator;
-			}
-			else
-			{
-				TextIdGenerator = itemTextIdGenerator;
-			}
+			//var mailIdGenerator = new NHIdGenerator(typeof(MailMessage), "_TextId");
+			//var itemTextIdGenerator = new NHIdGenerator(typeof(ItemRecord), "m_ItemTextId");
+			//if (LastId > LastItemRecordId)
+			//{
+			//	//TextIdGenerator = mailIdGenerator;
+			//}
+			//else
+			//{
+			//	//TextIdGenerator = itemTextIdGenerator;
+			//}
 		}
 
 		protected MailMgr()
@@ -207,10 +283,10 @@ namespace WCell.RealmServer.Mail
 			letter.ExpireTime = letter.DeliveryTime.AddDays(letter.CashOnDelivery > 0 ? MaxCODExpiryDelay : MailExpiryDelay);
 			RealmServer.IOQueue.ExecuteInContext(() =>
 			{
-				letter.Save();
+				RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(letter);
 
 				// If the recipient is online, send them a new-mail notification
-				var recipient = World.GetCharacter(letter.ReceiverId);
+				var recipient = World.GetCharacter((uint)letter.ReceiverId);
 				if (recipient != null)
 				{
 					if (letter.DeliveryTime < DateTime.Now)
@@ -236,19 +312,31 @@ namespace WCell.RealmServer.Mail
 		/// </summary>
 		public static void ReturnValueMailFor(uint charId)
 		{
-			var sql = string.Format("UPDATE {0} SET {1} = {2}, {3} = 0 WHERE {4} = {5} AND ({6} > 0 OR {7} > 0 OR {8} > 0)",
-				DatabaseUtil.Dialect.QuoteForTableName(typeof(MailMessage).Name),
-				DatabaseUtil.Dialect.QuoteForColumnName("ReceiverId"),
-				DatabaseUtil.Dialect.QuoteForColumnName("SenderId"),
+			//var dlct = RealmWorldDBMgr.DatabaseProvider.CurrentDialect;
+			//var sql = string.Format("UPDATE {0} SET {1} = {2}, {3} = 0 WHERE {4} = {5} AND ({6} > 0 OR {7} > 0 OR {8} > 0)",
+			//	dlct.QuoteForTableName(typeof(MailMessage).Name),
+			//	dlct.QuoteForColumnName("ReceiverId"),
+			//	dlct.QuoteForColumnName("SenderId"),
 
-				DatabaseUtil.Dialect.QuoteForColumnName("CashOnDelivery"),
-				DatabaseUtil.Dialect.QuoteForColumnName("SenderId"),
-				charId,
-				DatabaseUtil.Dialect.QuoteForColumnName("CashOnDelivery"),
-				DatabaseUtil.Dialect.QuoteForColumnName("IncludedMoney"),
-				DatabaseUtil.Dialect.QuoteForColumnName("IncludedItemCount"));
-			var query = new ScalarQuery<long>(typeof(CharacterRecord), QueryLanguage.Sql, sql);
-			var result = query.Execute();
+			//	dlct.QuoteForColumnName("CashOnDelivery"),
+			//	dlct.QuoteForColumnName("SenderId"),
+			//	charId,
+			//	dlct.QuoteForColumnName("CashOnDelivery"),
+			//	dlct.QuoteForColumnName("IncludedMoney"),
+			//	dlct.QuoteForColumnName("IncludedItemCount"));
+			
+			//var query = new ScalarQuery<long>(typeof(CharacterRecord), QueryLanguage.Sql, sql);
+			//var result = query.Execute();
+
+			foreach (var mailMessage in RealmWorldDBMgr.DatabaseProvider.Query<MailMessage>().Where(mailMessage => 
+				mailMessage.SenderId == charId && 
+					(mailMessage.CashOnDelivery > 0 ||
+						mailMessage.IncludedMoney > 0 ||
+						mailMessage.IncludedItemCount > 0)))
+			{
+				mailMessage.ReceiverId = mailMessage.SenderId;
+				RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(mailMessage);
+			}
 		}
 	}
 }

@@ -2,18 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using Castle.ActiveRecord;
 using WCell.Util.Logging;
 using WCell.Constants;
-using WCell.Core.Database;
 using WCell.Core.Initialization;
-using WCell.RealmServer.Database;
 using WCell.Util;
 using WCell.Util.Data;
 using WCell.Util.DB;
 using WCell.Util.Variables;
 using WCell.Util.Conversion;
 using System.Text;
+using WCell.RealmServer.Database;
 
 namespace WCell.RealmServer.Content
 {
@@ -165,7 +163,7 @@ namespace WCell.RealmServer.Content
 		private static bool inited;
 
 		[Initialization]
-		[DependentInitialization(typeof(RealmDBMgr))]
+		[DependentInitialization(typeof(RealmContentDBMgr))]
 		public static void Initialize()
 		{
 			InitializeAndLoad(typeof(ContentMgr).Assembly);
@@ -175,7 +173,7 @@ namespace WCell.RealmServer.Content
 
 		public static void InitializeDefault()
 		{
-			RealmDBMgr.Initialize();
+			RealmContentDBMgr.Initialize();
 			InitializeAndLoad(typeof(ContentMgr).Assembly);
 		}
 
@@ -221,9 +219,9 @@ namespace WCell.RealmServer.Content
 						if (!field.IsEmpty)
 						{
 							try
-							{
+							{ //TODO: Remove the need for this crap
 								using ( //var reader = 
-									mapper.Wrapper.Query(SqlUtil.BuildSelect(new[] { field.ColumnName }, table.Name, "LIMIT 1")))
+									mapper.Wrapper.Query(string.Format("select {0} from {1} {2}", field.ColumnName, table.Name," LIMIT 1")))
 								{
 								}
 							}
@@ -255,15 +253,15 @@ namespace WCell.RealmServer.Content
 
 			s_definitions.LoadDataHolderDefinitions(dataDefDir);
 
-			if (!ActiveRecordStarter.IsInitialized)
+			if (!RealmContentDBMgr.Initialized) //TODO: Should this end up being content database?
 			{
-				throw new InvalidOperationException("ActiveRecord must be initialized.");
+				throw new InvalidOperationException("Content Database must be initialized.");
 			}
 
 			s_mappersByType = CreateMappersByType();
 		}
 
-		public static void CheckVersion()
+		public static void CheckVersion() //TODO: Re-implement check
 		{
 			var dbVersion = s_definitions.DBVersionLocation;
 			if (dbVersion != null && dbVersion.IsValid)
@@ -271,7 +269,7 @@ namespace WCell.RealmServer.Content
 				string versionStr;
 				try
 				{
-					versionStr = (new NHibernateDbWrapper()).GetDatabaseVersion(dbVersion.Table, dbVersion.Column);
+					versionStr = dbVersion.MaxVersion.ToString(); // (new NHibernateDbWrapper()).GetDatabaseVersion(dbVersion.Table, dbVersion.Column);
 				}
 				catch (Exception e)
 				{

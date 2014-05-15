@@ -1076,6 +1076,11 @@ namespace WCell.Util
 		{
 			return low | ((long)high << 32);
 		}
+
+		public static long MakeLong(int low, long high) //TODO: Get rid of the need for this method as longs should be usable everywhere without conversion
+		{
+			return low | ((long)high << 32);
+		}
 	}
 
 	#region SingleEnumerator

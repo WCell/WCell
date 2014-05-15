@@ -11,6 +11,7 @@ namespace WCell.RealmServer.Database.Mappings
 	{
 		public CharacterRelationRecordMap()
 		{
+			Not.LazyLoad();
 			Id(x => x.CharacterId);
 			Map(x => x.RelatedCharacterId).Not.Nullable();
 			Map(x => x.RelationType).Not.Nullable();

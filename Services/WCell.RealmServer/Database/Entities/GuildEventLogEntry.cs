@@ -2,20 +2,26 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using WCell.Constants.Guilds;
+using WCell.RealmServer.Database;
 using WCell.RealmServer.Guilds;
 
-namespace WCell.RealmServer.Database.Entities
+namespace WCell.RealmServer.Guilds
 {
 	public class GuildEventLogEntry
 	{
 		//private static readonly Order CreatedOrder = new Order("Created", false);
+
+		private GuildEventLogEntry()
+		{
+			
+		}
 
 		public static IEnumerable<GuildEventLogEntry> LoadAll(int guildId)
 		{
 			return RealmWorldDBMgr.DatabaseProvider.FindAll<GuildEventLogEntry>(x => x.GuildId == guildId).OrderBy(entry => entry.TimeStamp); //TODO: Check this is going to do things as we want
 		}
 
-		long Guid
+		public long Id
 		{
 			get;
 			set;

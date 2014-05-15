@@ -1,14 +1,15 @@
 using System;
 using System.Linq;
 using System.Threading;
-using NHibernate.Criterion;
-using WCell.Util.Logging;
 using WCell.Constants.Items;
 using WCell.Core;
+using WCell.RealmServer.Entities;
 using WCell.RealmServer.Items;
 using WCell.RealmServer.Items.Enchanting;
+using WCell.Util;
+using WCell.Util.Logging;
 
-namespace WCell.RealmServer.Database
+namespace WCell.RealmServer.Database.Entities
 {
 	/// <summary>
 	/// The DB-representation of an Item
@@ -18,25 +19,28 @@ namespace WCell.RealmServer.Database
 	{
 		private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-		static readonly Order ContOrder = new Order("ContainerSlots", false);
-
 		private static bool _idGeneratorInitialised;
 		private static long _highestId;
 
 		private static void Init()
 		{
-			long highestId;
+			//long highestId;
 			try
 			{
-				highestId = RealmWorldDBMgr.DatabaseProvider.Session.QueryOver<ItemRecord>().Select(Projections.ProjectionList().Add(Projections.Max<ItemRecord>(x => x.EntityLowId))).List<long>().First();
+				//highestId = RealmWorldDBMgr.DatabaseProvider.Session.QueryOver<ItemRecord>().Select(Projections.ProjectionList().Add(Projections.Max<ItemRecord>(x => x.EntityLowId))).List<long>().First();
+				ItemRecord highestItem = null;
+				Utility.Measure("Get highest item record ID", 1, () => highestItem = RealmWorldDBMgr.DatabaseProvider.Session.QueryOver<ItemRecord>().OrderBy(record => record.Guid).Desc.Take(1).SingleOrDefault());
+				_highestId = highestItem != null ? highestItem.EntityLowId : 0;
 			}
 			catch (Exception e)
 			{
 				RealmWorldDBMgr.OnDBError(e);
-				highestId = RealmWorldDBMgr.DatabaseProvider.Session.QueryOver<ItemRecord>().Select(Projections.ProjectionList().Add(Projections.Max<ItemRecord>(x => x.EntityLowId))).List<long>().First();
+				ItemRecord highestItem = null;
+				Utility.Measure("Get highest item record ID", 1, () => highestItem = RealmWorldDBMgr.DatabaseProvider.Session.QueryOver<ItemRecord>().OrderBy(record => record.Guid).Desc.Take(1).SingleOrDefault());
+				_highestId = highestItem != null ? highestItem.EntityLowId : 0;
 			}
 
-			_highestId = (long)Convert.ChangeType(highestId, typeof(long));
+			//_highestId = (long)Convert.ChangeType(highestId, typeof(long));
 
 			_idGeneratorInitialised = true;
 		}
@@ -79,23 +83,23 @@ namespace WCell.RealmServer.Database
 			}
 		}
 
-		[Field("EntryId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
+		//[Field("EntryId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
 		private int _entryId;
-		[Field("DisplayId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
+		//[Field("DisplayId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
 		private int _displayId;
-		[Field("ContainerSlot", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
+		//[Field("ContainerSlot", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
 		private byte _containerSlot;
-		[Field("ItemFlags", NotNull = true)]
+		//[Field("ItemFlags", NotNull = true)]
 		private int flags;
 
-		[Property(NotNull = true)]
+		//[Property(NotNull = true)]
 		public int OwnerId
 		{
 			get;
 			set;
 		}
 
-		[PrimaryKey(PrimaryKeyType.Assigned, "EntityLowId")]
+		//[PrimaryKey(PrimaryKeyType.Assigned, "EntityLowId")]
 		public long Guid
 		{
 			get;
@@ -162,35 +166,35 @@ namespace WCell.RealmServer.Database
 			}
 		}
 
-		[Property(NotNull = true)]
+		//[Property(NotNull = true)]
 		public int Slot
 		{
 			get;
 			set;
 		}
 
-		[Property(NotNull = true)]
+		//[Property(NotNull = true)]
 		public long CreatorEntityId
 		{
 			get;
 			set;
 		}
 
-		[Property(NotNull = true)]
+		//[Property(NotNull = true)]
 		public long GiftCreatorEntityId
 		{
 			get;
 			set;
 		}
 
-		[Property(NotNull = true)]
+		//[Property(NotNull = true)]
 		public int Durability
 		{
 			get;
 			set;
 		}
 
-		[Property(NotNull = true)]
+		//[Property(NotNull = true)]
 		public int Duration
 		{
 			get;
@@ -203,7 +207,7 @@ namespace WCell.RealmServer.Database
 			set { flags = (int)value; }
 		}
 
-		[Field("ItemTextId", Access = PropertyAccess.FieldCamelcase)]
+		//[Field("ItemTextId", Access = PropertyAccess.FieldCamelcase)]
 		private int m_ItemTextId;
 
 		public uint ItemTextId
@@ -212,38 +216,38 @@ namespace WCell.RealmServer.Database
 			set { m_ItemTextId = (int)value; }
 		}
 
-		[Property]
+		//[Property]
 		public string ItemText
 		{
 			get;
 			set;
 		}
 
-		[Property(NotNull = true)]
+		//[Property(NotNull = true)]
 		public int RandomProperty
 		{
 			get;
 			set;
 		}
 
-		[Property(NotNull = true)]
+		//[Property(NotNull = true)]
 		public int RandomSuffix
 		{
 			get;
 			set;
 		}
 
+		//[Property(NotNull = true)]
 		/// <summary>
 		/// Charges of the Use-spell
 		/// </summary>
-		[Property(NotNull = true)]
 		public short Charges
 		{
 			get;
 			set;
 		}
 
-		[Property(NotNull = true)]
+		//[Property(NotNull = true)]
 		public int Amount
 		{
 			get;
@@ -273,24 +277,25 @@ namespace WCell.RealmServer.Database
 			get { return Flags.HasFlag(ItemFlags.Soulbound); }
 		}
 
+		//[Property(NotNull = true)]
 		/// <summary>
 		/// If this > 0, we have a container with this amount of slots.
 		/// </summary>
-		[Property(NotNull = true)]
+
 		public int ContSlots
 		{
 			get;
 			set;
 		}
 
-		[Property]
+		//[Property]
 		public int[] EnchantIds
 		{
 			get;
 			set;
 		}
 
-		[Property]
+		//[Property]
 		public int EnchantTempTime
 		{
 			get;
@@ -462,20 +467,20 @@ namespace WCell.RealmServer.Database
 			get { return !IsAuctioned && MailId == 0; }
 		}
 
+		//[Property]
 		/// <summary>
 		/// if this is true, the item actually is auctioned
 		/// </summary>
-		[Property]
 		public bool IsAuctioned
 		{
 			get;
 			set;
 		}
 
+		//[Property]
 		/// <summary>
 		/// The id of the mail that this Item is attached to (if any)
 		/// </summary>
-		[Property]
 		public long MailId
 		{
 			get;
@@ -486,23 +491,23 @@ namespace WCell.RealmServer.Database
 		#region Loading
 		public static ItemRecord[] LoadItems(uint lowCharId)
 		{
-			return FindAll(Restrictions.Eq("OwnerId", (int)lowCharId));
+			return RealmWorldDBMgr.DatabaseProvider.Query<ItemRecord>().Where(itemRecord => itemRecord.OwnerId == lowCharId).ToArray();
 		}
 
 		public static ItemRecord[] LoadItemsContainersFirst(uint lowChrId)
 		{
 			// containers first
-			return FindAll(ContOrder, Restrictions.Eq("OwnerId", (int)lowChrId));
+			return RealmWorldDBMgr.DatabaseProvider.Query<ItemRecord>().Where(itemRecord => itemRecord.OwnerId == lowChrId).OrderByDescending(itemRecord => itemRecord.IsContainer).ToArray();
 		}
 
 		public static ItemRecord[] LoadAuctionedItems()
 		{
-			return FindAll(Restrictions.Eq("IsAuctioned", true));
+			return RealmWorldDBMgr.DatabaseProvider.Query<ItemRecord>().Where(itemRecord => itemRecord.IsAuctioned).ToArray();
 		}
 
 		public static ItemRecord GetRecordByID(long id)
 		{
-			return FindOne(Restrictions.Eq("Guid", id));
+			return RealmWorldDBMgr.DatabaseProvider.Query<ItemRecord>().First(itemRecord => itemRecord.Guid == id);
 		}
 
 		public static ItemRecord GetRecordByID(uint itemLowId)

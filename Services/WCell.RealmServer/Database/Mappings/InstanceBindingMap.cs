@@ -12,12 +12,10 @@ namespace WCell.RealmServer.Database.Mappings
     {
         public InstanceBindingMap()
         {
-            Id(x => x.MapId);
-            Id(x => Reveal.Member<int>("_InstanceId"));
+			Not.LazyLoad();
+			CompositeId().KeyProperty(x => x.MapId).KeyProperty(Reveal.Member<InstanceBinding>("_InstanceId"));
             Map(x => x.DifficultyIndex).Not.Nullable();
             Map(x => x.BindTime).Not.Nullable();
-
-
         }
     }
 }

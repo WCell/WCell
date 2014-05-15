@@ -78,10 +78,10 @@ namespace WCell.RealmServer.NPCs.Pets
 			set;
 		}
 
-		bool IsDirty
-		{
-			get;
-		}
+		//bool IsDirty
+		//{
+		//	get;
+		//}
 
 		uint[] ActionButtons
 		{

@@ -46,3 +46,5 @@ _ReSharper*/
 [Tt]est[Rr]esult*
 /packages
 /*.sln.ide
+Run/Content/Impl/UDB/unifieddb/
+Run/Content/Impl/UDB/unifieddb.zip

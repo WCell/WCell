@@ -1,35 +1,27 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using WCell.RealmServer.Database.Entities;
 using WCell.Util.Logging;
-using WCell.Constants.Spells;
-using WCell.Constants.Talents;
-using WCell.Core.Database;
-using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
-using WCell.RealmServer.Global;
-using WCell.RealmServer.Handlers;
-using NHibernate.Criterion;
-using Castle.ActiveRecord;
 using WCell.Util;
+using WCell.RealmServer.Database;
+using System.Linq;
 
 namespace WCell.RealmServer.Talents
 {
-	[ActiveRecord(Access = PropertyAccess.Property)]
-	public class SpecProfile : WCellRecord<SpecProfile>
+	//[ActiveRecord(Access = PropertyAccess.Property)]
+	public class SpecProfile // : WCellRecord<SpecProfile>
 	{
-		static readonly Order[] order = { Order.Asc("SpecIndex") };
+		//static readonly Order[] order = { Order.Asc("SpecIndex") };
 
 		public static int MAX_TALENT_GROUPS = 2;
 		public static int MAX_GLYPHS_PER_GROUP = 6;
 
 		internal static SpecProfile[] LoadAllOfCharacter(Character chr)
 		{
-			ICriterion[] query = { Expression.Eq("_characterGuid", (int)chr.EntityId.Low) };
+			//ICriterion[] query = { Expression.Eq("_characterGuid", (int)chr.EntityId.Low) };
 
-			var specs = FindAll(order, query);
+			var specs = RealmWorldDBMgr.DatabaseProvider.Query<SpecProfile>().Where(specProfile => specProfile.CharacterGuid == chr.EntityId.Low).OrderBy(specProfile => specProfile.SpecIndex).ToArray(); //FindAll(order, query);
 			var i = 0;
 
 			foreach (var spec in specs)
@@ -39,7 +31,7 @@ namespace WCell.RealmServer.Talents
 				{
 					LogManager.GetCurrentClassLogger().Warn("Found SpecProfile for \"{0}\" with invalid SpecIndex {1} (should be {2})", spec.SpecIndex, i);
 					spec.SpecIndex = i;
-					spec.State = RecordState.Dirty;
+					RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(spec);
 				}
 
 				// ensure correct ActionButtons
@@ -86,7 +78,7 @@ namespace WCell.RealmServer.Talents
 			return newProfile;
 		}
 
-		[Field("CharacterId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
+		//[Field("CharacterId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
 		private int _characterGuid;
 
 		private SpecProfile()
@@ -99,13 +91,13 @@ namespace WCell.RealmServer.Talents
 		{
 			_characterGuid = (int)lowId;
 			SpecIndex = specIndex;
-			State = RecordState.New;
+			RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(this); // TODO: Will this create the same outcome as setting State to new?
 		}
 
 		/// <summary>
 		/// Primary key. A combination of Character id and TalentGroup.
 		/// </summary>
-		[PrimaryKey(PrimaryKeyType.Assigned)]
+		//[PrimaryKey(PrimaryKeyType.Assigned)]
 		public long SpecRecordId
 		{
 			get
@@ -128,7 +120,7 @@ namespace WCell.RealmServer.Talents
 		/// <summary>
 		/// The Id of the Talent Group currently in use.
 		/// </summary>
-		[Property]
+		//[Property]
 		public int SpecIndex
 		{
 			get;
@@ -138,7 +130,7 @@ namespace WCell.RealmServer.Talents
 		/// <summary>
 		/// TODO: Move to own table
 		/// </summary>
-		[Property]
+		//[Property]
 		public uint[] GlyphIds
 		{
 			get;
@@ -148,7 +140,7 @@ namespace WCell.RealmServer.Talents
 		/// <summary>
 		/// 
 		/// </summary>
-		[Property]
+		//[Property]
 		public byte[] ActionButtons
 		{
 			get;

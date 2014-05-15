@@ -11,6 +11,8 @@ namespace WCell.RealmServer.Database.Mappings
     {
         public GuildTabardMap()
         {
+			Not.LazyLoad();
+			Id(x => x.Id);
             Map(x => x.EmblemStyle);
             Map(x => x.EmblemColor);
             Map(x => x.BorderStyle);

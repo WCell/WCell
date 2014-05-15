@@ -1,11 +1,7 @@
-using NHibernate.Criterion;
-using WCell.Database;
 using WCell.Constants.World;
 using System;
 using WCell.RealmServer.Database;
-using WCell.Util;
 using WCell.RealmServer.Global;
-using WCell.Constants;
 
 namespace WCell.RealmServer.Instances
 {

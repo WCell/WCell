@@ -314,16 +314,16 @@ namespace WCell.RealmServer.Commands
 	}
 	#endregion
 
-	#region GodMode
-	public class GodModeCommand : RealmServerCommand
+	#region GameMaster Mode
+	public class GameMasterModeCommand : RealmServerCommand
 	{
-		protected GodModeCommand() { }
+		protected GameMasterModeCommand() { }
 
 		protected override void Initialize()
 		{
-			Init("GodMode", "GM");
+			Init("GameMaster", "GM");
 			EnglishParamInfo = "[0|1]";
-			EnglishDescription = "Toggles the GodMode";
+			EnglishDescription = "Toggles GameMaster mode";
 		}
 
 		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
@@ -331,7 +331,7 @@ namespace WCell.RealmServer.Commands
 			var target = (Character)trigger.Args.Target;
 			var mode = (!trigger.Text.HasNext && !target.GodMode) || trigger.Text.NextBool();
 			target.GodMode = mode;
-			trigger.Reply("GodMode " + (mode ? "ON" : "OFF"));
+			trigger.Reply("GameMaster mode " + (mode ? "ON" : "OFF"));
 		}
 
 		public override ObjectTypeCustom TargetTypes

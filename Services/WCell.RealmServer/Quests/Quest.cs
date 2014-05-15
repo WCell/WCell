@@ -26,6 +26,7 @@ using WCell.RealmServer.Database;
 using WCell.Constants.Spells;
 using System.Collections.Generic;
 using WCell.Util.Data;
+using WCell.RealmServer.Database.Entities;
 
 namespace WCell.RealmServer.Quests
 {
@@ -374,11 +375,11 @@ namespace WCell.RealmServer.Quests
 		{
 			if (m_saved)
 			{
-				m_record.Update();
+				RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(m_record);
 			}
 			else
 			{
-				m_record.Create();
+				RealmWorldDBMgr.DatabaseProvider.Save(m_record);
 				m_saved = true;
 			}
 		}
@@ -387,7 +388,7 @@ namespace WCell.RealmServer.Quests
 		{
 			if (m_saved)
 			{
-				m_record.Delete();
+				RealmWorldDBMgr.DatabaseProvider.Delete(m_record);
 				m_saved = false;
 			}
 		}

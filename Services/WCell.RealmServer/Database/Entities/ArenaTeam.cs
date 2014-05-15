@@ -2,48 +2,87 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Castle.ActiveRecord;
 using Cell.Core;
-using WCell.RealmServer.Database.Entities;
 using WCell.Util.Logging;
 using WCell.Constants.ArenaTeams;
-using WCell.Core.Database;
 using WCell.RealmServer.Battlegrounds.Arenas;
 using WCell.RealmServer.Chat;
-using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.Util;
 using WCell.Util.Collections;
 using WCell.Util.Threading;
+using NHibernate.Criterion;
+using System.Threading;
 
-namespace WCell.RealmServer.Battlegrounds.Arenas
+namespace WCell.RealmServer.Database.Entities
 {
-	[ActiveRecord("ArenaTeam", Access = PropertyAccess.Property)]
-	public class ArenaTeam : WCellRecord<ArenaTeam>, INamed, IEnumerable<ArenaTeamMember>, IChatTarget
+	//[ActiveRecord("ArenaTeam", Access = PropertyAccess.Property)]
+	public class ArenaTeam : INamed, IEnumerable<ArenaTeamMember>, IChatTarget //WCellRecord<ArenaTeam>
 	{
-        private static readonly NHIdGenerator _idGenerator = new NHIdGenerator(typeof(ArenaTeam), "_id");
+		//private static readonly NHIdGenerator _idGenerator = new NHIdGenerator(typeof(ArenaTeam), "_id");
+		private static bool _idGeneratorInitialised;
+		private static long _highestId;
+
+		private static void Init()
+		{
+			//long highestId;
+			try
+			{
+				ArenaTeam highestItem = null;
+				highestItem = RealmWorldDBMgr.DatabaseProvider.Session.QueryOver<ArenaTeam>().OrderBy(record => record.Id).Desc.Take(1).SingleOrDefault();
+				_highestId = highestItem != null ? highestItem.Id : 0;
+
+				//_highestId = RealmWorldDBMgr.DatabaseProvider.Query<ArenaTeam>().Max(arenaTeam => arenaTeam.Id);
+			}
+			catch (Exception e)
+			{
+				RealmWorldDBMgr.OnDBError(e);
+				ArenaTeam highestItem = null;
+				highestItem = RealmWorldDBMgr.DatabaseProvider.Session.QueryOver<ArenaTeam>().OrderBy(record => record.Id).Desc.Take(1).SingleOrDefault();
+				_highestId = highestItem != null ? highestItem.Id : 0;
+				//_highestId = RealmWorldDBMgr.DatabaseProvider.Query<ArenaTeam>().Max(arenaTeam => arenaTeam.Id);
+			}
+
+			//_highestId = (long)Convert.ChangeType(highestId, typeof(long));
+
+			_idGeneratorInitialised = true;
+		}
+
+		/// <summary>
+		/// Returns the next unique Id for a new Item
+		/// </summary>
+		public static long NextId()
+		{
+			if (!_idGeneratorInitialised)
+				Init();
+
+			return Interlocked.Increment(ref _highestId);
+		}
+
+		public static long LastId
+		{
+			get
+			{
+				if (!_idGeneratorInitialised)
+					Init();
+				return Interlocked.Read(ref _highestId);
+			}
+		}
 
 		#region Database Fields
-        [PrimaryKey(PrimaryKeyType.Assigned, "Id")]
-        private long _id
-        {
-            get;
-            set;
-        }
+		//[PrimaryKey(PrimaryKeyType.Assigned, "Id")]
+		//private long _id;
 
-        [Field("Name", NotNull = true, Unique = true)]
-        private string _name;
+		//[Field("Name", NotNull = true, Unique = true)]
+		//private string _name;
 
-        [Field("LeaderLowId", NotNull = true)]
-        private int _leaderLowId;
+		//[Field("LeaderLowId", NotNull = true)]
+		//private int _leaderLowId;
 
-        public uint LeaderLowId
-        {
-            get { return (uint)_leaderLowId; }
-        }
+		public virtual uint LeaderLowId { get; set; }
 
-        [Field("Type", NotNull = true)]
-        private int _type;
+        //[Field("Type", NotNull = true)]
+        //private int _type;
 		#endregion
 
 		#region Fields
@@ -67,32 +106,27 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
 		/// <summary>
 		/// Id of this team
 		/// </summary>
-		public uint Id
-		{
-			get { return (uint)_id; }
-		}
+		public virtual long Id { get; set; }
 
 		/// <summary>
 		/// Arena team's name
 		/// </summary>
 		/// <remarks>length is limited with MAX_ARENATEAM_LENGTH</remarks>
-		public string Name
+		public virtual string Name
 		{
-            get { return _name; }
-        }
-        
-        /// <summary>
-        /// Type of this arena team
-        /// </summary>
-        public uint Type
-        {
-            get { return (uint)_type; }
-        }
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Type of this arena team
+		/// </summary>
+		public virtual uint Type { get; set; }
 
         /// <summary>
         /// Slot of this arena team
         /// <summary>
-        public ArenaTeamSlot Slot
+        public virtual ArenaTeamSlot Slot
         {
             get { return m_slot; }
             set { m_slot = value; }
@@ -102,7 +136,7 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
         /// Arena team leader's ArenaTeamMember
         /// Setting it does not send event to the team. Use ArenaTeam.SendEvent
         /// </summary>
-        public ArenaTeamMember Leader
+        public virtual ArenaTeamMember Leader
         {
             get { return m_leader; }
             set
@@ -111,14 +145,14 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
                     return;
 
                 m_leader = value;
-                _leaderLowId = (int)value.Id;
+				LeaderLowId = value.Id;
             }
         }
 
         /// <summary>
         /// Stats of the arena team
         /// </summary>
-        public ArenaTeamStats Stats
+        public virtual ArenaTeamStats Stats
         {
             set { m_stats = value; }
             get { return m_stats; }
@@ -127,7 +161,7 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
         /// <summary>
         /// Number of arena team's members
         /// </summary>
-        public int MemberCount
+        public virtual int MemberCount
         {
             get { return Members.Count; }
         }
@@ -148,10 +182,10 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
 		public ArenaTeam(CharacterRecord leader, string name, uint type)
 			: this()
 		{
-			_id = _idGenerator.Next();
-			_leaderLowId = (int)leader.EntityLowId;
-			_name = name;
-            _type = (int)type;
+			Id = NextId();
+			LeaderLowId = leader.EntityLowId;
+			Name = name;
+            Type = type;
 
             m_slot = ArenaMgr.GetSlotByType(type);
 
@@ -159,9 +193,9 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
             m_stats = new ArenaTeamStats(this);
 
 			Members.Add(m_leader.Id, m_leader);
-            m_leader.Create();
-			
-            RealmServer.IOQueue.AddMessage(Create);
+
+			RealmWorldDBMgr.DatabaseProvider.Save(m_leader);
+			RealmWorldDBMgr.DatabaseProvider.Save(this);
             Register();
 		}
         #endregion
@@ -170,7 +204,7 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
         /// <summary>
         /// Load & initialize the Team
         /// </summary>
-        internal void InitAfterLoad()
+        protected internal virtual void InitAfterLoad()
         {
             var members = ArenaTeamMember.FindAll(this);
             foreach (var atm in members)
@@ -178,7 +212,7 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
                 atm.Init(this);
                 Members.Add(atm.Id, atm);
             }
-            m_stats = ArenaTeamStats.FindByPrimaryKey(this.Id);
+			m_stats = RealmWorldDBMgr.DatabaseProvider.Query<ArenaTeamStats>().First(ats => ats.Id == Id);
             m_slot = ArenaMgr.GetSlotByType(Type);
 
             m_leader = this[LeaderLowId];
@@ -195,14 +229,14 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
         /// <summary>
         /// Initializes arena team after its creation or restoration from DB
         /// </summary>
-        internal void Register()
+        protected internal virtual void Register()
         {
             ArenaMgr.RegisterArenaTeam(this);
         }
         #endregion
 
         #region ArenaTeamMembers
-        public ArenaTeamMember AddMember(Character chr)
+        public virtual ArenaTeamMember AddMember(Character chr)
         {
             var member = AddMember(chr.Record);
             if (member != null)
@@ -218,7 +252,7 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
         /// </summary>
         /// <param name="chr">character to add</param>
         /// <returns>ArenaTeamMember of new member</returns>
-        public ArenaTeamMember AddMember(CharacterRecord chr)
+        public virtual ArenaTeamMember AddMember(CharacterRecord chr)
         {
             ArenaTeamMember newMember;
 
@@ -238,8 +272,7 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
 
                 Members.Add(newMember.Id, newMember);
 
-            	newMember.Create();
-                Update();
+				RealmWorldDBMgr.DatabaseProvider.Save(newMember);
             }
             catch (Exception e)
             {
@@ -258,7 +291,7 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
             return newMember;
         }
 
-        public bool RemoveMember(uint memberId)
+        public virtual bool RemoveMember(uint memberId)
         {
             var member = this[memberId];
             if (member != null)
@@ -268,7 +301,7 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
             return false;
         }
 
-        public bool RemoveMember(string name)
+        public virtual bool RemoveMember(string name)
         {
             var member = this[name];
             if (member != null)
@@ -283,7 +316,7 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
         /// </summary>
         /// <param name="member">member to remove</param>
         /// <param name="update">if true, sends event to the team</param>
-        public bool RemoveMember(ArenaTeamMember member)
+        public virtual bool RemoveMember(ArenaTeamMember member)
         {
             return RemoveMember(member, true);
         }
@@ -293,7 +326,7 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
         /// </summary>
         /// <param name="member">member to remove</param>
         /// <param name="update">if false, changes to the team will not be promoted anymore (used when the team is being disbanded)</param>
-        public bool RemoveMember(ArenaTeamMember member, bool update)
+        public virtual bool RemoveMember(ArenaTeamMember member, bool update)
         {
             OnRemoveMember(member);
 
@@ -334,10 +367,10 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
 
             RealmServer.IOQueue.AddMessage(() =>
             {
-                member.Delete();
+				RealmWorldDBMgr.DatabaseProvider.Delete(member);
                 if (update)
                 {
-                    Update();
+					RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(this);
                 }
             });
             return true;
@@ -346,7 +379,7 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
         /// <summary>
         /// Called before the given member is removed to clean up everything related to the given member
         /// </summary>
-        protected void OnRemoveMember(ArenaTeamMember member)
+        protected virtual void OnRemoveMember(ArenaTeamMember member)
         {
             ArenaMgr.UnregisterArenaTeamMember(member);
 
@@ -386,7 +419,7 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
 
         #region IEnumerable<ArenaTeamMember> Members
 
-        public IEnumerator<ArenaTeamMember> GetEnumerator()
+        public virtual IEnumerator<ArenaTeamMember> GetEnumerator()
         {
             foreach (ArenaTeamMember member in Members.Values)
             {
@@ -406,7 +439,7 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
 
         #region IChatTarget
 
-        public void SendSystemMsg(string msg)
+        public virtual void SendSystemMsg(string msg)
         {
             foreach (var member in Members.Values)
             {
@@ -415,7 +448,7 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
             }
         }
 
-        public void SendMessage(string message)
+        public virtual void SendMessage(string message)
         {
             // TODO: What to do if there is no chatter argument?
             throw new NotImplementedException();
@@ -425,7 +458,7 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
         /// <summary>
         /// Say something to this target
         /// </summary>		
-        public void SendMessage(IChatter sender, string message)
+        public virtual void SendMessage(IChatter sender, string message)
         {
             //ChatMgr.SendGuildMessage(sender, this, message);
         }
@@ -437,7 +470,7 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
         /// </summary>
         /// <param name="lowMemberId">low id of member's character</param>
         /// <returns>requested member or null</returns>
-        public ArenaTeamMember this[uint lowMemberId]
+        public virtual ArenaTeamMember this[uint lowMemberId]
         {
             get
             {
@@ -455,7 +488,7 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
 		/// </summary>
 		/// <param name="name">name of member's character (not case-sensitive)</param>
 		/// <returns>requested member</returns>
-		public ArenaTeamMember this[string name]
+		public virtual ArenaTeamMember this[string name]
 		{
 			get
 			{
@@ -475,7 +508,7 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
 		/// Disbands the arena team
 		/// </summary>
 		/// <param name="update">if true, sends event to the team</param>
-		public void Disband()
+		public virtual void Disband()
 		{
 			m_syncRoot.Enter();
 			try
@@ -490,7 +523,7 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
 				}
 
 				ArenaMgr.UnregisterArenaTeam(this);
-				RealmServer.IOQueue.AddMessage(() => Delete());
+				RealmServer.IOQueue.AddMessage(() => RealmWorldDBMgr.DatabaseProvider.Delete(this));
 			}
 			finally
 			{
@@ -503,7 +536,7 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
 		/// </summary>
 		/// <param name="newLeader">ArenaTeamMember of new leader</param>
 		/// <param name="update">if true, sends event to the team</param>
-		public void ChangeLeader(ArenaTeamMember newLeader)
+		public virtual void ChangeLeader(ArenaTeamMember newLeader)
 		{
 			if (newLeader.ArenaTeam != this)
 				return;
@@ -518,10 +551,10 @@ namespace WCell.RealmServer.Battlegrounds.Arenas
 			{
 				if (currentLeader != null)
 				{
-					currentLeader.Update();
+					RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(currentLeader);
 				}
-				newLeader.Update();
-				Update();
+				RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(newLeader);
+				RealmWorldDBMgr.DatabaseProvider.SaveOrUpdate(this);
 			}));
 
 			if (currentLeader != null)
