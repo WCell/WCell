@@ -47,6 +47,13 @@ namespace WCell.Addons.Default.Spells
 				spell.CastDelay = 3000;
 				spell.CooldownTime = 6000;
 			}, SpellId.Chilled);
+
+			SpellHandler.Apply(spell =>
+			{
+				spell.RequiredTargetType = RequiredSpellTargetType.NPCAlive;
+				spell.Range = new SimpleRange(1,20);
+				spell.RequiredTargetId = 9096;
+			}, SpellId.MendDragon);
 		}
 	}
 }
