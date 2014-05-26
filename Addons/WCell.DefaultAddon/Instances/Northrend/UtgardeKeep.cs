@@ -445,14 +445,14 @@ namespace WCell.Addons.Default.Instances
 			void CastDecrepify(WorldObject owner)
 			{
 
-				owner.Yell("Hi");
+				//owner.Yell("Hi");
 
-				//Character chr = owner.GetNearbyRandomHostileCharacter();
+				Character chr = owner.GetNearbyRandomHostileCharacter(); //TODO: Work out why this was commented out and replaced with a test string
 
-				//if (chr != null)
-				//{
-				//    m_owner.SpellCast.Start(decrepify, false, chr);
-				//}
+				if (chr != null)
+				{
+				    m_owner.SpellCast.Start(decrepify, false, chr);
+				}
 
 			}
 		}
