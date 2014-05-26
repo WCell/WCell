@@ -123,7 +123,7 @@ namespace Cell.Core
 		/// </summary>
 		public IPAddress ClientAddress
 		{
-			get { return (_tcpSock != null && _tcpSock.RemoteEndPoint != null) ? 
+			get { return (_tcpSock != null && _tcpSock.Connected && _tcpSock.RemoteEndPoint != null) ? 
 				((IPEndPoint)_tcpSock.RemoteEndPoint).Address : null ; }
 		}
 
@@ -132,7 +132,7 @@ namespace Cell.Core
 		/// </summary>
 		public int Port
 		{
-			get { return (_tcpSock != null && _tcpSock.RemoteEndPoint != null) ? 
+			get { return (_tcpSock != null && _tcpSock.Connected && _tcpSock.RemoteEndPoint != null) ? 
 				((IPEndPoint)_tcpSock.RemoteEndPoint).Port : -1; }
 		}
 
