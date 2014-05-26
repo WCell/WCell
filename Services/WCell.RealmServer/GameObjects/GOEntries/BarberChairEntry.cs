@@ -1,8 +1,8 @@
-using NLog;
+using WCell.Util.Logging;
 
 namespace WCell.RealmServer.GameObjects.GOEntries
 {
-	public class BarberChairEntry : GOEntry
+	public class BarberChairEntry : GOEntry //TODO: Does this class actually help achieve anything
 	{
 		private static readonly Logger sLog = LogManager.GetCurrentClassLogger();
 
@@ -32,7 +32,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 					return false;
 				}
 			}
-			set { Fields[ 1 ] = ( value ? 1u : 0u ); }
+			set { Fields[ 1 ] = ( value ? 1 : 0 ); }
     	}
 	}
 }

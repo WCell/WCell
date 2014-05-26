@@ -269,6 +269,7 @@
     <Compile Include="Editor\Menus\SpawnPointEditorMenu.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="GameObjects\GOEntries\BarberChairEntry.cs" />
     <Compile Include="Gossips\GossipTextHelper.cs" />
     <Compile Include="Handlers\MirrorImageHandler.cs" />
     <Compile Include="Handlers\TotemHandler.cs" />

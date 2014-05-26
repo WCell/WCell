@@ -5,6 +5,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.AuthServerConsole", "Applications\WCell.AuthServerConsole\WCell.AuthServerConsole.csproj", "{4515099C-386E-4CF2-9441-B683481549DB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.RealmServerConsole", "Applications\WCell.RealmServerConsole\WCell.RealmServerConsole.csproj", "{A003175E-EA71-49CC-8660-C975BABC9A99}"
+	ProjectSection(ProjectDependencies) = postProject
+		{38846B91-92C5-4ED0-A77C-5480FA06EDBE} = {38846B91-92C5-4ED0-A77C-5480FA06EDBE}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.AuthServer", "Services\WCell.AuthServer\WCell.AuthServer.csproj", "{926BA681-C960-45D7-B02A-CA9AE2B80C4B}"
 EndProject
@@ -430,7 +433,8 @@ Global
 		{359D2064-8F94-4C6D-BEAD-5F0D28CB2939}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{359D2064-8F94-4C6D-BEAD-5F0D28CB2939}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{359D2064-8F94-4C6D-BEAD-5F0D28CB2939}.Debug|Itanium.ActiveCfg = Debug|Any CPU
-		{359D2064-8F94-4C6D-BEAD-5F0D28CB2939}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{359D2064-8F94-4C6D-BEAD-5F0D28CB2939}.Debug|x64.ActiveCfg = Debug|x64
+		{359D2064-8F94-4C6D-BEAD-5F0D28CB2939}.Debug|x64.Build.0 = Debug|x64
 		{359D2064-8F94-4C6D-BEAD-5F0D28CB2939}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{359D2064-8F94-4C6D-BEAD-5F0D28CB2939}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{359D2064-8F94-4C6D-BEAD-5F0D28CB2939}.Release|Any CPU.Build.0 = Release|Any CPU
@@ -440,7 +444,8 @@ Global
 		{719075D8-2017-4C6B-AF9C-56FA7BE9762C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{719075D8-2017-4C6B-AF9C-56FA7BE9762C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{719075D8-2017-4C6B-AF9C-56FA7BE9762C}.Debug|Itanium.ActiveCfg = Debug|Any CPU
-		{719075D8-2017-4C6B-AF9C-56FA7BE9762C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{719075D8-2017-4C6B-AF9C-56FA7BE9762C}.Debug|x64.ActiveCfg = Debug|x64
+		{719075D8-2017-4C6B-AF9C-56FA7BE9762C}.Debug|x64.Build.0 = Debug|x64
 		{719075D8-2017-4C6B-AF9C-56FA7BE9762C}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{719075D8-2017-4C6B-AF9C-56FA7BE9762C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{719075D8-2017-4C6B-AF9C-56FA7BE9762C}.Release|Any CPU.Build.0 = Release|Any CPU
@@ -477,9 +482,9 @@ Global
 		{B6E8E045-B27D-47A8-A2F1-94B7BB351A80} = {009B84F0-3E1E-4674-9318-7B6BECF748E1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		ISWCFSolution = True
-		Locked = False
 		UnLocked = True
+		Locked = False
+		ISWCFSolution = True
 	EndGlobalSection
 	GlobalSection(TextTemplating) = postSolution
 		TextTemplating = 1
