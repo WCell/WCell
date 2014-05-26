@@ -23,6 +23,10 @@ namespace WCell.RealmServer.Spells
 		SpellFailedReason PrepareAI()
 		{
 			var caster = CasterUnit;
+			if (caster == null)
+			{
+				return SpellFailedReason.DontReport; //TODO: Prevent the spellcast from being disposed twice
+			}
 			SourceLoc = caster.Position;
 
 			if (caster.Target != null)
