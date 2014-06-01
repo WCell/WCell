@@ -125,6 +125,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Iesi.Collections.3.2.0.4000\lib\Net35\Iesi.Collections.dll</HintPath>
     </Reference>
+    <Reference Include="Jaddie.Database, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Jaddie.Database.1.0.2\lib\net40\Jaddie.Database.dll</HintPath>
+    </Reference>
     <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Libraries\Binaries\Log4Net\log4net.dll</HintPath>
@@ -223,10 +227,6 @@
       <Project>{5997613F-D2A5-4B86-BEE2-C823BC07D5AF}</Project>
       <Name>WCell.Intercommunication</Name>
       <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Utilities\Jaddie.Database\Jaddie.Database.csproj">
-      <Project>{719075d8-2017-4c6b-af9c-56fa7be9762c}</Project>
-      <Name>Jaddie.Database</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Utilities\WCell.Util\WCell.Util.csproj">
       <Project>{F753AF28-A251-4C12-9335-07E8236184F2}</Project>
