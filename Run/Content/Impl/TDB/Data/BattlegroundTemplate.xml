@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <DataHolder Name="BattlegroundTemplate">
+    <DefaultTable>battleground_template</DefaultTable>
+    <Flat Name="Id" Column="id" />
+    <Flat Name="MinPlayersPerTeam" Column="MinPlayersPerTeam" />
+    <Flat Name="MaxPlayersPerTeam" Column="MaxPlayersPerTeam" />
+    <Flat Name="AllianceStartPosIndex" Column="AllianceStartLoc" />
+    <Flat Name="HordeStartPosIndex" Column="HordeStartLoc" />
+    <Flat Name="AllianceStartOrientation" Column="AllianceStartO" />
+    <Flat Name="HordeStartOrientation" Column="HordeStartO" />
+  </DataHolder>
+</DataHolders>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <DataHolder Name="Archetype">
+    <DefaultTable>playercreateinfo</DefaultTable>
+    <Flat Name="RaceId" Column="race" />
+    <Flat Name="ClassId" Column="class" />
+    <Flat Name="StartMapId" Column="map" />
+    <Flat Name="StartZoneId" Column="zone" />
+    <Nested Name="StartPosition">
+      <Flat Name="X" Column="position_x" />
+      <Flat Name="Y" Column="position_y" />
+      <Flat Name="Z" Column="position_z" />
+    </Nested>
+<!--not in UDB
+    <Flat Name="StartOrientation" Column="" />
+    <Flat Name="IntroductionMovie" Column="" />
+    <Flat Name="StartLevel" Column="" />
+
+    These data are in player_levelstats, table has different primary keys so I'm not sure if it is able to locate them this way
+    <Flat Name="BaseAgility" Table="player_levelstats" Column="agi" />  
+    <Flat Name="BaseIntellect" Table="player_levelstats" Column="inte" /> 
+    <Flat Name="BaseSpirit" Table="player_levelstats" Column="spi" />
+    <Flat Name="BaseStamina" Table="player_levelstats" Column="sta" />
+    <Flat Name="BaseStrength" Table="player_levelstats" Column="str" />
+-->
+  </DataHolder>
+</DataHolders>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <DataHolder Name="SpellProcEventEntry">
+    <DefaultTable>spell_proc</DefaultTable>
+    <Flat Name="SpellId" Column="SpellId" />
+    <Flat Name="SchoolMask" Column="SchoolMask" />
+    <Flat Name="SpellClassSet" Column="SpellFamilyName" />
+
+
+
+
+
+
+    <FlatArray Name="SpellFamilyMask0">
+      <Column Name="SpellFamilyMask0" />
+      <!-- <Column Name="SpellFamilyMaskA0"/>
+      <Column Name="SpellFamilyMaskB0"/>
+      <Column Name="SpellFamilyMaskC0"/> -->
+    </FlatArray>
+
+    <FlatArray Name="SpellFamilyMask1">
+      <Column Name="SpellFamilyMask1" />
+      <!-- <Column Name="SpellFamilyMaskA1"/>
+      <Column Name="SpellFamilyMaskB1"/>
+      <Column Name="SpellFamilyMaskC1"/> -->
+    </FlatArray>
+    
+    <FlatArray Name="SpellFamilyMask2">
+      <Column Name="SpellFamilyMask2" />
+      <!-- <Column Name="SpellFamilyMaskA2"/>
+      <Column Name="SpellFamilyMaskB2"/>
+      <Column Name="SpellFamilyMaskC2"/> -->
+    </FlatArray>
+    
+    <Flat Name="ProcFlags" Column="ProcFlags" />
+    <Flat Name="ProcEx" Column="HitMask" /> <!-- Don't know if this is the right column! -->
+    <Flat Name="PpmRate" Column="ProcsPerMinute" />
+    <Flat Name="CustomChance" Column="Chance" />
+    <Flat Name="Cooldown" Column="Cooldown" />
+  </DataHolder>
+</DataHolders>

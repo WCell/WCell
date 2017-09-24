@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <DataHolder Name="PlayerItemEntry">
+    <DefaultTable>playercreateinfo_item</DefaultTable>
+    <Flat Name="Race" Column="race" />
+    <Flat Name="Class" Column="class" />
+    <Flat Name="ItemId" Column="itemid" />
+    <Flat Name="Amount" Column="amount" />
+
+  </DataHolder>
+<!--missing in UDB
+    <Flat Name="Slot" Column="" /> no slots for you in UDB, heard DBC is also good source of info!
+-->
+</DataHolders>

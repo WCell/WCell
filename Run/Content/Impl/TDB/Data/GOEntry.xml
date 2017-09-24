@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <DataHolder Name="GOEntry">
+    <DefaultTable>gameobject_template</DefaultTable>
+    <Flat Name="Id" Column="entry" />
+    <Flat Name="Type" Column="type" />
+    <Flat Name="DisplayId" Column="displayId" />
+    <!--locales_* tables are mostly empty in UDB -->
+    <FlatArray Name="Names">
+      <Column Name="name" />
+      <Column Name="name_loc1" Table="locales_gameobject" />
+      <Column Name="name_loc2" Table="locales_gameobject" />
+      <Column Name="name_loc3" Table="locales_gameobject" />
+      <Column Name="name_loc4" Table="locales_gameobject" />
+      <Column Name="name_loc5" Table="locales_gameobject" />
+      <Column Name="name_loc6" Table="locales_gameobject" />
+      <Column Name="name_loc7" Table="locales_gameobject" />
+      <!--<Column Name="name_loc8" Table="locales_gameobject" />-->
+    </FlatArray>
+    <Flat Name="Scale" Column="size" />
+    <Flat Name="Flags" Column="flags" />
+    <Flat Name="FactionId" Column="faction" />
+    <FlatArray Name="Fields" Pattern="data{#}" Offset="0" />
+<!--extra in UDB
+    mingold
+    maxgold
+    IconName
+    castBarCaption
+    unk1 (string)
+    questItem1
+    questItem2
+    questItem3
+    questItem4
+    scriptname
+-->  
+  </DataHolder>
+</DataHolders>

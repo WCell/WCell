@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <DataHolder Name="BattlemasterRelation">
+    <DefaultTable>battlemaster_entry</DefaultTable>
+    <Flat Name="BattleMasterId" Column="entry" />
+    <Flat Name="BattlegroundId" Column="bg_template" />
+  </DataHolder>
+</DataHolders>

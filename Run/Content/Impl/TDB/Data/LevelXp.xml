@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <DataHolder Name="LevelXp">
+    <DefaultTable>player_xp_for_level</DefaultTable>
+    <Flat Name="Level" Column="lvl" />
+    <Flat Name="Xp" Column="xp_for_next_level" />
+  </DataHolder>
+</DataHolders>

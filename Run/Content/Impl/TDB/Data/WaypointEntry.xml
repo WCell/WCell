@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <DataHolder Name="WaypointEntry">
+    <DefaultTable>creature_movement</DefaultTable>
+    
+    <Flat Name="SpawnId" Column="id" />
+    <Flat Name="Id" Column="point" />
+    <Nested Name="Position">
+      <Flat Name="X" Column="position_x" />
+      <Flat Name="Y" Column="position_y" />
+      <Flat Name="Z" Column="position_z" />
+    </Nested>
+    <Flat Name="WaitTime" Column="waittime" />
+    <Flat Name="Orientation" Column="orientation" />
+    <Flat Name="Emote" Column="emote" />
+    <Flat Name="SpellId" Column="spell" />
+    <Flat Name="ArriveDisplayId" Column="model1" />
+    <Flat Name="LeaveDisplayId" Column="model2" />
+  </DataHolder>
+</DataHolders>
