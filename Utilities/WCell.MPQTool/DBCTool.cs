@@ -252,7 +252,7 @@ namespace WCell.MPQTool
 					}
 					else
 					{
-						Console.WriteLine("Could not find a valid WoW installation - Please enter the path manually.");
+						Console.WriteLine("Could not find a valid WoW installation - Please type y and press enter to provide the path manually or nothing to close immediately");
 					}
 					response = Console.ReadLine();
 					if (response == null)
@@ -436,7 +436,7 @@ namespace WCell.MPQTool
 					return true;
 				}
 
-				throw new Exception("Could not find any WoW installation.");
+				//throw new Exception("Could not find any WoW installation.");
 			}
 			return false;
 		}
