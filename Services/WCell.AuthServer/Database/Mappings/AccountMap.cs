@@ -13,7 +13,7 @@ namespace WCell.AuthServer.Database.Mappings
 	{
 		public AccountMap()
 		{
-			Id(x => x.AccountId);
+			Id(x => x.AccountId).GeneratedBy.Identity();
 			Map(x => x.Created).Not.Nullable();
 			Map(x => x.Name).Not.Nullable().Unique().Length(16);
 			Map(x => x.Password).Not.Nullable().Length(20); //TODO: Find out if it specifying the column type is needed
