@@ -66,7 +66,7 @@ namespace WCell.RealmServer.AreaTriggers
 		/// </summary>
 		public string RequiredFailedText;
 
-		public uint RequiredLevel;
+		public int RequiredLevel;
 
 		[NotPersistent]
 		public AreaTriggerHandler Handler;
