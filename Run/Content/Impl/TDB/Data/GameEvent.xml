@@ -2,7 +2,7 @@
 <DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <DataHolder Name="WorldEvent">
     <DefaultTable>game_event</DefaultTable>
-    <Flat Name="Id" Column="entry" />
+    <Flat Name="Id" Column="eventEntry" />
     <Flat Name="From" Column="start_time" />
     <Flat Name="Until" Column="end_time" />
     <Flat Name="_Occurence" Column="occurence" />
@@ -12,7 +12,7 @@
   </DataHolder>
   
   <DataHolder Name="WorldEventQuest">
-    <DefaultTable>game_event_quest</DefaultTable>
+    <DefaultTable>game_event_quest</DefaultTable> <!-- TODO: Implement this by merging the data from gameobject_quest & creature_quest  -->
     <Flat Name="QuestId" Column="quest" />
     <Flat Name="EventId" Column="event" />
   </DataHolder>

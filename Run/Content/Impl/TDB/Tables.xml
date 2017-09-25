@@ -140,7 +140,7 @@
   </Table>
 
   <Table Name="game_event" MainDataHolder="WorldEvent">
-    <PrimaryColumn Name="entry" TypeName="UInt32"/>
+    <PrimaryColumn Name="eventEntry" TypeName="UInt32"/>
   </Table>
 
   <Table Name="game_event_creature" MainDataHolder="NPCSpawnEntry">
