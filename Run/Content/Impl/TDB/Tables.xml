@@ -445,8 +445,8 @@
   <Table Name="spell_scripts">
     <PrimaryColumn Name="id" />
   </Table>
-  <Table Name="spell_script_target" MainDataHolder="Spell">
-    <PrimaryColumn Name="entry" TypeName="UInt32" />
+  <Table Name="conditions" MainDataHolder="Spell">
+    <PrimaryColumn Name="SourceEntry" TypeName="UInt32" />
   </Table>
   <Table Name="spell_target_position" MainDataHolder="Spell">
     <PrimaryColumn Name="id" TypeName="UInt32"/>
