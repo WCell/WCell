@@ -184,12 +184,12 @@
     <PrimaryColumn Name="zone" />
   </Table>
 
-  <Table Name="access_requirement">
+  <Table Name="access_requirement" MainDataHolder="MapTemplate">
     <PrimaryColumn Name="mapId" TypeName="UInt32"/>
   </Table>
 
   <Table Name="instance_template">
-    <PrimaryColumn Name="map" />
+    <PrimaryColumn Name="map" TypeName="UInt32"/>
   </Table>
 
   <Table Name="item_enchantment_template">
