@@ -49,3 +49,4 @@ _ReSharper*/
 Run/Content/Impl/UDB/unifieddb/
 Run/Content/Impl/UDB/unifieddb.zip
 .vs/
+Run/RealmServerAddons/DefaultAddon/WCell.DefaultAddon.dll
